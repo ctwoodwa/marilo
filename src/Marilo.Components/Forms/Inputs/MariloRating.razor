@@ -1,0 +1,41 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.RatingClass())"
+     style="@CombineStyles()"
+     role="radiogroup"
+     aria-label="Rating"
+     @attributes="AdditionalAttributes">
+    @for (var i = 1; i <= Max; i++)
+    {
+        var starIndex = i;
+        var isFilled = starIndex <= Value;
+        var iconName = isFilled ? "star-filled" : "star";
+
+        if (IsReadOnly)
+        {
+            <span aria-label="@starIndex of @Max stars">
+                @IconProvider.GetIcon(iconName, IconSize.Medium)
+            </span>
+        }
+        else
+        {
+            <button aria-label="@starIndex of @Max stars"
+                    @onclick="() => SetRating(starIndex)">
+                @IconProvider.GetIcon(iconName, IconSize.Medium)
+            </button>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public int Value { get; set; }
+    [Parameter] public EventCallback<int> ValueChanged { get; set; }
+    [Parameter] public int Max { get; set; } = 5;
+    [Parameter] public bool IsReadOnly { get; set; }
+
+    private async Task SetRating(int rating)
+    {
+        Value = rating;
+        await ValueChanged.InvokeAsync(Value);
+    }
+}

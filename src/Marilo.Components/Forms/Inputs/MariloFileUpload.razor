@@ -1,0 +1,43 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.FileUploadClass())"
+     style="@CombineStyles()"
+     @attributes="AdditionalAttributes">
+    <label class="mar-file-upload__zone">
+        <span class="mar-file-upload__icon">
+            @IconProvider.GetIcon("upload", IconSize.Medium)
+        </span>
+        <span class="mar-file-upload__text">
+            @if (_selectedFileNames.Any())
+            {
+                @string.Join(", ", _selectedFileNames)
+            }
+            else
+            {
+                <text>Choose file@(Multiple ? "s" : "") or drag and drop</text>
+            }
+        </span>
+        <InputFile OnChange="HandleFileSelected"
+                   multiple="@Multiple"
+                   accept="@Accept"
+                   disabled="@Disabled"
+                   class="mar-file-upload__input" />
+    </label>
+</div>
+
+@code {
+    [Parameter] public EventCallback<IReadOnlyList<IBrowserFile>> OnFilesSelected { get; set; }
+    [Parameter] public bool Multiple { get; set; }
+    [Parameter] public string? Accept { get; set; }
+    [Parameter] public long MaxFileSize { get; set; } = 10 * 1024 * 1024;
+    [Parameter] public bool Disabled { get; set; }
+
+    private List<string> _selectedFileNames = new();
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        var files = Multiple ? e.GetMultipleFiles().ToList() : new List<IBrowserFile> { e.File };
+        _selectedFileNames = files.Select(f => f.Name).ToList();
+        await OnFilesSelected.InvokeAsync(files);
+    }
+}

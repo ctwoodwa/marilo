@@ -1,0 +1,36 @@
+@inherits MariloComponentBase
+
+<div class="mar-context-menu-trigger" @oncontextmenu="OnContextMenu" @oncontextmenu:preventDefault="true" @attributes="AdditionalAttributes">
+    @ChildContent
+</div>
+
+@if (_isOpen)
+{
+    <div class="mar-menu-overlay" @onclick="Close"></div>
+    <div class="@CombineClasses(CssProvider.ContextMenuClass())"
+         style="@CombineStyles($"position:fixed;left:{_x}px;top:{_y}px")"
+         role="menu">
+        @MenuContent
+    </div>
+}
+
+@code {
+    private bool _isOpen;
+    private double _x;
+    private double _y;
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? MenuContent { get; set; }
+
+    private void OnContextMenu(MouseEventArgs e)
+    {
+        _x = e.ClientX;
+        _y = e.ClientY;
+        _isOpen = true;
+    }
+
+    private void Close()
+    {
+        _isOpen = false;
+    }
+}

@@ -1,0 +1,32 @@
+@inherits MariloComponentBase
+
+<CascadingValue Value="@Theme">
+    @ChildContent
+</CascadingValue>
+
+@code {
+    [Parameter] public MariloTheme Theme { get; set; } = new();
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public EventCallback<ThemeChangedEventArgs> ThemeChanged { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ThemeService.ThemeChanged += OnThemeServiceChanged;
+    }
+
+    private async void OnThemeServiceChanged(object? sender, ThemeChangedEventArgs e)
+    {
+        Theme = e.NewTheme;
+        await ThemeChanged.InvokeAsync(e);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            ThemeService.ThemeChanged -= OnThemeServiceChanged;
+        }
+        base.Dispose(disposing);
+    }
+}

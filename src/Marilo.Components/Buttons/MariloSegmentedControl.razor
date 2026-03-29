@@ -1,0 +1,32 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.ButtonGroupClass())"
+     style="@CombineStyles()"
+     role="radiogroup"
+     @attributes="AdditionalAttributes">
+    @if (Items != null)
+    {
+        @foreach (var item in Items)
+        {
+            var isSelected = item == Value;
+            <button class="@CssProvider.ToggleButtonClass(isSelected)"
+                    role="radio"
+                    aria-checked="@isSelected.ToString().ToLowerInvariant()"
+                    @onclick="() => SelectItem(item)">
+                @item
+            </button>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public string Value { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public List<string>? Items { get; set; }
+
+    private async Task SelectItem(string item)
+    {
+        Value = item;
+        await ValueChanged.InvokeAsync(Value);
+    }
+}

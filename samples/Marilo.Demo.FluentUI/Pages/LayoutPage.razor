@@ -1,0 +1,63 @@
+@page "/layout"
+
+<div class="demo-page">
+    <h1>Layout</h1>
+
+    <div class="demo-section">
+        <h2>Grid (12-column)</h2>
+        <MariloGrid>
+            <MariloRow>
+                <MariloColumn Span="4"><div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">col-4</div></MariloColumn>
+                <MariloColumn Span="4"><div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">col-4</div></MariloColumn>
+                <MariloColumn Span="4"><div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">col-4</div></MariloColumn>
+            </MariloRow>
+            <MariloRow>
+                <MariloColumn Span="6"><div style="background:var(--marilo-color-info-light);padding:12px;border-radius:4px;">col-6</div></MariloColumn>
+                <MariloColumn Span="6"><div style="background:var(--marilo-color-info-light);padding:12px;border-radius:4px;">col-6</div></MariloColumn>
+            </MariloRow>
+            <MariloRow>
+                <MariloColumn Span="3"><div style="background:var(--marilo-color-success-light);padding:12px;border-radius:4px;">col-3</div></MariloColumn>
+                <MariloColumn Span="6"><div style="background:var(--marilo-color-success-light);padding:12px;border-radius:4px;">col-6</div></MariloColumn>
+                <MariloColumn Span="3"><div style="background:var(--marilo-color-success-light);padding:12px;border-radius:4px;">col-3</div></MariloColumn>
+            </MariloRow>
+        </MariloGrid>
+    </div>
+
+    <div class="demo-section">
+        <h2>Stack</h2>
+        <h3>Horizontal</h3>
+        <MariloStack Direction="StackDirection.Horizontal" Alignment="StackAlignment.Center">
+            <MariloBadge Variant="BadgeVariant.Primary">Item 1</MariloBadge>
+            <MariloBadge Variant="BadgeVariant.Secondary">Item 2</MariloBadge>
+            <MariloBadge Variant="BadgeVariant.Success">Item 3</MariloBadge>
+        </MariloStack>
+
+        <h3 style="margin-top: 16px;">Vertical</h3>
+        <MariloStack Direction="StackDirection.Vertical">
+            <MariloButton Variant="ButtonVariant.Primary" Size="ButtonSize.Small">First</MariloButton>
+            <MariloButton Variant="ButtonVariant.Secondary" Size="ButtonSize.Small">Second</MariloButton>
+            <MariloButton Variant="ButtonVariant.Success" Size="ButtonSize.Small">Third</MariloButton>
+        </MariloStack>
+    </div>
+
+    <div class="demo-section">
+        <h2>Divider</h2>
+        <p>Content above</p>
+        <MariloDivider />
+        <p>Content below</p>
+    </div>
+
+    <div class="demo-section">
+        <h2>Panel</h2>
+        <MariloPanel>
+            <p>This content is inside a panel component with elevation and padding.</p>
+        </MariloPanel>
+    </div>
+
+    <div class="demo-section">
+        <h2>Container</h2>
+        <MariloContainer>
+            <MariloAlert Severity="AlertSeverity.Info">This alert is inside a container.</MariloAlert>
+        </MariloContainer>
+    </div>
+</div>

@@ -1,0 +1,78 @@
+@namespace Marilo.Components
+@inject DataChangeService ChangeService
+@implements IAsyncDisposable
+
+@if (pendingChanges.Any())
+{
+    <div class="mar-data-change-banner">
+        <div class="mar-banner-content">
+            <FluentIcon Value="@(new Icons.Regular.Size20.ArrowSync())" Color="Color.Neutral" />
+            <span>
+                @if (pendingChanges.Count == 1)
+                {
+                    @pendingChanges[0].Summary
+                }
+                else
+                {
+                    <text>@pendingChanges.Count changes were made by other users</text>
+                }
+            </span>
+        </div>
+        <div class="mar-banner-actions">
+            <FluentButton Appearance="Appearance.Accent"
+                          Size="ButtonSize.Small"
+                          OnClick="@HandleRefresh">
+                <FluentIcon Value="@(new Icons.Regular.Size16.ArrowSync())" />
+                Refresh Data
+            </FluentButton>
+            <FluentButton Appearance="Appearance.Stealth"
+                          Size="ButtonSize.Small"
+                          OnClick="@DismissAll">
+                Dismiss
+            </FluentButton>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public IEnumerable<string> EntityTypes { get; set; } = Enumerable.Empty<string>();
+
+    [Parameter]
+    public EventCallback OnRefreshRequested { get; set; }
+
+    private readonly List<DataChangeAlert> pendingChanges = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        ChangeService.OnChange += HandleChange;
+        foreach (var entityType in EntityTypes)
+            await ChangeService.SubscribeAsync(entityType);
+    }
+
+    private void HandleChange(DataChangeAlert alert)
+    {
+        if (!EntityTypes.Contains(alert.EntityType)) return;
+        pendingChanges.Add(alert);
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleRefresh()
+    {
+        pendingChanges.Clear();
+        await OnRefreshRequested.InvokeAsync();
+    }
+
+    private void DismissAll()
+    {
+        pendingChanges.Clear();
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        ChangeService.OnChange -= HandleChange;
+        foreach (var entityType in EntityTypes)
+            await ChangeService.UnsubscribeAsync(entityType);
+    }
+}

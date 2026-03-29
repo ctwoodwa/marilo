@@ -1,0 +1,22 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.ColorPickerClass())"
+     style="@CombineStyles()"
+     @attributes="AdditionalAttributes">
+    <input type="color"
+           value="@Value"
+           disabled="@Disabled"
+           @oninput="OnColorChanged" />
+</div>
+
+@code {
+    [Parameter] public string Value { get; set; } = "#000000";
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+
+    private async Task OnColorChanged(ChangeEventArgs e)
+    {
+        Value = e.Value?.ToString() ?? "#000000";
+        await ValueChanged.InvokeAsync(Value);
+    }
+}

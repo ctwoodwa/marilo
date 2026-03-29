@@ -1,0 +1,22 @@
+@inherits MariloComponentBase
+
+@if (IsOpen)
+{
+    <div class="@CssProvider.DrawerOverlayClass()" @onclick="OnClose"></div>
+}
+
+<div class="@CombineClasses(CssProvider.DrawerClass(Position, IsOpen))"
+     style="@CombineStyles($"width:{Width}")"
+     role="dialog"
+     aria-modal="true"
+     @attributes="AdditionalAttributes">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public DrawerPosition Position { get; set; } = DrawerPosition.Left;
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public string? Width { get; set; } = "300px";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

@@ -1,0 +1,12 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.ProgressBarClass())" style="@CombineStyles()" @attributes="AdditionalAttributes">
+    <div class="marilo-progress-bar-inner"
+         style="@(IsIndeterminate ? "" : $"width: {Value}%")">
+    </div>
+</div>
+
+@code {
+    [Parameter] public double Value { get; set; }
+    [Parameter] public bool IsIndeterminate { get; set; }
+}

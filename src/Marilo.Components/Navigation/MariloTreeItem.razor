@@ -1,0 +1,42 @@
+@inherits MariloComponentBase
+
+<li class="@CombineClasses(CssProvider.TreeItemClass(IsExpanded, IsSelected))"
+    style="@CombineStyles()"
+    role="treeitem"
+    aria-expanded="@(ChildContent != null ? IsExpanded.ToString().ToLower() : null)"
+    aria-selected="@IsSelected.ToString().ToLower()"
+    @attributes="AdditionalAttributes">
+    <div class="mar-tree-item__header">
+        @if (ChildContent != null)
+        {
+            <button type="button"
+                    class="mar-tree-item__toggle"
+                    aria-label="@(IsExpanded ? "Collapse" : "Expand")"
+                    @onclick="ToggleExpanded">
+                @(IsExpanded ? "\u25BC" : "\u25B6")
+            </button>
+        }
+        <span class="mar-tree-item__title" @onclick="OnClick">@Title</span>
+    </div>
+    @if (ChildContent != null && IsExpanded)
+    {
+        <ul role="group" class="mar-tree-item__children">
+            @ChildContent
+        </ul>
+    }
+</li>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public bool IsExpanded { get; set; }
+    [Parameter] public EventCallback<bool> IsExpandedChanged { get; set; }
+    [Parameter] public bool IsSelected { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public EventCallback OnClick { get; set; }
+
+    private async Task ToggleExpanded()
+    {
+        IsExpanded = !IsExpanded;
+        await IsExpandedChanged.InvokeAsync(IsExpanded);
+    }
+}

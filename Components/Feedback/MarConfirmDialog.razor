@@ -1,0 +1,70 @@
+@namespace Marilo.Components
+
+@if (IsOpen)
+{
+    <div class="mar-confirm-overlay" @onclick="Cancel">
+        <FluentCard class="mar-confirm-dialog" @onclick:stopPropagation="true">
+            <div class="mar-confirm-header">
+                @if (IsDangerous)
+                {
+                    <FluentIcon Value="@(new Icons.Regular.Size24.Warning())" Color="Color.Error" />
+                }
+                else
+                {
+                    <FluentIcon Value="@(new Icons.Regular.Size24.QuestionCircle())" Color="Color.Warning" />
+                }
+                <h3>@Title</h3>
+            </div>
+            <div class="mar-confirm-body">
+                @if (ChildContent is not null)
+                {
+                    @ChildContent
+                }
+                else
+                {
+                    <p>@Message</p>
+                }
+            </div>
+            <div class="mar-confirm-actions">
+                <FluentButton Appearance="Appearance.Stealth" OnClick="Cancel">@CancelText</FluentButton>
+                <FluentButton Appearance="Appearance.Accent"
+                              OnClick="Confirm"
+                              Style="@(IsDangerous ? "background: var(--error);" : "")">
+                    @ConfirmText
+                </FluentButton>
+            </div>
+        </FluentCard>
+    </div>
+}
+
+@code {
+    /// <summary>Whether the dialog is visible.</summary>
+    [Parameter] public bool IsOpen { get; set; }
+
+    /// <summary>Dialog title text.</summary>
+    [Parameter] public string Title { get; set; } = "Confirm Action";
+
+    /// <summary>Dialog body message (used when ChildContent is null).</summary>
+    [Parameter] public string Message { get; set; } = "Are you sure you want to proceed?";
+
+    /// <summary>Optional rich body content, replaces Message when provided.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Text for the confirm button.</summary>
+    [Parameter] public string ConfirmText { get; set; } = "Confirm";
+
+    /// <summary>Text for the cancel button.</summary>
+    [Parameter] public string CancelText { get; set; } = "Cancel";
+
+    /// <summary>When true, styles the confirm button as a destructive action.</summary>
+    [Parameter] public bool IsDangerous { get; set; }
+
+    /// <summary>Fired when the user confirms.</summary>
+    [Parameter] public EventCallback OnConfirm { get; set; }
+
+    /// <summary>Fired when the user cancels or clicks outside.</summary>
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private async Task Confirm() => await OnConfirm.InvokeAsync();
+    private async Task Cancel() => await OnCancel.InvokeAsync();
+}

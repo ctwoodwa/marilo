@@ -1,0 +1,74 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.CarouselClass())" style="@CombineStyles()" @attributes="AdditionalAttributes">
+    <div class="mar-carousel__track">
+        @ChildContent
+    </div>
+    <button class="mar-carousel__prev" @onclick="Previous" aria-label="Previous">
+        @IconProvider.GetIcon("chevron-left", IconSize.Medium)
+    </button>
+    <button class="mar-carousel__next" @onclick="Next" aria-label="Next">
+        @IconProvider.GetIcon("chevron-right", IconSize.Medium)
+    </button>
+    <div class="mar-carousel__dots">
+        @for (var i = 0; i < ItemCount; i++)
+        {
+            var idx = i;
+            <button class="mar-carousel__dot @(idx == ActiveIndex ? "mar-carousel__dot--active" : "")"
+                    @onclick="() => GoTo(idx)" aria-label="Go to slide @(idx + 1)"></button>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public int ActiveIndex { get; set; }
+    [Parameter] public EventCallback<int> ActiveIndexChanged { get; set; }
+    [Parameter] public int ItemCount { get; set; } = 1;
+    [Parameter] public bool AutoPlay { get; set; }
+    [Parameter] public int IntervalMs { get; set; } = 5000;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private System.Timers.Timer? _timer;
+
+    protected override void OnInitialized()
+    {
+        if (AutoPlay)
+        {
+            _timer = new System.Timers.Timer(IntervalMs);
+            _timer.Elapsed += async (_, _) => await InvokeAsync(async () =>
+            {
+                await Next();
+                StateHasChanged();
+            });
+            _timer.Start();
+        }
+    }
+
+    private async Task Previous()
+    {
+        ActiveIndex = (ActiveIndex - 1 + ItemCount) % ItemCount;
+        await ActiveIndexChanged.InvokeAsync(ActiveIndex);
+    }
+
+    private async Task Next()
+    {
+        ActiveIndex = (ActiveIndex + 1) % ItemCount;
+        await ActiveIndexChanged.InvokeAsync(ActiveIndex);
+    }
+
+    private async Task GoTo(int index)
+    {
+        ActiveIndex = index;
+        await ActiveIndexChanged.InvokeAsync(ActiveIndex);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _timer?.Stop();
+            _timer?.Dispose();
+        }
+        base.Dispose(disposing);
+    }
+}

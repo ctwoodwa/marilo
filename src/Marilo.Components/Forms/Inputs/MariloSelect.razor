@@ -1,0 +1,22 @@
+@inherits MariloComponentBase
+
+<select class="@CombineClasses(CssProvider.SelectClass(IsInvalid))"
+        style="@CombineStyles()"
+        value="@Value"
+        @onchange="OnSelectionChanged"
+        @attributes="AdditionalAttributes">
+    @ChildContent
+</select>
+
+@code {
+    [Parameter] public string Value { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public bool IsInvalid { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private async Task OnSelectionChanged(ChangeEventArgs e)
+    {
+        Value = e.Value?.ToString() ?? string.Empty;
+        await ValueChanged.InvokeAsync(Value);
+    }
+}

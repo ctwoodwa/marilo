@@ -1,0 +1,12 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.ToastClass(Severity))" style="@CombineStyles()" @attributes="AdditionalAttributes">
+    <span>@Message</span>
+    <button type="button" @onclick="OnDismiss">&#x2715;</button>
+</div>
+
+@code {
+    [Parameter] public ToastSeverity Severity { get; set; } = ToastSeverity.Info;
+    [Parameter] public string Message { get; set; } = string.Empty;
+    [Parameter] public EventCallback OnDismiss { get; set; }
+}

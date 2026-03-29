@@ -1,0 +1,30 @@
+@inherits MariloComponentBase
+
+@if (IsOpen)
+{
+    <div class="@CombineClasses(CssProvider.DialogOverlayClass())" @onclick="OnCancel">
+        <div class="@CssProvider.DialogClass()" style="@CombineStyles()" @onclick:stopPropagation="true" @attributes="AdditionalAttributes">
+            <div class="marilo-dialog-title">@Title</div>
+            <div class="marilo-dialog-body">@Message</div>
+            <div class="marilo-dialog-actions">
+                <button type="button" @onclick="OnCancel">@CancelText</button>
+                <button type="button"
+                        class="@(IsDangerous ? "marilo-btn-danger" : "marilo-btn-primary")"
+                        @onclick="OnConfirm">
+                    @ConfirmText
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public string Title { get; set; } = string.Empty;
+    [Parameter] public string Message { get; set; } = string.Empty;
+    [Parameter] public string ConfirmText { get; set; } = "Confirm";
+    [Parameter] public string CancelText { get; set; } = "Cancel";
+    [Parameter] public bool IsDangerous { get; set; }
+    [Parameter] public EventCallback OnConfirm { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+}

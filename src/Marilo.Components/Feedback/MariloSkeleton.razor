@@ -1,0 +1,20 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.SkeletonClass(Variant))"
+     style="@CombineStyles(BuildSizeStyle())"
+     @attributes="AdditionalAttributes">
+</div>
+
+@code {
+    [Parameter] public SkeletonVariant Variant { get; set; } = SkeletonVariant.Text;
+    [Parameter] public string? Width { get; set; }
+    [Parameter] public string? Height { get; set; }
+
+    private string? BuildSizeStyle()
+    {
+        var parts = new List<string>();
+        if (!string.IsNullOrEmpty(Width)) parts.Add($"width: {Width}");
+        if (!string.IsNullOrEmpty(Height)) parts.Add($"height: {Height}");
+        return parts.Count > 0 ? string.Join("; ", parts) : null;
+    }
+}

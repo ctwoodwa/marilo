@@ -1,0 +1,19 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.AvatarClass(Size))" style="@CombineStyles()" @attributes="AdditionalAttributes">
+    @if (!string.IsNullOrEmpty(Src))
+    {
+        <img src="@Src" alt="@Alt" />
+    }
+    else
+    {
+        @Initials
+    }
+</div>
+
+@code {
+    [Parameter] public AvatarSize Size { get; set; } = AvatarSize.Medium;
+    [Parameter] public string? Src { get; set; }
+    [Parameter] public string? Alt { get; set; }
+    [Parameter] public string? Initials { get; set; }
+}

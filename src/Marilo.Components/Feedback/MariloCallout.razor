@@ -1,0 +1,37 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.CalloutClass(Type))" style="@CombineStyles()" @attributes="AdditionalAttributes">
+    <div class="mar-callout__icon">
+        @switch (Type)
+        {
+            case CalloutType.Info:
+                @IconProvider.GetIcon("info", IconSize.Medium)
+                break;
+            case CalloutType.Warning:
+                @IconProvider.GetIcon("warning", IconSize.Medium)
+                break;
+            case CalloutType.Danger:
+                @IconProvider.GetIcon("error", IconSize.Medium)
+                break;
+            case CalloutType.Success:
+                @IconProvider.GetIcon("check-circle", IconSize.Medium)
+                break;
+            case CalloutType.Note:
+                @IconProvider.GetIcon("note", IconSize.Medium)
+                break;
+        }
+    </div>
+    <div class="mar-callout__content">
+        @if (!string.IsNullOrEmpty(Title))
+        {
+            <div class="mar-callout__title">@Title</div>
+        }
+        @ChildContent
+    </div>
+</div>
+
+@code {
+    [Parameter] public CalloutType Type { get; set; } = CalloutType.Info;
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

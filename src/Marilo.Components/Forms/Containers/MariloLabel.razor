@@ -1,0 +1,10 @@
+@inherits MariloComponentBase
+
+<label class="@CombineClasses(CssProvider.LabelClass())" style="@CombineStyles()" for="@For" @attributes="AdditionalAttributes">
+    @ChildContent
+</label>
+
+@code {
+    [Parameter] public string? For { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

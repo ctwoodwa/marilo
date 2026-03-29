@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>Marilo.Core</PackageId>
+    <Version>2.0.0</Version>
+    <Description>Core abstractions, base classes, and contracts for the Marilo component library</Description>
+    <PackageTags>blazor;components;razor-class-library;ui-framework</PackageTags>
+    <IsPackable>true</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+</Project>

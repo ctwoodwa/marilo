@@ -1,0 +1,36 @@
+@namespace Marilo.Components
+
+<div class="mar-time-range-selector">
+    <FluentLabel Typo="Typography.Body">Time Range:</FluentLabel>
+    @foreach (var range in _ranges)
+    {
+        <FluentButton Appearance="@(SelectedRange == range.Key ? Appearance.Accent : Appearance.Stealth)"
+                      Size="ButtonSize.Small"
+                      OnClick="@(() => SelectRange(range.Key))"
+                      Title="@range.Value">
+            @range.Key
+        </FluentButton>
+    }
+</div>
+
+@code {
+    [Parameter] public string SelectedRange { get; set; } = "24h";
+    [Parameter] public EventCallback<string> SelectedRangeChanged { get; set; }
+    [Parameter] public EventCallback<string> OnRangeChanged { get; set; }
+
+    private readonly Dictionary<string, string> _ranges = new()
+    {
+        ["Now"] = "Live / real-time",
+        ["1h"] = "Last 1 hour",
+        ["24h"] = "Last 24 hours",
+        ["7d"] = "Last 7 days",
+        ["30d"] = "Last 30 days"
+    };
+
+    private async Task SelectRange(string range)
+    {
+        SelectedRange = range;
+        await SelectedRangeChanged.InvokeAsync(range);
+        await OnRangeChanged.InvokeAsync(range);
+    }
+}

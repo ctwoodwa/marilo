@@ -1,0 +1,28 @@
+@inherits MariloComponentBase
+
+<input type="range"
+       class="@CombineClasses(CssProvider.SliderClass())"
+       style="@CombineStyles()"
+       value="@Value"
+       min="@Min"
+       max="@Max"
+       step="@Step"
+       @oninput="OnSliderChanged"
+       @attributes="AdditionalAttributes" />
+
+@code {
+    [Parameter] public double Value { get; set; }
+    [Parameter] public EventCallback<double> ValueChanged { get; set; }
+    [Parameter] public double Min { get; set; } = 0;
+    [Parameter] public double Max { get; set; } = 100;
+    [Parameter] public double Step { get; set; } = 1;
+
+    private async Task OnSliderChanged(ChangeEventArgs e)
+    {
+        if (double.TryParse(e.Value?.ToString(), out var val))
+        {
+            Value = val;
+            await ValueChanged.InvokeAsync(Value);
+        }
+    }
+}

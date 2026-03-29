@@ -1,0 +1,63 @@
+@page "/navigation"
+
+<div class="demo-page">
+    <h1>Navigation</h1>
+
+    <div class="demo-section">
+        <h2>Breadcrumb</h2>
+        <MariloBreadcrumb>
+            <MariloBreadcrumbItem Href="/">Home</MariloBreadcrumbItem>
+            <MariloBreadcrumbItem Href="/navigation">Components</MariloBreadcrumbItem>
+            <MariloBreadcrumbItem IsActive="true">Navigation</MariloBreadcrumbItem>
+        </MariloBreadcrumb>
+    </div>
+
+    <div class="demo-section">
+        <h2>Pagination</h2>
+        <MariloPagination CurrentPage="@_page" CurrentPageChanged="@(p => _page = p)" TotalPages="10" />
+        <p style="margin-top:8px;">Current page: @_page</p>
+    </div>
+
+    <div class="demo-section">
+        <h2>Toolbar</h2>
+        <MariloToolbar>
+            <MariloButton Size="ButtonSize.Small" Variant="ButtonVariant.Secondary">Cut</MariloButton>
+            <MariloButton Size="ButtonSize.Small" Variant="ButtonVariant.Secondary">Copy</MariloButton>
+            <MariloButton Size="ButtonSize.Small" Variant="ButtonVariant.Secondary">Paste</MariloButton>
+            <MariloDivider Vertical="true" />
+            <MariloButton Size="ButtonSize.Small" Variant="ButtonVariant.Primary">Save</MariloButton>
+        </MariloToolbar>
+    </div>
+
+    <div class="demo-section">
+        <h2>Tree View</h2>
+        <MariloTreeView>
+            <MariloTreeItem Title="Documents" IsExpanded="true">
+                <MariloTreeItem Title="Reports" IsExpanded="false">
+                    <MariloTreeItem Title="Q1 Report" />
+                    <MariloTreeItem Title="Q2 Report" />
+                </MariloTreeItem>
+                <MariloTreeItem Title="Images" />
+            </MariloTreeItem>
+            <MariloTreeItem Title="Downloads" />
+            <MariloTreeItem Title="Desktop" />
+        </MariloTreeView>
+    </div>
+
+    <div class="demo-section">
+        <h2>Menu</h2>
+        <div style="position:relative;display:inline-block;">
+            <MariloButton OnClick="@(() => _menuOpen = !_menuOpen)">Open Menu</MariloButton>
+            <MariloMenu IsOpen="@_menuOpen" OnClose="@(() => _menuOpen = false)">
+                <MariloMenuItem OnClick="@(() => _menuOpen = false)">Edit</MariloMenuItem>
+                <MariloMenuItem OnClick="@(() => _menuOpen = false)">Duplicate</MariloMenuItem>
+                <MariloMenuItem OnClick="@(() => _menuOpen = false)" IsDisabled="true">Delete</MariloMenuItem>
+            </MariloMenu>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int _page = 1;
+    private bool _menuOpen;
+}

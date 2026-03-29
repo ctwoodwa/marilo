@@ -1,0 +1,79 @@
+/* Demo app styles */
+body {
+    margin: 0;
+    font-family: var(--marilo-font-family, 'Segoe UI', system-ui, sans-serif);
+    color: var(--marilo-color-on-background, #323130);
+    background: var(--marilo-color-background, #ffffff);
+}
+
+.demo-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.demo-section {
+    margin-bottom: 48px;
+}
+
+.demo-section h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--marilo-color-border, #e1dfdd);
+}
+
+.demo-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.demo-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 240px;
+    height: 100vh;
+    background: var(--marilo-color-surface, #f3f2f1);
+    border-right: 1px solid var(--marilo-color-border, #e1dfdd);
+    padding: 16px 0;
+    overflow-y: auto;
+}
+
+.sidebar h1 {
+    font-size: 1.25rem;
+    padding: 0 16px;
+    margin: 0 0 16px 0;
+}
+
+.sidebar a {
+    display: block;
+    padding: 8px 16px;
+    color: var(--marilo-color-on-surface, #323130);
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+.sidebar a:hover {
+    background: var(--marilo-color-surface-hover, #edebe9);
+}
+
+.sidebar a.active {
+    color: var(--marilo-color-primary, #0078d4);
+    font-weight: 600;
+}
+
+.main-content {
+    margin-left: 240px;
+    padding: 24px 32px;
+}

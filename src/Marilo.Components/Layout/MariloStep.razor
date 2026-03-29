@@ -1,0 +1,26 @@
+@inherits MariloComponentBase
+
+@if (_stepper?.IsStepActive(this) == true)
+{
+    <div class="mar-step__content">
+        @ChildContent
+    </div>
+}
+
+@code {
+    [CascadingParameter] private MariloStepper? _stepper { get; set; }
+
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _stepper?.RegisterStep(this);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing) _stepper?.UnregisterStep(this);
+        base.Dispose(disposing);
+    }
+}

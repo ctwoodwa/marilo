@@ -1,0 +1,14 @@
+@inherits MariloComponentBase
+
+<button class="@CombineClasses(CssProvider.FabClass(Size))"
+        style="@CombineStyles()"
+        @onclick="OnClick"
+        @attributes="AdditionalAttributes">
+    @IconProvider.GetIcon(Icon, IconSize.Medium)
+</button>
+
+@code {
+    [Parameter] public FabSize Size { get; set; } = FabSize.Medium;
+    [Parameter] public string Icon { get; set; } = string.Empty;
+    [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
+}

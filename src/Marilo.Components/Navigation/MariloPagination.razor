@@ -1,0 +1,57 @@
+@inherits MariloComponentBase
+
+<nav class="@CombineClasses(CssProvider.PaginationClass())" style="@CombineStyles()" role="navigation" aria-label="pagination" @attributes="AdditionalAttributes">
+    <button type="button"
+            class="mar-pagination__prev"
+            disabled="@(CurrentPage <= 1)"
+            aria-label="Previous page"
+            @onclick="PreviousPage">
+        &laquo;
+    </button>
+
+    @foreach (var page in GetVisiblePages())
+    {
+        var p = page;
+        <button type="button"
+                class="@CssProvider.PaginationItemClass(p == CurrentPage)"
+                aria-current="@(p == CurrentPage ? "page" : null)"
+                @onclick="() => GoToPage(p)">
+            @p
+        </button>
+    }
+
+    <button type="button"
+            class="mar-pagination__next"
+            disabled="@(CurrentPage >= TotalPages)"
+            aria-label="Next page"
+            @onclick="NextPage">
+        &raquo;
+    </button>
+</nav>
+
+@code {
+    [Parameter] public int CurrentPage { get; set; } = 1;
+    [Parameter] public EventCallback<int> CurrentPageChanged { get; set; }
+    [Parameter] public int TotalPages { get; set; }
+    [Parameter] public int MaxVisiblePages { get; set; } = 5;
+
+    private IEnumerable<int> GetVisiblePages()
+    {
+        var half = MaxVisiblePages / 2;
+        var start = Math.Max(1, CurrentPage - half);
+        var end = Math.Min(TotalPages, start + MaxVisiblePages - 1);
+        start = Math.Max(1, end - MaxVisiblePages + 1);
+
+        for (var i = start; i <= end; i++)
+            yield return i;
+    }
+
+    private async Task GoToPage(int page)
+    {
+        CurrentPage = page;
+        await CurrentPageChanged.InvokeAsync(page);
+    }
+
+    private Task PreviousPage() => GoToPage(CurrentPage - 1);
+    private Task NextPage() => GoToPage(CurrentPage + 1);
+}

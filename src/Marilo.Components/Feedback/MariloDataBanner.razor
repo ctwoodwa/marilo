@@ -1,0 +1,13 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses("marilo-data-banner")" style="@CombineStyles()" @attributes="AdditionalAttributes">
+    <span>@PendingChanges.Count pending change(s)</span>
+    <button type="button" @onclick="OnRefreshRequested">Refresh</button>
+    <button type="button" @onclick="OnDismiss">Dismiss</button>
+</div>
+
+@code {
+    [Parameter] public IReadOnlyList<DataChangeInfo> PendingChanges { get; set; } = Array.Empty<DataChangeInfo>();
+    [Parameter] public EventCallback OnRefreshRequested { get; set; }
+    [Parameter] public EventCallback OnDismiss { get; set; }
+}

@@ -1,0 +1,32 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.AccordionItemClass(IsExpanded))" style="@CombineStyles()" @attributes="AdditionalAttributes">
+    <button type="button"
+            class="mar-accordion-item__header"
+            aria-expanded="@IsExpanded.ToString().ToLower()"
+            aria-controls="@_contentId"
+            @onclick="ToggleExpanded">
+        @Title
+    </button>
+    @if (IsExpanded)
+    {
+        <div id="@_contentId" role="region" class="mar-accordion-item__content">
+            @ChildContent
+        </div>
+    }
+</div>
+
+@code {
+    private readonly string _contentId = $"acc-{Guid.NewGuid().ToString("N")[..8]}";
+
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public bool IsExpanded { get; set; }
+    [Parameter] public EventCallback<bool> IsExpandedChanged { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private async Task ToggleExpanded()
+    {
+        IsExpanded = !IsExpanded;
+        await IsExpandedChanged.InvokeAsync(IsExpanded);
+    }
+}

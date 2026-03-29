@@ -1,0 +1,11 @@
+@inherits MariloComponentBase
+
+<nav class="@CombineClasses(CssProvider.BreadcrumbClass())" style="@CombineStyles()" aria-label="breadcrumb" @attributes="AdditionalAttributes">
+    <ol>
+        @ChildContent
+    </ol>
+</nav>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

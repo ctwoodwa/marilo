@@ -1,0 +1,55 @@
+@inherits MariloComponentBase
+
+@if (IsOpen)
+{
+    <div class="@CombineClasses(CssProvider.SnackbarClass())" style="@CombineStyles()" role="status" aria-live="polite" @attributes="AdditionalAttributes">
+        <span class="mar-snackbar__message">@Message</span>
+        @if (!string.IsNullOrEmpty(ActionText))
+        {
+            <button class="mar-snackbar__action" @onclick="OnAction">@ActionText</button>
+        }
+        <button class="mar-snackbar__dismiss" @onclick="OnDismiss" aria-label="Dismiss">&#x2715;</button>
+    </div>
+}
+
+@code {
+    [Parameter] public string Message { get; set; } = string.Empty;
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public string? ActionText { get; set; }
+    [Parameter] public EventCallback OnAction { get; set; }
+    [Parameter] public EventCallback OnDismiss { get; set; }
+    [Parameter] public int DurationMs { get; set; } = 3000;
+
+    private System.Timers.Timer? _timer;
+
+    protected override void OnParametersSet()
+    {
+        if (IsOpen)
+        {
+            _timer?.Stop();
+            _timer?.Dispose();
+            _timer = new System.Timers.Timer(DurationMs);
+            _timer.AutoReset = false;
+            _timer.Elapsed += async (_, _) => await InvokeAsync(async () =>
+            {
+                await OnDismiss.InvokeAsync();
+                StateHasChanged();
+            });
+            _timer.Start();
+        }
+        else
+        {
+            _timer?.Stop();
+        }
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _timer?.Stop();
+            _timer?.Dispose();
+        }
+        base.Dispose(disposing);
+    }
+}

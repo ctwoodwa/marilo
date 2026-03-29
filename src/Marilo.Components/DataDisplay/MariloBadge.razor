@@ -1,0 +1,10 @@
+@inherits MariloComponentBase
+
+<span class="@CombineClasses(CssProvider.BadgeClass(Variant))" style="@CombineStyles()" @attributes="AdditionalAttributes">
+    @ChildContent
+</span>
+
+@code {
+    [Parameter] public BadgeVariant Variant { get; set; } = BadgeVariant.Default;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

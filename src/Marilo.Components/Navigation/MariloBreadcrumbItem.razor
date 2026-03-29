@@ -1,0 +1,22 @@
+@inherits MariloComponentBase
+
+<li class="@CombineClasses(CssProvider.BreadcrumbItemClass())" style="@CombineStyles()" @attributes="AdditionalAttributes">
+    @if (IsActive)
+    {
+        <span aria-current="page">@ChildContent</span>
+    }
+    else if (!string.IsNullOrEmpty(Href))
+    {
+        <a href="@Href">@ChildContent</a>
+    }
+    else
+    {
+        <span>@ChildContent</span>
+    }
+</li>
+
+@code {
+    [Parameter] public string? Href { get; set; }
+    [Parameter] public bool IsActive { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

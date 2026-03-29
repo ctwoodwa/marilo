@@ -1,0 +1,253 @@
+/* ============================================================
+   Marilo Component Library
+   Bundled stylesheet for all Mar-prefixed components.
+   Include via: _content/Marilo/css/marilo.css
+   ============================================================ */
+
+/* --- Animations --- */
+
+@keyframes mar-toast-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes mar-banner-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Feedback / MarAlertStrip --- */
+
+.mar-alert-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.mar-alert-strip-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 6px;
+  border-left: 4px solid transparent;
+}
+
+.mar-alert-strip-item.mar-alert-critical {
+  background: rgba(209, 52, 56, 0.12);
+  border-left-color: var(--fluent-error, #D13438);
+}
+
+.mar-alert-strip-item.mar-alert-warning {
+  background: rgba(255, 185, 0, 0.12);
+  border-left-color: var(--fluent-warning, #FFB900);
+}
+
+.mar-alert-strip-item.mar-alert-info {
+  background: rgba(0, 120, 212, 0.08);
+  border-left-color: var(--fluent-primary, #0078D4);
+}
+
+.mar-alert-icon {
+  flex-shrink: 0;
+}
+
+.mar-alert-text {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.mar-alert-detail {
+  color: var(--neutral-foreground-hint);
+}
+
+/* --- Feedback / MarConfirmDialog --- */
+
+.mar-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.mar-confirm-dialog {
+  width: 420px;
+  max-width: 90vw;
+  padding: 24px;
+}
+
+.mar-confirm-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.mar-confirm-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.mar-confirm-body {
+  margin-bottom: 24px;
+  color: var(--neutral-foreground-hint);
+}
+
+.mar-confirm-body p {
+  margin: 0;
+}
+
+.mar-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* --- Feedback / MarDataChangeBanner --- */
+
+.mar-data-change-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 20px;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, rgba(96, 205, 255, 0.08), rgba(96, 205, 255, 0.03));
+  border: 1px solid rgba(96, 205, 255, 0.25);
+  border-radius: 8px;
+  animation: mar-banner-fade-in 0.3s ease-out;
+}
+
+.mar-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--neutral-foreground-rest);
+}
+
+.mar-banner-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* --- Feedback / MarDataChangeToast --- */
+
+.mar-toast-container {
+  position: fixed;
+  top: 60px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 420px;
+  pointer-events: none;
+}
+
+.mar-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--neutral-layer-2);
+  border: 1px solid var(--neutral-stroke-rest);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  pointer-events: auto;
+  animation: mar-toast-slide-in 0.3s ease-out;
+  border-left: 3px solid #60cdff;
+}
+
+.mar-toast.created {
+  border-left-color: #6ccb5f;
+}
+
+.mar-toast.updated {
+  border-left-color: #60cdff;
+}
+
+.mar-toast.deleted {
+  border-left-color: #ff6347;
+}
+
+.mar-toast.toggled {
+  border-left-color: #fce100;
+}
+
+.mar-toast-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.mar-toast-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.mar-toast-summary {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--neutral-foreground-rest);
+  line-height: 1.4;
+}
+
+.mar-toast-meta {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--neutral-foreground-hint);
+}
+
+.mar-toast-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.mar-toast-overflow {
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--neutral-foreground-hint);
+  border-left: none;
+}
+
+/* --- Navigation / MarEnvironmentBadge --- */
+
+.mar-env-badge {
+  margin-left: 8px;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+}
+
+/* --- Navigation / MarTimeRangeSelector --- */
+
+.mar-time-range-selector {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

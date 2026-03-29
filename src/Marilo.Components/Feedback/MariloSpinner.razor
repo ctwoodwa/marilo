@@ -1,0 +1,7 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.SpinnerClass(Size))" style="@CombineStyles()" @attributes="AdditionalAttributes"></div>
+
+@code {
+    [Parameter] public SpinnerSize Size { get; set; } = SpinnerSize.Medium;
+}

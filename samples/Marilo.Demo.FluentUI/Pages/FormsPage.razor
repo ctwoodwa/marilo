@@ -1,0 +1,76 @@
+@page "/forms"
+
+<div class="demo-page">
+    <h1>Forms</h1>
+
+    <div class="demo-section">
+        <h2>Text Inputs</h2>
+        <MariloForm>
+            <MariloField>
+                <MariloLabel>Name</MariloLabel>
+                <MariloTextField Value="@_name" ValueChanged="@(v => _name = v)" Placeholder="Enter your name" />
+            </MariloField>
+            <MariloField>
+                <MariloLabel>Description</MariloLabel>
+                <MariloTextArea Value="@_description" ValueChanged="@(v => _description = v)" Rows="4" Placeholder="Enter a description" />
+            </MariloField>
+            <MariloField>
+                <MariloLabel>Invalid Input</MariloLabel>
+                <MariloTextField Value="" IsInvalid="true" Placeholder="This field has an error" />
+                <MariloValidation Severity="ValidationSeverity.Error" Message="This field is required." />
+            </MariloField>
+            <MariloField>
+                <MariloLabel>Disabled Input</MariloLabel>
+                <MariloTextField Value="Cannot edit" Disabled="true" />
+            </MariloField>
+        </MariloForm>
+    </div>
+
+    <div class="demo-section">
+        <h2>Selection Controls</h2>
+        <MariloForm>
+            <MariloField>
+                <MariloLabel>Select</MariloLabel>
+                <MariloSelect Value="@_selectedOption" ValueChanged="@(v => _selectedOption = v)">
+                    <option value="">Choose...</option>
+                    <option value="fluent">Fluent UI</option>
+                    <option value="bootstrap">Bootstrap</option>
+                    <option value="tailwind">Tailwind</option>
+                </MariloSelect>
+            </MariloField>
+            <MariloField>
+                <MariloCheckbox Checked="@_checked" CheckedChanged="@(v => _checked = v)" Label="Accept terms and conditions" />
+            </MariloField>
+            <MariloField>
+                <MariloSwitch IsOn="@_switchOn" IsOnChanged="@(v => _switchOn = v)" Label="Enable notifications" />
+            </MariloField>
+            <MariloField>
+                <MariloLabel>Volume: @_sliderValue</MariloLabel>
+                <MariloSlider Value="@_sliderValue" ValueChanged="@(v => _sliderValue = v)" Min="0" Max="100" Step="5" />
+            </MariloField>
+        </MariloForm>
+    </div>
+
+    <div class="demo-section">
+        <h2>Live Values</h2>
+        <MariloCard>
+            <MariloCardBody>
+                <p><strong>Name:</strong> @_name</p>
+                <p><strong>Description:</strong> @_description</p>
+                <p><strong>Selected:</strong> @_selectedOption</p>
+                <p><strong>Checked:</strong> @_checked</p>
+                <p><strong>Switch:</strong> @_switchOn</p>
+                <p><strong>Slider:</strong> @_sliderValue</p>
+            </MariloCardBody>
+        </MariloCard>
+    </div>
+</div>
+
+@code {
+    private string _name = "";
+    private string _description = "";
+    private string _selectedOption = "";
+    private bool _checked;
+    private bool _switchOn;
+    private double _sliderValue = 50;
+}

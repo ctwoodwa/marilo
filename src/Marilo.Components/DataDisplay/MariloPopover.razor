@@ -1,0 +1,27 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.PopoverClass())" style="@CombineStyles()" @attributes="AdditionalAttributes">
+    <div class="mar-popover__trigger" @onclick="Toggle" aria-haspopup="true" aria-expanded="@IsOpen">
+        @ChildContent
+    </div>
+    @if (IsOpen)
+    {
+        <div class="mar-popover__content mar-popover__content--@Position.ToString().ToLowerInvariant()">
+            @PopoverContent
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+    [Parameter] public TooltipPosition Position { get; set; } = TooltipPosition.Bottom;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? PopoverContent { get; set; }
+
+    private async Task Toggle()
+    {
+        IsOpen = !IsOpen;
+        await IsOpenChanged.InvokeAsync(IsOpen);
+    }
+}

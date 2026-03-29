@@ -1,0 +1,24 @@
+@inherits MariloComponentBase
+
+<label class="@CombineClasses(CssProvider.SwitchClass(IsOn))" style="@CombineStyles()" @attributes="AdditionalAttributes">
+    <input type="checkbox"
+           role="switch"
+           checked="@IsOn"
+           @onchange="OnToggled" />
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <span>@Label</span>
+    }
+</label>
+
+@code {
+    [Parameter] public bool IsOn { get; set; }
+    [Parameter] public EventCallback<bool> IsOnChanged { get; set; }
+    [Parameter] public string? Label { get; set; }
+
+    private async Task OnToggled(ChangeEventArgs e)
+    {
+        IsOn = (bool)(e.Value ?? false);
+        await IsOnChanged.InvokeAsync(IsOn);
+    }
+}

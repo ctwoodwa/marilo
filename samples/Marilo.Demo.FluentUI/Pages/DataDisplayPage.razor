@@ -1,0 +1,81 @@
+@page "/data-display"
+
+<div class="demo-page">
+    <h1>Data Display</h1>
+
+    <div class="demo-section">
+        <h2>Cards</h2>
+        <div class="demo-card-grid">
+            @for (var i = 1; i <= 3; i++)
+            {
+                var idx = i;
+                <MariloCard>
+                    <MariloCardHeader>Card @idx</MariloCardHeader>
+                    <MariloCardBody>Card body content for item @idx. This shows the basic card structure.</MariloCardBody>
+                    <MariloCardActions>
+                        <MariloButton Variant="ButtonVariant.Primary" Size="ButtonSize.Small">Action</MariloButton>
+                    </MariloCardActions>
+                </MariloCard>
+            }
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Avatars</h2>
+        <div class="demo-row">
+            <MariloAvatar Size="AvatarSize.ExtraSmall" Initials="XS" />
+            <MariloAvatar Size="AvatarSize.Small" Initials="SM" />
+            <MariloAvatar Size="AvatarSize.Medium" Initials="MD" />
+            <MariloAvatar Size="AvatarSize.Large" Initials="LG" />
+            <MariloAvatar Size="AvatarSize.ExtraLarge" Initials="XL" />
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Badges</h2>
+        <div class="demo-row">
+            <MariloBadge Variant="BadgeVariant.Default">Default</MariloBadge>
+            <MariloBadge Variant="BadgeVariant.Primary">Primary</MariloBadge>
+            <MariloBadge Variant="BadgeVariant.Secondary">Secondary</MariloBadge>
+            <MariloBadge Variant="BadgeVariant.Danger">Danger</MariloBadge>
+            <MariloBadge Variant="BadgeVariant.Warning">Warning</MariloBadge>
+            <MariloBadge Variant="BadgeVariant.Info">Info</MariloBadge>
+            <MariloBadge Variant="BadgeVariant.Success">Success</MariloBadge>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>List</h2>
+        <MariloList>
+            <MariloListItem>First item in the list</MariloListItem>
+            <MariloListItem>Second item in the list</MariloListItem>
+            <MariloListItem>Third item in the list</MariloListItem>
+        </MariloList>
+    </div>
+
+    <div class="demo-section">
+        <h2>Table</h2>
+        <MariloTable>
+            <thead>
+                <tr><th>Name</th><th>Role</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Alice</td><td>Admin</td><td><MariloBadge Variant="BadgeVariant.Success">Active</MariloBadge></td></tr>
+                <tr><td>Bob</td><td>User</td><td><MariloBadge Variant="BadgeVariant.Warning">Pending</MariloBadge></td></tr>
+                <tr><td>Charlie</td><td>Editor</td><td><MariloBadge Variant="BadgeVariant.Danger">Inactive</MariloBadge></td></tr>
+            </tbody>
+        </MariloTable>
+    </div>
+
+    <div class="demo-section">
+        <h2>Tooltip</h2>
+        <div class="demo-row">
+            <MariloTooltip Text="This is a top tooltip" Position="TooltipPosition.Top">
+                <MariloButton Variant="ButtonVariant.Secondary">Hover me (Top)</MariloButton>
+            </MariloTooltip>
+            <MariloTooltip Text="This is a bottom tooltip" Position="TooltipPosition.Bottom">
+                <MariloButton Variant="ButtonVariant.Secondary">Hover me (Bottom)</MariloButton>
+            </MariloTooltip>
+        </div>
+    </div>
+</div>

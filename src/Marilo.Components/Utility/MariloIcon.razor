@@ -1,0 +1,10 @@
+@inherits MariloComponentBase
+
+<span class="@CombineClasses(CssProvider.IconClass(Name, Size))" style="@CombineStyles()" @attributes="AdditionalAttributes">
+    @IconProvider.GetIcon(Name, Size)
+</span>
+
+@code {
+    [Parameter] public string Name { get; set; } = string.Empty;
+    [Parameter] public IconSize Size { get; set; } = IconSize.Medium;
+}

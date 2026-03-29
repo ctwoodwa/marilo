@@ -1,0 +1,15 @@
+@inherits MariloComponentBase
+
+<span class="@CombineClasses(CssProvider.ChipClass(Variant, IsSelected))"
+      style="@CombineStyles()"
+      @onclick="OnClick"
+      @attributes="AdditionalAttributes">
+    @Label
+</span>
+
+@code {
+    [Parameter] public ChipVariant Variant { get; set; } = ChipVariant.Default;
+    [Parameter] public bool IsSelected { get; set; }
+    [Parameter] public string Label { get; set; } = string.Empty;
+    [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
+}

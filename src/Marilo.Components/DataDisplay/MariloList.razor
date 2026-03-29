@@ -1,0 +1,9 @@
+@inherits MariloComponentBase
+
+<ul class="@CombineClasses(CssProvider.ListClass())" style="@CombineStyles()" @attributes="AdditionalAttributes">
+    @ChildContent
+</ul>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

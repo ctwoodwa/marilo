@@ -1,0 +1,21 @@
+@inherits MariloComponentBase
+
+@if (IsOpen)
+{
+    <div class="@CombineClasses(CssProvider.DialogOverlayClass())" @onclick="OnClose">
+        <div class="@CssProvider.DialogClass()" style="@CombineStyles()" @onclick:stopPropagation="true" @attributes="AdditionalAttributes">
+            @if (!string.IsNullOrEmpty(Title))
+            {
+                <div class="marilo-dialog-title">@Title</div>
+            }
+            @ChildContent
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsOpen { get; set; }
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
+}

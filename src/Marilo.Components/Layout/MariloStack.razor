@@ -1,0 +1,11 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.StackClass(Direction, Alignment))" style="@CombineStyles()" @attributes="AdditionalAttributes">
+    @ChildContent
+</div>
+
+@code {
+    [Parameter] public StackDirection Direction { get; set; } = StackDirection.Vertical;
+    [Parameter] public StackAlignment Alignment { get; set; } = StackAlignment.Start;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

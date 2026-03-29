@@ -1,0 +1,16 @@
+@inherits MariloComponentBase
+
+<div role="alert" class="@CombineClasses(CssProvider.AlertClass(Severity))" style="@CombineStyles()" @attributes="AdditionalAttributes">
+    @ChildContent
+    @if (IsDismissible)
+    {
+        <button type="button" @onclick="OnDismiss">&#x2715;</button>
+    }
+</div>
+
+@code {
+    [Parameter] public AlertSeverity Severity { get; set; } = AlertSeverity.Info;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public EventCallback OnDismiss { get; set; }
+    [Parameter] public bool IsDismissible { get; set; }
+}

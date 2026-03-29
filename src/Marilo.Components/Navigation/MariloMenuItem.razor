@@ -1,0 +1,22 @@
+@inherits MariloComponentBase
+
+<button type="button"
+        class="@CombineClasses(CssProvider.MenuItemClass(IsDisabled))"
+        style="@CombineStyles()"
+        role="menuitem"
+        disabled="@IsDisabled"
+        @onclick="OnClick"
+        @attributes="AdditionalAttributes">
+    @if (!string.IsNullOrEmpty(Icon))
+    {
+        <span class="mar-menu-item__icon">@Icon</span>
+    }
+    @ChildContent
+</button>
+
+@code {
+    [Parameter] public EventCallback OnClick { get; set; }
+    [Parameter] public bool IsDisabled { get; set; }
+    [Parameter] public string? Icon { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

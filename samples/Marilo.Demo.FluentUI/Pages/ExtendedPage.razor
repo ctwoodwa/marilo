@@ -1,0 +1,134 @@
+@page "/extended"
+
+<div class="demo-page">
+    <h1>Extended Components</h1>
+
+    <div class="demo-section">
+        <h2>Tabs</h2>
+        <MariloTabs ActiveIndex="@_tabIndex" ActiveIndexChanged="@(i => _tabIndex = i)">
+            <MariloTabPanel Title="Overview">
+                <p>This is the overview tab content. Tabs use a cascading value pattern.</p>
+            </MariloTabPanel>
+            <MariloTabPanel Title="Details">
+                <p>Details tab with more specific information about the component.</p>
+            </MariloTabPanel>
+            <MariloTabPanel Title="Settings">
+                <MariloForm>
+                    <MariloField>
+                        <MariloLabel>Name</MariloLabel>
+                        <MariloTextField Value="" Placeholder="Enter name" />
+                    </MariloField>
+                    <MariloField>
+                        <MariloSwitch IsOn="false" Label="Enable feature" />
+                    </MariloField>
+                </MariloForm>
+            </MariloTabPanel>
+        </MariloTabs>
+    </div>
+
+    <div class="demo-section">
+        <h2>Accordion</h2>
+        <MariloAccordion>
+            <MariloAccordionItem Title="What is Marilo?">
+                <p>Marilo is a provider-first Blazor component library. Components define behavior; providers supply visual styling.</p>
+            </MariloAccordionItem>
+            <MariloAccordionItem Title="How do providers work?">
+                <p>Each provider implements IMariloCssProvider to map component states to CSS class names. Swap providers to change the design system.</p>
+            </MariloAccordionItem>
+            <MariloAccordionItem Title="Which providers are available?">
+                <p>Currently: Fluent UI. Planned: Bootstrap 5, Tailwind CSS, Material Design 3.</p>
+            </MariloAccordionItem>
+        </MariloAccordion>
+    </div>
+
+    <div class="demo-section">
+        <h2>Stepper</h2>
+        <MariloStepper ActiveStep="@_step" ActiveStepChanged="@(s => _step = s)">
+            <MariloStep Title="Account">
+                <p>Create your account details.</p>
+            </MariloStep>
+            <MariloStep Title="Profile">
+                <p>Set up your profile information.</p>
+            </MariloStep>
+            <MariloStep Title="Review">
+                <p>Review and confirm your settings.</p>
+            </MariloStep>
+        </MariloStepper>
+        <div class="demo-row" style="margin-top:12px;">
+            <MariloButton Size="ButtonSize.Small" Disabled="@(_step == 0)" OnClick="@(() => _step--)">Previous</MariloButton>
+            <MariloButton Size="ButtonSize.Small" Variant="ButtonVariant.Primary" Disabled="@(_step >= 2)" OnClick="@(() => _step++)">Next</MariloButton>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Drawer</h2>
+        <MariloButton OnClick="@(() => _drawerOpen = true)">Open Drawer</MariloButton>
+        <MariloDrawer IsOpen="@_drawerOpen" OnClose="@(() => _drawerOpen = false)" Position="DrawerPosition.Right" Width="360px">
+            <div style="padding:24px;">
+                <h3>Drawer Content</h3>
+                <p>This is a slide-out drawer panel. Click the overlay to close.</p>
+                <MariloButton Variant="ButtonVariant.Primary" OnClick="@(() => _drawerOpen = false)">Close</MariloButton>
+            </div>
+        </MariloDrawer>
+    </div>
+
+    <div class="demo-section">
+        <h2>Toggle Button</h2>
+        <div class="demo-row">
+            <MariloToggleButton IsActive="@_bold" IsActiveChanged="@(v => _bold = v)">Bold</MariloToggleButton>
+            <MariloToggleButton IsActive="@_italic" IsActiveChanged="@(v => _italic = v)">Italic</MariloToggleButton>
+            <MariloToggleButton IsActive="@_underline" IsActiveChanged="@(v => _underline = v)">Underline</MariloToggleButton>
+        </div>
+        <p style="margin-top:8px;font-weight:@(_bold?"700":"400");font-style:@(_italic?"italic":"normal");text-decoration:@(_underline?"underline":"none");">
+            Preview text with applied formatting.
+        </p>
+    </div>
+
+    <div class="demo-section">
+        <h2>Segmented Control</h2>
+        <MariloSegmentedControl Value="@_view" ValueChanged="@(v => _view = v)" Items="@(new List<string>{"List","Grid","Map"})" />
+        <p style="margin-top:8px;">Selected view: <strong>@_view</strong></p>
+    </div>
+
+    <div class="demo-section">
+        <h2>Rating</h2>
+        <MariloRating Value="@_rating" ValueChanged="@(v => _rating = v)" Max="5" />
+        <p style="margin-top:4px;">@_rating of 5 stars</p>
+    </div>
+
+    <div class="demo-section">
+        <h2>Search Box</h2>
+        <MariloSearchBox Value="@_search" ValueChanged="@(v => _search = v)" Placeholder="Search components..." />
+        @if (!string.IsNullOrEmpty(_search))
+        {
+            <p style="margin-top:8px;">Searching for: <strong>@_search</strong></p>
+        }
+    </div>
+
+    <div class="demo-section">
+        <h2>Date Picker</h2>
+        <MariloDatePicker Value="@_date" ValueChanged="@(v => _date = v)" />
+        @if (_date.HasValue)
+        {
+            <p style="margin-top:8px;">Selected: <strong>@_date.Value.ToString("yyyy-MM-dd")</strong></p>
+        }
+    </div>
+
+    <div class="demo-section">
+        <h2>Color Picker</h2>
+        <MariloColorPicker Value="@_color" ValueChanged="@(v => _color = v)" />
+        <div style="margin-top:8px;width:48px;height:48px;border-radius:4px;background:@_color;border:1px solid #ccc;"></div>
+    </div>
+</div>
+
+@code {
+    private int _tabIndex;
+    private int _step;
+    private bool _drawerOpen;
+    private bool _bold, _italic, _underline;
+    private string _view = "List";
+    private int _rating = 3;
+    private string _search = "";
+    private DateOnly? _date;
+    private string _color = "#0078d4";
+}

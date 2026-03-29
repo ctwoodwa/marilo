@@ -1,0 +1,46 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "scss:build",
+      "type": "shell",
+      "command": "npm run scss:build",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "scss:watch",
+      "type": "shell",
+      "command": "npm run scss:watch",
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^Error:",
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^Sass is watching",
+          "endsPattern": "^Compiled"
+        }
+      }
+    },
+    {
+      "label": "dotnet:build",
+      "type": "shell",
+      "command": "dotnet build samples/Marilo.Demo.FluentUI/Marilo.Demo.FluentUI.csproj",
+      "group": "build",
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "build:all",
+      "dependsOn": ["scss:build", "dotnet:build"],
+      "dependsOrder": "sequence",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}

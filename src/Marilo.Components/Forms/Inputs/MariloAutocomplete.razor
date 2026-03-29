@@ -1,0 +1,115 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.AutocompleteClass())"
+     style="@CombineStyles()"
+     @attributes="AdditionalAttributes">
+    <input type="text"
+           class="@CssProvider.TextFieldClass(false, Disabled)"
+           value="@Value"
+           placeholder="@Placeholder"
+           disabled="@Disabled"
+           role="combobox"
+           aria-expanded="@_isOpen.ToString().ToLowerInvariant()"
+           aria-autocomplete="list"
+           aria-activedescendant="@(_highlightedIndex >= 0 ? $"autocomplete-option-{_highlightedIndex}" : null)"
+           @oninput="OnInputChanged"
+           @onkeydown="OnKeyDown"
+           @onfocus="OpenDropdown"
+           @onblur="CloseDropdownDelayed" />
+    @if (_isOpen && _filteredItems.Any())
+    {
+        <ul class="@CssProvider.MenuClass()" role="listbox">
+            @for (var i = 0; i < _filteredItems.Count; i++)
+            {
+                var index = i;
+                var item = _filteredItems[i];
+                <li id="autocomplete-option-@index"
+                    class="@CssProvider.MenuItemClass(false)"
+                    role="option"
+                    aria-selected="@(index == _highlightedIndex ? "true" : "false")"
+                    @onmousedown="() => SelectItem(item)">
+                    @item
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    [Parameter] public string Value { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public IEnumerable<string> Items { get; set; } = Enumerable.Empty<string>();
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+
+    private bool _isOpen;
+    private List<string> _filteredItems = new();
+    private int _highlightedIndex = -1;
+
+    private void FilterItems()
+    {
+        _filteredItems = Items
+            .Where(item => string.IsNullOrEmpty(Value) || item.Contains(Value, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+        _highlightedIndex = -1;
+    }
+
+    private async Task OnInputChanged(ChangeEventArgs e)
+    {
+        Value = e.Value?.ToString() ?? string.Empty;
+        await ValueChanged.InvokeAsync(Value);
+        FilterItems();
+        _isOpen = _filteredItems.Any();
+    }
+
+    private async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        switch (e.Key)
+        {
+            case "ArrowDown":
+                if (_isOpen && _filteredItems.Any())
+                {
+                    _highlightedIndex = (_highlightedIndex + 1) % _filteredItems.Count;
+                }
+                break;
+            case "ArrowUp":
+                if (_isOpen && _filteredItems.Any())
+                {
+                    _highlightedIndex = _highlightedIndex <= 0 ? _filteredItems.Count - 1 : _highlightedIndex - 1;
+                }
+                break;
+            case "Enter":
+                if (_highlightedIndex >= 0 && _highlightedIndex < _filteredItems.Count)
+                {
+                    await SelectItem(_filteredItems[_highlightedIndex]);
+                }
+                break;
+            case "Escape":
+                _isOpen = false;
+                break;
+        }
+    }
+
+    private async Task SelectItem(string item)
+    {
+        Value = item;
+        await ValueChanged.InvokeAsync(Value);
+        _isOpen = false;
+    }
+
+    private void OpenDropdown()
+    {
+        FilterItems();
+        _isOpen = _filteredItems.Any();
+    }
+
+    private void CloseDropdownDelayed()
+    {
+        // Delay to allow mousedown on items to fire first
+        _ = Task.Delay(200).ContinueWith(_ =>
+        {
+            _isOpen = false;
+            InvokeAsync(StateHasChanged);
+        });
+    }
+}

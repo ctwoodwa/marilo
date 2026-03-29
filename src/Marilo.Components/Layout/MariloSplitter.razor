@@ -1,0 +1,19 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.SplitterClass(Orientation))" style="@CombineStyles()" @attributes="AdditionalAttributes">
+    <div class="mar-splitter__pane mar-splitter__pane--first" style="flex-basis:@FirstPaneSize">
+        @FirstPane
+    </div>
+    <div class="mar-splitter__handle" role="separator" aria-orientation="@(Orientation == StackDirection.Horizontal ? "vertical" : "horizontal")"></div>
+    <div class="mar-splitter__pane mar-splitter__pane--second">
+        @SecondPane
+    </div>
+</div>
+
+@code {
+    [Parameter] public StackDirection Orientation { get; set; } = StackDirection.Horizontal;
+    [Parameter] public string? FirstPaneSize { get; set; } = "50%";
+    [Parameter] public RenderFragment? FirstPane { get; set; }
+    [Parameter] public RenderFragment? SecondPane { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

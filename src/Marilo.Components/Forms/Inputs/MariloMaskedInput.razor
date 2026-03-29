@@ -1,0 +1,25 @@
+@inherits MariloComponentBase
+
+<input type="text"
+       class="@CombineClasses(CssProvider.TextFieldClass(IsInvalid, Disabled))"
+       style="@CombineStyles()"
+       value="@Value"
+       placeholder="@(Placeholder ?? Mask)"
+       disabled="@Disabled"
+       @oninput="OnInputChanged"
+       @attributes="AdditionalAttributes" />
+
+@code {
+    [Parameter] public string Value { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public string? Mask { get; set; }
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public bool IsInvalid { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+
+    private async Task OnInputChanged(ChangeEventArgs e)
+    {
+        Value = e.Value?.ToString() ?? string.Empty;
+        await ValueChanged.InvokeAsync(Value);
+    }
+}

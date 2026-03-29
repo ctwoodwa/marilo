@@ -1,0 +1,26 @@
+@inherits MariloComponentBase
+
+@if (_tabs?.IsPanelActive(this) == true)
+{
+    <div role="tabpanel" class="mar-tabs__content">
+        @ChildContent
+    </div>
+}
+
+@code {
+    [CascadingParameter] private MariloTabs? _tabs { get; set; }
+
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _tabs?.RegisterPanel(this);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing) _tabs?.UnregisterPanel(this);
+        base.Dispose(disposing);
+    }
+}

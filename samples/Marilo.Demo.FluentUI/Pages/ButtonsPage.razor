@@ -1,0 +1,83 @@
+@page "/buttons"
+
+<div class="demo-page">
+    <h1>Buttons</h1>
+
+    <div class="demo-section">
+        <h2>Variants</h2>
+        <div class="demo-row">
+            <MariloButton Variant="ButtonVariant.Primary">Primary</MariloButton>
+            <MariloButton Variant="ButtonVariant.Secondary">Secondary</MariloButton>
+            <MariloButton Variant="ButtonVariant.Danger">Danger</MariloButton>
+            <MariloButton Variant="ButtonVariant.Warning">Warning</MariloButton>
+            <MariloButton Variant="ButtonVariant.Info">Info</MariloButton>
+            <MariloButton Variant="ButtonVariant.Success">Success</MariloButton>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Sizes</h2>
+        <div class="demo-row">
+            <MariloButton Size="ButtonSize.Small">Small</MariloButton>
+            <MariloButton Size="ButtonSize.Medium">Medium</MariloButton>
+            <MariloButton Size="ButtonSize.Large">Large</MariloButton>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Outline</h2>
+        <div class="demo-row">
+            <MariloButton Variant="ButtonVariant.Primary" IsOutline="true">Outline Primary</MariloButton>
+            <MariloButton Variant="ButtonVariant.Danger" IsOutline="true">Outline Danger</MariloButton>
+            <MariloButton Variant="ButtonVariant.Success" IsOutline="true">Outline Success</MariloButton>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Disabled</h2>
+        <div class="demo-row">
+            <MariloButton Disabled="true">Disabled</MariloButton>
+            <MariloButton Variant="ButtonVariant.Danger" Disabled="true">Disabled Danger</MariloButton>
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Button Group</h2>
+        <MariloButtonGroup>
+            <MariloButton Variant="ButtonVariant.Secondary">Left</MariloButton>
+            <MariloButton Variant="ButtonVariant.Secondary">Center</MariloButton>
+            <MariloButton Variant="ButtonVariant.Secondary">Right</MariloButton>
+        </MariloButtonGroup>
+    </div>
+
+    <div class="demo-section">
+        <h2>Chips</h2>
+        <div class="demo-row">
+            <MariloChip Label="Default" />
+            <MariloChip Variant="ChipVariant.Primary" Label="Primary" />
+            <MariloChip Variant="ChipVariant.Danger" Label="Danger" />
+            <MariloChip Variant="ChipVariant.Success" Label="Selected" IsSelected="true" />
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>FAB</h2>
+        <div class="demo-row">
+            <MariloFab Icon="plus" Size="FabSize.Small" />
+            <MariloFab Icon="plus" Size="FabSize.Medium" />
+            <MariloFab Icon="plus" Size="FabSize.Large" />
+        </div>
+    </div>
+
+    <div class="demo-section">
+        <h2>Interactive</h2>
+        <div class="demo-row">
+            <MariloButton Variant="ButtonVariant.Primary" OnClick="@OnClickHandler">Click me: @_clickCount</MariloButton>
+        </div>
+    </div>
+</div>
+
+@code {
+    private int _clickCount;
+    private void OnClickHandler() => _clickCount++;
+}

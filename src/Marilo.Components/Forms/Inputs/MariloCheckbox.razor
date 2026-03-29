@@ -1,0 +1,23 @@
+@inherits MariloComponentBase
+
+<label class="@CombineClasses(CssProvider.CheckboxClass(Checked))" style="@CombineStyles()" @attributes="AdditionalAttributes">
+    <input type="checkbox"
+           checked="@Checked"
+           @onchange="OnCheckChanged" />
+    @if (!string.IsNullOrEmpty(Label))
+    {
+        <span>@Label</span>
+    }
+</label>
+
+@code {
+    [Parameter] public bool Checked { get; set; }
+    [Parameter] public EventCallback<bool> CheckedChanged { get; set; }
+    [Parameter] public string? Label { get; set; }
+
+    private async Task OnCheckChanged(ChangeEventArgs e)
+    {
+        Checked = (bool)(e.Value ?? false);
+        await CheckedChanged.InvokeAsync(Checked);
+    }
+}

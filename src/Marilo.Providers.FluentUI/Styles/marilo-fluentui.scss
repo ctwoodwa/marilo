@@ -1,0 +1,6 @@
+// Marilo Fluent UI Provider - SCSS Entry Point
+// Compile with: npm run scss:build
+// Watch with:   npm run scss:watch
+
+// Base styles (will be refactored into partials: _tokens, _buttons, _forms, etc.)
+@forward 'generated-base';

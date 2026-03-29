@@ -1,0 +1,37 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.SplitButtonClass())"
+     style="@CombineStyles()"
+     @attributes="AdditionalAttributes">
+    <button class="@CssProvider.ButtonClass(Variant, Size, false, false)"
+            @onclick="OnClick">
+        @ChildContent
+    </button>
+    <button class="@CssProvider.ButtonClass(Variant, Size, false, false)"
+            aria-haspopup="true"
+            aria-expanded="@_menuOpen.ToString().ToLowerInvariant()"
+            @onclick="ToggleMenu">
+        @IconProvider.GetIcon("chevron-down", IconSize.Small)
+    </button>
+    @if (_menuOpen)
+    {
+        <div class="@CssProvider.MenuClass()" role="menu">
+            @MenuContent
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public ButtonVariant Variant { get; set; } = ButtonVariant.Primary;
+    [Parameter] public ButtonSize Size { get; set; } = ButtonSize.Medium;
+    [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? MenuContent { get; set; }
+
+    private bool _menuOpen;
+
+    private void ToggleMenu()
+    {
+        _menuOpen = !_menuOpen;
+    }
+}

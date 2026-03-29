@@ -1,0 +1,12 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.TooltipClass(Position))" style="@CombineStyles()" @attributes="AdditionalAttributes">
+    @ChildContent
+    <div class="marilo-tooltip-content">@Text</div>
+</div>
+
+@code {
+    [Parameter] public TooltipPosition Position { get; set; } = TooltipPosition.Top;
+    [Parameter] public string Text { get; set; } = string.Empty;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}
