@@ -40,28 +40,63 @@
                        placeholder="Search..." />
             }
             <ul role="listbox">
-                @for (var i = 0; i < _filteredItems.Count; i++)
+                @if (!string.IsNullOrEmpty(GroupField))
                 {
-                    var index = i;
-                    var item = _filteredItems[i];
-                    var isHighlighted = index == _highlightedIndex;
-                    var isSelected = Equals(GetValue(item), Value);
-                    <li id="ddl-option-@index"
-                        class="@CssProvider.DropDownListItemClass(isHighlighted, isSelected)"
-                        role="option"
-                        aria-selected="@isSelected.ToString().ToLowerInvariant()"
-                        @onclick="() => SelectItem(item)"
-                        @onclick:stopPropagation="true"
-                        @onmouseover="() => _highlightedIndex = index">
-                        @if (ItemTemplate is not null)
+                    var groups = GetGroupedItems();
+                    var flatIndex = 0;
+                    @foreach (var group in groups)
+                    {
+                        <li class="mar-dropdownlist__group-header" role="presentation">@group.Key</li>
+                        @foreach (var item in group.Items)
                         {
-                            @ItemTemplate(item)
+                            var index = flatIndex;
+                            var isHighlighted = index == _highlightedIndex;
+                            var isSelected = Equals(GetValue(item), Value);
+                            <li id="ddl-option-@index"
+                                class="@CssProvider.DropDownListItemClass(isHighlighted, isSelected)"
+                                role="option"
+                                aria-selected="@isSelected.ToString().ToLowerInvariant()"
+                                @onclick="() => SelectItem(item)"
+                                @onclick:stopPropagation="true"
+                                @onmouseover="() => _highlightedIndex = index">
+                                @if (ItemTemplate is not null)
+                                {
+                                    @ItemTemplate(item)
+                                }
+                                else
+                                {
+                                    @GetText(item)
+                                }
+                            </li>
+                            flatIndex++;
                         }
-                        else
-                        {
-                            @GetText(item)
-                        }
-                    </li>
+                    }
+                }
+                else
+                {
+                    @for (var i = 0; i < _filteredItems.Count; i++)
+                    {
+                        var index = i;
+                        var item = _filteredItems[i];
+                        var isHighlighted = index == _highlightedIndex;
+                        var isSelected = Equals(GetValue(item), Value);
+                        <li id="ddl-option-@index"
+                            class="@CssProvider.DropDownListItemClass(isHighlighted, isSelected)"
+                            role="option"
+                            aria-selected="@isSelected.ToString().ToLowerInvariant()"
+                            @onclick="() => SelectItem(item)"
+                            @onclick:stopPropagation="true"
+                            @onmouseover="() => _highlightedIndex = index">
+                            @if (ItemTemplate is not null)
+                            {
+                                @ItemTemplate(item)
+                            }
+                            else
+                            {
+                                @GetText(item)
+                            }
+                        </li>
+                    }
                 }
             </ul>
         </div>
@@ -72,6 +107,7 @@
     [Parameter] public IEnumerable<TItem> Data { get; set; } = Enumerable.Empty<TItem>();
     [Parameter] public string? TextField { get; set; }
     [Parameter] public string? ValueField { get; set; }
+    [Parameter] public string? GroupField { get; set; }
     [Parameter] public TValue? Value { get; set; }
     [Parameter] public EventCallback<TValue?> ValueChanged { get; set; }
     [Parameter] public string? Placeholder { get; set; }
@@ -119,6 +155,22 @@
         var propValue = typeof(TItem).GetProperty(ValueField)?.GetValue(item);
         if (propValue is null) return default;
         return (TValue?)Convert.ChangeType(propValue, typeof(TValue));
+    }
+
+    private string? GetGroup(TItem item)
+    {
+        if (item is null || string.IsNullOrEmpty(GroupField)) return null;
+        return typeof(TItem).GetProperty(GroupField)?.GetValue(item)?.ToString();
+    }
+
+    private record GroupResult(string Key, List<TItem> Items);
+
+    private List<GroupResult> GetGroupedItems()
+    {
+        return _filteredItems
+            .GroupBy(item => GetGroup(item) ?? "")
+            .Select(g => new GroupResult(g.Key, g.ToList()))
+            .ToList();
     }
 
     private void ToggleDropdown()

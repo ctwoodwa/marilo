@@ -1,3 +1,4 @@
+@using Marilo.Core.Models
 @inherits MariloComponentBase
 
 @if (IsOpen)
@@ -23,6 +24,8 @@
     [Parameter] public string? Height { get; set; }
     [Parameter] public bool Draggable { get; set; }
     [Parameter] public bool Modal { get; set; } = true;
+    [Parameter] public DialogButtons Buttons { get; set; } = DialogButtons.None;
+    [Parameter] public EventCallback<DialogResult> OnButtonClick { get; set; }
 
     private RenderFragment RenderDialogContent() => __builder =>
     {
@@ -38,6 +41,43 @@
                 <div class="marilo-dialog-title">@Title</div>
             }
             @ChildContent
+            @if (Buttons != DialogButtons.None)
+            {
+                <div class="marilo-dialog-actions">
+                    @switch (Buttons)
+                    {
+                        case DialogButtons.Ok:
+                            <button class="mar-btn mar-btn--primary" @onclick="() => HandleButtonClick(DialogResult.Ok)">OK</button>
+                            break;
+                        case DialogButtons.OkCancel:
+                            <button class="mar-btn mar-btn--flat" @onclick="() => HandleButtonClick(DialogResult.Cancel)">Cancel</button>
+                            <button class="mar-btn mar-btn--primary" @onclick="() => HandleButtonClick(DialogResult.Ok)">OK</button>
+                            break;
+                        case DialogButtons.YesNo:
+                            <button class="mar-btn mar-btn--flat" @onclick="() => HandleButtonClick(DialogResult.No)">No</button>
+                            <button class="mar-btn mar-btn--primary" @onclick="() => HandleButtonClick(DialogResult.Yes)">Yes</button>
+                            break;
+                        case DialogButtons.YesNoCancel:
+                            <button class="mar-btn mar-btn--flat" @onclick="() => HandleButtonClick(DialogResult.Cancel)">Cancel</button>
+                            <button class="mar-btn mar-btn--flat" @onclick="() => HandleButtonClick(DialogResult.No)">No</button>
+                            <button class="mar-btn mar-btn--primary" @onclick="() => HandleButtonClick(DialogResult.Yes)">Yes</button>
+                            break;
+                        case DialogButtons.RetryCancel:
+                            <button class="mar-btn mar-btn--flat" @onclick="() => HandleButtonClick(DialogResult.Cancel)">Cancel</button>
+                            <button class="mar-btn mar-btn--primary" @onclick="() => HandleButtonClick(DialogResult.Retry)">Retry</button>
+                            break;
+                    }
+                </div>
+            }
         </div>
     };
+
+    private async Task HandleButtonClick(DialogResult result)
+    {
+        await OnButtonClick.InvokeAsync(result);
+        if (result == DialogResult.Cancel || result == DialogResult.No)
+        {
+            await OnClose.InvokeAsync();
+        }
+    }
 }

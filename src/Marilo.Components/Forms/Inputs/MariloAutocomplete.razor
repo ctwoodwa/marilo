@@ -44,27 +44,63 @@
             @if (_filteredTItems.Any())
             {
                 <ul class="@CssProvider.MenuClass()" role="listbox">
-                    @for (var i = 0; i < _filteredTItems.Count; i++)
+                    @if (!string.IsNullOrEmpty(GroupField))
                     {
-                        var index = i;
-                        var item = _filteredTItems[i];
-                        var displayText = GetDisplayText(item);
-                        var isHighlighted = index == _highlightedIndex;
-                        var isSelected = displayText == Value;
-                        <li id="autocomplete-option-@index"
-                            class="@CssProvider.AutocompleteItemClass(isHighlighted, isSelected)"
-                            role="option"
-                            aria-selected="@(isHighlighted ? "true" : "false")"
-                            @onmousedown="() => SelectTItem(item)">
-                            @if (ItemTemplate != null)
+                        var groups = _filteredTItems
+                            .GroupBy(item => GetGroupValue(item) ?? "")
+                            .ToList();
+                        var flatIdx = 0;
+                        @foreach (var group in groups)
+                        {
+                            <li class="mar-autocomplete__group-header" role="presentation">@group.Key</li>
+                            @foreach (var item in group)
                             {
-                                @ItemTemplate(item)
+                                var index = flatIdx;
+                                var displayText = GetDisplayText(item);
+                                var isHighlighted = index == _highlightedIndex;
+                                var isSelected = displayText == Value;
+                                <li id="autocomplete-option-@index"
+                                    class="@CssProvider.AutocompleteItemClass(isHighlighted, isSelected)"
+                                    role="option"
+                                    aria-selected="@(isHighlighted ? "true" : "false")"
+                                    @onmousedown="() => SelectTItem(item)">
+                                    @if (ItemTemplate != null)
+                                    {
+                                        @ItemTemplate(item)
+                                    }
+                                    else
+                                    {
+                                        @displayText
+                                    }
+                                </li>
+                                flatIdx++;
                             }
-                            else
-                            {
-                                @displayText
-                            }
-                        </li>
+                        }
+                    }
+                    else
+                    {
+                        @for (var i = 0; i < _filteredTItems.Count; i++)
+                        {
+                            var index = i;
+                            var item = _filteredTItems[i];
+                            var displayText = GetDisplayText(item);
+                            var isHighlighted = index == _highlightedIndex;
+                            var isSelected = displayText == Value;
+                            <li id="autocomplete-option-@index"
+                                class="@CssProvider.AutocompleteItemClass(isHighlighted, isSelected)"
+                                role="option"
+                                aria-selected="@(isHighlighted ? "true" : "false")"
+                                @onmousedown="() => SelectTItem(item)">
+                                @if (ItemTemplate != null)
+                                {
+                                    @ItemTemplate(item)
+                                }
+                                else
+                                {
+                                    @displayText
+                                }
+                            </li>
+                        }
                     }
                 </ul>
             }
@@ -96,6 +132,7 @@
     [Parameter] public RenderFragment<TItem>? ItemTemplate { get; set; }
     [Parameter] public RenderFragment? HeaderTemplate { get; set; }
     [Parameter] public RenderFragment? FooterTemplate { get; set; }
+    [Parameter] public string? GroupField { get; set; }
 
     private bool _isOpen;
     private List<TItem> _filteredTItems = new();
@@ -143,6 +180,12 @@
         }
 
         return GetDisplayText(item);
+    }
+
+    private string? GetGroupValue(TItem item)
+    {
+        if (item is null || string.IsNullOrEmpty(GroupField)) return null;
+        return typeof(TItem).GetProperty(GroupField)?.GetValue(item)?.ToString();
     }
 
     private bool MatchesFilter(string text, string search)

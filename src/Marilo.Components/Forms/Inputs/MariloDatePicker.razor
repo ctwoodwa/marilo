@@ -74,6 +74,7 @@
     [Parameter] public DateOnly? Max { get; set; }
     [Parameter] public bool Disabled { get; set; }
     [Parameter] public IEnumerable<DateOnly>? DisabledDates { get; set; }
+    [Parameter] public string Format { get; set; } = "yyyy-MM-dd";
 
     private bool _isCalendarOpen;
     private DateOnly _displayMonth;
@@ -87,7 +88,7 @@
         _displayMonth = new DateOnly(_displayMonth.Year, _displayMonth.Month, 1);
     }
 
-    private string? FormatValue() => Value?.ToString("yyyy-MM-dd");
+    private string? FormatValue() => Value?.ToString(Format);
 
     private void OpenCalendar()
     {

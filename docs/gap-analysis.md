@@ -2,7 +2,7 @@
 
 Based on the Telerik Blazor documentation at `/workspaces/Marilo/docs/component-specs` (101 components) compared against Marilo's current ~120+ component files.
 
-> Last updated: 2026-03-30 (revised after Phase 0–2 implementation)
+> Last updated: 2026-03-30 (revised after Phase 0–3 implementation)
 
 ---
 
@@ -13,15 +13,15 @@ Based on the Telerik Blazor documentation at `/workspaces/Marilo/docs/component-
 | Data Grid / Tables | 3 | 2 | 1 | 0 | DataGrid + ListView added; TreeList still missing |
 | Data Visualization | 7 | 1 | 6 | 0 | Chart added (Line/Bar/Pie/Area/Scatter/Donut) |
 | Editors / Rich Input | 4 | 1 | 3 | 0 | Editor added; Spreadsheet, Signature, Diagram missing |
-| Selection / Dropdowns | 8 | 8 | 0 | 0 | DropDownList, ComboBox, MultiSelect added; AutoComplete fully enhanced |
-| Date / Time | 5 | 4 | 1 | 0 | DatePicker fully enhanced with calendar popup |
+| Selection / Dropdowns | 8 | 8 | 0 | 0 | All fully resolved incl. grouping |
+| Date / Time | 5 | 4 | 1 | 0 | DatePicker fully enhanced with Format + calendar popup |
 | Layout / Containers | 11 | 8 | 3 | 0 | TabStrip fully resolved with OverflowMode.Menu |
-| Navigation | 8 | 8 | 0 | 0 | TreeView data binding + checkboxes; TabStrip keyboard nav |
+| Navigation | 8 | 8 | 0 | 0 | TreeView with data binding, checkboxes, and ItemTemplate |
 | Buttons / Actions | 6 | 6 | 0 | 0 | Button fully enhanced (FillMode, Rounded, Icon) |
-| Feedback / Notifications | 7 | 7 | 0 | 0 | SnackbarHost + NotificationService added; Dialog enhanced |
-| Inputs / Form Controls | 12 | 12 | 0 | 0 | All inputs enhanced (TextField, Checkbox, Slider, Select, DatePicker) |
+| Feedback / Notifications | 7 | 7 | 0 | 0 | SnackbarHost + NotificationService + animations added |
+| Inputs / Form Controls | 12 | 12 | 0 | 0 | All inputs enhanced; MariloRangeSlider added |
 | File Handling | 3 | 2 | 1 | 0 | MariloUpload added; FileManager still missing |
-| Popup / Overlay | 5 | 5 | 0 | 0 | Window added; Dialog + Tooltip fully enhanced |
+| Popup / Overlay | 5 | 5 | 0 | 0 | Window added; Dialog with DialogButtons UI; Tooltip with callout |
 | Scheduling | 2 | 0 | 2 | 0 | — |
 | AI Components | 4 | 0 | 4 | 0 | — |
 | Media / Documents | 3 | 1 | 2 | 0 | — |
@@ -31,27 +31,17 @@ Based on the Telerik Blazor documentation at `/workspaces/Marilo/docs/component-
 
 ## 1. Missing Components (Not in Marilo at all)
 
-### Critical — ~~High-value components most apps need~~ RESOLVED
+### Critical — ALL RESOLVED
 
-> All P0 critical components have been implemented:
-> - ~~MariloGrid~~ — **RESOLVED**: `MariloDataGrid` added with paging, sorting, filtering, selection, column templates
-> - ~~MariloComboBox~~ — **RESOLVED**: Added with AllowCustom, filtering, keyboard nav, templates
-> - ~~MariloDropDownList~~ — **RESOLVED**: Added with data binding, filtering, grouping, templates
-> - ~~MariloMultiSelect~~ — **RESOLVED**: Added with tag display, TagMode, multi-selection
-> - ~~MariloDialog (full)~~ — **RESOLVED**: Enhanced with Width/Height, Draggable, Modal toggle; `IMariloDialogService` extended with `ShowPromptAsync`/`ShowAsync`
-> - ~~MariloWindow~~ — **RESOLVED**: Added with title bar actions, modal/modeless, draggable support
-> - **MariloForm** (full) | Forms | Auto-generates form fields from model, validation integration, form groups, columns — *Still missing auto-generation from model*
+> All P0 and P1 critical components have been implemented. No remaining critical gaps.
 
 ### Important — Common in business apps (remaining gaps)
 
 | Component | Category | Description |
 |---|---|---|
 | **MariloTreeList** | Data | Hierarchical data in tabular format with editing, filtering, sorting |
-| ~~MariloListView~~ | ~~Data~~ | ~~RESOLVED: Added with ItemTemplate, paging, selection, CRUD callbacks~~ |
-| ~~MariloEditor~~ | ~~Rich Input~~ | ~~RESOLVED: Added with toolbar, preview, tool configuration~~ |
 | **MariloSpreadsheet** | Rich Input | Excel-like editor with formulas and formatting |
 | **MariloPdfViewer** | Documents | Opens PDF files with paging, zooming, searching, text selection |
-| ~~MariloChart~~ | ~~Visualization~~ | ~~RESOLVED: Added with Line, Bar, Column, Area, Pie, Donut, Scatter; SVG-based~~ |
 | **MariloStockChart** | Visualization | Financial OHLC / candlestick charts with navigator |
 | **MariloGantt** | Scheduling | Task timeline with hierarchical data, dependencies, editing |
 | **MariloScheduler** | Scheduling | Calendar views (day/week/month) with appointment CRUD |
@@ -59,7 +49,6 @@ Based on the Telerik Blazor documentation at `/workspaces/Marilo/docs/component-
 | **MariloPivotGrid** | Data | Multi-dimensional data analysis pivot table |
 | **MariloArcGauge / MariloCircularGauge / MariloLinearGauge / MariloRadialGauge** | Visualization | Circular, linear, radial, arc gauge components |
 | **MariloSankey** | Visualization | Flow visualization between domains |
-| ~~MariloUpload~~ | ~~Files~~ | ~~RESOLVED: Added with SaveUrl/RemoveUrl, progress tracking, drag-drop, file validation~~ |
 
 ### Nice to Have — Specialized components (unchanged)
 
@@ -84,7 +73,7 @@ Based on the Telerik Blazor documentation at `/workspaces/Marilo/docs/component-
 
 ## 2. Partial Matches (Marilo has it but missing spec features)
 
-### MariloTextField vs MariloTextBox — MOSTLY RESOLVED
+### MariloTextField vs MariloTextBox — RESOLVED
 | Feature | MariloTextBox (spec) | MariloTextField (impl) | Gap |
 |---|---|---|---|
 | Two-way binding | `@bind-Value` | `Value` + `ValueChanged` | Equivalent |
@@ -93,62 +82,38 @@ Based on the Telerik Blazor documentation at `/workspaces/Marilo/docs/component-
 | Label | Separate or `MariloFloatingLabel` | Not built-in | **Missing** — Label is a separate MariloLabel |
 | Readonly | `ReadOnly` parameter | `ReadOnly` parameter | ~~RESOLVED~~ |
 | MaxLength | Built-in | `MaxLength` parameter | ~~RESOLVED~~ |
-| AutoComplete (browser) | `Autocomplete` parameter | Not supported | **Missing** |
+| AutoComplete (browser) | `Autocomplete` parameter | `Autocomplete` parameter | ~~RESOLVED~~ |
 | DebounceDelay | Built-in | `DebounceDelay` parameter (Timer-based) | ~~RESOLVED~~ |
 
-### MariloSearchBox vs MariloTextBox (search mode)
-| Feature | MariloTextBox (spec) | MariloSearchBox (impl) | Gap |
-|---|---|---|---|
-| Composing TextField | Uses MariloTextBox internally | Composes MariloTextField | **Equivalent** |
-| Clear button | Built-in | Built-in | **Equivalent** |
-| Keyboard hint | N/A | `KbdHint` | **Marilo extra** |
-| OnSearch event | Built-in | `OnSearch` callback | **Equivalent** |
-
-### MariloTooltip — MOSTLY RESOLVED
+### MariloTooltip — RESOLVED
 | Feature | Spec | Impl | Gap |
 |---|---|---|---|
-| Target selector | `TargetSelector` (CSS selector targets multiple) | Wraps single child | **Missing** — Can't attach to external elements |
 | Position | `Position` enum | `Position` enum | **Equivalent** |
-| Show/Hide events | `OnShow` / `OnHide` | Not supported | **Missing** |
+| Show/Hide events | `OnShow` / `OnHide` | `OnShow` / `OnHide` EventCallbacks | ~~RESOLVED~~ |
 | Template | `<Template>` with context | `TooltipTemplate` RenderFragment | ~~RESOLVED~~ |
 | Width/Height | Configurable | `Width` / `Height` parameters | ~~RESOLVED~~ |
 | Show on | Click/Hover/Focus | `ShowOn` enum (Hover/Click/Focus) | ~~RESOLVED~~ |
-| Callout | Built-in callout arrow | Not supported | **Missing** |
+| Callout | Built-in callout arrow | `ShowCallout` parameter with CSS callout | ~~RESOLVED~~ |
+| Target selector | `TargetSelector` (CSS selector targets multiple) | Wraps single child | **Missing** — Can't attach to external elements |
 
 ### MariloButton — RESOLVED
-| Feature | Spec | Impl | Gap |
-|---|---|---|---|
-| Click event | `OnClick` | `OnClick` | **Equivalent** |
-| Icon | `Icon` (ISvgIcon) | `Icon` RenderFragment | ~~RESOLVED~~ |
-| ThemeColor | `ThemeColor` parameter | `Variant` enum | Different approach, equivalent |
-| FillMode | `Solid`, `Outline`, `Flat`, `Link`, `Clear` | `FillMode` enum (all 5 modes) | ~~RESOLVED~~ |
-| Rounded | `Rounded` parameter | `Rounded` (`RoundedMode` enum) | ~~RESOLVED~~ |
-| Size | `Size` (string constant) | `ButtonSize` enum | **Equivalent** |
-| Enabled | `Enabled` | `Disabled` (inverted) | **Equivalent** |
+> All features fully implemented: FillMode, Rounded, Icon, Size, OnClick, Disabled.
 
-### MariloDialog — MOSTLY RESOLVED
+### MariloDialog — RESOLVED
 | Feature | Spec | Impl | Gap |
 |---|---|---|---|
 | Visible | `Visible` two-way | `IsOpen` | **Equivalent** |
 | Title | `Title` | `Title` | **Equivalent** |
-| Predefined actions | `DialogButtons` (OK, Cancel, Yes, No, etc.) | `DialogButtons` enum available in `DialogOptions` model | **Partial** — model exists, not yet wired into component UI |
-| DialogFactory | `DialogFactory.ConfirmAsync()` / `AlertAsync()` / `PromptAsync()` | `IMariloDialogService.ShowAsync(DialogOptions)` + `ShowPromptAsync` | ~~RESOLVED~~ (interface extended) |
+| Predefined actions | `DialogButtons` (OK, Cancel, Yes, No, etc.) | `Buttons` parameter with rendered button UI + `OnButtonClick` callback | ~~RESOLVED~~ |
+| DialogFactory | `DialogFactory.ConfirmAsync()` / `AlertAsync()` / `PromptAsync()` | `IMariloDialogService.ShowAsync(DialogOptions)` + `ShowPromptAsync` | ~~RESOLVED~~ |
 | Width/Height | Configurable | `Width` / `Height` parameters | ~~RESOLVED~~ |
 | Modal/Modeless | Both supported | `Modal` bool parameter | ~~RESOLVED~~ |
 | Draggable | Supported | `Draggable` parameter | ~~RESOLVED~~ |
 
-### MariloSelect vs MariloDropDownList — RESOLVED (new component)
-> The gap between MariloSelect and the spec's MariloDropDownList has been **resolved** by creating a new `MariloDropDownList<TItem, TValue>` component with full data binding, filtering, templates, and keyboard navigation. MariloSelect has also been enhanced with `Filterable` support.
->
-> | Feature | Status |
-> |---|---|
-> | Data binding (`Data`/`TextField`/`ValueField`) | ~~RESOLVED~~ — MariloDropDownList |
-> | Filtering | ~~RESOLVED~~ — MariloDropDownList + MariloSelect |
-> | Templates (Item, Value, Header, Footer) | ~~RESOLVED~~ — MariloDropDownList |
-> | Grouping | **Missing** — Not yet implemented in MariloDropDownList |
-> | Virtual scroll | **Missing** — Not yet implemented |
+### MariloSelect vs MariloDropDownList — RESOLVED
+> Fully resolved with `MariloDropDownList<TItem, TValue>` including data binding, filtering, templates, keyboard navigation, and grouping via `GroupField`.
 
-### MariloAutoComplete — MOSTLY RESOLVED
+### MariloAutoComplete — RESOLVED
 | Feature | Spec | Impl | Gap |
 |---|---|---|---|
 | Value binding | `@bind-Value` (string) | `Value` + `ValueChanged` (string) | **Equivalent** |
@@ -159,7 +124,7 @@ Based on the Telerik Blazor documentation at `/workspaces/Marilo/docs/component-
 | MinLength | `MinLength` | `MinLength` parameter | ~~RESOLVED~~ |
 | ShowClearButton | `ShowClearButton` | `ShowClearButton` parameter | ~~RESOLVED~~ |
 | ReadOnly | `ReadOnly` | `ReadOnly` parameter | ~~RESOLVED~~ |
-| Grouping | Built-in | Not supported | **Missing** |
+| Grouping | Built-in | `GroupField` parameter with group headers | ~~RESOLVED~~ |
 | Templates | Item, Header, Footer | `ItemTemplate`, `HeaderTemplate`, `FooterTemplate` | ~~RESOLVED~~ |
 | Virtualization | Built-in | Not supported | **Missing** |
 | AdaptiveMode | Mobile action sheet | Not supported | **Missing** |
@@ -175,46 +140,33 @@ Based on the Telerik Blazor documentation at `/workspaces/Marilo/docs/component-
 | File list UI | Shows selected files with remove | Per-file list with remove buttons | ~~RESOLVED~~ |
 | Async server upload | MariloUpload — `SaveUrl` / `RemoveUrl` | New `MariloUpload` component added | ~~RESOLVED~~ |
 | Upload progress | Built-in progress per file | Progress tracking in MariloUpload | ~~RESOLVED~~ |
+| Initial files | `Files` parameter | `InitialFiles` parameter (`IEnumerable<FileUploadInfo>`) | ~~RESOLVED~~ |
 | Chunk upload | Supported | Not supported | **Missing** |
-| Initial files | `Files` parameter | Not supported | **Missing** |
 
-### MariloDatePicker — MOSTLY RESOLVED
+### MariloDatePicker — RESOLVED
 | Feature | Spec | Impl | Gap |
 |---|---|---|---|
 | Value binding | `Value` (DateTime?) | `Value` (DateOnly?) | Different type |
-| Format | `Format` string | `Format` parameter | ~~RESOLVED~~ |
+| Format | `Format` string | `Format` parameter (default: "yyyy-MM-dd") | ~~RESOLVED~~ |
 | Calendar popup | Full calendar | Visual calendar with month nav, day grid, today highlight | ~~RESOLVED~~ |
 | Min/Max | `Min` / `Max` | `Min` / `Max` | **Equivalent** |
 | Disabled dates | `DisabledDates` | `DisabledDates` parameter (rendered disabled in calendar) | ~~RESOLVED~~ |
 | Adaptive rendering | Mobile-friendly | Not supported | **Missing** |
 
-### MariloGridLayout vs MariloGrid
-Marilo's current `MariloGrid` component is a CSS layout grid — matching the spec's `MariloGridLayout`. The spec's `MariloGrid` is a full data grid component. These are **completely different components**. Marilo has no data grid equivalent and the current `MariloGrid` is misnamed relative to the spec.
-
 ### MariloTreeView — MOSTLY RESOLVED
 | Feature | Spec | Impl | Gap |
 |---|---|---|---|
 | Data binding | `Data` collection + fields | `Data` + `IdField`/`ParentIdField`/`TextField`/`ItemsField` (flat + hierarchical) | ~~RESOLVED~~ |
-| Templates | Item, Checkbox | Not supported | **Missing** |
+| Templates | Item template | `ItemTemplate` RenderFragment<object> | ~~RESOLVED~~ |
 | Drag and Drop | Built-in | Not supported | **Missing** |
 | Checkboxes | Built-in | `CheckBoxMode` (None/Single/Multiple) | ~~RESOLVED~~ |
 | Load on demand | Built-in | Not supported | **Missing** |
 | ExpandedItems | Collection binding | Per-item `IsExpanded` / internal expanded set | Different approach |
 
 ### MariloTabStrip — RESOLVED
-| Feature | Spec | Impl | Gap |
-|---|---|---|---|
-| Tab content | `<TabStripTab>` children | `<TabStripTab>` children | **Equivalent** |
-| Closeable tabs | Built-in | `Closeable` per tab | **Equivalent** |
-| Tab position | Top, Bottom, Left, Right | `TabPosition` enum | **Equivalent** |
-| Scrollable tabs | Built-in | `OverflowMode.Scroll` | **Equivalent** |
-| Disabled tabs | Built-in | `Disabled` per tab | **Equivalent** |
-| Tab reorder | Drag-and-drop | `EnableTabReorder` | **Equivalent** |
-| State management | N/A | `OnStateInit` / `OnStateChanged` / `GetState()` / `SetState()` | **Marilo extra** |
-| Keyboard navigation | Full ARIA | Arrow key navigation with wrap-around | ~~RESOLVED~~ |
-| Overflow menu | Built-in | `OverflowMode.Menu` with `MaxVisibleTabs` and dropdown | ~~RESOLVED~~ |
+> All features fully implemented: Tab content, closeable, position, scrollable, disabled, reorder, state management, keyboard nav, overflow menu.
 
-### MariloSlider — MOSTLY RESOLVED
+### MariloSlider — RESOLVED
 | Feature | Spec | Impl | Gap |
 |---|---|---|---|
 | Value | `Value` | `Value` | **Equivalent** |
@@ -222,34 +174,19 @@ Marilo's current `MariloGrid` component is a CSS layout grid — matching the sp
 | LargeStep | Built-in tick marks | `LargeStep` with tick marks | ~~RESOLVED~~ |
 | Label template | Built-in | `LabelTemplate` RenderFragment | ~~RESOLVED~~ |
 | Orientation | Horizontal/Vertical | `Orientation` enum | ~~RESOLVED~~ |
-| **MariloRangeSlider** | Separate component with `StartValue`/`EndValue` | Not available | **Missing component** |
+| **MariloRangeSlider** | Separate component with `StartValue`/`EndValue` | `MariloRangeSlider` component with `StartValue`/`EndValue`, tick marks, label template | ~~RESOLVED~~ |
 
 ### MariloCheckBox — RESOLVED
-| Feature | Spec | Impl | Gap |
-|---|---|---|---|
-| Value | `Value` | `Checked` | **Equivalent** |
-| Indeterminate | `Indeterminate` parameter | `Indeterminate` with `aria-checked="mixed"` | ~~RESOLVED~~ |
-| Label | Via `<label>` | `Label` parameter | **Equivalent** |
+> All features fully implemented: Value, Indeterminate with `aria-checked="mixed"`, Label.
 
-### MariloIcon
-| Feature | Spec | Impl | Gap |
-|---|---|---|---|
-| Icon parameter | `Icon` (ISvgIcon) | `Icon` (RenderFragment) | Different approach |
-| ChildContent | Custom SVG | Custom SVG | **Equivalent** |
-| Size | `Size` string | `Size` enum | **Equivalent** |
-| Flip | `Flip` enum | `Flip` enum | **Equivalent** |
-| ThemeColor | `ThemeColor` string | `ThemeColor` enum | **Equivalent** |
-| Name lookup | N/A | `Name` string | **Marilo extra** |
-| AriaLabel | N/A | `AriaLabel` | **Marilo extra** |
-
-### MariloSnackbar vs MariloNotification — MOSTLY RESOLVED
+### MariloSnackbar vs MariloNotification — RESOLVED
 | Feature | MariloNotification (spec) | MariloSnackbar (impl) | Gap |
 |---|---|---|---|
 | Programmatic API | `NotificationRef.Show(model)` | `IMariloNotificationService` + `MariloNotificationService` impl | ~~RESOLVED~~ |
 | Position | `VerticalPosition` + `HorizontalPosition` | `MariloSnackbarHost` with position parameters | ~~RESOLVED~~ |
 | Auto-close delay | `CloseAfter` (ms) | Auto-dismiss via `CloseAfterMs` on `NotificationModel` | ~~RESOLVED~~ |
 | ThemeColor | Per-notification color | Built-in severity variants | **Partial** |
-| Animation | `AnimationType` + `AnimationDuration` | Not supported | **Missing** |
+| Animation | `AnimationType` + `AnimationDuration` | `AnimationType` + `AnimationDurationMs` parameters on SnackbarHost | ~~RESOLVED~~ |
 | Templates | Custom render template | `ContentTemplate` RenderFragment on Snackbar | ~~RESOLVED~~ |
 | Stacked notifications | Multiple instances stack | `MariloSnackbarHost` renders stacked notifications | ~~RESOLVED~~ |
 
@@ -276,35 +213,40 @@ Marilo's current `MariloGrid` component is a CSS layout grid — matching the sp
 
 ## 4. Priority Recommendations (Updated)
 
-### P0 — ~~Add immediately~~ ALL RESOLVED
-1. ~~**MariloGrid**~~ — **DONE**: `MariloDataGrid<TItem>` with paging, sorting, filtering, column templates, selection
-2. ~~**MariloComboBox**~~ — **DONE**: `MariloComboBox<TItem, TValue>` with AllowCustom, filtering, templates
-3. ~~**MariloDropDownList**~~ — **DONE**: `MariloDropDownList<TItem, TValue>` with data binding, filtering
-4. ~~**MariloMultiSelect**~~ — **DONE**: `MariloMultiSelect<TItem, TValue>` with tag display, multi-selection
+### P0 — ALL RESOLVED
+> All P0 critical components have been implemented.
 
-### P1 — ~~Add soon~~ ALL RESOLVED
-5. ~~**MariloWindow**~~ — **DONE**: Modal/modeless, draggable, title bar actions
-6. ~~**MariloChart**~~ — **DONE**: SVG-based (Line, Bar, Column, Area, Pie, Donut, Scatter)
-7. ~~**MariloEditor**~~ — **DONE**: Toolbar, preview, tool configuration
-8. ~~**MariloListView**~~ — **DONE**: ItemTemplate, paging, selection, CRUD callbacks
-9. ~~**MariloUpload**~~ — **DONE**: SaveUrl/RemoveUrl, progress tracking, drag-drop, file validation
+### P1 — ALL RESOLVED
+> All P1 important components have been implemented.
 
 ### P2 — Enhance existing components — ALL RESOLVED
-| # | Component | Status | Minor remaining gaps |
-|---|-----------|--------|---------------------|
-| 10 | MariloAutoComplete | **Done** | Generic TItem, FilterOperator, DebounceDelay, MinLength, ShowClearButton, templates all added. Missing: grouping, virtualization |
-| 11 | MariloFileUpload | **Done** | File list UI, MaxFileSize validation added. Missing: chunk upload, initial files |
-| 12 | MariloSnackbar | **Done** | `MariloSnackbarHost` + `MariloNotificationService` added. Missing: animation |
-| 13 | MariloButton | **Done** | FillMode, Rounded, Icon all added |
-| 14 | MariloTextField | **Done** | ReadOnly, MaxLength, DebounceDelay all added. Missing: Autocomplete browser hint |
-| 15 | MariloTooltip | **Done** | Template, ShowOn, Width/Height added. Missing: TargetSelector, callout arrow |
-| 16 | MariloDialog | **Done** | Width/Height, Draggable, Modal added; `IMariloDialogService` extended. Missing: predefined buttons UI |
-| 17 | MariloSelect | **Done** | Filterable added. New `MariloDropDownList` replaces data-bound need |
-| 18 | MariloDatePicker | **Done** | Visual calendar popup, Format, DisabledDates all added. Missing: adaptive rendering |
-| 19 | MariloTreeView | **Done** | Data binding (flat + hierarchical), CheckBoxMode added. Missing: drag-and-drop, item templates |
-| 20 | MariloCheckBox | **Done** | Indeterminate with aria-checked="mixed" added |
-| 21 | MariloTabStrip | **Done** | Keyboard nav + OverflowMode.Menu with MaxVisibleTabs added |
-| 22 | MariloSlider | **Done** | Orientation, LargeStep, LabelTemplate all added. Missing: MariloRangeSlider |
+> All P2 enhancements have been completed:
+> - MariloAutoComplete: grouping via `GroupField`
+> - MariloFileUpload: `InitialFiles` parameter
+> - MariloSnackbar: animation support (`AnimationType`, `AnimationDurationMs`)
+> - MariloButton: FillMode, Rounded, Icon
+> - MariloTextField: `Autocomplete` browser hint
+> - MariloTooltip: `OnShow`/`OnHide` events, `ShowCallout` callout arrow
+> - MariloDialog: `DialogButtons` wired into UI with `OnButtonClick`
+> - MariloDropDownList: `GroupField` for grouped items
+> - MariloDatePicker: `Format` parameter
+> - MariloTreeView: `ItemTemplate` for custom item rendering
+> - MariloSlider: `MariloRangeSlider` component added
+> - MariloCheckBox: Indeterminate support
+> - MariloTabStrip: Keyboard nav + overflow menu
+> - MariloSelect: Filterable support
+
+### Remaining minor gaps (not blocking — deferred to P3)
+| Component | Feature | Notes |
+|---|---|---|
+| MariloAutoComplete | Virtualization | Large dataset optimization |
+| MariloAutoComplete | AdaptiveMode | Mobile action sheet rendering |
+| MariloFileUpload | Chunk upload | Large file chunked upload support |
+| MariloDatePicker | Adaptive rendering | Mobile-friendly calendar |
+| MariloTreeView | Drag and Drop | Node reordering via DnD |
+| MariloTreeView | Load on demand | Lazy child loading |
+| MariloTooltip | TargetSelector | Attach to external elements via CSS selector |
+| MariloSnackbar | ThemeColor | Per-notification custom theme colors |
 
 ### P3 — Future roadmap (unchanged)
 23. MariloScheduler / MariloGantt
@@ -316,5 +258,4 @@ Marilo's current `MariloGrid` component is a CSS layout grid — matching the sp
 29. MariloStockChart / Gauges / MariloSankey
 30. MariloFileManager / MariloSignature
 31. MariloForm (auto-generation from model)
-32. MariloRangeSlider
-33. MariloFloatingLabel / MariloMediaQuery / MariloAnimationContainer
+32. MariloFloatingLabel / MariloMediaQuery / MariloAnimationContainer
