@@ -1,0 +1,90 @@
+---
+title: Position
+page_title: Floating Action Button Position
+description: Explore the position and alignment settings of the Floating Action Button for Blazor.
+slug: fab-positions
+tags: marilo,blazor,floating action button,position,align,alignment
+published: True
+position: 2
+components: ["floatingactionbutton"]
+---
+# Position and Alignment
+
+You can position and align the Blazor Floating Action Button component relative to its parent container by using the available parameters. The example at the bottom of the page lets you experiment with the available parameters.
+
+## Position Mode
+
+The `PositionMode` parameter accepts a member of the `FloatingActionButtonPositionMode` enum and controls the CSS position of the Floating Action Button:
+
+
+| Enum member | Description |
+|---------------|--------|
+| `Fixed` <br /> (default) | Positions the button relative to the viewport. |
+| `Absolute` | Positions the button relative to the nearest positioned ancestor. |
+
+## Alignment
+
+Use the available alignment parameters to control which side of the Floating Action Button touches the parent element:
+
+
+| Parameter | Type | Enum Members |
+| ----------- | ----------- | ----------- |
+| `HorizontalAlign` | `FloatingActionButtonHorizontalAlign` | `End` (default) <br /> `Start` <br /> `Center` |
+| `VerticalAlign` | `FloatingActionButtonVerticalAlign` | `Bottom` (default) <br /> `Middle` <br /> `Top` |
+
+## Example
+
+````RAZOR
+<div class="custom-container">
+    <label>
+        Horizontal Alignment
+        <br />
+        <MariloRadioGroup Data="@HorizontalAligns"
+                           @bind-Value="@HorizontalAlign">
+        </MariloRadioGroup>
+    </label>
+    <label>
+        Vertical Alignment
+        <br />
+        <MariloRadioGroup Data="@VerticalAligns"
+                           @bind-Value="@VerticalAlign">
+        </MariloRadioGroup>
+    </label>
+</div>
+
+<MariloFloatingActionButton HorizontalAlign="@HorizontalAlign"
+                             VerticalAlign="@VerticalAlign"
+                             Icon="SvgIcon.Pin" />
+
+<style>
+    .custom-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        column-gap: 10px;
+    }
+</style>
+
+@code {
+    private FloatingActionButtonHorizontalAlign HorizontalAlign { get; set; } = FloatingActionButtonHorizontalAlign.Start;
+    private List<FloatingActionButtonHorizontalAlign> HorizontalAligns { get; set; } = new List<FloatingActionButtonHorizontalAlign>()
+    {
+        FloatingActionButtonHorizontalAlign.Start,
+        FloatingActionButtonHorizontalAlign.Center,
+        FloatingActionButtonHorizontalAlign.End
+    };
+
+    private FloatingActionButtonVerticalAlign VerticalAlign { get; set; } = FloatingActionButtonVerticalAlign.Top;
+    private List<FloatingActionButtonVerticalAlign> VerticalAligns { get; set; } = new List<FloatingActionButtonVerticalAlign>()
+    {
+        FloatingActionButtonVerticalAlign.Top,
+        FloatingActionButtonVerticalAlign.Middle,
+        FloatingActionButtonVerticalAlign.Bottom
+    };
+}
+````
+
+## See Also
+
+* [Positioning - Design System Docs](https://www.marilo.com/design-system/docs/components/floatingactionbutton/#positioning)

@@ -31,11 +31,23 @@
           "toc.yml",
           "*.md"
         ]
+      },
+      {
+        "files": [
+          "component-specs/**/**.md",
+          "component-specs/**/toc.yml",
+          "component-specs/toc.yml"
+        ],
+        "src": "../docs"
       }
     ],
     "resource": [
       {
         "files": ["images/**", "logo.svg"]
+      },
+      {
+        "files": ["component-specs/**/images/**"],
+        "src": "../docs"
       }
     ],
     "output": "_site",

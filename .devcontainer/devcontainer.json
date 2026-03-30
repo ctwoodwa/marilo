@@ -6,14 +6,27 @@
 	"image": "mcr.microsoft.com/devcontainers/dotnet:2-10.0-noble",
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	"features": {
-		// Installs a Node.js version and makes 'npm' available
 		"ghcr.io/devcontainers/features/node:1": {
-			"version": "lts" // or a specific version like "18" or "20"
-		}
+			"version": "lts"
+		},
+		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {}
 	},
 	"mounts": [
-		"source=C:/Projects/blazor-docs,target=/blazor-docs,type=bind,consistency=cached"
+		"source=C:/Projects/blazor-docs,target=/blazor-docs,type=bind,consistency=cached",
+		"source=${localEnv:USERPROFILE}/.claude,target=/home/vscode/.claude,type=bind"
 	],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"anthropic.claude-code",
+				// Add any other extensions you need
+				"shd101wyy.markdown-preview-enhanced"
+			]
+		}
+	},
+	"containerEnv": {
+		"CLAUDE_CONFIG_DIR": "/home/vscode/.claude"
+	},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [5000, 5001],
 	// "portsAttributes": {
