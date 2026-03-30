@@ -60,12 +60,26 @@ public class FluentUICssProvider : IMariloCssProvider
             .AddClass("mar-accordion-item--expanded", isExpanded)
             .Build();
 
-    public string TabsClass() => "mar-tabs";
+    public string TabsClass(TabPosition position, TabAlignment alignment, TabSize size) =>
+        new CssClassBuilder()
+            .AddClass("mar-tabs")
+            .AddClass($"mar-tabs--{position.ToString().ToLower()}", position != TabPosition.Top)
+            .AddClass($"mar-tabs--align-{alignment.ToString().ToLower()}", alignment != TabAlignment.Start)
+            .AddClass($"mar-tabs--{size.ToString().ToLower()}", size != TabSize.Medium)
+            .Build();
 
-    public string TabPanelClass(bool isActive) =>
+    public string TabClass(bool isActive, bool isDisabled) =>
+        new CssClassBuilder()
+            .AddClass("mar-tab")
+            .AddClass("mar-tab--active", isActive)
+            .AddClass("mar-tab--disabled", isDisabled)
+            .Build();
+
+    public string TabPanelClass(bool isActive, bool persistContent) =>
         new CssClassBuilder()
             .AddClass("mar-tab-panel")
             .AddClass("mar-tab-panel--active", isActive)
+            .AddClass("mar-tab-panel--hidden", persistContent && !isActive)
             .Build();
 
     public string StepperClass() => "mar-stepper";
@@ -109,6 +123,8 @@ public class FluentUICssProvider : IMariloCssProvider
             .AddClass("mar-menu-item--disabled", isDisabled)
             .Build();
 
+    public string MenuDividerClass() => "mar-menu-divider";
+
     public string PaginationClass() => "mar-pagination";
 
     public string PaginationItemClass(bool isActive) =>
@@ -127,6 +143,32 @@ public class FluentUICssProvider : IMariloCssProvider
             .Build();
 
     public string ToolbarClass() => "mar-toolbar";
+
+    public string EnvironmentBadgeClass(string env) =>
+        new CssClassBuilder()
+            .AddClass("mar-env-badge")
+            .AddClass($"mar-env-badge--{env.ToLower()}")
+            .Build();
+
+    public string TimeRangeSelectorClass() => "mar-time-range-selector";
+
+
+    public string ToolbarButtonClass(bool isDisabled = false) =>
+        new CssClassBuilder()
+            .AddClass("mar-toolbar-btn")
+            .AddClass("mar-toolbar-btn--disabled", isDisabled)
+            .Build();
+
+    public string ToolbarToggleButtonClass(bool isActive, bool isDisabled = false) =>
+        new CssClassBuilder()
+            .AddClass("mar-toolbar-btn")
+            .AddClass("mar-toolbar-btn--active", isActive)
+            .AddClass("mar-toolbar-btn--disabled", isDisabled)
+            .Build();
+
+    public string ToolbarSeparatorClass() => "mar-toolbar-sep";
+
+    public string ToolbarGroupClass() => "mar-toolbar-group";
 
     public string LinkClass() => "mar-link";
 
@@ -148,10 +190,10 @@ public class FluentUICssProvider : IMariloCssProvider
 
     public string ButtonGroupClass() => "mar-button-group";
 
-    public string ToggleButtonClass(bool isActive) =>
+    public string ToggleButtonClass(bool selected) =>
         new CssClassBuilder()
             .AddClass("mar-toggle-button")
-            .AddClass("mar-toggle-button--active", isActive)
+            .AddClass("mar-toggle-button--active", selected)
             .Build();
 
     public string SplitButtonClass() => "mar-split-button";
@@ -298,6 +340,8 @@ public class FluentUICssProvider : IMariloCssProvider
             .AddClass($"mar-alert--{severity.ToString().ToLower()}")
             .Build();
 
+    public string AlertStripClass() => "mar-alert-strip";
+
     public string ToastClass(ToastSeverity severity) =>
         new CssClassBuilder()
             .AddClass("mar-toast")
@@ -368,11 +412,13 @@ public class FluentUICssProvider : IMariloCssProvider
     public string ModalOverlayClass() => "mar-modal-overlay";
 
     // Utility
-    public string IconClass(string iconName, IconSize size) =>
+    public string IconClass(string iconName, IconSize size, IconFlip flip = IconFlip.None, IconThemeColor themeColor = IconThemeColor.Base) =>
         new CssClassBuilder()
             .AddClass("mar-icon")
             .AddClass($"mar-icon--{size.ToString().ToLower()}")
             .AddClass($"mar-icon--{iconName}")
+            .AddClass($"mar-icon--flip-{flip.ToString().ToLower()}", flip != IconFlip.None)
+            .AddClass($"mar-icon--{themeColor.ToString().ToLower()}", themeColor != IconThemeColor.Base)
             .Build();
 
     public string DragDropClass() => "mar-dragdrop";

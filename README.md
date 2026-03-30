@@ -1,102 +1,118 @@
 # Marilo
 
-A Blazor component library built on [Fluent UI](https://www.fluentui-blazor.net/) with real-time data change notifications, feedback components, and navigation helpers.
+[![CI](https://github.com/ctwoodwa/marilo/actions/workflows/ci.yml/badge.svg)](https://github.com/ctwoodwa/marilo/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/badge/docs-ctwoodwa.github.io%2Fmarilo-blue)](https://ctwoodwa.github.io/marilo/)
+[![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4)](https://dotnet.microsoft.com/download/dotnet/10.0)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## Installation
+Provider-first Blazor component library. Components define behavior; providers supply visual styling — swap providers to change the entire look-and-feel without touching component code.
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/ctwoodwa/marilo?quickstart=1)
+&nbsp;&nbsp;**[View Documentation →](https://ctwoodwa.github.io/marilo/)**
+
+---
+
+## Packages
+
+| Package | Description |
+|---|---|
+| `Marilo.Components` | 40+ provider-agnostic Razor components |
+| `Marilo.Providers.FluentUI` | Fluent UI visual styling provider |
+| `Marilo.Icons` | 360+ SVG icons + `MariloIcon` component |
+| `Marilo.Core` | Base classes, contracts, and enums |
+
+## Quick Start
+
+### 1. Install packages
 
 ```bash
-dotnet add package Marilo
+dotnet add package Marilo.Components
+dotnet add package Marilo.Providers.FluentUI
+dotnet add package Marilo.Icons        # optional
 ```
 
-## Setup
-
-### 1. Register services
+### 2. Register services
 
 ```csharp
 // Program.cs
-using Marilo;
-
-builder.Services.AddMarilo();
+builder.Services.AddMarilo(options => options
+    .UseFluentUI()
+    .UseMariloIcons()   // optional
+);
 ```
 
-### 2. Add the stylesheet
+### 3. Add stylesheets
 
 ```html
-<!-- index.html or _Host.cshtml -->
-<link href="_content/Marilo/css/marilo.css" rel="stylesheet" />
+<!-- App.razor or index.html -->
+<link rel="stylesheet" href="_content/Marilo.Providers.FluentUI/css/marilo-fluentui.css" />
+<link rel="stylesheet" href="_content/Marilo.Icons/css/marilo-icons.css" />
 ```
 
-### 3. Add imports
+### 4. Add global imports
 
 ```razor
 <!-- _Imports.razor -->
-@using Marilo.Services
-@using Marilo.Models
 @using Marilo.Components
+@using Marilo.Core.Enums
+```
+
+### 5. Use a component
+
+```razor
+<MariloButton Variant="ButtonVariant.Primary" OnClick="HandleClick">
+    <MariloIcon Name="download" /> Export
+</MariloButton>
 ```
 
 ## Components
 
-### Feedback
-
-| Component | Description |
+| Category | Components |
 |---|---|
-| `<MarAlertStrip>` | Displays a list of system alerts with severity-based styling |
-| `<MarConfirmDialog>` | Modal confirmation dialog with dangerous-action styling support |
-| `<MarDataChangeBanner>` | Banner showing pending real-time data changes with refresh/dismiss |
-| `<MarDataChangeToast>` | Toast notifications for real-time data changes via SignalR |
+| Buttons | `MariloButton`, `MariloButtonGroup`, `MariloToggleButton`, `MariloFAB` |
+| Forms | `MariloTextField`, `MariloTextArea`, `MariloCheckbox`, `MariloSwitch`, `MariloSelect`, `MariloSlider`, `MariloDatePicker`, `MariloColorPicker`, `MariloSearchBox`, `MariloRating` |
+| Navigation | `MariloMenu`, `MariloTabs`, `MariloBreadcrumb`, `MariloTreeView`, `MariloStepper`, `MariloSegmentedControl`, `MariloPagination`, `MariloToolbar` |
+| Layout | `MariloContainer`, `MariloStack`, `MariloGrid`, `MariloPanel`, `MariloCard`, `MariloDivider` |
+| Feedback | `MariloAlert`, `MariloDialog`, `MariloConfirmDialog`, `MariloDrawer`, `MariloTooltip`, `MariloChip`, `MariloProgressBar`, `MariloSpinner`, `MariloSkeleton` |
+| Display | `MariloAvatar`, `MariloBadge`, `MariloTable`, `MariloList` |
+| Icons | `MariloIcon`, `MariloIconSprite` |
 
-### Navigation
+## Running the Demo
 
-| Component | Description |
-|---|---|
-| `<MarEnvironmentBadge>` | Displays the current environment (DEV/STAGING/PROD) as a badge |
-| `<MarTimeRangeSelector>` | Time range picker (Now, 1h, 24h, 7d, 30d) with two-way binding |
+The demo is a Blazor Server application. The quickest way to try it is **GitHub Codespaces** — no local setup required:
 
-## Usage Examples
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/ctwoodwa/marilo?quickstart=1)
 
-```razor
-<!-- Alert strip -->
-<MarAlertStrip Alerts="@alerts" />
+Once the Codespace starts, run the demo from the terminal:
 
-<!-- Confirmation dialog -->
-<MarConfirmDialog IsOpen="@showDialog"
-                  Title="Delete Item"
-                  ConfirmText="Delete"
-                  IsDangerous="true"
-                  OnConfirm="HandleDelete"
-                  OnCancel="CloseDialog">
-    <p>Are you sure you want to delete this item?</p>
-</MarConfirmDialog>
-
-<!-- Real-time data change banner -->
-<MarDataChangeBanner EntityTypes="@(new[] { "User" })"
-                     OnRefreshRequested="@LoadData" />
-
-<!-- Toast notifications (typically in MainLayout) -->
-<MarDataChangeToast />
-
-<!-- Environment badge -->
-<MarEnvironmentBadge />
-
-<!-- Time range selector with two-way binding -->
-<MarTimeRangeSelector @bind-SelectedRange="timeRange"
-                      OnRangeChanged="HandleRangeChange" />
+```bash
+dotnet run --project samples/Marilo.Demo
 ```
 
-## Services
+Then open the forwarded port in your browser.
 
-| Service | Lifetime | Description |
-|---|---|---|
-| `AuthStateProvider` | Scoped | Fetches auth state from a BFF endpoint |
-| `ThemeService` | Scoped | Dark/light theme toggle with localStorage persistence |
-| `DataChangeService` | Scoped | SignalR-based real-time data change notifications |
-| `MarkdownService` | Singleton | Markdown-to-HTML rendering via Markdig |
-| `GraphQLClientBase` | Abstract | Base class for app-specific GraphQL clients |
+### Run locally
 
-## CSS Prefix
+```bash
+git clone https://github.com/ctwoodwa/marilo.git
+cd marilo
+npm install && npm run build
+dotnet run --project samples/Marilo.Demo
+```
 
-All Marilo CSS classes use the `mar-` prefix to avoid collisions with your application styles.
+Open `http://localhost:8080`.
+
+## Documentation
+
+Full docs including API reference, theming guide, and icon browser are published to GitHub Pages:
+
+**[https://ctwoodwa.github.io/marilo/](https://ctwoodwa.github.io/marilo/)**
+
+To build and serve docs locally:
+
+```bash
+npm run docs:serve
+```
 
 ## License
 

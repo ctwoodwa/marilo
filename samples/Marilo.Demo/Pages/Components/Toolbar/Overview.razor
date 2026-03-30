@@ -1,0 +1,116 @@
+@page "/components/toolbar"
+@page "/components/toolbar/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloToolbar>
+            <MariloToolbarGroup>
+                <MariloToolbarToggleButton IsSelected="@_bold" IsSelectedChanged="@((bool v) => _bold = v)">Bold</MariloToolbarToggleButton>
+                <MariloToolbarToggleButton IsSelected="@_italic" IsSelectedChanged="@((bool v) => _italic = v)">Italic</MariloToolbarToggleButton>
+                <MariloToolbarToggleButton IsSelected="@_underline" IsSelectedChanged="@((bool v) => _underline = v)">Underline</MariloToolbarToggleButton>
+            </MariloToolbarGroup>
+            <MariloToolbarSeparator />
+            <MariloToolbarGroup>
+                <MariloToolbarButton>Cut</MariloToolbarButton>
+                <MariloToolbarButton>Copy</MariloToolbarButton>
+                <MariloToolbarButton>Paste</MariloToolbarButton>
+            </MariloToolbarGroup>
+            <MariloToolbarSeparator />
+            <MariloToolbarButton Disabled="true">Undo</MariloToolbarButton>
+        </MariloToolbar>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="Vertical Orientation" Description="Toolbars can be arranged vertically." Code="@_verticalCode">
+        <MariloToolbar Orientation="Orientation.Vertical">
+            <MariloToolbarButton>Cut</MariloToolbarButton>
+            <MariloToolbarButton>Copy</MariloToolbarButton>
+            <MariloToolbarButton>Paste</MariloToolbarButton>
+        </MariloToolbar>
+    </DemoSection>
+
+    <DemoSection Title="Sizes" Description="Toolbar buttons support different sizes." Code="@_sizesCode">
+        <MariloToolbar Size="ToolbarSize.Small">
+            <MariloToolbarButton>Small A</MariloToolbarButton>
+            <MariloToolbarButton>Small B</MariloToolbarButton>
+        </MariloToolbar>
+        <MariloToolbar Size="ToolbarSize.Medium">
+            <MariloToolbarButton>Medium A</MariloToolbarButton>
+            <MariloToolbarButton>Medium B</MariloToolbarButton>
+        </MariloToolbar>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Accessibility">
+    <AccessibilityInfo
+        KeyboardInteractions="@_keyboard"
+        AriaAttributes="@_aria"
+        ScreenReaderNotes="@_screenReader" />
+</PageSection>
+
+@code {
+    private bool _bold, _italic, _underline;
+
+    private const string _basicCode =
+        "<MariloToolbar>\n" +
+        "    <MariloToolbarGroup>\n" +
+        "        <MariloToolbarToggleButton IsSelected=\"@_bold\" IsSelectedChanged=\"@(v => _bold = v)\">Bold</MariloToolbarToggleButton>\n" +
+        "        <MariloToolbarToggleButton IsSelected=\"@_italic\" IsSelectedChanged=\"@(v => _italic = v)\">Italic</MariloToolbarToggleButton>\n" +
+        "        <MariloToolbarToggleButton IsSelected=\"@_underline\" IsSelectedChanged=\"@(v => _underline = v)\">Underline</MariloToolbarToggleButton>\n" +
+        "    </MariloToolbarGroup>\n" +
+        "    <MariloToolbarSeparator />\n" +
+        "    <MariloToolbarGroup>\n" +
+        "        <MariloToolbarButton>Cut</MariloToolbarButton>\n" +
+        "        <MariloToolbarButton>Copy</MariloToolbarButton>\n" +
+        "        <MariloToolbarButton>Paste</MariloToolbarButton>\n" +
+        "    </MariloToolbarGroup>\n" +
+        "    <MariloToolbarSeparator />\n" +
+        "    <MariloToolbarButton Disabled=\"true\">Undo</MariloToolbarButton>\n" +
+        "</MariloToolbar>\n\n" +
+        "@code {\n" +
+        "    private bool _bold, _italic, _underline;\n" +
+        "}";
+
+    private const string _verticalCode =
+        "<MariloToolbar Orientation=\"Orientation.Vertical\">\n" +
+        "    <MariloToolbarButton>Cut</MariloToolbarButton>\n" +
+        "    <MariloToolbarButton>Copy</MariloToolbarButton>\n" +
+        "    <MariloToolbarButton>Paste</MariloToolbarButton>\n" +
+        "</MariloToolbar>";
+
+    private const string _sizesCode =
+        "<MariloToolbar Size=\"ToolbarSize.Small\">\n" +
+        "    <MariloToolbarButton>Small A</MariloToolbarButton>\n" +
+        "    <MariloToolbarButton>Small B</MariloToolbarButton>\n" +
+        "</MariloToolbar>\n" +
+        "<MariloToolbar Size=\"ToolbarSize.Medium\">\n" +
+        "    <MariloToolbarButton>Medium A</MariloToolbarButton>\n" +
+        "    <MariloToolbarButton>Medium B</MariloToolbarButton>\n" +
+        "</MariloToolbar>";
+
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Left Arrow", "Moves focus to the previous toolbar item"),
+        ("Right Arrow", "Moves focus to the next toolbar item"),
+        ("Home", "Moves focus to the first toolbar item"),
+        ("End", "Moves focus to the last toolbar item"),
+        ("Tab", "Moves focus out of the toolbar to the next focusable element"),
+        ("Shift + Tab", "Moves focus out of the toolbar to the previous focusable element"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"toolbar\"", "Applied to the toolbar container to identify it as a toolbar widget"),
+        ("aria-label", "Provides an accessible name for the toolbar"),
+        ("aria-orientation", "Indicates whether the toolbar is horizontal or vertical"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "The toolbar is announced with its role and accessible name when focus enters it.",
+        "Arrow keys move between items within the toolbar, while Tab moves focus out of the toolbar entirely.",
+        "Toggle buttons announce their pressed state as \"pressed\" or \"not pressed\".",
+    ];
+}

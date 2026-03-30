@@ -3,8 +3,7 @@
 <div class="demo-page">
     <h1>Feedback</h1>
 
-    <div class="demo-section">
-        <h2>Alerts</h2>
+    <DemoSection Title="Alerts" Code="@_alertsCode">
         <MariloAlert Severity="AlertSeverity.Info">This is an info alert.</MariloAlert>
         <MariloAlert Severity="AlertSeverity.Success">Operation completed successfully.</MariloAlert>
         <MariloAlert Severity="AlertSeverity.Warning">Please review your settings.</MariloAlert>
@@ -12,10 +11,9 @@
         <MariloAlert Severity="AlertSeverity.Info" IsDismissible="true" OnDismiss="@(() => {})">
             This alert can be dismissed.
         </MariloAlert>
-    </div>
+    </DemoSection>
 
-    <div class="demo-section">
-        <h2>Progress</h2>
+    <DemoSection Title="Progress" Code="@_progressCode">
         <div style="margin-bottom: 16px;">
             <p>Determinate: @_progress%</p>
             <MariloProgressBar Value="@_progress" />
@@ -28,37 +26,33 @@
             <MariloButton Size="ButtonSize.Small" OnClick="@(() => _progress = Math.Max(0, _progress - 10))">-10</MariloButton>
             <MariloButton Size="ButtonSize.Small" OnClick="@(() => _progress = Math.Min(100, _progress + 10))">+10</MariloButton>
         </div>
-    </div>
+    </DemoSection>
 
-    <div class="demo-section">
-        <h2>Spinners</h2>
+    <DemoSection Title="Spinners" Code="@_spinnersCode">
         <div class="demo-row">
             <MariloSpinner Size="SpinnerSize.Small" />
             <MariloSpinner Size="SpinnerSize.Medium" />
             <MariloSpinner Size="SpinnerSize.Large" />
         </div>
-    </div>
+    </DemoSection>
 
-    <div class="demo-section">
-        <h2>Skeletons</h2>
+    <DemoSection Title="Skeletons" Code="@_skeletonsCode">
         <div class="demo-row">
             <MariloSkeleton Variant="SkeletonVariant.Text" Width="200px" Height="16px" />
             <MariloSkeleton Variant="SkeletonVariant.Circular" Width="48px" Height="48px" />
             <MariloSkeleton Variant="SkeletonVariant.Rectangular" Width="200px" Height="120px" />
         </div>
-    </div>
+    </DemoSection>
 
-    <div class="demo-section">
-        <h2>Dialog</h2>
+    <DemoSection Title="Dialog" Code="@_dialogCode">
         <MariloButton OnClick="@(() => _dialogOpen = true)">Open Dialog</MariloButton>
         <MariloDialog IsOpen="@_dialogOpen" Title="Example Dialog" OnClose="@(() => _dialogOpen = false)">
             <p>This is a dialog component rendered with pure HTML and CSS.</p>
             <MariloButton Variant="ButtonVariant.Primary" OnClick="@(() => _dialogOpen = false)">Close</MariloButton>
         </MariloDialog>
-    </div>
+    </DemoSection>
 
-    <div class="demo-section">
-        <h2>Confirm Dialog</h2>
+    <DemoSection Title="Confirm Dialog" Code="@_confirmCode">
         <MariloButton Variant="ButtonVariant.Danger" OnClick="@(() => _confirmOpen = true)">Delete Item</MariloButton>
         <MariloConfirmDialog IsOpen="@_confirmOpen"
                              Title="Confirm Delete"
@@ -71,7 +65,7 @@
         {
             <p style="margin-top: 8px;">Result: <strong>@_confirmResult</strong></p>
         }
-    </div>
+    </DemoSection>
 </div>
 
 @code {
@@ -79,4 +73,41 @@
     private bool _dialogOpen;
     private bool _confirmOpen;
     private string? _confirmResult;
+
+    private const string _alertsCode = @"<MariloAlert Severity=""AlertSeverity.Info"">Info alert.</MariloAlert>
+<MariloAlert Severity=""AlertSeverity.Success"">Success alert.</MariloAlert>
+<MariloAlert Severity=""AlertSeverity.Warning"">Warning alert.</MariloAlert>
+<MariloAlert Severity=""AlertSeverity.Critical"">Critical alert.</MariloAlert>
+<MariloAlert Severity=""AlertSeverity.Info"" IsDismissible=""true"" OnDismiss=""@(() => {})"">
+    Dismissible alert.
+</MariloAlert>";
+
+    private const string _progressCode = @"<MariloProgressBar Value=""@_progress"" />
+<MariloProgressBar IsIndeterminate=""true"" />
+
+@code { private double _progress = 45; }";
+
+    private const string _spinnersCode = @"<MariloSpinner Size=""SpinnerSize.Small"" />
+<MariloSpinner Size=""SpinnerSize.Medium"" />
+<MariloSpinner Size=""SpinnerSize.Large"" />";
+
+    private const string _skeletonsCode = @"<MariloSkeleton Variant=""SkeletonVariant.Text"" Width=""200px"" Height=""16px"" />
+<MariloSkeleton Variant=""SkeletonVariant.Circular"" Width=""48px"" Height=""48px"" />
+<MariloSkeleton Variant=""SkeletonVariant.Rectangular"" Width=""200px"" Height=""120px"" />";
+
+    private const string _dialogCode = @"<MariloButton OnClick=""@(() => _dialogOpen = true)"">Open Dialog</MariloButton>
+<MariloDialog IsOpen=""@_dialogOpen"" Title=""Example Dialog"" OnClose=""@(() => _dialogOpen = false)"">
+    <p>Dialog content here.</p>
+    <MariloButton Variant=""ButtonVariant.Primary"" OnClick=""@(() => _dialogOpen = false)"">Close</MariloButton>
+</MariloDialog>
+
+@code { private bool _dialogOpen; }";
+
+    private const string _confirmCode = @"<MariloConfirmDialog IsOpen=""@_confirmOpen""
+    Title=""Confirm Delete""
+    Message=""Are you sure?""
+    IsDangerous=""true""
+    ConfirmText=""Delete""
+    OnConfirm=""@(() => _confirmOpen = false)""
+    OnCancel=""@(() => _confirmOpen = false)"" />";
 }

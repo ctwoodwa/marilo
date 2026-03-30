@@ -1,0 +1,12 @@
+- name: Getting Started
+  href: articles/getting-started/
+- name: Components
+  href: http://localhost:8080/components
+- name: Component Specs
+  href: component-specs/
+- name: Theming
+  href: articles/theming/
+- name: Icons
+  href: articles/icons.md
+- name: API Reference
+  href: api/

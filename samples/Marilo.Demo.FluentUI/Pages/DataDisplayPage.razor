@@ -3,8 +3,7 @@
 <div class="demo-page">
     <h1>Data Display</h1>
 
-    <div class="demo-section">
-        <h2>Cards</h2>
+    <DemoSection Title="Cards" Code="@_cardsCode">
         <div class="demo-card-grid">
             @for (var i = 1; i <= 3; i++)
             {
@@ -18,10 +17,9 @@
                 </MariloCard>
             }
         </div>
-    </div>
+    </DemoSection>
 
-    <div class="demo-section">
-        <h2>Avatars</h2>
+    <DemoSection Title="Avatars" Code="@_avatarsCode">
         <div class="demo-row">
             <MariloAvatar Size="AvatarSize.ExtraSmall" Initials="XS" />
             <MariloAvatar Size="AvatarSize.Small" Initials="SM" />
@@ -29,10 +27,9 @@
             <MariloAvatar Size="AvatarSize.Large" Initials="LG" />
             <MariloAvatar Size="AvatarSize.ExtraLarge" Initials="XL" />
         </div>
-    </div>
+    </DemoSection>
 
-    <div class="demo-section">
-        <h2>Badges</h2>
+    <DemoSection Title="Badges" Code="@_badgesCode">
         <div class="demo-row">
             <MariloBadge Variant="BadgeVariant.Default">Default</MariloBadge>
             <MariloBadge Variant="BadgeVariant.Primary">Primary</MariloBadge>
@@ -42,19 +39,17 @@
             <MariloBadge Variant="BadgeVariant.Info">Info</MariloBadge>
             <MariloBadge Variant="BadgeVariant.Success">Success</MariloBadge>
         </div>
-    </div>
+    </DemoSection>
 
-    <div class="demo-section">
-        <h2>List</h2>
+    <DemoSection Title="List" Code="@_listCode">
         <MariloList>
             <MariloListItem>First item in the list</MariloListItem>
             <MariloListItem>Second item in the list</MariloListItem>
             <MariloListItem>Third item in the list</MariloListItem>
         </MariloList>
-    </div>
+    </DemoSection>
 
-    <div class="demo-section">
-        <h2>Table</h2>
+    <DemoSection Title="Table" Code="@_tableCode">
         <MariloTable>
             <thead>
                 <tr><th>Name</th><th>Role</th><th>Status</th></tr>
@@ -65,10 +60,9 @@
                 <tr><td>Charlie</td><td>Editor</td><td><MariloBadge Variant="BadgeVariant.Danger">Inactive</MariloBadge></td></tr>
             </tbody>
         </MariloTable>
-    </div>
+    </DemoSection>
 
-    <div class="demo-section">
-        <h2>Tooltip</h2>
+    <DemoSection Title="Tooltip" Code="@_tooltipCode">
         <div class="demo-row">
             <MariloTooltip Text="This is a top tooltip" Position="TooltipPosition.Top">
                 <MariloButton Variant="ButtonVariant.Secondary">Hover me (Top)</MariloButton>
@@ -77,5 +71,47 @@
                 <MariloButton Variant="ButtonVariant.Secondary">Hover me (Bottom)</MariloButton>
             </MariloTooltip>
         </div>
-    </div>
+    </DemoSection>
 </div>
+
+@code {
+    private const string _cardsCode = @"<MariloCard>
+    <MariloCardHeader>Card Title</MariloCardHeader>
+    <MariloCardBody>Card body content.</MariloCardBody>
+    <MariloCardActions>
+        <MariloButton Variant=""ButtonVariant.Primary"" Size=""ButtonSize.Small"">Action</MariloButton>
+    </MariloCardActions>
+</MariloCard>";
+
+    private const string _avatarsCode = @"<MariloAvatar Size=""AvatarSize.ExtraSmall"" Initials=""XS"" />
+<MariloAvatar Size=""AvatarSize.Small"" Initials=""SM"" />
+<MariloAvatar Size=""AvatarSize.Medium"" Initials=""MD"" />
+<MariloAvatar Size=""AvatarSize.Large"" Initials=""LG"" />
+<MariloAvatar Size=""AvatarSize.ExtraLarge"" Initials=""XL"" />";
+
+    private const string _badgesCode = @"<MariloBadge Variant=""BadgeVariant.Default"">Default</MariloBadge>
+<MariloBadge Variant=""BadgeVariant.Primary"">Primary</MariloBadge>
+<MariloBadge Variant=""BadgeVariant.Danger"">Danger</MariloBadge>
+<MariloBadge Variant=""BadgeVariant.Warning"">Warning</MariloBadge>
+<MariloBadge Variant=""BadgeVariant.Success"">Success</MariloBadge>";
+
+    private const string _listCode = @"<MariloList>
+    <MariloListItem>First item</MariloListItem>
+    <MariloListItem>Second item</MariloListItem>
+    <MariloListItem>Third item</MariloListItem>
+</MariloList>";
+
+    private const string _tableCode = @"<MariloTable>
+    <thead><tr><th>Name</th><th>Role</th><th>Status</th></tr></thead>
+    <tbody>
+        <tr>
+            <td>Alice</td><td>Admin</td>
+            <td><MariloBadge Variant=""BadgeVariant.Success"">Active</MariloBadge></td>
+        </tr>
+    </tbody>
+</MariloTable>";
+
+    private const string _tooltipCode = @"<MariloTooltip Text=""Tooltip text"" Position=""TooltipPosition.Top"">
+    <MariloButton Variant=""ButtonVariant.Secondary"">Hover me</MariloButton>
+</MariloTooltip>";
+}

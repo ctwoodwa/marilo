@@ -1,8 +1,8 @@
 @inherits MariloComponentBase
 
-<div class="@CombineClasses(CssProvider.TooltipClass(Position))" style="@CombineStyles()" @attributes="AdditionalAttributes">
+<div class="marilo-tooltip-trigger" style="position:relative;display:inline-block;@CombineStyles()" @attributes="AdditionalAttributes">
     @ChildContent
-    <div class="marilo-tooltip-content">@Text</div>
+    <div class="@CombineClasses(CssProvider.TooltipClass(Position))">@Text</div>
 </div>
 
 @code {

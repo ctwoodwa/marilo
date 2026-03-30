@@ -458,8 +458,7 @@
    -------------------------------------------------------------------------- */
 .mar-tabs {
   display: flex;
-  border-bottom: 1px solid var(--marilo-color-border);
-  gap: var(--marilo-space-xs);
+  flex-direction: column;
 }
 
 .mar-tab-panel {
@@ -693,6 +692,66 @@
   padding: var(--marilo-space-sm);
   background: var(--marilo-color-surface);
   border-radius: var(--marilo-radius-md);
+}
+
+.mar-toolbar-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--marilo-color-surface, #f3f2f1);
+  border: 1px solid var(--marilo-color-border, #e1dfdd);
+  border-radius: var(--marilo-radius-lg);
+  padding: 3px;
+  flex-shrink: 0;
+}
+
+.mar-toolbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--marilo-space-xs);
+  padding: 5px 14px;
+  border: none;
+  border-radius: var(--marilo-radius-md);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  font-family: var(--marilo-font-family);
+  line-height: 1.5;
+  cursor: pointer;
+  color: var(--marilo-color-text-secondary, #605e5c);
+  background: transparent;
+  transition: background var(--marilo-transition-fast), color var(--marilo-transition-fast), box-shadow var(--marilo-transition-fast);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.mar-toolbar-btn:hover:not(.mar-toolbar-btn--disabled):not(.mar-toolbar-btn--active) {
+  background: var(--marilo-color-surface-hover, #edebe9);
+  color: var(--marilo-color-on-background, #323130);
+}
+
+.mar-toolbar-btn--active {
+  background: var(--marilo-color-background, #ffffff);
+  color: var(--marilo-color-primary, #0078d4);
+  box-shadow: var(--marilo-shadow-sm);
+}
+
+.mar-toolbar-btn--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.mar-toolbar-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--marilo-focus-ring);
+}
+
+.mar-toolbar-sep {
+  width: 1px;
+  align-self: stretch;
+  background: var(--marilo-color-border, #e1dfdd);
+  margin: 2px var(--marilo-space-xs);
+  flex-shrink: 0;
 }
 
 .mar-link {
@@ -1123,11 +1182,98 @@
    -------------------------------------------------------------------------- */
 .mar-textfield {
   display: flex;
-  flex-direction: column;
-  gap: var(--marilo-space-xs);
+  align-items: center;
+  border: 1px solid var(--marilo-color-border-strong);
+  border-radius: var(--marilo-radius-md);
+  background: var(--marilo-color-background);
+  min-height: 32px;
+  transition: border-color var(--marilo-transition-fast), box-shadow var(--marilo-transition-fast);
 }
 
-.mar-textfield input,
+.mar-textfield:hover {
+  border-color: var(--marilo-color-on-background);
+}
+
+.mar-textfield:focus-within {
+  border-color: var(--marilo-color-primary);
+  box-shadow: 0 0 0 1px var(--marilo-color-primary);
+}
+
+.mar-textfield input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 10px;
+  font-family: var(--marilo-font-family);
+  font-size: var(--marilo-font-size-base);
+  color: var(--marilo-color-on-background);
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.mar-textfield input::placeholder {
+  color: var(--marilo-color-text-secondary);
+}
+
+.mar-textfield__prefix,
+.mar-textfield__suffix {
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  color: var(--marilo-color-text-secondary);
+  flex-shrink: 0;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.mar-textfield__prefix {
+  padding-left: 10px;
+}
+
+.mar-textfield__suffix {
+  padding-right: 10px;
+}
+
+.mar-textfield__prefix--sep {
+  border-right: 1px solid var(--marilo-color-border);
+  margin-right: -1px;
+  padding-right: 10px;
+}
+
+.mar-textfield__suffix--sep {
+  border-left: 1px solid var(--marilo-color-border);
+  margin-left: -1px;
+  padding-left: 10px;
+}
+
+.mar-textfield:has(.mar-textfield__prefix) input {
+  padding-left: 4px;
+}
+
+.mar-textfield:has(.mar-textfield__suffix) input {
+  padding-right: 4px;
+}
+
+.mar-textfield--invalid {
+  border-color: var(--marilo-color-danger);
+}
+
+.mar-textfield--invalid:focus-within {
+  box-shadow: 0 0 0 1px var(--marilo-color-danger);
+}
+
+.mar-textfield--disabled {
+  background: var(--marilo-color-surface);
+  border-color: var(--marilo-color-border);
+  cursor: not-allowed;
+}
+
+.mar-textfield--disabled input {
+  color: var(--marilo-color-text-disabled);
+  cursor: not-allowed;
+}
+
+/* Shared styles for other form input controls */
 .mar-textarea textarea,
 .mar-numeric-input input,
 .mar-select select {
@@ -1144,14 +1290,12 @@
   min-height: 32px;
 }
 
-.mar-textfield input:hover,
 .mar-textarea textarea:hover,
 .mar-numeric-input input:hover,
 .mar-select select:hover {
   border-color: var(--marilo-color-on-background);
 }
 
-.mar-textfield input:focus,
 .mar-textarea textarea:focus,
 .mar-numeric-input input:focus,
 .mar-select select:focus {
@@ -1159,23 +1303,14 @@
   box-shadow: 0 0 0 1px var(--marilo-color-primary);
 }
 
-.mar-textfield--invalid input,
 .mar-textarea--invalid textarea,
 .mar-select--invalid select {
   border-color: var(--marilo-color-danger);
 }
 
-.mar-textfield--invalid input:focus,
 .mar-textarea--invalid textarea:focus,
 .mar-select--invalid select:focus {
   box-shadow: 0 0 0 1px var(--marilo-color-danger);
-}
-
-.mar-textfield--disabled input {
-  background: var(--marilo-color-surface);
-  color: var(--marilo-color-text-disabled);
-  border-color: var(--marilo-color-border);
-  cursor: not-allowed;
 }
 
 .mar-textarea {
@@ -1578,7 +1713,12 @@
   white-space: nowrap;
   z-index: var(--marilo-z-tooltip);
   pointer-events: none;
-  animation: marilo-fade-in var(--marilo-transition-fast);
+  opacity: 0;
+  transition: opacity var(--marilo-transition-fast);
+}
+
+.marilo-tooltip-trigger:hover > .mar-tooltip {
+  opacity: 1;
 }
 
 .mar-tooltip--top {
@@ -2154,6 +2294,48 @@
 .mar-icon--extralarge {
   width: 32px;
   height: 32px;
+}
+
+/* Icon flip */
+.mar-icon--flip-horizontal {
+  transform: scaleX(-1);
+}
+
+.mar-icon--flip-vertical {
+  transform: scaleY(-1);
+}
+
+.mar-icon--flip-both {
+  transform: scale(-1);
+}
+
+/* Icon theme colors */
+.mar-icon--primary {
+  color: var(--marilo-color-primary);
+}
+
+.mar-icon--secondary {
+  color: var(--marilo-color-text-secondary);
+}
+
+.mar-icon--success {
+  color: var(--marilo-color-success);
+}
+
+.mar-icon--warning {
+  color: var(--marilo-color-warning);
+}
+
+.mar-icon--danger {
+  color: var(--marilo-color-danger);
+}
+
+.mar-icon--info {
+  color: var(--marilo-color-info);
+}
+
+.mar-icon--inherit {
+  color: inherit;
 }
 
 /* --------------------------------------------------------------------------
@@ -2821,29 +3003,83 @@
 
 .mar-search-box__icon {
   position: absolute;
-  left: var(--marilo-space-sm);
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
   color: var(--marilo-color-text-secondary);
   pointer-events: none;
+  display: flex;
+  align-items: center;
 }
 
-.mar-search-box input {
-  padding-left: calc(var(--marilo-space-sm) + 24px);
+.mar-search-box input[type=search] {
+  width: 100%;
+  padding: 7px 34px 7px 34px;
+  font-family: var(--marilo-font-family);
+  font-size: var(--marilo-font-size-sm);
+  color: var(--marilo-color-on-background);
+  background: var(--marilo-color-background);
+  border: 1px solid var(--marilo-color-border);
+  border-radius: var(--marilo-radius-lg);
+  outline: none;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color var(--marilo-transition-fast), box-shadow var(--marilo-transition-fast);
+}
+
+.mar-search-box input[type=search]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  display: none;
+}
+
+.mar-search-box input[type=search]::placeholder {
+  color: var(--marilo-color-text-secondary);
+}
+
+.mar-search-box input[type=search]:focus {
+  border-color: var(--marilo-color-primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--marilo-color-primary) 18%, transparent);
 }
 
 .mar-search-box__clear {
   position: absolute;
-  right: var(--marilo-space-xs);
+  right: 7px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
   background: none;
   border: none;
   cursor: pointer;
-  padding: var(--marilo-space-xxs);
   color: var(--marilo-color-text-secondary);
-  border-radius: var(--marilo-radius-full);
+  border-radius: var(--marilo-radius-sm);
+  transition: color var(--marilo-transition-fast), background var(--marilo-transition-fast);
 }
 
 .mar-search-box__clear:hover {
   background: var(--marilo-color-surface);
   color: var(--marilo-color-on-background);
+}
+
+.mar-search-box__kbd {
+  position: absolute;
+  right: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+  font-size: 0.6rem;
+  background: var(--marilo-color-surface);
+  color: var(--marilo-color-text-secondary);
+  padding: 0.1em 0.45em;
+  border-radius: var(--marilo-radius-sm);
+  border: 1px solid var(--marilo-color-border);
+  pointer-events: none;
+  line-height: 1.5;
 }
 
 .mar-autocomplete {
@@ -3358,6 +3594,227 @@
   font-size: var(--marilo-font-size-xs);
   line-height: 1.4;
   color: var(--marilo-color-text-secondary);
+}
+
+/* ==========================================================================
+   Phase 3 Component Styles
+   ========================================================================== */
+/* --------------------------------------------------------------------------
+   Animations: Data Toast / Data Banner
+   -------------------------------------------------------------------------- */
+@keyframes marilo-slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+/* --------------------------------------------------------------------------
+   Feedback: Alert Strip
+   -------------------------------------------------------------------------- */
+.mar-alert-strip {
+  display: flex;
+  flex-direction: column;
+  gap: var(--marilo-space-sm);
+  margin-bottom: var(--marilo-space-xl);
+}
+
+.marilo-alert-strip-item {
+  display: flex;
+  align-items: center;
+  gap: var(--marilo-space-md);
+  padding: var(--marilo-space-sm) var(--marilo-space-lg);
+  border-radius: var(--marilo-radius-md);
+  border-left: 4px solid transparent;
+}
+
+.marilo-alert-strip-item.mar-alert--critical {
+  background: rgba(209, 52, 56, 0.12);
+  border-left-color: var(--marilo-color-danger);
+}
+
+.marilo-alert-strip-item.mar-alert--warning {
+  background: rgba(255, 185, 0, 0.12);
+  border-left-color: var(--marilo-color-warning);
+}
+
+.marilo-alert-strip-item.mar-alert--info {
+  background: rgba(0, 120, 212, 0.08);
+  border-left-color: var(--marilo-color-primary);
+}
+
+.marilo-alert-strip-module {
+  color: var(--marilo-color-text-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   Feedback: Dialog (inner structure)
+   -------------------------------------------------------------------------- */
+.marilo-dialog-title {
+  display: flex;
+  align-items: center;
+  gap: var(--marilo-space-md);
+  margin-bottom: var(--marilo-space-lg);
+  font-size: var(--marilo-font-size-lg);
+  font-weight: var(--marilo-font-weight-semibold);
+}
+
+.marilo-dialog-body {
+  margin-bottom: var(--marilo-space-xl);
+  color: var(--marilo-color-text-secondary);
+}
+
+.marilo-dialog-body p {
+  margin: 0;
+}
+
+.marilo-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--marilo-space-sm);
+}
+
+/* --------------------------------------------------------------------------
+   Feedback: Data Banner
+   -------------------------------------------------------------------------- */
+.marilo-data-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--marilo-space-lg);
+  padding: var(--marilo-space-sm) var(--marilo-space-xl);
+  margin-bottom: var(--marilo-space-lg);
+  background: linear-gradient(135deg, rgba(96, 205, 255, 0.08), rgba(96, 205, 255, 0.03));
+  border: 1px solid rgba(96, 205, 255, 0.25);
+  border-radius: var(--marilo-radius-lg);
+  animation: marilo-slide-in var(--marilo-transition-normal);
+}
+
+/* --------------------------------------------------------------------------
+   Feedback: Data Toast
+   -------------------------------------------------------------------------- */
+.marilo-data-toast-container {
+  position: fixed;
+  top: 60px;
+  right: 20px;
+  z-index: var(--marilo-z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--marilo-space-sm);
+  max-width: 420px;
+  pointer-events: none;
+}
+
+.marilo-data-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--marilo-space-md);
+  padding: var(--marilo-space-md) var(--marilo-space-lg);
+  background: var(--marilo-color-background);
+  border: 1px solid var(--marilo-color-border);
+  border-radius: var(--marilo-radius-lg);
+  box-shadow: var(--marilo-shadow-lg);
+  pointer-events: auto;
+  animation: marilo-slide-in-right var(--marilo-transition-slow);
+  border-left: 3px solid var(--marilo-color-info);
+}
+
+.marilo-data-toast.created {
+  border-left-color: var(--marilo-color-success);
+}
+
+.marilo-data-toast.updated {
+  border-left-color: var(--marilo-color-info);
+}
+
+.marilo-data-toast.deleted {
+  border-left-color: var(--marilo-color-danger);
+}
+
+.marilo-data-toast.toggled {
+  border-left-color: var(--marilo-color-warning);
+}
+
+.marilo-data-toast-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.marilo-data-toast-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.marilo-data-toast-summary {
+  font-size: var(--marilo-font-size-sm);
+  font-weight: var(--marilo-font-weight-semibold);
+  color: var(--marilo-color-on-background);
+  line-height: 1.4;
+}
+
+.marilo-data-toast-meta {
+  display: flex;
+  gap: var(--marilo-space-md);
+  margin-top: var(--marilo-space-xxs);
+  font-size: var(--marilo-font-size-xs);
+  color: var(--marilo-color-text-secondary);
+}
+
+.marilo-data-toast-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--marilo-space-xs);
+  flex-shrink: 0;
+}
+
+.marilo-data-toast-overflow {
+  display: flex;
+  justify-content: center;
+  gap: var(--marilo-space-sm);
+  padding: var(--marilo-space-sm) var(--marilo-space-lg);
+  font-size: var(--marilo-font-size-xs);
+  color: var(--marilo-color-text-secondary);
+  border-left: none;
+}
+
+/* --------------------------------------------------------------------------
+   Navigation: Environment Badge
+   -------------------------------------------------------------------------- */
+.mar-env-badge {
+  margin-left: var(--marilo-space-sm);
+  font-size: var(--marilo-font-size-xs);
+  letter-spacing: 0.5px;
+  font-weight: var(--marilo-font-weight-semibold);
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: var(--marilo-radius-sm);
+}
+
+.mar-env-badge--dev {
+  background: var(--marilo-color-warning-light);
+  color: var(--marilo-color-on-warning);
+}
+
+.mar-env-badge--staging {
+  background: var(--marilo-color-info-light);
+  color: var(--marilo-color-on-info);
+}
+
+.mar-env-badge--production {
+  background: var(--marilo-color-danger-light);
+  color: var(--marilo-color-on-danger);
+}
+
+/* --------------------------------------------------------------------------
+   Navigation: Time Range Selector
+   -------------------------------------------------------------------------- */
+.mar-time-range-selector {
+  display: flex;
+  align-items: center;
+  gap: var(--marilo-space-xs);
 }
 
 .mar-typography--overline {

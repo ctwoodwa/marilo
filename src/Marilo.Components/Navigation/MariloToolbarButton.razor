@@ -1,0 +1,17 @@
+@inherits MariloComponentBase
+
+<button class="@CombineClasses(CssProvider.ToolbarButtonClass(Disabled))"
+        style="@CombineStyles()"
+        disabled="@Disabled"
+        title="@Title"
+        @onclick="OnClick"
+        @attributes="AdditionalAttributes">
+    @ChildContent
+</button>
+
+@code {
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

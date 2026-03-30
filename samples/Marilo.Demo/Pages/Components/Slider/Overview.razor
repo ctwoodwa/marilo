@@ -1,0 +1,84 @@
+@page "/components/slider"
+@page "/components/slider/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloField>
+            <MariloLabel>Volume</MariloLabel>
+            <MariloSlider Value="@_sliderValue" ValueChanged="@(v => _sliderValue = v)" Min="0" Max="100" Step="5" />
+        </MariloField>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="Disabled" Description="A disabled slider prevents user interaction." Code="@_disabledCode">
+        <MariloField>
+            <MariloLabel>Volume</MariloLabel>
+            <MariloSlider Value="50" Disabled="true" Min="0" Max="100" Step="5" />
+        </MariloField>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Events">
+    <DemoSection Title="ValueChanged" Description="Handle slider changes with the ValueChanged callback." Code="@_interactiveCode">
+        <MariloField>
+            <MariloLabel>Value: @_evSliderValue</MariloLabel>
+            <MariloSlider Value="@_evSliderValue" ValueChanged="@(v => _evSliderValue = v)" Min="0" Max="100" Step="5" />
+        </MariloField>
+        <p><strong>Slider value:</strong> @_evSliderValue</p>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Accessibility">
+    <AccessibilityInfo
+        KeyboardInteractions="@_keyboard"
+        AriaAttributes="@_aria"
+        ScreenReaderNotes="@_screenReader" />
+</PageSection>
+
+@code {
+    private double _sliderValue = 50;
+    private double _evSliderValue = 50;
+
+    private const string _basicCode =
+        "<MariloSlider Value=\"@_sliderValue\" ValueChanged=\"@(v => _sliderValue = v)\" Min=\"0\" Max=\"100\" Step=\"5\" />";
+
+    private const string _disabledCode =
+        "<MariloSlider Value=\"50\" Disabled=\"true\" Min=\"0\" Max=\"100\" Step=\"5\" />";
+
+    private const string _interactiveCode =
+        "<MariloLabel>Value: @_sliderValue</MariloLabel>\n" +
+        "<MariloSlider Value=\"@_sliderValue\" ValueChanged=\"@(v => _sliderValue = v)\" Min=\"0\" Max=\"100\" Step=\"5\" />\n" +
+        "<p><strong>Slider value:</strong> @_sliderValue</p>\n\n" +
+        "@code {\n" +
+        "    private double _sliderValue = 50;\n" +
+        "}";
+
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus to the slider thumb"),
+        ("Shift + Tab", "Moves focus to the previous focusable element"),
+        ("Arrow Right / Arrow Up", "Increases the slider value by one step"),
+        ("Arrow Left / Arrow Down", "Decreases the slider value by one step"),
+        ("Home", "Sets the slider to its minimum value"),
+        ("End", "Sets the slider to its maximum value"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"slider\"", "Implicitly set by the <input type=\"range\"> element"),
+        ("aria-valuenow", "Reflects the current value of the slider"),
+        ("aria-valuemin", "Reflects the minimum value of the slider"),
+        ("aria-valuemax", "Reflects the maximum value of the slider"),
+        ("aria-disabled=\"true\"", "Applied when the Disabled parameter is set"),
+        ("aria-label", "Can be set to provide an accessible name when no visible label is present"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "Sliders are announced with their label, current value, range, and the \"slider\" role.",
+        "Value changes are announced as the user adjusts the slider with arrow keys.",
+        "Disabled sliders are announced as \"dimmed\" or \"unavailable\" depending on the screen reader.",
+    ];
+}

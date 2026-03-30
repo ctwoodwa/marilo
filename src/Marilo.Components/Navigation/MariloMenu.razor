@@ -1,15 +1,118 @@
 @inherits MariloComponentBase
+@using System.Reflection
 
 @if (IsOpen)
 {
-    <div class="mar-menu-overlay" @onclick="OnClose"></div>
+    <div class="mar-menu-overlay" @onclick="HandleClose"></div>
     <div class="@CombineClasses(CssProvider.MenuClass())" style="@CombineStyles()" role="menu" @attributes="AdditionalAttributes">
-        @ChildContent
+        @if (Data != null)
+        {
+            @foreach (var item in Data)
+            {
+                var isSeparator = GetBool(item, SeparatorField);
+                var isDisabled  = GetBool(item, DisabledField);
+                var text        = GetString(item, TextField);
+                var icon        = GetString(item, IconField);
+                var url         = GetString(item, UrlField);
+
+                if (isSeparator)
+                {
+                    <div class="@CssProvider.MenuDividerClass()" role="separator"></div>
+                }
+                else if (!string.IsNullOrEmpty(url))
+                {
+                    <a class="@CssProvider.MenuItemClass(isDisabled)"
+                       href="@url"
+                       role="menuitem"
+                       aria-disabled="@isDisabled">
+                        @if (!string.IsNullOrEmpty(icon))
+                        {
+                            <span class="mar-menu-item__icon">@icon</span>
+                        }
+                        @text
+                    </a>
+                }
+                else
+                {
+                    <button type="button"
+                            class="@CssProvider.MenuItemClass(isDisabled)"
+                            role="menuitem"
+                            disabled="@isDisabled">
+                        @if (!string.IsNullOrEmpty(icon))
+                        {
+                            <span class="mar-menu-item__icon">@icon</span>
+                        }
+                        @text
+                    </button>
+                }
+            }
+        }
+        else
+        {
+            @ChildContent
+        }
     </div>
 }
 
 @code {
+    /// <summary>Whether the menu is open.</summary>
     [Parameter] public bool IsOpen { get; set; }
-    [Parameter] public EventCallback OnClose { get; set; }
+
+    /// <summary>Callback invoked when the open state changes (supports two-way binding).</summary>
+    [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    /// <summary>Child content rendered when <see cref="Data"/> is not set.</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    // ── Data-binding parameters ──────────────────────────────────────
+
+    /// <summary>The collection of menu items to render. When set, child content is ignored.</summary>
+    [Parameter] public IEnumerable<object>? Data { get; set; }
+
+    /// <summary>Field name for the item text. Default: <c>Text</c>.</summary>
+    [Parameter] public string TextField { get; set; } = "Text";
+
+    /// <summary>Field name for the item icon. Default: <c>Icon</c>.</summary>
+    [Parameter] public string IconField { get; set; } = "Icon";
+
+    /// <summary>Field name for the item URL. Default: <c>Url</c>.</summary>
+    [Parameter] public string UrlField { get; set; } = "Url";
+
+    /// <summary>Field name for the separator flag. Default: <c>Separator</c>.</summary>
+    [Parameter] public string SeparatorField { get; set; } = "Separator";
+
+    /// <summary>Field name for the disabled flag. Default: <c>Disabled</c>.</summary>
+    [Parameter] public string DisabledField { get; set; } = "Disabled";
+
+    /// <summary>Field name for the item id. Default: <c>Id</c>.</summary>
+    [Parameter] public string IdField { get; set; } = "Id";
+
+    /// <summary>Field name for the parent id (flat data). Default: <c>ParentId</c>.</summary>
+    [Parameter] public string ParentIdField { get; set; } = "ParentId";
+
+    /// <summary>Field name for the child items collection (hierarchical data). Default: <c>Items</c>.</summary>
+    [Parameter] public string ItemsField { get; set; } = "Items";
+
+    /// <summary>Field name for the has-children hint. Default: <c>HasChildren</c>.</summary>
+    [Parameter] public string HasChildrenField { get; set; } = "HasChildren";
+
+    // ── Helpers ──────────────────────────────────────────────────────
+
+    private async Task HandleClose()
+    {
+        if (IsOpenChanged.HasDelegate)
+            await IsOpenChanged.InvokeAsync(false);
+    }
+
+    private static string? GetString(object item, string field)
+    {
+        var prop = item.GetType().GetProperty(field, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+        return prop?.GetValue(item)?.ToString();
+    }
+
+    private static bool GetBool(object item, string field)
+    {
+        var prop = item.GetType().GetProperty(field, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+        return prop?.GetValue(item) is true;
+    }
 }

@@ -1,0 +1,211 @@
+@inherits LayoutComponentBase
+@inject NavigationManager Nav
+@inject SiteLinks Links
+@using Marilo.Demo.Data
+
+<div class="app-root @(_isDark ? "app-dark" : "")">
+    <header class="top-navbar">
+        <nav class="top-navbar-inner">
+            <a class="navbar-brand" href="/">
+                <svg width="20" height="20" viewBox="0 0 28 28" fill="none" class="navbar-logo">
+                    <rect x="2" y="2" width="24" height="24" rx="6" stroke="currentColor" stroke-width="2" />
+                    <path d="M9 9l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M15 14h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+                <span>Marilo</span>
+            </a>
+
+            <div class="navbar-nav">
+                <a class="nav-link" href="@Links.GettingStarted">Getting Started</a>
+                <a class="nav-link @(IsNavActive("components") || IsNavActive("icons") ? "active" : "")"
+                   href="/components">Components</a>
+                <a class="nav-link" href="@Links.Theming">Theming</a>
+                <a class="nav-link" href="@Links.ApiReference">API Reference</a>
+            </div>
+
+            <div class="navbar-actions">
+                <div class="navbar-search">
+                    <MariloSearchBox Value="@_search"
+                                     ValueChanged="OnSearchChanged"
+                                     Placeholder="Search components..."
+                                     OnEscape="ClearSearch"
+                                     OnSearch="@((_) => NavigateFirstResult())" />
+                </div>
+                <button class="theme-toggle" @onclick="ToggleTheme"
+                        title="@(_isDark ? "Switch to light mode" : "Switch to dark mode")">
+                    @if (_isDark)
+                    {
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" /></svg>
+                    }
+                    else
+                    {
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+                    }
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    @if (!string.IsNullOrWhiteSpace(_search))
+    {
+        <div class="search-overlay" @onclick="ClearSearch">
+            <div class="search-results-panel" @onclick:stopPropagation>
+                @if (_filteredItems.Count > 0)
+                {
+                    @foreach (var item in _filteredItems)
+                    {
+                        <button class="search-result @(IsActive(item.Href) ? "active" : "")"
+                                @onclick="() => NavigateFromSearch(item.Href)">
+                            <span class="search-result-label">@item.Label</span>
+                            <span class="search-result-group">@item.Group</span>
+                        </button>
+                    }
+                }
+                else
+                {
+                    <div class="search-no-results">No results for "@_search"</div>
+                }
+            </div>
+        </div>
+    }
+
+    <main class="main-container">
+        @if (ShowSidebar())
+        {
+            <aside class="toc-sidebar">
+                <nav class="toc-nav">
+                    @if (IsComponentDetailView())
+                    {
+                        var comp = GetCurrentComponent();
+                        @if (comp is not null)
+                        {
+                            <div class="toc-section-title">@comp.Category</div>
+                            @foreach (var sibling in ComponentRegistry.GetByCategory(comp.CategorySlug))
+                            {
+                                var isCurrent = sibling.Slug == comp.Slug;
+                                <div class="toc-item @(isCurrent ? "expanded" : "")">
+                                    <a class="toc-link @(isCurrent ? "active" : "")"
+                                       href="/components/@sibling.Slug">@sibling.Name</a>
+                                </div>
+                            }
+                        }
+                    }
+                    else
+                    {
+                        @foreach (var category in ComponentRegistry.GetCategories())
+                        {
+                            var components = ComponentRegistry.GetByCategory(category.Slug);
+                            <div class="toc-section-title">@category.Name</div>
+                            @foreach (var comp in components)
+                            {
+                                <a class="toc-link @(IsComponentActive(comp.Slug) ? "active" : "")"
+                                   href="/components/@comp.Slug">@comp.Name</a>
+                            }
+                        }
+                        <div class="toc-section-title">Resources</div>
+                        <a class="toc-link @(IsActive("icons") ? "active" : "")" href="/icons">Icons</a>
+                    }
+                </nav>
+            </aside>
+        }
+
+        <div class="content-area @(ShowSidebar() ? "" : "content-full")">
+            <CascadingValue Value="_isDark" Name="IsDarkMode">
+                @Body
+            </CascadingValue>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            Marilo Component Library &mdash; MIT License
+        </div>
+    </footer>
+</div>
+
+@code {
+    private bool _isDark;
+    private string _search = "";
+
+    private record NavEntry(string Label, string Href, string Group);
+
+    private static readonly NavEntry[] _allItems =
+        ComponentRegistry.All
+            .Select(c => new NavEntry(c.Name, $"components/{c.Slug}", c.Category))
+            .Prepend(new NavEntry("Home", "", "Pages"))
+            .Append(new NavEntry("Icons", "icons", "Icons"))
+            .ToArray();
+
+    private List<NavEntry> _filteredItems = new();
+
+    private void OnSearchChanged(string value)
+    {
+        _search = value;
+        if (string.IsNullOrWhiteSpace(_search))
+        {
+            _filteredItems.Clear();
+            return;
+        }
+        var q = _search.Trim().ToLower();
+        _filteredItems = _allItems
+            .Where(i => i.Label.ToLower().Contains(q) || i.Group.ToLower().Contains(q))
+            .ToList();
+    }
+
+    private void ClearSearch()
+    {
+        _search = "";
+        _filteredItems.Clear();
+    }
+
+    private void NavigateFirstResult()
+    {
+        if (_filteredItems.Count == 1)
+            NavigateFromSearch(_filteredItems[0].Href);
+    }
+
+    private void NavigateFromSearch(string path)
+    {
+        ClearSearch();
+        Nav.NavigateTo($"/{path}");
+    }
+
+    private void ToggleTheme() => _isDark = !_isDark;
+
+    private string GetRelativeUri() => Nav.ToBaseRelativePath(Nav.Uri).TrimEnd('/');
+
+    private bool IsActive(string path) =>
+        GetRelativeUri().Equals(path, StringComparison.OrdinalIgnoreCase);
+
+    private bool IsNavActive(string prefix) =>
+        GetRelativeUri().StartsWith(prefix, StringComparison.OrdinalIgnoreCase);
+
+    private bool IsComponentActive(string slug)
+    {
+        var uri = GetRelativeUri();
+        return uri.Equals($"components/{slug}", StringComparison.OrdinalIgnoreCase)
+            || uri.StartsWith($"components/{slug}/", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool ShowSidebar()
+    {
+        var uri = GetRelativeUri();
+        return uri.StartsWith("components", StringComparison.OrdinalIgnoreCase)
+            || uri.Equals("icons", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool IsComponentDetailView()
+    {
+        var segments = GetRelativeUri().Split('/');
+        return segments.Length >= 2
+            && segments[0].Equals("components", StringComparison.OrdinalIgnoreCase)
+            && ComponentRegistry.GetBySlug(segments[1]) is not null;
+    }
+
+    private ComponentRegistry.ComponentInfo? GetCurrentComponent()
+    {
+        var segments = GetRelativeUri().Split('/');
+        return segments.Length >= 2 ? ComponentRegistry.GetBySlug(segments[1]) : null;
+    }
+
+}

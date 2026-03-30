@@ -1,0 +1,77 @@
+name: Deploy Docs
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Restore dotnet local tools
+        run: dotnet tool restore
+
+      - name: Restore NuGet packages
+        run: dotnet restore Marilo.slnx
+
+      - name: Build assets (icons + SCSS)
+        run: npm run build
+
+      - name: Set production site links
+        run: |
+          node -e "
+            const fs = require('fs');
+            fs.writeFileSync('site-links.json', JSON.stringify({
+              docsBaseUrl: 'https://ctwoodwa.github.io/marilo',
+              demoBaseUrl: 'https://codespaces.new/ctwoodwa/marilo?quickstart=1',
+              componentsUrl: 'https://codespaces.new/ctwoodwa/marilo?quickstart=1'
+            }, null, 2));
+          "
+
+      - name: Patch docs links
+        run: npm run docs:patch-links
+
+      - name: Build DocFX site
+        run: dotnet docfx docfx/docfx.json
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docfx/_site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

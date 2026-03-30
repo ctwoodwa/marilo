@@ -1,0 +1,111 @@
+@page "/components/dialog"
+@page "/components/dialog/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Description="Click the button to open a simple dialog." Code="@_basicCode">
+        <MariloButton OnClick="@(() => _dialogOpen = true)">Open Dialog</MariloButton>
+        <MariloDialog IsOpen="@_dialogOpen" Title="Example Dialog" OnClose="@(() => _dialogOpen = false)">
+            <p>This is a dialog component rendered with pure HTML and CSS.</p>
+            <MariloButton Variant="ButtonVariant.Primary" OnClick="@(() => _dialogOpen = false)">Close</MariloButton>
+        </MariloDialog>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="Dialog with Rich Content" Description="Dialogs can contain any content including forms and multiple actions." Code="@_richCode">
+        <MariloButton OnClick="@(() => _richDialogOpen = true)">Open Rich Dialog</MariloButton>
+        <MariloDialog IsOpen="@_richDialogOpen" Title="Rich Content Dialog" OnClose="@(() => _richDialogOpen = false)">
+            <p>This dialog demonstrates richer content with multiple action buttons.</p>
+            <div class="demo-row">
+                <MariloButton Variant="ButtonVariant.Primary" OnClick="@(() => _richDialogOpen = false)">Confirm</MariloButton>
+                <MariloButton Variant="ButtonVariant.Secondary" OnClick="@(() => _richDialogOpen = false)">Cancel</MariloButton>
+            </div>
+        </MariloDialog>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Events">
+    <DemoSection Title="OnClose" Description="Handle the dialog close event with the OnClose callback." Code="@_closeCode">
+        <MariloButton OnClick="@(() => _evDialogOpen = true)">Open Dialog</MariloButton>
+        <MariloDialog IsOpen="@_evDialogOpen" Title="Close Event Demo" OnClose="@OnDialogClose">
+            <p>Close this dialog to see the event callback in action.</p>
+            <MariloButton Variant="ButtonVariant.Primary" OnClick="@(() => _evDialogOpen = false)">Close</MariloButton>
+        </MariloDialog>
+        @if (!string.IsNullOrEmpty(_closeMessage))
+        {
+            <p style="margin-top: 8px;">@_closeMessage</p>
+        }
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Accessibility">
+    <AccessibilityInfo
+        KeyboardInteractions="@_keyboard"
+        AriaAttributes="@_aria"
+        ScreenReaderNotes="@_screenReader" />
+</PageSection>
+
+@code {
+    private bool _dialogOpen;
+    private bool _richDialogOpen;
+    private bool _evDialogOpen;
+    private string? _closeMessage;
+
+    private void OnDialogClose()
+    {
+        _evDialogOpen = false;
+        _closeMessage = $"Dialog closed at {DateTime.Now:HH:mm:ss}";
+    }
+
+    private const string _basicCode =
+        "<MariloButton OnClick=\"@(() => _dialogOpen = true)\">Open Dialog</MariloButton>\n" +
+        "<MariloDialog IsOpen=\"@_dialogOpen\" Title=\"Example Dialog\" OnClose=\"@(() => _dialogOpen = false)\">\n" +
+        "    <p>Dialog content here.</p>\n" +
+        "    <MariloButton Variant=\"ButtonVariant.Primary\" OnClick=\"@(() => _dialogOpen = false)\">Close</MariloButton>\n" +
+        "</MariloDialog>\n\n" +
+        "@code { private bool _dialogOpen; }";
+
+    private const string _richCode =
+        "<MariloButton OnClick=\"@(() => _richDialogOpen = true)\">Open Rich Dialog</MariloButton>\n" +
+        "<MariloDialog IsOpen=\"@_richDialogOpen\" Title=\"Rich Content Dialog\" OnClose=\"@(() => _richDialogOpen = false)\">\n" +
+        "    <p>Dialog with multiple action buttons.</p>\n" +
+        "    <MariloButton Variant=\"ButtonVariant.Primary\" OnClick=\"@(() => _richDialogOpen = false)\">Confirm</MariloButton>\n" +
+        "    <MariloButton Variant=\"ButtonVariant.Secondary\" OnClick=\"@(() => _richDialogOpen = false)\">Cancel</MariloButton>\n" +
+        "</MariloDialog>\n\n" +
+        "@code { private bool _richDialogOpen; }";
+
+    private const string _closeCode =
+        "<MariloButton OnClick=\"@(() => _dialogOpen = true)\">Open Dialog</MariloButton>\n" +
+        "<MariloDialog IsOpen=\"@_dialogOpen\" Title=\"Close Event Demo\" OnClose=\"@OnDialogClose\">\n" +
+        "    <p>Close this dialog to see the event callback in action.</p>\n" +
+        "    <MariloButton Variant=\"ButtonVariant.Primary\" OnClick=\"@(() => _dialogOpen = false)\">Close</MariloButton>\n" +
+        "</MariloDialog>\n\n" +
+        "@code {\n" +
+        "    private bool _dialogOpen;\n" +
+        "    private void OnDialogClose() => _dialogOpen = false;\n" +
+        "}";
+
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Escape", "Closes the dialog and returns focus to the triggering element"),
+        ("Tab", "Moves focus to the next focusable element within the dialog (focus is trapped)"),
+        ("Shift + Tab", "Moves focus to the previous focusable element within the dialog"),
+        ("Enter", "Activates the focused button or interactive element"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"dialog\"", "Applied to the dialog container to identify it as a dialog"),
+        ("aria-modal=\"true\"", "Indicates the dialog is modal and blocks interaction with content behind it"),
+        ("aria-labelledby", "References the dialog title element for an accessible name"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "When the dialog opens, focus moves to the first focusable element inside the dialog.",
+        "The dialog title is announced when the dialog opens via aria-labelledby.",
+        "Focus is trapped within the dialog until it is closed.",
+        "When the dialog closes, focus returns to the element that triggered it.",
+    ];
+}

@@ -1,0 +1,175 @@
+@page "/components/tabs"
+@page "/components/tabs/overview"
+@layout ComponentDemoLayout
+@using Marilo.Components.Layout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloTabStrip @bind-ActiveTabId="@_activeTabId">
+            <TabStripTab Id="overview" Title="Overview">
+                <p>This is the overview content.</p>
+            </TabStripTab>
+            <TabStripTab Id="details" Title="Details">
+                <p>This is the details content.</p>
+            </TabStripTab>
+            <TabStripTab Id="settings" Title="Settings">
+                <MariloField>
+                    <MariloLabel>Display Name</MariloLabel>
+                    <MariloTextField Placeholder="Enter a name" />
+                </MariloField>
+                <MariloField>
+                    <MariloSwitch Label="Enable notifications" />
+                </MariloField>
+            </TabStripTab>
+        </MariloTabStrip>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="Multiple Tabs" Description="Tabs with different content sections." Code="@_multiCode">
+        <MariloTabStrip @bind-ActiveTabId="@_multiActiveId">
+            <TabStripTab Id="active" Title="Active">
+                <p>This tab is active.</p>
+            </TabStripTab>
+            <TabStripTab Id="info" Title="Info">
+                <p>This tab shows information.</p>
+            </TabStripTab>
+            <TabStripTab Id="another" Title="Another">
+                <p>This tab is also available.</p>
+            </TabStripTab>
+        </MariloTabStrip>
+    </DemoSection>
+
+    <DemoSection Title="Tabs with Rich Content" Description="Tabs can contain forms and other components." Code="@_richCode">
+        <MariloTabStrip @bind-ActiveTabId="@_richActiveId">
+            <TabStripTab Id="profile" Title="Profile">
+                <MariloField>
+                    <MariloLabel>Username</MariloLabel>
+                    <MariloTextField Placeholder="Enter username" />
+                </MariloField>
+            </TabStripTab>
+            <TabStripTab Id="prefs" Title="Preferences">
+                <MariloField>
+                    <MariloSwitch Label="Dark mode" />
+                </MariloField>
+            </TabStripTab>
+        </MariloTabStrip>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Events">
+    <DemoSection Title="ActiveTabIdChanged" Description="Handle tab selection changes with the ActiveTabIdChanged callback." Code="@_eventCode">
+        <MariloTabStrip ActiveTabId="@_evActiveTabId" ActiveTabIdChanged="@OnTabChanged">
+            <TabStripTab Id="first" Title="First">
+                <p>First tab content.</p>
+            </TabStripTab>
+            <TabStripTab Id="second" Title="Second">
+                <p>Second tab content.</p>
+            </TabStripTab>
+            <TabStripTab Id="third" Title="Third">
+                <p>Third tab content.</p>
+            </TabStripTab>
+        </MariloTabStrip>
+        <p>Active tab ID: <code>@_evActiveTabId</code></p>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Accessibility">
+    <AccessibilityInfo
+        KeyboardInteractions="@_keyboard"
+        AriaAttributes="@_aria"
+        ScreenReaderNotes="@_screenReader" />
+</PageSection>
+
+@code {
+    // Overview
+    private string _activeTabId = "overview";
+
+    private const string _basicCode =
+        "<MariloTabStrip @bind-ActiveTabId=\"@_activeTabId\">\n" +
+        "    <TabStripTab Id=\"overview\" Title=\"Overview\">\n" +
+        "        <p>This is the overview content.</p>\n" +
+        "    </TabStripTab>\n" +
+        "    <TabStripTab Id=\"details\" Title=\"Details\">\n" +
+        "        <p>This is the details content.</p>\n" +
+        "    </TabStripTab>\n" +
+        "    <TabStripTab Id=\"settings\" Title=\"Settings\">\n" +
+        "        ...\n" +
+        "    </TabStripTab>\n" +
+        "</MariloTabStrip>\n\n" +
+        "@code {\n" +
+        "    private string _activeTabId = \"overview\";\n" +
+        "}";
+
+    // Appearance
+    private string _multiActiveId = "active";
+    private string _richActiveId  = "profile";
+
+    private const string _multiCode =
+        "<MariloTabStrip @bind-ActiveTabId=\"@_activeTabId\">\n" +
+        "    <TabStripTab Id=\"active\" Title=\"Active\">...</TabStripTab>\n" +
+        "    <TabStripTab Id=\"info\" Title=\"Info\">...</TabStripTab>\n" +
+        "    <TabStripTab Id=\"another\" Title=\"Another\">...</TabStripTab>\n" +
+        "</MariloTabStrip>";
+
+    private const string _richCode =
+        "<MariloTabStrip @bind-ActiveTabId=\"@_activeTabId\">\n" +
+        "    <TabStripTab Id=\"profile\" Title=\"Profile\">\n" +
+        "        <MariloField>\n" +
+        "            <MariloLabel>Username</MariloLabel>\n" +
+        "            <MariloTextField Placeholder=\"Enter username\" />\n" +
+        "        </MariloField>\n" +
+        "    </TabStripTab>\n" +
+        "    <TabStripTab Id=\"prefs\" Title=\"Preferences\">\n" +
+        "        <MariloField><MariloSwitch Label=\"Dark mode\" /></MariloField>\n" +
+        "    </TabStripTab>\n" +
+        "</MariloTabStrip>";
+
+    // Events
+    private string _evActiveTabId = "first";
+
+    private void OnTabChanged(string tabId)
+    {
+        _evActiveTabId = tabId;
+    }
+
+    private const string _eventCode =
+        "<MariloTabStrip ActiveTabId=\"@_activeTabId\" ActiveTabIdChanged=\"@OnTabChanged\">\n" +
+        "    <TabStripTab Id=\"first\" Title=\"First\">...</TabStripTab>\n" +
+        "    <TabStripTab Id=\"second\" Title=\"Second\">...</TabStripTab>\n" +
+        "    <TabStripTab Id=\"third\" Title=\"Third\">...</TabStripTab>\n" +
+        "</MariloTabStrip>\n" +
+        "<p>Active tab ID: @_activeTabId</p>\n\n" +
+        "@code {\n" +
+        "    private string _activeTabId = \"first\";\n" +
+        "    private void OnTabChanged(string tabId) => _activeTabId = tabId;\n" +
+        "}";
+
+    // Accessibility
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Arrow Left", "Moves focus to the previous tab"),
+        ("Arrow Right", "Moves focus to the next tab"),
+        ("Tab", "Moves focus from the tab list into the active tab panel content"),
+        ("Enter / Space", "Activates the focused tab"),
+        ("Home", "Moves focus to the first tab"),
+        ("End", "Moves focus to the last tab"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"tablist\"", "Applied to the tab strip container"),
+        ("role=\"tab\"", "Applied to each individual tab element"),
+        ("role=\"tabpanel\"", "Applied to the content area associated with each tab"),
+        ("aria-selected=\"true\"", "Indicates the currently active tab"),
+        ("aria-controls", "Links each tab to its corresponding tab panel"),
+        ("aria-labelledby", "Links each tab panel back to its controlling tab"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "Tabs are announced with their title, position in the list (e.g., \"tab 2 of 3\"), and selected state.",
+        "Disabled tabs are announced as \"dimmed\" or \"unavailable\".",
+        "Tab panel content is announced when a new tab is activated.",
+    ];
+}

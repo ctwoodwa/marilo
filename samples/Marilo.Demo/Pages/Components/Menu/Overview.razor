@@ -1,0 +1,202 @@
+@page "/components/menu"
+@page "/components/menu/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloButton OnClick="ToggleMenu">Toggle Menu</MariloButton>
+        <MariloMenu IsOpen="@_menuOpen" IsOpenChanged="@((bool v) => _menuOpen = v)">
+            <MariloMenuItem>Edit</MariloMenuItem>
+            <MariloMenuItem>Duplicate</MariloMenuItem>
+            <MariloMenuItem IsDisabled="true">Delete</MariloMenuItem>
+        </MariloMenu>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="With Icons" Description="Menu items can display icons alongside their labels." Code="@_iconsCode">
+        <MariloButton OnClick="@(() => _iconsMenuOpen = !_iconsMenuOpen)">Actions</MariloButton>
+        <MariloMenu IsOpen="@_iconsMenuOpen" IsOpenChanged="@((bool v) => _iconsMenuOpen = v)">
+            <MariloMenuItem Icon="edit">Edit</MariloMenuItem>
+            <MariloMenuItem Icon="copy">Duplicate</MariloMenuItem>
+            <MariloMenuItem Icon="trash" IsDisabled="true">Delete</MariloMenuItem>
+        </MariloMenu>
+    </DemoSection>
+
+    <DemoSection Title="With Dividers" Description="Use MariloMenuDivider to separate groups of related items." Code="@_dividersCode">
+        <MariloButton OnClick="@(() => _dividersMenuOpen = !_dividersMenuOpen)">File</MariloButton>
+        <MariloMenu IsOpen="@_dividersMenuOpen" IsOpenChanged="@((bool v) => _dividersMenuOpen = v)">
+            <MariloMenuItem>New</MariloMenuItem>
+            <MariloMenuItem>Open</MariloMenuItem>
+            <MariloMenuDivider />
+            <MariloMenuItem>Save</MariloMenuItem>
+            <MariloMenuItem>Save As</MariloMenuItem>
+            <MariloMenuDivider />
+            <MariloMenuItem>Exit</MariloMenuItem>
+        </MariloMenu>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Data Binding">
+    <DemoSection Title="Flat Data with Separator Field"
+                 Description="Bind the menu to a flat list. Items with Separator = true render as dividers. Disabled items remain visible but cannot be clicked."
+                 Code="@_dataBindCode">
+        <MariloButton OnClick="@(() => _dataMenuOpen = !_dataMenuOpen)">Actions</MariloButton>
+        <MariloMenu Data="@_menuItems"
+                    IsOpen="@_dataMenuOpen"
+                    IsOpenChanged="@((bool v) => _dataMenuOpen = v)"
+                    TextField="@nameof(MenuItem.Label)"
+                    IconField="@nameof(MenuItem.IconName)"
+                    SeparatorField="@nameof(MenuItem.IsSeparator)"
+                    DisabledField="@nameof(MenuItem.IsDisabled)" />
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Events">
+    <DemoSection Title="OnItemClick" Description="Handle menu item clicks with the OnClick callback." Code="@_clickCode">
+        <MariloButton OnClick="@(() => _eventsMenuOpen = !_eventsMenuOpen)">Actions</MariloButton>
+        <MariloMenu IsOpen="@_eventsMenuOpen" IsOpenChanged="@((bool v) => _eventsMenuOpen = v)">
+            <MariloMenuItem OnClick="@(() => _lastAction = "Edit")">Edit</MariloMenuItem>
+            <MariloMenuItem OnClick="@(() => _lastAction = "Duplicate")">Duplicate</MariloMenuItem>
+            <MariloMenuItem OnClick="@(() => _lastAction = "Delete")">Delete</MariloMenuItem>
+        </MariloMenu>
+        <p><strong>Last action:</strong> @_lastAction</p>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Accessibility">
+    <AccessibilityInfo
+        KeyboardInteractions="@_keyboard"
+        AriaAttributes="@_aria"
+        ScreenReaderNotes="@_screenReader" />
+</PageSection>
+
+@code {
+    private bool _menuOpen;
+    private bool _iconsMenuOpen;
+    private bool _dividersMenuOpen;
+    private bool _dataMenuOpen;
+    private bool _eventsMenuOpen;
+    private string _lastAction = "None";
+
+    private void ToggleMenu() => _menuOpen = !_menuOpen;
+
+    // ── Data-binding model ───────────────────────────────────────────
+    public class MenuItem
+    {
+        public string? Label    { get; set; }
+        public string? IconName { get; set; }
+        public bool IsSeparator { get; set; }
+        public bool IsDisabled  { get; set; }
+    }
+
+    private readonly List<MenuItem> _menuItems =
+    [
+        new() { Label = "Edit",      IconName = "edit" },
+        new() { Label = "Duplicate", IconName = "copy" },
+        new() { IsSeparator = true },
+        new() { Label = "Archive",   IconName = "folder" },
+        new() { IsSeparator = true },
+        new() { Label = "Delete",    IconName = "trash", IsDisabled = true },
+    ];
+
+    // ── Code snippets ────────────────────────────────────────────────
+    private const string _basicCode =
+        "<MariloButton OnClick=\"@(() => _menuOpen = !_menuOpen)\">Toggle Menu</MariloButton>\n" +
+        "<MariloMenu IsOpen=\"@_menuOpen\" IsOpenChanged=\"@(v => _menuOpen = v)\">\n" +
+        "    <MariloMenuItem>Edit</MariloMenuItem>\n" +
+        "    <MariloMenuItem>Duplicate</MariloMenuItem>\n" +
+        "    <MariloMenuItem IsDisabled=\"true\">Delete</MariloMenuItem>\n" +
+        "</MariloMenu>\n\n" +
+        "@code {\n" +
+        "    private bool _menuOpen;\n" +
+        "}";
+
+    private const string _iconsCode =
+        "<MariloMenu IsOpen=\"@_menuOpen\" IsOpenChanged=\"@(v => _menuOpen = v)\">\n" +
+        "    <MariloMenuItem Icon=\"edit\">Edit</MariloMenuItem>\n" +
+        "    <MariloMenuItem Icon=\"copy\">Duplicate</MariloMenuItem>\n" +
+        "    <MariloMenuItem Icon=\"trash\" IsDisabled=\"true\">Delete</MariloMenuItem>\n" +
+        "</MariloMenu>";
+
+    private const string _dividersCode =
+        "<MariloMenu IsOpen=\"@_menuOpen\" IsOpenChanged=\"@(v => _menuOpen = v)\">\n" +
+        "    <MariloMenuItem>New</MariloMenuItem>\n" +
+        "    <MariloMenuItem>Open</MariloMenuItem>\n" +
+        "    <MariloMenuDivider />\n" +
+        "    <MariloMenuItem>Save</MariloMenuItem>\n" +
+        "    <MariloMenuItem>Save As</MariloMenuItem>\n" +
+        "    <MariloMenuDivider />\n" +
+        "    <MariloMenuItem>Exit</MariloMenuItem>\n" +
+        "</MariloMenu>";
+
+    private const string _dataBindCode =
+        "<MariloMenu Data=\"@_menuItems\"\n" +
+        "            IsOpen=\"@_menuOpen\"\n" +
+        "            IsOpenChanged=\"@(v => _menuOpen = v)\"\n" +
+        "            TextField=\"@nameof(MenuItem.Label)\"\n" +
+        "            IconField=\"@nameof(MenuItem.IconName)\"\n" +
+        "            SeparatorField=\"@nameof(MenuItem.IsSeparator)\"\n" +
+        "            DisabledField=\"@nameof(MenuItem.IsDisabled)\" />\n\n" +
+        "@code {\n" +
+        "    public class MenuItem\n" +
+        "    {\n" +
+        "        public string? Label    { get; set; }\n" +
+        "        public string? IconName { get; set; }\n" +
+        "        public bool IsSeparator { get; set; }\n" +
+        "        public bool IsDisabled  { get; set; }\n" +
+        "    }\n\n" +
+        "    private readonly List<MenuItem> _menuItems =\n" +
+        "    [\n" +
+        "        new() { Label = \"Edit\",      IconName = \"edit\" },\n" +
+        "        new() { Label = \"Duplicate\", IconName = \"copy\" },\n" +
+        "        new() { IsSeparator = true },\n" +
+        "        new() { Label = \"Archive\",   IconName = \"folder\" },\n" +
+        "        new() { IsSeparator = true },\n" +
+        "        new() { Label = \"Delete\",    IconName = \"trash\", IsDisabled = true },\n" +
+        "    ];\n" +
+        "}";
+
+    private const string _clickCode =
+        "<MariloMenu IsOpen=\"@_menuOpen\" IsOpenChanged=\"@(v => _menuOpen = v)\">\n" +
+        "    <MariloMenuItem OnClick=\"@(() => _lastAction = \"Edit\")\">Edit</MariloMenuItem>\n" +
+        "    <MariloMenuItem OnClick=\"@(() => _lastAction = \"Duplicate\")\">Duplicate</MariloMenuItem>\n" +
+        "    <MariloMenuItem OnClick=\"@(() => _lastAction = \"Delete\")\">Delete</MariloMenuItem>\n" +
+        "</MariloMenu>\n" +
+        "<p><strong>Last action:</strong> @_lastAction</p>\n\n" +
+        "@code {\n" +
+        "    private bool _menuOpen;\n" +
+        "    private string _lastAction = \"None\";\n" +
+        "}";
+
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Up Arrow", "Moves focus to the previous menu item"),
+        ("Down Arrow", "Moves focus to the next menu item"),
+        ("Enter", "Activates the focused menu item and closes the menu"),
+        ("Space", "Activates the focused menu item and closes the menu"),
+        ("Escape", "Closes the menu and returns focus to the trigger"),
+        ("Home", "Moves focus to the first menu item"),
+        ("End", "Moves focus to the last menu item"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"menu\"", "Applied to the menu container to identify it as a menu widget"),
+        ("role=\"menuitem\"", "Applied to each item within the menu"),
+        ("role=\"separator\"", "Applied to divider elements between menu item groups"),
+        ("aria-expanded=\"true/false\"", "Applied to the trigger button to indicate whether the menu is open"),
+        ("aria-haspopup=\"menu\"", "Applied to the trigger button to indicate it opens a menu"),
+        ("aria-disabled=\"true\"", "Applied to disabled menu items"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "The menu trigger button announces that it has a popup menu and whether it is expanded.",
+        "When the menu opens, focus moves to the first menu item and it is announced.",
+        "Each menu item is announced with its text content and position in the menu.",
+        "Separator items are announced as a group boundary by screen readers.",
+        "Disabled menu items are announced as \"dimmed\" or \"unavailable\".",
+        "Closing the menu returns focus to the trigger button.",
+    ];
+}

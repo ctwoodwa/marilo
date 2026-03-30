@@ -1,0 +1,165 @@
+---
+uid: theming-custom-provider
+title: Creating a Custom Provider
+description: Step-by-step guide to building your own Marilo provider with custom CSS, icons, and JS interop.
+---
+
+# Creating a Custom Provider
+
+This guide walks through building a provider from scratch. By the end you will have a NuGet-ready project that plugs into any Marilo application with a single extension method call.
+
+## 1. Create the project
+
+```bash
+dotnet new razorclasslib -n Marilo.Providers.MyDesign
+cd Marilo.Providers.MyDesign
+dotnet add reference ../Marilo.Core/Marilo.Core.csproj
+```
+
+## 2. Implement IMariloCssProvider
+
+Create a class that returns CSS class strings for every component. The interface contains 80+ methods; start with the components your application uses and fill in the rest over time.
+
+```csharp
+using Marilo.Core.Contracts;
+using Marilo.Core.Enums;
+
+namespace Marilo.Providers.MyDesign;
+
+public class MyDesignCssProvider : IMariloCssProvider
+{
+    public string ButtonClass(ButtonVariant variant, ButtonSize size, bool isOutline, bool isDisabled)
+    {
+        var css = $"md-btn md-btn--{variant.ToString().ToLowerInvariant()} md-btn--{size.ToString().ToLowerInvariant()}";
+        if (isOutline) css += " md-btn--outline";
+        if (isDisabled) css += " md-btn--disabled";
+        return css;
+    }
+
+    public string CardClass() => "md-card";
+
+    public string AlertClass(AlertSeverity severity) =>
+        $"md-alert md-alert--{severity.ToString().ToLowerInvariant()}";
+
+    // Implement remaining methods ...
+}
+```
+
+## 3. Create SCSS styles
+
+Add a `Styles/` folder with your SCSS source files. Each component should have its own partial:
+
+```text
+Styles/
+  _variables.scss
+  _button.scss
+  _card.scss
+  _alert.scss
+  marilo-mydesign.scss   <-- imports all partials
+```
+
+Example `_button.scss`:
+
+```scss
+.md-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid transparent;
+  border-radius: var(--md-radius-md, 4px);
+  cursor: pointer;
+
+  &--primary { background: var(--md-color-primary); color: #fff; }
+  &--secondary { background: var(--md-color-secondary); color: #fff; }
+  &--small { padding: 0.25rem 0.5rem; font-size: 0.875rem; }
+  &--medium { padding: 0.5rem 1rem; font-size: 1rem; }
+  &--large { padding: 0.75rem 1.5rem; font-size: 1.125rem; }
+  &--outline { background: transparent; border-color: currentColor; }
+  &--disabled { opacity: 0.5; pointer-events: none; }
+}
+```
+
+Compile the SCSS to `wwwroot/css/marilo-mydesign.css` and mark it as static web asset.
+
+## 4. Implement IMariloIconProvider
+
+```csharp
+public class MyDesignIconProvider : IMariloIconProvider
+{
+    public MarkupString GetIcon(string name, IconSize size = IconSize.Medium)
+    {
+        // Return inline SVG or reference a sprite sheet
+        return new MarkupString($"<svg class=\"md-icon md-icon--{size.ToString().ToLowerInvariant()}\"><use href=\"_content/Marilo.Providers.MyDesign/icons/sprite.svg#{name}\"/></svg>");
+    }
+
+    public string GetIconSpriteUrl() =>
+        "_content/Marilo.Providers.MyDesign/icons/sprite.svg";
+}
+```
+
+## 5. Implement IMariloJsInterop
+
+```csharp
+public class MyDesignJsInterop : IMariloJsInterop
+{
+    private readonly IJSRuntime _js;
+    private IJSObjectReference? _module;
+
+    public MyDesignJsInterop(IJSRuntime js) => _js = js;
+
+    public async ValueTask InitializeAsync()
+    {
+        _module = await _js.InvokeAsync<IJSObjectReference>(
+            "import", "./_content/Marilo.Providers.MyDesign/js/marilo-mydesign.js");
+    }
+
+    // Implement remaining methods using _module.InvokeAsync ...
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_module is not null) await _module.DisposeAsync();
+    }
+}
+```
+
+## 6. Register via MariloBuilder extension
+
+Create an extension method so consumers can opt in with a single call:
+
+```csharp
+using Marilo.Core.Contracts;
+using Marilo.Core.Extensions;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Marilo.Providers.MyDesign;
+
+public static class MariloBuilderExtensions
+{
+    public static MariloBuilder UseMyDesign(this MariloBuilder builder)
+    {
+        builder.Services.AddScoped<IMariloCssProvider, MyDesignCssProvider>();
+        builder.Services.AddScoped<IMariloIconProvider, MyDesignIconProvider>();
+        builder.Services.AddScoped<IMariloJsInterop, MyDesignJsInterop>();
+        return builder;
+    }
+}
+```
+
+Consumers register it in `Program.cs`:
+
+```csharp
+builder.Services.AddMarilo().UseMyDesign();
+```
+
+## 7. Reference the stylesheet
+
+In the consuming application's `App.razor`:
+
+```html
+<link rel="stylesheet" href="_content/Marilo.Providers.MyDesign/css/marilo-mydesign.css" />
+```
+
+## See also
+
+- [Theming Overview](xref:theming-overview) -- `MariloTheme` and `MariloThemeProvider`.
+- [Providers](xref:theming-providers) -- full reference for the three provider contracts.

@@ -1,0 +1,100 @@
+{
+  "actions": [
+    "search", "zoom-in", "zoom-out", "filter", "filter-x", "sort-asc", "sort-desc", "sort",
+    "download", "upload", "refresh", "undo", "redo", "save", "print", "copy", "cut", "paste",
+    "clipboard", "clipboard-check", "trash", "trash-2", "edit", "pencil", "settings", "gear",
+    "wrench", "tool", "eye", "eye-off", "scan", "plus", "minus", "sliders", "log-out"
+  ],
+  "alerts-status": [
+    "check", "check-circle", "x-mark", "x-circle", "x-close", "alert-triangle", "alert-circle",
+    "info", "info-circle", "question", "question-circle", "help-circle", "bell", "bell-off",
+    "bell-ring", "clock", "timer", "hourglass", "loader", "activity", "zap", "lightning", "badge"
+  ],
+  "arrows-transform": [
+    "rotate-cw", "rotate-ccw", "flip-horizontal", "flip-vertical", "scale", "crop",
+    "move-horizontal", "move-vertical", "arrows-maximize", "arrows-minimize",
+    "swap-horizontal", "swap-vertical"
+  ],
+  "commerce-finance": [
+    "credit-card", "wallet", "shopping-cart", "shopping-bag", "tag", "tags", "receipt",
+    "invoice", "banknote", "coins", "dollar-sign", "percent-badge", "barcode", "qr-code",
+    "gift", "store", "building", "briefcase"
+  ],
+  "data-charts": [
+    "chart-bar", "chart-line", "chart-pie", "chart-area", "chart-donut", "chart-scatter",
+    "chart-candlestick", "chart-radar", "trending-up", "trending-down", "hash", "percent",
+    "calculator", "table", "database", "server", "bar-chart-horizontal", "gauge",
+    "pie-chart", "analytics"
+  ],
+  "development-code": [
+    "code", "terminal", "git-branch", "git-commit", "git-merge", "git-pull-request",
+    "bug", "debug", "brackets", "braces", "variable", "function", "api", "webhook",
+    "package", "component"
+  ],
+  "devices-hardware": [
+    "monitor", "laptop", "tablet", "smartphone", "keyboard", "mouse", "printer",
+    "hard-drive", "cpu", "wifi", "wifi-off", "bluetooth", "signal", "battery-full",
+    "battery-half", "battery-low", "battery-charging", "plug", "power"
+  ],
+  "files-documents": [
+    "file", "file-text", "file-plus", "file-minus", "file-check", "file-x", "file-code",
+    "file-image", "file-audio", "file-video", "file-zip", "file-pdf", "file-spreadsheet",
+    "folder", "folder-open", "folder-plus", "folder-minus", "archive", "paperclip",
+    "attachment", "bookmark", "bookmark-filled", "cloud-download", "cloud-upload"
+  ],
+  "layout-interface": [
+    "layout", "layout-grid", "layout-list", "layout-columns", "layout-sidebar",
+    "panel-left", "panel-right", "panel-top", "panel-bottom", "split-horizontal",
+    "split-vertical", "expand", "shrink", "move", "drag-handle", "grip-vertical",
+    "grip-horizontal", "resize", "layers", "group", "ungroup", "align-to-grid"
+  ],
+  "maps-location": [
+    "map", "map-pin", "map-pin-off", "navigation", "compass", "globe", "globe-alt",
+    "crosshair", "route", "directions", "location", "location-off", "flag", "flag-filled"
+  ],
+  "media-communication": [
+    "play", "pause", "stop", "stop-circle", "skip-forward", "skip-back", "fast-forward",
+    "rewind", "volume", "volume-high", "volume-low", "volume-mute", "volume-off",
+    "mic", "mic-off", "camera", "camera-off", "video", "video-off", "image", "images",
+    "film", "music", "headphones", "radio", "podcast", "cast", "airplay"
+  ],
+  "misc-objects": [
+    "link", "link-off", "anchor", "hash-tag", "at", "rss", "calendar", "calendar-plus",
+    "calendar-check", "calendar-x", "sparkles", "magic-wand", "lightbulb", "target",
+    "crosshair-target", "palette"
+  ],
+  "navigation": [
+    "home", "menu", "menu-alt", "grid", "grid-view", "list", "list-view",
+    "arrow-up", "arrow-down", "arrow-left", "arrow-right",
+    "chevron-up", "chevron-down", "chevron-left", "chevron-right",
+    "chevrons-up", "chevrons-down", "chevrons-left", "chevrons-right",
+    "corner-up-right", "corner-down-left", "external-link", "maximize", "minimize",
+    "sidebar", "more-horizontal", "more-vertical"
+  ],
+  "security-access": [
+    "lock", "unlock", "key", "shield", "shield-check", "shield-x", "shield-alert",
+    "fingerprint", "scan-face", "login", "logout", "user-lock", "password",
+    "two-factor", "verified", "ban"
+  ],
+  "text-formatting": [
+    "bold", "italic", "underline", "strikethrough", "align-left", "align-center",
+    "align-right", "align-justify", "indent", "outdent", "list-ordered", "list-unordered",
+    "heading-1", "heading-2", "heading-3", "quote", "code-inline", "paragraph",
+    "subscript", "superscript", "text-wrap", "type"
+  ],
+  "toggle-controls": [
+    "toggle-on", "toggle-off", "checkbox", "checkbox-checked", "checkbox-indeterminate",
+    "radio", "radio-checked", "slider", "switch", "star", "star-half", "star-filled",
+    "heart", "heart-filled", "thumbs-up"
+  ],
+  "user-social": [
+    "user", "user-plus", "user-minus", "user-check", "user-x", "users", "user-circle",
+    "contact", "at-sign", "mail", "mail-open", "send", "inbox", "message-circle",
+    "message-square", "phone", "phone-off", "phone-incoming", "phone-outgoing", "share"
+  ],
+  "weather-nature": [
+    "sun", "moon", "cloud", "cloud-rain", "cloud-snow", "cloud-lightning", "cloud-drizzle",
+    "cloud-fog", "wind", "thermometer", "droplet", "snowflake", "umbrella",
+    "sunrise", "sunset", "rainbow"
+  ]
+}

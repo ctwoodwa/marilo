@@ -1,0 +1,21 @@
+<section id="@_anchorId" class="page-section">
+    <h2 class="page-section-heading">@Title</h2>
+    <CascadingValue Name="ActiveSectionId" Value="@_anchorId">
+        @ChildContent
+    </CascadingValue>
+</section>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    [CascadingParameter] public PageSectionTracker? SectionTracker { get; set; }
+
+    private string _anchorId = "";
+
+    protected override void OnParametersSet()
+    {
+        _anchorId = PageSectionTracker.ToAnchorId(Title);
+        SectionTracker?.RegisterSection(_anchorId, Title);
+    }
+}

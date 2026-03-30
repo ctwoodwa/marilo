@@ -2,9 +2,10 @@
   <Folder Name="/src/">
     <Project Path="src/Marilo.Core/Marilo.Core.csproj" />
     <Project Path="src/Marilo.Components/Marilo.Components.csproj" />
+    <Project Path="src/Marilo.Icons/Marilo.Icons.csproj" />
     <Project Path="src/Marilo.Providers.FluentUI/Marilo.Providers.FluentUI.csproj" />
   </Folder>
   <Folder Name="/samples/">
-    <Project Path="samples/Marilo.Demo.FluentUI/Marilo.Demo.FluentUI.csproj" />
+    <Project Path="samples/Marilo.Demo/Marilo.Demo.csproj" />
   </Folder>
 </Solution>

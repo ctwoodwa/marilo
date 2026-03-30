@@ -1,0 +1,80 @@
+@page "/components/progress-bar"
+@page "/components/progress-bar/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Determinate" Description="A determinate progress bar shows a specific percentage of completion." Code="@_determinateCode">
+        <div style="margin-bottom: 16px;">
+            <p>Progress: @_progress%</p>
+            <MariloProgressBar Value="@_progress" />
+        </div>
+        <div class="demo-row">
+            <MariloButton Size="ButtonSize.Small" OnClick="@(() => _progress = Math.Max(0, _progress - 10))">-10</MariloButton>
+            <MariloButton Size="ButtonSize.Small" OnClick="@(() => _progress = Math.Min(100, _progress + 10))">+10</MariloButton>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Indeterminate" Description="An indeterminate progress bar indicates an ongoing process without a known duration." Code="@_indeterminateCode">
+        <MariloProgressBar IsIndeterminate="true" />
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="Progress Values" Description="Progress bars at various completion levels." Code="@_valuesCode">
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <MariloProgressBar Value="0" />
+            <MariloProgressBar Value="25" />
+            <MariloProgressBar Value="50" />
+            <MariloProgressBar Value="75" />
+            <MariloProgressBar Value="100" />
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Accessibility">
+    <AccessibilityInfo
+        KeyboardInteractions="@_keyboard"
+        AriaAttributes="@_aria"
+        ScreenReaderNotes="@_screenReader" />
+</PageSection>
+
+@code {
+    private double _progress = 45;
+
+    private const string _determinateCode =
+        "<MariloProgressBar Value=\"@_progress\" />\n\n" +
+        "<MariloButton Size=\"ButtonSize.Small\" OnClick=\"@(() => _progress = Math.Max(0, _progress - 10))\">-10</MariloButton>\n" +
+        "<MariloButton Size=\"ButtonSize.Small\" OnClick=\"@(() => _progress = Math.Min(100, _progress + 10))\">+10</MariloButton>\n\n" +
+        "@code { private double _progress = 45; }";
+
+    private const string _indeterminateCode =
+        "<MariloProgressBar IsIndeterminate=\"true\" />";
+
+    private const string _valuesCode =
+        "<MariloProgressBar Value=\"0\" />\n" +
+        "<MariloProgressBar Value=\"25\" />\n" +
+        "<MariloProgressBar Value=\"50\" />\n" +
+        "<MariloProgressBar Value=\"75\" />\n" +
+        "<MariloProgressBar Value=\"100\" />";
+
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Progress bars are not interactive and do not receive keyboard focus"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"progressbar\"", "Applied to indicate the element displays progress information"),
+        ("aria-valuenow", "Indicates the current progress value"),
+        ("aria-valuemin", "Indicates the minimum value (typically 0)"),
+        ("aria-valuemax", "Indicates the maximum value (typically 100)"),
+        ("aria-label", "Provides an accessible name describing what the progress represents"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "Determinate progress bars announce their current percentage value.",
+        "Indeterminate progress bars are announced as \"busy\" or \"loading\" with no specific value.",
+        "Progress changes are announced when the value updates significantly.",
+    ];
+}

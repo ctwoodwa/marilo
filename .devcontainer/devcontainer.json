@@ -1,0 +1,33 @@
+{
+	"name": "Marilo",
+	"image": "mcr.microsoft.com/devcontainers/dotnet:2-10.0-noble",
+	"features": {
+		"ghcr.io/devcontainers/features/node:1": {
+			"version": "lts"
+		},
+		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {}
+	},
+	"mounts": [
+		"source=C:/Projects/blazor-docs,target=/blazor-docs,type=bind,consistency=cached",
+		"source=${localEnv:USERPROFILE}/.claude,target=/home/vscode/.claude,type=bind"
+	],
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"anthropic.claude-code",
+				"ms-dotnettools.csdevkit",
+				"syler.sass-indented",
+				"shd101wyy.markdown-preview-enhanced"
+			]
+		}
+	},
+	"containerEnv": {
+		"CLAUDE_CONFIG_DIR": "/home/vscode/.claude"
+	},
+	"forwardPorts": [5000, 5001, 8080],
+	"portsAttributes": {
+		"5001": { "protocol": "https" },
+		"8080": { "label": "DocFX" }
+	},
+	"postCreateCommand": "dotnet restore && npm install"
+}

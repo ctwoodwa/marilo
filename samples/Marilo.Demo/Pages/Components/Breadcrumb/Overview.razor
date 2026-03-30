@@ -1,0 +1,84 @@
+@page "/components/breadcrumb"
+@page "/components/breadcrumb/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloBreadcrumb>
+            <MariloBreadcrumbItem Href="/">Home</MariloBreadcrumbItem>
+            <MariloBreadcrumbItem Href="/components">Components</MariloBreadcrumbItem>
+            <MariloBreadcrumbItem IsActive="true">Breadcrumb</MariloBreadcrumbItem>
+        </MariloBreadcrumb>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="Custom Separator" Description="Breadcrumbs can use a custom separator character." Code="@_separatorCode">
+        <MariloBreadcrumb Separator="/">
+            <MariloBreadcrumbItem Href="/">Home</MariloBreadcrumbItem>
+            <MariloBreadcrumbItem Href="/components">Components</MariloBreadcrumbItem>
+            <MariloBreadcrumbItem IsActive="true">Breadcrumb</MariloBreadcrumbItem>
+        </MariloBreadcrumb>
+    </DemoSection>
+
+    <DemoSection Title="With Icons" Description="Breadcrumb items can include icons for visual clarity." Code="@_iconsCode">
+        <MariloBreadcrumb>
+            <MariloBreadcrumbItem Href="/" Icon="home">Home</MariloBreadcrumbItem>
+            <MariloBreadcrumbItem Href="/components" Icon="grid">Components</MariloBreadcrumbItem>
+            <MariloBreadcrumbItem IsActive="true" Icon="navigation">Breadcrumb</MariloBreadcrumbItem>
+        </MariloBreadcrumb>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Accessibility">
+    <AccessibilityInfo
+        KeyboardInteractions="@_keyboard"
+        AriaAttributes="@_aria"
+        ScreenReaderNotes="@_screenReader" />
+</PageSection>
+
+@code {
+    // Overview
+    private const string _basicCode =
+        "<MariloBreadcrumb>\n" +
+        "    <MariloBreadcrumbItem Href=\"/\">Home</MariloBreadcrumbItem>\n" +
+        "    <MariloBreadcrumbItem Href=\"/components\">Components</MariloBreadcrumbItem>\n" +
+        "    <MariloBreadcrumbItem IsActive=\"true\">Breadcrumb</MariloBreadcrumbItem>\n" +
+        "</MariloBreadcrumb>";
+
+    // Appearance
+    private const string _separatorCode =
+        "<MariloBreadcrumb Separator=\"/\">\n" +
+        "    <MariloBreadcrumbItem Href=\"/\">Home</MariloBreadcrumbItem>\n" +
+        "    <MariloBreadcrumbItem Href=\"/components\">Components</MariloBreadcrumbItem>\n" +
+        "    <MariloBreadcrumbItem IsActive=\"true\">Breadcrumb</MariloBreadcrumbItem>\n" +
+        "</MariloBreadcrumb>";
+
+    private const string _iconsCode =
+        "<MariloBreadcrumb>\n" +
+        "    <MariloBreadcrumbItem Href=\"/\" Icon=\"home\">Home</MariloBreadcrumbItem>\n" +
+        "    <MariloBreadcrumbItem Href=\"/components\" Icon=\"grid\">Components</MariloBreadcrumbItem>\n" +
+        "    <MariloBreadcrumbItem IsActive=\"true\" Icon=\"navigation\">Breadcrumb</MariloBreadcrumbItem>\n" +
+        "</MariloBreadcrumb>";
+
+    // Accessibility
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus to the next breadcrumb link"),
+        ("Shift + Tab", "Moves focus to the previous breadcrumb link"),
+        ("Enter", "Activates the focused breadcrumb link"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("nav aria-label=\"Breadcrumb\"", "The breadcrumb is wrapped in a nav element with aria-label=\"Breadcrumb\""),
+        ("aria-current=\"page\"", "Applied to the current (active) breadcrumb item to indicate the current page"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "The breadcrumb navigation is announced as a navigation landmark with the label \"Breadcrumb\".",
+        "The current page item is announced with \"current page\" to indicate the user's location.",
+        "Each breadcrumb link is announced with its text content and the separator is hidden from screen readers.",
+    ];
+}

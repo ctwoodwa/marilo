@@ -1,0 +1,84 @@
+@page "/components/checkbox"
+@page "/components/checkbox/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloField>
+            <MariloCheckbox Checked="@_checked" CheckedChanged="@(v => _checked = v)" Label="Accept terms and conditions" />
+        </MariloField>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="Disabled" Description="A disabled checkbox prevents user interaction." Code="@_disabledCode">
+        <MariloField>
+            <MariloCheckbox Checked="true" Disabled="true" Label="Checked and disabled" />
+        </MariloField>
+        <MariloField>
+            <MariloCheckbox Checked="false" Disabled="true" Label="Unchecked and disabled" />
+        </MariloField>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Events">
+    <DemoSection Title="CheckedChanged" Description="Handle checkbox toggle with the CheckedChanged callback." Code="@_interactiveCode">
+        <MariloField>
+            <MariloCheckbox Checked="@_evChecked" CheckedChanged="@(v => _evChecked = v)" Label="Toggle me" />
+        </MariloField>
+        <p><strong>Checked:</strong> @_evChecked</p>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Accessibility">
+    <AccessibilityInfo
+        KeyboardInteractions="@_keyboard"
+        AriaAttributes="@_aria"
+        ScreenReaderNotes="@_screenReader" />
+</PageSection>
+
+@code {
+    // Overview
+    private bool _checked;
+
+    private const string _basicCode =
+        "<MariloCheckbox Checked=\"@_checked\" CheckedChanged=\"@(v => _checked = v)\" Label=\"Accept terms and conditions\" />";
+
+    // Appearance
+    private const string _disabledCode =
+        "<MariloCheckbox Checked=\"true\" Disabled=\"true\" Label=\"Checked and disabled\" />\n" +
+        "<MariloCheckbox Checked=\"false\" Disabled=\"true\" Label=\"Unchecked and disabled\" />";
+
+    // Events
+    private bool _evChecked;
+
+    private const string _interactiveCode =
+        "<MariloCheckbox Checked=\"@_checked\" CheckedChanged=\"@(v => _checked = v)\" Label=\"Toggle me\" />\n" +
+        "<p><strong>Checked:</strong> @_checked</p>\n\n" +
+        "@code {\n" +
+        "    private bool _checked;\n" +
+        "}";
+
+    // Accessibility
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus to the checkbox"),
+        ("Shift + Tab", "Moves focus to the previous focusable element"),
+        ("Space", "Toggles the checkbox checked state"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"checkbox\"", "Implicitly set by the <input type=\"checkbox\"> element"),
+        ("aria-checked", "Reflects the current checked state of the checkbox"),
+        ("aria-disabled=\"true\"", "Applied when the Disabled parameter is set"),
+        ("aria-label", "Provided by the Label parameter"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "Checkboxes are announced with their label, checked state, and the \"checkbox\" role.",
+        "Toggling the checkbox announces the new state (\"checked\" or \"not checked\").",
+        "Disabled checkboxes are announced as \"dimmed\" or \"unavailable\" depending on the screen reader.",
+    ];
+}

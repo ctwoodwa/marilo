@@ -1,0 +1,75 @@
+---
+title: Reorder
+page_title: Grid - Reorder Columns
+description: Drag to reorder columns in the Grid for Blazor.
+slug: components/grid/columns/reorder
+tags: marilo,blazor,grid,column,reorder,drag
+published: True
+position: 25
+components: ["grid"]
+---
+# Reorder Columns
+
+The Grid lets the user reorder its columns by dragging their headers.
+
+To enable the column reordering, set the `Reorderable` parameter of the grid to `true`.
+
+To prevent the user from moving a certain column, set the column's `Reorderable` parameter to `false`. Note that the user can still re-arrange other columns around it.
+
+>caption Enable column reordering in Marilo Grid
+
+````RAZOR
+@* Drag a column header between other columns to change the columns positions. You cannot drag the command column. Note that actual CRUD operations and settings are not implemented here for brevity. *@
+
+<MariloGrid Data="@GridData"
+             Reorderable="true"
+             Pageable="true" PageSize="10" Sortable="true" Height="300px">
+    <GridColumns>
+        <GridColumn Field=@nameof(SampleData.Id) Title="Id" />
+        <GridColumn Field=@nameof(SampleData.Name) Title="First Name" />
+        <GridColumn Field=@nameof(SampleData.LastName) Title="Last Name" />
+        <GridCommandColumn Width="100px" Reorderable="false">
+            <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">Save</GridCommandButton>
+            <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil">Edit</GridCommandButton>
+            <GridCommandButton Command="Delete" Icon="@SvgIcon.Trash">Delete</GridCommandButton>
+            <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
+        </GridCommandColumn>
+    </GridColumns>
+</MariloGrid>
+
+@code {
+    public List<SampleData> GridData { get; set; }
+
+    protected override void OnInitialized()
+    {
+        GridData = GetData();
+    }
+
+    private List<SampleData> GetData()
+    {
+        return Enumerable.Range(1, 50).Select(x => new SampleData
+        {
+            Id = x,
+            Name = $"name {x}",
+            LastName = $"Surname {x}"
+        }).ToList();
+    }
+
+    public class SampleData
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string LastName { get; set; }
+    }
+}
+````
+
+
+>caption How column reordering works in the Marilo grid
+
+![Blazor Grid Column Reorder Preview](images/column-reorder-preview.gif)
+
+## See Also
+
+  * [Live Demo: Column Reordering](https://demos.marilo.com/blazor-ui/grid/column-reordering)
+  * [Blazor Grid](slug:grid-overview)

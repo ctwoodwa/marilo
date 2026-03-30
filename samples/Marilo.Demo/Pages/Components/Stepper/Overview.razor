@@ -1,0 +1,131 @@
+@page "/components/stepper"
+@page "/components/stepper/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloStepper ActiveStep="@_step">
+            <MariloStep Title="Account" />
+            <MariloStep Title="Profile" />
+            <MariloStep Title="Review" />
+        </MariloStepper>
+        <div class="demo-row">
+            <MariloButton Disabled="@(_step <= 0)" OnClick="@(() => _step--)">Previous</MariloButton>
+            <MariloButton Disabled="@(_step >= 2)" OnClick="@(() => _step++)">Next</MariloButton>
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="Vertical Orientation" Description="Display stepper steps in a vertical layout." Code="@_verticalCode">
+        <MariloStepper ActiveStep="@_verticalStep" Orientation="StepperOrientation.Vertical">
+            <MariloStep Title="Step 1" Description="First step description" />
+            <MariloStep Title="Step 2" Description="Second step description" />
+            <MariloStep Title="Step 3" Description="Third step description" />
+        </MariloStepper>
+        <div class="demo-row">
+            <MariloButton Disabled="@(_verticalStep <= 0)" OnClick="@(() => _verticalStep--)">Previous</MariloButton>
+            <MariloButton Disabled="@(_verticalStep >= 2)" OnClick="@(() => _verticalStep++)">Next</MariloButton>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="With Descriptions" Description="Steps can include descriptive text below the title." Code="@_descCode">
+        <MariloStepper ActiveStep="1">
+            <MariloStep Title="Completed" Description="This step is done" />
+            <MariloStep Title="In Progress" Description="Currently active" />
+            <MariloStep Title="Pending" Description="Not yet started" />
+        </MariloStepper>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Events">
+    <DemoSection Title="ActiveStepChanged" Description="Handle step changes with the ActiveStepChanged callback." Code="@_eventCode">
+        <MariloStepper ActiveStep="@_evStep" ActiveStepChanged="@OnStepChanged">
+            <MariloStep Title="Account" />
+            <MariloStep Title="Profile" />
+            <MariloStep Title="Review" />
+        </MariloStepper>
+        <p>Current step: @_evStep</p>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Accessibility">
+    <AccessibilityInfo
+        KeyboardInteractions="@_keyboard"
+        AriaAttributes="@_aria"
+        ScreenReaderNotes="@_screenReader" />
+</PageSection>
+
+@code {
+    private int _step;
+    private int _verticalStep;
+    private int _evStep;
+
+    private void OnStepChanged(int step)
+    {
+        _evStep = step;
+    }
+
+    private const string _basicCode =
+        "<MariloStepper ActiveStep=\"@_step\">\n" +
+        "    <MariloStep Title=\"Account\" />\n" +
+        "    <MariloStep Title=\"Profile\" />\n" +
+        "    <MariloStep Title=\"Review\" />\n" +
+        "</MariloStepper>\n" +
+        "<MariloButton Disabled=\"@(_step <= 0)\" OnClick=\"@(() => _step--)\">Previous</MariloButton>\n" +
+        "<MariloButton Disabled=\"@(_step >= 2)\" OnClick=\"@(() => _step++)\">Next</MariloButton>\n\n" +
+        "@code {\n" +
+        "    private int _step;\n" +
+        "}";
+
+    private const string _verticalCode =
+        "<MariloStepper ActiveStep=\"@_step\" Orientation=\"StepperOrientation.Vertical\">\n" +
+        "    <MariloStep Title=\"Step 1\" Description=\"First step description\" />\n" +
+        "    <MariloStep Title=\"Step 2\" Description=\"Second step description\" />\n" +
+        "    <MariloStep Title=\"Step 3\" Description=\"Third step description\" />\n" +
+        "</MariloStepper>";
+
+    private const string _descCode =
+        "<MariloStepper ActiveStep=\"1\">\n" +
+        "    <MariloStep Title=\"Completed\" Description=\"This step is done\" />\n" +
+        "    <MariloStep Title=\"In Progress\" Description=\"Currently active\" />\n" +
+        "    <MariloStep Title=\"Pending\" Description=\"Not yet started\" />\n" +
+        "</MariloStepper>";
+
+    private const string _eventCode =
+        "<MariloStepper ActiveStep=\"@_step\" ActiveStepChanged=\"@OnStepChanged\">\n" +
+        "    <MariloStep Title=\"Account\" />\n" +
+        "    <MariloStep Title=\"Profile\" />\n" +
+        "    <MariloStep Title=\"Review\" />\n" +
+        "</MariloStepper>\n" +
+        "<p>Current step: @_step</p>\n\n" +
+        "@code {\n" +
+        "    private int _step;\n" +
+        "    private void OnStepChanged(int step) => _step = step;\n" +
+        "}";
+
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Arrow Left / Arrow Up", "Moves focus to the previous step"),
+        ("Arrow Right / Arrow Down", "Moves focus to the next step"),
+        ("Enter", "Activates the focused step"),
+        ("Tab", "Moves focus to the next focusable element outside the stepper"),
+        ("Home", "Moves focus to the first step"),
+        ("End", "Moves focus to the last step"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("aria-current=\"step\"", "Indicates the currently active step in the sequence"),
+        ("aria-label", "Provides an accessible name for each step element"),
+        ("role=\"list\"", "Applied to the stepper container to convey the ordered sequence"),
+        ("role=\"listitem\"", "Applied to each step to convey its membership in the sequence"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "Steps are announced with their title, position (e.g., \"step 2 of 3\"), and completion state.",
+        "The active step is identified by aria-current=\"step\".",
+        "Completed steps are announced as completed, and pending steps as not yet reached.",
+    ];
+}

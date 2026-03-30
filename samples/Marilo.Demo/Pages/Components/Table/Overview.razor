@@ -1,0 +1,98 @@
+@page "/components/table"
+@page "/components/table/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloTable>
+            <thead>
+                <tr><th>Name</th><th>Role</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Alice</td><td>Admin</td><td><MariloBadge Variant="BadgeVariant.Success">Active</MariloBadge></td></tr>
+                <tr><td>Bob</td><td>User</td><td><MariloBadge Variant="BadgeVariant.Warning">Pending</MariloBadge></td></tr>
+                <tr><td>Charlie</td><td>Editor</td><td><MariloBadge Variant="BadgeVariant.Danger">Inactive</MariloBadge></td></tr>
+            </tbody>
+        </MariloTable>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="Striped Rows" Description="Tables with alternating row colors for improved readability." Code="@_stripedCode">
+        <MariloTable>
+            <thead>
+                <tr><th>Product</th><th>Category</th><th>Price</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Widget A</td><td>Electronics</td><td>$19.99</td></tr>
+                <tr><td>Widget B</td><td>Hardware</td><td>$29.99</td></tr>
+                <tr><td>Widget C</td><td>Software</td><td>$9.99</td></tr>
+                <tr><td>Widget D</td><td>Electronics</td><td>$49.99</td></tr>
+            </tbody>
+        </MariloTable>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Accessibility">
+    <AccessibilityInfo
+        KeyboardInteractions="@_keyboard"
+        AriaAttributes="@_aria"
+        ScreenReaderNotes="@_screenReader" />
+</PageSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloTable>\n" +
+        "    <thead>\n" +
+        "        <tr><th>Name</th><th>Role</th><th>Status</th></tr>\n" +
+        "    </thead>\n" +
+        "    <tbody>\n" +
+        "        <tr>\n" +
+        "            <td>Alice</td><td>Admin</td>\n" +
+        "            <td><MariloBadge Variant=\"BadgeVariant.Success\">Active</MariloBadge></td>\n" +
+        "        </tr>\n" +
+        "        <tr>\n" +
+        "            <td>Bob</td><td>User</td>\n" +
+        "            <td><MariloBadge Variant=\"BadgeVariant.Warning\">Pending</MariloBadge></td>\n" +
+        "        </tr>\n" +
+        "        <tr>\n" +
+        "            <td>Charlie</td><td>Editor</td>\n" +
+        "            <td><MariloBadge Variant=\"BadgeVariant.Danger\">Inactive</MariloBadge></td>\n" +
+        "        </tr>\n" +
+        "    </tbody>\n" +
+        "</MariloTable>";
+
+    private const string _stripedCode =
+        "<MariloTable>\n" +
+        "    <thead>\n" +
+        "        <tr><th>Product</th><th>Category</th><th>Price</th></tr>\n" +
+        "    </thead>\n" +
+        "    <tbody>\n" +
+        "        <tr><td>Widget A</td><td>Electronics</td><td>$19.99</td></tr>\n" +
+        "        <tr><td>Widget B</td><td>Hardware</td><td>$29.99</td></tr>\n" +
+        "        <tr><td>Widget C</td><td>Software</td><td>$9.99</td></tr>\n" +
+        "        <tr><td>Widget D</td><td>Electronics</td><td>$49.99</td></tr>\n" +
+        "    </tbody>\n" +
+        "</MariloTable>";
+
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus to the next interactive element within the table"),
+        ("Arrow Keys", "Navigates between cells when the table supports grid navigation"),
+        ("Enter", "Activates a focused interactive element within a cell"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"table\"", "Implicitly set by the <table> element for standard table semantics"),
+        ("aria-sort=\"ascending\" / \"descending\"", "Applied to sortable column headers to indicate current sort direction"),
+        ("aria-label", "Provides an accessible name for the table when no visible caption exists"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "Tables are announced with their row and column counts.",
+        "Column headers are announced when navigating between cells in the same row.",
+        "Sortable columns should indicate their current sort state via aria-sort.",
+    ];
+}

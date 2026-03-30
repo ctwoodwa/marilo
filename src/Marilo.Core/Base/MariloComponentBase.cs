@@ -4,22 +4,52 @@ using Microsoft.AspNetCore.Components;
 
 namespace Marilo.Core.Base;
 
+/// <summary>
+/// Base class for all Marilo components, providing shared infrastructure such as
+/// CSS class/style composition, RTL awareness, ARIA attribute helpers, and disposal.
+/// </summary>
 public abstract class MariloComponentBase : ComponentBase, IDisposable
 {
     [Inject] protected IMariloCssProvider CssProvider { get; set; } = default!;
     [Inject] protected IMariloIconProvider IconProvider { get; set; } = default!;
     [Inject] protected IMariloThemeService ThemeService { get; set; } = default!;
 
+    /// <summary>
+    /// Additional CSS class names to append to the component's root element.
+    /// </summary>
     [Parameter] public string? Class { get; set; }
+
+    /// <summary>
+    /// Inline style string to append to the component's root element.
+    /// </summary>
     [Parameter] public string? Style { get; set; }
+
+    /// <summary>
+    /// Captures any unmatched HTML attributes and renders them on the root element.
+    /// </summary>
     [Parameter(CaptureUnmatchedValues = true)]
     public Dictionary<string, object>? AdditionalAttributes { get; set; }
 
+    /// <summary>
+    /// Reusable builder for composing CSS class strings from multiple sources.
+    /// </summary>
     protected CssClassBuilder ClassBuilder { get; } = new();
+
+    /// <summary>
+    /// Reusable builder for composing inline style strings from multiple sources.
+    /// </summary>
     protected StyleBuilder StyleBuilder { get; } = new();
 
+    /// <summary>
+    /// Gets a value indicating whether the current theme uses right-to-left layout direction.
+    /// </summary>
     protected bool IsRtl => ThemeService.IsRtl;
 
+    /// <summary>
+    /// Combines a provider-supplied base CSS class with any consumer-supplied <see cref="Class"/> value.
+    /// </summary>
+    /// <param name="baseClass">The CSS class returned by the active <see cref="IMariloCssProvider"/>.</param>
+    /// <returns>A single space-separated class string.</returns>
     protected string CombineClasses(string baseClass)
     {
         return ClassBuilder.Clear()
@@ -28,6 +58,11 @@ public abstract class MariloComponentBase : ComponentBase, IDisposable
             .Build();
     }
 
+    /// <summary>
+    /// Combines an optional provider-supplied base style with any consumer-supplied <see cref="Style"/> value.
+    /// </summary>
+    /// <param name="baseStyle">An optional inline style string to prepend.</param>
+    /// <returns>A semicolon-separated style string.</returns>
     protected string CombineStyles(string? baseStyle = null)
     {
         return StyleBuilder.Clear()
@@ -36,6 +71,11 @@ public abstract class MariloComponentBase : ComponentBase, IDisposable
             .Build();
     }
 
+    /// <summary>
+    /// Sets an <c>aria-*</c> attribute on the component's root element via <see cref="AdditionalAttributes"/>.
+    /// </summary>
+    /// <param name="key">The ARIA attribute name without the <c>aria-</c> prefix.</param>
+    /// <param name="value">The attribute value. If <c>null</c>, the attribute is not set.</param>
     protected void SetAria(string key, object? value)
     {
         if (value != null)
@@ -47,6 +87,9 @@ public abstract class MariloComponentBase : ComponentBase, IDisposable
 
     private bool _disposed;
 
+    /// <summary>
+    /// Releases all resources used by the component. Implements the dispose pattern.
+    /// </summary>
     public void Dispose()
     {
         if (!_disposed)
@@ -57,6 +100,10 @@ public abstract class MariloComponentBase : ComponentBase, IDisposable
         GC.SuppressFinalize(this);
     }
 
+    /// <summary>
+    /// Override in derived classes to release managed resources.
+    /// </summary>
+    /// <param name="disposing"><c>true</c> when called from <see cref="Dispose()"/>; <c>false</c> if called from a finalizer.</param>
     protected virtual void Dispose(bool disposing)
     {
     }

@@ -1,0 +1,160 @@
+@page "/components/tree-view"
+@page "/components/tree-view/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloTreeView>
+            <MariloTreeItem Title="Documents" IsExpanded="true">
+                <MariloTreeItem Title="Reports">
+                    <MariloTreeItem Title="Q1" />
+                    <MariloTreeItem Title="Q2" />
+                </MariloTreeItem>
+                <MariloTreeItem Title="Images" />
+            </MariloTreeItem>
+            <MariloTreeItem Title="Downloads" />
+            <MariloTreeItem Title="Desktop" />
+        </MariloTreeView>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="With Icons" Description="Tree items can display icons for visual identification." Code="@_iconsCode">
+        <MariloTreeView>
+            <MariloTreeItem Title="Documents" Icon="folder" IsExpanded="true">
+                <MariloTreeItem Title="Reports" Icon="folder">
+                    <MariloTreeItem Title="Q1.pdf" Icon="document" />
+                    <MariloTreeItem Title="Q2.pdf" Icon="document" />
+                </MariloTreeItem>
+                <MariloTreeItem Title="Images" Icon="folder" />
+            </MariloTreeItem>
+            <MariloTreeItem Title="Downloads" Icon="folder" />
+        </MariloTreeView>
+    </DemoSection>
+
+    <DemoSection Title="Selection" Description="Tree items can be selectable to indicate the current selection." Code="@_selectionCode">
+        <MariloTreeView SelectionMode="TreeSelectionMode.Single">
+            <MariloTreeItem Title="Option A" />
+            <MariloTreeItem Title="Option B" />
+            <MariloTreeItem Title="Option C" />
+        </MariloTreeView>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Events">
+    <DemoSection Title="Item Selection" Description="Click a tree item to select it." Code="@_selectedCode">
+        <MariloTreeView>
+            <MariloTreeItem Title="Documents" IsExpanded="true">
+                <MariloTreeItem Title="Reports" />
+                <MariloTreeItem Title="Images" />
+            </MariloTreeItem>
+            <MariloTreeItem Title="Downloads" />
+        </MariloTreeView>
+    </DemoSection>
+
+    <DemoSection Title="Item Expand / Collapse" Description="Click a parent item to expand or collapse it." Code="@_expandedCode">
+        <MariloTreeView>
+            <MariloTreeItem Title="Folder A">
+                <MariloTreeItem Title="File 1" />
+                <MariloTreeItem Title="File 2" />
+            </MariloTreeItem>
+            <MariloTreeItem Title="Folder B">
+                <MariloTreeItem Title="File 3" />
+            </MariloTreeItem>
+        </MariloTreeView>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Accessibility">
+    <AccessibilityInfo
+        KeyboardInteractions="@_keyboard"
+        AriaAttributes="@_aria"
+        ScreenReaderNotes="@_screenReader" />
+</PageSection>
+
+@code {
+    // Overview
+    private const string _basicCode =
+        "<MariloTreeView>\n" +
+        "    <MariloTreeItem Title=\"Documents\" IsExpanded=\"true\">\n" +
+        "        <MariloTreeItem Title=\"Reports\">\n" +
+        "            <MariloTreeItem Title=\"Q1\" />\n" +
+        "            <MariloTreeItem Title=\"Q2\" />\n" +
+        "        </MariloTreeItem>\n" +
+        "        <MariloTreeItem Title=\"Images\" />\n" +
+        "    </MariloTreeItem>\n" +
+        "    <MariloTreeItem Title=\"Downloads\" />\n" +
+        "    <MariloTreeItem Title=\"Desktop\" />\n" +
+        "</MariloTreeView>";
+
+    // Appearance
+    private const string _iconsCode =
+        "<MariloTreeView>\n" +
+        "    <MariloTreeItem Title=\"Documents\" Icon=\"folder\" IsExpanded=\"true\">\n" +
+        "        <MariloTreeItem Title=\"Reports\" Icon=\"folder\">\n" +
+        "            <MariloTreeItem Title=\"Q1.pdf\" Icon=\"document\" />\n" +
+        "            <MariloTreeItem Title=\"Q2.pdf\" Icon=\"document\" />\n" +
+        "        </MariloTreeItem>\n" +
+        "        <MariloTreeItem Title=\"Images\" Icon=\"folder\" />\n" +
+        "    </MariloTreeItem>\n" +
+        "    <MariloTreeItem Title=\"Downloads\" Icon=\"folder\" />\n" +
+        "</MariloTreeView>";
+
+    private const string _selectionCode =
+        "<MariloTreeView SelectionMode=\"TreeSelectionMode.Single\">\n" +
+        "    <MariloTreeItem Title=\"Option A\" />\n" +
+        "    <MariloTreeItem Title=\"Option B\" />\n" +
+        "    <MariloTreeItem Title=\"Option C\" />\n" +
+        "</MariloTreeView>";
+
+    // Events
+    private const string _selectedCode =
+        "<MariloTreeView>\n" +
+        "    <MariloTreeItem Title=\"Documents\" IsExpanded=\"true\">\n" +
+        "        <MariloTreeItem Title=\"Reports\" />\n" +
+        "        <MariloTreeItem Title=\"Images\" />\n" +
+        "    </MariloTreeItem>\n" +
+        "    <MariloTreeItem Title=\"Downloads\" />\n" +
+        "</MariloTreeView>";
+
+    private const string _expandedCode =
+        "<MariloTreeView>\n" +
+        "    <MariloTreeItem Title=\"Folder A\">\n" +
+        "        <MariloTreeItem Title=\"File 1\" />\n" +
+        "        <MariloTreeItem Title=\"File 2\" />\n" +
+        "    </MariloTreeItem>\n" +
+        "    <MariloTreeItem Title=\"Folder B\">\n" +
+        "        <MariloTreeItem Title=\"File 3\" />\n" +
+        "    </MariloTreeItem>\n" +
+        "</MariloTreeView>";
+
+    // Accessibility
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Up Arrow", "Moves focus to the previous visible tree item"),
+        ("Down Arrow", "Moves focus to the next visible tree item"),
+        ("Right Arrow", "Expands a collapsed item, or moves focus to the first child"),
+        ("Left Arrow", "Collapses an expanded item, or moves focus to the parent"),
+        ("Enter", "Activates or selects the focused tree item"),
+        ("Space", "Toggles selection of the focused tree item"),
+        ("Home", "Moves focus to the first tree item"),
+        ("End", "Moves focus to the last visible tree item"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"tree\"", "Applied to the tree view container to identify it as a tree widget"),
+        ("role=\"treeitem\"", "Applied to each tree item within the tree"),
+        ("aria-expanded=\"true/false\"", "Indicates whether a parent tree item is expanded or collapsed"),
+        ("aria-selected=\"true/false\"", "Indicates whether a tree item is selected"),
+        ("aria-level", "Indicates the nesting level of the tree item"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "The tree view is announced with its role and accessible name when focus enters it.",
+        "Each tree item announces its title, level, position in set, and expanded/collapsed state.",
+        "Arrow keys navigate between visible items while respecting the hierarchical structure.",
+        "Expanding or collapsing an item announces the new state to the screen reader.",
+    ];
+}
