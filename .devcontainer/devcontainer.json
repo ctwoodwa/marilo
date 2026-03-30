@@ -1,10 +1,6 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
 {
-	"name": "C# (.NET)",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"name": "Marilo",
 	"image": "mcr.microsoft.com/devcontainers/dotnet:2-10.0-noble",
-	// Features to add to the dev container. More info: https://containers.dev/features.
 	"features": {
 		"ghcr.io/devcontainers/features/node:1": {
 			"version": "lts"
@@ -19,7 +15,8 @@
 		"vscode": {
 			"extensions": [
 				"anthropic.claude-code",
-				// Add any other extensions you need
+				"ms-dotnettools.csdevkit",
+				"syler.sass-indented",
 				"shd101wyy.markdown-preview-enhanced"
 			]
 		}
@@ -27,18 +24,10 @@
 	"containerEnv": {
 		"CLAUDE_CONFIG_DIR": "/home/vscode/.claude"
 	},
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [5000, 5001],
-	// "portsAttributes": {
-	//		"5001": {
-	//			"protocol": "https"
-	//		}
-	// }
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "dotnet restore",
-	"postCreateCommand": "npm install"
-	// Configure tool-specific properties.
-	// "customizations": {},
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
+	"forwardPorts": [5000, 5001, 8080],
+	"portsAttributes": {
+		"5001": { "protocol": "https" },
+		"8080": { "label": "DocFX" }
+	},
+	"postCreateCommand": "dotnet restore && npm install"
 }
