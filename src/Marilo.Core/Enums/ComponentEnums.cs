@@ -341,3 +341,19 @@ public enum CheckBoxMode
     /// <summary>Multiple checkbox selection.</summary>
     Multiple
 }
+
+/// <summary>
+/// Specifies the adaptive rendering mode for autocomplete on mobile devices.
+/// </summary>
+public enum AutoCompleteAdaptiveMode
+{
+    /// <summary>Standard dropdown rendering.</summary>
+    None,
+
+    /// <summary>
+    /// Automatically switches to a full-screen action sheet on small viewports.
+    /// CSS class mar-autocomplete--adaptive is applied and a media query
+    /// triggers full-screen overlay rendering.
+    /// </summary>
+    Auto
+}

@@ -22,6 +22,26 @@
     [Parameter] public CheckBoxMode CheckBoxMode { get; set; } = CheckBoxMode.None;
     [Parameter] public RenderFragment<object>? ItemTemplate { get; set; }
 
+    /// <summary>
+    /// Callback invoked when a node is expanded that has HasChildren=true but no loaded children.
+    /// The callback receives the data item and should update the Data collection with child items.
+    /// </summary>
+    [Parameter] public EventCallback<object> OnExpand { get; set; }
+
+    /// <summary>
+    /// Enable drag and drop reordering of tree nodes.
+    /// </summary>
+    [Parameter] public bool EnableDragDrop { get; set; }
+
+    /// <summary>
+    /// Callback invoked when a node is dropped onto another node.
+    /// Receives a TreeDragDropEventArgs with the dragged and target items.
+    /// </summary>
+    [Parameter] public EventCallback<TreeDragDropEventArgs> OnDrop { get; set; }
+
+    private string? _draggedNodeId;
+    private string? _dragOverNodeId;
+
     internal bool ShowCheckboxes => CheckBoxMode != CheckBoxMode.None;
     internal bool IsSingleCheckMode => CheckBoxMode == CheckBoxMode.Single;
 
@@ -151,7 +171,19 @@
 
             // Header
             builder.OpenElement(10, "div");
-            builder.AddAttribute(11, "class", "mar-tree-item__header");
+            var headerClass = "mar-tree-item__header" +
+                (EnableDragDrop && _dragOverNodeId == node.Id ? " mar-tree-item__header--dragover" : "");
+            builder.AddAttribute(11, "class", headerClass);
+            if (EnableDragDrop)
+            {
+                var dragNodeId = node.Id;
+                builder.AddAttribute(12, "draggable", "true");
+                builder.AddAttribute(13, "ondragstart", EventCallback.Factory.Create<DragEventArgs>(this, () => _draggedNodeId = dragNodeId));
+                builder.AddAttribute(14, "ondragover", EventCallback.Factory.Create<DragEventArgs>(this, () => _dragOverNodeId = dragNodeId));
+                builder.AddAttribute(15, "ondragleave", EventCallback.Factory.Create<DragEventArgs>(this, () => { if (_dragOverNodeId == dragNodeId) _dragOverNodeId = null; }));
+                builder.AddAttribute(16, "ondrop", EventCallback.Factory.Create<DragEventArgs>(this, () => HandleDrop(dragNodeId)));
+                builder.AddEventPreventDefaultAttribute(17, "ondragover", true);
+            }
 
             if (hasKids)
             {
@@ -179,6 +211,15 @@
 
             builder.CloseElement(); // div header
 
+            // Loading indicator for load-on-demand
+            if (hasKids && isExpanded && _loadingIds.Contains(node.Id))
+            {
+                builder.OpenElement(35, "div");
+                builder.AddAttribute(36, "class", "mar-tree-item__loading");
+                builder.AddContent(37, "Loading\u2026");
+                builder.CloseElement();
+            }
+
             // Children
             if (hasKids && isExpanded && node.Children.Any())
             {
@@ -193,9 +234,65 @@
         }
     };
 
-    private void ToggleNode(string id)
+    private async Task ToggleNode(string nodeId)
     {
-        if (!_expandedIds.Remove(id))
-            _expandedIds.Add(id);
+        if (_expandedIds.Contains(nodeId))
+        {
+            _expandedIds.Remove(nodeId);
+        }
+        else
+        {
+            _expandedIds.Add(nodeId);
+
+            // Load on demand: if OnExpand is set, fire for nodes with HasChildren but no children loaded
+            if (OnExpand.HasDelegate)
+            {
+                var tree = BuildTree();
+                var node = FindNode(tree, nodeId);
+                if (node != null && node.HasChildren && !node.Children.Any())
+                {
+                    _loadingIds.Add(nodeId);
+                    StateHasChanged();
+                    await OnExpand.InvokeAsync(node.Item);
+                    _loadingIds.Remove(nodeId);
+                }
+            }
+        }
+    }
+
+    private HashSet<string> _loadingIds = new();
+
+    private async Task HandleDrop(string targetNodeId)
+    {
+        _dragOverNodeId = null;
+        if (_draggedNodeId == null || _draggedNodeId == targetNodeId) return;
+
+        var tree = BuildTree();
+        var draggedNode = FindNode(tree, _draggedNodeId);
+        var targetNode = FindNode(tree, targetNodeId);
+
+        if (draggedNode != null && targetNode != null && OnDrop.HasDelegate)
+        {
+            await OnDrop.InvokeAsync(new TreeDragDropEventArgs
+            {
+                DraggedItem = draggedNode.Item,
+                TargetItem = targetNode.Item,
+                DraggedId = _draggedNodeId,
+                TargetId = targetNodeId
+            });
+        }
+
+        _draggedNodeId = null;
+    }
+
+    private TreeNode? FindNode(List<TreeNode> nodes, string id)
+    {
+        foreach (var node in nodes)
+        {
+            if (node.Id == id) return node;
+            var found = FindNode(node.Children, id);
+            if (found != null) return found;
+        }
+        return null;
     }
 }

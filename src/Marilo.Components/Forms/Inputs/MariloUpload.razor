@@ -83,6 +83,13 @@
     [Parameter] public EventCallback<UploadSelectEventArgs> OnSelect { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
+    /// <summary>
+    /// Chunk size in bytes for chunked uploads. When set to a value > 0,
+    /// files are uploaded in chunks of this size. Each chunk is sent as a
+    /// separate POST with metadata headers (X-Chunk-Index, X-Total-Chunks, X-File-Name).
+    /// </summary>
+    [Parameter] public long ChunkSize { get; set; }
+
     private readonly List<UploadFileInfo> _files = [];
     private bool _isDragOver;
 
@@ -152,23 +159,14 @@
             StateHasChanged();
 
             var maxSize = MaxFileSize > 0 ? MaxFileSize : 10L * 1024 * 1024 * 1024;
-            using var content = new MultipartFormDataContent();
-            var streamContent = new StreamContent(browserFile.OpenReadStream(maxSize));
-            content.Add(streamContent, "file", info.Name);
 
-            var response = await Http.PostAsync(SaveUrl, content);
-
-            if (response.IsSuccessStatusCode)
+            if (ChunkSize > 0 && browserFile.Size > ChunkSize)
             {
-                info.Status = UploadFileStatus.Uploaded;
-                info.Progress = 100;
-                await OnUpload.InvokeAsync(new UploadEventArgs { File = info });
+                await UploadFileChunked(info, browserFile, maxSize);
             }
             else
             {
-                info.Status = UploadFileStatus.Failed;
-                var errorMsg = $"Upload failed with status {response.StatusCode}.";
-                await OnError.InvokeAsync(new UploadErrorEventArgs { File = info, ErrorMessage = errorMsg });
+                await UploadFileWhole(info, browserFile, maxSize);
             }
         }
         catch (Exception ex)
@@ -178,6 +176,65 @@
         }
 
         StateHasChanged();
+    }
+
+    private async Task UploadFileWhole(UploadFileInfo info, IBrowserFile browserFile, long maxSize)
+    {
+        using var content = new MultipartFormDataContent();
+        var streamContent = new StreamContent(browserFile.OpenReadStream(maxSize));
+        content.Add(streamContent, "file", info.Name);
+
+        var response = await Http.PostAsync(SaveUrl, content);
+
+        if (response.IsSuccessStatusCode)
+        {
+            info.Status = UploadFileStatus.Uploaded;
+            info.Progress = 100;
+            await OnUpload.InvokeAsync(new UploadEventArgs { File = info });
+        }
+        else
+        {
+            info.Status = UploadFileStatus.Failed;
+            var errorMsg = $"Upload failed with status {response.StatusCode}.";
+            await OnError.InvokeAsync(new UploadErrorEventArgs { File = info, ErrorMessage = errorMsg });
+        }
+    }
+
+    private async Task UploadFileChunked(UploadFileInfo info, IBrowserFile browserFile, long maxSize)
+    {
+        var totalChunks = (int)Math.Ceiling((double)browserFile.Size / ChunkSize);
+        var buffer = new byte[ChunkSize];
+
+        await using var stream = browserFile.OpenReadStream(maxSize);
+
+        for (var chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++)
+        {
+            var bytesRead = await stream.ReadAsync(buffer.AsMemory(0, (int)Math.Min(ChunkSize, browserFile.Size - chunkIndex * ChunkSize)));
+
+            using var chunkContent = new ByteArrayContent(buffer, 0, bytesRead);
+            using var request = new HttpRequestMessage(HttpMethod.Post, SaveUrl);
+            request.Content = chunkContent;
+            request.Headers.Add("X-File-Name", info.Name);
+            request.Headers.Add("X-Chunk-Index", chunkIndex.ToString());
+            request.Headers.Add("X-Total-Chunks", totalChunks.ToString());
+
+            var response = await Http.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                info.Status = UploadFileStatus.Failed;
+                var errorMsg = $"Chunk {chunkIndex + 1}/{totalChunks} failed with status {response.StatusCode}.";
+                await OnError.InvokeAsync(new UploadErrorEventArgs { File = info, ErrorMessage = errorMsg });
+                return;
+            }
+
+            info.Progress = (int)((chunkIndex + 1) * 100.0 / totalChunks);
+            StateHasChanged();
+        }
+
+        info.Status = UploadFileStatus.Uploaded;
+        info.Progress = 100;
+        await OnUpload.InvokeAsync(new UploadEventArgs { File = info });
     }
 
     private async Task RemoveFile(UploadFileInfo file)
