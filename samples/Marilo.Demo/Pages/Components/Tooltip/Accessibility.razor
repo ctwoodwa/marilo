@@ -1,0 +1,28 @@
+@page "/components/tooltip/accessibility"
+@layout ComponentDemoLayout
+
+<AccessibilityInfo
+    KeyboardInteractions="@_keyboard"
+    AriaAttributes="@_aria"
+    ScreenReaderNotes="@_screenReader" />
+
+@code {
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus to the tooltip trigger, showing the tooltip"),
+        ("Escape", "Dismisses the tooltip when it is visible"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("aria-describedby", "Links the trigger element to the tooltip content"),
+        ("role=\"tooltip\"", "Applied to the tooltip popup to identify it as a tooltip"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "Tooltip content is announced when the trigger element receives focus.",
+        "The tooltip text is associated with the trigger via aria-describedby.",
+        "Tooltips should not contain interactive content; use a popover for interactive elements.",
+    ];
+}

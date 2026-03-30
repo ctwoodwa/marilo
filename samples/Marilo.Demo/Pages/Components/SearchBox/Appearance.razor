@@ -1,0 +1,13 @@
+@page "/components/search-box/appearance"
+@layout ComponentDemoLayout
+
+<DemoSection Title="With Keyboard Hint" Description="Display a keyboard shortcut hint inside the search box." Code="@_kbdCode">
+    <MariloSearchBox Value="@_search" ValueChanged="@(v => _search = v)" Placeholder="Search..." KbdHint="/" />
+</DemoSection>
+
+@code {
+    private string _search = "";
+
+    private const string _kbdCode =
+        "<MariloSearchBox Value=\"@_search\" ValueChanged=\"@(v => _search = v)\" Placeholder=\"Search...\" KbdHint=\"/\" />";
+}

@@ -1,0 +1,31 @@
+@page "/components/stepper"
+@page "/components/stepper/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <MariloStepper ActiveStep="@_step">
+        <MariloStep Title="Account" />
+        <MariloStep Title="Profile" />
+        <MariloStep Title="Review" />
+    </MariloStepper>
+    <div class="demo-row">
+        <MariloButton Disabled="@(_step <= 0)" OnClick="@(() => _step--)">Previous</MariloButton>
+        <MariloButton Disabled="@(_step >= 2)" OnClick="@(() => _step++)">Next</MariloButton>
+    </div>
+</DemoSection>
+
+@code {
+    private int _step;
+
+    private const string _basicCode =
+        "<MariloStepper ActiveStep=\"@_step\">\n" +
+        "    <MariloStep Title=\"Account\" />\n" +
+        "    <MariloStep Title=\"Profile\" />\n" +
+        "    <MariloStep Title=\"Review\" />\n" +
+        "</MariloStepper>\n" +
+        "<MariloButton Disabled=\"@(_step <= 0)\" OnClick=\"@(() => _step--)\">Previous</MariloButton>\n" +
+        "<MariloButton Disabled=\"@(_step >= 2)\" OnClick=\"@(() => _step++)\">Next</MariloButton>\n\n" +
+        "@code {\n" +
+        "    private int _step;\n" +
+        "}";
+}

@@ -1,0 +1,18 @@
+@page "/components/tooltip"
+@page "/components/tooltip/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Description="Tooltips display informative text on hover or focus." Code="@_basicCode">
+    <div class="demo-row">
+        <MariloTooltip Text="This is a tooltip">
+            <MariloButton Variant="ButtonVariant.Secondary">Hover me</MariloButton>
+        </MariloTooltip>
+    </div>
+</DemoSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloTooltip Text=\"This is a tooltip\">\n" +
+        "    <MariloButton Variant=\"ButtonVariant.Secondary\">Hover me</MariloButton>\n" +
+        "</MariloTooltip>";
+}

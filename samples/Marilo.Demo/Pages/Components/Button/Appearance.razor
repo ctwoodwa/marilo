@@ -1,0 +1,49 @@
+@page "/components/button/appearance"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Variants" Description="Buttons come in several variants to indicate different levels of emphasis." Code="@_variantsCode">
+    <div class="demo-row">
+        <MariloButton Variant="ButtonVariant.Primary">Primary</MariloButton>
+        <MariloButton Variant="ButtonVariant.Secondary">Secondary</MariloButton>
+        <MariloButton Variant="ButtonVariant.Danger">Danger</MariloButton>
+        <MariloButton Variant="ButtonVariant.Warning">Warning</MariloButton>
+        <MariloButton Variant="ButtonVariant.Info">Info</MariloButton>
+        <MariloButton Variant="ButtonVariant.Success">Success</MariloButton>
+    </div>
+</DemoSection>
+
+<DemoSection Title="Sizes" Code="@_sizesCode">
+    <div class="demo-row">
+        <MariloButton Size="ButtonSize.Small">Small</MariloButton>
+        <MariloButton Size="ButtonSize.Medium">Medium</MariloButton>
+        <MariloButton Size="ButtonSize.Large">Large</MariloButton>
+    </div>
+</DemoSection>
+
+<DemoSection Title="Outline" Code="@_outlineCode">
+    <div class="demo-row">
+        <MariloButton Variant="ButtonVariant.Primary" IsOutline="true">Outline Primary</MariloButton>
+        <MariloButton Variant="ButtonVariant.Danger" IsOutline="true">Outline Danger</MariloButton>
+        <MariloButton Variant="ButtonVariant.Success" IsOutline="true">Outline Success</MariloButton>
+    </div>
+</DemoSection>
+
+@code {
+    private const string _variantsCode =
+        "<MariloButton Variant=\"ButtonVariant.Primary\">Primary</MariloButton>\n" +
+        "<MariloButton Variant=\"ButtonVariant.Secondary\">Secondary</MariloButton>\n" +
+        "<MariloButton Variant=\"ButtonVariant.Danger\">Danger</MariloButton>\n" +
+        "<MariloButton Variant=\"ButtonVariant.Warning\">Warning</MariloButton>\n" +
+        "<MariloButton Variant=\"ButtonVariant.Info\">Info</MariloButton>\n" +
+        "<MariloButton Variant=\"ButtonVariant.Success\">Success</MariloButton>";
+
+    private const string _sizesCode =
+        "<MariloButton Size=\"ButtonSize.Small\">Small</MariloButton>\n" +
+        "<MariloButton Size=\"ButtonSize.Medium\">Medium</MariloButton>\n" +
+        "<MariloButton Size=\"ButtonSize.Large\">Large</MariloButton>";
+
+    private const string _outlineCode =
+        "<MariloButton Variant=\"ButtonVariant.Primary\" IsOutline=\"true\">Outline Primary</MariloButton>\n" +
+        "<MariloButton Variant=\"ButtonVariant.Danger\" IsOutline=\"true\">Outline Danger</MariloButton>\n" +
+        "<MariloButton Variant=\"ButtonVariant.Success\" IsOutline=\"true\">Outline Success</MariloButton>";
+}

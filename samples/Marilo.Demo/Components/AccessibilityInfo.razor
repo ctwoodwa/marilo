@@ -1,0 +1,75 @@
+<div class="accessibility-info">
+    @if (KeyboardInteractions?.Length > 0)
+    {
+        <h2>Keyboard Navigation</h2>
+        <table class="a11y-table">
+            <thead>
+                <tr>
+                    <th>Key</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var (key, action) in KeyboardInteractions)
+                {
+                    <tr>
+                        <td><kbd>@key</kbd></td>
+                        <td>@action</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    @if (AriaAttributes?.Length > 0)
+    {
+        <h2>ARIA Attributes</h2>
+        <table class="a11y-table">
+            <thead>
+                <tr>
+                    <th>Attribute</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var (attr, desc) in AriaAttributes)
+                {
+                    <tr>
+                        <td><code>@attr</code></td>
+                        <td>@desc</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    @if (ScreenReaderNotes?.Length > 0)
+    {
+        <h2>Screen Reader Notes</h2>
+        <ul>
+            @foreach (var note in ScreenReaderNotes)
+            {
+                <li>@note</li>
+            }
+        </ul>
+    }
+
+    @if (ChildContent is not null)
+    {
+        @ChildContent
+    }
+</div>
+
+@code {
+    [Parameter]
+    public (string Key, string Action)[]? KeyboardInteractions { get; set; }
+
+    [Parameter]
+    public (string Attribute, string Description)[]? AriaAttributes { get; set; }
+
+    [Parameter]
+    public string[]? ScreenReaderNotes { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

@@ -1,0 +1,26 @@
+@page "/components/segmented-control/appearance"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Multiple Segments" Description="Segmented controls can contain varying numbers of options." Code="@_multipleCode">
+    <MariloSegmentedControl Value="@_size" ValueChanged="@(v => _size = v)">
+        <MariloSegmentedItem Value="S">S</MariloSegmentedItem>
+        <MariloSegmentedItem Value="M">M</MariloSegmentedItem>
+        <MariloSegmentedItem Value="L">L</MariloSegmentedItem>
+        <MariloSegmentedItem Value="XL">XL</MariloSegmentedItem>
+    </MariloSegmentedControl>
+</DemoSection>
+
+@code {
+    private string _size = "M";
+
+    private const string _multipleCode =
+        "<MariloSegmentedControl Value=\"@_size\" ValueChanged=\"@(v => _size = v)\">\n" +
+        "    <MariloSegmentedItem Value=\"S\">S</MariloSegmentedItem>\n" +
+        "    <MariloSegmentedItem Value=\"M\">M</MariloSegmentedItem>\n" +
+        "    <MariloSegmentedItem Value=\"L\">L</MariloSegmentedItem>\n" +
+        "    <MariloSegmentedItem Value=\"XL\">XL</MariloSegmentedItem>\n" +
+        "</MariloSegmentedControl>\n\n" +
+        "@code {\n" +
+        "    private string _size = \"M\";\n" +
+        "}";
+}

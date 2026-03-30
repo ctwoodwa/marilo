@@ -1,0 +1,36 @@
+@page "/components/dialog/events"
+@layout ComponentDemoLayout
+
+<DemoSection Title="OnClose" Description="Handle the dialog close event with the OnClose callback." Code="@_closeCode">
+    <MariloButton OnClick="@(() => _dialogOpen = true)">Open Dialog</MariloButton>
+    <MariloDialog IsOpen="@_dialogOpen" Title="Close Event Demo" OnClose="@OnDialogClose">
+        <p>Close this dialog to see the event callback in action.</p>
+        <MariloButton Variant="ButtonVariant.Primary" OnClick="@(() => _dialogOpen = false)">Close</MariloButton>
+    </MariloDialog>
+    @if (!string.IsNullOrEmpty(_closeMessage))
+    {
+        <p style="margin-top: 8px;">@_closeMessage</p>
+    }
+</DemoSection>
+
+@code {
+    private bool _dialogOpen;
+    private string? _closeMessage;
+
+    private void OnDialogClose()
+    {
+        _dialogOpen = false;
+        _closeMessage = $"Dialog closed at {DateTime.Now:HH:mm:ss}";
+    }
+
+    private const string _closeCode =
+        "<MariloButton OnClick=\"@(() => _dialogOpen = true)\">Open Dialog</MariloButton>\n" +
+        "<MariloDialog IsOpen=\"@_dialogOpen\" Title=\"Close Event Demo\" OnClose=\"@OnDialogClose\">\n" +
+        "    <p>Close this dialog to see the event callback in action.</p>\n" +
+        "    <MariloButton Variant=\"ButtonVariant.Primary\" OnClick=\"@(() => _dialogOpen = false)\">Close</MariloButton>\n" +
+        "</MariloDialog>\n\n" +
+        "@code {\n" +
+        "    private bool _dialogOpen;\n" +
+        "    private void OnDialogClose() => _dialogOpen = false;\n" +
+        "}";
+}

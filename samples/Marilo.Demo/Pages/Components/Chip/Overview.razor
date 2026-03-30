@@ -1,0 +1,16 @@
+@page "/components/chip"
+@page "/components/chip/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Selected State" Code="@_selectedCode">
+    <div class="demo-row">
+        <MariloChip Variant="ChipVariant.Primary" Label="Selected" IsSelected="true" />
+        <MariloChip Variant="ChipVariant.Primary" Label="Unselected" IsSelected="false" />
+    </div>
+</DemoSection>
+
+@code {
+    private const string _selectedCode =
+        "<MariloChip Variant=\"ChipVariant.Primary\" Label=\"Selected\" IsSelected=\"true\" />\n" +
+        "<MariloChip Variant=\"ChipVariant.Primary\" Label=\"Unselected\" IsSelected=\"false\" />";
+}

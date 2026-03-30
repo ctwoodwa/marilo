@@ -1,0 +1,22 @@
+@page "/components/toggle-button/events"
+@layout ComponentDemoLayout
+
+<DemoSection Title="IsSelectedChanged" Description="Handle toggle state changes with the IsSelectedChanged callback." Code="@_changedCode">
+    <div class="demo-row">
+        <MariloToggleButton IsSelected="@_isActive" IsSelectedChanged="@((bool v) => _isActive = v)">Toggle</MariloToggleButton>
+        <span style="align-self: center;">State: @(_isActive ? "Active" : "Inactive")</span>
+    </div>
+</DemoSection>
+
+@code {
+    private bool _isActive;
+
+    private const string _changedCode =
+        "<MariloToggleButton IsSelected=\"@_isActive\" IsSelectedChanged=\"@((bool v) => _isActive = v)\">\n" +
+        "    Toggle\n" +
+        "</MariloToggleButton>\n" +
+        "<span>State: @(_isActive ? \"Active\" : \"Inactive\")</span>\n\n" +
+        "@code {\n" +
+        "    private bool _isActive;\n" +
+        "}";
+}

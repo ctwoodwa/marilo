@@ -1,0 +1,16 @@
+@page "/components/checkbox"
+@page "/components/checkbox/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <MariloField>
+        <MariloCheckbox Checked="@_checked" CheckedChanged="@(v => _checked = v)" Label="Accept terms and conditions" />
+    </MariloField>
+</DemoSection>
+
+@code {
+    private bool _checked;
+
+    private const string _basicCode =
+        "<MariloCheckbox Checked=\"@_checked\" CheckedChanged=\"@(v => _checked = v)\" Label=\"Accept terms and conditions\" />";
+}

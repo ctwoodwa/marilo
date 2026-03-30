@@ -1,0 +1,20 @@
+@page "/components/checkbox/events"
+@layout ComponentDemoLayout
+
+<DemoSection Title="CheckedChanged" Description="Handle checkbox toggle with the CheckedChanged callback." Code="@_interactiveCode">
+    <MariloField>
+        <MariloCheckbox Checked="@_checked" CheckedChanged="@(v => _checked = v)" Label="Toggle me" />
+    </MariloField>
+    <p><strong>Checked:</strong> @_checked</p>
+</DemoSection>
+
+@code {
+    private bool _checked;
+
+    private const string _interactiveCode =
+        "<MariloCheckbox Checked=\"@_checked\" CheckedChanged=\"@(v => _checked = v)\" Label=\"Toggle me\" />\n" +
+        "<p><strong>Checked:</strong> @_checked</p>\n\n" +
+        "@code {\n" +
+        "    private bool _checked;\n" +
+        "}";
+}

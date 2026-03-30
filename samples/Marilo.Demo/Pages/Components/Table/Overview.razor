@@ -1,0 +1,39 @@
+@page "/components/table"
+@page "/components/table/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <MariloTable>
+        <thead>
+            <tr><th>Name</th><th>Role</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>Alice</td><td>Admin</td><td><MariloBadge Variant="BadgeVariant.Success">Active</MariloBadge></td></tr>
+            <tr><td>Bob</td><td>User</td><td><MariloBadge Variant="BadgeVariant.Warning">Pending</MariloBadge></td></tr>
+            <tr><td>Charlie</td><td>Editor</td><td><MariloBadge Variant="BadgeVariant.Danger">Inactive</MariloBadge></td></tr>
+        </tbody>
+    </MariloTable>
+</DemoSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloTable>\n" +
+        "    <thead>\n" +
+        "        <tr><th>Name</th><th>Role</th><th>Status</th></tr>\n" +
+        "    </thead>\n" +
+        "    <tbody>\n" +
+        "        <tr>\n" +
+        "            <td>Alice</td><td>Admin</td>\n" +
+        "            <td><MariloBadge Variant=\"BadgeVariant.Success\">Active</MariloBadge></td>\n" +
+        "        </tr>\n" +
+        "        <tr>\n" +
+        "            <td>Bob</td><td>User</td>\n" +
+        "            <td><MariloBadge Variant=\"BadgeVariant.Warning\">Pending</MariloBadge></td>\n" +
+        "        </tr>\n" +
+        "        <tr>\n" +
+        "            <td>Charlie</td><td>Editor</td>\n" +
+        "            <td><MariloBadge Variant=\"BadgeVariant.Danger\">Inactive</MariloBadge></td>\n" +
+        "        </tr>\n" +
+        "    </tbody>\n" +
+        "</MariloTable>";
+}

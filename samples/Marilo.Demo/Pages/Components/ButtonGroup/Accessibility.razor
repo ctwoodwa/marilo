@@ -1,0 +1,31 @@
+@page "/components/button-group/accessibility"
+@layout ComponentDemoLayout
+
+<AccessibilityInfo
+    KeyboardInteractions="@_keyboard"
+    AriaAttributes="@_aria"
+    ScreenReaderNotes="@_screenReader" />
+
+@code {
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus to the next button in the group"),
+        ("Shift + Tab", "Moves focus to the previous button in the group"),
+        ("Enter", "Activates the focused button"),
+        ("Space", "Activates the focused button"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"group\"", "Applied to the button group container to indicate related buttons"),
+        ("aria-label", "Can be set on the group to describe its purpose"),
+        ("aria-disabled=\"true\"", "Applied to individual buttons when disabled"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "The button group is announced as a \"group\" containing related buttons.",
+        "Each button within the group is announced individually with its text content.",
+        "Use aria-label on the group to provide context about the grouped actions.",
+    ];
+}

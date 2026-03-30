@@ -1,0 +1,31 @@
+@page "/components/text-area/accessibility"
+@layout ComponentDemoLayout
+
+<AccessibilityInfo
+    KeyboardInteractions="@_keyboard"
+    AriaAttributes="@_aria"
+    ScreenReaderNotes="@_screenReader" />
+
+@code {
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus to the text area"),
+        ("Shift + Tab", "Moves focus to the previous focusable element"),
+        ("Escape", "Clears focus from the text area"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"textbox\"", "Implicitly set by the <textarea> element"),
+        ("aria-multiline=\"true\"", "Implicitly set by the <textarea> element"),
+        ("aria-invalid=\"true\"", "Applied when the IsInvalid parameter is set"),
+        ("aria-disabled=\"true\"", "Applied when the Disabled parameter is set"),
+        ("aria-label", "Can be set to provide an accessible name when no visible label is present"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "Text areas are announced with their label and the \"edit text\" role with multi-line support.",
+        "Disabled text areas are announced as \"dimmed\" or \"unavailable\" depending on the screen reader.",
+    ];
+}

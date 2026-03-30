@@ -1,0 +1,38 @@
+@page "/components/menu/accessibility"
+@layout ComponentDemoLayout
+
+<AccessibilityInfo
+    KeyboardInteractions="@_keyboard"
+    AriaAttributes="@_aria"
+    ScreenReaderNotes="@_screenReader" />
+
+@code {
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Up Arrow", "Moves focus to the previous menu item"),
+        ("Down Arrow", "Moves focus to the next menu item"),
+        ("Enter", "Activates the focused menu item and closes the menu"),
+        ("Space", "Activates the focused menu item and closes the menu"),
+        ("Escape", "Closes the menu and returns focus to the trigger"),
+        ("Home", "Moves focus to the first menu item"),
+        ("End", "Moves focus to the last menu item"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"menu\"", "Applied to the menu container to identify it as a menu widget"),
+        ("role=\"menuitem\"", "Applied to each item within the menu"),
+        ("aria-expanded=\"true/false\"", "Applied to the trigger button to indicate whether the menu is open"),
+        ("aria-haspopup=\"menu\"", "Applied to the trigger button to indicate it opens a menu"),
+        ("aria-disabled=\"true\"", "Applied to disabled menu items"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "The menu trigger button announces that it has a popup menu and whether it is expanded.",
+        "When the menu opens, focus moves to the first menu item and it is announced.",
+        "Each menu item is announced with its text content and position in the menu.",
+        "Disabled menu items are announced as \"dimmed\" or \"unavailable\".",
+        "Closing the menu returns focus to the trigger button.",
+    ];
+}

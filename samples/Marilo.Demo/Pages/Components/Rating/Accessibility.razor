@@ -1,0 +1,35 @@
+@page "/components/rating/accessibility"
+@layout ComponentDemoLayout
+
+<AccessibilityInfo
+    KeyboardInteractions="@_keyboard"
+    AriaAttributes="@_aria"
+    ScreenReaderNotes="@_screenReader" />
+
+@code {
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus to the rating component"),
+        ("Shift + Tab", "Moves focus to the previous focusable element"),
+        ("Arrow Right / Arrow Up", "Increases the rating by one star"),
+        ("Arrow Left / Arrow Down", "Decreases the rating by one star"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"radiogroup\"", "Groups the individual star elements as a rating control"),
+        ("aria-label", "Provides an accessible name for the rating group"),
+        ("aria-valuenow", "Reflects the current rating value"),
+        ("aria-valuemin", "Reflects the minimum rating value"),
+        ("aria-valuemax", "Reflects the maximum rating value set by the Max parameter"),
+        ("aria-disabled=\"true\"", "Applied when the Disabled parameter is set"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "The rating component is announced as a group with its current value and maximum.",
+        "Individual stars are announced as radio buttons with their position (e.g., \"3 of 5\").",
+        "Value changes are announced as the user navigates with arrow keys.",
+        "Read-only and disabled ratings are announced with their respective states.",
+    ];
+}

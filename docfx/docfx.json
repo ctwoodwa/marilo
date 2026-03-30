@@ -35,7 +35,7 @@
     ],
     "resource": [
       {
-        "files": ["images/**"]
+        "files": ["images/**", "logo.svg"]
       }
     ],
     "output": "_site",

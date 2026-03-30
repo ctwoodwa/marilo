@@ -1,0 +1,38 @@
+@page "/components/segmented-control/events"
+@layout ComponentDemoLayout
+
+<DemoSection Title="ValueChanged" Description="Handle selection changes with the ValueChanged callback." Code="@_changedCode">
+    <MariloSegmentedControl Value="@_mode" ValueChanged="@OnModeChanged">
+        <MariloSegmentedItem Value="Light">Light</MariloSegmentedItem>
+        <MariloSegmentedItem Value="Dark">Dark</MariloSegmentedItem>
+        <MariloSegmentedItem Value="System">System</MariloSegmentedItem>
+    </MariloSegmentedControl>
+    <p><strong>Mode:</strong> @_mode (changed @_changeCount times)</p>
+</DemoSection>
+
+@code {
+    private string _mode = "Light";
+    private int _changeCount;
+
+    private void OnModeChanged(string value)
+    {
+        _mode = value;
+        _changeCount++;
+    }
+
+    private const string _changedCode =
+        "<MariloSegmentedControl Value=\"@_mode\" ValueChanged=\"@OnModeChanged\">\n" +
+        "    <MariloSegmentedItem Value=\"Light\">Light</MariloSegmentedItem>\n" +
+        "    <MariloSegmentedItem Value=\"Dark\">Dark</MariloSegmentedItem>\n" +
+        "    <MariloSegmentedItem Value=\"System\">System</MariloSegmentedItem>\n" +
+        "</MariloSegmentedControl>\n\n" +
+        "@code {\n" +
+        "    private string _mode = \"Light\";\n" +
+        "    private int _changeCount;\n\n" +
+        "    private void OnModeChanged(string value)\n" +
+        "    {\n" +
+        "        _mode = value;\n" +
+        "        _changeCount++;\n" +
+        "    }\n" +
+        "}";
+}

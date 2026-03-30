@@ -1,0 +1,44 @@
+@page "/components/text-field/appearance"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Adornments" Description="Prefix and suffix adornments enhance inputs with icons, labels, or actions." Code="@_adornmentsCode">
+    <MariloField>
+        <MariloLabel>Email</MariloLabel>
+        <MariloTextField Value="@_email" ValueChanged="@(v => _email = v)" Placeholder="Enter email" InputType="email" ShowPrefixSeparator="true">
+            <Prefix>
+                <MariloIcon Name="mail" Size="IconSize.Small" />
+            </Prefix>
+        </MariloTextField>
+    </MariloField>
+    <MariloField>
+        <MariloLabel>Website</MariloLabel>
+        <MariloTextField Value="@_website" ValueChanged="@(v => _website = v)" Placeholder="example.com" ShowPrefixSeparator="true">
+            <Prefix><span>https://</span></Prefix>
+        </MariloTextField>
+    </MariloField>
+    <MariloField>
+        <MariloLabel>Price</MariloLabel>
+        <MariloTextField Value="@_price" ValueChanged="@(v => _price = v)" Placeholder="0.00">
+            <Prefix><span>$</span></Prefix>
+            <Suffix><span>USD</span></Suffix>
+        </MariloTextField>
+    </MariloField>
+</DemoSection>
+
+@code {
+    private string _email = "";
+    private string _website = "";
+    private string _price = "";
+
+    private const string _adornmentsCode =
+        "<MariloTextField Value=\"@_email\" Placeholder=\"Enter email\" ShowPrefixSeparator=\"true\">\n" +
+        "    <Prefix><MariloIcon Name=\"mail\" Size=\"IconSize.Small\" /></Prefix>\n" +
+        "</MariloTextField>\n\n" +
+        "<MariloTextField Value=\"@_website\" Placeholder=\"example.com\" ShowPrefixSeparator=\"true\">\n" +
+        "    <Prefix><span>https://</span></Prefix>\n" +
+        "</MariloTextField>\n\n" +
+        "<MariloTextField Value=\"@_price\" Placeholder=\"0.00\">\n" +
+        "    <Prefix><span>$</span></Prefix>\n" +
+        "    <Suffix><span>USD</span></Suffix>\n" +
+        "</MariloTextField>";
+}

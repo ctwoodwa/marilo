@@ -60,12 +60,26 @@ public class FluentUICssProvider : IMariloCssProvider
             .AddClass("mar-accordion-item--expanded", isExpanded)
             .Build();
 
-    public string TabsClass() => "mar-tabs";
+    public string TabsClass(TabPosition position, TabAlignment alignment, TabSize size) =>
+        new CssClassBuilder()
+            .AddClass("mar-tabs")
+            .AddClass($"mar-tabs--{position.ToString().ToLower()}", position != TabPosition.Top)
+            .AddClass($"mar-tabs--align-{alignment.ToString().ToLower()}", alignment != TabAlignment.Start)
+            .AddClass($"mar-tabs--{size.ToString().ToLower()}", size != TabSize.Medium)
+            .Build();
 
-    public string TabPanelClass(bool isActive) =>
+    public string TabClass(bool isActive, bool isDisabled) =>
+        new CssClassBuilder()
+            .AddClass("mar-tab")
+            .AddClass("mar-tab--active", isActive)
+            .AddClass("mar-tab--disabled", isDisabled)
+            .Build();
+
+    public string TabPanelClass(bool isActive, bool persistContent) =>
         new CssClassBuilder()
             .AddClass("mar-tab-panel")
             .AddClass("mar-tab-panel--active", isActive)
+            .AddClass("mar-tab-panel--hidden", persistContent && !isActive)
             .Build();
 
     public string StepperClass() => "mar-stepper";

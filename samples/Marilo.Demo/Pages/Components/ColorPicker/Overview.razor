@@ -1,0 +1,21 @@
+@page "/components/color-picker"
+@page "/components/color-picker/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <MariloColorPicker Value="@_color" ValueChanged="@(v => _color = v)" />
+    <div style="width: 48px; height: 48px; background: @_color; border-radius: 4px; margin-top: 8px;"></div>
+    <p><strong>Selected color:</strong> @_color</p>
+</DemoSection>
+
+@code {
+    private string _color = "#0078d4";
+
+    private const string _basicCode =
+        "<MariloColorPicker Value=\"@_color\" ValueChanged=\"@(v => _color = v)\" />\n" +
+        "<div style=\"width: 48px; height: 48px; background: @_color; border-radius: 4px; margin-top: 8px;\"></div>\n" +
+        "<p><strong>Selected color:</strong> @_color</p>\n\n" +
+        "@code {\n" +
+        "    private string _color = \"#0078d4\";\n" +
+        "}";
+}

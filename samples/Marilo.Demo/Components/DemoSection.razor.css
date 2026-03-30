@@ -1,104 +1,135 @@
-/* ── Story block (Storybook-style) ── */
-.story {
-    margin-bottom: 40px;
+/* ── Demo Panel ── */
+.demo-panel {
+    margin-bottom: 36px;
+    scroll-margin-top: 80px;
 }
 
-.story-header {
+.demo-panel-header {
     margin-bottom: 12px;
 }
 
-.story-title {
+.demo-panel-title {
     font-size: 1rem;
     font-weight: 600;
     margin: 0 0 4px;
-    color: var(--app-text);
+    color: var(--color-text);
 }
 
-.story-desc {
-    font-size: 0.8125rem;
-    color: var(--app-text-muted);
+.demo-panel-desc {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
     margin: 0;
-    line-height: 1.55;
+    line-height: 1.5;
 }
 
-/* Canvas area */
-.story-canvas {
-    border: 1px solid var(--app-border);
-    border-radius: 8px;
+/* ── Card container ── */
+.demo-panel-card {
+    border: 1px solid var(--color-border);
+    border-radius: 0.375rem;
     overflow: hidden;
-    background: var(--app-surface-raised);
-    transition: border-color 250ms ease;
+    background: var(--color-surface);
+    transition: border-color 0.15s ease-in-out;
 }
 
-.story-preview {
-    padding: 24px;
-    min-height: 48px;
-}
-
-/* Bottom toolbar */
-.story-toolbar {
+/* ── Top tab bar ── */
+.demo-panel-tabs {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 6px 12px;
-    border-top: 1px solid var(--app-border);
-    background: var(--app-surface);
-    transition: background 250ms ease, border-color 250ms ease;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg-alt);
+    padding: 0 8px;
+    min-height: 40px;
+    transition: background 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
 
-.story-code-toggle {
+.demo-panel-tab-group {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    height: 40px;
+}
+
+.demo-panel-tab {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
+    padding: 0 14px;
     border: none;
-    border-radius: 4px;
+    border-bottom: 2px solid transparent;
     background: none;
-    color: var(--app-text-muted);
+    color: var(--color-text-muted);
     font-size: 0.75rem;
-    font-weight: 500;
+    font-weight: 600;
     font-family: inherit;
+    letter-spacing: 0.03em;
     cursor: pointer;
-    transition: color 180ms ease, background 180ms ease;
+    transition: color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+    margin-bottom: -1px;
 }
-.story-code-toggle:hover { color: var(--app-text); background: var(--app-primary-soft); }
-.story-code-toggle.active { color: var(--app-primary); }
 
-.story-copy-btn {
+.demo-panel-tab:hover {
+    color: var(--color-text);
+}
+
+.demo-panel-tab.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+}
+
+/* ── Right-side actions ── */
+.demo-panel-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.demo-panel-action {
     display: inline-flex;
     align-items: center;
     gap: 5px;
     padding: 4px 10px;
     border: none;
-    border-radius: 4px;
+    border-radius: 0.375rem;
     background: none;
-    color: var(--app-text-muted);
+    color: var(--color-text-muted);
     font-size: 0.75rem;
     font-weight: 500;
     font-family: inherit;
     cursor: pointer;
-    transition: color 180ms ease, background 180ms ease;
-}
-.story-copy-btn:hover { color: var(--app-primary); background: var(--app-primary-soft); }
-
-/* Code block */
-.story-code {
-    border-top: 1px solid var(--app-border);
+    transition: color 0.15s ease-in-out, background 0.15s ease-in-out;
 }
 
-.story-pre {
+.demo-panel-action:hover {
+    color: var(--color-primary);
+    background: var(--color-primary-soft);
+}
+
+/* ── Preview area ── */
+.demo-panel-preview {
+    padding: 24px;
+    min-height: 48px;
+    background: var(--color-surface);
+    transition: background 0.15s ease-in-out;
+}
+
+/* ── Source code area ── */
+.demo-panel-source {
+    background: #1b1b1f;
+}
+
+.demo-panel-pre {
     margin: 0;
     padding: 16px 20px;
     overflow-x: auto;
-    font-size: 0.8125rem;
-    line-height: 1.6;
+    font-size: 0.875rem;
+    line-height: 1.5;
     background: #1b1b1f !important;
-    max-height: 400px;
+    max-height: 480px;
 }
 
-::deep .story-pre code {
+::deep .demo-panel-pre code {
     font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
-    font-size: 0.8125rem;
+    font-size: 0.875rem;
     background: none !important;
     padding: 0 !important;
 }

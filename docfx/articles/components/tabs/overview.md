@@ -13,7 +13,7 @@ The `MariloTabs` component displays a horizontal tab strip and shows the content
 ## Creating Tabs
 
 ````razor
-<MariloTabs @bind-ActiveIndex="activeTab">
+<MariloTabs @bind-ActiveTabIndex="activeTab">
     <MariloTabPanel Title="Profile">
         <p>Profile content goes here.</p>
     </MariloTabPanel>
@@ -33,7 +33,7 @@ The `MariloTabs` component displays a horizontal tab strip and shows the content
 ## Features
 
 - **Automatic tab strip** -- Tab buttons are rendered from the `Title` property of each `MariloTabPanel`.
-- **Two-way binding** -- Use `@bind-ActiveIndex` to synchronize the selected tab with your code.
+- **Two-way binding** -- Use `@bind-ActiveTabIndex` to synchronize the selected tab with your code.
 - **Dynamic panels** -- Add or remove `MariloTabPanel` children at runtime; the tab strip updates automatically.
 - **Accessibility** -- Uses `role="tablist"` and `aria-selected` attributes.
 
@@ -43,8 +43,8 @@ The `MariloTabs` component displays a horizontal tab strip and shows the content
 
 | Name | Type | Default | Description |
 |---|---|---|---|
-| `ActiveIndex` | `int` | `0` | The zero-based index of the currently active tab. |
-| `ActiveIndexChanged` | `EventCallback<int>` | -- | Callback fired when the active tab changes. Used by `@bind-ActiveIndex`. |
+| `ActiveTabIndex` | `int` | `0` | The zero-based index of the currently active tab. |
+| `ActiveTabIndexChanged` | `EventCallback<int>` | -- | Callback fired when the active tab changes. Used by `@bind-ActiveTabIndex`. |
 | `ChildContent` | `RenderFragment?` | `null` | The `MariloTabPanel` children. |
 
 ### MariloTabPanel

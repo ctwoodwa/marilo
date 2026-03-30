@@ -1,0 +1,27 @@
+@page "/components/stack/accessibility"
+@layout ComponentDemoLayout
+
+<AccessibilityInfo
+    KeyboardInteractions="@_keyboard"
+    AriaAttributes="@_aria"
+    ScreenReaderNotes="@_screenReader" />
+
+@code {
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus through interactive items within the stack"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"group\"", "Use when the stack contains related items that should be grouped semantically"),
+        ("aria-label", "Provides an accessible name for the group when role=\"group\" is applied"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "Use role=\"group\" to associate related items so screen readers announce them as a group.",
+        "Content within the stack is read in document order regardless of visual direction.",
+        "Provide an aria-label when using role=\"group\" to describe the purpose of the grouped items.",
+    ];
+}

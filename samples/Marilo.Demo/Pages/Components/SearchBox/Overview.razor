@@ -1,0 +1,25 @@
+@page "/components/search-box"
+@page "/components/search-box/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <MariloSearchBox Value="@_search" ValueChanged="@(v => _search = v)" Placeholder="Search..." />
+    @if (!string.IsNullOrEmpty(_search))
+    {
+        <p><strong>Search term:</strong> @_search</p>
+    }
+</DemoSection>
+
+@code {
+    private string _search = "";
+
+    private const string _basicCode =
+        "<MariloSearchBox Value=\"@_search\" ValueChanged=\"@(v => _search = v)\" Placeholder=\"Search...\" />\n" +
+        "@if (!string.IsNullOrEmpty(_search))\n" +
+        "{\n" +
+        "    <p><strong>Search term:</strong> @_search</p>\n" +
+        "}\n\n" +
+        "@code {\n" +
+        "    private string _search = \"\";\n" +
+        "}";
+}

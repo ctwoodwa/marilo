@@ -1,0 +1,20 @@
+@page "/components/breadcrumb"
+@page "/components/breadcrumb/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <MariloBreadcrumb>
+        <MariloBreadcrumbItem Href="/">Home</MariloBreadcrumbItem>
+        <MariloBreadcrumbItem Href="/components">Components</MariloBreadcrumbItem>
+        <MariloBreadcrumbItem IsActive="true">Breadcrumb</MariloBreadcrumbItem>
+    </MariloBreadcrumb>
+</DemoSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloBreadcrumb>\n" +
+        "    <MariloBreadcrumbItem Href=\"/\">Home</MariloBreadcrumbItem>\n" +
+        "    <MariloBreadcrumbItem Href=\"/components\">Components</MariloBreadcrumbItem>\n" +
+        "    <MariloBreadcrumbItem IsActive=\"true\">Breadcrumb</MariloBreadcrumbItem>\n" +
+        "</MariloBreadcrumb>";
+}

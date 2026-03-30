@@ -1,0 +1,40 @@
+@page "/components/stepper/appearance"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Vertical Orientation" Description="Display stepper steps in a vertical layout." Code="@_verticalCode">
+    <MariloStepper ActiveStep="@_verticalStep" Orientation="StepperOrientation.Vertical">
+        <MariloStep Title="Step 1" Description="First step description" />
+        <MariloStep Title="Step 2" Description="Second step description" />
+        <MariloStep Title="Step 3" Description="Third step description" />
+    </MariloStepper>
+    <div class="demo-row">
+        <MariloButton Disabled="@(_verticalStep <= 0)" OnClick="@(() => _verticalStep--)">Previous</MariloButton>
+        <MariloButton Disabled="@(_verticalStep >= 2)" OnClick="@(() => _verticalStep++)">Next</MariloButton>
+    </div>
+</DemoSection>
+
+<DemoSection Title="With Descriptions" Description="Steps can include descriptive text below the title." Code="@_descCode">
+    <MariloStepper ActiveStep="1">
+        <MariloStep Title="Completed" Description="This step is done" />
+        <MariloStep Title="In Progress" Description="Currently active" />
+        <MariloStep Title="Pending" Description="Not yet started" />
+    </MariloStepper>
+</DemoSection>
+
+@code {
+    private int _verticalStep;
+
+    private const string _verticalCode =
+        "<MariloStepper ActiveStep=\"@_step\" Orientation=\"StepperOrientation.Vertical\">\n" +
+        "    <MariloStep Title=\"Step 1\" Description=\"First step description\" />\n" +
+        "    <MariloStep Title=\"Step 2\" Description=\"Second step description\" />\n" +
+        "    <MariloStep Title=\"Step 3\" Description=\"Third step description\" />\n" +
+        "</MariloStepper>";
+
+    private const string _descCode =
+        "<MariloStepper ActiveStep=\"1\">\n" +
+        "    <MariloStep Title=\"Completed\" Description=\"This step is done\" />\n" +
+        "    <MariloStep Title=\"In Progress\" Description=\"Currently active\" />\n" +
+        "    <MariloStep Title=\"Pending\" Description=\"Not yet started\" />\n" +
+        "</MariloStepper>";
+}

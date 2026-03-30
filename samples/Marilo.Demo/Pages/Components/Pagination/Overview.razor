@@ -1,0 +1,19 @@
+@page "/components/pagination"
+@page "/components/pagination/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <MariloPagination TotalPages="10" CurrentPage="@_page" CurrentPageChanged="@(v => _page = v)" />
+    <p><strong>Current page:</strong> @_page</p>
+</DemoSection>
+
+@code {
+    private int _page = 1;
+
+    private const string _basicCode =
+        "<MariloPagination TotalPages=\"10\" CurrentPage=\"@_page\" CurrentPageChanged=\"@(v => _page = v)\" />\n" +
+        "<p><strong>Current page:</strong> @_page</p>\n\n" +
+        "@code {\n" +
+        "    private int _page = 1;\n" +
+        "}";
+}

@@ -21,8 +21,9 @@ public interface IMariloCssProvider
     string AppBarClass(AppBarPosition position);
     string AccordionClass();
     string AccordionItemClass(bool isExpanded);
-    string TabsClass();
-    string TabPanelClass(bool isActive);
+    string TabsClass(TabPosition position, TabAlignment alignment, TabSize size);
+    string TabClass(bool isActive, bool isDisabled);
+    string TabPanelClass(bool isActive, bool persistContent);
     string StepperClass();
     string StepClass(StepStatus status);
     string SplitterClass(StackDirection orientation);

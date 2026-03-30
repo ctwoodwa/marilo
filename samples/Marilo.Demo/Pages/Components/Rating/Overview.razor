@@ -1,0 +1,19 @@
+@page "/components/rating"
+@page "/components/rating/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <MariloRating Value="@_rating" ValueChanged="@(v => _rating = v)" Max="5" />
+    <p><strong>@_rating of 5 stars</strong></p>
+</DemoSection>
+
+@code {
+    private int _rating = 3;
+
+    private const string _basicCode =
+        "<MariloRating Value=\"@_rating\" ValueChanged=\"@(v => _rating = v)\" Max=\"5\" />\n" +
+        "<p><strong>@_rating of 5 stars</strong></p>\n\n" +
+        "@code {\n" +
+        "    private int _rating = 3;\n" +
+        "}";
+}

@@ -1,0 +1,20 @@
+@page "/components/button-group"
+@page "/components/button-group/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <MariloButtonGroup>
+        <MariloButton Variant="ButtonVariant.Secondary">Left</MariloButton>
+        <MariloButton Variant="ButtonVariant.Secondary">Center</MariloButton>
+        <MariloButton Variant="ButtonVariant.Secondary">Right</MariloButton>
+    </MariloButtonGroup>
+</DemoSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloButtonGroup>\n" +
+        "    <MariloButton Variant=\"ButtonVariant.Secondary\">Left</MariloButton>\n" +
+        "    <MariloButton Variant=\"ButtonVariant.Secondary\">Center</MariloButton>\n" +
+        "    <MariloButton Variant=\"ButtonVariant.Secondary\">Right</MariloButton>\n" +
+        "</MariloButtonGroup>";
+}

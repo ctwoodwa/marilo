@@ -1,30 +1,128 @@
+@using Marilo.Core.Enums
 @inherits MariloComponentBase
 
-<div class="@CombineClasses(CssProvider.TabsClass())" style="@CombineStyles()" @attributes="AdditionalAttributes">
-    <div role="tablist" class="mar-tabs__list">
+@{
+    var isVertical = TabPosition == TabPosition.Left || TabPosition == TabPosition.Right;
+    var tabsClass = CombineClasses(CssProvider.TabsClass(TabPosition, TabAlignment, Size));
+    var dimensionStyle = StyleBuilder.Clear()
+        .AddStyle("width", Width!, !string.IsNullOrEmpty(Width))
+        .AddStyle("height", Height!, !string.IsNullOrEmpty(Height))
+        .Build();
+    var rootStyle = CombineStyles(dimensionStyle);
+}
+
+<div class="@tabsClass" style="@rootStyle" @attributes="AdditionalAttributes">
+    @if (TabPosition == TabPosition.Bottom)
+    {
+        <CascadingValue Value="this" IsFixed="true">
+            @ChildContent
+        </CascadingValue>
+    }
+
+    <div role="tablist"
+         class="mar-tabs__list"
+         aria-orientation="@(isVertical ? "vertical" : "horizontal")">
         @for (var i = 0; i < _panels.Count; i++)
         {
             var index = i;
             var panel = _panels[i];
+
+            if (!panel.Visible)
+                continue;
+
+            var tabId = panel.GetTabId();
+            var panelId = panel.GetPanelId();
+            var isActive = IsPanelActive(panel);
+
             <button role="tab"
-                    class="@CssProvider.TabPanelClass(index == ActiveIndex)"
-                    aria-selected="@(index == ActiveIndex)"
-                    @onclick="() => SetActive(index)">
-                @panel.Title
+                    id="@tabId"
+                    class="@CssProvider.TabClass(isActive, panel.Disabled)"
+                    aria-selected="@isActive.ToString().ToLower()"
+                    aria-controls="@panelId"
+                    disabled="@panel.Disabled"
+                    @onclick="() => SetActive(index, panel)">
+                @if (panel.HeaderTemplate != null)
+                {
+                    @panel.HeaderTemplate
+                }
+                else
+                {
+                    @panel.Title
+                }
             </button>
         }
     </div>
-    <CascadingValue Value="this">
-        @ChildContent
-    </CascadingValue>
+
+    @if (TabPosition != TabPosition.Bottom)
+    {
+        <CascadingValue Value="this" IsFixed="true">
+            @ChildContent
+        </CascadingValue>
+    }
 </div>
 
 @code {
     private readonly List<MariloTabPanel> _panels = [];
 
-    [Parameter] public int ActiveIndex { get; set; }
-    [Parameter] public EventCallback<int> ActiveIndexChanged { get; set; }
+    /// <summary>
+    /// The index of the currently active tab. Supports two-way binding.
+    /// Use <see cref="ActiveTabId"/> instead for dynamic tab scenarios.
+    /// </summary>
+    [Parameter] public int ActiveTabIndex { get; set; }
+
+    /// <summary>
+    /// Fires when the active tab index changes.
+    /// </summary>
+    [Parameter] public EventCallback<int> ActiveTabIndexChanged { get; set; }
+
+    /// <summary>
+    /// The ID of the currently active tab. If not set, the first tab is active.
+    /// Supports two-way binding. Do not use together with <see cref="ActiveTabIndex"/>.
+    /// </summary>
+    [Parameter] public string? ActiveTabId { get; set; }
+
+    /// <summary>
+    /// Fires when the active tab ID changes.
+    /// </summary>
+    [Parameter] public EventCallback<string> ActiveTabIdChanged { get; set; }
+
+    /// <summary>
+    /// Controls the position of the tab list relative to the content.
+    /// </summary>
+    [Parameter] public TabPosition TabPosition { get; set; } = TabPosition.Top;
+
+    /// <summary>
+    /// Controls the alignment of the tabs within the tab list.
+    /// </summary>
+    [Parameter] public TabAlignment TabAlignment { get; set; } = TabAlignment.Start;
+
+    /// <summary>
+    /// Controls the size of the tabs.
+    /// </summary>
+    [Parameter] public TabSize Size { get; set; } = TabSize.Medium;
+
+    /// <summary>
+    /// Whether to keep inactive tab content in the DOM (hidden with CSS)
+    /// instead of removing it.
+    /// </summary>
+    [Parameter] public bool PersistTabContent { get; set; }
+
+    /// <summary>
+    /// The width of the component (e.g., "300px", "100%").
+    /// </summary>
+    [Parameter] public string? Width { get; set; }
+
+    /// <summary>
+    /// The height of the component (e.g., "400px", "100%").
+    /// </summary>
+    [Parameter] public string? Height { get; set; }
+
+    /// <summary>
+    /// The content of the TabStrip, typically <see cref="MariloTabPanel"/> components.
+    /// </summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    internal bool PersistContent => PersistTabContent;
 
     internal void RegisterPanel(MariloTabPanel panel)
     {
@@ -41,11 +139,41 @@
         StateHasChanged();
     }
 
-    internal bool IsPanelActive(MariloTabPanel panel) => _panels.IndexOf(panel) == ActiveIndex;
-
-    private async Task SetActive(int index)
+    internal bool IsPanelActive(MariloTabPanel panel)
     {
-        ActiveIndex = index;
-        await ActiveIndexChanged.InvokeAsync(index);
+        // If ActiveTabId is set, use ID-based matching
+        if (!string.IsNullOrEmpty(ActiveTabId))
+        {
+            return panel.Id == ActiveTabId;
+        }
+
+        // Fall back to index-based matching
+        var visibleIndex = 0;
+        foreach (var p in _panels)
+        {
+            if (!p.Visible) continue;
+            if (p == panel) return visibleIndex == ActiveTabIndex;
+            visibleIndex++;
+        }
+        return false;
     }
+
+    private async Task SetActive(int visibleIndex, MariloTabPanel panel)
+    {
+        if (panel.Disabled) return;
+
+        if (!string.IsNullOrEmpty(ActiveTabId) || ActiveTabIdChanged.HasDelegate)
+        {
+            ActiveTabId = panel.Id;
+            await ActiveTabIdChanged.InvokeAsync(panel.Id);
+        }
+
+        ActiveTabIndex = visibleIndex;
+        await ActiveTabIndexChanged.InvokeAsync(visibleIndex);
+    }
+
+    /// <summary>
+    /// Forces the component to re-render.
+    /// </summary>
+    public void Refresh() => StateHasChanged();
 }

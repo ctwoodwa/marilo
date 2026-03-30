@@ -1,0 +1,30 @@
+@page "/components/card"
+@page "/components/card/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <div class="demo-card-grid">
+        @for (var i = 1; i <= 3; i++)
+        {
+            var idx = i;
+            <MariloCard>
+                <MariloCardHeader>Card @idx</MariloCardHeader>
+                <MariloCardBody>Card body content for item @idx. This shows the basic card structure.</MariloCardBody>
+                <MariloCardActions>
+                    <MariloButton Variant="ButtonVariant.Primary" Size="ButtonSize.Small">Action</MariloButton>
+                </MariloCardActions>
+            </MariloCard>
+        }
+    </div>
+</DemoSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloCard>\n" +
+        "    <MariloCardHeader>Title</MariloCardHeader>\n" +
+        "    <MariloCardBody>Card body content.</MariloCardBody>\n" +
+        "    <MariloCardActions>\n" +
+        "        <MariloButton Variant=\"ButtonVariant.Primary\" Size=\"ButtonSize.Small\">Action</MariloButton>\n" +
+        "    </MariloCardActions>\n" +
+        "</MariloCard>";
+}

@@ -1,0 +1,19 @@
+@page "/components/chip/appearance"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Variants" Description="Chips come in several variants to convey different meanings." Code="@_variantsCode">
+    <div class="demo-row">
+        <MariloChip Label="Default" />
+        <MariloChip Variant="ChipVariant.Primary" Label="Primary" />
+        <MariloChip Variant="ChipVariant.Danger" Label="Danger" />
+        <MariloChip Variant="ChipVariant.Success" Label="Selected" IsSelected="true" />
+    </div>
+</DemoSection>
+
+@code {
+    private const string _variantsCode =
+        "<MariloChip Label=\"Default\" />\n" +
+        "<MariloChip Variant=\"ChipVariant.Primary\" Label=\"Primary\" />\n" +
+        "<MariloChip Variant=\"ChipVariant.Danger\" Label=\"Danger\" />\n" +
+        "<MariloChip Variant=\"ChipVariant.Success\" Label=\"Selected\" IsSelected=\"true\" />";
+}

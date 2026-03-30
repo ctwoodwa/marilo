@@ -1,0 +1,36 @@
+@page "/components/card/appearance"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Card with Image" Description="Cards can include images to provide visual context." Code="@_imageCode">
+    <MariloCard>
+        <MariloCardHeader>Featured Card</MariloCardHeader>
+        <MariloCardBody>This card demonstrates a styled card layout with header, body, and action sections.</MariloCardBody>
+        <MariloCardActions>
+            <MariloButton Variant="ButtonVariant.Primary" Size="ButtonSize.Small">Learn More</MariloButton>
+            <MariloButton Variant="ButtonVariant.Secondary" Size="ButtonSize.Small">Dismiss</MariloButton>
+        </MariloCardActions>
+    </MariloCard>
+</DemoSection>
+
+<DemoSection Title="Compact Card" Description="Cards with minimal content for quick display." Code="@_compactCode">
+    <MariloCard>
+        <MariloCardBody>A simple compact card with body content only.</MariloCardBody>
+    </MariloCard>
+</DemoSection>
+
+@code {
+    private const string _imageCode =
+        "<MariloCard>\n" +
+        "    <MariloCardHeader>Featured Card</MariloCardHeader>\n" +
+        "    <MariloCardBody>Card body with description.</MariloCardBody>\n" +
+        "    <MariloCardActions>\n" +
+        "        <MariloButton Variant=\"ButtonVariant.Primary\" Size=\"ButtonSize.Small\">Learn More</MariloButton>\n" +
+        "        <MariloButton Variant=\"ButtonVariant.Secondary\" Size=\"ButtonSize.Small\">Dismiss</MariloButton>\n" +
+        "    </MariloCardActions>\n" +
+        "</MariloCard>";
+
+    private const string _compactCode =
+        "<MariloCard>\n" +
+        "    <MariloCardBody>A simple compact card with body content only.</MariloCardBody>\n" +
+        "</MariloCard>";
+}

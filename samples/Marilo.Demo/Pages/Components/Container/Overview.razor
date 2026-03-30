@@ -1,0 +1,16 @@
+@page "/components/container"
+@page "/components/container/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <MariloContainer>
+        <MariloAlert Variant="AlertVariant.Info">This alert is inside a container that centers and constrains its width.</MariloAlert>
+    </MariloContainer>
+</DemoSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloContainer>\n" +
+        "    <MariloAlert Variant=\"AlertVariant.Info\">This alert is inside a container.</MariloAlert>\n" +
+        "</MariloContainer>";
+}

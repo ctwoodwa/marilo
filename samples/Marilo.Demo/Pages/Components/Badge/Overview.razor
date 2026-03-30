@@ -1,0 +1,16 @@
+@page "/components/badge"
+@page "/components/badge/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Description="Badges display short labels or counts." Code="@_basicCode">
+    <div class="demo-row">
+        <MariloBadge>Default</MariloBadge>
+        <MariloBadge Variant="BadgeVariant.Primary">Primary</MariloBadge>
+    </div>
+</DemoSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloBadge>Default</MariloBadge>\n" +
+        "<MariloBadge Variant=\"BadgeVariant.Primary\">Primary</MariloBadge>";
+}

@@ -1,0 +1,17 @@
+@page "/components/slider"
+@page "/components/slider/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <MariloField>
+        <MariloLabel>Volume</MariloLabel>
+        <MariloSlider Value="@_sliderValue" ValueChanged="@(v => _sliderValue = v)" Min="0" Max="100" Step="5" />
+    </MariloField>
+</DemoSection>
+
+@code {
+    private double _sliderValue = 50;
+
+    private const string _basicCode =
+        "<MariloSlider Value=\"@_sliderValue\" ValueChanged=\"@(v => _sliderValue = v)\" Min=\"0\" Max=\"100\" Step=\"5\" />";
+}

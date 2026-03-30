@@ -1,0 +1,20 @@
+@page "/components/text-area"
+@page "/components/text-area/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <MariloField>
+        <MariloLabel>Description</MariloLabel>
+        <MariloTextArea Value="@_description" ValueChanged="@(v => _description = v)" Rows="4" Placeholder="Enter a description" />
+    </MariloField>
+</DemoSection>
+
+@code {
+    private string _description = "";
+
+    private const string _basicCode =
+        "<MariloField>\n" +
+        "    <MariloLabel>Description</MariloLabel>\n" +
+        "    <MariloTextArea Value=\"@_description\" ValueChanged=\"@(v => _description = v)\" Rows=\"4\" Placeholder=\"Enter a description\" />\n" +
+        "</MariloField>";
+}

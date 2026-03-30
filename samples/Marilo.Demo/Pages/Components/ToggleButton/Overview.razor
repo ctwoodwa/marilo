@@ -1,0 +1,27 @@
+@page "/components/toggle-button"
+@page "/components/toggle-button/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <div class="demo-row">
+        <MariloToggleButton IsSelected="@_bold" IsSelectedChanged="@((bool v) => _bold = v)">Bold</MariloToggleButton>
+        <MariloToggleButton IsSelected="@_italic" IsSelectedChanged="@((bool v) => _italic = v)">Italic</MariloToggleButton>
+        <MariloToggleButton IsSelected="@_underline" IsSelectedChanged="@((bool v) => _underline = v)">Underline</MariloToggleButton>
+    </div>
+    <p style="font-weight: @(_bold ? "bold" : "normal"); font-style: @(_italic ? "italic" : "normal"); text-decoration: @(_underline ? "underline" : "none");">
+        Preview text
+    </p>
+</DemoSection>
+
+@code {
+    private bool _bold, _italic, _underline;
+
+    private const string _basicCode =
+        "<MariloToggleButton IsSelected=\"@_bold\" IsSelectedChanged=\"@(v => _bold = v)\">Bold</MariloToggleButton>\n" +
+        "<MariloToggleButton IsSelected=\"@_italic\" IsSelectedChanged=\"@(v => _italic = v)\">Italic</MariloToggleButton>\n" +
+        "<MariloToggleButton IsSelected=\"@_underline\" IsSelectedChanged=\"@(v => _underline = v)\">Underline</MariloToggleButton>\n" +
+        "<p>Preview text</p>\n\n" +
+        "@code {\n" +
+        "    private bool _bold, _italic, _underline;\n" +
+        "}";
+}

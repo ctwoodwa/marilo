@@ -1,0 +1,41 @@
+@page "/components/text-field"
+@page "/components/text-field/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <MariloField>
+        <MariloLabel>Name</MariloLabel>
+        <MariloTextField Value="@_name" ValueChanged="@(v => _name = v)" Placeholder="Enter your name" />
+    </MariloField>
+</DemoSection>
+
+<DemoSection Title="States" Code="@_statesCode">
+    <MariloField>
+        <MariloLabel>Invalid Input</MariloLabel>
+        <MariloTextField Value="" IsInvalid="true" Placeholder="This field has an error" />
+        <MariloValidation Severity="ValidationSeverity.Error" Message="This field is required." />
+    </MariloField>
+    <MariloField>
+        <MariloLabel>Disabled Input</MariloLabel>
+        <MariloTextField Value="Cannot edit" Disabled="true" />
+    </MariloField>
+</DemoSection>
+
+@code {
+    private string _name = "";
+
+    private const string _basicCode =
+        "<MariloField>\n" +
+        "    <MariloLabel>Name</MariloLabel>\n" +
+        "    <MariloTextField Value=\"@_name\" ValueChanged=\"@(v => _name = v)\" Placeholder=\"Enter your name\" />\n" +
+        "</MariloField>";
+
+    private const string _statesCode =
+        "<MariloField>\n" +
+        "    <MariloTextField Value=\"\" IsInvalid=\"true\" Placeholder=\"This field has an error\" />\n" +
+        "    <MariloValidation Severity=\"ValidationSeverity.Error\" Message=\"This field is required.\" />\n" +
+        "</MariloField>\n\n" +
+        "<MariloField>\n" +
+        "    <MariloTextField Value=\"Cannot edit\" Disabled=\"true\" />\n" +
+        "</MariloField>";
+}

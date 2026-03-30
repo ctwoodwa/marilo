@@ -1,0 +1,32 @@
+@page "/components/stepper/events"
+@layout ComponentDemoLayout
+
+<DemoSection Title="ActiveStepChanged" Description="Handle step changes with the ActiveStepChanged callback." Code="@_eventCode">
+    <MariloStepper ActiveStep="@_step" ActiveStepChanged="@OnStepChanged">
+        <MariloStep Title="Account" />
+        <MariloStep Title="Profile" />
+        <MariloStep Title="Review" />
+    </MariloStepper>
+    <p>Current step: @_step</p>
+</DemoSection>
+
+@code {
+    private int _step;
+
+    private void OnStepChanged(int step)
+    {
+        _step = step;
+    }
+
+    private const string _eventCode =
+        "<MariloStepper ActiveStep=\"@_step\" ActiveStepChanged=\"@OnStepChanged\">\n" +
+        "    <MariloStep Title=\"Account\" />\n" +
+        "    <MariloStep Title=\"Profile\" />\n" +
+        "    <MariloStep Title=\"Review\" />\n" +
+        "</MariloStepper>\n" +
+        "<p>Current step: @_step</p>\n\n" +
+        "@code {\n" +
+        "    private int _step;\n" +
+        "    private void OnStepChanged(int step) => _step = step;\n" +
+        "}";
+}

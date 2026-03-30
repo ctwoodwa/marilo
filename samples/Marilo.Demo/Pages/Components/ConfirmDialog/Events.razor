@@ -1,0 +1,47 @@
+@page "/components/confirm-dialog/events"
+@layout ComponentDemoLayout
+
+<DemoSection Title="OnConfirm / OnCancel" Description="Handle confirm and cancel actions with callbacks." Code="@_eventsCode">
+    <MariloButton Variant="ButtonVariant.Primary" OnClick="@(() => _confirmOpen = true)">Open Confirm Dialog</MariloButton>
+    <MariloConfirmDialog IsOpen="@_confirmOpen"
+                         Title="Confirm Changes"
+                         Message="Do you want to save your changes?"
+                         ConfirmText="Save"
+                         OnConfirm="@OnConfirm"
+                         OnCancel="@OnCancel" />
+    @if (!string.IsNullOrEmpty(_eventResult))
+    {
+        <p style="margin-top: 8px;">Last action: <strong>@_eventResult</strong></p>
+    }
+</DemoSection>
+
+@code {
+    private bool _confirmOpen;
+    private string? _eventResult;
+
+    private void OnConfirm()
+    {
+        _confirmOpen = false;
+        _eventResult = $"Confirmed at {DateTime.Now:HH:mm:ss}";
+    }
+
+    private void OnCancel()
+    {
+        _confirmOpen = false;
+        _eventResult = $"Cancelled at {DateTime.Now:HH:mm:ss}";
+    }
+
+    private const string _eventsCode =
+        "<MariloButton OnClick=\"@(() => _confirmOpen = true)\">Open Confirm Dialog</MariloButton>\n" +
+        "<MariloConfirmDialog IsOpen=\"@_confirmOpen\"\n" +
+        "                     Title=\"Confirm Changes\"\n" +
+        "                     Message=\"Do you want to save your changes?\"\n" +
+        "                     ConfirmText=\"Save\"\n" +
+        "                     OnConfirm=\"@OnConfirm\"\n" +
+        "                     OnCancel=\"@OnCancel\" />\n\n" +
+        "@code {\n" +
+        "    private bool _confirmOpen;\n" +
+        "    private void OnConfirm() => _confirmOpen = false;\n" +
+        "    private void OnCancel() => _confirmOpen = false;\n" +
+        "}";
+}

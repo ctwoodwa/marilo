@@ -1,0 +1,21 @@
+@page "/components/avatar/appearance"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Sizes" Description="Avatars are available in multiple sizes." Code="@_sizesCode">
+    <div class="demo-row">
+        <MariloAvatar Size="AvatarSize.ExtraSmall" Initials="XS" />
+        <MariloAvatar Size="AvatarSize.Small" Initials="SM" />
+        <MariloAvatar Size="AvatarSize.Medium" Initials="MD" />
+        <MariloAvatar Size="AvatarSize.Large" Initials="LG" />
+        <MariloAvatar Size="AvatarSize.ExtraLarge" Initials="XL" />
+    </div>
+</DemoSection>
+
+@code {
+    private const string _sizesCode =
+        "<MariloAvatar Size=\"AvatarSize.ExtraSmall\" Initials=\"XS\" />\n" +
+        "<MariloAvatar Size=\"AvatarSize.Small\" Initials=\"SM\" />\n" +
+        "<MariloAvatar Size=\"AvatarSize.Medium\" Initials=\"MD\" />\n" +
+        "<MariloAvatar Size=\"AvatarSize.Large\" Initials=\"LG\" />\n" +
+        "<MariloAvatar Size=\"AvatarSize.ExtraLarge\" Initials=\"XL\" />";
+}

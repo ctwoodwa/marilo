@@ -1,0 +1,38 @@
+@page "/components/date-picker/accessibility"
+@layout ComponentDemoLayout
+
+<AccessibilityInfo
+    KeyboardInteractions="@_keyboard"
+    AriaAttributes="@_aria"
+    ScreenReaderNotes="@_screenReader" />
+
+@code {
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus to the date picker input"),
+        ("Shift + Tab", "Moves focus to the previous focusable element"),
+        ("Enter", "Opens the calendar popup or selects the focused date"),
+        ("Escape", "Closes the calendar popup"),
+        ("Arrow Up", "Moves to the same day in the previous week"),
+        ("Arrow Down", "Moves to the same day in the next week"),
+        ("Arrow Left", "Moves to the previous day"),
+        ("Arrow Right", "Moves to the next day"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"dialog\"", "Applied to the calendar popup"),
+        ("aria-label", "Provides an accessible name for the date picker"),
+        ("aria-disabled=\"true\"", "Applied when the Disabled parameter is set"),
+        ("aria-invalid=\"true\"", "Applied when the IsInvalid parameter is set"),
+        ("aria-expanded", "Indicates whether the calendar popup is open or closed"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "The date picker input announces its label and current selected date.",
+        "The calendar popup is announced as a dialog with the current month and year.",
+        "Individual dates are announced with their full date and selection state.",
+        "Disabled date pickers are announced as \"dimmed\" or \"unavailable\" depending on the screen reader.",
+    ];
+}

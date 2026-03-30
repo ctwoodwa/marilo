@@ -1,0 +1,33 @@
+@page "/components/chip/accessibility"
+@layout ComponentDemoLayout
+
+<AccessibilityInfo
+    KeyboardInteractions="@_keyboard"
+    AriaAttributes="@_aria"
+    ScreenReaderNotes="@_screenReader" />
+
+@code {
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Enter", "Selects or deselects the chip"),
+        ("Space", "Selects or deselects the chip"),
+        ("Delete", "Removes the chip if deletable"),
+        ("Backspace", "Removes the chip if deletable"),
+        ("Tab", "Moves focus to the next focusable element"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"option\"", "Applied to selectable chips to indicate they are options"),
+        ("aria-selected=\"true\"", "Applied when the chip is in a selected state"),
+        ("aria-disabled=\"true\"", "Applied when the chip is disabled"),
+        ("aria-label", "Can be set for chips with icons only"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "Chips are announced with their label text and current selection state.",
+        "Deletable chips announce the availability of the delete action.",
+        "Selected chips are announced as \"selected\" by screen readers.",
+    ];
+}

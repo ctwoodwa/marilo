@@ -1,0 +1,50 @@
+@page "/components/tabs"
+@page "/components/tabs/overview"
+@layout ComponentDemoLayout
+@using Marilo.Components.Layout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <MariloTabs ActiveTabIndex="@_tabIndex" ActiveTabIndexChanged="@((int v) => _tabIndex = v)">
+        <MariloTabPanel Title="Overview">
+            <p>This is the overview content.</p>
+        </MariloTabPanel>
+        <MariloTabPanel Title="Details">
+            <p>This is the details content.</p>
+        </MariloTabPanel>
+        <MariloTabPanel Title="Settings">
+            <MariloField>
+                <MariloLabel>Display Name</MariloLabel>
+                <MariloTextField Placeholder="Enter a name" />
+            </MariloField>
+            <MariloField>
+                <MariloSwitch Label="Enable notifications" />
+            </MariloField>
+        </MariloTabPanel>
+    </MariloTabs>
+</DemoSection>
+
+@code {
+    private int _tabIndex;
+
+    private const string _basicCode =
+        "<MariloTabs ActiveTabIndex=\"@_tabIndex\" ActiveTabIndexChanged=\"@(v => _tabIndex = v)\">\n" +
+        "    <MariloTabPanel Title=\"Overview\">\n" +
+        "        <p>This is the overview content.</p>\n" +
+        "    </MariloTabPanel>\n" +
+        "    <MariloTabPanel Title=\"Details\">\n" +
+        "        <p>This is the details content.</p>\n" +
+        "    </MariloTabPanel>\n" +
+        "    <MariloTabPanel Title=\"Settings\">\n" +
+        "        <MariloField>\n" +
+        "            <MariloLabel>Display Name</MariloLabel>\n" +
+        "            <MariloTextField Placeholder=\"Enter a name\" />\n" +
+        "        </MariloField>\n" +
+        "        <MariloField>\n" +
+        "            <MariloSwitch Label=\"Enable notifications\" />\n" +
+        "        </MariloField>\n" +
+        "    </MariloTabPanel>\n" +
+        "</MariloTabs>\n\n" +
+        "@code {\n" +
+        "    private int _tabIndex;\n" +
+        "}";
+}

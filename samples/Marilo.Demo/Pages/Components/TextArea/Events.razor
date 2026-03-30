@@ -1,0 +1,21 @@
+@page "/components/text-area/events"
+@layout ComponentDemoLayout
+
+<DemoSection Title="ValueChanged" Description="Handle text changes with the ValueChanged callback." Code="@_interactiveCode">
+    <MariloField>
+        <MariloLabel>Type something</MariloLabel>
+        <MariloTextArea Value="@_description" ValueChanged="@(v => _description = v)" Rows="4" Placeholder="Enter a description" />
+    </MariloField>
+    <p><strong>Value:</strong> @_description</p>
+</DemoSection>
+
+@code {
+    private string _description = "";
+
+    private const string _interactiveCode =
+        "<MariloTextArea Value=\"@_description\" ValueChanged=\"@(v => _description = v)\" Rows=\"4\" Placeholder=\"Enter a description\" />\n" +
+        "<p><strong>Value:</strong> @_description</p>\n\n" +
+        "@code {\n" +
+        "    private string _description = \"\";\n" +
+        "}";
+}

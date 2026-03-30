@@ -8,8 +8,9 @@
     "scss:watch": "sass src/Marilo.Providers.FluentUI/Styles/marilo-fluentui.scss:src/Marilo.Providers.FluentUI/wwwroot/css/marilo-fluentui.css --style=expanded --no-source-map --watch",
     "build": "npm run scss:build",
     "watch": "npm run scss:watch",
-    "docs:build": "dotnet docfx docfx/docfx.json",
-    "docs:serve": "dotnet docfx docfx/docfx.json --serve"
+    "docs:patch-links": "node scripts/patch-site-links.js",
+    "docs:build": "npm run docs:patch-links && dotnet docfx docfx/docfx.json",
+    "docs:serve": "npm run docs:patch-links && dotnet docfx docfx/docfx.json --serve"
   },
   "devDependencies": {
     "npm-run-all": "^4.1.5",

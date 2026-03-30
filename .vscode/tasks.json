@@ -33,6 +33,13 @@
       "problemMatcher": "$msCompile"
     },
     {
+      "label": "dotnet:build:demo",
+      "type": "shell",
+      "command": "dotnet build samples/Marilo.Demo/Marilo.Demo.csproj",
+      "group": "build",
+      "problemMatcher": "$msCompile"
+    },
+    {
       "label": "build:all",
       "dependsOn": ["scss:build", "dotnet:build"],
       "dependsOrder": "sequence",
@@ -40,6 +47,29 @@
         "kind": "build",
         "isDefault": true
       },
+      "problemMatcher": []
+    },
+    {
+      "label": "docs:serve",
+      "type": "shell",
+      "command": "node scripts/patch-site-links.js && dotnet tool restore && dotnet docfx build docfx/docfx.json --logLevel error && dotnet docfx serve docfx/_site --port 8081",
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^Error:",
+          "message": 1
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^Serving",
+          "endsPattern": "^Serving"
+        }
+      }
+    },
+    {
+      "label": "dotnet:build:demo+docs",
+      "dependsOn": ["dotnet:build:demo", "docs:serve"],
+      "dependsOrder": "parallel",
       "problemMatcher": []
     }
   ]

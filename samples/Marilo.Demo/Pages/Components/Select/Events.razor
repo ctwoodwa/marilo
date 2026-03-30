@@ -1,0 +1,30 @@
+@page "/components/select/events"
+@layout ComponentDemoLayout
+
+<DemoSection Title="ValueChanged" Description="Handle selection changes with the ValueChanged callback." Code="@_interactiveCode">
+    <MariloField>
+        <MariloLabel>Framework</MariloLabel>
+        <MariloSelect Value="@_selected" ValueChanged="@(v => _selected = v)">
+            <option value="">Choose...</option>
+            <option value="fluent">Fluent UI</option>
+            <option value="bootstrap">Bootstrap</option>
+            <option value="tailwind">Tailwind</option>
+        </MariloSelect>
+    </MariloField>
+    <p><strong>Selected:</strong> @_selected</p>
+</DemoSection>
+
+@code {
+    private string _selected = "";
+
+    private const string _interactiveCode =
+        "<MariloSelect Value=\"@_selected\" ValueChanged=\"@(v => _selected = v)\">\n" +
+        "    <option value=\"\">Choose...</option>\n" +
+        "    <option value=\"fluent\">Fluent UI</option>\n" +
+        "    <option value=\"bootstrap\">Bootstrap</option>\n" +
+        "</MariloSelect>\n" +
+        "<p><strong>Selected:</strong> @_selected</p>\n\n" +
+        "@code {\n" +
+        "    private string _selected = \"\";\n" +
+        "}";
+}

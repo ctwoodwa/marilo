@@ -1,0 +1,34 @@
+@page "/components/select/accessibility"
+@layout ComponentDemoLayout
+
+<AccessibilityInfo
+    KeyboardInteractions="@_keyboard"
+    AriaAttributes="@_aria"
+    ScreenReaderNotes="@_screenReader" />
+
+@code {
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus to the select"),
+        ("Shift + Tab", "Moves focus to the previous focusable element"),
+        ("Arrow Up / Arrow Down", "Navigates through the options"),
+        ("Enter", "Selects the focused option"),
+        ("Escape", "Closes the dropdown"),
+        ("Space", "Opens the dropdown when focused"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"listbox\"", "Implicitly set by the <select> element"),
+        ("aria-disabled=\"true\"", "Applied when the Disabled parameter is set"),
+        ("aria-invalid=\"true\"", "Applied when the IsInvalid parameter is set"),
+        ("aria-label", "Can be set to provide an accessible name when no visible label is present"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "The select is announced with its label, current value, and the \"pop-up button\" or \"combo box\" role.",
+        "Options are announced as the user navigates through them with arrow keys.",
+        "Disabled selects are announced as \"dimmed\" or \"unavailable\" depending on the screen reader.",
+    ];
+}

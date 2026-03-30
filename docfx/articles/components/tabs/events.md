@@ -6,12 +6,12 @@ description: Handle tab change events from the MariloTabs component.
 
 # Tabs Events
 
-## ActiveIndexChanged
+## ActiveTabIndexChanged
 
-The `ActiveIndexChanged` parameter is an `EventCallback<int>` that fires when the user selects a different tab. It is typically used via `@bind-ActiveIndex`:
+The `ActiveTabIndexChanged` parameter is an `EventCallback<int>` that fires when the user selects a different tab. It is typically used via `@bind-ActiveTabIndex`:
 
 ```razor
-<MariloTabs @bind-ActiveIndex="activeTab">
+<MariloTabs @bind-ActiveTabIndex="activeTab">
     <MariloTabPanel Title="Tab 1">Content 1</MariloTabPanel>
     <MariloTabPanel Title="Tab 2">Content 2</MariloTabPanel>
 </MariloTabs>
@@ -24,7 +24,7 @@ The `ActiveIndexChanged` parameter is an `EventCallback<int>` that fires when th
 For manual handling:
 
 ```razor
-<MariloTabs ActiveIndex="@activeTab" ActiveIndexChanged="@OnTabChanged">
+<MariloTabs ActiveTabIndex="@activeTab" ActiveTabIndexChanged="@OnTabChanged">
     <MariloTabPanel Title="Tab 1">Content 1</MariloTabPanel>
     <MariloTabPanel Title="Tab 2">Content 2</MariloTabPanel>
 </MariloTabs>

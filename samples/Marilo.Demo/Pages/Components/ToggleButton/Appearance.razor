@@ -1,0 +1,15 @@
+@page "/components/toggle-button/appearance"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Selected vs Unselected" Description="Toggle buttons visually indicate their current state." Code="@_statesCode">
+    <div class="demo-row">
+        <MariloToggleButton IsSelected="true">Selected</MariloToggleButton>
+        <MariloToggleButton IsSelected="false">Unselected</MariloToggleButton>
+    </div>
+</DemoSection>
+
+@code {
+    private const string _statesCode =
+        "<MariloToggleButton IsSelected=\"true\">Selected</MariloToggleButton>\n" +
+        "<MariloToggleButton IsSelected=\"false\">Unselected</MariloToggleButton>";
+}

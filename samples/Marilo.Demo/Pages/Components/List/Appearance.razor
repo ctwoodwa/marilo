@@ -1,0 +1,21 @@
+@page "/components/list/appearance"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Dense List" Description="A compact list with reduced spacing for dense content." Code="@_denseCode">
+    <MariloList>
+        <MariloListItem>Compact item one</MariloListItem>
+        <MariloListItem>Compact item two</MariloListItem>
+        <MariloListItem>Compact item three</MariloListItem>
+        <MariloListItem>Compact item four</MariloListItem>
+    </MariloList>
+</DemoSection>
+
+@code {
+    private const string _denseCode =
+        "<MariloList>\n" +
+        "    <MariloListItem>Compact item one</MariloListItem>\n" +
+        "    <MariloListItem>Compact item two</MariloListItem>\n" +
+        "    <MariloListItem>Compact item three</MariloListItem>\n" +
+        "    <MariloListItem>Compact item four</MariloListItem>\n" +
+        "</MariloList>";
+}

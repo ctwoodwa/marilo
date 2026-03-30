@@ -1,0 +1,31 @@
+@page "/components/pagination/accessibility"
+@layout ComponentDemoLayout
+
+<AccessibilityInfo
+    KeyboardInteractions="@_keyboard"
+    AriaAttributes="@_aria"
+    ScreenReaderNotes="@_screenReader" />
+
+@code {
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus to the next page button"),
+        ("Shift + Tab", "Moves focus to the previous page button"),
+        ("Enter", "Activates the focused page button"),
+        ("Space", "Activates the focused page button"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("nav aria-label=\"Pagination\"", "The pagination is wrapped in a nav element with aria-label=\"Pagination\""),
+        ("aria-current=\"page\"", "Applied to the currently selected page button to indicate the active page"),
+        ("aria-label", "Each page button has an aria-label such as \"Page 1\", \"Page 2\", etc."),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "The pagination is announced as a navigation landmark with the label \"Pagination\".",
+        "The current page button is announced with \"current page\" to indicate the selected page.",
+        "Previous and next buttons are labeled to indicate their navigation direction.",
+    ];
+}

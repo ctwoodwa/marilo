@@ -1,0 +1,31 @@
+@page "/components/button/accessibility"
+@layout ComponentDemoLayout
+
+<AccessibilityInfo
+    KeyboardInteractions="@_keyboard"
+    AriaAttributes="@_aria"
+    ScreenReaderNotes="@_screenReader" />
+
+@code {
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Enter", "Activates the button"),
+        ("Space", "Activates the button"),
+        ("Tab", "Moves focus to the next focusable element"),
+        ("Shift + Tab", "Moves focus to the previous focusable element"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"button\"", "Implicitly set by the <button> element"),
+        ("aria-disabled=\"true\"", "Applied when the Disabled parameter is set"),
+        ("aria-label", "Can be set for icon-only buttons that have no visible text"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "Buttons are announced with their visible text content and the \"button\" role.",
+        "Disabled buttons are announced as \"dimmed\" or \"unavailable\" depending on the screen reader.",
+        "Icon-only buttons should use aria-label to provide an accessible name.",
+    ];
+}

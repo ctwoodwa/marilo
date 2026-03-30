@@ -3,11 +3,17 @@
 {
 	"name": "C# (.NET)",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/dotnet:2-10.0-noble"
-
+	"image": "mcr.microsoft.com/devcontainers/dotnet:2-10.0-noble",
 	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
-
+	"features": {
+		// Installs a Node.js version and makes 'npm' available
+		"ghcr.io/devcontainers/features/node:1": {
+			"version": "lts" // or a specific version like "18" or "20"
+		}
+	},
+	"mounts": [
+		"source=C:/Projects/blazor-docs,target=/blazor-docs,type=bind,consistency=cached"
+	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [5000, 5001],
 	// "portsAttributes": {
@@ -15,13 +21,11 @@
 	//			"protocol": "https"
 	//		}
 	// }
-
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "dotnet restore",
-
+	"postCreateCommand": "npm install"
 	// Configure tool-specific properties.
 	// "customizations": {},
-
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
 }

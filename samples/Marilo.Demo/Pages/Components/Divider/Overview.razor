@@ -1,0 +1,16 @@
+@page "/components/divider"
+@page "/components/divider/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Horizontal" Code="@_horizontalCode">
+    <p>Content above the divider.</p>
+    <MariloDivider />
+    <p>Content below the divider.</p>
+</DemoSection>
+
+@code {
+    private const string _horizontalCode =
+        "<p>Content above the divider.</p>\n" +
+        "<MariloDivider />\n" +
+        "<p>Content below the divider.</p>";
+}

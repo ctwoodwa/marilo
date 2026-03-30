@@ -1,0 +1,20 @@
+@page "/components/list"
+@page "/components/list/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <MariloList>
+        <MariloListItem>First item in the list</MariloListItem>
+        <MariloListItem>Second item in the list</MariloListItem>
+        <MariloListItem>Third item in the list</MariloListItem>
+    </MariloList>
+</DemoSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloList>\n" +
+        "    <MariloListItem>First item in the list</MariloListItem>\n" +
+        "    <MariloListItem>Second item in the list</MariloListItem>\n" +
+        "    <MariloListItem>Third item in the list</MariloListItem>\n" +
+        "</MariloList>";
+}

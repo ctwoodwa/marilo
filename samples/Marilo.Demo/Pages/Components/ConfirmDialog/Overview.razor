@@ -1,0 +1,30 @@
+@page "/components/confirm-dialog"
+@page "/components/confirm-dialog/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Description="A confirm dialog asks users to verify an action before proceeding." Code="@_basicCode">
+    <MariloButton OnClick="@(() => _confirmOpen = true)">Confirm Action</MariloButton>
+    <MariloConfirmDialog IsOpen="@_confirmOpen"
+                         Title="Confirm Action"
+                         Message="Are you sure you want to proceed with this action?"
+                         OnConfirm="@(() => { _confirmOpen = false; _result = "Confirmed!"; })"
+                         OnCancel="@(() => { _confirmOpen = false; _result = "Cancelled."; })" />
+    @if (!string.IsNullOrEmpty(_result))
+    {
+        <p style="margin-top: 8px;">Result: <strong>@_result</strong></p>
+    }
+</DemoSection>
+
+@code {
+    private bool _confirmOpen;
+    private string? _result;
+
+    private const string _basicCode =
+        "<MariloButton OnClick=\"@(() => _confirmOpen = true)\">Confirm Action</MariloButton>\n" +
+        "<MariloConfirmDialog IsOpen=\"@_confirmOpen\"\n" +
+        "                     Title=\"Confirm Action\"\n" +
+        "                     Message=\"Are you sure you want to proceed?\"\n" +
+        "                     OnConfirm=\"@(() => _confirmOpen = false)\"\n" +
+        "                     OnCancel=\"@(() => _confirmOpen = false)\" />\n\n" +
+        "@code { private bool _confirmOpen; }";
+}

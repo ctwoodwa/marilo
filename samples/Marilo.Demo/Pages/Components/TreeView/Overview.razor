@@ -1,0 +1,32 @@
+@page "/components/tree-view"
+@page "/components/tree-view/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <MariloTreeView>
+        <MariloTreeItem Title="Documents" IsExpanded="true">
+            <MariloTreeItem Title="Reports">
+                <MariloTreeItem Title="Q1" />
+                <MariloTreeItem Title="Q2" />
+            </MariloTreeItem>
+            <MariloTreeItem Title="Images" />
+        </MariloTreeItem>
+        <MariloTreeItem Title="Downloads" />
+        <MariloTreeItem Title="Desktop" />
+    </MariloTreeView>
+</DemoSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloTreeView>\n" +
+        "    <MariloTreeItem Title=\"Documents\" IsExpanded=\"true\">\n" +
+        "        <MariloTreeItem Title=\"Reports\">\n" +
+        "            <MariloTreeItem Title=\"Q1\" />\n" +
+        "            <MariloTreeItem Title=\"Q2\" />\n" +
+        "        </MariloTreeItem>\n" +
+        "        <MariloTreeItem Title=\"Images\" />\n" +
+        "    </MariloTreeItem>\n" +
+        "    <MariloTreeItem Title=\"Downloads\" />\n" +
+        "    <MariloTreeItem Title=\"Desktop\" />\n" +
+        "</MariloTreeView>";
+}

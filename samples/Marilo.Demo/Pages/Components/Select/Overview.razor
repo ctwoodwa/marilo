@@ -1,0 +1,27 @@
+@page "/components/select"
+@page "/components/select/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <MariloField>
+        <MariloLabel>Framework</MariloLabel>
+        <MariloSelect Value="@_selected" ValueChanged="@(v => _selected = v)">
+            <option value="">Choose...</option>
+            <option value="fluent">Fluent UI</option>
+            <option value="bootstrap">Bootstrap</option>
+            <option value="tailwind">Tailwind</option>
+        </MariloSelect>
+    </MariloField>
+</DemoSection>
+
+@code {
+    private string _selected = "";
+
+    private const string _basicCode =
+        "<MariloSelect Value=\"@_selected\" ValueChanged=\"@(v => _selected = v)\">\n" +
+        "    <option value=\"\">Choose...</option>\n" +
+        "    <option value=\"fluent\">Fluent UI</option>\n" +
+        "    <option value=\"bootstrap\">Bootstrap</option>\n" +
+        "    <option value=\"tailwind\">Tailwind</option>\n" +
+        "</MariloSelect>";
+}

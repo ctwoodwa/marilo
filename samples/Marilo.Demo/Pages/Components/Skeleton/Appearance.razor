@@ -1,0 +1,17 @@
+@page "/components/skeleton/appearance"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Variants" Description="Skeletons support text, circular, and rectangular shapes." Code="@_variantsCode">
+    <div class="demo-row">
+        <MariloSkeleton Variant="SkeletonVariant.Text" Width="200px" Height="16px" />
+        <MariloSkeleton Variant="SkeletonVariant.Circular" Width="48px" Height="48px" />
+        <MariloSkeleton Variant="SkeletonVariant.Rectangular" Width="200px" Height="120px" />
+    </div>
+</DemoSection>
+
+@code {
+    private const string _variantsCode =
+        "<MariloSkeleton Variant=\"SkeletonVariant.Text\" Width=\"200px\" Height=\"16px\" />\n" +
+        "<MariloSkeleton Variant=\"SkeletonVariant.Circular\" Width=\"48px\" Height=\"48px\" />\n" +
+        "<MariloSkeleton Variant=\"SkeletonVariant.Rectangular\" Width=\"200px\" Height=\"120px\" />";
+}

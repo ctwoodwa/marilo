@@ -1,0 +1,16 @@
+@page "/components/panel"
+@page "/components/panel/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <MariloPanel>
+        <p>This content is displayed inside a panel with elevation and padding.</p>
+    </MariloPanel>
+</DemoSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloPanel>\n" +
+        "    <p>This content is displayed inside a panel with elevation and padding.</p>\n" +
+        "</MariloPanel>";
+}

@@ -4,7 +4,7 @@
     <h1>Extended Components</h1>
 
     <DemoSection Title="Tabs" Code="@_tabsCode">
-        <MariloTabs ActiveIndex="@_tabIndex" ActiveIndexChanged="@(i => _tabIndex = i)">
+        <MariloTabs ActiveTabIndex="@_tabIndex" ActiveTabIndexChanged="@(i => _tabIndex = i)">
             <MariloTabPanel Title="Overview"><p>This is the overview tab content. Tabs use a cascading value pattern.</p></MariloTabPanel>
             <MariloTabPanel Title="Details"><p>Details tab with more specific information about the component.</p></MariloTabPanel>
             <MariloTabPanel Title="Settings">
@@ -103,7 +103,7 @@
     private DateOnly? _date;
     private string _color = "#0078d4";
 
-    private const string _tabsCode = @"<MariloTabs ActiveIndex=""@_tabIndex"" ActiveIndexChanged=""@(i => _tabIndex = i)"">
+    private const string _tabsCode = @"<MariloTabs ActiveTabIndex=""@_tabIndex"" ActiveTabIndexChanged=""@(i => _tabIndex = i)"">
     <MariloTabPanel Title=""Overview"">Overview content</MariloTabPanel>
     <MariloTabPanel Title=""Details"">Details content</MariloTabPanel>
     <MariloTabPanel Title=""Settings"">Settings content</MariloTabPanel>

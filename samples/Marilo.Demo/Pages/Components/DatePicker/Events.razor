@@ -1,0 +1,27 @@
+@page "/components/date-picker/events"
+@layout ComponentDemoLayout
+
+<DemoSection Title="ValueChanged" Description="Handle date selection with the ValueChanged callback." Code="@_interactiveCode">
+    <MariloField>
+        <MariloLabel>Select a date</MariloLabel>
+        <MariloDatePicker Value="@_date" ValueChanged="@(v => _date = v)" />
+    </MariloField>
+    @if (_date.HasValue)
+    {
+        <p><strong>Selected date:</strong> @_date.Value.ToString("yyyy-MM-dd")</p>
+    }
+</DemoSection>
+
+@code {
+    private DateOnly? _date;
+
+    private const string _interactiveCode =
+        "<MariloDatePicker Value=\"@_date\" ValueChanged=\"@(v => _date = v)\" />\n" +
+        "@if (_date.HasValue)\n" +
+        "{\n" +
+        "    <p><strong>Selected date:</strong> @_date.Value.ToString(\"yyyy-MM-dd\")</p>\n" +
+        "}\n\n" +
+        "@code {\n" +
+        "    private DateOnly? _date;\n" +
+        "}";
+}

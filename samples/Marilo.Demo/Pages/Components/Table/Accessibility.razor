@@ -1,0 +1,30 @@
+@page "/components/table/accessibility"
+@layout ComponentDemoLayout
+
+<AccessibilityInfo
+    KeyboardInteractions="@_keyboard"
+    AriaAttributes="@_aria"
+    ScreenReaderNotes="@_screenReader" />
+
+@code {
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus to the next interactive element within the table"),
+        ("Arrow Keys", "Navigates between cells when the table supports grid navigation"),
+        ("Enter", "Activates a focused interactive element within a cell"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"table\"", "Implicitly set by the <table> element for standard table semantics"),
+        ("aria-sort=\"ascending\" / \"descending\"", "Applied to sortable column headers to indicate current sort direction"),
+        ("aria-label", "Provides an accessible name for the table when no visible caption exists"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "Tables are announced with their row and column counts.",
+        "Column headers are announced when navigating between cells in the same row.",
+        "Sortable columns should indicate their current sort state via aria-sort.",
+    ];
+}

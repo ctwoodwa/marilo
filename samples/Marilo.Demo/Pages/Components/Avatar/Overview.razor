@@ -1,0 +1,18 @@
+@page "/components/avatar"
+@page "/components/avatar/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Description="Avatars display initials representing a user or entity." Code="@_basicCode">
+    <div class="demo-row">
+        <MariloAvatar Initials="AB" />
+        <MariloAvatar Initials="CD" />
+        <MariloAvatar Initials="EF" />
+    </div>
+</DemoSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloAvatar Initials=\"AB\" />\n" +
+        "<MariloAvatar Initials=\"CD\" />\n" +
+        "<MariloAvatar Initials=\"EF\" />";
+}

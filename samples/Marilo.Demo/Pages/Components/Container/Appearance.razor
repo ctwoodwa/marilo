@@ -1,0 +1,27 @@
+@page "/components/container/appearance"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Max Width" Description="Containers support different maximum width presets." Code="@_maxWidthCode">
+    <MariloContainer MaxWidth="ContainerMaxWidth.Small">
+        <MariloAlert Variant="AlertVariant.Info">Small container</MariloAlert>
+    </MariloContainer>
+    <MariloContainer MaxWidth="ContainerMaxWidth.Medium">
+        <MariloAlert Variant="AlertVariant.Info">Medium container</MariloAlert>
+    </MariloContainer>
+    <MariloContainer MaxWidth="ContainerMaxWidth.Large">
+        <MariloAlert Variant="AlertVariant.Info">Large container</MariloAlert>
+    </MariloContainer>
+</DemoSection>
+
+@code {
+    private const string _maxWidthCode =
+        "<MariloContainer MaxWidth=\"ContainerMaxWidth.Small\">\n" +
+        "    <MariloAlert Variant=\"AlertVariant.Info\">Small container</MariloAlert>\n" +
+        "</MariloContainer>\n" +
+        "<MariloContainer MaxWidth=\"ContainerMaxWidth.Medium\">\n" +
+        "    <MariloAlert Variant=\"AlertVariant.Info\">Medium container</MariloAlert>\n" +
+        "</MariloContainer>\n" +
+        "<MariloContainer MaxWidth=\"ContainerMaxWidth.Large\">\n" +
+        "    <MariloAlert Variant=\"AlertVariant.Info\">Large container</MariloAlert>\n" +
+        "</MariloContainer>";
+}

@@ -1,0 +1,35 @@
+@page "/components/stack"
+@page "/components/stack/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Horizontal" Code="@_horizontalCode">
+    <MariloStack Direction="StackDirection.Horizontal" Alignment="StackAlignment.Center">
+        <MariloBadge Variant="BadgeVariant.Primary">Primary</MariloBadge>
+        <MariloBadge Variant="BadgeVariant.Secondary">Secondary</MariloBadge>
+        <MariloBadge Variant="BadgeVariant.Success">Success</MariloBadge>
+    </MariloStack>
+</DemoSection>
+
+<DemoSection Title="Vertical" Code="@_verticalCode">
+    <MariloStack Direction="StackDirection.Vertical">
+        <MariloButton Size="ButtonSize.Small">Button 1</MariloButton>
+        <MariloButton Size="ButtonSize.Small">Button 2</MariloButton>
+        <MariloButton Size="ButtonSize.Small">Button 3</MariloButton>
+    </MariloStack>
+</DemoSection>
+
+@code {
+    private const string _horizontalCode =
+        "<MariloStack Direction=\"StackDirection.Horizontal\" Alignment=\"StackAlignment.Center\">\n" +
+        "    <MariloBadge Variant=\"BadgeVariant.Primary\">Primary</MariloBadge>\n" +
+        "    <MariloBadge Variant=\"BadgeVariant.Secondary\">Secondary</MariloBadge>\n" +
+        "    <MariloBadge Variant=\"BadgeVariant.Success\">Success</MariloBadge>\n" +
+        "</MariloStack>";
+
+    private const string _verticalCode =
+        "<MariloStack Direction=\"StackDirection.Vertical\">\n" +
+        "    <MariloButton Size=\"ButtonSize.Small\">Button 1</MariloButton>\n" +
+        "    <MariloButton Size=\"ButtonSize.Small\">Button 2</MariloButton>\n" +
+        "    <MariloButton Size=\"ButtonSize.Small\">Button 3</MariloButton>\n" +
+        "</MariloStack>";
+}

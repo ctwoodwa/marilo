@@ -73,6 +73,60 @@ public enum AppBarPosition
 }
 
 /// <summary>
+/// Specifies the position of the tab list relative to the tab content.
+/// </summary>
+public enum TabPosition
+{
+    /// <summary>Tabs are displayed above the content.</summary>
+    Top,
+
+    /// <summary>Tabs are displayed below the content.</summary>
+    Bottom,
+
+    /// <summary>Tabs are displayed to the left of the content.</summary>
+    Left,
+
+    /// <summary>Tabs are displayed to the right of the content.</summary>
+    Right
+}
+
+/// <summary>
+/// Specifies the alignment of tabs within the tab list.
+/// </summary>
+public enum TabAlignment
+{
+    /// <summary>Tabs are aligned to the start (default).</summary>
+    Start,
+
+    /// <summary>Tabs are aligned to the end.</summary>
+    End,
+
+    /// <summary>Tabs are centered.</summary>
+    Center,
+
+    /// <summary>Tabs are evenly distributed across the available space.</summary>
+    Justify,
+
+    /// <summary>Tabs stretch to fill the available space.</summary>
+    Stretched
+}
+
+/// <summary>
+/// Specifies the size of tabs in a tab strip.
+/// </summary>
+public enum TabSize
+{
+    /// <summary>Compact tabs with reduced padding.</summary>
+    Small,
+
+    /// <summary>Default tab size.</summary>
+    Medium,
+
+    /// <summary>Larger tabs with increased padding.</summary>
+    Large
+}
+
+/// <summary>
 /// Specifies the current status of a step in a stepper control.
 /// </summary>
 public enum StepStatus

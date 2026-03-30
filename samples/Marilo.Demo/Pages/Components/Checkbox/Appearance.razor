@@ -1,0 +1,17 @@
+@page "/components/checkbox/appearance"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Disabled" Description="A disabled checkbox prevents user interaction." Code="@_disabledCode">
+    <MariloField>
+        <MariloCheckbox Checked="true" Disabled="true" Label="Checked and disabled" />
+    </MariloField>
+    <MariloField>
+        <MariloCheckbox Checked="false" Disabled="true" Label="Unchecked and disabled" />
+    </MariloField>
+</DemoSection>
+
+@code {
+    private const string _disabledCode =
+        "<MariloCheckbox Checked=\"true\" Disabled=\"true\" Label=\"Checked and disabled\" />\n" +
+        "<MariloCheckbox Checked=\"false\" Disabled=\"true\" Label=\"Unchecked and disabled\" />";
+}

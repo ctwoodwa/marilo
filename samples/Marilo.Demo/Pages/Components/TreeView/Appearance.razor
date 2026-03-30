@@ -1,0 +1,44 @@
+@page "/components/tree-view/appearance"
+@layout ComponentDemoLayout
+
+<DemoSection Title="With Icons" Description="Tree items can display icons for visual identification." Code="@_iconsCode">
+    <MariloTreeView>
+        <MariloTreeItem Title="Documents" Icon="folder" IsExpanded="true">
+            <MariloTreeItem Title="Reports" Icon="folder">
+                <MariloTreeItem Title="Q1.pdf" Icon="document" />
+                <MariloTreeItem Title="Q2.pdf" Icon="document" />
+            </MariloTreeItem>
+            <MariloTreeItem Title="Images" Icon="folder" />
+        </MariloTreeItem>
+        <MariloTreeItem Title="Downloads" Icon="folder" />
+    </MariloTreeView>
+</DemoSection>
+
+<DemoSection Title="Selection" Description="Tree items can be selectable to indicate the current selection." Code="@_selectionCode">
+    <MariloTreeView SelectionMode="TreeSelectionMode.Single">
+        <MariloTreeItem Title="Option A" />
+        <MariloTreeItem Title="Option B" />
+        <MariloTreeItem Title="Option C" />
+    </MariloTreeView>
+</DemoSection>
+
+@code {
+    private const string _iconsCode =
+        "<MariloTreeView>\n" +
+        "    <MariloTreeItem Title=\"Documents\" Icon=\"folder\" IsExpanded=\"true\">\n" +
+        "        <MariloTreeItem Title=\"Reports\" Icon=\"folder\">\n" +
+        "            <MariloTreeItem Title=\"Q1.pdf\" Icon=\"document\" />\n" +
+        "            <MariloTreeItem Title=\"Q2.pdf\" Icon=\"document\" />\n" +
+        "        </MariloTreeItem>\n" +
+        "        <MariloTreeItem Title=\"Images\" Icon=\"folder\" />\n" +
+        "    </MariloTreeItem>\n" +
+        "    <MariloTreeItem Title=\"Downloads\" Icon=\"folder\" />\n" +
+        "</MariloTreeView>";
+
+    private const string _selectionCode =
+        "<MariloTreeView SelectionMode=\"TreeSelectionMode.Single\">\n" +
+        "    <MariloTreeItem Title=\"Option A\" />\n" +
+        "    <MariloTreeItem Title=\"Option B\" />\n" +
+        "    <MariloTreeItem Title=\"Option C\" />\n" +
+        "</MariloTreeView>";
+}

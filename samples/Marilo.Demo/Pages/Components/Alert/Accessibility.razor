@@ -1,0 +1,30 @@
+@page "/components/alert/accessibility"
+@layout ComponentDemoLayout
+
+<AccessibilityInfo
+    KeyboardInteractions="@_keyboard"
+    AriaAttributes="@_aria"
+    ScreenReaderNotes="@_screenReader" />
+
+@code {
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus to the dismiss button if the alert is dismissible"),
+        ("Enter", "Activates the dismiss button to close the alert"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"alert\"", "Applied for critical alerts that require immediate attention"),
+        ("role=\"status\"", "Applied for informational alerts that do not require immediate action"),
+        ("aria-live=\"assertive\"", "Used with role=\"alert\" to interrupt screen reader announcements"),
+        ("aria-live=\"polite\"", "Used with role=\"status\" to announce at the next pause"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "Alerts with role=\"alert\" are announced immediately when they appear.",
+        "Dismissible alerts have a close button announced as \"Close\" or \"Dismiss\".",
+        "The severity level is conveyed through the alert content, not just color.",
+    ];
+}

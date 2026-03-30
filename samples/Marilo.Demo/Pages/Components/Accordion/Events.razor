@@ -1,0 +1,32 @@
+@page "/components/accordion/events"
+@layout ComponentDemoLayout
+
+<DemoSection Title="IsExpandedChanged" Description="Handle expand and collapse events for each accordion item." Code="@_eventCode">
+    <MariloAccordion>
+        <MariloAccordionItem Title="Click to expand" IsExpanded="@_isExpanded" IsExpandedChanged="@OnExpandedChanged">
+            <p>This item tracks its expanded state.</p>
+        </MariloAccordionItem>
+    </MariloAccordion>
+    <p>Expanded: @_isExpanded</p>
+</DemoSection>
+
+@code {
+    private bool _isExpanded;
+
+    private void OnExpandedChanged(bool expanded)
+    {
+        _isExpanded = expanded;
+    }
+
+    private const string _eventCode =
+        "<MariloAccordion>\n" +
+        "    <MariloAccordionItem Title=\"Click to expand\" IsExpanded=\"@_isExpanded\" IsExpandedChanged=\"@OnExpandedChanged\">\n" +
+        "        <p>This item tracks its expanded state.</p>\n" +
+        "    </MariloAccordionItem>\n" +
+        "</MariloAccordion>\n" +
+        "<p>Expanded: @_isExpanded</p>\n\n" +
+        "@code {\n" +
+        "    private bool _isExpanded;\n" +
+        "    private void OnExpandedChanged(bool expanded) => _isExpanded = expanded;\n" +
+        "}";
+}

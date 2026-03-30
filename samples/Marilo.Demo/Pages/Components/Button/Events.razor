@@ -1,0 +1,24 @@
+@page "/components/button/events"
+@layout ComponentDemoLayout
+
+<DemoSection Title="OnClick" Description="Handle button clicks with the OnClick callback." Code="@_clickCode">
+    <div class="demo-row">
+        <MariloButton Variant="ButtonVariant.Primary" OnClick="@OnClickHandler">Click me: @_clickCount</MariloButton>
+        <MariloButton Variant="ButtonVariant.Secondary" OnClick="@OnResetHandler">Reset</MariloButton>
+    </div>
+</DemoSection>
+
+@code {
+    private int _clickCount;
+    private void OnClickHandler() => _clickCount++;
+    private void OnResetHandler() => _clickCount = 0;
+
+    private const string _clickCode =
+        "<MariloButton Variant=\"ButtonVariant.Primary\" OnClick=\"@OnClickHandler\">\n" +
+        "    Click me: @_clickCount\n" +
+        "</MariloButton>\n\n" +
+        "@code {\n" +
+        "    private int _clickCount;\n" +
+        "    private void OnClickHandler() => _clickCount++;\n" +
+        "}";
+}

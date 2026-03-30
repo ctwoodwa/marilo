@@ -1,0 +1,116 @@
+@layout MainLayout
+@inherits LayoutComponentBase
+@implements IDisposable
+@inject NavigationManager Nav
+@inject IJSRuntime JS
+@using Marilo.Demo.Data
+@using Marilo.Demo.Components
+
+@if (_component is not null)
+{
+    <div class="content-with-affix">
+        <div class="content-page">
+            <nav class="breadcrumb-nav" aria-label="breadcrumb">
+                <a href="/components">Components</a>
+                <span class="breadcrumb-sep">/</span>
+                <a href="/components/@_component.Slug">@_component.Name</a>
+                @if (!_currentSubPage.Equals("overview", StringComparison.OrdinalIgnoreCase))
+                {
+                    <span class="breadcrumb-sep">/</span>
+                    <span class="breadcrumb-current">@ComponentRegistry.FormatSubPageName(_currentSubPage)</span>
+                }
+            </nav>
+
+            <article>
+                <h1>@_component.Name</h1>
+                <p class="article-description">@_component.Description</p>
+
+                <nav class="component-tabs">
+                    @foreach (var subPage in _component.SubPages)
+                    {
+                        var isActive = _currentSubPage.Equals(subPage, StringComparison.OrdinalIgnoreCase);
+                        <a class="component-tab @(isActive ? "active" : "")"
+                           href="/components/@(_component.Slug)/@subPage">
+                            @ComponentRegistry.FormatSubPageName(subPage)
+                        </a>
+                    }
+                </nav>
+
+                <CascadingValue Value="_sectionTracker">
+                    @Body
+                </CascadingValue>
+            </article>
+
+            <ComponentFooter Component="_component" CurrentSubPage="@_currentSubPage" />
+        </div>
+
+        @if (_sectionTracker.Sections.Count > 0)
+        {
+            <aside class="affix-sidebar">
+                <nav class="affix-nav">
+                    <div class="affix-title">IN THIS ARTICLE</div>
+                    @foreach (var (id, title) in _sectionTracker.Sections)
+                    {
+                        var sectionId = id;
+                        <a class="affix-link" href="javascript:void(0)"
+                           @onclick="() => ScrollToSection(sectionId)"
+                           @onclick:preventDefault>@title</a>
+                    }
+                </nav>
+            </aside>
+        }
+    </div>
+}
+
+@code {
+    private ComponentRegistry.ComponentInfo? _component;
+    private string _currentSubPage = "overview";
+    private PageSectionTracker _sectionTracker = new();
+
+    protected override void OnParametersSet()
+    {
+        ParseRoute();
+    }
+
+    protected override void OnInitialized()
+    {
+        Nav.LocationChanged += OnLocationChanged;
+        _sectionTracker.OnChanged += OnSectionsChanged;
+        ParseRoute();
+    }
+
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        _sectionTracker.Clear();
+        ParseRoute();
+        StateHasChanged();
+    }
+
+    private void OnSectionsChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void ParseRoute()
+    {
+        var uri = Nav.ToBaseRelativePath(Nav.Uri).TrimEnd('/');
+        var segments = uri.Split('/');
+
+        if (segments.Length >= 2 && segments[0].Equals("components", StringComparison.OrdinalIgnoreCase))
+        {
+            _component = ComponentRegistry.GetBySlug(segments[1]);
+            _currentSubPage = segments.Length >= 3 ? segments[2] : "overview";
+        }
+    }
+
+    private async Task ScrollToSection(string id)
+    {
+        await JS.InvokeVoidAsync("Marilo.scrollToElement", id);
+    }
+
+    public void Dispose()
+    {
+        Nav.LocationChanged -= OnLocationChanged;
+        _sectionTracker.OnChanged -= OnSectionsChanged;
+    }
+}

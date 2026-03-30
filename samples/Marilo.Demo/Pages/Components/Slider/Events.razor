@@ -1,0 +1,22 @@
+@page "/components/slider/events"
+@layout ComponentDemoLayout
+
+<DemoSection Title="ValueChanged" Description="Handle slider changes with the ValueChanged callback." Code="@_interactiveCode">
+    <MariloField>
+        <MariloLabel>Value: @_sliderValue</MariloLabel>
+        <MariloSlider Value="@_sliderValue" ValueChanged="@(v => _sliderValue = v)" Min="0" Max="100" Step="5" />
+    </MariloField>
+    <p><strong>Slider value:</strong> @_sliderValue</p>
+</DemoSection>
+
+@code {
+    private double _sliderValue = 50;
+
+    private const string _interactiveCode =
+        "<MariloLabel>Value: @_sliderValue</MariloLabel>\n" +
+        "<MariloSlider Value=\"@_sliderValue\" ValueChanged=\"@(v => _sliderValue = v)\" Min=\"0\" Max=\"100\" Step=\"5\" />\n" +
+        "<p><strong>Slider value:</strong> @_sliderValue</p>\n\n" +
+        "@code {\n" +
+        "    private double _sliderValue = 50;\n" +
+        "}";
+}

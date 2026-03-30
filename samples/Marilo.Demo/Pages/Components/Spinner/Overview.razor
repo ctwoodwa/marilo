@@ -1,0 +1,14 @@
+@page "/components/spinner"
+@page "/components/spinner/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Description="Spinners indicate an ongoing loading process." Code="@_basicCode">
+    <div class="demo-row">
+        <MariloSpinner Size="SpinnerSize.Medium" />
+    </div>
+</DemoSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloSpinner Size=\"SpinnerSize.Medium\" />";
+}

@@ -1,0 +1,33 @@
+@page "/components/drawer/events"
+@layout ComponentDemoLayout
+
+<DemoSection Title="IsOpenChanged" Description="Handle drawer open and close events with the IsOpenChanged callback." Code="@_eventCode">
+    <MariloButton OnClick="@(() => _drawerOpen = true)">Open Drawer</MariloButton>
+    <MariloDrawer IsOpen="@_drawerOpen" IsOpenChanged="@OnOpenChanged" Position="DrawerPosition.Right" Width="360px">
+        <h3>Event Drawer</h3>
+        <p>Close this drawer to see the event fire.</p>
+        <MariloButton OnClick="@(() => _drawerOpen = false)">Close</MariloButton>
+    </MariloDrawer>
+    <p>Drawer open: @_drawerOpen</p>
+</DemoSection>
+
+@code {
+    private bool _drawerOpen;
+
+    private void OnOpenChanged(bool isOpen)
+    {
+        _drawerOpen = isOpen;
+    }
+
+    private const string _eventCode =
+        "<MariloButton OnClick=\"@(() => _drawerOpen = true)\">Open Drawer</MariloButton>\n" +
+        "<MariloDrawer IsOpen=\"@_drawerOpen\" IsOpenChanged=\"@OnOpenChanged\" Position=\"DrawerPosition.Right\" Width=\"360px\">\n" +
+        "    <h3>Event Drawer</h3>\n" +
+        "    <MariloButton OnClick=\"@(() => _drawerOpen = false)\">Close</MariloButton>\n" +
+        "</MariloDrawer>\n" +
+        "<p>Drawer open: @_drawerOpen</p>\n\n" +
+        "@code {\n" +
+        "    private bool _drawerOpen;\n" +
+        "    private void OnOpenChanged(bool isOpen) => _drawerOpen = isOpen;\n" +
+        "}";
+}

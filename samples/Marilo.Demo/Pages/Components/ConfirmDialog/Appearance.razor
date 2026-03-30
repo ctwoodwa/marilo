@@ -1,0 +1,36 @@
+@page "/components/confirm-dialog/appearance"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Dangerous Action" Description="A confirm dialog styled for destructive operations." Code="@_dangerousCode">
+    <MariloButton Variant="ButtonVariant.Danger" OnClick="@(() => _confirmOpen = true)">Delete Item</MariloButton>
+    <MariloConfirmDialog IsOpen="@_confirmOpen"
+                         Title="Confirm Delete"
+                         Message="Are you sure you want to delete this item? This action cannot be undone."
+                         IsDangerous="true"
+                         ConfirmText="Delete"
+                         OnConfirm="@(() => { _confirmOpen = false; _confirmResult = "Confirmed!"; })"
+                         OnCancel="@(() => { _confirmOpen = false; _confirmResult = "Cancelled."; })" />
+    @if (!string.IsNullOrEmpty(_confirmResult))
+    {
+        <p style="margin-top: 8px;">Result: <strong>@_confirmResult</strong></p>
+    }
+</DemoSection>
+
+@code {
+    private bool _confirmOpen;
+    private string? _confirmResult;
+
+    private const string _dangerousCode =
+        "<MariloButton Variant=\"ButtonVariant.Danger\" OnClick=\"@(() => _confirmOpen = true)\">Delete Item</MariloButton>\n" +
+        "<MariloConfirmDialog IsOpen=\"@_confirmOpen\"\n" +
+        "                     Title=\"Confirm Delete\"\n" +
+        "                     Message=\"Are you sure you want to delete this item?\"\n" +
+        "                     IsDangerous=\"true\"\n" +
+        "                     ConfirmText=\"Delete\"\n" +
+        "                     OnConfirm=\"@(() => _confirmOpen = false)\"\n" +
+        "                     OnCancel=\"@(() => _confirmOpen = false)\" />\n\n" +
+        "@code {\n" +
+        "    private bool _confirmOpen;\n" +
+        "    private string? _confirmResult;\n" +
+        "}";
+}

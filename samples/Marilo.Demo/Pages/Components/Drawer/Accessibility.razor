@@ -1,0 +1,32 @@
+@page "/components/drawer/accessibility"
+@layout ComponentDemoLayout
+
+<AccessibilityInfo
+    KeyboardInteractions="@_keyboard"
+    AriaAttributes="@_aria"
+    ScreenReaderNotes="@_screenReader" />
+
+@code {
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Escape", "Closes the drawer"),
+        ("Tab", "Moves focus through interactive elements within the drawer (focus is trapped)"),
+        ("Shift + Tab", "Moves focus to the previous interactive element within the drawer"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"dialog\"", "Applied when the drawer overlays content and requires user interaction"),
+        ("role=\"complementary\"", "Applied when the drawer provides supplementary content alongside the main content"),
+        ("aria-modal=\"true\"", "Indicates that the drawer traps focus and blocks interaction with the page behind it"),
+        ("aria-label", "Provides an accessible name for the drawer"),
+        ("aria-hidden=\"true\"", "Applied to the drawer when it is closed to hide it from screen readers"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "When opened, the drawer is announced as a dialog or complementary region depending on its role.",
+        "Focus is trapped within the drawer when aria-modal is true, preventing interaction with background content.",
+        "Pressing Escape closes the drawer and returns focus to the element that triggered it.",
+    ];
+}

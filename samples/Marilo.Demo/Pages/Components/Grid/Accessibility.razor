@@ -1,0 +1,27 @@
+@page "/components/grid/accessibility"
+@layout ComponentDemoLayout
+
+<AccessibilityInfo
+    KeyboardInteractions="@_keyboard"
+    AriaAttributes="@_aria"
+    ScreenReaderNotes="@_screenReader" />
+
+@code {
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus through interactive content within grid cells"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"grid\"", "Not required; the semantic grid uses standard HTML elements for layout"),
+        ("aria-label", "Can be added to describe the grid's purpose when used for data layout"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "The grid uses semantic HTML elements, so no special ARIA roles are needed for layout purposes.",
+        "Content within grid cells is read in document order.",
+        "Ensure grid content has proper heading hierarchy for screen reader navigation.",
+    ];
+}

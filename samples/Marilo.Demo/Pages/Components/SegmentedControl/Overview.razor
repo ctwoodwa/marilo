@@ -1,0 +1,27 @@
+@page "/components/segmented-control"
+@page "/components/segmented-control/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <MariloSegmentedControl Value="@_view" ValueChanged="@(v => _view = v)">
+        <MariloSegmentedItem Value="List">List</MariloSegmentedItem>
+        <MariloSegmentedItem Value="Grid">Grid</MariloSegmentedItem>
+        <MariloSegmentedItem Value="Map">Map</MariloSegmentedItem>
+    </MariloSegmentedControl>
+    <p><strong>Selected:</strong> @_view</p>
+</DemoSection>
+
+@code {
+    private string _view = "List";
+
+    private const string _basicCode =
+        "<MariloSegmentedControl Value=\"@_view\" ValueChanged=\"@(v => _view = v)\">\n" +
+        "    <MariloSegmentedItem Value=\"List\">List</MariloSegmentedItem>\n" +
+        "    <MariloSegmentedItem Value=\"Grid\">Grid</MariloSegmentedItem>\n" +
+        "    <MariloSegmentedItem Value=\"Map\">Map</MariloSegmentedItem>\n" +
+        "</MariloSegmentedControl>\n" +
+        "<p><strong>Selected:</strong> @_view</p>\n\n" +
+        "@code {\n" +
+        "    private string _view = \"List\";\n" +
+        "}";
+}

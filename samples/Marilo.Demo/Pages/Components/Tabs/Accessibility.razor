@@ -1,0 +1,36 @@
+@page "/components/tabs/accessibility"
+@layout ComponentDemoLayout
+
+<AccessibilityInfo
+    KeyboardInteractions="@_keyboard"
+    AriaAttributes="@_aria"
+    ScreenReaderNotes="@_screenReader" />
+
+@code {
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Arrow Left", "Moves focus to the previous tab"),
+        ("Arrow Right", "Moves focus to the next tab"),
+        ("Tab", "Moves focus from the tab list into the active tab panel content"),
+        ("Enter / Space", "Activates the focused tab"),
+        ("Home", "Moves focus to the first tab"),
+        ("End", "Moves focus to the last tab"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"tablist\"", "Applied to the tab strip container"),
+        ("role=\"tab\"", "Applied to each individual tab element"),
+        ("role=\"tabpanel\"", "Applied to the content area associated with each tab"),
+        ("aria-selected=\"true\"", "Indicates the currently active tab"),
+        ("aria-controls", "Links each tab to its corresponding tab panel"),
+        ("aria-labelledby", "Links each tab panel back to its controlling tab"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "Tabs are announced with their title, position in the list (e.g., \"tab 2 of 3\"), and selected state.",
+        "Disabled tabs are announced as \"dimmed\" or \"unavailable\".",
+        "Tab panel content is announced when a new tab is activated.",
+    ];
+}

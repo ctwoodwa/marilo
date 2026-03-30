@@ -1,0 +1,23 @@
+@page "/components/dialog"
+@page "/components/dialog/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Description="Click the button to open a simple dialog." Code="@_basicCode">
+    <MariloButton OnClick="@(() => _dialogOpen = true)">Open Dialog</MariloButton>
+    <MariloDialog IsOpen="@_dialogOpen" Title="Example Dialog" OnClose="@(() => _dialogOpen = false)">
+        <p>This is a dialog component rendered with pure HTML and CSS.</p>
+        <MariloButton Variant="ButtonVariant.Primary" OnClick="@(() => _dialogOpen = false)">Close</MariloButton>
+    </MariloDialog>
+</DemoSection>
+
+@code {
+    private bool _dialogOpen;
+
+    private const string _basicCode =
+        "<MariloButton OnClick=\"@(() => _dialogOpen = true)\">Open Dialog</MariloButton>\n" +
+        "<MariloDialog IsOpen=\"@_dialogOpen\" Title=\"Example Dialog\" OnClose=\"@(() => _dialogOpen = false)\">\n" +
+        "    <p>Dialog content here.</p>\n" +
+        "    <MariloButton Variant=\"ButtonVariant.Primary\" OnClick=\"@(() => _dialogOpen = false)\">Close</MariloButton>\n" +
+        "</MariloDialog>\n\n" +
+        "@code { private bool _dialogOpen; }";
+}

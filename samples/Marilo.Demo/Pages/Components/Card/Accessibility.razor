@@ -1,0 +1,30 @@
+@page "/components/card/accessibility"
+@layout ComponentDemoLayout
+
+<AccessibilityInfo
+    KeyboardInteractions="@_keyboard"
+    AriaAttributes="@_aria"
+    ScreenReaderNotes="@_screenReader" />
+
+@code {
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus to the next focusable element within or after the card"),
+        ("Shift + Tab", "Moves focus to the previous focusable element"),
+        ("Enter", "Activates a focused interactive element inside the card"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"article\"", "Can be applied to cards representing self-contained content"),
+        ("role=\"region\"", "Can be applied to cards that group related content with a heading"),
+        ("aria-label", "Provides an accessible name when the card has no visible heading"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "Cards with a heading are announced by their heading text when using landmark navigation.",
+        "Interactive cards (clickable) should convey their interactive nature to assistive technology.",
+        "Action buttons within cards are announced individually when focused.",
+    ];
+}

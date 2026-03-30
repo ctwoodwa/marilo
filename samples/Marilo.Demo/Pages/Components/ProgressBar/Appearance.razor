@@ -1,0 +1,21 @@
+@page "/components/progress-bar/appearance"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Progress Values" Description="Progress bars at various completion levels." Code="@_valuesCode">
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+        <MariloProgressBar Value="0" />
+        <MariloProgressBar Value="25" />
+        <MariloProgressBar Value="50" />
+        <MariloProgressBar Value="75" />
+        <MariloProgressBar Value="100" />
+    </div>
+</DemoSection>
+
+@code {
+    private const string _valuesCode =
+        "<MariloProgressBar Value=\"0\" />\n" +
+        "<MariloProgressBar Value=\"25\" />\n" +
+        "<MariloProgressBar Value=\"50\" />\n" +
+        "<MariloProgressBar Value=\"75\" />\n" +
+        "<MariloProgressBar Value=\"100\" />";
+}

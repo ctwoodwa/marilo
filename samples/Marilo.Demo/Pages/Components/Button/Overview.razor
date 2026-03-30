@@ -1,0 +1,25 @@
+@page "/components/button"
+@page "/components/button/overview"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Basic Usage" Code="@_basicCode">
+    <div class="demo-row">
+        <MariloButton Variant="ButtonVariant.Primary">Click me</MariloButton>
+    </div>
+</DemoSection>
+
+<DemoSection Title="Disabled" Code="@_disabledCode">
+    <div class="demo-row">
+        <MariloButton Disabled="true">Disabled</MariloButton>
+        <MariloButton Variant="ButtonVariant.Danger" Disabled="true">Disabled Danger</MariloButton>
+    </div>
+</DemoSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloButton Variant=\"ButtonVariant.Primary\">Click me</MariloButton>";
+
+    private const string _disabledCode =
+        "<MariloButton Disabled=\"true\">Disabled</MariloButton>\n" +
+        "<MariloButton Variant=\"ButtonVariant.Danger\" Disabled=\"true\">Disabled Danger</MariloButton>";
+}

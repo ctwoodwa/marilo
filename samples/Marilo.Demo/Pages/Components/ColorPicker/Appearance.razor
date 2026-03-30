@@ -1,0 +1,11 @@
+@page "/components/color-picker/appearance"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Disabled" Description="A disabled color picker prevents user interaction." Code="@_disabledCode">
+    <MariloColorPicker Value="#0078d4" Disabled="true" />
+</DemoSection>
+
+@code {
+    private const string _disabledCode =
+        "<MariloColorPicker Value=\"#0078d4\" Disabled=\"true\" />";
+}

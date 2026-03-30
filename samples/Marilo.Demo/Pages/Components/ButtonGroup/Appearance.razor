@@ -1,0 +1,19 @@
+@page "/components/button-group/appearance"
+@layout ComponentDemoLayout
+
+<DemoSection Title="With Primary" Description="Mix variant styles within a button group to highlight the primary action." Code="@_withPrimaryCode">
+    <MariloButtonGroup>
+        <MariloButton Variant="ButtonVariant.Primary">Primary</MariloButton>
+        <MariloButton Variant="ButtonVariant.Secondary">Secondary</MariloButton>
+        <MariloButton Variant="ButtonVariant.Secondary">Secondary</MariloButton>
+    </MariloButtonGroup>
+</DemoSection>
+
+@code {
+    private const string _withPrimaryCode =
+        "<MariloButtonGroup>\n" +
+        "    <MariloButton Variant=\"ButtonVariant.Primary\">Primary</MariloButton>\n" +
+        "    <MariloButton Variant=\"ButtonVariant.Secondary\">Secondary</MariloButton>\n" +
+        "    <MariloButton Variant=\"ButtonVariant.Secondary\">Secondary</MariloButton>\n" +
+        "</MariloButtonGroup>";
+}

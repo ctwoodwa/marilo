@@ -1,0 +1,51 @@
+@page "/components/drawer/appearance"
+@layout ComponentDemoLayout
+
+<DemoSection Title="Positions" Description="Drawers can slide in from different edges of the viewport." Code="@_positionCode">
+    <div class="demo-row">
+        <MariloButton OnClick="@(() => OpenPositionDrawer(DrawerPosition.Left))">Left</MariloButton>
+        <MariloButton OnClick="@(() => OpenPositionDrawer(DrawerPosition.Right))">Right</MariloButton>
+    </div>
+    <MariloDrawer IsOpen="@_posDrawerOpen" IsOpenChanged="@((bool v) => _posDrawerOpen = v)" Position="@_drawerPosition" Width="300px">
+        <h3>@_drawerPosition Drawer</h3>
+        <p>This drawer slides in from the @_drawerPosition.ToString().ToLower().</p>
+        <MariloButton OnClick="@(() => _posDrawerOpen = false)">Close</MariloButton>
+    </MariloDrawer>
+</DemoSection>
+
+<DemoSection Title="Custom Width" Description="Set a custom width for the drawer panel." Code="@_widthCode">
+    <MariloButton OnClick="@(() => _wideDrawerOpen = true)">Open Wide Drawer</MariloButton>
+    <MariloDrawer IsOpen="@_wideDrawerOpen" IsOpenChanged="@((bool v) => _wideDrawerOpen = v)" Position="DrawerPosition.Right" Width="500px">
+        <h3>Wide Drawer</h3>
+        <p>This drawer has a custom width of 500px.</p>
+        <MariloButton OnClick="@(() => _wideDrawerOpen = false)">Close</MariloButton>
+    </MariloDrawer>
+</DemoSection>
+
+@code {
+    private bool _posDrawerOpen;
+    private DrawerPosition _drawerPosition = DrawerPosition.Right;
+    private bool _wideDrawerOpen;
+
+    private void OpenPositionDrawer(DrawerPosition position)
+    {
+        _drawerPosition = position;
+        _posDrawerOpen = true;
+    }
+
+    private const string _positionCode =
+        "<MariloButton OnClick=\"@(() => OpenDrawer(DrawerPosition.Left))\">Left</MariloButton>\n" +
+        "<MariloButton OnClick=\"@(() => OpenDrawer(DrawerPosition.Right))\">Right</MariloButton>\n" +
+        "<MariloDrawer IsOpen=\"@_isOpen\" IsOpenChanged=\"@(v => _isOpen = v)\" Position=\"@_position\" Width=\"300px\">\n" +
+        "    <h3>Drawer Content</h3>\n" +
+        "    <MariloButton OnClick=\"@(() => _isOpen = false)\">Close</MariloButton>\n" +
+        "</MariloDrawer>";
+
+    private const string _widthCode =
+        "<MariloButton OnClick=\"@(() => _isOpen = true)\">Open Wide Drawer</MariloButton>\n" +
+        "<MariloDrawer IsOpen=\"@_isOpen\" IsOpenChanged=\"@(v => _isOpen = v)\" Position=\"DrawerPosition.Right\" Width=\"500px\">\n" +
+        "    <h3>Wide Drawer</h3>\n" +
+        "    <p>This drawer has a custom width of 500px.</p>\n" +
+        "    <MariloButton OnClick=\"@(() => _isOpen = false)\">Close</MariloButton>\n" +
+        "</MariloDrawer>";
+}

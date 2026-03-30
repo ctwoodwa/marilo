@@ -1,0 +1,64 @@
+@page "/components/tree-view/events"
+@layout ComponentDemoLayout
+
+<DemoSection Title="OnItemSelected" Description="Handle item selection with the OnItemSelected callback." Code="@_selectedCode">
+    <MariloTreeView SelectionMode="TreeSelectionMode.Single" OnItemSelected="@OnItemSelected">
+        <MariloTreeItem Title="Documents" IsExpanded="true">
+            <MariloTreeItem Title="Reports" />
+            <MariloTreeItem Title="Images" />
+        </MariloTreeItem>
+        <MariloTreeItem Title="Downloads" />
+    </MariloTreeView>
+    <p><strong>Selected:</strong> @_selectedItem</p>
+</DemoSection>
+
+<DemoSection Title="OnItemExpanded" Description="Handle item expand and collapse with the OnItemExpanded callback." Code="@_expandedCode">
+    <MariloTreeView OnItemExpanded="@OnItemExpanded">
+        <MariloTreeItem Title="Folder A">
+            <MariloTreeItem Title="File 1" />
+            <MariloTreeItem Title="File 2" />
+        </MariloTreeItem>
+        <MariloTreeItem Title="Folder B">
+            <MariloTreeItem Title="File 3" />
+        </MariloTreeItem>
+    </MariloTreeView>
+    <p><strong>Last action:</strong> @_expandAction</p>
+</DemoSection>
+
+@code {
+    private string _selectedItem = "None";
+    private string _expandAction = "None";
+
+    private void OnItemSelected(string item) => _selectedItem = item;
+    private void OnItemExpanded(string item) => _expandAction = $"Toggled: {item}";
+
+    private const string _selectedCode =
+        "<MariloTreeView SelectionMode=\"TreeSelectionMode.Single\" OnItemSelected=\"@OnItemSelected\">\n" +
+        "    <MariloTreeItem Title=\"Documents\" IsExpanded=\"true\">\n" +
+        "        <MariloTreeItem Title=\"Reports\" />\n" +
+        "        <MariloTreeItem Title=\"Images\" />\n" +
+        "    </MariloTreeItem>\n" +
+        "    <MariloTreeItem Title=\"Downloads\" />\n" +
+        "</MariloTreeView>\n" +
+        "<p><strong>Selected:</strong> @_selectedItem</p>\n\n" +
+        "@code {\n" +
+        "    private string _selectedItem = \"None\";\n" +
+        "    private void OnItemSelected(string item) => _selectedItem = item;\n" +
+        "}";
+
+    private const string _expandedCode =
+        "<MariloTreeView OnItemExpanded=\"@OnItemExpanded\">\n" +
+        "    <MariloTreeItem Title=\"Folder A\">\n" +
+        "        <MariloTreeItem Title=\"File 1\" />\n" +
+        "        <MariloTreeItem Title=\"File 2\" />\n" +
+        "    </MariloTreeItem>\n" +
+        "    <MariloTreeItem Title=\"Folder B\">\n" +
+        "        <MariloTreeItem Title=\"File 3\" />\n" +
+        "    </MariloTreeItem>\n" +
+        "</MariloTreeView>\n" +
+        "<p><strong>Last action:</strong> @_expandAction</p>\n\n" +
+        "@code {\n" +
+        "    private string _expandAction = \"None\";\n" +
+        "    private void OnItemExpanded(string item) => _expandAction = $\"Toggled: {item}\";\n" +
+        "}";
+}
