@@ -48,6 +48,9 @@
       {
         "files": ["component-specs/**/images/**"],
         "src": "../docs"
+      },
+      {
+        "files": ["marilo-icons.json", "marilo-icon-browser.js"]
       }
     ],
     "output": "_site",

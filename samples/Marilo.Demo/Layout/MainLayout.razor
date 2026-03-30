@@ -86,19 +86,6 @@
                                 <div class="toc-item @(isCurrent ? "expanded" : "")">
                                     <a class="toc-link @(isCurrent ? "active" : "")"
                                        href="/components/@sibling.Slug">@sibling.Name</a>
-                                    @if (isCurrent)
-                                    {
-                                        <div class="toc-children">
-                                            @foreach (var subPage in comp.SubPages)
-                                            {
-                                                var isSubActive = IsSubPageActive(subPage);
-                                                <a class="toc-link toc-child @(isSubActive ? "active" : "")"
-                                                   href="/components/@comp.Slug/@subPage">
-                                                    @ComponentRegistry.FormatSubPageName(subPage)
-                                                </a>
-                                            }
-                                        </div>
-                                    }
                                 </div>
                             }
                         }
@@ -221,11 +208,4 @@
         return segments.Length >= 2 ? ComponentRegistry.GetBySlug(segments[1]) : null;
     }
 
-    private bool IsSubPageActive(string subPage)
-    {
-        var segments = GetRelativeUri().Split('/');
-        if (segments.Length >= 3)
-            return segments[2].Equals(subPage, StringComparison.OrdinalIgnoreCase);
-        return subPage.Equals("overview", StringComparison.OrdinalIgnoreCase);
-    }
 }

@@ -2,17 +2,67 @@
 @page "/components/avatar/overview"
 @layout ComponentDemoLayout
 
-<DemoSection Title="Basic Usage" Description="Avatars display initials representing a user or entity." Code="@_basicCode">
-    <div class="demo-row">
-        <MariloAvatar Initials="AB" />
-        <MariloAvatar Initials="CD" />
-        <MariloAvatar Initials="EF" />
-    </div>
-</DemoSection>
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Description="Avatars display initials representing a user or entity." Code="@_basicCode">
+        <div class="demo-row">
+            <MariloAvatar Initials="AB" />
+            <MariloAvatar Initials="CD" />
+            <MariloAvatar Initials="EF" />
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="Sizes" Description="Avatars are available in multiple sizes." Code="@_sizesCode">
+        <div class="demo-row">
+            <MariloAvatar Size="AvatarSize.ExtraSmall" Initials="XS" />
+            <MariloAvatar Size="AvatarSize.Small" Initials="SM" />
+            <MariloAvatar Size="AvatarSize.Medium" Initials="MD" />
+            <MariloAvatar Size="AvatarSize.Large" Initials="LG" />
+            <MariloAvatar Size="AvatarSize.ExtraLarge" Initials="XL" />
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Accessibility">
+    <AccessibilityInfo
+        KeyboardInteractions="@_keyboard"
+        AriaAttributes="@_aria"
+        ScreenReaderNotes="@_screenReader" />
+</PageSection>
 
 @code {
+    // Overview
     private const string _basicCode =
         "<MariloAvatar Initials=\"AB\" />\n" +
         "<MariloAvatar Initials=\"CD\" />\n" +
         "<MariloAvatar Initials=\"EF\" />";
+
+    // Appearance
+    private const string _sizesCode =
+        "<MariloAvatar Size=\"AvatarSize.ExtraSmall\" Initials=\"XS\" />\n" +
+        "<MariloAvatar Size=\"AvatarSize.Small\" Initials=\"SM\" />\n" +
+        "<MariloAvatar Size=\"AvatarSize.Medium\" Initials=\"MD\" />\n" +
+        "<MariloAvatar Size=\"AvatarSize.Large\" Initials=\"LG\" />\n" +
+        "<MariloAvatar Size=\"AvatarSize.ExtraLarge\" Initials=\"XL\" />";
+
+    // Accessibility
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus to the avatar if it is interactive"),
+        ("Enter", "Activates the avatar if it is a clickable element"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"img\"", "Applied to indicate the avatar represents an image"),
+        ("aria-label", "Provides alt text describing the avatar, such as the user's name"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "Avatars with initials are announced with their aria-label text.",
+        "Image-based avatars should include descriptive alt text for screen readers.",
+        "Decorative avatars that duplicate adjacent text can use aria-hidden=\"true\".",
+    ];
 }

@@ -123,6 +123,8 @@ public class FluentUICssProvider : IMariloCssProvider
             .AddClass("mar-menu-item--disabled", isDisabled)
             .Build();
 
+    public string MenuDividerClass() => "mar-menu-divider";
+
     public string PaginationClass() => "mar-pagination";
 
     public string PaginationItemClass(bool isActive) =>
@@ -188,10 +190,10 @@ public class FluentUICssProvider : IMariloCssProvider
 
     public string ButtonGroupClass() => "mar-button-group";
 
-    public string ToggleButtonClass(bool isActive) =>
+    public string ToggleButtonClass(bool selected) =>
         new CssClassBuilder()
             .AddClass("mar-toggle-button")
-            .AddClass("mar-toggle-button--active", isActive)
+            .AddClass("mar-toggle-button--active", selected)
             .Build();
 
     public string SplitButtonClass() => "mar-split-button";

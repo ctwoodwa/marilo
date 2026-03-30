@@ -2,26 +2,72 @@
 @page "/components/text-field/overview"
 @layout ComponentDemoLayout
 
-<DemoSection Title="Basic Usage" Code="@_basicCode">
-    <MariloField>
-        <MariloLabel>Name</MariloLabel>
-        <MariloTextField Value="@_name" ValueChanged="@(v => _name = v)" Placeholder="Enter your name" />
-    </MariloField>
-</DemoSection>
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloField>
+            <MariloLabel>Name</MariloLabel>
+            <MariloTextField Value="@_name" ValueChanged="@(v => _name = v)" Placeholder="Enter your name" />
+        </MariloField>
+    </DemoSection>
 
-<DemoSection Title="States" Code="@_statesCode">
-    <MariloField>
-        <MariloLabel>Invalid Input</MariloLabel>
-        <MariloTextField Value="" IsInvalid="true" Placeholder="This field has an error" />
-        <MariloValidation Severity="ValidationSeverity.Error" Message="This field is required." />
-    </MariloField>
-    <MariloField>
-        <MariloLabel>Disabled Input</MariloLabel>
-        <MariloTextField Value="Cannot edit" Disabled="true" />
-    </MariloField>
-</DemoSection>
+    <DemoSection Title="States" Code="@_statesCode">
+        <MariloField>
+            <MariloLabel>Invalid Input</MariloLabel>
+            <MariloTextField Value="" IsInvalid="true" Placeholder="This field has an error" />
+            <MariloValidation Severity="ValidationSeverity.Error" Message="This field is required." />
+        </MariloField>
+        <MariloField>
+            <MariloLabel>Disabled Input</MariloLabel>
+            <MariloTextField Value="Cannot edit" Disabled="true" />
+        </MariloField>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="Adornments" Description="Prefix and suffix adornments enhance inputs with icons, labels, or actions." Code="@_adornmentsCode">
+        <MariloField>
+            <MariloLabel>Email</MariloLabel>
+            <MariloTextField Value="@_email" ValueChanged="@(v => _email = v)" Placeholder="Enter email" InputType="email" ShowPrefixSeparator="true">
+                <Prefix>
+                    <MariloIcon Name="mail" Size="IconSize.Small" />
+                </Prefix>
+            </MariloTextField>
+        </MariloField>
+        <MariloField>
+            <MariloLabel>Website</MariloLabel>
+            <MariloTextField Value="@_website" ValueChanged="@(v => _website = v)" Placeholder="example.com" ShowPrefixSeparator="true">
+                <Prefix><span>https://</span></Prefix>
+            </MariloTextField>
+        </MariloField>
+        <MariloField>
+            <MariloLabel>Price</MariloLabel>
+            <MariloTextField Value="@_price" ValueChanged="@(v => _price = v)" Placeholder="0.00">
+                <Prefix><span>$</span></Prefix>
+                <Suffix><span>USD</span></Suffix>
+            </MariloTextField>
+        </MariloField>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Events">
+    <DemoSection Title="Interactive" Description="Handle value changes with the ValueChanged callback." Code="@_interactiveCode">
+        <MariloField>
+            <MariloLabel>Type something</MariloLabel>
+            <MariloTextField Value="@_evName" ValueChanged="@(v => _evName = v)" Placeholder="Enter your name" />
+        </MariloField>
+        <p><strong>Value:</strong> @_evName</p>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Accessibility">
+    <AccessibilityInfo
+        KeyboardInteractions="@_keyboard"
+        AriaAttributes="@_aria"
+        ScreenReaderNotes="@_screenReader" />
+</PageSection>
 
 @code {
+    // Overview
     private string _name = "";
 
     private const string _basicCode =
@@ -38,4 +84,56 @@
         "<MariloField>\n" +
         "    <MariloTextField Value=\"Cannot edit\" Disabled=\"true\" />\n" +
         "</MariloField>";
+
+    // Appearance
+    private string _email = "";
+    private string _website = "";
+    private string _price = "";
+
+    private const string _adornmentsCode =
+        "<MariloTextField Value=\"@_email\" Placeholder=\"Enter email\" ShowPrefixSeparator=\"true\">\n" +
+        "    <Prefix><MariloIcon Name=\"mail\" Size=\"IconSize.Small\" /></Prefix>\n" +
+        "</MariloTextField>\n\n" +
+        "<MariloTextField Value=\"@_website\" Placeholder=\"example.com\" ShowPrefixSeparator=\"true\">\n" +
+        "    <Prefix><span>https://</span></Prefix>\n" +
+        "</MariloTextField>\n\n" +
+        "<MariloTextField Value=\"@_price\" Placeholder=\"0.00\">\n" +
+        "    <Prefix><span>$</span></Prefix>\n" +
+        "    <Suffix><span>USD</span></Suffix>\n" +
+        "</MariloTextField>";
+
+    // Events
+    private string _evName = "";
+
+    private const string _interactiveCode =
+        "<MariloTextField Value=\"@_name\" ValueChanged=\"@(v => _name = v)\" Placeholder=\"Enter your name\" />\n" +
+        "<p><strong>Value:</strong> @_name</p>\n\n" +
+        "@code {\n" +
+        "    private string _name = \"\";\n" +
+        "}";
+
+    // Accessibility
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus to the text field"),
+        ("Shift + Tab", "Moves focus to the previous focusable element"),
+        ("Escape", "Clears focus from the text field"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"textbox\"", "Implicitly set by the <input type=\"text\"> element"),
+        ("aria-invalid=\"true\"", "Applied when the IsInvalid parameter is set"),
+        ("aria-disabled=\"true\"", "Applied when the Disabled parameter is set"),
+        ("aria-label", "Can be set to provide an accessible name when no visible label is present"),
+        ("aria-describedby", "References validation messages when present"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "Text fields are announced with their label and the \"edit text\" role.",
+        "Invalid fields are announced with their error state and associated validation message.",
+        "Disabled fields are announced as \"dimmed\" or \"unavailable\" depending on the screen reader.",
+        "Prefix and suffix adornments are decorative and do not affect screen reader announcements.",
+    ];
 }

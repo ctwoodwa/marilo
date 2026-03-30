@@ -4,3 +4,5 @@
   href: components/
 - name: Theming
   href: theming/
+- name: Icons
+  href: icons.md

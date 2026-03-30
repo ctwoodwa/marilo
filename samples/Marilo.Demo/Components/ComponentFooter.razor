@@ -8,30 +8,11 @@
         <p>This component is part of <strong>Marilo</strong>, a provider-first Blazor component library.</p>
     </div>
 
-    @if (Component.SubPages.Length > 1)
-    {
-        <div class="component-footer-features">
-            <h3>Explore @Component.Name</h3>
-            <ul>
-                @foreach (var subPage in Component.SubPages)
-                {
-                    <li>
-                        <a href="/components/@Component.Slug/@subPage">
-                            @ComponentRegistry.FormatSubPageName(subPage)
-                        </a>
-                        @(" — ")
-                        @GetSubPageSummary(subPage)
-                    </li>
-                }
-            </ul>
-        </div>
-    }
-
     <div class="component-footer-resources">
         <h3>Resources</h3>
         <ul>
             <li><a href="@Links.ApiPage(Component.ApiPath)">API Reference</a></li>
-            <li><a href="https://github.com/AnnaSava/Marilo" target="_blank">GitHub Repository</a></li>
+            <li><a href="https://github.com/ctwoodwa/marilo" target="_blank">GitHub Repository</a></li>
         </ul>
     </div>
 
@@ -57,18 +38,6 @@
 @code {
     [Parameter, EditorRequired]
     public ComponentRegistry.ComponentInfo Component { get; set; } = default!;
-
-    [Parameter]
-    public string CurrentSubPage { get; set; } = "overview";
-
-    private static string GetSubPageSummary(string subPage) => subPage switch
-    {
-        "overview" => "See the component in action with common usage patterns.",
-        "appearance" => "Explore variants, sizes, colors, and visual customization.",
-        "events" => "Learn about callbacks, event handling, and interactivity.",
-        "accessibility" => "Keyboard navigation, ARIA attributes, and screen reader support.",
-        _ => ""
-    };
 
     private (ComponentRegistry.ComponentInfo? Prev, ComponentRegistry.ComponentInfo? Next) GetAdjacentComponents()
     {

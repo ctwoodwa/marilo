@@ -127,6 +127,51 @@ public enum TabSize
 }
 
 /// <summary>
+/// Controls how the TabStrip handles tabs that exceed the available space.
+/// </summary>
+public enum TabStripOverflowMode
+{
+    /// <summary>No overflow handling; tabs wrap or overflow the container.</summary>
+    None,
+
+    /// <summary>Scroll buttons appear when tabs exceed the available width.</summary>
+    Scroll,
+
+    /// <summary>Overflowing tabs are collected into a dropdown menu.</summary>
+    Menu
+}
+
+/// <summary>
+/// Specifies the position of scroll buttons in the TabStrip when <see cref="TabStripOverflowMode.Scroll"/> is active.
+/// </summary>
+public enum TabStripScrollButtonsPosition
+{
+    /// <summary>Scroll buttons are rendered on both ends of the tab list (default).</summary>
+    Split,
+
+    /// <summary>Both scroll buttons are rendered before the tab list.</summary>
+    Start,
+
+    /// <summary>Both scroll buttons are rendered after the tab list.</summary>
+    End
+}
+
+/// <summary>
+/// Controls the visibility of scroll buttons when the TabStrip is in Scroll overflow mode.
+/// </summary>
+public enum TabStripScrollButtonsVisibility
+{
+    /// <summary>Scroll buttons are always visible; disabled when all tabs fit (default).</summary>
+    Visible,
+
+    /// <summary>Scroll buttons appear only when tabs overflow the available space.</summary>
+    Auto,
+
+    /// <summary>Scroll buttons are never displayed.</summary>
+    Hidden
+}
+
+/// <summary>
 /// Specifies the current status of a step in a stepper control.
 /// </summary>
 public enum StepStatus

@@ -163,6 +163,15 @@
                 </div>
                 <div class="icons-code-block">
                     <div class="icons-code-header">
+                        <span>Blazor</span>
+                        <button class="icons-code-copy" @onclick="CopyBlazor" aria-label="Copy Blazor">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg>
+                        </button>
+                    </div>
+                    <pre><code>@GetBlazorSnippet(_selected)</code></pre>
+                </div>
+                <div class="icons-code-block" style="margin-top:8px">
+                    <div class="icons-code-header">
                         <span>SVG</span>
                         <button class="icons-code-copy" @onclick="CopySvg" aria-label="Copy SVG">
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg>
@@ -271,6 +280,25 @@
     {
         if (!_icons.TryGetValue(name, out var paths)) return "";
         return $"""<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">{paths}</svg>""";
+    }
+
+    private string GetBlazorSnippet(string? name)
+    {
+        if (name == null) return "";
+        return $$$"""
+<MariloIcon Name="{name}" />
+
+{{/* with size */}}
+<MariloIcon Name="{name}" Size="IconSize.Large" />
+
+{{/* with color */}}
+<MariloIcon Name="{name}" ThemeColor="IconThemeColor.Primary" />
+
+{{/* inside a button */}}
+<MariloButton>
+    <MariloIcon Name="{name}" /> Label
+</MariloButton>
+""";
     }
 
     private string GetCategory(string? name) =>

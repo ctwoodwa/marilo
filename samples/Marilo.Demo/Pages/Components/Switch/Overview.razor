@@ -2,15 +2,78 @@
 @page "/components/switch/overview"
 @layout ComponentDemoLayout
 
-<DemoSection Title="Basic Usage" Code="@_basicCode">
-    <MariloField>
-        <MariloSwitch IsOn="@_switchOn" IsOnChanged="@(v => _switchOn = v)" Label="Enable notifications" />
-    </MariloField>
-</DemoSection>
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloField>
+            <MariloSwitch IsOn="@_switchOn" IsOnChanged="@(v => _switchOn = v)" Label="Enable notifications" />
+        </MariloField>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="Disabled" Description="A disabled switch prevents user interaction." Code="@_disabledCode">
+        <MariloField>
+            <MariloSwitch IsOn="true" Disabled="true" Label="On and disabled" />
+        </MariloField>
+        <MariloField>
+            <MariloSwitch IsOn="false" Disabled="true" Label="Off and disabled" />
+        </MariloField>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Events">
+    <DemoSection Title="IsOnChanged" Description="Handle switch toggle with the IsOnChanged callback." Code="@_interactiveCode">
+        <MariloField>
+            <MariloSwitch IsOn="@_evSwitchOn" IsOnChanged="@(v => _evSwitchOn = v)" Label="Toggle me" />
+        </MariloField>
+        <p><strong>Switch is on:</strong> @_evSwitchOn</p>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Accessibility">
+    <AccessibilityInfo
+        KeyboardInteractions="@_keyboard"
+        AriaAttributes="@_aria"
+        ScreenReaderNotes="@_screenReader" />
+</PageSection>
 
 @code {
     private bool _switchOn;
+    private bool _evSwitchOn;
 
     private const string _basicCode =
         "<MariloSwitch IsOn=\"@_switchOn\" IsOnChanged=\"@(v => _switchOn = v)\" Label=\"Enable notifications\" />";
+
+    private const string _disabledCode =
+        "<MariloSwitch IsOn=\"true\" Disabled=\"true\" Label=\"On and disabled\" />\n" +
+        "<MariloSwitch IsOn=\"false\" Disabled=\"true\" Label=\"Off and disabled\" />";
+
+    private const string _interactiveCode =
+        "<MariloSwitch IsOn=\"@_switchOn\" IsOnChanged=\"@(v => _switchOn = v)\" Label=\"Toggle me\" />\n" +
+        "<p><strong>Switch is on:</strong> @_switchOn</p>\n\n" +
+        "@code {\n" +
+        "    private bool _switchOn;\n" +
+        "}";
+
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus to the switch"),
+        ("Shift + Tab", "Moves focus to the previous focusable element"),
+        ("Space", "Toggles the switch on or off"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"switch\"", "Identifies the element as a switch"),
+        ("aria-checked", "Reflects the current on/off state of the switch"),
+        ("aria-disabled=\"true\"", "Applied when the Disabled parameter is set"),
+        ("aria-label", "Provided by the Label parameter"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "Switches are announced with their label, on/off state, and the \"switch\" role.",
+        "Toggling the switch announces the new state (\"on\" or \"off\").",
+        "Disabled switches are announced as \"dimmed\" or \"unavailable\" depending on the screen reader.",
+    ];
 }

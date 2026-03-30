@@ -2,13 +2,30 @@
 @page "/components/spinner/overview"
 @layout ComponentDemoLayout
 
-<DemoSection Title="Basic Usage" Description="Spinners indicate an ongoing loading process." Code="@_basicCode">
-    <div class="demo-row">
-        <MariloSpinner Size="SpinnerSize.Medium" />
-    </div>
-</DemoSection>
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Description="Spinners indicate an ongoing loading process." Code="@_basicCode">
+        <div class="demo-row">
+            <MariloSpinner Size="SpinnerSize.Medium" />
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="Sizes" Description="Spinners are available in small, medium, and large sizes." Code="@_sizesCode">
+        <div class="demo-row">
+            <MariloSpinner Size="SpinnerSize.Small" />
+            <MariloSpinner Size="SpinnerSize.Medium" />
+            <MariloSpinner Size="SpinnerSize.Large" />
+        </div>
+    </DemoSection>
+</PageSection>
 
 @code {
     private const string _basicCode =
         "<MariloSpinner Size=\"SpinnerSize.Medium\" />";
+
+    private const string _sizesCode =
+        "<MariloSpinner Size=\"SpinnerSize.Small\" />\n" +
+        "<MariloSpinner Size=\"SpinnerSize.Medium\" />\n" +
+        "<MariloSpinner Size=\"SpinnerSize.Large\" />";
 }

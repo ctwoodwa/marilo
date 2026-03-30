@@ -1,21 +1,25 @@
 @inherits MariloComponentBase
 
-<button class="@CombineClasses(CssProvider.ToggleButtonClass(IsActive))"
+<button class="@CombineClasses(CssProvider.ToggleButtonClass(Selected))"
         style="@CombineStyles()"
-        aria-pressed="@IsActive.ToString().ToLowerInvariant()"
+        aria-pressed="@Selected.ToString().ToLowerInvariant()"
+        disabled="@(!Enabled)"
         @onclick="HandleClick"
         @attributes="AdditionalAttributes">
     @ChildContent
 </button>
 
 @code {
-    [Parameter] public bool IsActive { get; set; }
-    [Parameter] public EventCallback<bool> IsActiveChanged { get; set; }
+    [Parameter] public bool Selected { get; set; }
+    [Parameter] public EventCallback<bool> SelectedChanged { get; set; }
+    [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
+    [Parameter] public bool Enabled { get; set; } = true;
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    private async Task HandleClick()
+    private async Task HandleClick(MouseEventArgs args)
     {
-        IsActive = !IsActive;
-        await IsActiveChanged.InvokeAsync(IsActive);
+        await OnClick.InvokeAsync(args);
+        Selected = !Selected;
+        await SelectedChanged.InvokeAsync(Selected);
     }
 }

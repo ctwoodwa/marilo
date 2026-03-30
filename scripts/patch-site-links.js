@@ -27,4 +27,13 @@ index = index.replace(
 );
 fs.writeFileSync(indexPath, index, 'utf8');
 
+// Patch articles/icons.md — demo site icons link
+const iconsPath = path.join(root, 'docfx', 'articles', 'icons.md');
+let icons = fs.readFileSync(iconsPath, 'utf8');
+icons = icons.replace(
+    /\[Marilo demo site\]\([^)]+\)/,
+    `[Marilo demo site](${demoUrl}/icons)`
+);
+fs.writeFileSync(iconsPath, icons, 'utf8');
+
 console.log(`Patched site links: demoBaseUrl=${demoUrl}`);

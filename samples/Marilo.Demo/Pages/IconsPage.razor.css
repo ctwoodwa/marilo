@@ -1,29 +1,29 @@
 /* ── Map page tokens to global app tokens ── */
 .icons-page {
-    --ni-bg:             var(--app-bg);
-    --ni-surface:        var(--app-surface);
-    --ni-surface-offset: var(--app-surface);
-    --ni-surface-raised: var(--app-surface-raised);
-    --ni-border:         var(--app-border);
-    --ni-divider:        var(--app-divider);
-    --ni-text:           var(--app-text);
-    --ni-text-muted:     var(--app-text-muted);
-    --ni-text-faint:     var(--app-text-faint);
-    --ni-primary:        var(--app-primary);
-    --ni-primary-hover:  var(--app-primary-hover);
-    --ni-primary-soft:   var(--app-primary-soft);
-    --ni-code-bg:        var(--app-code-bg);
-    --ni-kbd-bg:         var(--app-kbd-bg);
-    --ni-shadow-sm:      var(--app-shadow-sm);
-    --ni-shadow-md:      var(--app-shadow-md);
-    --ni-shadow-lg:      var(--app-shadow-lg);
-    --ni-shadow-xl:      var(--app-shadow-xl);
+    --ni-bg:             var(--color-bg);
+    --ni-surface:        var(--color-surface);
+    --ni-surface-offset: var(--color-bg-alt);
+    --ni-surface-raised: var(--color-surface);
+    --ni-border:         var(--color-border);
+    --ni-divider:        var(--color-divider);
+    --ni-text:           var(--color-text);
+    --ni-text-muted:     var(--color-text-muted);
+    --ni-text-faint:     var(--color-text-faint);
+    --ni-primary:        var(--color-primary);
+    --ni-primary-hover:  var(--color-primary-hover);
+    --ni-primary-soft:   var(--color-primary-soft);
+    --ni-code-bg:        var(--color-code-bg);
+    --ni-kbd-bg:         var(--color-kbd-bg);
+    --ni-shadow-sm:      var(--shadow-sm);
+    --ni-shadow-md:      var(--shadow-md);
+    --ni-shadow-lg:      var(--shadow-lg);
+    --ni-shadow-xl:      0 16px 48px rgba(0,0,0,.18);
     --ni-ease:           cubic-bezier(0.16, 1, 0.3, 1);
 
     background: var(--ni-bg);
     color: var(--ni-text);
-    margin: -24px -32px;   /* break out of .main-content padding */
-    min-height: 100vh;
+    margin: -1.6rem -3rem -2rem;   /* cancel content-area padding + margin */
+    min-height: calc(100vh - 60px);
     font-family: inherit;
 }
 
@@ -39,7 +39,7 @@
     backdrop-filter: blur(16px) saturate(1.4);
     -webkit-backdrop-filter: blur(16px) saturate(1.4);
     position: sticky;
-    top: 0;
+    top: 60px; /* below the 60px top-navbar */
     z-index: 100;
 }
 
@@ -124,7 +124,7 @@
 /* ── Toolbar ── */
 .icons-toolbar {
     position: sticky;
-    top: 49px;
+    top: 109px; /* 60px top-navbar + ~49px icons-header */
     z-index: 90;
     background: var(--ni-bg);
     background: color-mix(in srgb, var(--ni-bg) 92%, transparent);
@@ -565,7 +565,7 @@
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
-    .icons-page { margin: -24px -16px; }
+    .icons-page { margin: -1.6rem 0 -2rem; }
     .icons-header { padding: 10px 16px; }
     .icons-toolbar-inner { flex-wrap: wrap; padding: 10px 16px; }
     .icons-search-wrap { max-width: none; flex-basis: 100%; order: 1; }

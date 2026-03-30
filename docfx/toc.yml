@@ -6,5 +6,7 @@
   href: component-specs/
 - name: Theming
   href: articles/theming/
+- name: Icons
+  href: articles/icons.md
 - name: API Reference
   href: api/

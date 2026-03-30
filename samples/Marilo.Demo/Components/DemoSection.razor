@@ -62,6 +62,7 @@
     [Parameter] public string? Code { get; set; }
 
     [CascadingParameter] public PageSectionTracker? SectionTracker { get; set; }
+    [CascadingParameter(Name = "ActiveSectionId")] public string? ActiveSectionId { get; set; }
 
     private string _anchorId = "";
     private bool _showCode;
@@ -69,10 +70,13 @@
     private bool _needsHighlight;
     private ElementReference _codeEl;
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
         _anchorId = PageSectionTracker.ToAnchorId(Title);
-        SectionTracker?.Register(_anchorId, Title);
+        if (ActiveSectionId is not null)
+            SectionTracker?.RegisterSubSection(ActiveSectionId, _anchorId, Title);
+        else
+            SectionTracker?.RegisterSection(_anchorId, Title);
     }
 
     private void ShowExample() => _showCode = false;

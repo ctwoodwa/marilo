@@ -38,6 +38,7 @@ public interface IMariloCssProvider
     string BreadcrumbItemClass();
     string MenuClass();
     string MenuItemClass(bool isDisabled);
+    string MenuDividerClass();
     string PaginationClass();
     string PaginationItemClass(bool isActive);
     string TreeViewClass();
@@ -55,7 +56,7 @@ public interface IMariloCssProvider
     string ButtonClass(ButtonVariant variant, ButtonSize size, bool isOutline, bool isDisabled);
     string IconButtonClass(ButtonSize size);
     string ButtonGroupClass();
-    string ToggleButtonClass(bool isActive);
+    string ToggleButtonClass(bool selected);
     string SplitButtonClass();
     string ChipClass(ChipVariant variant, bool isSelected);
     string ChipSetClass();

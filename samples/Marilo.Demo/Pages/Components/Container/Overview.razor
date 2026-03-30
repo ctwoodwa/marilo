@@ -2,15 +2,67 @@
 @page "/components/container/overview"
 @layout ComponentDemoLayout
 
-<DemoSection Title="Basic Usage" Code="@_basicCode">
-    <MariloContainer>
-        <MariloAlert Variant="AlertVariant.Info">This alert is inside a container that centers and constrains its width.</MariloAlert>
-    </MariloContainer>
-</DemoSection>
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloContainer>
+            <MariloAlert Variant="AlertVariant.Info">This alert is inside a container that centers and constrains its width.</MariloAlert>
+        </MariloContainer>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="Max Width" Description="Containers support different maximum width presets." Code="@_maxWidthCode">
+        <MariloContainer MaxWidth="ContainerMaxWidth.Small">
+            <MariloAlert Variant="AlertVariant.Info">Small container</MariloAlert>
+        </MariloContainer>
+        <MariloContainer MaxWidth="ContainerMaxWidth.Medium">
+            <MariloAlert Variant="AlertVariant.Info">Medium container</MariloAlert>
+        </MariloContainer>
+        <MariloContainer MaxWidth="ContainerMaxWidth.Large">
+            <MariloAlert Variant="AlertVariant.Info">Large container</MariloAlert>
+        </MariloContainer>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Accessibility">
+    <AccessibilityInfo
+        KeyboardInteractions="@_keyboard"
+        AriaAttributes="@_aria"
+        ScreenReaderNotes="@_screenReader" />
+</PageSection>
 
 @code {
     private const string _basicCode =
         "<MariloContainer>\n" +
         "    <MariloAlert Variant=\"AlertVariant.Info\">This alert is inside a container.</MariloAlert>\n" +
         "</MariloContainer>";
+
+    private const string _maxWidthCode =
+        "<MariloContainer MaxWidth=\"ContainerMaxWidth.Small\">\n" +
+        "    <MariloAlert Variant=\"AlertVariant.Info\">Small container</MariloAlert>\n" +
+        "</MariloContainer>\n" +
+        "<MariloContainer MaxWidth=\"ContainerMaxWidth.Medium\">\n" +
+        "    <MariloAlert Variant=\"AlertVariant.Info\">Medium container</MariloAlert>\n" +
+        "</MariloContainer>\n" +
+        "<MariloContainer MaxWidth=\"ContainerMaxWidth.Large\">\n" +
+        "    <MariloAlert Variant=\"AlertVariant.Info\">Large container</MariloAlert>\n" +
+        "</MariloContainer>";
+
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus through interactive content within the container"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role", "No special ARIA role is needed; the container is a semantic wrapper element"),
+        ("aria-label", "Can be added when the container represents a distinct section of content"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "The container is a semantic wrapper and does not require special ARIA attributes.",
+        "Content within the container is read in normal document order.",
+        "Use landmark roles on the container only when it represents a meaningful page region.",
+    ];
 }

@@ -2,13 +2,51 @@
 @page "/components/pagination/overview"
 @layout ComponentDemoLayout
 
-<DemoSection Title="Basic Usage" Code="@_basicCode">
-    <MariloPagination TotalPages="10" CurrentPage="@_page" CurrentPageChanged="@(v => _page = v)" />
-    <p><strong>Current page:</strong> @_page</p>
-</DemoSection>
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloPagination TotalPages="10" CurrentPage="@_page" CurrentPageChanged="@(v => _page = v)" />
+        <p><strong>Current page:</strong> @_page</p>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="Sizes" Description="Pagination supports different sizes." Code="@_sizesCode">
+        <MariloPagination TotalPages="5" CurrentPage="1" Size="PaginationSize.Small" />
+        <MariloPagination TotalPages="5" CurrentPage="1" Size="PaginationSize.Medium" />
+        <MariloPagination TotalPages="5" CurrentPage="1" Size="PaginationSize.Large" />
+    </DemoSection>
+
+    <DemoSection Title="Variants" Description="Pagination can be displayed with different visual styles." Code="@_variantsCode">
+        <MariloPagination TotalPages="5" CurrentPage="1" Variant="PaginationVariant.Default" />
+        <MariloPagination TotalPages="5" CurrentPage="1" Variant="PaginationVariant.Outlined" />
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Events">
+    <DemoSection Title="CurrentPageChanged" Description="Handle page changes with the CurrentPageChanged callback." Code="@_pageChangedCode">
+        <MariloPagination TotalPages="10" CurrentPage="@_currentPage" CurrentPageChanged="@OnPageChanged" />
+        <p><strong>Current page:</strong> @_currentPage</p>
+        <p><strong>Last change:</strong> @_lastChange</p>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Accessibility">
+    <AccessibilityInfo
+        KeyboardInteractions="@_keyboard"
+        AriaAttributes="@_aria"
+        ScreenReaderNotes="@_screenReader" />
+</PageSection>
 
 @code {
     private int _page = 1;
+    private int _currentPage = 1;
+    private string _lastChange = "None";
+
+    private void OnPageChanged(int page)
+    {
+        _currentPage = page;
+        _lastChange = $"Changed to page {page}";
+    }
 
     private const string _basicCode =
         "<MariloPagination TotalPages=\"10\" CurrentPage=\"@_page\" CurrentPageChanged=\"@(v => _page = v)\" />\n" +
@@ -16,4 +54,49 @@
         "@code {\n" +
         "    private int _page = 1;\n" +
         "}";
+
+    private const string _sizesCode =
+        "<MariloPagination TotalPages=\"5\" CurrentPage=\"1\" Size=\"PaginationSize.Small\" />\n" +
+        "<MariloPagination TotalPages=\"5\" CurrentPage=\"1\" Size=\"PaginationSize.Medium\" />\n" +
+        "<MariloPagination TotalPages=\"5\" CurrentPage=\"1\" Size=\"PaginationSize.Large\" />";
+
+    private const string _variantsCode =
+        "<MariloPagination TotalPages=\"5\" CurrentPage=\"1\" Variant=\"PaginationVariant.Default\" />\n" +
+        "<MariloPagination TotalPages=\"5\" CurrentPage=\"1\" Variant=\"PaginationVariant.Outlined\" />";
+
+    private const string _pageChangedCode =
+        "<MariloPagination TotalPages=\"10\" CurrentPage=\"@_currentPage\" CurrentPageChanged=\"@OnPageChanged\" />\n" +
+        "<p><strong>Current page:</strong> @_currentPage</p>\n" +
+        "<p><strong>Last change:</strong> @_lastChange</p>\n\n" +
+        "@code {\n" +
+        "    private int _currentPage = 1;\n" +
+        "    private string _lastChange = \"None\";\n\n" +
+        "    private void OnPageChanged(int page)\n" +
+        "    {\n" +
+        "        _currentPage = page;\n" +
+        "        _lastChange = $\"Changed to page {page}\";\n" +
+        "    }\n" +
+        "}";
+
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus to the next page button"),
+        ("Shift + Tab", "Moves focus to the previous page button"),
+        ("Enter", "Activates the focused page button"),
+        ("Space", "Activates the focused page button"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("nav aria-label=\"Pagination\"", "The pagination is wrapped in a nav element with aria-label=\"Pagination\""),
+        ("aria-current=\"page\"", "Applied to the currently selected page button to indicate the active page"),
+        ("aria-label", "Each page button has an aria-label such as \"Page 1\", \"Page 2\", etc."),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "The pagination is announced as a navigation landmark with the label \"Pagination\".",
+        "The current page button is announced with \"current page\" to indicate the selected page.",
+        "Previous and next buttons are labeled to indicate their navigation direction.",
+    ];
 }

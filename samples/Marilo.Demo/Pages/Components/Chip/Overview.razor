@@ -2,15 +2,88 @@
 @page "/components/chip/overview"
 @layout ComponentDemoLayout
 
-<DemoSection Title="Selected State" Code="@_selectedCode">
-    <div class="demo-row">
-        <MariloChip Variant="ChipVariant.Primary" Label="Selected" IsSelected="true" />
-        <MariloChip Variant="ChipVariant.Primary" Label="Unselected" IsSelected="false" />
-    </div>
-</DemoSection>
+<PageSection Title="Overview">
+    <DemoSection Title="Selected State" Code="@_selectedCode">
+        <div class="demo-row">
+            <MariloChip Variant="ChipVariant.Primary" Label="Selected" IsSelected="true" />
+            <MariloChip Variant="ChipVariant.Primary" Label="Unselected" IsSelected="false" />
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="Variants" Description="Chips come in several variants to convey different meanings." Code="@_variantsCode">
+        <div class="demo-row">
+            <MariloChip Label="Default" />
+            <MariloChip Variant="ChipVariant.Primary" Label="Primary" />
+            <MariloChip Variant="ChipVariant.Danger" Label="Danger" />
+            <MariloChip Variant="ChipVariant.Success" Label="Selected" IsSelected="true" />
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Events">
+    <DemoSection Title="OnClick" Description="Handle chip click events to toggle selection or trigger actions." Code="@_clickCode">
+        <div class="demo-row">
+            <MariloChip Variant="ChipVariant.Primary" Label="@(_isSelected ? "Selected" : "Click me")" IsSelected="@_isSelected" OnClick="@(() => _isSelected = !_isSelected)" />
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Accessibility">
+    <AccessibilityInfo
+        KeyboardInteractions="@_keyboard"
+        AriaAttributes="@_aria"
+        ScreenReaderNotes="@_screenReader" />
+</PageSection>
 
 @code {
+    // Overview
     private const string _selectedCode =
         "<MariloChip Variant=\"ChipVariant.Primary\" Label=\"Selected\" IsSelected=\"true\" />\n" +
         "<MariloChip Variant=\"ChipVariant.Primary\" Label=\"Unselected\" IsSelected=\"false\" />";
+
+    // Appearance
+    private const string _variantsCode =
+        "<MariloChip Label=\"Default\" />\n" +
+        "<MariloChip Variant=\"ChipVariant.Primary\" Label=\"Primary\" />\n" +
+        "<MariloChip Variant=\"ChipVariant.Danger\" Label=\"Danger\" />\n" +
+        "<MariloChip Variant=\"ChipVariant.Success\" Label=\"Selected\" IsSelected=\"true\" />";
+
+    // Events
+    private bool _isSelected;
+
+    private const string _clickCode =
+        "<MariloChip Variant=\"ChipVariant.Primary\"\n" +
+        "    Label=\"@(_isSelected ? \"Selected\" : \"Click me\")\"\n" +
+        "    IsSelected=\"@_isSelected\"\n" +
+        "    OnClick=\"@(() => _isSelected = !_isSelected)\" />\n\n" +
+        "@code {\n" +
+        "    private bool _isSelected;\n" +
+        "}";
+
+    // Accessibility
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Enter", "Selects or deselects the chip"),
+        ("Space", "Selects or deselects the chip"),
+        ("Delete", "Removes the chip if deletable"),
+        ("Backspace", "Removes the chip if deletable"),
+        ("Tab", "Moves focus to the next focusable element"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"option\"", "Applied to selectable chips to indicate they are options"),
+        ("aria-selected=\"true\"", "Applied when the chip is in a selected state"),
+        ("aria-disabled=\"true\"", "Applied when the chip is disabled"),
+        ("aria-label", "Can be set for chips with icons only"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "Chips are announced with their label text and current selection state.",
+        "Deletable chips announce the availability of the delete action.",
+        "Selected chips are announced as \"selected\" by screen readers.",
+    ];
 }

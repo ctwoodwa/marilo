@@ -2,21 +2,69 @@
 @page "/components/accordion/overview"
 @layout ComponentDemoLayout
 
-<DemoSection Title="Basic Usage" Code="@_basicCode">
-    <MariloAccordion>
-        <MariloAccordionItem Title="What is Marilo?">
-            <p>Marilo is a provider-first Blazor component library that lets you write markup once and swap CSS frameworks without changing your Razor code.</p>
-        </MariloAccordionItem>
-        <MariloAccordionItem Title="How do providers work?">
-            <p>Providers implement the CSS mapping interface and translate abstract component tokens into framework-specific class names at render time.</p>
-        </MariloAccordionItem>
-        <MariloAccordionItem Title="Which providers are available?">
-            <p>Marilo currently ships with a Fluent UI provider, with Material and Bootstrap providers on the roadmap.</p>
-        </MariloAccordionItem>
-    </MariloAccordion>
-</DemoSection>
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloAccordion>
+            <MariloAccordionItem Title="What is Marilo?">
+                <p>Marilo is a provider-first Blazor component library that lets you write markup once and swap CSS frameworks without changing your Razor code.</p>
+            </MariloAccordionItem>
+            <MariloAccordionItem Title="How do providers work?">
+                <p>Providers implement the CSS mapping interface and translate abstract component tokens into framework-specific class names at render time.</p>
+            </MariloAccordionItem>
+            <MariloAccordionItem Title="Which providers are available?">
+                <p>Marilo currently ships with a Fluent UI provider, with Material and Bootstrap providers on the roadmap.</p>
+            </MariloAccordionItem>
+        </MariloAccordion>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="Multiple Expand" Description="Allow multiple accordion items to be expanded simultaneously." Code="@_multipleCode">
+        <MariloAccordion Multiple="true">
+            <MariloAccordionItem Title="Section A">
+                <p>Content for section A.</p>
+            </MariloAccordionItem>
+            <MariloAccordionItem Title="Section B">
+                <p>Content for section B.</p>
+            </MariloAccordionItem>
+            <MariloAccordionItem Title="Section C">
+                <p>Content for section C.</p>
+            </MariloAccordionItem>
+        </MariloAccordion>
+    </DemoSection>
+
+    <DemoSection Title="Default Expanded" Description="Set items to be expanded by default." Code="@_expandedCode">
+        <MariloAccordion>
+            <MariloAccordionItem Title="Expanded by default" IsExpanded="true">
+                <p>This item starts expanded.</p>
+            </MariloAccordionItem>
+            <MariloAccordionItem Title="Collapsed by default">
+                <p>This item starts collapsed.</p>
+            </MariloAccordionItem>
+        </MariloAccordion>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Events">
+    <DemoSection Title="IsExpandedChanged" Description="Handle expand and collapse events for each accordion item." Code="@_eventCode">
+        <MariloAccordion>
+            <MariloAccordionItem Title="Click to expand" IsExpanded="@_isExpanded" IsExpandedChanged="@OnExpandedChanged">
+                <p>This item tracks its expanded state.</p>
+            </MariloAccordionItem>
+        </MariloAccordion>
+        <p>Expanded: @_isExpanded</p>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Accessibility">
+    <AccessibilityInfo
+        KeyboardInteractions="@_keyboard"
+        AriaAttributes="@_aria"
+        ScreenReaderNotes="@_screenReader" />
+</PageSection>
 
 @code {
+    // Overview
     private const string _basicCode =
         "<MariloAccordion>\n" +
         "    <MariloAccordionItem Title=\"What is Marilo?\">\n" +
@@ -29,4 +77,75 @@
         "        <p>Marilo currently ships with a Fluent UI provider...</p>\n" +
         "    </MariloAccordionItem>\n" +
         "</MariloAccordion>";
+
+    // Appearance
+    private const string _multipleCode =
+        "<MariloAccordion Multiple=\"true\">\n" +
+        "    <MariloAccordionItem Title=\"Section A\">\n" +
+        "        <p>Content for section A.</p>\n" +
+        "    </MariloAccordionItem>\n" +
+        "    <MariloAccordionItem Title=\"Section B\">\n" +
+        "        <p>Content for section B.</p>\n" +
+        "    </MariloAccordionItem>\n" +
+        "    <MariloAccordionItem Title=\"Section C\">\n" +
+        "        <p>Content for section C.</p>\n" +
+        "    </MariloAccordionItem>\n" +
+        "</MariloAccordion>";
+
+    private const string _expandedCode =
+        "<MariloAccordion>\n" +
+        "    <MariloAccordionItem Title=\"Expanded by default\" IsExpanded=\"true\">\n" +
+        "        <p>This item starts expanded.</p>\n" +
+        "    </MariloAccordionItem>\n" +
+        "    <MariloAccordionItem Title=\"Collapsed by default\">\n" +
+        "        <p>This item starts collapsed.</p>\n" +
+        "    </MariloAccordionItem>\n" +
+        "</MariloAccordion>";
+
+    // Events
+    private bool _isExpanded;
+
+    private void OnExpandedChanged(bool expanded)
+    {
+        _isExpanded = expanded;
+    }
+
+    private const string _eventCode =
+        "<MariloAccordion>\n" +
+        "    <MariloAccordionItem Title=\"Click to expand\" IsExpanded=\"@_isExpanded\" IsExpandedChanged=\"@OnExpandedChanged\">\n" +
+        "        <p>This item tracks its expanded state.</p>\n" +
+        "    </MariloAccordionItem>\n" +
+        "</MariloAccordion>\n" +
+        "<p>Expanded: @_isExpanded</p>\n\n" +
+        "@code {\n" +
+        "    private bool _isExpanded;\n" +
+        "    private void OnExpandedChanged(bool expanded) => _isExpanded = expanded;\n" +
+        "}";
+
+    // Accessibility
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Enter / Space", "Expands or collapses the focused accordion item"),
+        ("Arrow Down", "Moves focus to the next accordion header"),
+        ("Arrow Up", "Moves focus to the previous accordion header"),
+        ("Home", "Moves focus to the first accordion header"),
+        ("End", "Moves focus to the last accordion header"),
+        ("Tab", "Moves focus to the next focusable element"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"button\"", "Applied to each accordion header to indicate it is activatable"),
+        ("aria-expanded=\"true/false\"", "Indicates whether the accordion item content is visible"),
+        ("aria-controls", "Links the header to its corresponding content panel"),
+        ("role=\"region\"", "Applied to the content panel of each accordion item"),
+        ("aria-labelledby", "Links the content panel back to its controlling header"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "Accordion headers are announced with their title and expanded or collapsed state.",
+        "When an item is expanded, the content panel is announced as a region labeled by the header.",
+        "Screen readers announce the position of each header (e.g., \"1 of 3\").",
+    ];
 }

@@ -2,24 +2,128 @@
 @page "/components/button/overview"
 @layout ComponentDemoLayout
 
-<DemoSection Title="Basic Usage" Code="@_basicCode">
-    <div class="demo-row">
-        <MariloButton Variant="ButtonVariant.Primary">Click me</MariloButton>
-    </div>
-</DemoSection>
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <div class="demo-row">
+            <MariloButton Variant="ButtonVariant.Primary">Click me</MariloButton>
+        </div>
+    </DemoSection>
 
-<DemoSection Title="Disabled" Code="@_disabledCode">
-    <div class="demo-row">
-        <MariloButton Disabled="true">Disabled</MariloButton>
-        <MariloButton Variant="ButtonVariant.Danger" Disabled="true">Disabled Danger</MariloButton>
-    </div>
-</DemoSection>
+    <DemoSection Title="Disabled" Code="@_disabledCode">
+        <div class="demo-row">
+            <MariloButton Disabled="true">Disabled</MariloButton>
+            <MariloButton Variant="ButtonVariant.Danger" Disabled="true">Disabled Danger</MariloButton>
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="Variants" Description="Buttons come in several variants to indicate different levels of emphasis." Code="@_variantsCode">
+        <div class="demo-row">
+            <MariloButton Variant="ButtonVariant.Primary">Primary</MariloButton>
+            <MariloButton Variant="ButtonVariant.Secondary">Secondary</MariloButton>
+            <MariloButton Variant="ButtonVariant.Danger">Danger</MariloButton>
+            <MariloButton Variant="ButtonVariant.Warning">Warning</MariloButton>
+            <MariloButton Variant="ButtonVariant.Info">Info</MariloButton>
+            <MariloButton Variant="ButtonVariant.Success">Success</MariloButton>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Sizes" Code="@_sizesCode">
+        <div class="demo-row">
+            <MariloButton Size="ButtonSize.Small">Small</MariloButton>
+            <MariloButton Size="ButtonSize.Medium">Medium</MariloButton>
+            <MariloButton Size="ButtonSize.Large">Large</MariloButton>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Outline" Code="@_outlineCode">
+        <div class="demo-row">
+            <MariloButton Variant="ButtonVariant.Primary" IsOutline="true">Outline Primary</MariloButton>
+            <MariloButton Variant="ButtonVariant.Danger" IsOutline="true">Outline Danger</MariloButton>
+            <MariloButton Variant="ButtonVariant.Success" IsOutline="true">Outline Success</MariloButton>
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Events">
+    <DemoSection Title="OnClick" Description="Handle button clicks with the OnClick callback." Code="@_clickCode">
+        <div class="demo-row">
+            <MariloButton Variant="ButtonVariant.Primary" OnClick="@OnClickHandler">Click me: @_clickCount</MariloButton>
+            <MariloButton Variant="ButtonVariant.Secondary" OnClick="@OnResetHandler">Reset</MariloButton>
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Accessibility">
+    <AccessibilityInfo
+        KeyboardInteractions="@_keyboard"
+        AriaAttributes="@_aria"
+        ScreenReaderNotes="@_screenReader" />
+</PageSection>
 
 @code {
+    // Overview
     private const string _basicCode =
         "<MariloButton Variant=\"ButtonVariant.Primary\">Click me</MariloButton>";
 
     private const string _disabledCode =
         "<MariloButton Disabled=\"true\">Disabled</MariloButton>\n" +
         "<MariloButton Variant=\"ButtonVariant.Danger\" Disabled=\"true\">Disabled Danger</MariloButton>";
+
+    // Appearance
+    private const string _variantsCode =
+        "<MariloButton Variant=\"ButtonVariant.Primary\">Primary</MariloButton>\n" +
+        "<MariloButton Variant=\"ButtonVariant.Secondary\">Secondary</MariloButton>\n" +
+        "<MariloButton Variant=\"ButtonVariant.Danger\">Danger</MariloButton>\n" +
+        "<MariloButton Variant=\"ButtonVariant.Warning\">Warning</MariloButton>\n" +
+        "<MariloButton Variant=\"ButtonVariant.Info\">Info</MariloButton>\n" +
+        "<MariloButton Variant=\"ButtonVariant.Success\">Success</MariloButton>";
+
+    private const string _sizesCode =
+        "<MariloButton Size=\"ButtonSize.Small\">Small</MariloButton>\n" +
+        "<MariloButton Size=\"ButtonSize.Medium\">Medium</MariloButton>\n" +
+        "<MariloButton Size=\"ButtonSize.Large\">Large</MariloButton>";
+
+    private const string _outlineCode =
+        "<MariloButton Variant=\"ButtonVariant.Primary\" IsOutline=\"true\">Outline Primary</MariloButton>\n" +
+        "<MariloButton Variant=\"ButtonVariant.Danger\" IsOutline=\"true\">Outline Danger</MariloButton>\n" +
+        "<MariloButton Variant=\"ButtonVariant.Success\" IsOutline=\"true\">Outline Success</MariloButton>";
+
+    // Events
+    private int _clickCount;
+    private void OnClickHandler() => _clickCount++;
+    private void OnResetHandler() => _clickCount = 0;
+
+    private const string _clickCode =
+        "<MariloButton Variant=\"ButtonVariant.Primary\" OnClick=\"@OnClickHandler\">\n" +
+        "    Click me: @_clickCount\n" +
+        "</MariloButton>\n\n" +
+        "@code {\n" +
+        "    private int _clickCount;\n" +
+        "    private void OnClickHandler() => _clickCount++;\n" +
+        "}";
+
+    // Accessibility
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Enter", "Activates the button"),
+        ("Space", "Activates the button"),
+        ("Tab", "Moves focus to the next focusable element"),
+        ("Shift + Tab", "Moves focus to the previous focusable element"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"button\"", "Implicitly set by the <button> element"),
+        ("aria-disabled=\"true\"", "Applied when the Disabled parameter is set"),
+        ("aria-label", "Can be set for icon-only buttons that have no visible text"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "Buttons are announced with their visible text content and the \"button\" role.",
+        "Disabled buttons are announced as \"dimmed\" or \"unavailable\" depending on the screen reader.",
+        "Icon-only buttons should use aria-label to provide an accessible name.",
+    ];
 }

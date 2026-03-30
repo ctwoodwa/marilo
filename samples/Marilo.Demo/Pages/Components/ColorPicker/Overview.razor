@@ -2,14 +2,38 @@
 @page "/components/color-picker/overview"
 @layout ComponentDemoLayout
 
-<DemoSection Title="Basic Usage" Code="@_basicCode">
-    <MariloColorPicker Value="@_color" ValueChanged="@(v => _color = v)" />
-    <div style="width: 48px; height: 48px; background: @_color; border-radius: 4px; margin-top: 8px;"></div>
-    <p><strong>Selected color:</strong> @_color</p>
-</DemoSection>
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloColorPicker Value="@_color" ValueChanged="@(v => _color = v)" />
+        <div style="width: 48px; height: 48px; background: @_color; border-radius: 4px; margin-top: 8px;"></div>
+        <p><strong>Selected color:</strong> @_color</p>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="Disabled" Description="A disabled color picker prevents user interaction." Code="@_disabledCode">
+        <MariloColorPicker Value="#0078d4" Disabled="true" />
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Events">
+    <DemoSection Title="ValueChanged" Description="Handle color selection with the ValueChanged callback." Code="@_interactiveCode">
+        <MariloColorPicker Value="@_evColor" ValueChanged="@(v => _evColor = v)" />
+        <div style="width: 48px; height: 48px; background: @_evColor; border-radius: 4px; margin-top: 8px;"></div>
+        <p><strong>Selected color:</strong> @_evColor</p>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Accessibility">
+    <AccessibilityInfo
+        KeyboardInteractions="@_keyboard"
+        AriaAttributes="@_aria"
+        ScreenReaderNotes="@_screenReader" />
+</PageSection>
 
 @code {
     private string _color = "#0078d4";
+    private string _evColor = "#0078d4";
 
     private const string _basicCode =
         "<MariloColorPicker Value=\"@_color\" ValueChanged=\"@(v => _color = v)\" />\n" +
@@ -18,4 +42,38 @@
         "@code {\n" +
         "    private string _color = \"#0078d4\";\n" +
         "}";
+
+    private const string _disabledCode =
+        "<MariloColorPicker Value=\"#0078d4\" Disabled=\"true\" />";
+
+    private const string _interactiveCode =
+        "<MariloColorPicker Value=\"@_color\" ValueChanged=\"@(v => _color = v)\" />\n" +
+        "<div style=\"width: 48px; height: 48px; background: @_color; border-radius: 4px;\"></div>\n" +
+        "<p><strong>Selected color:</strong> @_color</p>\n\n" +
+        "@code {\n" +
+        "    private string _color = \"#0078d4\";\n" +
+        "}";
+
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus to the color picker input"),
+        ("Shift + Tab", "Moves focus to the previous focusable element"),
+        ("Enter", "Opens the color selection popup"),
+        ("Escape", "Closes the color selection popup"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role=\"application\"", "Identifies the color picker as an interactive widget"),
+        ("aria-label", "Provides an accessible name for the color picker"),
+        ("aria-disabled=\"true\"", "Applied when the Disabled parameter is set"),
+        ("aria-valuenow", "Reflects the current color value"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "The color picker announces its label and current color value.",
+        "Color changes are announced as the user selects a new color.",
+        "Disabled color pickers are announced as \"dimmed\" or \"unavailable\" depending on the screen reader.",
+    ];
 }

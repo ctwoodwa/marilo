@@ -1,7 +1,7 @@
 <div class="accessibility-info">
     @if (KeyboardInteractions?.Length > 0)
     {
-        <h2>Keyboard Navigation</h2>
+        <h3 id="keyboard-navigation" class="a11y-heading">Keyboard Navigation</h3>
         <table class="a11y-table">
             <thead>
                 <tr>
@@ -23,7 +23,7 @@
 
     @if (AriaAttributes?.Length > 0)
     {
-        <h2>ARIA Attributes</h2>
+        <h3 id="aria-attributes" class="a11y-heading">ARIA Attributes</h3>
         <table class="a11y-table">
             <thead>
                 <tr>
@@ -45,7 +45,7 @@
 
     @if (ScreenReaderNotes?.Length > 0)
     {
-        <h2>Screen Reader Notes</h2>
+        <h3 id="screen-reader-notes" class="a11y-heading">Screen Reader Notes</h3>
         <ul>
             @foreach (var note in ScreenReaderNotes)
             {
@@ -61,6 +61,9 @@
 </div>
 
 @code {
+    [CascadingParameter] public PageSectionTracker? SectionTracker { get; set; }
+    [CascadingParameter(Name = "ActiveSectionId")] public string? ActiveSectionId { get; set; }
+
     [Parameter]
     public (string Key, string Action)[]? KeyboardInteractions { get; set; }
 
@@ -72,4 +75,17 @@
 
     [Parameter]
     public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (ActiveSectionId is not null)
+        {
+            if (KeyboardInteractions?.Length > 0)
+                SectionTracker?.RegisterSubSection(ActiveSectionId, "keyboard-navigation", "Keyboard Navigation");
+            if (AriaAttributes?.Length > 0)
+                SectionTracker?.RegisterSubSection(ActiveSectionId, "aria-attributes", "ARIA Attributes");
+            if (ScreenReaderNotes?.Length > 0)
+                SectionTracker?.RegisterSubSection(ActiveSectionId, "screen-reader-notes", "Screen Reader Notes");
+        }
+    }
 }
