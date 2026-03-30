@@ -14,9 +14,9 @@ This article explains the events available in the Marilo AIPrompt for Blazor:
 
 * [`OnOutputActionClick`](#onoutputactionclick)
 * [`OnPromptRequest`](#onpromptrequest)
-* [`OnPromptRequestStop`](#onpromptrequeststo)
+* [`OnPromptRequestStop`](#onpromptrequeststop)
 * [`OnCommandExecute`](#oncommandexecute)
-* [`PromptTextChanged`](#prompttextchanged)
+* [`PromptTextChanged`](#promptchanged)
 
 ## OnOutputActionClick
 

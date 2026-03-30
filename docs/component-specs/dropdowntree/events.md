@@ -15,7 +15,7 @@ This article describes the available events in the Marilo DropDownTree for Blazo
 
 * [`ExpandedItemsChanged`](#expandeditemschanged)
 * [`OnBlur`](#onblur)
-* [`OnChange`](#onchange)
+* `OnChange`
 * [`OnClose`](#onclose)
 * [`OnExpand`](#onexpand)
 * [`OnFocus`](#onfocus)

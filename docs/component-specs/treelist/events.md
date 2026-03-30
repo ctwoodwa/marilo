@@ -184,6 +184,7 @@ Visit the [TreeList Cell Selection article to see an example](slug:treelist-sele
 >caption The different use-cases of the OnModelInit event
 
 <div class="skip-repl"></div>
+
 ````RAZOR NoParameterlessConstructor
 @* Bind the TreeList to a class without a parameterless constructor *@
 

@@ -29,7 +29,7 @@ The AI Prompt component is a composite one and integrates the accessibility of t
 
 ### TextArea Component
 
-[TextArea accessibility specification]({{textarea_a11y_link}})
+[TextArea accessibility specification](../../textarea/accessibility/wai-aria-support.md)
 
 ### TextArea Adornments
 
@@ -57,50 +57,50 @@ The Suggestion list implements roving tabindex navigation. Meaning that only one
 
 ### Button Component
 
-[Button accessibility specification]({{button_a11y_link}})
+[Button accessibility specification](../../button/accessibility/wai-aria-support.md)
 
 ### Adaptive Mode
 
 
 When the AI Prompt component is in adaptive mode, the popup element follows the specifications of the ActionSheet component.
 
-[ActionSheet accessibility specification]({{actionsheet_a11y_link}})
+ActionSheet accessibility specification
 
 ### Toolbar Component
 
-[ToolBar accessibility specification]({{toolbar_a11y_link}})
+[ToolBar accessibility specification](../../toolbar/accessibility/wai-aria-support.md)
 
 ### Card List Container
 
-[CardList accessibility specification]({{cardlist_a11y_link}})
+CardList accessibility specification
 
 ### Card Component
 
-[Card accessibility specification]({{card_a11y_link}})
+[Card accessibility specification](../../card/accessibility/wai-aria-support.md)
 
 ### Chip Component
 
-[Chip accessibility specification]({{chip_a11y_link}})
+[Chip accessibility specification](../../chip/accessibility/wai-aria-support.md)
 
 ### ChipList Component
 
-[ChipList accessibility specification]({{chiplist_a11y_link}})
+[ChipList accessibility specification](../../chiplist/accessibility/wai-aria-support.md)
 
 ### ContextMenu Component
 
-[ContextMenu accessibility specification]({{contextmenu_a11y_link}})
+[ContextMenu accessibility specification](../../contextmenu/accessibility/wai-aria-support.md)
 
 ### FloatingActionButton Component
 
-[FloatingActionButton accessibility specification]({{floatingactionbutton_a11y_link}})
+[FloatingActionButton accessibility specification](../../floatingactionbutton/accessibility/wai-aria-support.md)
 
 ### SpeechToTextButton Component
 
-[SpeechToTextButton accessibility specification]({{speechtotextbutton_a11y_link}})
+SpeechToTextButton accessibility specification
 
 ### More Actions View - PanelBar Component
 
-[PanelBar accessibility specification]({{panelbar_a11y_link}})
+[PanelBar accessibility specification](../../panelbar/accessibility/wai-aria-support.md)
 
 ## Section 508
 

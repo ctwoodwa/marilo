@@ -18,7 +18,7 @@ When the `OnRead` event is used, the internal operations are disabled and you mu
 
 ## Examples
 
-Below you can find a few examples of using the `OnRead` event to perform custom data source operations. They may not implement all operations for brevity. They showcase the basics only, and it is up to the application's data access layer to implement them. You can read more about implementing the CUD operations in the [CRUD Operations Overview](editing/overview) article.
+Below you can find a few examples of using the `OnRead` event to perform custom data source operations. They may not implement all operations for brevity. They showcase the basics only, and it is up to the application's data access layer to implement them. You can read more about implementing the CUD operations in the [CRUD Operations Overview](editing/edit-appointments.md) article.
 
 The comments in the code provide explanations on what is done and why.
 

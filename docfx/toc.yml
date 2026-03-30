@@ -3,7 +3,7 @@
 - name: Components
   href: http://localhost:8080/components
 - name: Component Specs
-  href: component-specs/
+  href: ../docs/component-specs/toc.yml
 - name: Theming
   href: articles/theming/
 - name: Icons

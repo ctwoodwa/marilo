@@ -21,6 +21,7 @@ If you need more complex logic inside the editor template, compared to simple da
 When an input receives an `EditContext` (usually as a cascading parameter), the framework also requires a `ValueExpression`. If you use two-way binding (the `@bind-Value` syntax), the `ValueExpression` is deducted from there. However, if you use only the `Value` parameter, you have to pass the `ValueExpression` explicitly. This is a lambda expression that tells the framework what property of the model to use for validation. The following sample demonstrates how to achieve that. You can also check the [Requires a value for ValueExpression](slug:common-kb-requires-valueexpression) knowledge base article for more details.
 
 <div class="skip-repl"></div>
+
 ````RAZOR
 <EditorTemplate>
     <MariloTextBox Value="@myModel.MyField"

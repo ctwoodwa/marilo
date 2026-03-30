@@ -34,7 +34,7 @@ The TreeList is a composite component that consists of 2 logically separated str
 
 TreeList Toolbar follows the specification of the ToolBar component.
 
-[ToolBar accessibility specification]({{toolbar_a11y_link}})
+[ToolBar accessibility specification](../../toolbar/accessibility/wai-aria-support.md)
 
 | Selector | Attribute | Usage |
 | -------- | --------- | ----- |
@@ -47,7 +47,7 @@ TreeList Toolbar follows the specification of the ToolBar component.
 
 The element with `role=treegrid` must not include the ToolBar element as it does not belong to the `role=treegrid` element itself. It implements the ARIA specification for the Grid component with some exceptions listed below.
 
-[Grid accessibility specification]({{grid_a11y_link}})
+[Grid accessibility specification](../../grid/accessibility/wai-aria-support.md)
 
 
 The below table lists the ARIA requirements for the TreeList which are not present in the Grid specification:

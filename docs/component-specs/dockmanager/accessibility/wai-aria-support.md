@@ -36,28 +36,28 @@ The DockManager component consists of multiple inner panes, each containing tool
 
 The Toolbar in the DockManager element of the component should implement the specification for the **Toolbar** component.
 
-[Toolbar accessibility specification]({{Toolbar_a11y_link}})
+[Toolbar accessibility specification](../../toolbar/accessibility/wai-aria-support.md)
 
 ### DockManager TabStrip
 
 
 The TabStrip in the DockManager element of the component should implement the specification for the **TabStrip** component.
 
-[TabStrip accessibility specification]({{TabStrip_a11y_link}})
+[TabStrip accessibility specification](../../tabstrip/accessibility/wai-aria-support.md)
 
 ### DockManager Splitter
 
 
 The Splitter in the DockManager element of the component should implement the specification for the **Splitter** component.
 
-[Splitter accessibility specification]({{Splitter_a11y_link}})
+[Splitter accessibility specification](../../splitter/accessibility/wai-aria-support.md)
 
 ### DockManager Window
 
 
 The Window elements in the DockManager element of the component should implement the specification for the **Window** component.
 
-[Window accessibility specification]({{Window_a11y_link}})
+[Window accessibility specification](../../window/accessibility/wai-aria-support.md)
 
 ## Section 508
 

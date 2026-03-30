@@ -15,7 +15,7 @@ The Timeline view displays appointments in a continuous horizontal direction.
 In this article:
 
 * [View Parameters](#view-parameters)
-	* [Slots](#slots)
+	* Slots
 * [Example](#example)
 
 ## View Parameters

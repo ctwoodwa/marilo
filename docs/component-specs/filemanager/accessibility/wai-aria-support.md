@@ -39,32 +39,32 @@ Each component implements its own dedicated ARIA spec.
 
 The FileManager component integrates the ToolBar component and follows its WAI-ARIA spec:
 
-[ToolBar accessibility specification]({{toolbar_a11y_link}})
+[ToolBar accessibility specification](../../toolbar/accessibility/wai-aria-support.md)
 
 
 The component that organizes the inner structure of the FileManager is a Splitter:
 
-[Splitter accessibility specification]({{splitter_a11y_link}})
+[Splitter accessibility specification](../../splitter/accessibility/wai-aria-support.md)
 
 
 The main navigation component in the FileManager is the TreeView:
 
-[TreeView accessibility specification]({{treeview_a11y_link}})
+[TreeView accessibility specification](../../treeview/accessibility/wai-aria-support.md)
 
 
 The helper navigation component in the FileManager is the Breadcrumb:
 
-[Breadcrumb accessibility specification]({{breadcrumb_a11y_link}})
+[Breadcrumb accessibility specification](../../breadcrumb/accessibility/wai-aria-support.md)
 
 
 The component placed in the main pain of the FileManager can be a selectable ListView:
 
-[ListView accessibility specification]({{listview_a11y_link}})
+[ListView accessibility specification](../../listview/accessibility/wai-aria-support.md)
 
 
 or it can be a Grid:
 
-[Grid accessibility specification]({{grid_a11y_link}})
+[Grid accessibility specification](../../grid/accessibility/wai-aria-support.md)
 
 
 Apart from that the `.k-filemanager-preview` element must be focusable, so that its content would be comunicated to the users:

@@ -87,7 +87,7 @@ The listbox placed in the popup element of the DropDownList has to implement the
 
 When the component is in adaptive mode, the popup element follows the specifications of the ActionSheet component.
 
-[ActionSheet accessibility specification]({{actionsheet_a11y_link}})
+ActionSheet accessibility specification
 
 ## Resources
 

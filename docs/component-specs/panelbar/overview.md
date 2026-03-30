@@ -162,6 +162,7 @@ The table below lists the PanelBar methods. Also consult the [PanelBar API](slug
 | `Rebind` | [Refreshes the component data](slug:panelbar-refresh-data#rebind-method). |
 
 <div class="skip-repl"></div>
+
 ````RAZOR
 <MariloPanelBar @ref="@PanelBarRef" .../>
 

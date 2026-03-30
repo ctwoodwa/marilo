@@ -303,6 +303,7 @@ The functionality allows dragging items between TreeView, [Grid](slug:grid-drag-
 #### Drag and Drop between TreeView and Grid
 
 <div class="skip-repl"></div>
+
 ````RAZOR Index.razor
 @* Drag and drop in Grid and TreeView. *@
 
@@ -707,6 +708,7 @@ See more applicable examples in the [Grid Drag and Drop article](slug:grid-drag-
 ### Flat Data
 
 <div class="skip-repl"></div>
+
 ````RAZOR Component
 @inject TreeViewFlatDataService TreeViewFlatDataService
 
@@ -871,6 +873,7 @@ using MariloBlazorAppSource.Models;
 ### Hierarchical Data
 
 <div class="skip-repl"></div>
+
 ````RAZOR Component
 @inject TreeViewHierarchicalDataService TreeViewHierarchicalDataService
 
@@ -1083,6 +1086,7 @@ using System.Threading.Tasks;
 When you drag and drop items from one instance of the TreeView to another, the `OnDrop` event fires for the TreeView where the item originally was.
 
 <div class="skip-repl"></div>
+
 ````RAZOR Component
 @using System.Collections.ObjectModel
 

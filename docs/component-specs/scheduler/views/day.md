@@ -16,8 +16,8 @@ The `Date` parameter of the scheduler controls which date is displayed.
 
 In this article:
 
-* [View Parameters](#view-parameters)
-	* [Slots](#slots)
+* View Parameters
+	* Slots
 * [Example](#example)
 
 

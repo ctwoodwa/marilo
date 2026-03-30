@@ -81,7 +81,7 @@ You can change the `CardSeparator` orientation through its `Orientation` paramet
 
 >caption Use `CardSeparator` with vertical orientation to separate the two action buttons. The result from the snippet below.
 
-![Vertical CardSeparator](images/vertical-card-separator-example.PNG)
+![Vertical CardSeparator](images/vertical-card-separator-example.png)
 
 ````RAZOR
 @*CardSeparator with vertical orientation*@

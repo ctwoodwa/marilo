@@ -60,14 +60,14 @@ The popup element of the DropDownTree has to implement the WAI-ARIA specificatio
 
 The tree that is placed in the `popup` element of the component must implement the specification for a TreeView component.
 
-[TreeView accessibility specification]({{treeview_a11y_link}})
+[TreeView accessibility specification](../../treeview/accessibility/wai-aria-support.md)
 
 ### Adaptive Mode
 
 
 When the component is in adaptive mode, the popup element follows the specifications of the ActionSheet component.
 
-[ActionSheet accessibility specification]({{actionsheet_a11y_link}})
+ActionSheet accessibility specification
 
 ## Resources
 

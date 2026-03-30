@@ -54,7 +54,7 @@ The Spreadsheet is a composite component that is used to render spreadsheet data
 
 The Menu used for selecting the active ToolBar must implement the Menu specification.
 
-[Menu accessibility specification]({{menu_a11y_link}})
+[Menu accessibility specification](../../menu/accessibility/wai-aria-support.md)
 
 ### ToolBars
 
@@ -65,14 +65,14 @@ All ToolBars must implement the ToolBar specification. Apart from that, they als
 | -------- | --------- | ----- |
 | `.k-spreadsheet-toolbar` | `aria-label` or `title` | Each ToolBar must have a label specifying its purpose. |
 
-[ToolBar accessibility specification]({{toolbar_a11y_link}})
+[ToolBar accessibility specification](../../toolbar/accessibility/wai-aria-support.md)
 
 ### Name editor
 
 
 The Name editor must implement the spec for a ComboBox component.
 
-[ComboBox accessibility specification]({{combobox_a11y_link}})
+[ComboBox accessibility specification](../../combobox/accessibility/wai-aria-support.md)
 
 ### Formula input
 
@@ -97,7 +97,7 @@ The Name editor must implement the spec for a ComboBox component.
 
 The Sheet area must implement the spec for a Grid component. The column header cells are header cells are the members of the `.k-spreadsheet-column-header` element. The row header cells are the members of the `.k-spreadsheet-row-header` element.
 
-[Grid accessibility specification]({{grid_a11y_link}})
+[Grid accessibility specification](../../grid/accessibility/wai-aria-support.md)
 
 ### Add new sheet button
 
@@ -112,7 +112,7 @@ The Sheet area must implement the spec for a Grid component. The column header c
 
 The Menu sheet button must implement the spec for a DropDownButton component.
 
-[DropDownButton accessibility specification]({{dropdownbutton_a11y_link}})
+[DropDownButton accessibility specification](../../dropdownbutton/accessibility/wai-aria-support.md)
 
 | Selector | Attribute | Usage |
 | -------- | --------- | ----- |
@@ -123,14 +123,14 @@ The Menu sheet button must implement the spec for a DropDownButton component.
 
 The Sheets bar of the Spreadsheet must implement the TabStrip specification.
 
-[TabStrip accessibility specification]({{tabstrip_a11y_link}})
+[TabStrip accessibility specification](../../tabstrip/accessibility/wai-aria-support.md)
 
 ### Tab Menu button
 
 
 The Menu button is each TabStrip tab must implement the DropDownButton specification.
 
-[DropDownButton accessibility specification]({{dropdownbutton_a11y_link}})
+[DropDownButton accessibility specification](../../dropdownbutton/accessibility/wai-aria-support.md)
 
 ## Section 508
 

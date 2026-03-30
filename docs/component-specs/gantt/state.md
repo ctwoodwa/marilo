@@ -286,6 +286,7 @@ The following example shows one way you can store the Gantt state - through a cu
 >caption Save, Load, Reset Gantt state on every state change. Uses a sample LocalStorage in the browser.
 
 <div class="skip-repl"></div>
+
 ````RAZOR Component
 @inject LocalStorage LocalStorage
 @inject IJSRuntime JsInterop
@@ -535,6 +536,7 @@ The Gantt state allows you to control the behavior of the Gantt programmatically
 >tip If you want to set an initial state to the Gantt, use a similar snippet, but in the `OnStateInit` event.
 
 <div class="skip-repl"></div>
+
 ````RAZOR Sorting
 ````
 ````RAZOR FilterRow

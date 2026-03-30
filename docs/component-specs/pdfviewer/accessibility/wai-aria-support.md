@@ -25,7 +25,7 @@ This section lists the selectors, attributes, and behavior patterns supported by
 
 The PDF Viewer component contains two inner elements - a toolbar and a page container.
 
-[ToolBar accessibility specification]({{toolbar_a11y_link}})
+[ToolBar accessibility specification](../../toolbar/accessibility/wai-aria-support.md)
 
 | Selector | Attribute | Usage |
 | -------- | --------- | ----- |

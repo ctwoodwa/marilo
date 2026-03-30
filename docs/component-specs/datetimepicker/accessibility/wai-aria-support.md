@@ -48,28 +48,28 @@ This section lists the selectors, attributes, and behavior patterns supported by
 
 The Calendar in the Popup element of the component should implement the specification for the **Calendar** component.
 
-[Calendar accessibility specification]({{calendar_a11y_link}})
+[Calendar accessibility specification](../../calendar/accessibility/wai-aria-support.md)
 
 ### Popup Date/Time View Chooser
 
 
 The Date/Time view chooser in the Popup element of the component should implement the specification for the **ButtonGroup** component.
 
-[ButtonGroup accessibility specification]({{buttongroup_a11y_link}})
+[ButtonGroup accessibility specification](../../buttongroup/accessibility/wai-aria-support.md)
 
 ### TimePicker Popup
 
 
 Time Popup implementation should follow the specification for the TimePicker component.
 
-[TimePicker accessibility specification]({{timepicker_a11y_link}})
+[TimePicker accessibility specification](../../timepicker/accessibility/wai-aria-support.md)
 
 ### Adaptive Mode
 
 
 When the component is in adaptive mode, the popup element follows the specifications of the ActionSheet component.
 
-[ActionSheet accessibility specification]({{actionsheet_a11y_link}})
+ActionSheet accessibility specification
 
 ## Resources
 

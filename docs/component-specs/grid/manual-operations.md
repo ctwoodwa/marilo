@@ -26,7 +26,7 @@ The comments in the code provide explanations on what is done and why.
 Examples:
 
 * [Custom paging with a remote service](#custom-paging-with-a-remote-service)
-* [Marilo .ToDataSourceResult(request)](#marilo-todatasourceresult-request)
+* [Marilo .ToDataSourceResult(request)](#marilo-todatasourceresultrequest)
 * [Grouping with OnRead](#grouping-with-onread)
 * [Aggregates with OnRead](#aggregates-with-onread)
 * [Virtual Scrolling with OnRead](#virtual-scrolling-with-onread)

@@ -95,6 +95,7 @@ The table below lists the Carousel methods. Also consult the [Carousel API](slug
 | `Rebind` | [Refreshes the component data](slug:carousel-refresh-data#rebind-method). |
 
 <div class="skip-repl"></div>
+
 ````RAZOR
 <MariloCarousel @ref="@CarouselRef" .../>
 

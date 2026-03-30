@@ -16,8 +16,8 @@ The `Date` parameter of the Scheduler controls which is the first rendered date,
 
 In this article:
 
-* [View Parameters](#view-parameters)
-	* [Slots](#slots)
+* View Parameters
+	* Slots
 * [Example](#example)
 
 | `NumberOfDays` | `int` <br/> `1` | How many days to show side by side in the view.

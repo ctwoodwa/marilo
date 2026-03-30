@@ -37,7 +37,7 @@ This section lists the selectors, attributes, and behavior patterns supported by
 
 All the `k-draghandle` elements implement the **Slider** specification.
 
-[Slider accessibility specification]({{slider_a11y_link}})
+[Slider accessibility specification](../../slider/accessibility/wai-aria-support.md)
 
 
 Apart from that the HSV draghandle must also cover the following additional requirements:
@@ -53,7 +53,7 @@ Apart from that the HSV draghandle must also cover the following additional requ
 
 The Numeric inputs must implement the **NumericTextBox** specification.
 
-[NumericTextBox accessibility specification]({{numerictextbox_a11y_link}})
+[NumericTextBox accessibility specification](../../numerictextbox/accessibility/wai-aria-support.md)
 
 
 Here is one additional requirement for those numerics as their visible labels have only a single letter as text:

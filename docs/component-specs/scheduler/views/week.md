@@ -16,8 +16,8 @@ The `Date` parameter of the scheduler controls which week is displayed. The firs
 
 In this article:
 
-* [View Parameters](#view-parameters)
-	* [Slots](#slots)
+* View Parameters
+	* Slots
 * [Example](#example)
 
 

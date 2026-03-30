@@ -78,6 +78,7 @@ Read more about them and find code examples in the [Grid Export Events](slug:gri
 >caption The different use-cases of the OnModelInit event
 
 <div class="skip-repl"></div>
+
 ````RAZOR NoParameterlessConstructor
 @* Bind the Grid to a class without a parameterless constructor *@
 

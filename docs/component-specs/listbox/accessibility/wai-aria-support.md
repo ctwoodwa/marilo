@@ -38,7 +38,7 @@ This section lists the selectors, attributes, and behavior patterns supported by
 
 The ListBox toolbar follows the specification of the ToolBar component.
 
-[ToolBar accessibility specification]({{toolbar_a11y_link}})
+[ToolBar accessibility specification](../../toolbar/accessibility/wai-aria-support.md)
 
 | Selector | Attribute | Usage |
 | -------- | --------- | ----- |

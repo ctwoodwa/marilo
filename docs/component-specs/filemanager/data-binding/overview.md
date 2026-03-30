@@ -222,7 +222,7 @@ The following section describes the meaning of the model properties for the File
 
 ## Data Bindings
 
-All [FileManager item features](#fileManager-item-features) map to model properties. You define that relationship by providing the property name from which the corresponding information is taken. To do this, use the following parameters of the main `MariloFileManager` tag:
+All [FileManager item features](#filemanager-item-features) map to model properties. You define that relationship by providing the property name from which the corresponding information is taken. To do this, use the following parameters of the main `MariloFileManager` tag:
 
 
 | FileManager Parameter | Default&nbsp;Parameter&nbsp;Value <br /> (Model Property Name) | Model Property Type | Model Value Description | 

@@ -25,7 +25,7 @@ This section lists the selectors, attributes, and behavior patterns supported by
 
 The SplitButton implements the same WAI-ARIA specification as the DropDownButton component.
 
-[DropDownButton accessibility specification]({{dropdownbutton_a11y_link}})
+[DropDownButton accessibility specification](../../dropdownbutton/accessibility/wai-aria-support.md)
 
 ## Section 508
 

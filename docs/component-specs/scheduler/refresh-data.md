@@ -23,6 +23,7 @@ You can refresh the Scheduler data by using the Rebind method exposed to the ref
 >caption Use the Rebind method to refresh the Scheduler data.
 
 <div class="skip-repl"></div>
+
 ````RAZOR
 @* Add/remove an appointment or change the data collection to see how the Scheduler reacts to that change. *@
 

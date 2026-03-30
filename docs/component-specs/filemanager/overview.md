@@ -368,6 +368,7 @@ The available FileManager methods are:
 * `Rebind` - refreshes the FileManager data.
 
 <div class="skip-repl"></div>
+
 ````RAZOR
 <MariloFileManager Data="@Data"
                     @ref="@FileManagerRef" />

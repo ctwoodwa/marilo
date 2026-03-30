@@ -25,7 +25,7 @@ This section lists the selectors, attributes, and behavior patterns supported by
 
 The MultiColumnComboBox implements the same ARIA specification as the **ComboBox** component.
 
-[ComboBox accessibility specification]({{combobox_a11y_link}})
+[ComboBox accessibility specification](../../combobox/accessibility/wai-aria-support.md)
 
 ## Section 508
 

@@ -75,7 +75,7 @@ The popup element of the ComboBox has to implement the WAI-ARIA specification fo
 
 When the component is in adaptive mode, the popup element follows the specifications of the ActionSheet component.
 
-[ActionSheet accessibility specification]({{actionsheet_a11y_link}})
+ActionSheet accessibility specification
 
 ## Resources
 

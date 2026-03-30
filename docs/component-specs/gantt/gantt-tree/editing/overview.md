@@ -309,6 +309,7 @@ This configuration is available in InCell and Inline edit modes. For more detail
 >caption Example of adding a new item to the Gantt based on the `NewRowPosition` value
 
 <div class="skip-repl"></div>
+
 ````C#
 private void OnCreate(GanttCreateEventArgs args)
 {

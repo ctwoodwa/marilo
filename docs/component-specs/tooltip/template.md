@@ -18,7 +18,7 @@ The tooltip metadata is available from the the `context` object, in the followin
 
 This article contains the following examples for generating the tooltip content:
 
-* [Markup generated in the template](#basic-example-inline-markup). Shows how you can access the metadata.
+* [Markup generated in the template](#basic-example---inline-markup). Shows how you can access the metadata.
 
 * [Markup generated from a string through a method](#markup-from-generated-string). Shows how you can loop over all the keys in the metadata and render markup from a function call.
 
@@ -102,6 +102,7 @@ This example shows how you can use a standalone component to generate the toolti
 >caption Generate tooltip content through a separate component
 
 <div class="skip-repl"></div>
+
 ````RAZOR MainComponent
 @* Tip: set dimensions that will accommodate the data/content you fetch/generate
     to avoid sizing and/or positioning issues when the new content is rendered *@

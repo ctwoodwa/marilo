@@ -255,6 +255,7 @@ The functionality allows dragging items between Grid, [TreeList](slug:treelist-d
 #### Drag and Drop between Grid and TreeList
 
 <div class="skip-repl"></div>
+
 ````RAZOR Index.razor
 @using System.Collections.Generic;
 @using System.Collections.ObjectModel;
@@ -593,6 +594,7 @@ public enum ProductSize
 #### Drag and Drop between Grid and TreeView
 
 <div class="skip-repl"></div>
+
 ````RAZOR Index.razor
 @* Drag and drop in Grid and TreeView. *@
 
@@ -995,6 +997,7 @@ public class BaseFlatItem
 #### Drag and Drop between Grid and Scheduler
 
 <div class="skip-repl"></div>
+
 ````RAZOR Index.razor
 @* Drag and drop in Grid and TreeView. *@
 

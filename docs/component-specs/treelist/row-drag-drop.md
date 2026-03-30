@@ -71,6 +71,7 @@ This section contains the following examples:
 ### Drag and Drop a Row in the same TreeList
 
 <div class="skip-repl"></div>
+
 ````RAZOR Component
 @* Drag a row and drop it in the TreeList. *@
 
@@ -284,6 +285,7 @@ public class Employee
 When you drag and drop items from one instance of the TreeList to another, the `OnRowDrop` event fires for both instances of the component so you can update both their data sources. All instances must be bound to the same model.
 
 <div class="skip-repl"></div>
+
 ````RAZOR Component
 <MariloTreeList Data="@Data"
                  ItemsField="@(nameof(Employee.DirectReports))"
@@ -596,6 +598,7 @@ The functionality allows dragging items between TreeList, [Grid](slug:grid-drag-
 #### Drag and Drop between Grid and TreeList
 
 <div class="skip-repl"></div>
+
 ````RAZOR Index.razor
 @using System.Collections.Generic;
 @using System.Collections.ObjectModel;
@@ -940,6 +943,7 @@ You can drag and drop multiple rows in one or between multiple instances of the 
 When you select multiple rows, the row drag clue will be `N items selected` where `N` is the number of selected rows.
 
 <div class="skip-repl"></div>
+
 ````RAZOR Component
 @* Select multiple rows and reorder them in the TreeList. *@
 

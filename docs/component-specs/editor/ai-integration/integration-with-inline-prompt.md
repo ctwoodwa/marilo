@@ -31,6 +31,7 @@ To enable the Inline Prompt in the Editor:
 >caption Enabling the Inline Prompt in the Editor
 
 <div class="skip-repl"></div>
+
 ````RAZOR Editor
 <MariloEditor @bind-Value="@EditorValue"
                EnableInlineAIPrompt="true"

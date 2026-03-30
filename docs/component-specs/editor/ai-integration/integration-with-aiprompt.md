@@ -28,6 +28,7 @@ To enable the AIPrompt in the Editor:
 >caption Enabling the AIPrompt in the Editor
 
 <div class="skip-repl"></div>
+
 ````RAZOR Editor
 <MariloEditor @bind-Value="@EditorValue"
                EnableAIPrompt="true"

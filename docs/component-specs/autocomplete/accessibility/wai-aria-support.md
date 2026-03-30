@@ -71,7 +71,7 @@ The popup element of the AutoComplete has to implement the WAI-ARIA specificatio
 
 When the component is in adaptive mode, the popup element follows the specifications of the ActionSheet component.
 
-[ActionSheet accessibility specification]({{actionsheet_a11y_link}})
+ActionSheet accessibility specification
 
 ## Resources
 

@@ -104,6 +104,7 @@ You should avoid values in the data that match the `default` of their type (such
 The RadioGroup is a generic component and its type depends on the type of its `Data` and `Value`.
 
 <div class="skip-repl"></div>
+
 ````RAZOR String
 <MariloRadioGroup @ref="@RadioGroupRef"
                    Data="@RadioGroupData"

@@ -44,14 +44,14 @@ This section lists the selectors, attributes, and behavior patterns supported by
 
 The Calendars in the Popup element of the component should implement the specification for the **MultiViewCalendar** component.
 
-[Calendar accessibility specification]({{calendar_a11y_link}})
+[Calendar accessibility specification](../../calendar/accessibility/wai-aria-support.md)
 
 ### Adaptive Mode
 
 
 When the component is in adaptive mode, the popup element follows the specifications of the ActionSheet component.
 
-[ActionSheet accessibility specification]({{actionsheet_a11y_link}})
+ActionSheet accessibility specification
 
 ## Resources
 

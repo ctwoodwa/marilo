@@ -52,7 +52,7 @@ The ColorPicker popup contains in itself ColorGradient, ColorPalette, a UI to sw
 
 When the component is in adaptive mode, the popup element follows the specifications of the ActionSheet component.
 
-[ActionSheet accessibility specification]({{actionsheet_a11y_link}})
+ActionSheet accessibility specification
 
 | Selector | Attribute | Usage |
 | -------- | --------- | ----- |

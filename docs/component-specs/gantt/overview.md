@@ -221,6 +221,7 @@ The table below lists the Gantt methods. Also consult the [Gantt API](slug:Maril
 | `Rebind` | [Refreshes the component data](slug:gantt-refresh-data#rebind-method). |
 
 <div class="skip-repl"></div>
+
 ````RAZOR
 <MariloGantt @ref="@GanttRef" .../>
 

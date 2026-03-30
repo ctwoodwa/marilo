@@ -21,7 +21,7 @@ The <a href="https://www.marilo.com/blazor-ui/heatmap" target="_blank">Blazor He
     * [Setting the Marker Type](#setting-the-marker-type)
     * [Color](#color)
     * [ColorField](#colorfield)
-    * [Customize Chart Elements - Nested Tags Settings](#customize-chart-elements-nested-tags-settings)
+    * Customize Chart Elements - Nested Tags Settings
 
 
 #### To create a Heatmap chart:

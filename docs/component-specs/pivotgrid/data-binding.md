@@ -134,6 +134,7 @@ The `<PivotGridXmlaDataProviderCredentials>` component creates an object, which 
 >caption PivotGrid bound to XMLA data provider without credentials
 
 <div class="skip-repl"></div>
+
 ````RAZOR
 <MariloPivotGridContainer>
     <MariloPivotGridConfigurator />
