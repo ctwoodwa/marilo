@@ -1,0 +1,24 @@
+@page "/components/list"
+
+<div class="demo-page">
+    <h1>List</h1>
+    <p class="demo-page-desc">Lists present content in a structured, scannable format.</p>
+    <a class="demo-api-link" href="/api/Marilo.Components.DataDisplay.MariloList.html" target="_blank">API Reference</a>
+
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloList>
+            <MariloListItem>First item in the list</MariloListItem>
+            <MariloListItem>Second item in the list</MariloListItem>
+            <MariloListItem>Third item in the list</MariloListItem>
+        </MariloList>
+    </DemoSection>
+</div>
+
+@code {
+    private const string _basicCode =
+        "<MariloList>\n" +
+        "    <MariloListItem>First item in the list</MariloListItem>\n" +
+        "    <MariloListItem>Second item in the list</MariloListItem>\n" +
+        "    <MariloListItem>Third item in the list</MariloListItem>\n" +
+        "</MariloList>";
+}

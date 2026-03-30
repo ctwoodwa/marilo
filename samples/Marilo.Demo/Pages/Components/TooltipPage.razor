@@ -1,0 +1,28 @@
+@page "/components/tooltip"
+
+<div class="demo-page">
+    <h1>Tooltip</h1>
+    <p class="demo-page-desc">Tooltips display informative text when users hover over, focus on, or tap an element.</p>
+    <a class="demo-api-link" href="/api/Marilo.Components.DataDisplay.MariloTooltip.html" target="_blank">API Reference</a>
+
+    <DemoSection Title="Positions" Code="@_positionsCode">
+        <div class="demo-row">
+            <MariloTooltip Text="This is a top tooltip" Position="TooltipPosition.Top">
+                <MariloButton Variant="ButtonVariant.Secondary">Hover me (Top)</MariloButton>
+            </MariloTooltip>
+            <MariloTooltip Text="This is a bottom tooltip" Position="TooltipPosition.Bottom">
+                <MariloButton Variant="ButtonVariant.Secondary">Hover me (Bottom)</MariloButton>
+            </MariloTooltip>
+        </div>
+    </DemoSection>
+</div>
+
+@code {
+    private const string _positionsCode =
+        "<MariloTooltip Text=\"This is a top tooltip\" Position=\"TooltipPosition.Top\">\n" +
+        "    <MariloButton Variant=\"ButtonVariant.Secondary\">Hover me (Top)</MariloButton>\n" +
+        "</MariloTooltip>\n\n" +
+        "<MariloTooltip Text=\"This is a bottom tooltip\" Position=\"TooltipPosition.Bottom\">\n" +
+        "    <MariloButton Variant=\"ButtonVariant.Secondary\">Hover me (Bottom)</MariloButton>\n" +
+        "</MariloTooltip>";
+}

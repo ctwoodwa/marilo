@@ -1,10 +1,11 @@
 @page "/forms"
+@using Marilo.Components.Forms.Containers
+@using Marilo.Components.Forms.Inputs
 
 <div class="demo-page">
     <h1>Forms</h1>
 
-    <div class="demo-section">
-        <h2>Text Inputs</h2>
+    <DemoSection Title="Text Inputs" Code="@_textInputsCode">
         <MariloForm>
             <MariloField>
                 <MariloLabel>Name</MariloLabel>
@@ -24,10 +25,46 @@
                 <MariloTextField Value="Cannot edit" Disabled="true" />
             </MariloField>
         </MariloForm>
-    </div>
+    </DemoSection>
 
-    <div class="demo-section">
-        <h2>Selection Controls</h2>
+    <DemoSection Title="Input Adornments" Description="Prefix and suffix adornments enhance inputs with icons, labels, or actions." Code="@_adornmentsCode">
+        <MariloForm>
+            <MariloField>
+                <MariloLabel>Email</MariloLabel>
+                <MariloTextField Value="@_email" ValueChanged="@(v => _email = v)" Placeholder="Enter email" InputType="email" ShowPrefixSeparator="true">
+                    <Prefix>
+                        <MariloIcon Name="mail" Size="IconSize.Small" />
+                    </Prefix>
+                </MariloTextField>
+            </MariloField>
+            <MariloField>
+                <MariloLabel>Website</MariloLabel>
+                <MariloTextField Value="@_website" ValueChanged="@(v => _website = v)" Placeholder="example.com" ShowPrefixSeparator="true">
+                    <Prefix><span>https://</span></Prefix>
+                </MariloTextField>
+            </MariloField>
+            <MariloField>
+                <MariloLabel>Price</MariloLabel>
+                <MariloTextField Value="@_price" ValueChanged="@(v => _price = v)" Placeholder="0.00">
+                    <Prefix><span>$</span></Prefix>
+                    <Suffix><span>USD</span></Suffix>
+                </MariloTextField>
+            </MariloField>
+            <MariloField>
+                <MariloLabel>Search with action</MariloLabel>
+                <MariloTextField Value="@_searchDemo" ValueChanged="@(v => _searchDemo = v)" Placeholder="Search…" ShowSuffixSeparator="true">
+                    <Prefix>
+                        <MariloIcon Name="search" Size="IconSize.Small" />
+                    </Prefix>
+                    <Suffix>
+                        <MariloButton Variant="ButtonVariant.Primary" Size="ButtonSize.Small">Go</MariloButton>
+                    </Suffix>
+                </MariloTextField>
+            </MariloField>
+        </MariloForm>
+    </DemoSection>
+
+    <DemoSection Title="Selection Controls" Code="@_selectionCode">
         <MariloForm>
             <MariloField>
                 <MariloLabel>Select</MariloLabel>
@@ -49,10 +86,9 @@
                 <MariloSlider Value="@_sliderValue" ValueChanged="@(v => _sliderValue = v)" Min="0" Max="100" Step="5" />
             </MariloField>
         </MariloForm>
-    </div>
+    </DemoSection>
 
-    <div class="demo-section">
-        <h2>Live Values</h2>
+    <DemoSection Title="Live Values">
         <MariloCard>
             <MariloCardBody>
                 <p><strong>Name:</strong> @_name</p>
@@ -63,14 +99,49 @@
                 <p><strong>Slider:</strong> @_sliderValue</p>
             </MariloCardBody>
         </MariloCard>
-    </div>
+    </DemoSection>
 </div>
 
 @code {
     private string _name = "";
     private string _description = "";
+    private string _email = "";
+    private string _website = "";
+    private string _price = "";
+    private string _searchDemo = "";
     private string _selectedOption = "";
     private bool _checked;
     private bool _switchOn;
     private double _sliderValue = 50;
+
+    private const string _textInputsCode =
+        "<MariloForm>" +
+        "    <MariloField>" +
+        "        <MariloLabel>Name</MariloLabel>" +
+        "        <MariloTextField Value=\"@_name\" ValueChanged=\"@(v => _name = v)\" Placeholder=\"Enter your name\" />" +
+        "    </MariloField>" +
+        "    <MariloField>" +
+        "        <MariloTextField Value=\"\" IsInvalid=\"true\" />" +
+        "        <MariloValidation Severity=\"ValidationSeverity.Error\" Message=\"This field is required.\" />" +
+        "    </MariloField>" +
+        "</MariloForm>";
+
+    private const string _adornmentsCode =
+        @"<MariloTextField Value=""@_email"" Placeholder=""Enter email"" ShowPrefixSeparator=""true"">
+    <Prefix><MariloIcon Name=""mail"" Size=""IconSize.Small"" /></Prefix>
+</MariloTextField>
+
+<MariloTextField Value=""@_website"" Placeholder=""example.com"" ShowPrefixSeparator=""true"">
+    <Prefix><span>https://</span></Prefix>
+</MariloTextField>
+
+<MariloTextField Value=""@_price"" Placeholder=""0.00"">
+    <Prefix><span>$</span></Prefix>
+    <Suffix><span>USD</span></Suffix>
+</MariloTextField>";
+
+    private const string _selectionCode =
+        "<MariloCheckbox Checked=\"@_checked\" CheckedChanged=\"@(v => _checked = v)\" Label=\"Accept terms\" />" +
+        "<MariloSwitch IsOn=\"@_switchOn\" IsOnChanged=\"@(v => _switchOn = v)\" Label=\"Enable notifications\" />" +
+        "<MariloSlider Value=\"@_sliderValue\" ValueChanged=\"@(v => _sliderValue = v)\" Min=\"0\" Max=\"100\" />";
 }

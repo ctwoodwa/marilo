@@ -16,6 +16,10 @@ npm-debug.log*
 ## Rider
 .idea/
 
+## DocFX
+docfx/_site/
+docfx/api/
+
 ## OS
 .DS_Store
 Thumbs.db

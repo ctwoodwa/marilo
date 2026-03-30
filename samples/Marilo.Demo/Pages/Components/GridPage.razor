@@ -1,0 +1,46 @@
+@page "/components/grid"
+
+<div class="demo-page">
+    <h1>Grid</h1>
+    <p class="demo-page-desc">The grid system provides a 12-column responsive layout for organizing content.</p>
+    <a class="demo-api-link" href="/api/Marilo.Components.Layout.MariloGrid.html" target="_blank">API Reference</a>
+
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloGrid>
+            <MariloRow>
+                <MariloCol Span="4"><div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">Col 4</div></MariloCol>
+                <MariloCol Span="4"><div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">Col 4</div></MariloCol>
+                <MariloCol Span="4"><div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">Col 4</div></MariloCol>
+            </MariloRow>
+            <MariloRow>
+                <MariloCol Span="6"><div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">Col 6</div></MariloCol>
+                <MariloCol Span="6"><div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">Col 6</div></MariloCol>
+            </MariloRow>
+            <MariloRow>
+                <MariloCol Span="3"><div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">Col 3</div></MariloCol>
+                <MariloCol Span="6"><div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">Col 6</div></MariloCol>
+                <MariloCol Span="3"><div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">Col 3</div></MariloCol>
+            </MariloRow>
+        </MariloGrid>
+    </DemoSection>
+</div>
+
+@code {
+    private const string _basicCode =
+        "<MariloGrid>\n" +
+        "    <MariloRow>\n" +
+        "        <MariloCol Span=\"4\">Col 4</MariloCol>\n" +
+        "        <MariloCol Span=\"4\">Col 4</MariloCol>\n" +
+        "        <MariloCol Span=\"4\">Col 4</MariloCol>\n" +
+        "    </MariloRow>\n" +
+        "    <MariloRow>\n" +
+        "        <MariloCol Span=\"6\">Col 6</MariloCol>\n" +
+        "        <MariloCol Span=\"6\">Col 6</MariloCol>\n" +
+        "    </MariloRow>\n" +
+        "    <MariloRow>\n" +
+        "        <MariloCol Span=\"3\">Col 3</MariloCol>\n" +
+        "        <MariloCol Span=\"6\">Col 6</MariloCol>\n" +
+        "        <MariloCol Span=\"3\">Col 3</MariloCol>\n" +
+        "    </MariloRow>\n" +
+        "</MariloGrid>";
+}

@@ -1,0 +1,35 @@
+@page "/components/progress-bar"
+
+<div class="demo-page">
+    <h1>Progress Bar</h1>
+    <p class="demo-page-desc">Progress bars indicate the progress of an operation, showing how much has been completed.</p>
+    <a class="demo-api-link" href="/api/Marilo.Components.Feedback.MariloProgressBar.html" target="_blank">API Reference</a>
+
+    <DemoSection Title="Determinate" Description="A determinate progress bar shows a specific percentage of completion." Code="@_determinateCode">
+        <div style="margin-bottom: 16px;">
+            <p>Progress: @_progress%</p>
+            <MariloProgressBar Value="@_progress" />
+        </div>
+        <div class="demo-row">
+            <MariloButton Size="ButtonSize.Small" OnClick="@(() => _progress = Math.Max(0, _progress - 10))">-10</MariloButton>
+            <MariloButton Size="ButtonSize.Small" OnClick="@(() => _progress = Math.Min(100, _progress + 10))">+10</MariloButton>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Indeterminate" Description="An indeterminate progress bar indicates an ongoing process without a known duration." Code="@_indeterminateCode">
+        <MariloProgressBar IsIndeterminate="true" />
+    </DemoSection>
+</div>
+
+@code {
+    private double _progress = 45;
+
+    private const string _determinateCode =
+        "<MariloProgressBar Value=\"@_progress\" />\n\n" +
+        "<MariloButton Size=\"ButtonSize.Small\" OnClick=\"@(() => _progress = Math.Max(0, _progress - 10))\">-10</MariloButton>\n" +
+        "<MariloButton Size=\"ButtonSize.Small\" OnClick=\"@(() => _progress = Math.Min(100, _progress + 10))\">+10</MariloButton>\n\n" +
+        "@code { private double _progress = 45; }";
+
+    private const string _indeterminateCode =
+        "<MariloProgressBar IsIndeterminate=\"true\" />";
+}

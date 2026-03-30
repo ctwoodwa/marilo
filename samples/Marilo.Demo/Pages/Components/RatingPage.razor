@@ -1,0 +1,23 @@
+@page "/components/rating"
+
+<div class="demo-page">
+    <h1>Rating</h1>
+    <p class="demo-page-desc">The rating component lets users provide a star-based evaluation.</p>
+    <a class="demo-api-link" href="/api/Marilo.Components.Forms.Inputs.MariloRating.html" target="_blank">API Reference</a>
+
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloRating Value="@_rating" ValueChanged="@(v => _rating = v)" Max="5" />
+        <p><strong>@_rating of 5 stars</strong></p>
+    </DemoSection>
+</div>
+
+@code {
+    private int _rating = 3;
+
+    private const string _basicCode =
+        "<MariloRating Value=\"@_rating\" ValueChanged=\"@(v => _rating = v)\" Max=\"5\" />\n" +
+        "<p><strong>@_rating of 5 stars</strong></p>\n\n" +
+        "@code {\n" +
+        "    private int _rating = 3;\n" +
+        "}";
+}

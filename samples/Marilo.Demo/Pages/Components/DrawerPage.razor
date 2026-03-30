@@ -1,0 +1,34 @@
+@page "/components/drawer"
+
+<div class="demo-page">
+    <h1>Drawer</h1>
+    <p class="demo-page-desc">Drawers provide a slide-out panel for supplementary content or navigation.</p>
+    <a class="demo-api-link" href="/api/Marilo.Components.Layout.MariloDrawer.html" target="_blank">API Reference</a>
+
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloButton OnClick="OpenDrawer">Open Drawer</MariloButton>
+        <MariloDrawer IsOpen="@_drawerOpen" IsOpenChanged="@((bool v) => _drawerOpen = v)" Position="DrawerPosition.Right" Width="360px">
+            <h3>Drawer Content</h3>
+            <p>This is supplementary content displayed inside the drawer panel.</p>
+            <MariloButton OnClick="CloseDrawer">Close</MariloButton>
+        </MariloDrawer>
+    </DemoSection>
+</div>
+
+@code {
+    private bool _drawerOpen;
+
+    private void OpenDrawer() => _drawerOpen = true;
+    private void CloseDrawer() => _drawerOpen = false;
+
+    private const string _basicCode =
+        "<MariloButton OnClick=\"@(() => _drawerOpen = true)\">Open Drawer</MariloButton>\n" +
+        "<MariloDrawer IsOpen=\"@_drawerOpen\" IsOpenChanged=\"@(v => _drawerOpen = v)\" Position=\"DrawerPosition.Right\" Width=\"360px\">\n" +
+        "    <h3>Drawer Content</h3>\n" +
+        "    <p>This is supplementary content displayed inside the drawer panel.</p>\n" +
+        "    <MariloButton OnClick=\"@(() => _drawerOpen = false)\">Close</MariloButton>\n" +
+        "</MariloDrawer>\n\n" +
+        "@code {\n" +
+        "    private bool _drawerOpen;\n" +
+        "}";
+}

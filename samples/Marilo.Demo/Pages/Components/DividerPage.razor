@@ -1,0 +1,20 @@
+@page "/components/divider"
+
+<div class="demo-page">
+    <h1>Divider</h1>
+    <p class="demo-page-desc">Dividers separate content into clear groups.</p>
+    <a class="demo-api-link" href="/api/Marilo.Components.Layout.MariloDivider.html" target="_blank">API Reference</a>
+
+    <DemoSection Title="Horizontal" Code="@_horizontalCode">
+        <p>Content above the divider.</p>
+        <MariloDivider />
+        <p>Content below the divider.</p>
+    </DemoSection>
+</div>
+
+@code {
+    private const string _horizontalCode =
+        "<p>Content above the divider.</p>\n" +
+        "<MariloDivider />\n" +
+        "<p>Content below the divider.</p>";
+}

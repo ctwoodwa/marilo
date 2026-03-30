@@ -1,0 +1,35 @@
+@page "/components/date-picker"
+
+<div class="demo-page">
+    <h1>Date Picker</h1>
+    <p class="demo-page-desc">The date picker lets users select a date from a calendar or by typing.</p>
+    <a class="demo-api-link" href="/api/Marilo.Components.Forms.Inputs.MariloDatePicker.html" target="_blank">API Reference</a>
+
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloField>
+            <MariloLabel>Select a date</MariloLabel>
+            <MariloDatePicker Value="@_date" ValueChanged="@(v => _date = v)" />
+        </MariloField>
+        @if (_date.HasValue)
+        {
+            <p><strong>Selected date:</strong> @_date.Value.ToString("yyyy-MM-dd")</p>
+        }
+    </DemoSection>
+</div>
+
+@code {
+    private DateOnly? _date;
+
+    private const string _basicCode =
+        "<MariloField>\n" +
+        "    <MariloLabel>Select a date</MariloLabel>\n" +
+        "    <MariloDatePicker Value=\"@_date\" ValueChanged=\"@(v => _date = v)\" />\n" +
+        "</MariloField>\n" +
+        "@if (_date.HasValue)\n" +
+        "{\n" +
+        "    <p><strong>Selected date:</strong> @_date.Value.ToString(\"yyyy-MM-dd\")</p>\n" +
+        "}\n\n" +
+        "@code {\n" +
+        "    private DateOnly? _date;\n" +
+        "}";
+}

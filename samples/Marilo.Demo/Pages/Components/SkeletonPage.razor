@@ -1,0 +1,22 @@
+@page "/components/skeleton"
+
+<div class="demo-page">
+    <h1>Skeleton</h1>
+    <p class="demo-page-desc">Skeletons provide a low-fidelity preview of content before it loads, reducing perceived wait time.</p>
+    <a class="demo-api-link" href="/api/Marilo.Components.Feedback.MariloSkeleton.html" target="_blank">API Reference</a>
+
+    <DemoSection Title="Variants" Description="Skeletons support text, circular, and rectangular shapes." Code="@_variantsCode">
+        <div class="demo-row">
+            <MariloSkeleton Variant="SkeletonVariant.Text" Width="200px" Height="16px" />
+            <MariloSkeleton Variant="SkeletonVariant.Circular" Width="48px" Height="48px" />
+            <MariloSkeleton Variant="SkeletonVariant.Rectangular" Width="200px" Height="120px" />
+        </div>
+    </DemoSection>
+</div>
+
+@code {
+    private const string _variantsCode =
+        "<MariloSkeleton Variant=\"SkeletonVariant.Text\" Width=\"200px\" Height=\"16px\" />\n" +
+        "<MariloSkeleton Variant=\"SkeletonVariant.Circular\" Width=\"48px\" Height=\"48px\" />\n" +
+        "<MariloSkeleton Variant=\"SkeletonVariant.Rectangular\" Width=\"200px\" Height=\"120px\" />";
+}

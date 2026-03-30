@@ -1,0 +1,99 @@
+@page "/components/text-field"
+
+<div class="demo-page">
+    <h1>Text Field</h1>
+    <p class="demo-page-desc">The text field lets users enter and edit text. It supports prefix and suffix adornments for enhanced interactivity.</p>
+    <a class="demo-api-link" href="/api/Marilo.Components.Forms.Inputs.MariloTextField.html" target="_blank">API Reference</a>
+
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloField>
+            <MariloLabel>Name</MariloLabel>
+            <MariloTextField Value="@_name" ValueChanged="@(v => _name = v)" Placeholder="Enter your name" />
+        </MariloField>
+    </DemoSection>
+
+    <DemoSection Title="States" Code="@_statesCode">
+        <MariloField>
+            <MariloLabel>Invalid Input</MariloLabel>
+            <MariloTextField Value="" IsInvalid="true" Placeholder="This field has an error" />
+            <MariloValidation Severity="ValidationSeverity.Error" Message="This field is required." />
+        </MariloField>
+        <MariloField>
+            <MariloLabel>Disabled Input</MariloLabel>
+            <MariloTextField Value="Cannot edit" Disabled="true" />
+        </MariloField>
+    </DemoSection>
+
+    <DemoSection Title="Adornments" Description="Prefix and suffix adornments enhance inputs with icons, labels, or actions." Code="@_adornmentsCode">
+        <MariloField>
+            <MariloLabel>Email</MariloLabel>
+            <MariloTextField Value="@_email" ValueChanged="@(v => _email = v)" Placeholder="Enter email" InputType="email" ShowPrefixSeparator="true">
+                <Prefix>
+                    <MariloIcon Name="mail" Size="IconSize.Small" />
+                </Prefix>
+            </MariloTextField>
+        </MariloField>
+        <MariloField>
+            <MariloLabel>Website</MariloLabel>
+            <MariloTextField Value="@_website" ValueChanged="@(v => _website = v)" Placeholder="example.com" ShowPrefixSeparator="true">
+                <Prefix><span>https://</span></Prefix>
+            </MariloTextField>
+        </MariloField>
+        <MariloField>
+            <MariloLabel>Price</MariloLabel>
+            <MariloTextField Value="@_price" ValueChanged="@(v => _price = v)" Placeholder="0.00">
+                <Prefix><span>$</span></Prefix>
+                <Suffix><span>USD</span></Suffix>
+            </MariloTextField>
+        </MariloField>
+    </DemoSection>
+
+    <DemoSection Title="Interactive" Code="@_interactiveCode">
+        <MariloField>
+            <MariloLabel>Type something</MariloLabel>
+            <MariloTextField Value="@_name" ValueChanged="@(v => _name = v)" Placeholder="Enter your name" />
+        </MariloField>
+        <p><strong>Value:</strong> @_name</p>
+    </DemoSection>
+</div>
+
+@code {
+    private string _name = "";
+    private string _email = "";
+    private string _website = "";
+    private string _price = "";
+
+    private const string _basicCode =
+        "<MariloField>\n" +
+        "    <MariloLabel>Name</MariloLabel>\n" +
+        "    <MariloTextField Value=\"@_name\" ValueChanged=\"@(v => _name = v)\" Placeholder=\"Enter your name\" />\n" +
+        "</MariloField>";
+
+    private const string _statesCode =
+        "<MariloField>\n" +
+        "    <MariloTextField Value=\"\" IsInvalid=\"true\" Placeholder=\"This field has an error\" />\n" +
+        "    <MariloValidation Severity=\"ValidationSeverity.Error\" Message=\"This field is required.\" />\n" +
+        "</MariloField>\n\n" +
+        "<MariloField>\n" +
+        "    <MariloTextField Value=\"Cannot edit\" Disabled=\"true\" />\n" +
+        "</MariloField>";
+
+    private const string _adornmentsCode =
+        "<MariloTextField Value=\"@_email\" Placeholder=\"Enter email\" ShowPrefixSeparator=\"true\">\n" +
+        "    <Prefix><MariloIcon Name=\"mail\" Size=\"IconSize.Small\" /></Prefix>\n" +
+        "</MariloTextField>\n\n" +
+        "<MariloTextField Value=\"@_website\" Placeholder=\"example.com\" ShowPrefixSeparator=\"true\">\n" +
+        "    <Prefix><span>https://</span></Prefix>\n" +
+        "</MariloTextField>\n\n" +
+        "<MariloTextField Value=\"@_price\" Placeholder=\"0.00\">\n" +
+        "    <Prefix><span>$</span></Prefix>\n" +
+        "    <Suffix><span>USD</span></Suffix>\n" +
+        "</MariloTextField>";
+
+    private const string _interactiveCode =
+        "<MariloTextField Value=\"@_name\" ValueChanged=\"@(v => _name = v)\" Placeholder=\"Enter your name\" />\n" +
+        "<p><strong>Value:</strong> @_name</p>\n\n" +
+        "@code {\n" +
+        "    private string _name = \"\";\n" +
+        "}";
+}

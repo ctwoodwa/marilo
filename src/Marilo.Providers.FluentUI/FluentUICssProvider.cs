@@ -128,6 +128,32 @@ public class FluentUICssProvider : IMariloCssProvider
 
     public string ToolbarClass() => "mar-toolbar";
 
+    public string EnvironmentBadgeClass(string env) =>
+        new CssClassBuilder()
+            .AddClass("mar-env-badge")
+            .AddClass($"mar-env-badge--{env.ToLower()}")
+            .Build();
+
+    public string TimeRangeSelectorClass() => "mar-time-range-selector";
+
+
+    public string ToolbarButtonClass(bool isDisabled = false) =>
+        new CssClassBuilder()
+            .AddClass("mar-toolbar-btn")
+            .AddClass("mar-toolbar-btn--disabled", isDisabled)
+            .Build();
+
+    public string ToolbarToggleButtonClass(bool isActive, bool isDisabled = false) =>
+        new CssClassBuilder()
+            .AddClass("mar-toolbar-btn")
+            .AddClass("mar-toolbar-btn--active", isActive)
+            .AddClass("mar-toolbar-btn--disabled", isDisabled)
+            .Build();
+
+    public string ToolbarSeparatorClass() => "mar-toolbar-sep";
+
+    public string ToolbarGroupClass() => "mar-toolbar-group";
+
     public string LinkClass() => "mar-link";
 
     // Buttons
@@ -298,6 +324,8 @@ public class FluentUICssProvider : IMariloCssProvider
             .AddClass($"mar-alert--{severity.ToString().ToLower()}")
             .Build();
 
+    public string AlertStripClass() => "mar-alert-strip";
+
     public string ToastClass(ToastSeverity severity) =>
         new CssClassBuilder()
             .AddClass("mar-toast")
@@ -368,11 +396,13 @@ public class FluentUICssProvider : IMariloCssProvider
     public string ModalOverlayClass() => "mar-modal-overlay";
 
     // Utility
-    public string IconClass(string iconName, IconSize size) =>
+    public string IconClass(string iconName, IconSize size, IconFlip flip = IconFlip.None, IconThemeColor themeColor = IconThemeColor.Base) =>
         new CssClassBuilder()
             .AddClass("mar-icon")
             .AddClass($"mar-icon--{size.ToString().ToLower()}")
             .AddClass($"mar-icon--{iconName}")
+            .AddClass($"mar-icon--flip-{flip.ToString().ToLower()}", flip != IconFlip.None)
+            .AddClass($"mar-icon--{themeColor.ToString().ToLower()}", themeColor != IconThemeColor.Base)
             .Build();
 
     public string DragDropClass() => "mar-dragdrop";

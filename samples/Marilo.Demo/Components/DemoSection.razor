@@ -1,0 +1,85 @@
+@inject IJSRuntime JS
+
+<div class="story">
+    <div class="story-header">
+        <h3 class="story-title">@Title</h3>
+        @if (!string.IsNullOrEmpty(Description))
+        {
+            <p class="story-desc">@Description</p>
+        }
+    </div>
+    <div class="story-canvas">
+        <div class="story-preview">
+            @ChildContent
+        </div>
+        @if (!string.IsNullOrEmpty(Code))
+        {
+            <div class="story-toolbar">
+                <button class="story-code-toggle @(_showCode ? "active" : "")" @onclick="ToggleCode">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                    @(_showCode ? "Hide code" : "Show code")
+                </button>
+                @if (_showCode)
+                {
+                    <button class="story-copy-btn" @onclick="CopyCode">
+                        @if (_copied)
+                        {
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            <span>Copied!</span>
+                        }
+                        else
+                        {
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                            <span>Copy</span>
+                        }
+                    </button>
+                }
+            </div>
+            @if (_showCode)
+            {
+                <div class="story-code">
+                    <pre class="story-pre"><code class="language-html" @ref="_codeEl">@Code</code></pre>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter] public string? Description { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Code { get; set; }
+
+    private bool _showCode;
+    private bool _copied;
+    private bool _needsHighlight;
+    private ElementReference _codeEl;
+
+    private void ToggleCode()
+    {
+        _showCode = !_showCode;
+        if (_showCode) _needsHighlight = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (_needsHighlight)
+        {
+            _needsHighlight = false;
+            try { await JS.InvokeVoidAsync("Prism.highlightElement", _codeEl); }
+            catch { /* Prism not yet loaded */ }
+        }
+    }
+
+    private async Task CopyCode()
+    {
+        if (string.IsNullOrEmpty(Code)) return;
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", Code);
+        _copied = true;
+        StateHasChanged();
+        await Task.Delay(2000);
+        _copied = false;
+        StateHasChanged();
+    }
+}

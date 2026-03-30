@@ -1,0 +1,256 @@
+@inherits LayoutComponentBase
+@inject NavigationManager Nav
+
+<div class="app-shell @(_isDark ? "app-dark" : "")">
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <svg width="20" height="20" viewBox="0 0 28 28" fill="none" class="sidebar-logo">
+                <rect x="2" y="2" width="24" height="24" rx="6" stroke="currentColor" stroke-width="2" />
+                <path d="M9 9l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                <path d="M15 14h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+            <span>Marilo</span>
+        </div>
+
+        <div class="sidebar-search-wrap">
+            <MariloSearchBox Value="@_search"
+                             ValueChanged="OnSearchChanged"
+                             Placeholder="Find components…"
+                             OnEscape="ClearSearch"
+                             OnSearch="@((_) => NavigateFirstResult())" />
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(_search))
+        {
+            @if (_filteredItems.Count > 0)
+            {
+                <div class="sidebar-results">
+                    @foreach (var item in _filteredItems)
+                    {
+                        <button class="sidebar-result @(IsActive(item.Href) ? "active" : "")"
+                                @onclick="() => NavigateFromSearch(item.Href)">
+                            <span class="sidebar-result-label">@item.Label</span>
+                            <span class="sidebar-result-group">@item.Group</span>
+                        </button>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="sidebar-no-results">No results for "@_search"</div>
+            }
+        }
+
+        <nav class="sidebar-tree @(!string.IsNullOrWhiteSpace(_search) ? "sidebar-tree--hidden" : "")">
+            <MariloTreeView>
+                <MariloTreeItem Title="Home" IsSelected="@IsActive("")" OnClick="@(() => Navigate(""))" />
+
+                <MariloTreeItem Title="Buttons" IsExpanded="@IsCategoryExpanded("buttons")">
+                    <MariloTreeItem Title="Button" IsSelected="@IsActive("components/button")" OnClick="@(() => Navigate("components/button"))" />
+                    <MariloTreeItem Title="Button Group" IsSelected="@IsActive("components/button-group")" OnClick="@(() => Navigate("components/button-group"))" />
+                    <MariloTreeItem Title="Chip" IsSelected="@IsActive("components/chip")" OnClick="@(() => Navigate("components/chip"))" />
+                    <MariloTreeItem Title="FAB" IsSelected="@IsActive("components/fab")" OnClick="@(() => Navigate("components/fab"))" />
+                    <MariloTreeItem Title="Toggle Button" IsSelected="@IsActive("components/toggle-button")" OnClick="@(() => Navigate("components/toggle-button"))" />
+                    <MariloTreeItem Title="Segmented Control" IsSelected="@IsActive("components/segmented-control")" OnClick="@(() => Navigate("components/segmented-control"))" />
+                </MariloTreeItem>
+
+                <MariloTreeItem Title="Forms" IsExpanded="@IsCategoryExpanded("forms")">
+                    <MariloTreeItem Title="Text Field" IsSelected="@IsActive("components/text-field")" OnClick="@(() => Navigate("components/text-field"))" />
+                    <MariloTreeItem Title="Text Area" IsSelected="@IsActive("components/text-area")" OnClick="@(() => Navigate("components/text-area"))" />
+                    <MariloTreeItem Title="Select" IsSelected="@IsActive("components/select")" OnClick="@(() => Navigate("components/select"))" />
+                    <MariloTreeItem Title="Checkbox" IsSelected="@IsActive("components/checkbox")" OnClick="@(() => Navigate("components/checkbox"))" />
+                    <MariloTreeItem Title="Switch" IsSelected="@IsActive("components/switch")" OnClick="@(() => Navigate("components/switch"))" />
+                    <MariloTreeItem Title="Slider" IsSelected="@IsActive("components/slider")" OnClick="@(() => Navigate("components/slider"))" />
+                    <MariloTreeItem Title="Search Box" IsSelected="@IsActive("components/search-box")" OnClick="@(() => Navigate("components/search-box"))" />
+                    <MariloTreeItem Title="Rating" IsSelected="@IsActive("components/rating")" OnClick="@(() => Navigate("components/rating"))" />
+                    <MariloTreeItem Title="Date Picker" IsSelected="@IsActive("components/date-picker")" OnClick="@(() => Navigate("components/date-picker"))" />
+                    <MariloTreeItem Title="Color Picker" IsSelected="@IsActive("components/color-picker")" OnClick="@(() => Navigate("components/color-picker"))" />
+                </MariloTreeItem>
+
+                <MariloTreeItem Title="Data Display" IsExpanded="@IsCategoryExpanded("data-display")">
+                    <MariloTreeItem Title="Card" IsSelected="@IsActive("components/card")" OnClick="@(() => Navigate("components/card"))" />
+                    <MariloTreeItem Title="Avatar" IsSelected="@IsActive("components/avatar")" OnClick="@(() => Navigate("components/avatar"))" />
+                    <MariloTreeItem Title="Badge" IsSelected="@IsActive("components/badge")" OnClick="@(() => Navigate("components/badge"))" />
+                    <MariloTreeItem Title="List" IsSelected="@IsActive("components/list")" OnClick="@(() => Navigate("components/list"))" />
+                    <MariloTreeItem Title="Table" IsSelected="@IsActive("components/table")" OnClick="@(() => Navigate("components/table"))" />
+                    <MariloTreeItem Title="Tooltip" IsSelected="@IsActive("components/tooltip")" OnClick="@(() => Navigate("components/tooltip"))" />
+                </MariloTreeItem>
+
+                <MariloTreeItem Title="Feedback" IsExpanded="@IsCategoryExpanded("feedback")">
+                    <MariloTreeItem Title="Alert" IsSelected="@IsActive("components/alert")" OnClick="@(() => Navigate("components/alert"))" />
+                    <MariloTreeItem Title="Progress Bar" IsSelected="@IsActive("components/progress-bar")" OnClick="@(() => Navigate("components/progress-bar"))" />
+                    <MariloTreeItem Title="Spinner" IsSelected="@IsActive("components/spinner")" OnClick="@(() => Navigate("components/spinner"))" />
+                    <MariloTreeItem Title="Skeleton" IsSelected="@IsActive("components/skeleton")" OnClick="@(() => Navigate("components/skeleton"))" />
+                    <MariloTreeItem Title="Dialog" IsSelected="@IsActive("components/dialog")" OnClick="@(() => Navigate("components/dialog"))" />
+                    <MariloTreeItem Title="Confirm Dialog" IsSelected="@IsActive("components/confirm-dialog")" OnClick="@(() => Navigate("components/confirm-dialog"))" />
+                </MariloTreeItem>
+
+                <MariloTreeItem Title="Layout" IsExpanded="@IsCategoryExpanded("layout")">
+                    <MariloTreeItem Title="Grid" IsSelected="@IsActive("components/grid")" OnClick="@(() => Navigate("components/grid"))" />
+                    <MariloTreeItem Title="Stack" IsSelected="@IsActive("components/stack")" OnClick="@(() => Navigate("components/stack"))" />
+                    <MariloTreeItem Title="Divider" IsSelected="@IsActive("components/divider")" OnClick="@(() => Navigate("components/divider"))" />
+                    <MariloTreeItem Title="Panel" IsSelected="@IsActive("components/panel")" OnClick="@(() => Navigate("components/panel"))" />
+                    <MariloTreeItem Title="Container" IsSelected="@IsActive("components/container")" OnClick="@(() => Navigate("components/container"))" />
+                    <MariloTreeItem Title="Tabs" IsSelected="@IsActive("components/tabs")" OnClick="@(() => Navigate("components/tabs"))" />
+                    <MariloTreeItem Title="Accordion" IsSelected="@IsActive("components/accordion")" OnClick="@(() => Navigate("components/accordion"))" />
+                    <MariloTreeItem Title="Stepper" IsSelected="@IsActive("components/stepper")" OnClick="@(() => Navigate("components/stepper"))" />
+                    <MariloTreeItem Title="Drawer" IsSelected="@IsActive("components/drawer")" OnClick="@(() => Navigate("components/drawer"))" />
+                </MariloTreeItem>
+
+                <MariloTreeItem Title="Navigation" IsExpanded="@IsCategoryExpanded("navigation")">
+                    <MariloTreeItem Title="Breadcrumb" IsSelected="@IsActive("components/breadcrumb")" OnClick="@(() => Navigate("components/breadcrumb"))" />
+                    <MariloTreeItem Title="Pagination" IsSelected="@IsActive("components/pagination")" OnClick="@(() => Navigate("components/pagination"))" />
+                    <MariloTreeItem Title="Toolbar" IsSelected="@IsActive("components/toolbar")" OnClick="@(() => Navigate("components/toolbar"))" />
+                    <MariloTreeItem Title="Tree View" IsSelected="@IsActive("components/tree-view")" OnClick="@(() => Navigate("components/tree-view"))" />
+                    <MariloTreeItem Title="Menu" IsSelected="@IsActive("components/menu")" OnClick="@(() => Navigate("components/menu"))" />
+                </MariloTreeItem>
+
+                <MariloTreeItem Title="Icons" IsSelected="@IsActive("icons")" OnClick="@(() => Navigate("icons"))" />
+            </MariloTreeView>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-provider">
+                <span class="sidebar-provider-label">Theme</span>
+                <MariloSelect Value="@_provider" ValueChanged="@((string v) => _provider = v)">
+                    <option value="fluentui">Fluent UI</option>
+                </MariloSelect>
+            </div>
+            <button class="theme-toggle" @onclick="ToggleTheme" title="@(_isDark ? "Switch to light mode" : "Switch to dark mode")">
+                @if (_isDark)
+                {
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" /></svg>
+                    <span>Light mode</span>
+                }
+                else
+                {
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+                    <span>Dark mode</span>
+                }
+            </button>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <CascadingValue Value="_isDark" Name="IsDarkMode">
+            @Body
+        </CascadingValue>
+    </main>
+</div>
+
+@code {
+    private bool _isDark;
+    private string _search = "";
+    private string _provider = "fluentui";
+
+    private record NavEntry(string Label, string Href, string Group);
+
+    private static readonly NavEntry[] _allItems =
+    {
+        new("Home", "", "Pages"),
+        new("Button", "components/button", "Buttons"),
+        new("Button Group", "components/button-group", "Buttons"),
+        new("Chip", "components/chip", "Buttons"),
+        new("FAB", "components/fab", "Buttons"),
+        new("Toggle Button", "components/toggle-button", "Buttons"),
+        new("Segmented Control", "components/segmented-control", "Buttons"),
+        new("Text Field", "components/text-field", "Forms"),
+        new("Text Area", "components/text-area", "Forms"),
+        new("Select", "components/select", "Forms"),
+        new("Checkbox", "components/checkbox", "Forms"),
+        new("Switch", "components/switch", "Forms"),
+        new("Slider", "components/slider", "Forms"),
+        new("Search Box", "components/search-box", "Forms"),
+        new("Rating", "components/rating", "Forms"),
+        new("Date Picker", "components/date-picker", "Forms"),
+        new("Color Picker", "components/color-picker", "Forms"),
+        new("Card", "components/card", "Data Display"),
+        new("Avatar", "components/avatar", "Data Display"),
+        new("Badge", "components/badge", "Data Display"),
+        new("List", "components/list", "Data Display"),
+        new("Table", "components/table", "Data Display"),
+        new("Tooltip", "components/tooltip", "Data Display"),
+        new("Alert", "components/alert", "Feedback"),
+        new("Progress Bar", "components/progress-bar", "Feedback"),
+        new("Spinner", "components/spinner", "Feedback"),
+        new("Skeleton", "components/skeleton", "Feedback"),
+        new("Dialog", "components/dialog", "Feedback"),
+        new("Confirm Dialog", "components/confirm-dialog", "Feedback"),
+        new("Grid", "components/grid", "Layout"),
+        new("Stack", "components/stack", "Layout"),
+        new("Divider", "components/divider", "Layout"),
+        new("Panel", "components/panel", "Layout"),
+        new("Container", "components/container", "Layout"),
+        new("Tabs", "components/tabs", "Layout"),
+        new("Accordion", "components/accordion", "Layout"),
+        new("Stepper", "components/stepper", "Layout"),
+        new("Drawer", "components/drawer", "Layout"),
+        new("Breadcrumb", "components/breadcrumb", "Navigation"),
+        new("Pagination", "components/pagination", "Navigation"),
+        new("Toolbar", "components/toolbar", "Navigation"),
+        new("Tree View", "components/tree-view", "Navigation"),
+        new("Menu", "components/menu", "Navigation"),
+        new("Icons", "icons", "Icons"),
+    };
+
+    private static readonly Dictionary<string, string[]> _categoryRoutes = new()
+    {
+        ["buttons"] = new[] { "components/button", "components/button-group", "components/chip", "components/fab", "components/toggle-button", "components/segmented-control" },
+        ["forms"] = new[] { "components/text-field", "components/text-area", "components/select", "components/checkbox", "components/switch", "components/slider", "components/search-box", "components/rating", "components/date-picker", "components/color-picker" },
+        ["data-display"] = new[] { "components/card", "components/avatar", "components/badge", "components/list", "components/table", "components/tooltip" },
+        ["feedback"] = new[] { "components/alert", "components/progress-bar", "components/spinner", "components/skeleton", "components/dialog", "components/confirm-dialog" },
+        ["layout"] = new[] { "components/grid", "components/stack", "components/divider", "components/panel", "components/container", "components/tabs", "components/accordion", "components/stepper", "components/drawer" },
+        ["navigation"] = new[] { "components/breadcrumb", "components/pagination", "components/toolbar", "components/tree-view", "components/menu" },
+    };
+
+    private List<NavEntry> _filteredItems = new();
+
+    private void OnSearchChanged(string value)
+    {
+        _search = value;
+        if (string.IsNullOrWhiteSpace(_search))
+        {
+            _filteredItems.Clear();
+            return;
+        }
+        var q = _search.Trim().ToLower();
+        _filteredItems = _allItems
+            .Where(i => i.Label.ToLower().Contains(q) || i.Group.ToLower().Contains(q))
+            .ToList();
+    }
+
+    private void ClearSearch()
+    {
+        _search = "";
+        _filteredItems.Clear();
+    }
+
+    private void NavigateFirstResult()
+    {
+        if (_filteredItems.Count == 1)
+            NavigateFromSearch(_filteredItems[0].Href);
+    }
+
+    private void NavigateFromSearch(string path)
+    {
+        ClearSearch();
+        Nav.NavigateTo($"/{path}");
+    }
+
+    private void ToggleTheme() => _isDark = !_isDark;
+
+    private void Navigate(string path) => Nav.NavigateTo($"/{path}");
+
+    private bool IsActive(string path)
+    {
+        var uri = Nav.ToBaseRelativePath(Nav.Uri).TrimEnd('/');
+        return uri.Equals(path, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool IsCategoryExpanded(string category)
+    {
+        var uri = Nav.ToBaseRelativePath(Nav.Uri).TrimEnd('/');
+        return _categoryRoutes.TryGetValue(category, out var routes)
+               && routes.Any(r => uri.Equals(r, StringComparison.OrdinalIgnoreCase));
+    }
+}

@@ -1,0 +1,23 @@
+@page "/components/pagination"
+
+<div class="demo-page">
+    <h1>Pagination</h1>
+    <p class="demo-page-desc">Pagination lets users navigate through pages of content.</p>
+    <a class="demo-api-link" href="/api/Marilo.Components.Navigation.MariloPagination.html" target="_blank">API Reference</a>
+
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloPagination TotalPages="10" CurrentPage="@_page" CurrentPageChanged="@(v => _page = v)" />
+        <p><strong>Current page:</strong> @_page</p>
+    </DemoSection>
+</div>
+
+@code {
+    private int _page = 1;
+
+    private const string _basicCode =
+        "<MariloPagination TotalPages=\"10\" CurrentPage=\"@_page\" CurrentPageChanged=\"@(v => _page = v)\" />\n" +
+        "<p><strong>Current page:</strong> @_page</p>\n\n" +
+        "@code {\n" +
+        "    private int _page = 1;\n" +
+        "}";
+}

@@ -1,0 +1,34 @@
+@page "/components/switch"
+
+<div class="demo-page">
+    <h1>Switch</h1>
+    <p class="demo-page-desc">The switch toggles the state of a single setting on or off.</p>
+    <a class="demo-api-link" href="/api/Marilo.Components.Forms.Inputs.MariloSwitch.html" target="_blank">API Reference</a>
+
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloField>
+            <MariloSwitch IsOn="@_switchOn" IsOnChanged="@(v => _switchOn = v)" Label="Enable notifications" />
+        </MariloField>
+    </DemoSection>
+
+    <DemoSection Title="Interactive" Code="@_interactiveCode">
+        <MariloField>
+            <MariloSwitch IsOn="@_switchOn" IsOnChanged="@(v => _switchOn = v)" Label="Toggle me" />
+        </MariloField>
+        <p><strong>Switch is on:</strong> @_switchOn</p>
+    </DemoSection>
+</div>
+
+@code {
+    private bool _switchOn;
+
+    private const string _basicCode =
+        "<MariloSwitch IsOn=\"@_switchOn\" IsOnChanged=\"@(v => _switchOn = v)\" Label=\"Enable notifications\" />";
+
+    private const string _interactiveCode =
+        "<MariloSwitch IsOn=\"@_switchOn\" IsOnChanged=\"@(v => _switchOn = v)\" Label=\"Toggle me\" />\n" +
+        "<p><strong>Switch is on:</strong> @_switchOn</p>\n\n" +
+        "@code {\n" +
+        "    private bool _switchOn;\n" +
+        "}";
+}

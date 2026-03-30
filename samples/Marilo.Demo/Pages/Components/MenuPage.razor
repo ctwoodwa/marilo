@@ -1,0 +1,33 @@
+@page "/components/menu"
+
+<div class="demo-page">
+    <h1>Menu</h1>
+    <p class="demo-page-desc">Menus display a list of actions or options in a popup overlay.</p>
+    <a class="demo-api-link" href="/api/Marilo.Components.Navigation.MariloMenu.html" target="_blank">API Reference</a>
+
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloButton OnClick="ToggleMenu">Toggle Menu</MariloButton>
+        <MariloMenu IsOpen="@_menuOpen" IsOpenChanged="@((bool v) => _menuOpen = v)">
+            <MariloMenuItem>Edit</MariloMenuItem>
+            <MariloMenuItem>Duplicate</MariloMenuItem>
+            <MariloMenuItem Disabled="true">Delete</MariloMenuItem>
+        </MariloMenu>
+    </DemoSection>
+</div>
+
+@code {
+    private bool _menuOpen;
+
+    private void ToggleMenu() => _menuOpen = !_menuOpen;
+
+    private const string _basicCode =
+        "<MariloButton OnClick=\"@(() => _menuOpen = !_menuOpen)\">Toggle Menu</MariloButton>\n" +
+        "<MariloMenu IsOpen=\"@_menuOpen\" IsOpenChanged=\"@(v => _menuOpen = v)\">\n" +
+        "    <MariloMenuItem>Edit</MariloMenuItem>\n" +
+        "    <MariloMenuItem>Duplicate</MariloMenuItem>\n" +
+        "    <MariloMenuItem Disabled=\"true\">Delete</MariloMenuItem>\n" +
+        "</MariloMenu>\n\n" +
+        "@code {\n" +
+        "    private bool _menuOpen;\n" +
+        "}";
+}

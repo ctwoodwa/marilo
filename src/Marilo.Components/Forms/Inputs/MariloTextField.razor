@@ -1,20 +1,38 @@
 @inherits MariloComponentBase
 
-<input type="text"
-       class="@CombineClasses(CssProvider.TextFieldClass(IsInvalid, Disabled))"
-       style="@CombineStyles()"
-       value="@Value"
-       placeholder="@Placeholder"
-       disabled="@Disabled"
-       @oninput="OnInputChanged"
-       @attributes="AdditionalAttributes" />
+<div class="@CombineClasses(CssProvider.TextFieldClass(IsInvalid, Disabled))"
+     style="@CombineStyles()"
+     @attributes="AdditionalAttributes">
+    @if (Prefix != null)
+    {
+        <span class="mar-textfield__prefix @(ShowPrefixSeparator ? "mar-textfield__prefix--sep" : "")">
+            @Prefix
+        </span>
+    }
+    <input type="@InputType"
+           value="@Value"
+           placeholder="@Placeholder"
+           disabled="@Disabled"
+           @oninput="OnInputChanged" />
+    @if (Suffix != null)
+    {
+        <span class="mar-textfield__suffix @(ShowSuffixSeparator ? "mar-textfield__suffix--sep" : "")">
+            @Suffix
+        </span>
+    }
+</div>
 
 @code {
     [Parameter] public string Value { get; set; } = string.Empty;
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
     [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public string InputType { get; set; } = "text";
     [Parameter] public bool IsInvalid { get; set; }
     [Parameter] public bool Disabled { get; set; }
+    [Parameter] public RenderFragment? Prefix { get; set; }
+    [Parameter] public RenderFragment? Suffix { get; set; }
+    [Parameter] public bool ShowPrefixSeparator { get; set; }
+    [Parameter] public bool ShowSuffixSeparator { get; set; }
 
     private async Task OnInputChanged(ChangeEventArgs e)
     {

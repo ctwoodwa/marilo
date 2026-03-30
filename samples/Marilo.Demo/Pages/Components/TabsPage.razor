@@ -1,0 +1,53 @@
+@page "/components/tabs"
+
+<div class="demo-page">
+    <h1>Tabs</h1>
+    <p class="demo-page-desc">Tabs organize content into separate views where only one view is visible at a time.</p>
+    <a class="demo-api-link" href="/api/Marilo.Components.Layout.MariloTabs.html" target="_blank">API Reference</a>
+
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloTabs SelectedIndex="@_tabIndex" SelectedIndexChanged="@((int v) => _tabIndex = v)">
+            <MariloTab Title="Overview">
+                <p>This is the overview content.</p>
+            </MariloTab>
+            <MariloTab Title="Details">
+                <p>This is the details content.</p>
+            </MariloTab>
+            <MariloTab Title="Settings">
+                <MariloField>
+                    <MariloLabel>Display Name</MariloLabel>
+                    <MariloTextField Placeholder="Enter a name" />
+                </MariloField>
+                <MariloField>
+                    <MariloSwitch Label="Enable notifications" />
+                </MariloField>
+            </MariloTab>
+        </MariloTabs>
+    </DemoSection>
+</div>
+
+@code {
+    private int _tabIndex;
+
+    private const string _basicCode =
+        "<MariloTabs SelectedIndex=\"@_tabIndex\" SelectedIndexChanged=\"@(v => _tabIndex = v)\">\n" +
+        "    <MariloTab Title=\"Overview\">\n" +
+        "        <p>This is the overview content.</p>\n" +
+        "    </MariloTab>\n" +
+        "    <MariloTab Title=\"Details\">\n" +
+        "        <p>This is the details content.</p>\n" +
+        "    </MariloTab>\n" +
+        "    <MariloTab Title=\"Settings\">\n" +
+        "        <MariloField>\n" +
+        "            <MariloLabel>Display Name</MariloLabel>\n" +
+        "            <MariloTextField Placeholder=\"Enter a name\" />\n" +
+        "        </MariloField>\n" +
+        "        <MariloField>\n" +
+        "            <MariloSwitch Label=\"Enable notifications\" />\n" +
+        "        </MariloField>\n" +
+        "    </MariloTab>\n" +
+        "</MariloTabs>\n\n" +
+        "@code {\n" +
+        "    private int _tabIndex;\n" +
+        "}";
+}

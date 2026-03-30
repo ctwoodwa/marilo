@@ -1,0 +1,36 @@
+@page "/components/accordion"
+
+<div class="demo-page">
+    <h1>Accordion</h1>
+    <p class="demo-page-desc">Accordions display collapsible content panels for presenting information in a limited space.</p>
+    <a class="demo-api-link" href="/api/Marilo.Components.Layout.MariloAccordion.html" target="_blank">API Reference</a>
+
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloAccordion>
+            <MariloAccordionItem Title="What is Marilo?">
+                <p>Marilo is a provider-first Blazor component library that lets you write markup once and swap CSS frameworks without changing your Razor code.</p>
+            </MariloAccordionItem>
+            <MariloAccordionItem Title="How do providers work?">
+                <p>Providers implement the CSS mapping interface and translate abstract component tokens into framework-specific class names at render time.</p>
+            </MariloAccordionItem>
+            <MariloAccordionItem Title="Which providers are available?">
+                <p>Marilo currently ships with a Fluent UI provider, with Material and Bootstrap providers on the roadmap.</p>
+            </MariloAccordionItem>
+        </MariloAccordion>
+    </DemoSection>
+</div>
+
+@code {
+    private const string _basicCode =
+        "<MariloAccordion>\n" +
+        "    <MariloAccordionItem Title=\"What is Marilo?\">\n" +
+        "        <p>Marilo is a provider-first Blazor component library...</p>\n" +
+        "    </MariloAccordionItem>\n" +
+        "    <MariloAccordionItem Title=\"How do providers work?\">\n" +
+        "        <p>Providers implement the CSS mapping interface...</p>\n" +
+        "    </MariloAccordionItem>\n" +
+        "    <MariloAccordionItem Title=\"Which providers are available?\">\n" +
+        "        <p>Marilo currently ships with a Fluent UI provider...</p>\n" +
+        "    </MariloAccordionItem>\n" +
+        "</MariloAccordion>";
+}

@@ -2,9 +2,14 @@ using Marilo.Core.Enums;
 
 namespace Marilo.Core.Contracts;
 
+/// <summary>
+/// Defines the contract for a design-system CSS provider. Each implementation
+/// (e.g., Fluent UI, Material, Bootstrap) maps Marilo component states to its
+/// own CSS class names, keeping component logic design-system-agnostic.
+/// </summary>
 public interface IMariloCssProvider
 {
-    // Layout
+    // ── Layout ──────────────────────────────────────────────────────────
     string ContainerClass(string? size = null);
     string GridClass();
     string RowClass();
@@ -24,7 +29,7 @@ public interface IMariloCssProvider
     string DrawerOverlayClass();
     string ContextMenuClass();
 
-    // Navigation
+    // ── Navigation ──────────────────────────────────────────────────────
     string NavBarClass();
     string NavMenuClass();
     string NavItemClass(bool isActive);
@@ -37,9 +42,15 @@ public interface IMariloCssProvider
     string TreeViewClass();
     string TreeItemClass(bool isExpanded, bool isSelected);
     string ToolbarClass();
+    string EnvironmentBadgeClass(string env);
+    string TimeRangeSelectorClass();
+    string ToolbarButtonClass(bool isDisabled = false);
+    string ToolbarToggleButtonClass(bool isActive, bool isDisabled = false);
+    string ToolbarSeparatorClass();
+    string ToolbarGroupClass();
     string LinkClass();
 
-    // Buttons
+    // ── Buttons ─────────────────────────────────────────────────────────
     string ButtonClass(ButtonVariant variant, ButtonSize size, bool isOutline, bool isDisabled);
     string IconButtonClass(ButtonSize size);
     string ButtonGroupClass();
@@ -49,7 +60,7 @@ public interface IMariloCssProvider
     string ChipSetClass();
     string FabClass(FabSize size);
 
-    // Forms - Inputs
+    // ── Forms — Inputs ──────────────────────────────────────────────────
     string TextFieldClass(bool isInvalid, bool isDisabled);
     string TextAreaClass(bool isInvalid);
     string NumericInputClass();
@@ -67,14 +78,14 @@ public interface IMariloCssProvider
     string TimePickerClass();
     string FileUploadClass();
 
-    // Forms - Containers
+    // ── Forms — Containers ──────────────────────────────────────────────
     string FormClass();
     string FieldClass();
     string LabelClass();
     string InputGroupClass();
     string ValidationMessageClass(ValidationSeverity severity);
 
-    // Data Display
+    // ── Data Display ────────────────────────────────────────────────────
     string CardClass();
     string CardHeaderClass();
     string CardBodyClass();
@@ -91,8 +102,9 @@ public interface IMariloCssProvider
     string CarouselClass();
     string TypographyClass(TypographyVariant variant);
 
-    // Feedback
+    // ── Feedback ────────────────────────────────────────────────────────
     string AlertClass(AlertSeverity severity);
+    string AlertStripClass();
     string ToastClass(ToastSeverity severity);
     string SnackbarClass();
     string DialogClass();
@@ -103,27 +115,27 @@ public interface IMariloCssProvider
     string SkeletonClass(SkeletonVariant variant);
     string CalloutClass(CalloutType type);
 
-    // DataGrid
+    // ── DataGrid ────────────────────────────────────────────────────────
     string DataGridClass();
     string DataGridHeaderClass();
     string DataGridRowClass(bool isSelected, bool isStriped);
     string DataGridCellClass();
     string DataGridPagerClass();
 
-    // Charts
+    // ── Charts ──────────────────────────────────────────────────────────
     string ChartContainerClass();
     string GaugeClass();
 
-    // Scheduling
+    // ── Scheduling ──────────────────────────────────────────────────────
     string CalendarClass();
     string SchedulerClass();
 
-    // Overlays
+    // ── Overlays ────────────────────────────────────────────────────────
     string ModalClass(ModalSize size);
     string ModalOverlayClass();
 
-    // Utility
-    string IconClass(string iconName, IconSize size);
+    // ── Utility ─────────────────────────────────────────────────────────
+    string IconClass(string iconName, IconSize size, IconFlip flip = IconFlip.None, IconThemeColor themeColor = IconThemeColor.Base);
     string DragDropClass();
     string DropZoneClass(bool isActive);
     string ScrollViewClass();

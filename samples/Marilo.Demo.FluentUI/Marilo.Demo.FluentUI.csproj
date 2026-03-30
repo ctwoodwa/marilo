@@ -8,6 +8,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Marilo.Core\Marilo.Core.csproj" />
     <ProjectReference Include="..\..\src\Marilo.Components\Marilo.Components.csproj" />
+    <ProjectReference Include="..\..\src\Marilo.Icons\Marilo.Icons.csproj" />
     <ProjectReference Include="..\..\src\Marilo.Providers.FluentUI\Marilo.Providers.FluentUI.csproj" />
   </ItemGroup>
 
