@@ -8,13 +8,14 @@ const path = require('path');
 const root = path.resolve(__dirname, '..');
 const links = JSON.parse(fs.readFileSync(path.join(root, 'site-links.json'), 'utf8'));
 const demoUrl = links.demoBaseUrl;
+const componentsUrl = links.componentsUrl || `${demoUrl}/components`;
 
 // Patch toc.yml — Components nav link
 const tocPath = path.join(root, 'docfx', 'toc.yml');
 let toc = fs.readFileSync(tocPath, 'utf8');
 toc = toc.replace(
     /^(- name: Components\n\s+href: ).*$/m,
-    `$1${demoUrl}/components`
+    `$1${componentsUrl}`
 );
 fs.writeFileSync(tocPath, toc, 'utf8');
 
@@ -23,7 +24,7 @@ const indexPath = path.join(root, 'docfx', 'index.md');
 let index = fs.readFileSync(indexPath, 'utf8');
 index = index.replace(
     /\[Components\]\([^)]+\)/,
-    `[Components](${demoUrl}/components)`
+    `[Components](${componentsUrl})`
 );
 fs.writeFileSync(indexPath, index, 'utf8');
 
@@ -36,4 +37,4 @@ icons = icons.replace(
 );
 fs.writeFileSync(iconsPath, icons, 'utf8');
 
-console.log(`Patched site links: demoBaseUrl=${demoUrl}`);
+console.log(`Patched site links: demoBaseUrl=${demoUrl}, componentsUrl=${componentsUrl}`);

@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Restore NuGet packages
+        run: dotnet restore Marilo.slnx
+
+      - name: Build assets (icons + SCSS)
+        run: npm run build
+
+      - name: Build solution
+        run: dotnet build Marilo.slnx --no-restore --configuration Release
+
+      - name: Run tests
+        run: dotnet test Marilo.slnx --no-build --configuration Release --verbosity normal
