@@ -20,6 +20,7 @@
     [Parameter] public string? ItemsField { get; set; }
     [Parameter] public string? HasChildrenField { get; set; }
     [Parameter] public CheckBoxMode CheckBoxMode { get; set; } = CheckBoxMode.None;
+    [Parameter] public RenderFragment<object>? ItemTemplate { get; set; }
 
     internal bool ShowCheckboxes => CheckBoxMode != CheckBoxMode.None;
     internal bool IsSingleCheckMode => CheckBoxMode == CheckBoxMode.Single;
@@ -164,10 +165,17 @@
                 builder.CloseElement(); // button
             }
 
-            builder.OpenElement(30, "span");
-            builder.AddAttribute(31, "class", "mar-tree-item__title");
-            builder.AddContent(32, node.Text);
-            builder.CloseElement(); // span
+            if (ItemTemplate != null)
+            {
+                builder.AddContent(30, ItemTemplate(node.Item));
+            }
+            else
+            {
+                builder.OpenElement(30, "span");
+                builder.AddAttribute(31, "class", "mar-tree-item__title");
+                builder.AddContent(32, node.Text);
+                builder.CloseElement(); // span
+            }
 
             builder.CloseElement(); // div header
 

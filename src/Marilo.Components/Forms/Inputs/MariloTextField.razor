@@ -15,6 +15,7 @@
            disabled="@Disabled"
            readonly="@ReadOnly"
            maxlength="@MaxLength"
+           autocomplete="@Autocomplete"
            @oninput="OnInputChanged" />
     @if (Suffix != null)
     {
@@ -38,6 +39,7 @@
     [Parameter] public bool ReadOnly { get; set; }
     [Parameter] public int? MaxLength { get; set; }
     [Parameter] public int DebounceDelay { get; set; }
+    [Parameter] public string? Autocomplete { get; set; }
 
     private System.Timers.Timer? _debounceTimer;
     private string _pendingValue = string.Empty;

@@ -11,11 +11,15 @@
         TooltipShowOn.Focus => "marilo-tooltip-trigger--focus",
         _ => ""
     };
+    var calloutClass = ShowCallout ? "marilo-tooltip--callout" : "";
 }
 
-<div class="marilo-tooltip-trigger @showOnClass" style="position:relative;display:inline-block;@CombineStyles()" @attributes="AdditionalAttributes">
+<div class="marilo-tooltip-trigger @showOnClass" style="position:relative;display:inline-block;@CombineStyles()"
+     @onmouseenter="HandleShow" @onmouseleave="HandleHide"
+     @onfocusin="HandleFocusShow" @onfocusout="HandleFocusHide"
+     @attributes="AdditionalAttributes">
     @ChildContent
-    <div class="@CombineClasses(CssProvider.TooltipClass(Position, ShowOn))" style="@tooltipStyle">
+    <div class="@CombineClasses(CssProvider.TooltipClass(Position, ShowOn)) @calloutClass" style="@tooltipStyle">
         @if (TooltipTemplate != null)
         {
             @TooltipTemplate
@@ -23,6 +27,10 @@
         else
         {
             @Text
+        }
+        @if (ShowCallout)
+        {
+            <span class="marilo-tooltip__callout marilo-tooltip__callout--@Position.ToString().ToLowerInvariant()"></span>
         }
     </div>
 </div>
@@ -35,4 +43,31 @@
     [Parameter] public TooltipShowOn ShowOn { get; set; } = TooltipShowOn.Hover;
     [Parameter] public string? Width { get; set; }
     [Parameter] public string? Height { get; set; }
+    [Parameter] public EventCallback OnShow { get; set; }
+    [Parameter] public EventCallback OnHide { get; set; }
+    [Parameter] public bool ShowCallout { get; set; }
+
+    private async Task HandleShow()
+    {
+        if (ShowOn == TooltipShowOn.Hover)
+            await OnShow.InvokeAsync();
+    }
+
+    private async Task HandleHide()
+    {
+        if (ShowOn == TooltipShowOn.Hover)
+            await OnHide.InvokeAsync();
+    }
+
+    private async Task HandleFocusShow()
+    {
+        if (ShowOn == TooltipShowOn.Focus)
+            await OnShow.InvokeAsync();
+    }
+
+    private async Task HandleFocusHide()
+    {
+        if (ShowOn == TooltipShowOn.Focus)
+            await OnHide.InvokeAsync();
+    }
 }

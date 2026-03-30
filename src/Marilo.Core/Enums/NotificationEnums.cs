@@ -26,3 +26,18 @@ public enum NotificationHorizontalPosition
     /// <summary>Notifications appear on the right side.</summary>
     Right
 }
+
+/// <summary>
+/// Specifies the animation type used when a notification appears.
+/// </summary>
+public enum NotificationAnimation
+{
+    /// <summary>No animation.</summary>
+    None,
+
+    /// <summary>Fade-in animation.</summary>
+    Fade,
+
+    /// <summary>Slide-in animation from the edge.</summary>
+    SlideIn
+}

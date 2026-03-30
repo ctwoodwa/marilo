@@ -29,9 +29,20 @@
         <div class="mar-file-upload__error" role="alert">@_errorMessage</div>
     }
 
-    @if (_selectedFiles.Any())
+    @if (_initialFileEntries.Any() || _selectedFiles.Any())
     {
         <ul class="@CssProvider.FileUploadFileListClass()">
+            @foreach (var entry in _initialFileEntries)
+            {
+                <li class="mar-file-upload__file-item">
+                    <span class="mar-file-upload__file-name">@entry.Name</span>
+                    <span class="mar-file-upload__file-size">@FormatFileSize(entry.Size)</span>
+                    <button type="button"
+                            class="mar-file-upload__file-remove"
+                            aria-label="Remove @entry.Name"
+                            @onclick="() => RemoveInitialFile(entry)">&#x2715;</button>
+                </li>
+            }
             @foreach (var file in _selectedFiles)
             {
                 <li class="mar-file-upload__file-item">
@@ -53,9 +64,26 @@
     [Parameter] public string? Accept { get; set; }
     [Parameter] public long MaxFileSize { get; set; } = 10 * 1024 * 1024;
     [Parameter] public bool Disabled { get; set; }
+    [Parameter] public IEnumerable<FileUploadInfo>? InitialFiles { get; set; }
 
     private List<IBrowserFile> _selectedFiles = new();
+    private List<FileUploadInfo> _initialFileEntries = new();
     private string? _errorMessage;
+    private bool _initialFilesLoaded;
+
+    protected override void OnParametersSet()
+    {
+        if (!_initialFilesLoaded && InitialFiles != null)
+        {
+            _initialFileEntries = InitialFiles.ToList();
+            _initialFilesLoaded = true;
+        }
+    }
+
+    private void RemoveInitialFile(FileUploadInfo entry)
+    {
+        _initialFileEntries.Remove(entry);
+    }
 
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
