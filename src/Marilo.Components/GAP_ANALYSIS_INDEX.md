@@ -13,182 +13,200 @@ This document tracks the gap analysis status for each Marilo Blazor component ag
 
 | Component | Status | Spec Source | Gap File |
 |-----------|--------|------------|----------|
-| MariloButton | [ ] | `docs/component-specs/button/`, `docfx/articles/components/button/` | `GAP_ANALYSIS.md` |
-| MariloButtonGroup | [ ] | `docs/component-specs/buttongroup/` | `GAP_ANALYSIS.md` |
-| MariloChip | [ ] | `docs/component-specs/chip/` | `GAP_ANALYSIS.md` |
-| MariloChipSet | [ ] | `docs/component-specs/chiplist/` | `GAP_ANALYSIS.md` |
-| MariloFab | [ ] | `docs/component-specs/floatingactionbutton/` | `GAP_ANALYSIS.md` |
-| MariloIconButton | [ ] | `docs/component-specs/button/` (icon button section) | `GAP_ANALYSIS.md` |
-| MariloSegmentedControl | [ ] | *(no direct spec found)* | `GAP_ANALYSIS.md` |
-| MariloSplitButton | [ ] | `docs/component-specs/splitbutton/` | `GAP_ANALYSIS.md` |
-| MariloToggleButton | [ ] | `docs/component-specs/togglebutton/` | `GAP_ANALYSIS.md` |
+| MariloButton | [x] | `docs/component-specs/button/`, `docfx/articles/components/button/` | `Buttons/GAP_ANALYSIS.md` |
+| MariloButtonGroup | [x] | `docs/component-specs/buttongroup/` | `Buttons/GAP_ANALYSIS.md` |
+| MariloChip | [x] | `docs/component-specs/chip/` | `Buttons/GAP_ANALYSIS.md` |
+| MariloChipSet | [x] | `docs/component-specs/chiplist/` | `Buttons/GAP_ANALYSIS.md` |
+| MariloFab | [x] | `docs/component-specs/floatingactionbutton/` | `Buttons/GAP_ANALYSIS.md` |
+| MariloIconButton | [x] | `docs/component-specs/button/` (icon button section) | `Buttons/GAP_ANALYSIS.md` |
+| MariloSegmentedControl | [x] | *(no direct spec found)* | `Buttons/GAP_ANALYSIS.md` |
+| MariloSplitButton | [x] | `docs/component-specs/splitbutton/` | `Buttons/GAP_ANALYSIS.md` |
+| MariloToggleButton | [x] | `docs/component-specs/togglebutton/` | `Buttons/GAP_ANALYSIS.md` |
 
 ## Charts
 
 | Component | Status | Spec Source | Gap File |
 |-----------|--------|------------|----------|
-| MariloChart | [ ] | `docs/component-specs/chart/` | `GAP_ANALYSIS.md` |
-| MariloChartSeries | [ ] | `docs/component-specs/chart/` (series sub-docs) | `GAP_ANALYSIS.md` |
+| MariloChart | [x] | `docs/component-specs/chart/` | `Charts/GAP_ANALYSIS.md` |
+| MariloChartSeries | [x] | `docs/component-specs/chart/` (series sub-docs) | `Charts/GAP_ANALYSIS.md` |
 
 ## DataDisplay
 
 | Component | Status | Spec Source | Gap File |
 |-----------|--------|------------|----------|
-| MariloAvatar | [ ] | `docs/component-specs/avatar/` | `GAP_ANALYSIS.md` |
-| MariloBadge | [ ] | `docs/component-specs/badge/` | `GAP_ANALYSIS.md` |
-| MariloCard | [ ] | `docs/component-specs/card/`, `docfx/articles/components/card/` | `GAP_ANALYSIS.md` |
-| MariloCardActions | [ ] | `docs/component-specs/card/` (sub-component) | `GAP_ANALYSIS.md` |
-| MariloCardBody | [ ] | `docs/component-specs/card/` (sub-component) | `GAP_ANALYSIS.md` |
-| MariloCardHeader | [ ] | `docs/component-specs/card/` (sub-component) | `GAP_ANALYSIS.md` |
-| MariloCarousel | [ ] | `docs/component-specs/carousel/` | `GAP_ANALYSIS.md` |
-| MariloHighlighter | [ ] | *(no direct spec found)* | `GAP_ANALYSIS.md` |
-| MariloImage | [ ] | *(no direct spec found)* | `GAP_ANALYSIS.md` |
-| MariloList | [ ] | `docs/component-specs/listbox/` | `GAP_ANALYSIS.md` |
-| MariloListItem | [ ] | `docs/component-specs/listbox/` (sub-component) | `GAP_ANALYSIS.md` |
-| MariloListView | [ ] | `docs/component-specs/listview/` | `GAP_ANALYSIS.md` |
-| MariloPopover | [ ] | `docs/component-specs/popover/` | `GAP_ANALYSIS.md` |
-| MariloTable | [ ] | *(no direct spec — see grid)* | `GAP_ANALYSIS.md` |
-| MariloTimeline | [ ] | *(no direct spec found)* | `GAP_ANALYSIS.md` |
-| MariloTimelineItem | [ ] | *(no direct spec found — sub-component of Timeline)* | `GAP_ANALYSIS.md` |
-| MariloTooltip | [ ] | `docs/component-specs/tooltip/`, `docfx/articles/components/tooltip/` | `GAP_ANALYSIS.md` |
-| MariloTypography | [ ] | *(no direct spec found)* | `GAP_ANALYSIS.md` |
+| MariloAvatar | [x] | `docs/component-specs/avatar/` | `DataDisplay/GAP_ANALYSIS_PART1.md` |
+| MariloBadge | [x] | `docs/component-specs/badge/` | `DataDisplay/GAP_ANALYSIS_PART1.md` |
+| MariloCard | [x] | `docs/component-specs/card/`, `docfx/articles/components/card/` | `DataDisplay/GAP_ANALYSIS_PART1.md` |
+| MariloCardActions | [x] | `docs/component-specs/card/` (sub-component) | `DataDisplay/GAP_ANALYSIS_PART1.md` |
+| MariloCardBody | [x] | `docs/component-specs/card/` (sub-component) | `DataDisplay/GAP_ANALYSIS_PART1.md` |
+| MariloCardHeader | [x] | `docs/component-specs/card/` (sub-component) | `DataDisplay/GAP_ANALYSIS_PART1.md` |
+| MariloCarousel | [x] | `docs/component-specs/carousel/` | `DataDisplay/GAP_ANALYSIS_PART1.md` |
+| MariloHighlighter | [x] | *(no direct spec found)* | `DataDisplay/GAP_ANALYSIS_PART1.md` |
+| MariloImage | [x] | *(no direct spec found)* | `DataDisplay/GAP_ANALYSIS_PART1.md` |
+| MariloList | [x] | `docs/component-specs/listbox/` | `DataDisplay/GAP_ANALYSIS_PART2.md` |
+| MariloListItem | [x] | `docs/component-specs/listbox/` (sub-component) | `DataDisplay/GAP_ANALYSIS_PART2.md` |
+| MariloListView | [x] | `docs/component-specs/listview/` | `DataDisplay/GAP_ANALYSIS_PART2.md` |
+| MariloPopover | [x] | `docs/component-specs/popover/` | `DataDisplay/GAP_ANALYSIS_PART2.md` |
+| MariloTable | [x] | *(no direct spec — see grid)* | `DataDisplay/GAP_ANALYSIS_PART2.md` |
+| MariloTimeline | [x] | *(no direct spec found)* | `DataDisplay/GAP_ANALYSIS_PART2.md` |
+| MariloTimelineItem | [x] | *(no direct spec found — sub-component of Timeline)* | `DataDisplay/GAP_ANALYSIS_PART2.md` |
+| MariloTooltip | [x] | `docs/component-specs/tooltip/`, `docfx/articles/components/tooltip/` | `DataDisplay/GAP_ANALYSIS_PART2.md` |
+| MariloTypography | [x] | *(no direct spec found)* | `DataDisplay/GAP_ANALYSIS_PART2.md` |
 
 ## DataGrid
 
 | Component | Status | Spec Source | Gap File |
 |-----------|--------|------------|----------|
-| MariloDataGrid | [ ] | `docs/component-specs/grid/` | `GAP_ANALYSIS.md` |
-| MariloGridColumn | [ ] | `docs/component-specs/grid/` (columns sub-docs) | `GAP_ANALYSIS.md` |
-| MariloGridToolbar | [ ] | `docs/component-specs/grid/` (toolbar sub-docs) | `GAP_ANALYSIS.md` |
+| MariloDataGrid | [x] | `docs/component-specs/grid/` | `DataGrid/GAP_ANALYSIS.md` |
+| MariloGridColumn | [x] | `docs/component-specs/grid/` (columns sub-docs) | `DataGrid/GAP_ANALYSIS.md` |
+| MariloGridToolbar | [x] | `docs/component-specs/grid/` (toolbar sub-docs) | `DataGrid/GAP_ANALYSIS.md` |
 
 ## Editors
 
 | Component | Status | Spec Source | Gap File |
 |-----------|--------|------------|----------|
-| MariloEditor | [ ] | `docs/component-specs/editor/` | `GAP_ANALYSIS.md` |
+| MariloEditor | [x] | `docs/component-specs/editor/` | `Editors/GAP_ANALYSIS.md` |
 
 ## Feedback
 
 | Component | Status | Spec Source | Gap File |
 |-----------|--------|------------|----------|
-| MariloAlert | [ ] | `docs/component-specs/notification/`, `docfx/articles/components/alert/` | `GAP_ANALYSIS.md` |
-| MariloAlertStrip | [ ] | `docs/component-specs/notification/` (variant) | `GAP_ANALYSIS.md` |
-| MariloCallout | [ ] | *(no direct spec found)* | `GAP_ANALYSIS.md` |
-| MariloConfirmDialog | [ ] | `docs/component-specs/dialog/` (confirm variant) | `GAP_ANALYSIS.md` |
-| MariloDataBanner | [ ] | *(no direct spec found)* | `GAP_ANALYSIS.md` |
-| MariloDataToast | [ ] | *(no direct spec found)* | `GAP_ANALYSIS.md` |
-| MariloDialog | [ ] | `docs/component-specs/dialog/`, `docfx/articles/components/dialog/` | `GAP_ANALYSIS.md` |
-| MariloProgressBar | [ ] | `docs/component-specs/progressbar/` | `GAP_ANALYSIS.md` |
-| MariloProgressCircle | [ ] | `docs/component-specs/loader/` | `GAP_ANALYSIS.md` |
-| MariloSkeleton | [ ] | `docs/component-specs/skeleton/` | `GAP_ANALYSIS.md` |
-| MariloSnackbar | [ ] | *(no direct spec found)* | `GAP_ANALYSIS.md` |
-| MariloSnackbarHost | [ ] | *(no direct spec found — sub-component of Snackbar)* | `GAP_ANALYSIS.md` |
-| MariloSpinner | [ ] | `docs/component-specs/loader/` | `GAP_ANALYSIS.md` |
-| MariloToast | [ ] | `docs/component-specs/notification/` | `GAP_ANALYSIS.md` |
+| MariloAlert | [x] | `docs/component-specs/notification/`, `docfx/articles/components/alert/` | `Feedback/GAP_ANALYSIS_PART1.md` |
+| MariloAlertStrip | [x] | `docs/component-specs/notification/` (variant) | `Feedback/GAP_ANALYSIS_PART1.md` |
+| MariloCallout | [x] | *(no direct spec found)* | `Feedback/GAP_ANALYSIS_PART1.md` |
+| MariloConfirmDialog | [x] | `docs/component-specs/dialog/` (confirm variant) | `Feedback/GAP_ANALYSIS_PART1.md` |
+| MariloDataBanner | [x] | *(no direct spec found)* | `Feedback/GAP_ANALYSIS_PART1.md` |
+| MariloDataToast | [x] | *(no direct spec found)* | `Feedback/GAP_ANALYSIS_PART1.md` |
+| MariloDialog | [x] | `docs/component-specs/dialog/`, `docfx/articles/components/dialog/` | `Feedback/GAP_ANALYSIS_PART1.md` |
+| MariloProgressBar | [x] | `docs/component-specs/progressbar/` | `Feedback/GAP_ANALYSIS_PART2.md` |
+| MariloProgressCircle | [x] | `docs/component-specs/loader/` | `Feedback/GAP_ANALYSIS_PART2.md` |
+| MariloSkeleton | [x] | `docs/component-specs/skeleton/` | `Feedback/GAP_ANALYSIS_PART2.md` |
+| MariloSnackbar | [x] | *(no direct spec found)* | `Feedback/GAP_ANALYSIS_PART2.md` |
+| MariloSnackbarHost | [x] | *(no direct spec found — sub-component of Snackbar)* | `Feedback/GAP_ANALYSIS_PART2.md` |
+| MariloSpinner | [x] | `docs/component-specs/loader/` | `Feedback/GAP_ANALYSIS_PART2.md` |
+| MariloToast | [x] | `docs/component-specs/notification/` | `Feedback/GAP_ANALYSIS_PART2.md` |
 
 ## Forms / Containers
 
 | Component | Status | Spec Source | Gap File |
 |-----------|--------|------------|----------|
-| MariloField | [ ] | `docs/component-specs/floatinglabel/` | `GAP_ANALYSIS.md` |
-| MariloForm | [ ] | `docs/component-specs/form/` | `GAP_ANALYSIS.md` |
-| MariloLabel | [ ] | `docs/component-specs/floatinglabel/` | `GAP_ANALYSIS.md` |
-| MariloValidation | [ ] | `docs/component-specs/validation/` | `GAP_ANALYSIS.md` |
+| MariloField | [x] | `docs/component-specs/floatinglabel/` | `Forms/Containers/GAP_ANALYSIS.md` |
+| MariloForm | [x] | `docs/component-specs/form/` | `Forms/Containers/GAP_ANALYSIS.md` |
+| MariloLabel | [x] | `docs/component-specs/floatinglabel/` | `Forms/Containers/GAP_ANALYSIS.md` |
+| MariloValidation | [x] | `docs/component-specs/validation/` | `Forms/Containers/GAP_ANALYSIS.md` |
 
 ## Forms / Inputs
 
 | Component | Status | Spec Source | Gap File |
 |-----------|--------|------------|----------|
-| MariloAutocomplete | [ ] | `docs/component-specs/autocomplete/` | `GAP_ANALYSIS.md` |
-| MariloCheckbox | [ ] | `docs/component-specs/checkbox/` | `GAP_ANALYSIS.md` |
-| MariloColorPicker | [ ] | `docs/component-specs/colorpicker/` | `GAP_ANALYSIS.md` |
-| MariloComboBox | [ ] | `docs/component-specs/combobox/` | `GAP_ANALYSIS.md` |
-| MariloDatePicker | [ ] | `docs/component-specs/datepicker/` | `GAP_ANALYSIS.md` |
-| MariloDateRangePicker | [ ] | `docs/component-specs/daterangepicker/` | `GAP_ANALYSIS.md` |
-| MariloDateTimePicker | [ ] | `docs/component-specs/datetimepicker/` | `GAP_ANALYSIS.md` |
-| MariloDropDownList | [ ] | `docs/component-specs/dropdownlist/` | `GAP_ANALYSIS.md` |
-| MariloFileUpload | [ ] | `docs/component-specs/fileselect/`, `docs/component-specs/upload/` | `GAP_ANALYSIS.md` |
-| MariloMaskedInput | [ ] | `docs/component-specs/maskedtextbox/` | `GAP_ANALYSIS.md` |
-| MariloMultiSelect | [ ] | `docs/component-specs/multiselect/` | `GAP_ANALYSIS.md` |
-| MariloNumericInput | [ ] | `docs/component-specs/numerictextbox/` | `GAP_ANALYSIS.md` |
-| MariloRadio | [ ] | `docs/component-specs/radiogroup/` | `GAP_ANALYSIS.md` |
-| MariloRangeSlider | [ ] | `docs/component-specs/rangeslider/` | `GAP_ANALYSIS.md` |
-| MariloRating | [ ] | `docs/component-specs/rating/` | `GAP_ANALYSIS.md` |
-| MariloSearchBox | [ ] | `docfx/articles/components/search-box/` | `GAP_ANALYSIS.md` |
-| MariloSelect | [ ] | `docfx/articles/components/select/` | `GAP_ANALYSIS.md` |
-| MariloSlider | [ ] | `docs/component-specs/slider/` | `GAP_ANALYSIS.md` |
-| MariloSwitch | [ ] | `docs/component-specs/switch/` | `GAP_ANALYSIS.md` |
-| MariloTextArea | [ ] | `docs/component-specs/textarea/` | `GAP_ANALYSIS.md` |
-| MariloTextField | [ ] | `docs/component-specs/textbox/`, `docfx/articles/components/text-field/` | `GAP_ANALYSIS.md` |
-| MariloTimePicker | [ ] | `docs/component-specs/timepicker/` | `GAP_ANALYSIS.md` |
-| MariloUpload | [ ] | `docs/component-specs/upload/` | `GAP_ANALYSIS.md` |
+| MariloAutocomplete | [x] | `docs/component-specs/autocomplete/` | `Forms/Inputs/GAP_ANALYSIS_PART1.md` |
+| MariloCheckbox | [x] | `docs/component-specs/checkbox/` | `Forms/Inputs/GAP_ANALYSIS_PART1.md` |
+| MariloColorPicker | [x] | `docs/component-specs/colorpicker/` | `Forms/Inputs/GAP_ANALYSIS_PART1.md` |
+| MariloComboBox | [x] | `docs/component-specs/combobox/` | `Forms/Inputs/GAP_ANALYSIS_PART1.md` |
+| MariloDatePicker | [x] | `docs/component-specs/datepicker/` | `Forms/Inputs/GAP_ANALYSIS_PART1.md` |
+| MariloDateRangePicker | [x] | `docs/component-specs/daterangepicker/` | `Forms/Inputs/GAP_ANALYSIS_PART1.md` |
+| MariloDateTimePicker | [x] | `docs/component-specs/datetimepicker/` | `Forms/Inputs/GAP_ANALYSIS_PART1.md` |
+| MariloDropDownList | [x] | `docs/component-specs/dropdownlist/` | `Forms/Inputs/GAP_ANALYSIS_PART1.md` |
+| MariloFileUpload | [x] | `docs/component-specs/fileselect/`, `docs/component-specs/upload/` | `Forms/Inputs/GAP_ANALYSIS_PART2.md` |
+| MariloMaskedInput | [x] | `docs/component-specs/maskedtextbox/` | `Forms/Inputs/GAP_ANALYSIS_PART2.md` |
+| MariloMultiSelect | [x] | `docs/component-specs/multiselect/` | `Forms/Inputs/GAP_ANALYSIS_PART2.md` |
+| MariloNumericInput | [x] | `docs/component-specs/numerictextbox/` | `Forms/Inputs/GAP_ANALYSIS_PART2.md` |
+| MariloRadio | [x] | `docs/component-specs/radiogroup/` | `Forms/Inputs/GAP_ANALYSIS_PART2.md` |
+| MariloRangeSlider | [x] | `docs/component-specs/rangeslider/` | `Forms/Inputs/GAP_ANALYSIS_PART2.md` |
+| MariloRating | [x] | `docs/component-specs/rating/` | `Forms/Inputs/GAP_ANALYSIS_PART2.md` |
+| MariloSearchBox | [x] | `docfx/articles/components/search-box/` | `Forms/Inputs/GAP_ANALYSIS_PART2.md` |
+| MariloSelect | [x] | `docfx/articles/components/select/` | `Forms/Inputs/GAP_ANALYSIS_PART3.md` |
+| MariloSlider | [x] | `docs/component-specs/slider/` | `Forms/Inputs/GAP_ANALYSIS_PART3.md` |
+| MariloSwitch | [x] | `docs/component-specs/switch/` | `Forms/Inputs/GAP_ANALYSIS_PART3.md` |
+| MariloTextArea | [x] | `docs/component-specs/textarea/` | `Forms/Inputs/GAP_ANALYSIS_PART3.md` |
+| MariloTextField | [x] | `docs/component-specs/textbox/`, `docfx/articles/components/text-field/` | `Forms/Inputs/GAP_ANALYSIS_PART3.md` |
+| MariloTimePicker | [x] | `docs/component-specs/timepicker/` | `Forms/Inputs/GAP_ANALYSIS_PART3.md` |
+| MariloUpload | [x] | `docs/component-specs/upload/` | `Forms/Inputs/GAP_ANALYSIS_PART3.md` |
 
 ## Layout
 
 | Component | Status | Spec Source | Gap File |
 |-----------|--------|------------|----------|
-| MariloAccordion | [ ] | `docs/component-specs/panelbar/` | `GAP_ANALYSIS.md` |
-| MariloAccordionItem | [ ] | `docs/component-specs/panelbar/` (sub-component) | `GAP_ANALYSIS.md` |
-| MariloAppBar | [ ] | `docs/component-specs/appbar/` | `GAP_ANALYSIS.md` |
-| MariloColumn | [ ] | `docs/component-specs/gridlayout/` (sub-component) | `GAP_ANALYSIS.md` |
-| MariloContainer | [ ] | *(no direct spec found)* | `GAP_ANALYSIS.md` |
-| MariloDivider | [ ] | *(no direct spec found)* | `GAP_ANALYSIS.md` |
-| MariloDrawer | [ ] | `docs/component-specs/drawer/` | `GAP_ANALYSIS.md` |
-| MariloGrid | [ ] | `docs/component-specs/gridlayout/` | `GAP_ANALYSIS.md` |
-| MariloPanel | [ ] | `docs/component-specs/panelbar/` | `GAP_ANALYSIS.md` |
-| MariloRow | [ ] | `docs/component-specs/gridlayout/` (sub-component) | `GAP_ANALYSIS.md` |
-| MariloSplitter | [ ] | `docs/component-specs/splitter/` | `GAP_ANALYSIS.md` |
-| MariloStack | [ ] | `docs/component-specs/stacklayout/` | `GAP_ANALYSIS.md` |
-| MariloStep | [ ] | `docs/component-specs/stepper/` (sub-component) | `GAP_ANALYSIS.md` |
-| MariloStepper | [ ] | `docs/component-specs/stepper/` | `GAP_ANALYSIS.md` |
-| MariloTabStrip | [ ] | `docs/component-specs/tabstrip/`, `docfx/articles/components/tabs/` | `GAP_ANALYSIS.md` |
-| TabStripTab | [ ] | `docs/component-specs/tabstrip/` (sub-component) | `GAP_ANALYSIS.md` |
+| MariloAccordion | [x] | `docs/component-specs/panelbar/` | `Layout/GAP_ANALYSIS_PART1.md` |
+| MariloAccordionItem | [x] | `docs/component-specs/panelbar/` (sub-component) | `Layout/GAP_ANALYSIS_PART1.md` |
+| MariloAppBar | [x] | `docs/component-specs/appbar/` | `Layout/GAP_ANALYSIS_PART1.md` |
+| MariloColumn | [x] | `docs/component-specs/gridlayout/` (sub-component) | `Layout/GAP_ANALYSIS_PART1.md` |
+| MariloContainer | [x] | *(no direct spec found)* | `Layout/GAP_ANALYSIS_PART1.md` |
+| MariloDivider | [x] | *(no direct spec found)* | `Layout/GAP_ANALYSIS_PART1.md` |
+| MariloDrawer | [x] | `docs/component-specs/drawer/` | `Layout/GAP_ANALYSIS_PART1.md` |
+| MariloGrid | [x] | `docs/component-specs/gridlayout/` | `Layout/GAP_ANALYSIS_PART1.md` |
+| MariloPanel | [x] | `docs/component-specs/panelbar/` | `Layout/GAP_ANALYSIS_PART2.md` |
+| MariloRow | [x] | `docs/component-specs/gridlayout/` (sub-component) | `Layout/GAP_ANALYSIS_PART2.md` |
+| MariloSplitter | [x] | `docs/component-specs/splitter/` | `Layout/GAP_ANALYSIS_PART2.md` |
+| MariloStack | [x] | `docs/component-specs/stacklayout/` | `Layout/GAP_ANALYSIS_PART2.md` |
+| MariloStep | [x] | `docs/component-specs/stepper/` (sub-component) | `Layout/GAP_ANALYSIS_PART2.md` |
+| MariloStepper | [x] | `docs/component-specs/stepper/` | `Layout/GAP_ANALYSIS_PART2.md` |
+| MariloTabStrip | [x] | `docs/component-specs/tabstrip/`, `docfx/articles/components/tabs/` | `Layout/GAP_ANALYSIS_PART2.md` |
+| TabStripTab | [x] | `docs/component-specs/tabstrip/` (sub-component) | `Layout/GAP_ANALYSIS_PART2.md` |
 
 ## Navigation
 
 | Component | Status | Spec Source | Gap File |
 |-----------|--------|------------|----------|
-| MariloBreadcrumb | [ ] | `docs/component-specs/breadcrumb/` | `GAP_ANALYSIS.md` |
-| MariloBreadcrumbItem | [ ] | `docs/component-specs/breadcrumb/` (sub-component) | `GAP_ANALYSIS.md` |
-| MariloContextMenu | [ ] | `docs/component-specs/contextmenu/` | `GAP_ANALYSIS.md` |
-| MariloEnvironmentBadge | [ ] | *(no direct spec found)* | `GAP_ANALYSIS.md` |
-| MariloMenu | [ ] | `docs/component-specs/menu/` | `GAP_ANALYSIS.md` |
-| MariloMenuDivider | [ ] | `docs/component-specs/menu/` (sub-component) | `GAP_ANALYSIS.md` |
-| MariloMenuItem | [ ] | `docs/component-specs/menu/` (sub-component) | `GAP_ANALYSIS.md` |
-| MariloNavBar | [ ] | *(no direct spec found)* | `GAP_ANALYSIS.md` |
-| MariloNavItem | [ ] | *(no direct spec found — sub-component of NavMenu)* | `GAP_ANALYSIS.md` |
-| MariloNavMenu | [ ] | *(no direct spec found)* | `GAP_ANALYSIS.md` |
-| MariloPagination | [ ] | `docs/component-specs/pager/` | `GAP_ANALYSIS.md` |
-| MariloTimeRangeSelector | [ ] | *(no direct spec found)* | `GAP_ANALYSIS.md` |
-| MariloToolbar | [ ] | `docs/component-specs/toolbar/` | `GAP_ANALYSIS.md` |
-| MariloToolbarButton | [ ] | `docs/component-specs/toolbar/` (sub-component) | `GAP_ANALYSIS.md` |
-| MariloToolbarGroup | [ ] | `docs/component-specs/toolbar/` (sub-component) | `GAP_ANALYSIS.md` |
-| MariloToolbarSeparator | [ ] | `docs/component-specs/toolbar/` (sub-component) | `GAP_ANALYSIS.md` |
-| MariloToolbarToggleButton | [ ] | `docs/component-specs/toolbar/` (sub-component) | `GAP_ANALYSIS.md` |
-| MariloTreeItem | [ ] | `docs/component-specs/treeview/` (sub-component) | `GAP_ANALYSIS.md` |
-| MariloTreeView | [ ] | `docs/component-specs/treeview/` | `GAP_ANALYSIS.md` |
+| MariloBreadcrumb | [x] | `docs/component-specs/breadcrumb/` | `Navigation/GAP_ANALYSIS_PART1.md` |
+| MariloBreadcrumbItem | [x] | `docs/component-specs/breadcrumb/` (sub-component) | `Navigation/GAP_ANALYSIS_PART1.md` |
+| MariloContextMenu | [x] | `docs/component-specs/contextmenu/` | `Navigation/GAP_ANALYSIS_PART1.md` |
+| MariloEnvironmentBadge | [x] | *(no direct spec found)* | `Navigation/GAP_ANALYSIS_PART1.md` |
+| MariloMenu | [x] | `docs/component-specs/menu/` | `Navigation/GAP_ANALYSIS_PART1.md` |
+| MariloMenuDivider | [x] | `docs/component-specs/menu/` (sub-component) | `Navigation/GAP_ANALYSIS_PART1.md` |
+| MariloMenuItem | [x] | `docs/component-specs/menu/` (sub-component) | `Navigation/GAP_ANALYSIS_PART1.md` |
+| MariloNavBar | [x] | *(no direct spec found)* | `Navigation/GAP_ANALYSIS_PART1.md` |
+| MariloNavItem | [x] | *(no direct spec found — sub-component of NavMenu)* | `Navigation/GAP_ANALYSIS_PART1.md` |
+| MariloNavMenu | [x] | *(no direct spec found)* | `Navigation/GAP_ANALYSIS_PART1.md` |
+| MariloPagination | [x] | `docs/component-specs/pager/` | `Navigation/GAP_ANALYSIS_PART2.md` |
+| MariloTimeRangeSelector | [x] | *(no direct spec found)* | `Navigation/GAP_ANALYSIS_PART2.md` |
+| MariloToolbar | [x] | `docs/component-specs/toolbar/` | `Navigation/GAP_ANALYSIS_PART2.md` |
+| MariloToolbarButton | [x] | `docs/component-specs/toolbar/` (sub-component) | `Navigation/GAP_ANALYSIS_PART2.md` |
+| MariloToolbarGroup | [x] | `docs/component-specs/toolbar/` (sub-component) | `Navigation/GAP_ANALYSIS_PART2.md` |
+| MariloToolbarSeparator | [x] | `docs/component-specs/toolbar/` (sub-component) | `Navigation/GAP_ANALYSIS_PART2.md` |
+| MariloToolbarToggleButton | [x] | `docs/component-specs/toolbar/` (sub-component) | `Navigation/GAP_ANALYSIS_PART2.md` |
+| MariloTreeItem | [x] | `docs/component-specs/treeview/` (sub-component) | `Navigation/GAP_ANALYSIS_PART2.md` |
+| MariloTreeView | [x] | `docs/component-specs/treeview/` | `Navigation/GAP_ANALYSIS_PART2.md` |
 
 ## Overlays
 
 | Component | Status | Spec Source | Gap File |
 |-----------|--------|------------|----------|
-| MariloWindow | [ ] | `docs/component-specs/window/` | `GAP_ANALYSIS.md` |
+| MariloWindow | [x] | `docs/component-specs/window/` | `Overlays/GAP_ANALYSIS.md` |
 
 ## Utility / Root
 
 | Component | Status | Spec Source | Gap File |
 |-----------|--------|------------|----------|
-| MariloIcon | [ ] | `docfx/articles/components/icon/` | `GAP_ANALYSIS.md` |
-| MariloThemeProvider | [ ] | `docfx/articles/theming/` | `GAP_ANALYSIS.md` |
+| MariloIcon | [x] | `docfx/articles/components/icon/` | `Utility/GAP_ANALYSIS.md` |
+| MariloThemeProvider | [x] | `docfx/articles/theming/` | `MariloThemeProvider_GAP_ANALYSIS.md` |
 
 ---
 
 ## Summary Statistics
 
 - **Total Components:** 87
-- **Evaluated:** 0
-- **Remaining:** 87
-- **Components with no spec found:** ~15 (SegmentedControl, Highlighter, Image, Table, Timeline, TimelineItem, Typography, Callout, DataBanner, DataToast, Snackbar, SnackbarHost, Container, Divider, EnvironmentBadge, NavBar, NavItem, NavMenu, TimeRangeSelector)
+- **Evaluated:** 87
+- **Remaining:** 0
+- **Components with no spec found:** ~19 (SegmentedControl, Highlighter, Image, Table, Timeline, TimelineItem, Typography, Callout, DataBanner, DataToast, Snackbar, SnackbarHost, Container, Divider, EnvironmentBadge, NavBar, NavItem, NavMenu, TimeRangeSelector)
+
+## Gap Analysis Files
+
+| Folder | File(s) |
+|--------|---------|
+| Buttons | `GAP_ANALYSIS.md` |
+| Charts | `GAP_ANALYSIS.md` |
+| DataDisplay | `GAP_ANALYSIS_PART1.md`, `GAP_ANALYSIS_PART2.md` |
+| DataGrid | `GAP_ANALYSIS.md` |
+| Editors | `GAP_ANALYSIS.md` |
+| Feedback | `GAP_ANALYSIS_PART1.md`, `GAP_ANALYSIS_PART2.md` |
+| Forms/Containers | `GAP_ANALYSIS.md` |
+| Forms/Inputs | `GAP_ANALYSIS_PART1.md`, `GAP_ANALYSIS_PART2.md`, `GAP_ANALYSIS_PART3.md` |
+| Layout | `GAP_ANALYSIS_PART1.md`, `GAP_ANALYSIS_PART2.md` |
+| Navigation | `GAP_ANALYSIS_PART1.md`, `GAP_ANALYSIS_PART2.md` |
+| Overlays | `GAP_ANALYSIS.md` |
+| Utility | `GAP_ANALYSIS.md` |
+| Root | `MariloThemeProvider_GAP_ANALYSIS.md` |
 
 ## Notes
 
