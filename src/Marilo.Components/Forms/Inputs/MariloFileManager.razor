@@ -1,0 +1,169 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses("mar-filemanager")"
+     style="@CombineStyles()"
+     @attributes="AdditionalAttributes">
+
+    @* Toolbar *@
+    <div class="mar-filemanager__toolbar">
+        <button type="button" class="mar-btn mar-btn--flat mar-btn--sm" @onclick="NavigateUp"
+                disabled="@(!CanNavigateUp)">
+            @IconProvider.GetIcon("arrow-up", IconSize.Small)
+            Up
+        </button>
+        <span class="mar-filemanager__path">@CurrentPath</span>
+        <span class="mar-filemanager__spacer"></span>
+        @if (AllowCreate)
+        {
+            <button type="button" class="mar-btn mar-btn--flat mar-btn--sm" @onclick="CreateFolder">
+                New Folder
+            </button>
+        }
+    </div>
+
+    @* Content area *@
+    <div class="mar-filemanager__content">
+        @* Folder tree sidebar *@
+        @if (ShowFolderTree)
+        {
+            <div class="mar-filemanager__sidebar">
+                <ul class="mar-filemanager__tree" role="tree">
+                    @foreach (var folder in GetRootFolders())
+                    {
+                        <li role="treeitem" class="@(folder.Path == CurrentPath ? "mar-filemanager__tree-item--active" : "")"
+                            @onclick="() => NavigateTo(folder.Path)">
+                            @IconProvider.GetIcon("folder", IconSize.Small) @folder.Name
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+
+        @* File list *@
+        <div class="mar-filemanager__files">
+            @if (ViewMode == FileManagerViewMode.Grid)
+            {
+                <div class="mar-filemanager__grid">
+                    @foreach (var item in GetCurrentItems())
+                    {
+                        var entry = item;
+                        <div class="mar-filemanager__grid-item @(entry.Path == SelectedItemPath ? "mar-filemanager__grid-item--selected" : "")"
+                             @onclick="() => SelectItem(entry)"
+                             @ondblclick="() => OpenItem(entry)">
+                            <span class="mar-filemanager__icon">
+                                @IconProvider.GetIcon(entry.IsDirectory ? "folder" : "file", IconSize.Large)
+                            </span>
+                            <span class="mar-filemanager__name">@entry.Name</span>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <table class="mar-filemanager__list">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Size</th>
+                            <th>Modified</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in GetCurrentItems())
+                        {
+                            var entry = item;
+                            <tr class="@(entry.Path == SelectedItemPath ? "mar-filemanager__row--selected" : "")"
+                                @onclick="() => SelectItem(entry)"
+                                @ondblclick="() => OpenItem(entry)">
+                                <td>
+                                    @IconProvider.GetIcon(entry.IsDirectory ? "folder" : "file", IconSize.Small)
+                                    @entry.Name
+                                </td>
+                                <td>@(entry.IsDirectory ? "" : FormatSize(entry.Size))</td>
+                                <td>@entry.DateModified?.ToString("yyyy-MM-dd HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public IEnumerable<FileManagerEntry> Items { get; set; } = Enumerable.Empty<FileManagerEntry>();
+    [Parameter] public string CurrentPath { get; set; } = "/";
+    [Parameter] public EventCallback<string> CurrentPathChanged { get; set; }
+    [Parameter] public FileManagerViewMode ViewMode { get; set; } = FileManagerViewMode.List;
+    [Parameter] public bool ShowFolderTree { get; set; } = true;
+    [Parameter] public bool AllowCreate { get; set; }
+    [Parameter] public bool AllowDelete { get; set; }
+    [Parameter] public bool AllowRename { get; set; }
+    [Parameter] public EventCallback<FileManagerEntry> OnSelect { get; set; }
+    [Parameter] public EventCallback<FileManagerEntry> OnOpen { get; set; }
+    [Parameter] public EventCallback<string> OnCreateFolder { get; set; }
+    [Parameter] public EventCallback<FileManagerEntry> OnDelete { get; set; }
+
+    private string? SelectedItemPath;
+    private bool CanNavigateUp => CurrentPath != "/" && CurrentPath.Contains('/');
+
+    private IEnumerable<FileManagerEntry> GetCurrentItems()
+    {
+        return Items
+            .Where(i => GetParentPath(i.Path) == CurrentPath.TrimEnd('/'))
+            .OrderByDescending(i => i.IsDirectory)
+            .ThenBy(i => i.Name);
+    }
+
+    private IEnumerable<FileManagerEntry> GetRootFolders()
+    {
+        return Items.Where(i => i.IsDirectory).OrderBy(i => i.Path);
+    }
+
+    private static string GetParentPath(string path)
+    {
+        var lastSlash = path.TrimEnd('/').LastIndexOf('/');
+        return lastSlash <= 0 ? "" : path[..lastSlash];
+    }
+
+    private async Task NavigateTo(string path)
+    {
+        CurrentPath = path;
+        await CurrentPathChanged.InvokeAsync(CurrentPath);
+    }
+
+    private async Task NavigateUp()
+    {
+        var parent = GetParentPath(CurrentPath);
+        if (!string.IsNullOrEmpty(parent))
+            await NavigateTo(parent);
+        else
+            await NavigateTo("/");
+    }
+
+    private async Task SelectItem(FileManagerEntry entry)
+    {
+        SelectedItemPath = entry.Path;
+        await OnSelect.InvokeAsync(entry);
+    }
+
+    private async Task OpenItem(FileManagerEntry entry)
+    {
+        if (entry.IsDirectory)
+            await NavigateTo(entry.Path);
+        else
+            await OnOpen.InvokeAsync(entry);
+    }
+
+    private async Task CreateFolder()
+    {
+        await OnCreateFolder.InvokeAsync(CurrentPath);
+    }
+
+    private static string FormatSize(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes} B";
+        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
+        return $"{bytes / (1024.0 * 1024):F1} MB";
+    }
+}

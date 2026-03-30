@@ -1,0 +1,95 @@
+@inherits MariloComponentBase
+
+@{
+    var tasks = Data.ToList();
+    var minDate = tasks.Any() ? tasks.Min(t => t.Start) : DateTime.Today;
+    var maxDate = tasks.Any() ? tasks.Max(t => t.End) : DateTime.Today.AddDays(30);
+    var totalDays = (maxDate - minDate).TotalDays;
+    if (totalDays <= 0) totalDays = 1;
+}
+
+<div class="@CombineClasses("mar-gantt")"
+     style="@CombineStyles()"
+     @attributes="AdditionalAttributes">
+    <div class="mar-gantt__container">
+        @* Task list *@
+        <div class="mar-gantt__tasklist" style="width: @(TaskListWidth)px;">
+            <div class="mar-gantt__tasklist-header">
+                <span>Task</span>
+            </div>
+            @foreach (var task in tasks)
+            {
+                var t = task;
+                <div class="mar-gantt__task-row" style="padding-left: @(t.Level * 16)px;"
+                     @onclick="() => OnTaskClick.InvokeAsync(t)">
+                    @t.Title
+                </div>
+            }
+        </div>
+
+        @* Timeline *@
+        <div class="mar-gantt__timeline" style="overflow-x: auto;">
+            @* Timeline header *@
+            <div class="mar-gantt__timeline-header" style="width: @(totalDays * DayWidth)px;">
+                @{
+                    var d = minDate;
+                    while (d <= maxDate)
+                    {
+                        <span class="mar-gantt__date-label" style="width: @(DayWidth)px;">
+                            @d.ToString("M/d")
+                        </span>
+                        d = d.AddDays(1);
+                    }
+                }
+            </div>
+
+            @* Task bars *@
+            <div class="mar-gantt__bars" style="width: @(totalDays * DayWidth)px;">
+                @foreach (var task in tasks)
+                {
+                    var t = task;
+                    var startOffset = (t.Start - minDate).TotalDays * DayWidth;
+                    var barWidth = Math.Max((t.End - t.Start).TotalDays * DayWidth, 4);
+                    var progressWidth = barWidth * (t.PercentComplete / 100.0);
+
+                    <div class="mar-gantt__bar-row">
+                        <div class="mar-gantt__bar @(t.IsMilestone ? "mar-gantt__bar--milestone" : "")"
+                             style="left: @(startOffset)px; width: @(barWidth)px; @(!string.IsNullOrEmpty(t.Color) ? $"background-color:{t.Color};" : "")"
+                             @onclick="() => OnTaskClick.InvokeAsync(t)">
+                            @if (t.PercentComplete > 0 && !t.IsMilestone)
+                            {
+                                <div class="mar-gantt__bar-progress" style="width: @(progressWidth)px;"></div>
+                            }
+                        </div>
+                        @* Dependencies *@
+                        @if (t.DependsOn != null)
+                        {
+                            foreach (var depId in t.DependsOn)
+                            {
+                                var dep = tasks.FirstOrDefault(x => x.Id == depId);
+                                if (dep != null)
+                                {
+                                    var depEnd = (dep.End - minDate).TotalDays * DayWidth;
+                                    <svg class="mar-gantt__dependency" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;">
+                                        <line x1="@depEnd" y1="@(tasks.IndexOf(dep) * RowHeight + RowHeight / 2)"
+                                              x2="@startOffset" y2="@(tasks.IndexOf(t) * RowHeight + RowHeight / 2)"
+                                              stroke="#999" stroke-width="1" marker-end="url(#arrow)" />
+                                    </svg>
+                                }
+                            }
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public IEnumerable<GanttTask> Data { get; set; } = Enumerable.Empty<GanttTask>();
+    [Parameter] public int TaskListWidth { get; set; } = 250;
+    [Parameter] public int DayWidth { get; set; } = 30;
+    [Parameter] public int RowHeight { get; set; } = 36;
+    [Parameter] public EventCallback<GanttTask> OnTaskClick { get; set; }
+    [Parameter] public EventCallback<GanttTask> OnTaskEdit { get; set; }
+}

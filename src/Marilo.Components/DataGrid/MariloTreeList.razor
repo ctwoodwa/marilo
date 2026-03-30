@@ -1,0 +1,185 @@
+@typeparam TItem
+@inherits MariloComponentBase
+
+<div class="@CombineClasses("mar-treelist")"
+     style="@CombineStyles()"
+     @attributes="AdditionalAttributes">
+    <table class="mar-treelist__table" role="treegrid">
+        <thead>
+            <tr>
+                @if (Columns != null)
+                {
+                    foreach (var col in Columns)
+                    {
+                        <th class="mar-treelist__th" style="@(col.Width != null ? $"width:{col.Width};" : "")">
+                            @col.Title
+                        </th>
+                    }
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @{ RenderRows(_rootItems, 0); }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    [Parameter] public IEnumerable<TItem> Data { get; set; } = Enumerable.Empty<TItem>();
+    [Parameter] public string? IdField { get; set; }
+    [Parameter] public string? ParentIdField { get; set; }
+    [Parameter] public string? ItemsField { get; set; }
+    [Parameter] public string? HasChildrenField { get; set; }
+    [Parameter] public List<TreeListColumn> Columns { get; set; } = new();
+    [Parameter] public EventCallback<TItem> OnRowClick { get; set; }
+
+    private List<TreeListNode> _rootItems = new();
+    private HashSet<string> _expandedIds = new();
+
+    private record TreeListNode(string Id, TItem Item, List<TreeListNode> Children, bool HasChildren);
+
+    protected override void OnParametersSet()
+    {
+        _rootItems = BuildTree();
+    }
+
+    private List<TreeListNode> BuildTree()
+    {
+        var items = Data.ToList();
+        if (!items.Any()) return new();
+
+        if (!string.IsNullOrEmpty(ItemsField))
+            return BuildHierarchical(items.Cast<object>(), 0);
+
+        if (!string.IsNullOrEmpty(IdField) && !string.IsNullOrEmpty(ParentIdField))
+            return BuildFlat(items);
+
+        int idx = 0;
+        return items.Select(i => new TreeListNode($"auto-{idx++}", i, new(), false)).ToList();
+    }
+
+    private List<TreeListNode> BuildHierarchical(IEnumerable<object> items, int depth)
+    {
+        var result = new List<TreeListNode>();
+        int idx = 0;
+        foreach (var item in items)
+        {
+            var id = GetProp(item, IdField) ?? $"h-{depth}-{idx++}";
+            var children = new List<TreeListNode>();
+            var childItems = item.GetType().GetProperty(ItemsField!)?.GetValue(item);
+            if (childItems is System.Collections.IEnumerable en)
+            {
+                var list = en.Cast<object>().ToList();
+                if (list.Any()) children = BuildHierarchical(list, depth + 1);
+            }
+            var hasKids = children.Any();
+            if (!string.IsNullOrEmpty(HasChildrenField))
+            {
+                var v = item.GetType().GetProperty(HasChildrenField)?.GetValue(item);
+                if (v is bool b) hasKids = b;
+            }
+            result.Add(new TreeListNode(id, (TItem)item, children, hasKids));
+        }
+        return result;
+    }
+
+    private List<TreeListNode> BuildFlat(List<TItem> items)
+    {
+        var lookup = new Dictionary<string, TreeListNode>();
+        var roots = new List<TreeListNode>();
+        foreach (var item in items)
+        {
+            var id = GetProp(item!, IdField) ?? "";
+            var hasKids = false;
+            if (!string.IsNullOrEmpty(HasChildrenField))
+            {
+                var v = item!.GetType().GetProperty(HasChildrenField)?.GetValue(item);
+                if (v is bool b) hasKids = b;
+            }
+            lookup[id] = new TreeListNode(id, item, new(), hasKids);
+        }
+        foreach (var item in items)
+        {
+            var id = GetProp(item!, IdField) ?? "";
+            var parentId = GetProp(item!, ParentIdField);
+            if (string.IsNullOrEmpty(parentId) || !lookup.ContainsKey(parentId))
+                roots.Add(lookup[id]);
+            else
+                lookup[parentId].Children.Add(lookup[id]);
+        }
+        return roots;
+    }
+
+    private string? GetProp(object item, string? propName)
+    {
+        if (string.IsNullOrEmpty(propName)) return null;
+        return item.GetType().GetProperty(propName)?.GetValue(item)?.ToString();
+    }
+
+    private object? GetPropValue(object item, string propName)
+    {
+        return item.GetType().GetProperty(propName)?.GetValue(item);
+    }
+
+    private void RenderRows(List<TreeListNode> nodes, int depth)
+    {
+        foreach (var node in nodes)
+        {
+            var isExpanded = _expandedIds.Contains(node.Id);
+            var hasKids = node.Children.Any() || node.HasChildren;
+            var nodeId = node.Id;
+
+            <tr class="mar-treelist__row" role="row" aria-level="@(depth + 1)"
+                @onclick="() => OnRowClick.InvokeAsync(node.Item)">
+                @if (Columns != null)
+                {
+                    for (var ci = 0; ci < Columns.Count; ci++)
+                    {
+                        var col = Columns[ci];
+                        <td class="mar-treelist__td">
+                            @if (ci == 0)
+                            {
+                                <span style="padding-left: @(depth * 20)px; display: inline-flex; align-items: center; gap: 4px;">
+                                    @if (hasKids)
+                                    {
+                                        <button type="button" class="mar-tree-item__toggle"
+                                                @onclick="() => ToggleExpand(nodeId)"
+                                                @onclick:stopPropagation="true">
+                                            @(isExpanded ? "\u25BC" : "\u25B6")
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <span style="width: 20px;"></span>
+                                    }
+                                    @GetCellValue(node.Item, col)
+                                </span>
+                            }
+                            else
+                            {
+                                @GetCellValue(node.Item, col)
+                            }
+                        </td>
+                    }
+                }
+            </tr>
+
+            if (hasKids && isExpanded)
+            {
+                RenderRows(node.Children, depth + 1);
+            }
+        }
+    }
+
+    private string? GetCellValue(TItem item, TreeListColumn col)
+    {
+        if (item is null || string.IsNullOrEmpty(col.Field)) return null;
+        return item.GetType().GetProperty(col.Field)?.GetValue(item)?.ToString();
+    }
+
+    private void ToggleExpand(string id)
+    {
+        if (!_expandedIds.Remove(id))
+            _expandedIds.Add(id);
+    }
+}
