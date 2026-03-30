@@ -1,10 +1,14 @@
 @inherits MariloComponentBase
 
-<button class="@CombineClasses(CssProvider.ButtonClass(Variant, Size, IsOutline, Disabled))"
+<button class="@CombineClasses(CssProvider.ButtonClass(Variant, Size, FillMode, Rounded, Disabled))"
         style="@CombineStyles()"
         disabled="@Disabled"
         @onclick="OnClick"
         @attributes="AdditionalAttributes">
+    @if (Icon != null)
+    {
+        <span class="mar-button__icon">@Icon</span>
+    }
     @ChildContent
 </button>
 
@@ -15,4 +19,7 @@
     [Parameter] public bool Disabled { get; set; }
     [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public FillMode FillMode { get; set; } = FillMode.Solid;
+    [Parameter] public RoundedMode Rounded { get; set; } = RoundedMode.Medium;
+    [Parameter] public RenderFragment? Icon { get; set; }
 }

@@ -54,6 +54,7 @@ public interface IMariloCssProvider
 
     // ── Buttons ─────────────────────────────────────────────────────────
     string ButtonClass(ButtonVariant variant, ButtonSize size, bool isOutline, bool isDisabled);
+    string ButtonClass(ButtonVariant variant, ButtonSize size, FillMode fillMode, RoundedMode rounded, bool isDisabled);
     string IconButtonClass(ButtonSize size);
     string ButtonGroupClass();
     string ToggleButtonClass(bool selected);
@@ -68,17 +69,34 @@ public interface IMariloCssProvider
     string NumericInputClass();
     string SearchBoxClass();
     string AutocompleteClass();
+    string AutocompleteClass(bool isOpen, bool isDisabled, bool isInvalid);
+    string AutocompleteItemClass(bool isHighlighted, bool isSelected);
     string SelectClass(bool isInvalid);
     string CheckboxClass(bool isChecked);
     string RadioClass(bool isSelected);
     string RadioGroupClass();
     string SwitchClass(bool isOn);
     string SliderClass();
+    string SliderClass(SliderOrientation orientation);
     string RatingClass();
     string ColorPickerClass();
     string DatePickerClass();
     string TimePickerClass();
     string FileUploadClass();
+    string FileUploadFileListClass();
+
+    // ── Selection / Dropdowns ───────────────────────────────────────────
+    string DropDownListClass(bool isOpen, bool isDisabled, bool isInvalid);
+    string DropDownListPopupClass();
+    string DropDownListItemClass(bool isHighlighted, bool isSelected);
+    string ComboBoxClass(bool isOpen, bool isDisabled, bool isInvalid);
+    string ComboBoxPopupClass();
+    string ComboBoxItemClass(bool isHighlighted, bool isSelected);
+    string MultiSelectClass(bool isOpen, bool isDisabled, bool isInvalid);
+    string MultiSelectPopupClass();
+    string MultiSelectItemClass(bool isHighlighted, bool isSelected);
+    string MultiSelectTagClass();
+    string DropdownPopupClass();
 
     // ── Forms — Containers ──────────────────────────────────────────────
     string FormClass();
@@ -98,6 +116,7 @@ public interface IMariloCssProvider
     string AvatarClass(AvatarSize size);
     string BadgeClass(BadgeVariant variant);
     string TooltipClass(TooltipPosition position);
+    string TooltipClass(TooltipPosition position, TooltipShowOn showOn);
     string PopoverClass();
     string TimelineClass();
     string TimelineItemClass();
@@ -109,7 +128,10 @@ public interface IMariloCssProvider
     string AlertStripClass();
     string ToastClass(ToastSeverity severity);
     string SnackbarClass();
+    string SnackbarClass(NotificationVerticalPosition vertical, NotificationHorizontalPosition horizontal);
+    string SnackbarHostClass();
     string DialogClass();
+    string DialogClass(bool isDraggable);
     string DialogOverlayClass();
     string ProgressBarClass();
     string ProgressCircleClass();
@@ -120,9 +142,36 @@ public interface IMariloCssProvider
     // ── DataGrid ────────────────────────────────────────────────────────
     string DataGridClass();
     string DataGridHeaderClass();
+    string DataGridHeaderCellClass(bool isSortable, bool isSorted);
     string DataGridRowClass(bool isSelected, bool isStriped);
     string DataGridCellClass();
     string DataGridPagerClass();
+    string DataGridToolbarClass();
+    string DataGridFilterRowClass();
+    string DataGridFilterCellClass();
+    string DataGridGroupHeaderClass();
+
+    // ── ListView ────────────────────────────────────────────────────────
+    string ListViewClass();
+    string ListViewItemClass(bool isSelected);
+
+    // ── Window ──────────────────────────────────────────────────────────
+    string WindowClass(bool isModal);
+    string WindowTitleBarClass();
+    string WindowContentClass();
+    string WindowActionsClass();
+    string WindowOverlayClass();
+
+    // ── Editor ──────────────────────────────────────────────────────────
+    string EditorClass();
+    string EditorToolbarClass();
+    string EditorContentClass();
+
+    // ── Upload ──────────────────────────────────────────────────────────
+    string UploadClass();
+    string UploadFileListClass();
+    string UploadFileItemClass();
+    string UploadDropZoneClass(bool isActive);
 
     // ── Charts ──────────────────────────────────────────────────────────
     string ChartContainerClass();

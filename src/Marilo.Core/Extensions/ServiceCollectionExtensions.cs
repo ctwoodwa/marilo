@@ -27,6 +27,7 @@ public static class ServiceCollectionExtensions
     public static MariloBuilder AddMariloCoreServices(this MariloBuilder builder)
     {
         builder.Services.AddScoped<IMariloThemeService, ThemeService>();
+        builder.Services.AddScoped<IMariloNotificationService, MariloNotificationService>();
         return builder;
     }
 }

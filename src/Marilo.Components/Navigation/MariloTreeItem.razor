@@ -16,6 +16,13 @@
                 @(IsExpanded ? "\u25BC" : "\u25B6")
             </button>
         }
+        @if (TreeView?.ShowCheckboxes == true)
+        {
+            <input type="checkbox"
+                   class="mar-tree-item__checkbox"
+                   checked="@(TreeView.IsItemChecked(GetItemId()))"
+                   @onchange="OnCheckboxChanged" />
+        }
         <span class="mar-tree-item__title" @onclick="OnClick">@Title</span>
     </div>
     @if (ChildContent != null && IsExpanded)
@@ -27,6 +34,7 @@
 </li>
 
 @code {
+    [CascadingParameter] public MariloTreeView? TreeView { get; set; }
     [Parameter] public string Title { get; set; } = "";
     [Parameter] public bool IsExpanded { get; set; }
     [Parameter] public EventCallback<bool> IsExpandedChanged { get; set; }
@@ -34,9 +42,16 @@
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public EventCallback OnClick { get; set; }
 
+    private string GetItemId() => Title;
+
     private async Task ToggleExpanded()
     {
         IsExpanded = !IsExpanded;
         await IsExpandedChanged.InvokeAsync(IsExpanded);
+    }
+
+    private void OnCheckboxChanged(ChangeEventArgs e)
+    {
+        TreeView?.ToggleItemChecked(GetItemId());
     }
 }

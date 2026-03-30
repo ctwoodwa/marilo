@@ -1,0 +1,121 @@
+@using Marilo.Core.Enums
+@using Marilo.Core.Models
+@using Marilo.Core.Services
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.SnackbarClass(VerticalPosition, HorizontalPosition))"
+     style="@CombineStyles()"
+     @attributes="AdditionalAttributes">
+    @foreach (var notification in GetVisibleNotifications())
+    {
+        var id = notification.Id;
+        <div class="@GetNotificationClass(notification)" role="status" aria-live="polite">
+            <span class="mar-snackbar__message">@notification.Message</span>
+            @if (notification.Closeable)
+            {
+                <button class="mar-snackbar__dismiss"
+                        @onclick="() => DismissNotification(id)"
+                        aria-label="Dismiss">&#x2715;</button>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Inject] private IMariloNotificationService NotificationService { get; set; } = default!;
+
+    /// <summary>Vertical position of the notification host.</summary>
+    [Parameter] public NotificationVerticalPosition VerticalPosition { get; set; } = NotificationVerticalPosition.Bottom;
+
+    /// <summary>Horizontal position of the notification host.</summary>
+    [Parameter] public NotificationHorizontalPosition HorizontalPosition { get; set; } = NotificationHorizontalPosition.Right;
+
+    /// <summary>Maximum number of simultaneously visible notifications.</summary>
+    [Parameter] public int MaxCount { get; set; } = 5;
+
+    private readonly Dictionary<string, System.Timers.Timer> _timers = new();
+
+    protected override void OnInitialized()
+    {
+        NotificationService.OnChange += HandleNotificationsChanged;
+    }
+
+    private void HandleNotificationsChanged()
+    {
+        InvokeAsync(() =>
+        {
+            EnsureTimers();
+            StateHasChanged();
+        });
+    }
+
+    private IReadOnlyList<NotificationModel> GetVisibleNotifications()
+    {
+        var all = NotificationService.GetNotifications();
+        return all.Count <= MaxCount ? all : all.TakeLast(MaxCount).ToList().AsReadOnly();
+    }
+
+    private void EnsureTimers()
+    {
+        var notifications = NotificationService.GetNotifications();
+        foreach (var n in notifications)
+        {
+            if (n.CloseAfterMs > 0 && !_timers.ContainsKey(n.Id))
+            {
+                var id = n.Id;
+                var timer = new System.Timers.Timer(n.CloseAfterMs);
+                timer.AutoReset = false;
+                timer.Elapsed += async (_, _) => await InvokeAsync(() =>
+                {
+                    NotificationService.Hide(id);
+                    CleanupTimer(id);
+                });
+                _timers[id] = timer;
+                timer.Start();
+            }
+        }
+
+        // Cleanup timers for notifications that no longer exist
+        var activeIds = notifications.Select(n => n.Id).ToHashSet();
+        var staleIds = _timers.Keys.Where(k => !activeIds.Contains(k)).ToList();
+        foreach (var id in staleIds)
+        {
+            CleanupTimer(id);
+        }
+    }
+
+    private void DismissNotification(string id)
+    {
+        NotificationService.Hide(id);
+        CleanupTimer(id);
+    }
+
+    private void CleanupTimer(string id)
+    {
+        if (_timers.Remove(id, out var timer))
+        {
+            timer.Stop();
+            timer.Dispose();
+        }
+    }
+
+    private string GetNotificationClass(NotificationModel notification)
+    {
+        return $"{CssProvider.SnackbarClass()} {CssProvider.ToastClass(notification.Severity)}";
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            NotificationService.OnChange -= HandleNotificationsChanged;
+            foreach (var timer in _timers.Values)
+            {
+                timer.Stop();
+                timer.Dispose();
+            }
+            _timers.Clear();
+        }
+        base.Dispose(disposing);
+    }
+}

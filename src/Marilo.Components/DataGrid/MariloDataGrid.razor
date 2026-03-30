@@ -1,0 +1,420 @@
+@using Marilo.Core.Data
+@typeparam TItem
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.DataGridClass())"
+     style="@CombineStyles()"
+     role="grid"
+     aria-rowcount="@_displayedItems.Count"
+     aria-colcount="@_columns.Count"
+     @attributes="AdditionalAttributes">
+
+    @* Toolbar area *@
+    @if (ToolbarTemplate != null)
+    {
+        @ToolbarTemplate
+    }
+
+    @* Column definitions (hidden, just registers via CascadingValue) *@
+    <CascadingValue Value="this" IsFixed="true">
+        @ChildContent
+    </CascadingValue>
+
+    <table>
+        @* Header row *@
+        <thead>
+            <tr class="@CssProvider.DataGridHeaderClass()" role="row">
+                @foreach (var column in _columns)
+                {
+                    var isSortable = Sortable && column.Sortable;
+                    var isSorted = _state.SortDescriptors.Any(s => s.Field == column.Field);
+                    var sortDir = _state.SortDescriptors.FirstOrDefault(s => s.Field == column.Field);
+                    var headerCellClass = CssProvider.DataGridHeaderCellClass(isSortable, isSorted);
+                    var headerStyle = column.Width != null ? $"width:{column.Width};" : null;
+                    var textAlignStyle = column.TextAlign != null ? $"text-align:{column.TextAlign};" : null;
+                    var combinedStyle = string.Join("", new[] { headerStyle, textAlignStyle }.Where(s => s != null));
+
+                    <th class="@headerCellClass"
+                        role="columnheader"
+                        style="@(string.IsNullOrEmpty(combinedStyle) ? null : combinedStyle)"
+                        aria-sort="@GetAriaSortValue(sortDir)"
+                        @onclick="() => OnHeaderClick(column, isSortable)">
+                        @if (column.HeaderTemplate != null)
+                        {
+                            @column.HeaderTemplate
+                        }
+                        else
+                        {
+                            @column.DisplayTitle
+                        }
+                        @if (isSorted && sortDir != null)
+                        {
+                            <span class="mar-datagrid-sort-indicator" aria-hidden="true">
+                                @(sortDir.Direction == SortDirection.Ascending ? "\u25B2" : "\u25BC")
+                            </span>
+                        }
+                    </th>
+                }
+            </tr>
+
+            @* Filter row *@
+            @if (FilterMode == GridFilterMode.FilterRow)
+            {
+                <tr class="@CssProvider.DataGridFilterRowClass()" role="row">
+                    @foreach (var column in _columns)
+                    {
+                        <td class="@CssProvider.DataGridFilterCellClass()" role="gridcell">
+                            @if (column.Filterable)
+                            {
+                                var currentFilter = _state.FilterDescriptors.FirstOrDefault(f => f.Field == column.Field);
+                                <input type="text"
+                                       value="@(currentFilter?.Value?.ToString() ?? "")"
+                                       placeholder="Filter..."
+                                       aria-label="@($"Filter {column.DisplayTitle}")"
+                                       @onchange="(e) => OnFilterChanged(column.Field, e)" />
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        </thead>
+
+        @* Data rows *@
+        <tbody>
+            @if (_displayedItems.Count == 0)
+            {
+                <tr role="row">
+                    <td colspan="@_columns.Count" role="gridcell" class="mar-datagrid-empty">
+                        No data available.
+                    </td>
+                </tr>
+            }
+            else
+            {
+                @for (var i = 0; i < _displayedItems.Count; i++)
+                {
+                    var item = _displayedItems[i];
+                    var isSelected = _selectedItems.Contains(item);
+                    var isStripedRow = Striped && i % 2 == 1;
+                    var rowClass = CssProvider.DataGridRowClass(isSelected, isStripedRow);
+
+                    <tr class="@rowClass"
+                        role="row"
+                        aria-selected="@(isSelected ? "true" : null)"
+                        @onclick="() => OnRowClick(item)">
+                        @foreach (var column in _columns)
+                        {
+                            var cellStyle = column.TextAlign != null ? $"text-align:{column.TextAlign};" : null;
+                            <td class="@CssProvider.DataGridCellClass()"
+                                role="gridcell"
+                                style="@cellStyle">
+                                @if (column.Template != null)
+                                {
+                                    @column.Template(item)
+                                }
+                                else
+                                {
+                                    @column.GetDisplayValue(item)
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    @* Pager *@
+    @if (Pageable)
+    {
+        var totalPages = TotalPages;
+
+        <div class="@CssProvider.DataGridPagerClass()" role="navigation" aria-label="Pagination">
+            <button type="button"
+                    disabled="@(_state.CurrentPage <= 1)"
+                    aria-label="Previous page"
+                    @onclick="GoToPreviousPage">
+                &laquo; Previous
+            </button>
+
+            <span class="mar-datagrid-pager-info">
+                Page @_state.CurrentPage of @totalPages
+            </span>
+
+            <button type="button"
+                    disabled="@(_state.CurrentPage >= totalPages)"
+                    aria-label="Next page"
+                    @onclick="GoToNextPage">
+                Next &raquo;
+            </button>
+        </div>
+    }
+</div>
+
+@code {
+    private readonly List<MariloGridColumn<TItem>> _columns = [];
+    private readonly GridState _state = new();
+    private List<TItem> _displayedItems = [];
+    private HashSet<TItem> _selectedItems = [];
+
+    // ── Parameters ──────────────────────────────────────────────────────
+
+    /// <summary>Client-side data source.</summary>
+    [Parameter] public IEnumerable<TItem>? Data { get; set; }
+
+    /// <summary>Server-side data read callback.</summary>
+    [Parameter] public EventCallback<DataRequest> OnRead { get; set; }
+
+    /// <summary>Whether paging is enabled.</summary>
+    [Parameter] public bool Pageable { get; set; }
+
+    /// <summary>Number of items per page. Defaults to 10.</summary>
+    [Parameter] public int PageSize { get; set; } = 10;
+
+    /// <summary>Whether sorting is enabled. Defaults to true.</summary>
+    [Parameter] public bool Sortable { get; set; } = true;
+
+    /// <summary>The filter mode for the grid.</summary>
+    [Parameter] public GridFilterMode FilterMode { get; set; } = GridFilterMode.None;
+
+    /// <summary>The selection mode for the grid.</summary>
+    [Parameter] public GridSelectionMode SelectionMode { get; set; } = GridSelectionMode.None;
+
+    /// <summary>The currently selected items.</summary>
+    [Parameter] public IEnumerable<TItem>? SelectedItems { get; set; }
+
+    /// <summary>Fires when the selected items change.</summary>
+    [Parameter] public EventCallback<IEnumerable<TItem>> SelectedItemsChanged { get; set; }
+
+    /// <summary>Whether to apply striped row styling.</summary>
+    [Parameter] public bool Striped { get; set; }
+
+    /// <summary>Column definitions (MariloGridColumn components).</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Optional toolbar content rendered above the grid.</summary>
+    [Parameter] public RenderFragment? ToolbarTemplate { get; set; }
+
+    // ── Internal API for child columns ──────────────────────────────────
+
+    internal void RegisterColumn(MariloGridColumn<TItem> column)
+    {
+        if (!_columns.Contains(column))
+        {
+            _columns.Add(column);
+            StateHasChanged();
+        }
+    }
+
+    internal void UnregisterColumn(MariloGridColumn<TItem> column)
+    {
+        _columns.Remove(column);
+        StateHasChanged();
+    }
+
+    // ── Computed properties ─────────────────────────────────────────────
+
+    internal int TotalPages => _state.TotalCount > 0 && _state.PageSize > 0
+        ? (int)Math.Ceiling((double)_state.TotalCount / _state.PageSize)
+        : 1;
+
+    // ── Lifecycle ───────────────────────────────────────────────────────
+
+    protected override void OnParametersSet()
+    {
+        _state.PageSize = PageSize;
+
+        if (SelectedItems != null)
+            _selectedItems = new HashSet<TItem>(SelectedItems);
+
+        ProcessData();
+    }
+
+    // ── Data processing ─────────────────────────────────────────────────
+
+    private void ProcessData()
+    {
+        if (Data is null)
+        {
+            _displayedItems = [];
+            _state.TotalCount = 0;
+            return;
+        }
+
+        IEnumerable<TItem> items = Data;
+
+        // Apply filters
+        foreach (var filter in _state.FilterDescriptors)
+        {
+            items = ApplyFilter(items, filter);
+        }
+
+        // Apply sorting
+        items = ApplySort(items);
+
+        var allItems = items.ToList();
+        _state.TotalCount = allItems.Count;
+
+        // Apply paging
+        if (Pageable && _state.PageSize > 0)
+        {
+            var skip = (_state.CurrentPage - 1) * _state.PageSize;
+            _displayedItems = allItems.Skip(skip).Take(_state.PageSize).ToList();
+        }
+        else
+        {
+            _displayedItems = allItems;
+        }
+    }
+
+    private static IEnumerable<TItem> ApplyFilter(IEnumerable<TItem> items, FilterDescriptor filter)
+    {
+        if (string.IsNullOrEmpty(filter.Field) || filter.Value is null)
+            return items;
+
+        var prop = typeof(TItem).GetProperty(filter.Field);
+        if (prop is null) return items;
+
+        var filterValue = filter.Value.ToString()?.ToLowerInvariant() ?? "";
+
+        return filter.Operator switch
+        {
+            FilterOperator.Contains => items.Where(item =>
+                prop.GetValue(item)?.ToString()?.Contains(filterValue, StringComparison.OrdinalIgnoreCase) == true),
+            FilterOperator.Equals => items.Where(item =>
+                string.Equals(prop.GetValue(item)?.ToString(), filterValue, StringComparison.OrdinalIgnoreCase)),
+            FilterOperator.StartsWith => items.Where(item =>
+                prop.GetValue(item)?.ToString()?.StartsWith(filterValue, StringComparison.OrdinalIgnoreCase) == true),
+            _ => items
+        };
+    }
+
+    private IEnumerable<TItem> ApplySort(IEnumerable<TItem> items)
+    {
+        if (_state.SortDescriptors.Count == 0) return items;
+
+        IOrderedEnumerable<TItem>? ordered = null;
+        foreach (var sort in _state.SortDescriptors)
+        {
+            var prop = typeof(TItem).GetProperty(sort.Field);
+            if (prop is null) continue;
+
+            if (ordered is null)
+            {
+                ordered = sort.Direction == SortDirection.Ascending
+                    ? items.OrderBy(item => prop.GetValue(item))
+                    : items.OrderByDescending(item => prop.GetValue(item));
+            }
+            else
+            {
+                ordered = sort.Direction == SortDirection.Ascending
+                    ? ordered.ThenBy(item => prop.GetValue(item))
+                    : ordered.ThenByDescending(item => prop.GetValue(item));
+            }
+        }
+
+        return ordered ?? items;
+    }
+
+    // ── Event handlers ──────────────────────────────────────────────────
+
+    private void OnHeaderClick(MariloGridColumn<TItem> column, bool isSortable)
+    {
+        if (!isSortable) return;
+
+        var existing = _state.SortDescriptors.FirstOrDefault(s => s.Field == column.Field);
+        if (existing is null)
+        {
+            _state.SortDescriptors.Clear();
+            _state.SortDescriptors.Add(new SortDescriptor
+            {
+                Field = column.Field,
+                Direction = SortDirection.Ascending
+            });
+        }
+        else if (existing.Direction == SortDirection.Ascending)
+        {
+            existing.Direction = SortDirection.Descending;
+        }
+        else
+        {
+            _state.SortDescriptors.Remove(existing);
+        }
+
+        _state.CurrentPage = 1;
+        ProcessData();
+    }
+
+    private void OnFilterChanged(string field, ChangeEventArgs e)
+    {
+        var value = e.Value?.ToString();
+        var existing = _state.FilterDescriptors.FirstOrDefault(f => f.Field == field);
+
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            if (existing != null)
+                _state.FilterDescriptors.Remove(existing);
+        }
+        else
+        {
+            if (existing != null)
+            {
+                existing.Value = value;
+            }
+            else
+            {
+                _state.FilterDescriptors.Add(new FilterDescriptor
+                {
+                    Field = field,
+                    Operator = FilterOperator.Contains,
+                    Value = value
+                });
+            }
+        }
+
+        _state.CurrentPage = 1;
+        ProcessData();
+    }
+
+    private async Task OnRowClick(TItem item)
+    {
+        if (SelectionMode == GridSelectionMode.None) return;
+
+        if (SelectionMode == GridSelectionMode.Single)
+        {
+            _selectedItems.Clear();
+            _selectedItems.Add(item);
+        }
+        else if (SelectionMode == GridSelectionMode.Multiple)
+        {
+            if (!_selectedItems.Remove(item))
+                _selectedItems.Add(item);
+        }
+
+        await SelectedItemsChanged.InvokeAsync(_selectedItems.ToList());
+    }
+
+    private void GoToPreviousPage()
+    {
+        if (_state.CurrentPage > 1)
+        {
+            _state.CurrentPage--;
+            ProcessData();
+        }
+    }
+
+    private void GoToNextPage()
+    {
+        if (_state.CurrentPage < TotalPages)
+        {
+            _state.CurrentPage++;
+            ProcessData();
+        }
+    }
+
+    private static string? GetAriaSortValue(SortDescriptor? sort)
+    {
+        if (sort is null) return null;
+        return sort.Direction == SortDirection.Ascending ? "ascending" : "descending";
+    }
+}

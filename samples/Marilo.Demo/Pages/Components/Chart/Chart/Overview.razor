@@ -1,0 +1,71 @@
+@page "/components/chart"
+@page "/components/chart/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Line Chart" Description="A simple line chart showing monthly revenue and profit." Code="@_lineCode">
+        <MariloChart Title="Monthly Revenue" Height="350px">
+            <MariloChartSeries Name="Revenue"
+                               Data="_salesData"
+                               Field="Revenue"
+                               CategoryField="Month"
+                               Type="ChartSeriesType.Line"
+                               Color="#4e79a7" />
+            <MariloChartSeries Name="Profit"
+                               Data="_salesData"
+                               Field="Profit"
+                               CategoryField="Month"
+                               Type="ChartSeriesType.Line"
+                               Color="#e15759" />
+        </MariloChart>
+    </DemoSection>
+
+    <DemoSection Title="Column Chart" Description="A column chart comparing revenue across months." Code="@_columnCode">
+        <MariloChart Title="Revenue vs Profit" Height="350px">
+            <MariloChartSeries Name="Revenue"
+                               Data="_salesData"
+                               Field="Revenue"
+                               CategoryField="Month"
+                               Type="ChartSeriesType.Column"
+                               Color="#4e79a7" />
+            <MariloChartSeries Name="Profit"
+                               Data="_salesData"
+                               Field="Profit"
+                               CategoryField="Month"
+                               Type="ChartSeriesType.Column"
+                               Color="#59a14f" />
+        </MariloChart>
+    </DemoSection>
+</PageSection>
+
+@code {
+    private record SalesData(string Month, double Revenue, double Profit);
+
+    private readonly List<SalesData> _salesData =
+    [
+        new("Jan", 12000, 3200),
+        new("Feb", 15000, 4100),
+        new("Mar", 13500, 3800),
+        new("Apr", 17000, 5200),
+        new("May", 19500, 6100),
+        new("Jun", 21000, 7000),
+    ];
+
+    private const string _lineCode =
+        "<MariloChart Title=\"Monthly Revenue\" Height=\"350px\">\n" +
+        "    <MariloChartSeries Name=\"Revenue\"\n" +
+        "                       Data=\"_salesData\"\n" +
+        "                       Field=\"Revenue\"\n" +
+        "                       CategoryField=\"Month\"\n" +
+        "                       Type=\"ChartSeriesType.Line\" />\n" +
+        "</MariloChart>";
+
+    private const string _columnCode =
+        "<MariloChart Title=\"Revenue vs Profit\" Height=\"350px\">\n" +
+        "    <MariloChartSeries Name=\"Revenue\"\n" +
+        "                       Data=\"_salesData\"\n" +
+        "                       Field=\"Revenue\"\n" +
+        "                       CategoryField=\"Month\"\n" +
+        "                       Type=\"ChartSeriesType.Column\" />\n" +
+        "</MariloChart>";
+}

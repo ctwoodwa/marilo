@@ -1,0 +1,84 @@
+@page "/components/window"
+@page "/components/window/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Window" Code="@_basicCode">
+        <div class="demo-row">
+            <MariloButton Variant="ButtonVariant.Primary" OnClick="() => _showBasic = true">Open Window</MariloButton>
+        </div>
+        <MariloWindow Title="Basic Window"
+                      @bind-Visible="_showBasic"
+                      Width="500px"
+                      Height="300px">
+            <p>This is the window content.</p>
+        </MariloWindow>
+    </DemoSection>
+
+    <DemoSection Title="Modal Window" Code="@_modalCode">
+        <div class="demo-row">
+            <MariloButton Variant="ButtonVariant.Primary" OnClick="() => _showModal = true">Open Modal Window</MariloButton>
+        </div>
+        <MariloWindow Title="Modal Window"
+                      @bind-Visible="_showModal"
+                      Modal="true"
+                      Width="500px"
+                      Height="300px">
+            <p>This modal window has an overlay behind it.</p>
+        </MariloWindow>
+    </DemoSection>
+
+    <DemoSection Title="Window with All Actions" Code="@_actionsCode">
+        <div class="demo-row">
+            <MariloButton Variant="ButtonVariant.Primary" OnClick="() => _showActions = true">Open Window with Actions</MariloButton>
+            @if (!string.IsNullOrEmpty(_lastAction))
+            {
+                <span>Last action: @_lastAction</span>
+            }
+        </div>
+        <MariloWindow Title="Window with Actions"
+                      @bind-Visible="_showActions"
+                      Actions="WindowAction.Close | WindowAction.Minimize | WindowAction.Maximize"
+                      OnAction="HandleAction"
+                      Width="600px"
+                      Height="400px">
+            <p>This window has minimize, maximize, and close buttons.</p>
+        </MariloWindow>
+    </DemoSection>
+</PageSection>
+
+@code {
+    private bool _showBasic;
+    private bool _showModal;
+    private bool _showActions;
+    private string? _lastAction;
+
+    private void HandleAction(WindowAction action)
+    {
+        _lastAction = action.ToString();
+    }
+
+    private const string _basicCode =
+        "<MariloWindow Title=\"Basic Window\"\n" +
+        "              @bind-Visible=\"_showBasic\"\n" +
+        "              Width=\"500px\" Height=\"300px\">\n" +
+        "    <p>This is the window content.</p>\n" +
+        "</MariloWindow>";
+
+    private const string _modalCode =
+        "<MariloWindow Title=\"Modal Window\"\n" +
+        "              @bind-Visible=\"_showModal\"\n" +
+        "              Modal=\"true\"\n" +
+        "              Width=\"500px\" Height=\"300px\">\n" +
+        "    <p>This modal window has an overlay behind it.</p>\n" +
+        "</MariloWindow>";
+
+    private const string _actionsCode =
+        "<MariloWindow Title=\"Window with Actions\"\n" +
+        "              @bind-Visible=\"_showActions\"\n" +
+        "              Actions=\"WindowAction.Close | WindowAction.Minimize | WindowAction.Maximize\"\n" +
+        "              OnAction=\"HandleAction\"\n" +
+        "              Width=\"600px\" Height=\"400px\">\n" +
+        "    <p>This window has minimize, maximize, and close buttons.</p>\n" +
+        "</MariloWindow>";
+}

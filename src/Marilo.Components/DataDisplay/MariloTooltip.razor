@@ -1,12 +1,38 @@
 @inherits MariloComponentBase
 
-<div class="marilo-tooltip-trigger" style="position:relative;display:inline-block;@CombineStyles()" @attributes="AdditionalAttributes">
+@{
+    var tooltipStyle = StyleBuilder.Clear()
+        .AddStyle("width", Width!, !string.IsNullOrEmpty(Width))
+        .AddStyle("height", Height!, !string.IsNullOrEmpty(Height))
+        .Build();
+    var showOnClass = ShowOn switch
+    {
+        TooltipShowOn.Click => "marilo-tooltip-trigger--click",
+        TooltipShowOn.Focus => "marilo-tooltip-trigger--focus",
+        _ => ""
+    };
+}
+
+<div class="marilo-tooltip-trigger @showOnClass" style="position:relative;display:inline-block;@CombineStyles()" @attributes="AdditionalAttributes">
     @ChildContent
-    <div class="@CombineClasses(CssProvider.TooltipClass(Position))">@Text</div>
+    <div class="@CombineClasses(CssProvider.TooltipClass(Position, ShowOn))" style="@tooltipStyle">
+        @if (TooltipTemplate != null)
+        {
+            @TooltipTemplate
+        }
+        else
+        {
+            @Text
+        }
+    </div>
 </div>
 
 @code {
     [Parameter] public TooltipPosition Position { get; set; } = TooltipPosition.Top;
     [Parameter] public string Text { get; set; } = string.Empty;
     [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? TooltipTemplate { get; set; }
+    [Parameter] public TooltipShowOn ShowOn { get; set; } = TooltipShowOn.Hover;
+    [Parameter] public string? Width { get; set; }
+    [Parameter] public string? Height { get; set; }
 }

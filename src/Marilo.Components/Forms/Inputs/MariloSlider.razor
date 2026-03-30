@@ -1,14 +1,36 @@
 @inherits MariloComponentBase
 
-<input type="range"
-       class="@CombineClasses(CssProvider.SliderClass())"
-       style="@CombineStyles()"
-       value="@Value"
-       min="@Min"
-       max="@Max"
-       step="@Step"
-       @oninput="OnSliderChanged"
-       @attributes="AdditionalAttributes" />
+<div class="@CombineClasses(CssProvider.SliderClass(Orientation))"
+     style="@CombineStyles()">
+    <input type="range"
+           value="@Value"
+           min="@Min"
+           max="@Max"
+           step="@Step"
+           orient="@(Orientation == SliderOrientation.Vertical ? "vertical" : "horizontal")"
+           @oninput="OnSliderChanged"
+           @attributes="AdditionalAttributes" />
+    @if (LargeStep.HasValue)
+    {
+        <div class="mar-slider__ticks">
+            @{
+                var tickValue = Min;
+                while (tickValue <= Max)
+                {
+                    var pct = (tickValue - Min) / (Max - Min) * 100;
+                    <span class="mar-slider__tick" style="@(Orientation == SliderOrientation.Horizontal ? $"left: {pct}%;" : $"bottom: {pct}%;")"></span>
+                    tickValue += LargeStep.Value;
+                }
+            }
+        </div>
+    }
+    @if (LabelTemplate != null)
+    {
+        <div class="mar-slider__label">
+            @LabelTemplate(Value)
+        </div>
+    }
+</div>
 
 @code {
     [Parameter] public double Value { get; set; }
@@ -16,6 +38,9 @@
     [Parameter] public double Min { get; set; } = 0;
     [Parameter] public double Max { get; set; } = 100;
     [Parameter] public double Step { get; set; } = 1;
+    [Parameter] public SliderOrientation Orientation { get; set; } = SliderOrientation.Horizontal;
+    [Parameter] public double? LargeStep { get; set; }
+    [Parameter] public RenderFragment<double>? LabelTemplate { get; set; }
 
     private async Task OnSliderChanged(ChangeEventArgs e)
     {

@@ -1,0 +1,110 @@
+@inherits MariloComponentBase
+
+@if (Visible)
+{
+    @if (Modal)
+    {
+        <div class="@CssProvider.WindowOverlayClass()" @onclick="HandleOverlayClick"></div>
+    }
+
+    <div class="@CombineClasses(CssProvider.WindowClass(Modal))"
+         style="@BuildWindowStyle()"
+         role="dialog"
+         aria-modal="@Modal.ToString().ToLower()"
+         aria-label="@Title"
+         @attributes="AdditionalAttributes">
+
+        @* Title Bar *@
+        <div class="@CssProvider.WindowTitleBarClass()"
+             data-draggable="@Draggable.ToString().ToLower()">
+            @if (TitleBarTemplate != null)
+            {
+                @TitleBarTemplate
+            }
+            else
+            {
+                <span class="mar-window__title">@Title</span>
+            }
+            <div class="@CssProvider.WindowActionsClass()">
+                @if (Actions.HasFlag(WindowAction.Minimize))
+                {
+                    <button type="button"
+                            class="mar-window__action-btn mar-window__action-btn--minimize"
+                            aria-label="Minimize"
+                            @onclick="() => HandleAction(WindowAction.Minimize)">
+                        &#x2212;
+                    </button>
+                }
+                @if (Actions.HasFlag(WindowAction.Maximize))
+                {
+                    <button type="button"
+                            class="mar-window__action-btn mar-window__action-btn--maximize"
+                            aria-label="Maximize"
+                            @onclick="() => HandleAction(WindowAction.Maximize)">
+                        &#x25A1;
+                    </button>
+                }
+                @if (Actions.HasFlag(WindowAction.Close))
+                {
+                    <button type="button"
+                            class="mar-window__action-btn mar-window__action-btn--close"
+                            aria-label="Close"
+                            @onclick="() => HandleAction(WindowAction.Close)">
+                        &#x2715;
+                    </button>
+                }
+            </div>
+        </div>
+
+        @* Content *@
+        <div class="@CssProvider.WindowContentClass()">
+            @ChildContent
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public EventCallback<bool> VisibleChanged { get; set; }
+    [Parameter] public bool Modal { get; set; }
+    [Parameter] public string? Width { get; set; }
+    [Parameter] public string? Height { get; set; }
+    [Parameter] public string? Top { get; set; }
+    [Parameter] public string? Left { get; set; }
+    [Parameter] public WindowAction Actions { get; set; } = WindowAction.Close;
+    [Parameter] public bool Draggable { get; set; } = true;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public RenderFragment? TitleBarTemplate { get; set; }
+    [Parameter] public EventCallback<WindowAction> OnAction { get; set; }
+
+    private string BuildWindowStyle()
+    {
+        var sb = StyleBuilder.Clear();
+        if (!string.IsNullOrEmpty(Width)) sb.AddStyle($"width:{Width}");
+        if (!string.IsNullOrEmpty(Height)) sb.AddStyle($"height:{Height}");
+        if (!string.IsNullOrEmpty(Top)) sb.AddStyle($"top:{Top}");
+        if (!string.IsNullOrEmpty(Left)) sb.AddStyle($"left:{Left}");
+        sb.AddStyle(Style);
+        return sb.Build();
+    }
+
+    private async Task HandleAction(WindowAction action)
+    {
+        if (action == WindowAction.Close)
+        {
+            Visible = false;
+            await VisibleChanged.InvokeAsync(false);
+        }
+
+        await OnAction.InvokeAsync(action);
+    }
+
+    private async Task HandleOverlayClick()
+    {
+        if (Actions.HasFlag(WindowAction.Close))
+        {
+            await HandleAction(WindowAction.Close);
+        }
+    }
+}

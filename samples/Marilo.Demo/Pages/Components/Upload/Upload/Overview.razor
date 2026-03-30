@@ -1,0 +1,65 @@
+@page "/components/upload"
+@page "/components/upload/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Upload" Code="@_basicCode">
+        <MariloUpload SaveUrl="/api/upload"
+                      OnUpload="HandleUpload"
+                      OnError="HandleError" />
+        @if (!string.IsNullOrEmpty(_uploadStatus))
+        {
+            <p>@_uploadStatus</p>
+        }
+    </DemoSection>
+
+    <DemoSection Title="Restricted Upload" Code="@_restrictedCode">
+        <MariloUpload SaveUrl="/api/upload"
+                      Accept=".jpg,.png,.gif"
+                      AllowedExtensions='@(new[] { ".jpg", ".png", ".gif" })'
+                      MaxFileSize="@(5 * 1024 * 1024)"
+                      OnError="HandleError" />
+    </DemoSection>
+
+    <DemoSection Title="Custom Drop Zone" Code="@_customCode">
+        <MariloUpload SaveUrl="/api/upload"
+                      RemoveUrl="/api/upload/remove"
+                      Multiple="true"
+                      AutoUpload="false">
+            <p>Drop your documents here</p>
+        </MariloUpload>
+    </DemoSection>
+</PageSection>
+
+@code {
+    private string? _uploadStatus;
+
+    private void HandleUpload(UploadEventArgs args)
+    {
+        _uploadStatus = $"Uploaded: {args.File.Name}";
+    }
+
+    private void HandleError(UploadErrorEventArgs args)
+    {
+        _uploadStatus = $"Error uploading {args.File.Name}: {args.ErrorMessage}";
+    }
+
+    private const string _basicCode =
+        "<MariloUpload SaveUrl=\"/api/upload\"\n" +
+        "              OnUpload=\"HandleUpload\"\n" +
+        "              OnError=\"HandleError\" />";
+
+    private const string _restrictedCode =
+        "<MariloUpload SaveUrl=\"/api/upload\"\n" +
+        "              Accept=\".jpg,.png,.gif\"\n" +
+        "              AllowedExtensions='@(new[] { \".jpg\", \".png\", \".gif\" })'\n" +
+        "              MaxFileSize=\"@(5 * 1024 * 1024)\" />";
+
+    private const string _customCode =
+        "<MariloUpload SaveUrl=\"/api/upload\"\n" +
+        "              RemoveUrl=\"/api/upload/remove\"\n" +
+        "              Multiple=\"true\"\n" +
+        "              AutoUpload=\"false\">\n" +
+        "    <p>Drop your documents here</p>\n" +
+        "</MariloUpload>";
+}

@@ -1,0 +1,39 @@
+@page "/components/snackbarhost"
+@page "/components/snackbarhost/overview"
+@layout ComponentDemoLayout
+@using Marilo.Core.Services
+@using Marilo.Core.Enums
+
+<PageSection Title="Overview">
+    <DemoSection Title="Notification Service" Description="Trigger notifications programmatically using IMariloNotificationService." Code="@_basicCode">
+        <MariloButton OnClick="ShowInfo">Show Info</MariloButton>
+        <MariloButton OnClick="ShowSuccess">Show Success</MariloButton>
+        <MariloButton OnClick="ShowWarning">Show Warning</MariloButton>
+        <MariloButton OnClick="ShowError">Show Error</MariloButton>
+        <MariloButton OnClick="ClearAll">Clear All</MariloButton>
+    </DemoSection>
+</PageSection>
+
+<MariloSnackbarHost VerticalPosition="NotificationVerticalPosition.Bottom"
+                    HorizontalPosition="NotificationHorizontalPosition.Right" />
+
+@code {
+    [Inject] private IMariloNotificationService NotificationService { get; set; } = default!;
+
+    private void ShowInfo() => NotificationService.ShowToast("This is an info notification.", ToastSeverity.Info);
+    private void ShowSuccess() => NotificationService.ShowToast("Operation succeeded!", ToastSeverity.Success);
+    private void ShowWarning() => NotificationService.ShowToast("Something needs your attention.", ToastSeverity.Warning);
+    private void ShowError() => NotificationService.ShowToast("An error occurred.", ToastSeverity.Error, 5000);
+    private void ClearAll() => NotificationService.HideAll();
+
+    private const string _basicCode =
+        "@inject IMariloNotificationService NotificationService\n\n" +
+        "<MariloButton OnClick=\"ShowInfo\">Show Info</MariloButton>\n" +
+        "<MariloButton OnClick=\"ShowSuccess\">Show Success</MariloButton>\n\n" +
+        "<MariloSnackbarHost VerticalPosition=\"NotificationVerticalPosition.Bottom\"\n" +
+        "                    HorizontalPosition=\"NotificationHorizontalPosition.Right\" />\n\n" +
+        "@code {\n" +
+        "    void ShowInfo() => NotificationService.ShowToast(\"Info!\", ToastSeverity.Info);\n" +
+        "    void ShowSuccess() => NotificationService.ShowToast(\"Success!\", ToastSeverity.Success);\n" +
+        "}";
+}

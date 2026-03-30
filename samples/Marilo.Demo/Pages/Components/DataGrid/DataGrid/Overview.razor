@@ -1,0 +1,114 @@
+@page "/components/datagrid"
+@page "/components/datagrid/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloDataGrid TItem="Employee" Data="@_employees">
+            <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name" />
+            <MariloGridColumn TItem="Employee" Field="Department" />
+            <MariloGridColumn TItem="Employee" Field="HireDate" Title="Hire Date" Format="yyyy-MM-dd" />
+            <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right" />
+        </MariloDataGrid>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Features">
+    <DemoSection Title="Paging" Description="Enable paging with the Pageable parameter." Code="@_pagingCode">
+        <MariloDataGrid TItem="Employee" Data="@_employees" Pageable="true" PageSize="3">
+            <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name" />
+            <MariloGridColumn TItem="Employee" Field="Department" />
+            <MariloGridColumn TItem="Employee" Field="HireDate" Title="Hire Date" Format="yyyy-MM-dd" />
+            <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right" />
+        </MariloDataGrid>
+    </DemoSection>
+
+    <DemoSection Title="Sorting" Description="Click column headers to sort. Sorting is enabled by default." Code="@_sortingCode">
+        <MariloDataGrid TItem="Employee" Data="@_employees" Sortable="true" Striped="true">
+            <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name" />
+            <MariloGridColumn TItem="Employee" Field="Department" />
+            <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right" />
+        </MariloDataGrid>
+    </DemoSection>
+
+    <DemoSection Title="Filtering" Description="Show a filter row below the header." Code="@_filteringCode">
+        <MariloDataGrid TItem="Employee" Data="@_employees" FilterMode="GridFilterMode.FilterRow">
+            <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name" />
+            <MariloGridColumn TItem="Employee" Field="Department" />
+            <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right" Filterable="false" />
+        </MariloDataGrid>
+    </DemoSection>
+
+    <DemoSection Title="Selection" Description="Enable row selection with the SelectionMode parameter." Code="@_selectionCode">
+        <MariloDataGrid TItem="Employee"
+                        Data="@_employees"
+                        SelectionMode="GridSelectionMode.Single"
+                        SelectedItems="@_selected"
+                        SelectedItemsChanged="@OnSelectionChanged"
+                        Striped="true">
+            <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name" />
+            <MariloGridColumn TItem="Employee" Field="Department" />
+        </MariloDataGrid>
+        <p>Selected: @string.Join(", ", _selected.Select(e => e.Name))</p>
+    </DemoSection>
+</PageSection>
+
+@code {
+    private List<Employee> _employees =
+    [
+        new("Alice Johnson", "Engineering", new DateTime(2019, 3, 15), 95000m),
+        new("Bob Smith", "Marketing", new DateTime(2020, 7, 1), 72000m),
+        new("Carol White", "Engineering", new DateTime(2018, 1, 10), 105000m),
+        new("David Brown", "Sales", new DateTime(2021, 11, 20), 68000m),
+        new("Eve Davis", "Engineering", new DateTime(2022, 5, 5), 88000m),
+        new("Frank Miller", "Marketing", new DateTime(2017, 9, 12), 78000m),
+        new("Grace Lee", "Sales", new DateTime(2023, 2, 28), 65000m),
+    ];
+
+    private List<Employee> _selected = [];
+
+    private void OnSelectionChanged(IEnumerable<Employee> items)
+    {
+        _selected = items.ToList();
+    }
+
+    public record Employee(string Name, string Department, DateTime HireDate, decimal Salary);
+
+    private const string _basicCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\">\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Name\" Title=\"Full Name\" />\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Department\" />\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"HireDate\" Title=\"Hire Date\" Format=\"yyyy-MM-dd\" />\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Salary\" Format=\"C2\" TextAlign=\"right\" />\n" +
+        "</MariloDataGrid>";
+
+    private const string _pagingCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\" Pageable=\"true\" PageSize=\"3\">\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Name\" Title=\"Full Name\" />\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Department\" />\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Salary\" Format=\"C2\" TextAlign=\"right\" />\n" +
+        "</MariloDataGrid>";
+
+    private const string _sortingCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\" Sortable=\"true\" Striped=\"true\">\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Name\" Title=\"Full Name\" />\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Department\" />\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Salary\" Format=\"C2\" TextAlign=\"right\" />\n" +
+        "</MariloDataGrid>";
+
+    private const string _filteringCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\" FilterMode=\"GridFilterMode.FilterRow\">\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Name\" Title=\"Full Name\" />\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Department\" />\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Salary\" Format=\"C2\" Filterable=\"false\" />\n" +
+        "</MariloDataGrid>";
+
+    private const string _selectionCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\"\n" +
+        "                SelectionMode=\"GridSelectionMode.Single\"\n" +
+        "                SelectedItems=\"@_selected\"\n" +
+        "                SelectedItemsChanged=\"@OnSelectionChanged\">\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Name\" Title=\"Full Name\" />\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Department\" />\n" +
+        "</MariloDataGrid>";
+}

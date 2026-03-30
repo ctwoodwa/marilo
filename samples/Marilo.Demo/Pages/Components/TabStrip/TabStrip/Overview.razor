@@ -1,0 +1,71 @@
+@page "/components/tabstrip"
+@page "/components/tabstrip/overview"
+@layout ComponentDemoLayout
+@using Marilo.Components.Layout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Overflow Menu Mode" Description="When OverflowMode is set to Menu with MaxVisibleTabs, tabs beyond that count are placed in a dropdown." Code="@_overflowCode">
+        <MariloTabStrip @bind-ActiveTabId="@_activeTabId"
+                        OverflowMode="TabStripOverflowMode.Menu"
+                        MaxVisibleTabs="3">
+            <TabStripTab Id="tab1" Title="Dashboard">
+                <p>Dashboard content.</p>
+            </TabStripTab>
+            <TabStripTab Id="tab2" Title="Reports">
+                <p>Reports content.</p>
+            </TabStripTab>
+            <TabStripTab Id="tab3" Title="Analytics">
+                <p>Analytics content.</p>
+            </TabStripTab>
+            <TabStripTab Id="tab4" Title="Settings">
+                <p>Settings content (overflow).</p>
+            </TabStripTab>
+            <TabStripTab Id="tab5" Title="Users">
+                <p>Users content (overflow).</p>
+            </TabStripTab>
+            <TabStripTab Id="tab6" Title="Billing">
+                <p>Billing content (overflow).</p>
+            </TabStripTab>
+        </MariloTabStrip>
+    </DemoSection>
+
+    <DemoSection Title="Menu Mode — All Tabs in Dropdown" Description="When OverflowMode is Menu without MaxVisibleTabs, the dropdown lists all tabs." Code="@_allMenuCode">
+        <MariloTabStrip @bind-ActiveTabId="@_allMenuActiveId"
+                        OverflowMode="TabStripOverflowMode.Menu">
+            <TabStripTab Id="all1" Title="First">
+                <p>First tab content.</p>
+            </TabStripTab>
+            <TabStripTab Id="all2" Title="Second">
+                <p>Second tab content.</p>
+            </TabStripTab>
+            <TabStripTab Id="all3" Title="Third">
+                <p>Third tab content.</p>
+            </TabStripTab>
+        </MariloTabStrip>
+    </DemoSection>
+</PageSection>
+
+@code {
+    private string _activeTabId = "tab1";
+    private string _allMenuActiveId = "all1";
+
+    private const string _overflowCode =
+        "<MariloTabStrip @bind-ActiveTabId=\"@_activeTabId\"\n" +
+        "                OverflowMode=\"TabStripOverflowMode.Menu\"\n" +
+        "                MaxVisibleTabs=\"3\">\n" +
+        "    <TabStripTab Id=\"tab1\" Title=\"Dashboard\">...</TabStripTab>\n" +
+        "    <TabStripTab Id=\"tab2\" Title=\"Reports\">...</TabStripTab>\n" +
+        "    <TabStripTab Id=\"tab3\" Title=\"Analytics\">...</TabStripTab>\n" +
+        "    <TabStripTab Id=\"tab4\" Title=\"Settings\">...</TabStripTab>\n" +
+        "    <TabStripTab Id=\"tab5\" Title=\"Users\">...</TabStripTab>\n" +
+        "    <TabStripTab Id=\"tab6\" Title=\"Billing\">...</TabStripTab>\n" +
+        "</MariloTabStrip>";
+
+    private const string _allMenuCode =
+        "<MariloTabStrip @bind-ActiveTabId=\"@_activeTabId\"\n" +
+        "                OverflowMode=\"TabStripOverflowMode.Menu\">\n" +
+        "    <TabStripTab Id=\"all1\" Title=\"First\">...</TabStripTab>\n" +
+        "    <TabStripTab Id=\"all2\" Title=\"Second\">...</TabStripTab>\n" +
+        "    <TabStripTab Id=\"all3\" Title=\"Third\">...</TabStripTab>\n" +
+        "</MariloTabStrip>";
+}

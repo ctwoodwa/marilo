@@ -22,6 +22,33 @@
             <MariloDatePicker Value="@(new DateOnly(2025, 1, 15))" Disabled="true" />
         </MariloField>
     </DemoSection>
+
+    <DemoSection Title="With Min/Max Range" Description="Restrict selectable dates to a range. Days outside the range appear disabled in the calendar." Code="@_rangeCode">
+        <MariloField>
+            <MariloLabel>Date (Jan 2025 only)</MariloLabel>
+            <MariloDatePicker Value="@_rangeDate"
+                              ValueChanged="@(v => _rangeDate = v)"
+                              Min="@(new DateOnly(2025, 1, 1))"
+                              Max="@(new DateOnly(2025, 1, 31))" />
+        </MariloField>
+        @if (_rangeDate.HasValue)
+        {
+            <p><strong>Selected:</strong> @_rangeDate.Value.ToString("yyyy-MM-dd")</p>
+        }
+    </DemoSection>
+
+    <DemoSection Title="With Disabled Dates" Description="Specific dates can be disabled (e.g., holidays or weekends)." Code="@_disabledDatesCode">
+        <MariloField>
+            <MariloLabel>No weekends in Jan 2025</MariloLabel>
+            <MariloDatePicker Value="@_noWeekendDate"
+                              ValueChanged="@(v => _noWeekendDate = v)"
+                              DisabledDates="@_disabledDates" />
+        </MariloField>
+        @if (_noWeekendDate.HasValue)
+        {
+            <p><strong>Selected:</strong> @_noWeekendDate.Value.ToString("yyyy-MM-dd")</p>
+        }
+    </DemoSection>
 </PageSection>
 
 <PageSection Title="Events">
@@ -47,6 +74,13 @@
 @code {
     private DateOnly? _date;
     private DateOnly? _evDate;
+    private DateOnly? _rangeDate;
+    private DateOnly? _noWeekendDate;
+
+    private List<DateOnly> _disabledDates = Enumerable.Range(1, 31)
+        .Select(d => new DateOnly(2025, 1, d))
+        .Where(d => d.DayOfWeek == DayOfWeek.Saturday || d.DayOfWeek == DayOfWeek.Sunday)
+        .ToList();
 
     private const string _basicCode =
         "<MariloField>\n" +
@@ -66,6 +100,17 @@
         "    <MariloLabel>Select a date</MariloLabel>\n" +
         "    <MariloDatePicker Value=\"@(new DateOnly(2025, 1, 15))\" Disabled=\"true\" />\n" +
         "</MariloField>";
+
+    private const string _rangeCode =
+        "<MariloDatePicker Value=\"@_date\"\n" +
+        "                  ValueChanged=\"@(v => _date = v)\"\n" +
+        "                  Min=\"@(new DateOnly(2025, 1, 1))\"\n" +
+        "                  Max=\"@(new DateOnly(2025, 1, 31))\" />";
+
+    private const string _disabledDatesCode =
+        "<MariloDatePicker Value=\"@_date\"\n" +
+        "                  ValueChanged=\"@(v => _date = v)\"\n" +
+        "                  DisabledDates=\"@_weekends\" />";
 
     private const string _interactiveCode =
         "<MariloDatePicker Value=\"@_date\" ValueChanged=\"@(v => _date = v)\" />\n" +

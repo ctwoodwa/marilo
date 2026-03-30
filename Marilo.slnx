@@ -8,4 +8,7 @@
   <Folder Name="/samples/">
     <Project Path="samples/Marilo.Demo/Marilo.Demo.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Marilo.Tests.Unit/Marilo.Tests.Unit.csproj" />
+  </Folder>
 </Solution>

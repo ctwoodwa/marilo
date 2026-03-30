@@ -1,0 +1,223 @@
+@inherits MariloComponentBase
+@inject HttpClient Http
+
+<div class="@CombineClasses(CssProvider.UploadClass())"
+     style="@CombineStyles()"
+     @attributes="AdditionalAttributes">
+
+    @* Drop zone *@
+    <div class="@CssProvider.UploadDropZoneClass(_isDragOver)"
+         @ondragenter="HandleDragEnter"
+         @ondragover="HandleDragOver"
+         @ondragleave="HandleDragLeave"
+         @ondrop="HandleDrop"
+         @ondragenter:preventDefault
+         @ondragover:preventDefault
+         @ondrop:preventDefault>
+        @if (ChildContent != null)
+        {
+            @ChildContent
+        }
+        else
+        {
+            <span class="mar-upload__icon">
+                @IconProvider.GetIcon("upload", IconSize.Medium)
+            </span>
+            <span class="mar-upload__text">
+                Drag and drop file@(Multiple ? "s" : "") here or
+            </span>
+        }
+        <label class="mar-upload__browse-btn">
+            <span>Browse</span>
+            <InputFile OnChange="HandleFileSelected"
+                       multiple="@Multiple"
+                       accept="@Accept"
+                       class="mar-upload__input" />
+        </label>
+    </div>
+
+    @* File list *@
+    @if (_files.Count > 0)
+    {
+        <ul class="@CssProvider.UploadFileListClass()">
+            @foreach (var file in _files)
+            {
+                <li class="@CssProvider.UploadFileItemClass()">
+                    <span class="mar-upload__file-name">@file.Name</span>
+                    <span class="mar-upload__file-size">@FormatSize(file.Size)</span>
+                    <span class="mar-upload__file-status mar-upload__file-status--@file.Status.ToString().ToLower()">
+                        @file.Status
+                    </span>
+                    @if (file.Status == UploadFileStatus.Uploading)
+                    {
+                        <div class="mar-upload__progress">
+                            <div class="mar-upload__progress-bar" style="width:@(file.Progress)%"></div>
+                        </div>
+                    }
+                    @if (file.Status == UploadFileStatus.Uploaded && !string.IsNullOrEmpty(RemoveUrl))
+                    {
+                        <button type="button"
+                                class="mar-upload__remove-btn"
+                                @onclick="() => RemoveFile(file)">
+                            &#x2715;
+                        </button>
+                    }
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    [Parameter] public string SaveUrl { get; set; } = string.Empty;
+    [Parameter] public string? RemoveUrl { get; set; }
+    [Parameter] public bool Multiple { get; set; } = true;
+    [Parameter] public string? Accept { get; set; }
+    [Parameter] public long MaxFileSize { get; set; }
+    [Parameter] public IEnumerable<string>? AllowedExtensions { get; set; }
+    [Parameter] public bool AutoUpload { get; set; } = true;
+    [Parameter] public bool WithCredentials { get; set; }
+    [Parameter] public EventCallback<UploadEventArgs> OnUpload { get; set; }
+    [Parameter] public EventCallback<UploadEventArgs> OnRemove { get; set; }
+    [Parameter] public EventCallback<UploadErrorEventArgs> OnError { get; set; }
+    [Parameter] public EventCallback<UploadSelectEventArgs> OnSelect { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private readonly List<UploadFileInfo> _files = [];
+    private bool _isDragOver;
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        var browserFiles = Multiple ? e.GetMultipleFiles().ToList() : new List<IBrowserFile> { e.File };
+        var fileInfos = new List<UploadFileInfo>();
+
+        foreach (var bf in browserFiles)
+        {
+            var info = new UploadFileInfo
+            {
+                Name = bf.Name,
+                Size = bf.Size,
+                Status = UploadFileStatus.Selected
+            };
+
+            var error = ValidateFile(info);
+            if (error != null)
+            {
+                info.Status = UploadFileStatus.Failed;
+                _files.Add(info);
+                await OnError.InvokeAsync(new UploadErrorEventArgs { File = info, ErrorMessage = error });
+                continue;
+            }
+
+            _files.Add(info);
+            fileInfos.Add(info);
+        }
+
+        await OnSelect.InvokeAsync(new UploadSelectEventArgs { Files = fileInfos });
+
+        if (AutoUpload)
+        {
+            foreach (var (info, bf) in fileInfos.Zip(browserFiles))
+            {
+                await UploadFile(info, bf);
+            }
+        }
+    }
+
+    private string? ValidateFile(UploadFileInfo file)
+    {
+        if (MaxFileSize > 0 && file.Size > MaxFileSize)
+        {
+            return $"File size {FormatSize(file.Size)} exceeds the maximum allowed size of {FormatSize(MaxFileSize)}.";
+        }
+
+        if (AllowedExtensions?.Any() == true)
+        {
+            var ext = Path.GetExtension(file.Name)?.ToLowerInvariant();
+            if (ext == null || !AllowedExtensions.Select(e => e.ToLowerInvariant()).Contains(ext))
+            {
+                return $"File type '{ext}' is not allowed. Allowed types: {string.Join(", ", AllowedExtensions)}.";
+            }
+        }
+
+        return null;
+    }
+
+    private async Task UploadFile(UploadFileInfo info, IBrowserFile browserFile)
+    {
+        try
+        {
+            info.Status = UploadFileStatus.Uploading;
+            info.Progress = 0;
+            StateHasChanged();
+
+            var maxSize = MaxFileSize > 0 ? MaxFileSize : 10L * 1024 * 1024 * 1024;
+            using var content = new MultipartFormDataContent();
+            var streamContent = new StreamContent(browserFile.OpenReadStream(maxSize));
+            content.Add(streamContent, "file", info.Name);
+
+            var response = await Http.PostAsync(SaveUrl, content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                info.Status = UploadFileStatus.Uploaded;
+                info.Progress = 100;
+                await OnUpload.InvokeAsync(new UploadEventArgs { File = info });
+            }
+            else
+            {
+                info.Status = UploadFileStatus.Failed;
+                var errorMsg = $"Upload failed with status {response.StatusCode}.";
+                await OnError.InvokeAsync(new UploadErrorEventArgs { File = info, ErrorMessage = errorMsg });
+            }
+        }
+        catch (Exception ex)
+        {
+            info.Status = UploadFileStatus.Failed;
+            await OnError.InvokeAsync(new UploadErrorEventArgs { File = info, ErrorMessage = ex.Message });
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task RemoveFile(UploadFileInfo file)
+    {
+        if (!string.IsNullOrEmpty(RemoveUrl))
+        {
+            try
+            {
+                var response = await Http.PostAsJsonAsync(RemoveUrl, new { file.Name });
+                if (response.IsSuccessStatusCode)
+                {
+                    _files.Remove(file);
+                    await OnRemove.InvokeAsync(new UploadEventArgs { File = file });
+                }
+            }
+            catch (Exception ex)
+            {
+                await OnError.InvokeAsync(new UploadErrorEventArgs { File = file, ErrorMessage = ex.Message });
+            }
+        }
+        else
+        {
+            _files.Remove(file);
+            await OnRemove.InvokeAsync(new UploadEventArgs { File = file });
+        }
+    }
+
+    private void HandleDragEnter(DragEventArgs e) => _isDragOver = true;
+
+    private void HandleDragOver(DragEventArgs e) { /* prevent default handled in markup */ }
+
+    private void HandleDragLeave(DragEventArgs e) => _isDragOver = false;
+
+    private void HandleDrop(DragEventArgs e) => _isDragOver = false;
+
+    private static string FormatSize(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes} B";
+        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
+        if (bytes < 1024 * 1024 * 1024) return $"{bytes / (1024.0 * 1024):F1} MB";
+        return $"{bytes / (1024.0 * 1024 * 1024):F1} GB";
+    }
+}

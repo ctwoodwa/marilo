@@ -1,0 +1,56 @@
+@page "/components/editor"
+@page "/components/editor/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Editor" Description="A rich-text editor with default tools and live preview." Code="@_basicCode">
+        <MariloEditor @bind-Value="_editorContent"
+                      Placeholder="Type some HTML here..."
+                      Height="200px" />
+
+        <div style="margin-top:16px">
+            <strong>Current Value:</strong>
+            <pre style="background:#f5f5f5;padding:8px;border-radius:4px;overflow-x:auto">@_editorContent</pre>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Limited Tools" Description="An editor with a limited set of formatting tools." Code="@_limitedCode">
+        <MariloEditor @bind-Value="_limitedContent"
+                      Tools="_limitedTools"
+                      Placeholder="Only basic formatting available..."
+                      Height="150px" />
+    </DemoSection>
+</PageSection>
+
+@code {
+    private string? _editorContent = "<p>Hello, <strong>world</strong>!</p>";
+    private string? _limitedContent;
+
+    private static readonly EditorTool[] _limitedTools =
+    [
+        EditorTool.Bold,
+        EditorTool.Italic,
+        EditorTool.Underline,
+        EditorTool.Link,
+        EditorTool.OrderedList,
+        EditorTool.UnorderedList,
+    ];
+
+    private const string _basicCode =
+        "<MariloEditor @bind-Value=\"_editorContent\"\n" +
+        "              Placeholder=\"Type some HTML here...\"\n" +
+        "              Height=\"200px\" />";
+
+    private const string _limitedCode =
+        "<MariloEditor @bind-Value=\"_limitedContent\"\n" +
+        "              Tools=\"_limitedTools\"\n" +
+        "              Height=\"150px\" />\n\n" +
+        "@code {\n" +
+        "    private static readonly EditorTool[] _limitedTools =\n" +
+        "    [\n" +
+        "        EditorTool.Bold,\n" +
+        "        EditorTool.Italic,\n" +
+        "        EditorTool.Underline,\n" +
+        "    ];\n" +
+        "}";
+}

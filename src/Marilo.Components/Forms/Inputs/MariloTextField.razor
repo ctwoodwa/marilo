@@ -13,6 +13,8 @@
            value="@Value"
            placeholder="@Placeholder"
            disabled="@Disabled"
+           readonly="@ReadOnly"
+           maxlength="@MaxLength"
            @oninput="OnInputChanged" />
     @if (Suffix != null)
     {
@@ -33,10 +35,46 @@
     [Parameter] public RenderFragment? Suffix { get; set; }
     [Parameter] public bool ShowPrefixSeparator { get; set; }
     [Parameter] public bool ShowSuffixSeparator { get; set; }
+    [Parameter] public bool ReadOnly { get; set; }
+    [Parameter] public int? MaxLength { get; set; }
+    [Parameter] public int DebounceDelay { get; set; }
+
+    private System.Timers.Timer? _debounceTimer;
+    private string _pendingValue = string.Empty;
 
     private async Task OnInputChanged(ChangeEventArgs e)
     {
-        Value = e.Value?.ToString() ?? string.Empty;
-        await ValueChanged.InvokeAsync(Value);
+        var newValue = e.Value?.ToString() ?? string.Empty;
+
+        if (DebounceDelay > 0)
+        {
+            _pendingValue = newValue;
+            _debounceTimer?.Stop();
+            _debounceTimer?.Dispose();
+            _debounceTimer = new System.Timers.Timer(DebounceDelay);
+            _debounceTimer.AutoReset = false;
+            _debounceTimer.Elapsed += async (_, _) => await InvokeAsync(async () =>
+            {
+                Value = _pendingValue;
+                await ValueChanged.InvokeAsync(Value);
+                StateHasChanged();
+            });
+            _debounceTimer.Start();
+        }
+        else
+        {
+            Value = newValue;
+            await ValueChanged.InvokeAsync(Value);
+        }
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _debounceTimer?.Stop();
+            _debounceTimer?.Dispose();
+        }
+        base.Dispose(disposing);
     }
 }

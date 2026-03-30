@@ -182,6 +182,16 @@ public class FluentUICssProvider : IMariloCssProvider
             .AddClass("mar-button--disabled", isDisabled)
             .Build();
 
+    public string ButtonClass(ButtonVariant variant, ButtonSize size, FillMode fillMode, RoundedMode rounded, bool isDisabled) =>
+        new CssClassBuilder()
+            .AddClass("mar-button")
+            .AddClass($"mar-button--{variant.ToString().ToLower()}")
+            .AddClass($"mar-button--{size.ToString().ToLower()}")
+            .AddClass($"mar-button--fill-{fillMode.ToString().ToLower()}", fillMode != FillMode.Solid)
+            .AddClass($"mar-button--rounded-{rounded.ToString().ToLower()}", rounded != RoundedMode.Medium)
+            .AddClass("mar-button--disabled", isDisabled)
+            .Build();
+
     public string IconButtonClass(ButtonSize size) =>
         new CssClassBuilder()
             .AddClass("mar-icon-button")
@@ -233,6 +243,21 @@ public class FluentUICssProvider : IMariloCssProvider
 
     public string AutocompleteClass() => "mar-autocomplete";
 
+    public string AutocompleteClass(bool isOpen, bool isDisabled, bool isInvalid) =>
+        new CssClassBuilder()
+            .AddClass("mar-autocomplete")
+            .AddClass("mar-autocomplete--open", isOpen)
+            .AddClass("mar-autocomplete--disabled", isDisabled)
+            .AddClass("mar-autocomplete--invalid", isInvalid)
+            .Build();
+
+    public string AutocompleteItemClass(bool isHighlighted, bool isSelected) =>
+        new CssClassBuilder()
+            .AddClass("mar-autocomplete-item")
+            .AddClass("mar-autocomplete-item--highlighted", isHighlighted)
+            .AddClass("mar-autocomplete-item--selected", isSelected)
+            .Build();
+
     public string SelectClass(bool isInvalid) =>
         new CssClassBuilder()
             .AddClass("mar-select")
@@ -261,6 +286,12 @@ public class FluentUICssProvider : IMariloCssProvider
 
     public string SliderClass() => "mar-slider";
 
+    public string SliderClass(SliderOrientation orientation) =>
+        new CssClassBuilder()
+            .AddClass("mar-slider")
+            .AddClass($"mar-slider--{orientation.ToString().ToLower()}")
+            .Build();
+
     public string RatingClass() => "mar-rating";
 
     public string ColorPickerClass() => "mar-color-picker";
@@ -270,6 +301,64 @@ public class FluentUICssProvider : IMariloCssProvider
     public string TimePickerClass() => "mar-timepicker";
 
     public string FileUploadClass() => "mar-file-upload";
+
+    public string FileUploadFileListClass() => "mar-file-upload-file-list";
+
+    // Selection / Dropdowns
+    public string DropDownListClass(bool isOpen, bool isDisabled, bool isInvalid) =>
+        new CssClassBuilder()
+            .AddClass("mar-dropdownlist")
+            .AddClass("mar-dropdownlist--open", isOpen)
+            .AddClass("mar-dropdownlist--disabled", isDisabled)
+            .AddClass("mar-dropdownlist--invalid", isInvalid)
+            .Build();
+
+    public string DropDownListPopupClass() => "mar-dropdownlist-popup";
+
+    public string DropDownListItemClass(bool isHighlighted, bool isSelected) =>
+        new CssClassBuilder()
+            .AddClass("mar-dropdownlist-item")
+            .AddClass("mar-dropdownlist-item--highlighted", isHighlighted)
+            .AddClass("mar-dropdownlist-item--selected", isSelected)
+            .Build();
+
+    public string ComboBoxClass(bool isOpen, bool isDisabled, bool isInvalid) =>
+        new CssClassBuilder()
+            .AddClass("mar-combobox")
+            .AddClass("mar-combobox--open", isOpen)
+            .AddClass("mar-combobox--disabled", isDisabled)
+            .AddClass("mar-combobox--invalid", isInvalid)
+            .Build();
+
+    public string ComboBoxPopupClass() => "mar-combobox-popup";
+
+    public string ComboBoxItemClass(bool isHighlighted, bool isSelected) =>
+        new CssClassBuilder()
+            .AddClass("mar-combobox-item")
+            .AddClass("mar-combobox-item--highlighted", isHighlighted)
+            .AddClass("mar-combobox-item--selected", isSelected)
+            .Build();
+
+    public string MultiSelectClass(bool isOpen, bool isDisabled, bool isInvalid) =>
+        new CssClassBuilder()
+            .AddClass("mar-multiselect")
+            .AddClass("mar-multiselect--open", isOpen)
+            .AddClass("mar-multiselect--disabled", isDisabled)
+            .AddClass("mar-multiselect--invalid", isInvalid)
+            .Build();
+
+    public string MultiSelectPopupClass() => "mar-multiselect-popup";
+
+    public string MultiSelectItemClass(bool isHighlighted, bool isSelected) =>
+        new CssClassBuilder()
+            .AddClass("mar-multiselect-item")
+            .AddClass("mar-multiselect-item--highlighted", isHighlighted)
+            .AddClass("mar-multiselect-item--selected", isSelected)
+            .Build();
+
+    public string MultiSelectTagClass() => "mar-multiselect-tag";
+
+    public string DropdownPopupClass() => "mar-dropdown-popup";
 
     // Forms - Containers
     public string FormClass() => "mar-form";
@@ -319,6 +408,13 @@ public class FluentUICssProvider : IMariloCssProvider
             .AddClass($"mar-tooltip--{position.ToString().ToLower()}")
             .Build();
 
+    public string TooltipClass(TooltipPosition position, TooltipShowOn showOn) =>
+        new CssClassBuilder()
+            .AddClass("mar-tooltip")
+            .AddClass($"mar-tooltip--{position.ToString().ToLower()}")
+            .AddClass($"mar-tooltip--show-{showOn.ToString().ToLower()}", showOn != TooltipShowOn.Hover)
+            .Build();
+
     public string PopoverClass() => "mar-popover";
 
     public string TimelineClass() => "mar-timeline";
@@ -350,7 +446,22 @@ public class FluentUICssProvider : IMariloCssProvider
 
     public string SnackbarClass() => "mar-snackbar";
 
+    public string SnackbarClass(NotificationVerticalPosition vertical, NotificationHorizontalPosition horizontal) =>
+        new CssClassBuilder()
+            .AddClass("mar-snackbar")
+            .AddClass($"mar-snackbar--{vertical.ToString().ToLower()}")
+            .AddClass($"mar-snackbar--{horizontal.ToString().ToLower()}")
+            .Build();
+
+    public string SnackbarHostClass() => "mar-snackbar-host";
+
     public string DialogClass() => "mar-dialog";
+
+    public string DialogClass(bool isDraggable) =>
+        new CssClassBuilder()
+            .AddClass("mar-dialog")
+            .AddClass("mar-dialog--draggable", isDraggable)
+            .Build();
 
     public string DialogOverlayClass() => "mar-dialog-overlay";
 
@@ -381,6 +492,13 @@ public class FluentUICssProvider : IMariloCssProvider
 
     public string DataGridHeaderClass() => "mar-datagrid-header";
 
+    public string DataGridHeaderCellClass(bool isSortable, bool isSorted) =>
+        new CssClassBuilder()
+            .AddClass("mar-datagrid-header-cell")
+            .AddClass("mar-datagrid-header-cell--sortable", isSortable)
+            .AddClass("mar-datagrid-header-cell--sorted", isSorted)
+            .Build();
+
     public string DataGridRowClass(bool isSelected, bool isStriped) =>
         new CssClassBuilder()
             .AddClass("mar-datagrid-row")
@@ -391,6 +509,58 @@ public class FluentUICssProvider : IMariloCssProvider
     public string DataGridCellClass() => "mar-datagrid-cell";
 
     public string DataGridPagerClass() => "mar-datagrid-pager";
+
+    public string DataGridToolbarClass() => "mar-datagrid-toolbar";
+
+    public string DataGridFilterRowClass() => "mar-datagrid-filter-row";
+
+    public string DataGridFilterCellClass() => "mar-datagrid-filter-cell";
+
+    public string DataGridGroupHeaderClass() => "mar-datagrid-group-header";
+
+    // ListView
+    public string ListViewClass() => "mar-listview";
+
+    public string ListViewItemClass(bool isSelected) =>
+        new CssClassBuilder()
+            .AddClass("mar-listview-item")
+            .AddClass("mar-listview-item--selected", isSelected)
+            .Build();
+
+    // Window
+    public string WindowClass(bool isModal) =>
+        new CssClassBuilder()
+            .AddClass("mar-window")
+            .AddClass("mar-window--modal", isModal)
+            .Build();
+
+    public string WindowTitleBarClass() => "mar-window-titlebar";
+
+    public string WindowContentClass() => "mar-window-content";
+
+    public string WindowActionsClass() => "mar-window-actions";
+
+    public string WindowOverlayClass() => "mar-window-overlay";
+
+    // Editor
+    public string EditorClass() => "mar-editor";
+
+    public string EditorToolbarClass() => "mar-editor-toolbar";
+
+    public string EditorContentClass() => "mar-editor-content";
+
+    // Upload
+    public string UploadClass() => "mar-upload";
+
+    public string UploadFileListClass() => "mar-upload-file-list";
+
+    public string UploadFileItemClass() => "mar-upload-file-item";
+
+    public string UploadDropZoneClass(bool isActive) =>
+        new CssClassBuilder()
+            .AddClass("mar-upload-dropzone")
+            .AddClass("mar-upload-dropzone--active", isActive)
+            .Build();
 
     // Charts
     public string ChartContainerClass() => "mar-chart-container";

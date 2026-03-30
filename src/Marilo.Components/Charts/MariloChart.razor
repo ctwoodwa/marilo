@@ -1,0 +1,415 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.ChartContainerClass())"
+     style="@CombineStyles($"width:{Width};height:{Height}")"
+     @attributes="AdditionalAttributes">
+
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <div class="mar-chart-title">@Title</div>
+    }
+
+    <CascadingValue Value="this" IsFixed="true">
+        @ChildContent
+    </CascadingValue>
+
+    @if (_series.Count > 0)
+    {
+        @RenderChart()
+    }
+</div>
+
+@code {
+    private static readonly string[] DefaultColors = ["#4e79a7", "#f28e2b", "#e15759", "#76b7b2", "#59a14f", "#edc948", "#b07aa1", "#ff9da7"];
+
+    [Parameter] public string Width { get; set; } = "100%";
+    [Parameter] public string Height { get; set; } = "300px";
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private readonly List<MariloChartSeries> _series = new();
+
+    internal void AddSeries(MariloChartSeries series)
+    {
+        if (!_series.Contains(series))
+        {
+            _series.Add(series);
+            StateHasChanged();
+        }
+    }
+
+    internal void RemoveSeries(MariloChartSeries series)
+    {
+        _series.Remove(series);
+    }
+
+    private string GetSeriesColor(int index, MariloChartSeries series)
+    {
+        return series.Color ?? DefaultColors[index % DefaultColors.Length];
+    }
+
+    private RenderFragment RenderChart() => builder =>
+    {
+        // Check if any series is a pie/donut type
+        var hasPieOrDonut = _series.Any(s => s.Type is ChartSeriesType.Pie or ChartSeriesType.Donut);
+
+        if (hasPieOrDonut)
+        {
+            RenderPieDonutChart(builder);
+        }
+        else
+        {
+            RenderCartesianChart(builder);
+        }
+    };
+
+    private void RenderCartesianChart(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder)
+    {
+        const double svgWidth = 600;
+        const double svgHeight = 300;
+        const double marginLeft = 60;
+        const double marginRight = 20;
+        const double marginTop = 20;
+        const double marginBottom = 40;
+        double plotWidth = svgWidth - marginLeft - marginRight;
+        double plotHeight = svgHeight - marginTop - marginBottom;
+
+        // Collect all data points
+        var allPoints = _series.Select(s => s.GetDataPoints()).ToList();
+
+        if (allPoints.All(p => p.Count == 0)) return;
+
+        // Calculate Y range
+        double minY = 0;
+        double maxY = allPoints.SelectMany(p => p).Select(p => p.Value).DefaultIfEmpty(0).Max();
+        maxY = maxY == 0 ? 10 : maxY * 1.1; // Add 10% headroom
+
+        // Get categories from first series
+        var categories = allPoints.First().Select(p => p.Category).ToList();
+        int categoryCount = Math.Max(categories.Count, 1);
+
+        builder.OpenElement(0, "svg");
+        builder.AddAttribute(1, "viewBox", $"0 0 {svgWidth} {svgHeight}");
+        builder.AddAttribute(2, "style", "width:100%;height:calc(100% - 40px)");
+        builder.AddAttribute(3, "xmlns", "http://www.w3.org/2000/svg");
+
+        // Gridlines
+        int gridLineCount = 5;
+        for (int i = 0; i <= gridLineCount; i++)
+        {
+            double y = marginTop + plotHeight - (plotHeight * i / gridLineCount);
+            double labelValue = minY + (maxY - minY) * i / gridLineCount;
+
+            builder.OpenElement(10, "line");
+            builder.AddAttribute(11, "x1", marginLeft.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            builder.AddAttribute(12, "y1", y.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            builder.AddAttribute(13, "x2", (svgWidth - marginRight).ToString(System.Globalization.CultureInfo.InvariantCulture));
+            builder.AddAttribute(14, "y2", y.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            builder.AddAttribute(15, "stroke", "#e0e0e0");
+            builder.AddAttribute(16, "stroke-width", "1");
+            builder.CloseElement();
+
+            builder.OpenElement(17, "text");
+            builder.AddAttribute(18, "x", (marginLeft - 5).ToString(System.Globalization.CultureInfo.InvariantCulture));
+            builder.AddAttribute(19, "y", (y + 4).ToString(System.Globalization.CultureInfo.InvariantCulture));
+            builder.AddAttribute(20, "text-anchor", "end");
+            builder.AddAttribute(21, "font-size", "11");
+            builder.AddAttribute(22, "fill", "#666");
+            builder.AddContent(23, labelValue.ToString("N0"));
+            builder.CloseElement();
+        }
+
+        // X axis labels
+        for (int i = 0; i < categories.Count; i++)
+        {
+            double x = marginLeft + (plotWidth * (i + 0.5) / categoryCount);
+
+            builder.OpenElement(30, "text");
+            builder.AddAttribute(31, "x", x.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            builder.AddAttribute(32, "y", (svgHeight - 10).ToString(System.Globalization.CultureInfo.InvariantCulture));
+            builder.AddAttribute(33, "text-anchor", "middle");
+            builder.AddAttribute(34, "font-size", "11");
+            builder.AddAttribute(35, "fill", "#666");
+            builder.AddContent(36, categories[i]);
+            builder.CloseElement();
+        }
+
+        // Axes
+        builder.OpenElement(40, "line");
+        builder.AddAttribute(41, "x1", marginLeft.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        builder.AddAttribute(42, "y1", marginTop.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        builder.AddAttribute(43, "x2", marginLeft.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        builder.AddAttribute(44, "y2", (svgHeight - marginBottom).ToString(System.Globalization.CultureInfo.InvariantCulture));
+        builder.AddAttribute(45, "stroke", "#333");
+        builder.AddAttribute(46, "stroke-width", "1");
+        builder.CloseElement();
+
+        builder.OpenElement(47, "line");
+        builder.AddAttribute(48, "x1", marginLeft.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        builder.AddAttribute(49, "y1", (svgHeight - marginBottom).ToString(System.Globalization.CultureInfo.InvariantCulture));
+        builder.AddAttribute(50, "x2", (svgWidth - marginRight).ToString(System.Globalization.CultureInfo.InvariantCulture));
+        builder.AddAttribute(51, "y2", (svgHeight - marginBottom).ToString(System.Globalization.CultureInfo.InvariantCulture));
+        builder.AddAttribute(52, "stroke", "#333");
+        builder.AddAttribute(53, "stroke-width", "1");
+        builder.CloseElement();
+
+        // Render each series
+        int totalBarSeries = _series.Count(s => s.Type is ChartSeriesType.Bar or ChartSeriesType.Column);
+        int barSeriesIndex = 0;
+
+        for (int si = 0; si < _series.Count; si++)
+        {
+            var series = _series[si];
+            var points = allPoints[si];
+            var color = GetSeriesColor(si, series);
+
+            switch (series.Type)
+            {
+                case ChartSeriesType.Line:
+                    RenderLineSeries(builder, points, color, plotWidth, plotHeight, marginLeft, marginTop, maxY, categoryCount, false);
+                    break;
+                case ChartSeriesType.Area:
+                    RenderLineSeries(builder, points, color, plotWidth, plotHeight, marginLeft, marginTop, maxY, categoryCount, true);
+                    break;
+                case ChartSeriesType.Bar:
+                case ChartSeriesType.Column:
+                    RenderColumnSeries(builder, points, color, plotWidth, plotHeight, marginLeft, marginTop, maxY, categoryCount, barSeriesIndex, totalBarSeries);
+                    barSeriesIndex++;
+                    break;
+                case ChartSeriesType.Scatter:
+                    RenderScatterSeries(builder, points, color, plotWidth, plotHeight, marginLeft, marginTop, maxY, categoryCount);
+                    break;
+            }
+        }
+
+        builder.CloseElement(); // svg
+
+        // Legend
+        RenderLegend(builder);
+    }
+
+    private void RenderLineSeries(
+        Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder,
+        IReadOnlyList<(string Category, double Value)> points,
+        string color, double plotWidth, double plotHeight,
+        double marginLeft, double marginTop, double maxY,
+        int categoryCount, bool isArea)
+    {
+        if (points.Count == 0) return;
+
+        var svgPoints = new List<(double x, double y)>();
+        for (int i = 0; i < points.Count; i++)
+        {
+            double x = marginLeft + (plotWidth * (i + 0.5) / categoryCount);
+            double y = marginTop + plotHeight - (plotHeight * points[i].Value / maxY);
+            svgPoints.Add((x, y));
+        }
+
+        var pointsStr = string.Join(" ", svgPoints.Select(p =>
+            $"{p.x.ToString(System.Globalization.CultureInfo.InvariantCulture)},{p.y.ToString(System.Globalization.CultureInfo.InvariantCulture)}"));
+
+        if (isArea)
+        {
+            double baseY = marginTop + plotHeight;
+            var areaPoints = $"{svgPoints[0].x.ToString(System.Globalization.CultureInfo.InvariantCulture)},{baseY.ToString(System.Globalization.CultureInfo.InvariantCulture)} {pointsStr} {svgPoints[^1].x.ToString(System.Globalization.CultureInfo.InvariantCulture)},{baseY.ToString(System.Globalization.CultureInfo.InvariantCulture)}";
+            builder.OpenElement(60, "polygon");
+            builder.AddAttribute(61, "points", areaPoints);
+            builder.AddAttribute(62, "fill", color);
+            builder.AddAttribute(63, "fill-opacity", "0.3");
+            builder.AddAttribute(64, "stroke", "none");
+            builder.CloseElement();
+        }
+
+        builder.OpenElement(65, "polyline");
+        builder.AddAttribute(66, "points", pointsStr);
+        builder.AddAttribute(67, "fill", "none");
+        builder.AddAttribute(68, "stroke", color);
+        builder.AddAttribute(69, "stroke-width", "2");
+        builder.CloseElement();
+
+        // Data point circles
+        foreach (var (x, y) in svgPoints)
+        {
+            builder.OpenElement(70, "circle");
+            builder.AddAttribute(71, "cx", x.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            builder.AddAttribute(72, "cy", y.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            builder.AddAttribute(73, "r", "4");
+            builder.AddAttribute(74, "fill", color);
+            builder.CloseElement();
+        }
+    }
+
+    private void RenderColumnSeries(
+        Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder,
+        IReadOnlyList<(string Category, double Value)> points,
+        string color, double plotWidth, double plotHeight,
+        double marginLeft, double marginTop, double maxY,
+        int categoryCount, int seriesIndex, int totalBarSeries)
+    {
+        double slotWidth = plotWidth / categoryCount;
+        double barGroupWidth = slotWidth * 0.7;
+        double barWidth = barGroupWidth / totalBarSeries;
+        double baseY = marginTop + plotHeight;
+
+        for (int i = 0; i < points.Count; i++)
+        {
+            double slotX = marginLeft + (slotWidth * i);
+            double groupStart = slotX + (slotWidth - barGroupWidth) / 2;
+            double x = groupStart + (barWidth * seriesIndex);
+            double barHeight = plotHeight * points[i].Value / maxY;
+            double y = baseY - barHeight;
+
+            builder.OpenElement(80, "rect");
+            builder.AddAttribute(81, "x", x.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            builder.AddAttribute(82, "y", y.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            builder.AddAttribute(83, "width", barWidth.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            builder.AddAttribute(84, "height", barHeight.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            builder.AddAttribute(85, "fill", color);
+            builder.CloseElement();
+        }
+    }
+
+    private void RenderScatterSeries(
+        Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder,
+        IReadOnlyList<(string Category, double Value)> points,
+        string color, double plotWidth, double plotHeight,
+        double marginLeft, double marginTop, double maxY,
+        int categoryCount)
+    {
+        for (int i = 0; i < points.Count; i++)
+        {
+            double x = marginLeft + (plotWidth * (i + 0.5) / categoryCount);
+            double y = marginTop + plotHeight - (plotHeight * points[i].Value / maxY);
+
+            builder.OpenElement(90, "circle");
+            builder.AddAttribute(91, "cx", x.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            builder.AddAttribute(92, "cy", y.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            builder.AddAttribute(93, "r", "5");
+            builder.AddAttribute(94, "fill", color);
+            builder.CloseElement();
+        }
+    }
+
+    private void RenderPieDonutChart(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder)
+    {
+        const double svgSize = 300;
+        const double cx = 150;
+        const double cy = 150;
+        const double outerRadius = 120;
+
+        builder.OpenElement(100, "svg");
+        builder.AddAttribute(101, "viewBox", $"0 0 {svgSize} {svgSize}");
+        builder.AddAttribute(102, "style", "width:100%;height:calc(100% - 40px)");
+        builder.AddAttribute(103, "xmlns", "http://www.w3.org/2000/svg");
+
+        // Use first pie/donut series
+        var series = _series.FirstOrDefault(s => s.Type is ChartSeriesType.Pie or ChartSeriesType.Donut);
+        if (series == null) { builder.CloseElement(); return; }
+
+        var points = series.GetDataPoints();
+        double total = points.Sum(p => Math.Abs(p.Value));
+        if (total == 0) { builder.CloseElement(); return; }
+
+        bool isDonut = series.Type == ChartSeriesType.Donut;
+        double innerRadius = isDonut ? outerRadius * 0.6 : 0;
+
+        double currentAngle = -Math.PI / 2; // Start at top
+
+        for (int i = 0; i < points.Count; i++)
+        {
+            double sliceAngle = 2 * Math.PI * Math.Abs(points[i].Value) / total;
+            double endAngle = currentAngle + sliceAngle;
+            int largeArc = sliceAngle > Math.PI ? 1 : 0;
+            var color = DefaultColors[i % DefaultColors.Length];
+
+            double x1Outer = cx + outerRadius * Math.Cos(currentAngle);
+            double y1Outer = cy + outerRadius * Math.Sin(currentAngle);
+            double x2Outer = cx + outerRadius * Math.Cos(endAngle);
+            double y2Outer = cy + outerRadius * Math.Sin(endAngle);
+
+            string d;
+            if (isDonut)
+            {
+                double x1Inner = cx + innerRadius * Math.Cos(currentAngle);
+                double y1Inner = cy + innerRadius * Math.Sin(currentAngle);
+                double x2Inner = cx + innerRadius * Math.Cos(endAngle);
+                double y2Inner = cy + innerRadius * Math.Sin(endAngle);
+
+                d = $"M {Fmt(x1Outer)} {Fmt(y1Outer)} A {Fmt(outerRadius)} {Fmt(outerRadius)} 0 {largeArc} 1 {Fmt(x2Outer)} {Fmt(y2Outer)} L {Fmt(x2Inner)} {Fmt(y2Inner)} A {Fmt(innerRadius)} {Fmt(innerRadius)} 0 {largeArc} 0 {Fmt(x1Inner)} {Fmt(y1Inner)} Z";
+            }
+            else
+            {
+                d = $"M {Fmt(cx)} {Fmt(cy)} L {Fmt(x1Outer)} {Fmt(y1Outer)} A {Fmt(outerRadius)} {Fmt(outerRadius)} 0 {largeArc} 1 {Fmt(x2Outer)} {Fmt(y2Outer)} Z";
+            }
+
+            builder.OpenElement(110, "path");
+            builder.AddAttribute(111, "d", d);
+            builder.AddAttribute(112, "fill", color);
+            builder.AddAttribute(113, "stroke", "white");
+            builder.AddAttribute(114, "stroke-width", "2");
+            builder.CloseElement();
+
+            currentAngle = endAngle;
+        }
+
+        builder.CloseElement(); // svg
+
+        // Legend for pie/donut
+        RenderLegend(builder);
+    }
+
+    private void RenderLegend(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder)
+    {
+        // Check if we have a pie/donut - legend items come from data points
+        var pieSeries = _series.FirstOrDefault(s => s.Type is ChartSeriesType.Pie or ChartSeriesType.Donut);
+        if (pieSeries != null)
+        {
+            var points = pieSeries.GetDataPoints();
+            builder.OpenElement(120, "div");
+            builder.AddAttribute(121, "class", "mar-chart-legend");
+            builder.AddAttribute(122, "style", "display:flex;flex-wrap:wrap;gap:12px;justify-content:center;padding:8px");
+
+            for (int i = 0; i < points.Count; i++)
+            {
+                var color = DefaultColors[i % DefaultColors.Length];
+                builder.OpenElement(123, "span");
+                builder.AddAttribute(124, "class", "mar-chart-legend-item");
+                builder.AddAttribute(125, "style", "display:inline-flex;align-items:center;gap:4px;font-size:12px");
+
+                builder.OpenElement(126, "span");
+                builder.AddAttribute(127, "style", $"width:12px;height:12px;background:{color};border-radius:2px;display:inline-block");
+                builder.CloseElement();
+
+                builder.AddContent(128, points[i].Category);
+                builder.CloseElement();
+            }
+
+            builder.CloseElement();
+        }
+        else
+        {
+            builder.OpenElement(130, "div");
+            builder.AddAttribute(131, "class", "mar-chart-legend");
+            builder.AddAttribute(132, "style", "display:flex;flex-wrap:wrap;gap:12px;justify-content:center;padding:8px");
+
+            for (int si = 0; si < _series.Count; si++)
+            {
+                var color = GetSeriesColor(si, _series[si]);
+                builder.OpenElement(133, "span");
+                builder.AddAttribute(134, "class", "mar-chart-legend-item");
+                builder.AddAttribute(135, "style", "display:inline-flex;align-items:center;gap:4px;font-size:12px");
+
+                builder.OpenElement(136, "span");
+                builder.AddAttribute(137, "style", $"width:12px;height:12px;background:{color};border-radius:2px;display:inline-block");
+                builder.CloseElement();
+
+                builder.AddContent(138, _series[si].Name);
+                builder.CloseElement();
+            }
+
+            builder.CloseElement();
+        }
+    }
+
+    private static string Fmt(double v) => v.ToString(System.Globalization.CultureInfo.InvariantCulture);
+}

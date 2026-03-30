@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* ==========================================================================
    Marilo Fluent UI Provider - Design System Stylesheet
    Version: 2.0.0
@@ -87,6 +88,132 @@
   --marilo-z-popover: 1060;
   --marilo-z-tooltip: 1070;
   --marilo-z-toast: 1080;
+  /* Fluent UI Design Token System */
+  --direction: ltr;
+  --disabled-opacity: 0.3;
+  --base-height-multiplier: 8;
+  --base-horizontal-spacing-multiplier: 3;
+  --density: 0;
+  --design-unit: 4;
+  --control-corner-radius: 4;
+  --layer-corner-radius: 8;
+  --stroke-width: 1;
+  --focus-stroke-width: 2;
+  --body-font: 'Segoe UI Variable', 'Segoe UI', sans-serif;
+  --font-weight: 400;
+  /* Fluent Type Ramp */
+  --type-ramp-base-font-size: 14px;
+  --type-ramp-base-line-height: 20px;
+  --type-ramp-minus-1-font-size: 12px;
+  --type-ramp-minus-1-line-height: 16px;
+  --type-ramp-minus-2-font-size: 10px;
+  --type-ramp-minus-2-line-height: 14px;
+  --type-ramp-plus-1-font-size: 16px;
+  --type-ramp-plus-1-line-height: 22px;
+  --type-ramp-plus-2-font-size: 20px;
+  --type-ramp-plus-2-line-height: 26px;
+  --type-ramp-plus-3-font-size: 24px;
+  --type-ramp-plus-3-line-height: 32px;
+  --type-ramp-plus-4-font-size: 28px;
+  --type-ramp-plus-4-line-height: 36px;
+  --type-ramp-plus-5-font-size: 32px;
+  --type-ramp-plus-5-line-height: 40px;
+  --type-ramp-plus-6-font-size: 40px;
+  --type-ramp-plus-6-line-height: 52px;
+  /* Fluent Color System */
+  --base-layer-luminance: 0.98;
+  --neutral-base-color: #808080;
+  --accent-base-color: #0078d4;
+  /* Fluent Neutral Fills */
+  --fill-color: #fbfbfb;
+  --neutral-fill-rest: #ffffff;
+  --neutral-fill-hover: #f7f7f7;
+  --neutral-fill-active: #fbfbfb;
+  --neutral-fill-focus: #fbfbfb;
+  --neutral-fill-input-rest: #ffffff;
+  --neutral-fill-input-hover: #f7f7f7;
+  --neutral-fill-input-active: #fbfbfb;
+  --neutral-fill-input-focus: #ffffff;
+  --neutral-fill-input-alt-rest: #f3f3f3;
+  --neutral-fill-input-alt-hover: #ebebeb;
+  --neutral-fill-input-alt-active: #e0e0e0;
+  --neutral-fill-input-alt-focus: #f3f3f3;
+  --neutral-fill-layer-rest: #ffffff;
+  --neutral-fill-layer-hover: #ffffff;
+  --neutral-fill-layer-active: #ffffff;
+  --neutral-fill-layer-alt-rest: #ffffff;
+  --neutral-fill-secondary-rest: #efefef;
+  --neutral-fill-secondary-hover: #f3f3f3;
+  --neutral-fill-secondary-active: #f7f7f7;
+  --neutral-fill-secondary-focus: #efefef;
+  --neutral-fill-stealth-rest: #fbfbfb;
+  --neutral-fill-stealth-hover: #efefef;
+  --neutral-fill-stealth-active: #f3f3f3;
+  --neutral-fill-stealth-focus: #fbfbfb;
+  --neutral-fill-strong-rest: #717171;
+  --neutral-fill-strong-hover: #4b4b4b;
+  --neutral-fill-strong-active: #868686;
+  --neutral-fill-strong-focus: #717171;
+  /* Fluent Neutral Foreground */
+  --neutral-foreground-rest: #1a1a1a;
+  --neutral-foreground-hover: #7a7a7a;
+  --neutral-foreground-active: #a8a8a8;
+  --neutral-foreground-focus: #1a1a1a;
+  --neutral-foreground-hint: #717171;
+  /* Fluent Accent Fills */
+  --accent-fill-rest: #036ac4;
+  --accent-fill-hover: #0473ce;
+  --accent-fill-active: #0481e0;
+  --accent-fill-focus: #036ac4;
+  --foreground-on-accent-rest: #ffffff;
+  --foreground-on-accent-hover: #ffffff;
+  --foreground-on-accent-active: #ffffff;
+  --foreground-on-accent-focus: #ffffff;
+  --accent-foreground-rest: #023b8f;
+  --accent-foreground-hover: #012e7f;
+  --accent-foreground-active: #0360b9;
+  --accent-foreground-focus: #023b8f;
+  /* Fluent Stroke */
+  --neutral-stroke-rest: #d6d6d6;
+  --neutral-stroke-hover: #c6c6c6;
+  --neutral-stroke-active: #e0e0e0;
+  --neutral-stroke-focus: #d6d6d6;
+  --neutral-stroke-control-rest: linear-gradient(#efefef 90%, #d6d6d6 100%);
+  --neutral-stroke-control-hover: linear-gradient(#e5e5e5 90%, #cecece 100%);
+  --neutral-stroke-control-active: #e5e5e5;
+  --neutral-stroke-control-focus: linear-gradient(#e5e5e5 90%, #cecece 100%);
+  --neutral-stroke-divider-rest: #ebebeb;
+  --neutral-stroke-input-rest: linear-gradient(#efefef calc(100% - 1px), #929292 calc(100% - 1px), #929292);
+  --neutral-stroke-input-hover: linear-gradient(#e5e5e5 calc(100% - 1px), #8a8a8a calc(100% - 1px), #8a8a8a);
+  --neutral-stroke-input-active: #e5e5e5;
+  --neutral-stroke-input-focus: linear-gradient(#e5e5e5 calc(100% - 1px), #8a8a8a calc(100% - 1px), #8a8a8a);
+  --neutral-stroke-layer-rest: #efefef;
+  --neutral-stroke-strong-rest: #636363;
+  --neutral-stroke-strong-hover: #636363;
+  --neutral-stroke-strong-active: #636363;
+  --neutral-stroke-strong-focus: #636363;
+  --accent-stroke-control-rest: linear-gradient(#1c79ca 90%, #024885 100%);
+  --accent-stroke-control-hover: linear-gradient(#1b80d2 90%, #035292 100%);
+  --accent-stroke-control-active: #1b8ce3;
+  --accent-stroke-control-focus: linear-gradient(#1c79ca 90%, #024885 100%);
+  /* Fluent Focus */
+  --focus-stroke-outer: #000000;
+  --focus-stroke-inner: #ffffff;
+  /* Fluent Elevation Shadows */
+  --elevation-shadow-card-rest: 0 0 2px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.14);
+  --elevation-shadow-card-hover: 0 0 2px rgba(0, 0, 0, 0.12), 0 4px 8px rgba(0, 0, 0, 0.14);
+  --elevation-shadow-tooltip: 0 0 2px rgba(0, 0, 0, 0.12), 0 8px 16px rgba(0, 0, 0, 0.14);
+  --elevation-shadow-flyout: 0 0 2px rgba(0, 0, 0, 0.2), 0 16px 32px rgba(0, 0, 0, 0.24);
+  --elevation-shadow-dialog: 0 0 2px rgba(0, 0, 0, 0.2), 0 64px 128px rgba(0, 0, 0, 0.24);
+  /* Fluent Layer Colors (for dropdown popup context) */
+  --neutral-layer-floating: #ffffff;
+  --neutral-layer-1: #fbfbfb;
+  --neutral-layer-2: #f3f3f3;
+  --neutral-layer-3: #ebebeb;
+  --neutral-layer-4: #e0e0e0;
+  /* Fluent Input Placeholder */
+  --input-placeholder-rest: #767676;
+  --input-placeholder-hover: #717171;
 }
 
 /* --------------------------------------------------------------------------
@@ -1275,8 +1402,7 @@
 
 /* Shared styles for other form input controls */
 .mar-textarea textarea,
-.mar-numeric-input input,
-.mar-select select {
+.mar-numeric-input input {
   width: 100%;
   padding: 6px 10px;
   font-family: var(--marilo-font-family);
@@ -1291,25 +1417,21 @@
 }
 
 .mar-textarea textarea:hover,
-.mar-numeric-input input:hover,
-.mar-select select:hover {
+.mar-numeric-input input:hover {
   border-color: var(--marilo-color-on-background);
 }
 
 .mar-textarea textarea:focus,
-.mar-numeric-input input:focus,
-.mar-select select:focus {
+.mar-numeric-input input:focus {
   border-color: var(--marilo-color-primary);
   box-shadow: 0 0 0 1px var(--marilo-color-primary);
 }
 
-.mar-textarea--invalid textarea,
-.mar-select--invalid select {
+.mar-textarea--invalid textarea {
   border-color: var(--marilo-color-danger);
 }
 
-.mar-textarea--invalid textarea:focus,
-.mar-select--invalid select:focus {
+.mar-textarea--invalid textarea:focus {
   box-shadow: 0 0 0 1px var(--marilo-color-danger);
 }
 
@@ -1340,10 +1462,180 @@
   position: relative;
 }
 
+/* --------------------------------------------------------------------------
+   Forms: Select (Fluent UI Design Token System)
+   -------------------------------------------------------------------------- */
 .mar-select {
-  display: flex;
+  display: inline-flex;
+  position: relative;
+  background: padding-box linear-gradient(var(--neutral-fill-rest), var(--neutral-fill-rest)), border-box var(--neutral-stroke-control-rest);
+  border: calc(var(--stroke-width) * 1px) solid transparent;
+  border-radius: calc(var(--control-corner-radius) * 1px);
+  box-sizing: border-box;
+  color: var(--neutral-foreground-rest);
+  fill: currentcolor;
+  font-family: var(--body-font);
+  font-size: var(--type-ramp-base-font-size);
+  line-height: var(--type-ramp-base-line-height);
+  height: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px);
+  min-width: 250px;
+  user-select: none;
+  vertical-align: top;
+}
+.mar-select select {
+  appearance: none;
+  width: 100%;
+  height: 100%;
+  padding: 0 calc(var(--design-unit) * 9px) 0 calc(var(--design-unit) * 3px);
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+.mar-select::after {
+  content: "";
+  display: block;
+  position: absolute;
+  right: calc(var(--design-unit) * 2.5px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.15 4.65a.5.5 0 0 1 .7 0L6 7.79l3.15-3.14a.5.5 0 0 1 .7.7l-3.5 3.5a.5.5 0 0 1-.7 0l-3.5-3.5a.5.5 0 0 1 0-.7z' fill='%231a1a1a'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-size: contain;
+  pointer-events: none;
+}
+.mar-select:hover {
+  background: padding-box linear-gradient(var(--neutral-fill-hover), var(--neutral-fill-hover)), border-box var(--neutral-stroke-control-hover);
+}
+.mar-select:active {
+  background: padding-box linear-gradient(var(--neutral-fill-active), var(--neutral-fill-active)), border-box var(--neutral-stroke-control-active);
+}
+.mar-select:focus-within {
+  background: padding-box linear-gradient(var(--neutral-fill-focus), var(--neutral-fill-focus)), border-box var(--neutral-stroke-control-focus);
+  box-shadow: 0 0 0 calc(var(--focus-stroke-width) * 1px) var(--focus-stroke-outer);
+  outline: calc(var(--focus-stroke-width) * 1px) solid var(--focus-stroke-inner);
+  outline-offset: calc(var(--focus-stroke-width) * -1px);
+}
+
+.mar-select--invalid {
+  background: padding-box linear-gradient(var(--neutral-fill-rest), var(--neutral-fill-rest)), border-box var(--marilo-color-danger);
+}
+.mar-select--invalid:focus-within {
+  box-shadow: 0 0 0 calc(var(--focus-stroke-width) * 1px) var(--marilo-color-danger);
+}
+
+.mar-select__filter {
+  width: 100%;
+  padding: calc(var(--design-unit) * 1px) calc(var(--design-unit) * 2px);
+  font-family: var(--body-font);
+  font-size: var(--type-ramp-minus-1-font-size);
+  line-height: var(--type-ramp-minus-1-line-height);
+  color: var(--neutral-foreground-rest);
+  background: var(--neutral-fill-input-alt-rest);
+  border: calc(var(--stroke-width) * 1px) solid transparent;
+  border-radius: calc(var(--control-corner-radius) * 1px);
+  outline: none;
+  margin-bottom: calc(var(--design-unit) * 1px);
+}
+.mar-select__filter:focus {
+  border-color: var(--accent-fill-rest);
+}
+.mar-select__filter::placeholder {
+  color: var(--input-placeholder-rest);
+}
+.mar-select__filter:hover::placeholder {
+  color: var(--input-placeholder-hover);
+}
+
+.mar-select[disabled],
+.mar-select--disabled {
+  opacity: var(--disabled-opacity);
+  pointer-events: none;
+}
+
+/* Select dropdown popup (fluent-listbox equivalent) */
+.mar-select__listbox {
+  --max-height: 158px;
+  color: var(--neutral-foreground-rest);
+  fill: currentcolor;
+  font-family: var(--body-font);
+  user-select: none;
+  box-shadow: var(--elevation-shadow-flyout);
+  background: var(--fill-color);
+  border-radius: calc(var(--layer-corner-radius) * 1px);
+  border: calc(var(--stroke-width) * 1px) solid transparent;
+  box-sizing: border-box;
+  display: none;
   flex-direction: column;
-  gap: var(--marilo-space-xs);
+  left: 0;
+  max-height: calc(var(--max-height) - (var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px);
+  padding: calc((var(--design-unit) - var(--stroke-width)) * 1px);
+  overflow-y: auto;
+  position: absolute;
+  width: 100%;
+  z-index: 1;
+  margin: 1px 0;
+}
+.mar-select__listbox--open {
+  display: inline-flex;
+}
+
+/* Select option item (fluent-option equivalent) */
+.mar-select__option {
+  display: flex;
+  align-items: center;
+  position: relative;
+  box-sizing: border-box;
+  color: var(--neutral-foreground-rest);
+  fill: currentcolor;
+  font-family: var(--body-font);
+  font-size: var(--type-ramp-base-font-size);
+  line-height: var(--type-ramp-base-line-height);
+  height: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px);
+  min-height: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px);
+  padding: 0 calc((var(--base-horizontal-spacing-multiplier) + var(--design-unit) + var(--density)) * var(--design-unit) * 1px) 0 calc(var(--base-horizontal-spacing-multiplier) * var(--design-unit) * 1px);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border: calc(var(--focus-stroke-width) * 1px) solid transparent;
+  border-radius: calc(var(--control-corner-radius) * 1px);
+  margin: 0 calc(var(--design-unit) * 1px);
+}
+.mar-select__option:hover {
+  background: var(--neutral-fill-stealth-hover);
+  border-color: transparent;
+}
+.mar-select__option:active {
+  background: var(--neutral-fill-stealth-active);
+}
+.mar-select__option--selected {
+  background: var(--neutral-fill-stealth-hover);
+}
+.mar-select__option--selected::before {
+  content: "";
+  display: block;
+  position: absolute;
+  left: calc(var(--design-unit) * 1px);
+  width: 3px;
+  height: calc(var(--design-unit) * 4px);
+  background: var(--accent-fill-rest);
+  border-radius: calc(var(--control-corner-radius) * 1px);
+}
+.mar-select__option--disabled {
+  opacity: var(--disabled-opacity);
+  pointer-events: none;
+}
+.mar-select__option:focus-visible {
+  outline: none;
+  border-color: var(--focus-stroke-outer);
+  box-shadow: inset 0 0 0 calc(var(--stroke-width) * 1px) var(--focus-stroke-inner);
 }
 
 /* --------------------------------------------------------------------------
@@ -3823,4 +4115,663 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--marilo-color-text-secondary);
+}
+
+/* --------------------------------------------------------------------------
+   Selection: DropDownList
+   -------------------------------------------------------------------------- */
+.mar-dropdownlist {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-width: 160px;
+  border: 1px solid var(--marilo-color-border);
+  border-radius: var(--marilo-radius-md);
+  background: var(--marilo-color-background);
+  padding: var(--marilo-space-xs) var(--marilo-space-sm);
+  cursor: pointer;
+  font-size: var(--marilo-font-size-base);
+  transition: border-color 0.15s ease;
+}
+.mar-dropdownlist:hover {
+  border-color: var(--marilo-color-border-strong);
+}
+.mar-dropdownlist--open {
+  border-color: var(--marilo-color-primary);
+}
+.mar-dropdownlist--disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.mar-dropdownlist--invalid {
+  border-color: var(--marilo-color-danger);
+}
+
+.mar-dropdownlist-popup {
+  --max-height: 158px;
+  color: var(--neutral-foreground-rest);
+  fill: currentcolor;
+  font-family: var(--body-font);
+  user-select: none;
+  box-shadow: var(--elevation-shadow-flyout);
+  background: var(--neutral-layer-floating);
+  border-radius: calc(var(--layer-corner-radius) * 1px);
+  border: calc(var(--stroke-width) * 1px) solid transparent;
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-direction: column;
+  left: 0;
+  max-height: calc(var(--max-height) - (var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px);
+  padding: calc((var(--design-unit) - var(--stroke-width)) * 1px);
+  overflow-y: auto;
+  min-width: 100%;
+  z-index: 1;
+  margin: 1px 0;
+  position: absolute;
+}
+
+.mar-dropdownlist-item {
+  display: flex;
+  align-items: center;
+  position: relative;
+  box-sizing: border-box;
+  height: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px);
+  min-height: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px);
+  padding: 0 calc((var(--base-horizontal-spacing-multiplier) + var(--design-unit) + var(--density)) * var(--design-unit) * 1px) 0 calc(var(--base-horizontal-spacing-multiplier) * var(--design-unit) * 1px);
+  cursor: pointer;
+  font-family: var(--body-font);
+  font-size: var(--type-ramp-base-font-size);
+  line-height: var(--type-ramp-base-line-height);
+  color: var(--neutral-foreground-rest);
+  border: calc(var(--focus-stroke-width) * 1px) solid transparent;
+  border-radius: calc(var(--control-corner-radius) * 1px);
+  margin: 0 calc(var(--design-unit) * 1px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mar-dropdownlist-item:hover {
+  background: var(--neutral-fill-stealth-hover);
+}
+.mar-dropdownlist-item:active {
+  background: var(--neutral-fill-stealth-active);
+}
+.mar-dropdownlist-item--highlighted {
+  background: var(--neutral-fill-stealth-hover);
+}
+.mar-dropdownlist-item--selected {
+  background: var(--neutral-fill-stealth-hover);
+}
+.mar-dropdownlist-item--selected::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--design-unit) * 1px);
+  width: 3px;
+  height: calc(var(--design-unit) * 4px);
+  background: var(--accent-fill-rest);
+  border-radius: calc(var(--control-corner-radius) * 1px);
+}
+.mar-dropdownlist-item:focus-visible {
+  outline: none;
+  border-color: var(--focus-stroke-outer);
+  box-shadow: inset 0 0 0 calc(var(--stroke-width) * 1px) var(--focus-stroke-inner);
+}
+
+/* --------------------------------------------------------------------------
+   Selection: ComboBox
+   -------------------------------------------------------------------------- */
+.mar-combobox {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-width: 160px;
+  border: 1px solid var(--marilo-color-border);
+  border-radius: var(--marilo-radius-md);
+  background: var(--marilo-color-background);
+  font-size: var(--marilo-font-size-base);
+  transition: border-color 0.15s ease;
+}
+.mar-combobox:hover {
+  border-color: var(--marilo-color-border-strong);
+}
+.mar-combobox--open {
+  border-color: var(--marilo-color-primary);
+}
+.mar-combobox--disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.mar-combobox--invalid {
+  border-color: var(--marilo-color-danger);
+}
+.mar-combobox input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: var(--marilo-space-xs) var(--marilo-space-sm);
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.mar-combobox-popup {
+  --max-height: 158px;
+  color: var(--neutral-foreground-rest);
+  fill: currentcolor;
+  font-family: var(--body-font);
+  user-select: none;
+  box-shadow: var(--elevation-shadow-flyout);
+  background: var(--neutral-layer-floating);
+  border-radius: calc(var(--layer-corner-radius) * 1px);
+  border: calc(var(--stroke-width) * 1px) solid transparent;
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-direction: column;
+  left: 0;
+  max-height: calc(var(--max-height) - (var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px);
+  padding: calc((var(--design-unit) - var(--stroke-width)) * 1px);
+  overflow-y: auto;
+  min-width: 100%;
+  z-index: 1;
+  margin: 1px 0;
+  position: absolute;
+}
+
+.mar-combobox-item {
+  display: flex;
+  align-items: center;
+  position: relative;
+  box-sizing: border-box;
+  height: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px);
+  min-height: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px);
+  padding: 0 calc((var(--base-horizontal-spacing-multiplier) + var(--design-unit) + var(--density)) * var(--design-unit) * 1px) 0 calc(var(--base-horizontal-spacing-multiplier) * var(--design-unit) * 1px);
+  cursor: pointer;
+  font-family: var(--body-font);
+  font-size: var(--type-ramp-base-font-size);
+  line-height: var(--type-ramp-base-line-height);
+  color: var(--neutral-foreground-rest);
+  border: calc(var(--focus-stroke-width) * 1px) solid transparent;
+  border-radius: calc(var(--control-corner-radius) * 1px);
+  margin: 0 calc(var(--design-unit) * 1px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mar-combobox-item:hover {
+  background: var(--neutral-fill-stealth-hover);
+}
+.mar-combobox-item:active {
+  background: var(--neutral-fill-stealth-active);
+}
+.mar-combobox-item--highlighted {
+  background: var(--neutral-fill-stealth-hover);
+}
+.mar-combobox-item--selected {
+  background: var(--neutral-fill-stealth-hover);
+}
+.mar-combobox-item--selected::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--design-unit) * 1px);
+  width: 3px;
+  height: calc(var(--design-unit) * 4px);
+  background: var(--accent-fill-rest);
+  border-radius: calc(var(--control-corner-radius) * 1px);
+}
+.mar-combobox-item:focus-visible {
+  outline: none;
+  border-color: var(--focus-stroke-outer);
+  box-shadow: inset 0 0 0 calc(var(--stroke-width) * 1px) var(--focus-stroke-inner);
+}
+
+/* --------------------------------------------------------------------------
+   Selection: MultiSelect
+   -------------------------------------------------------------------------- */
+.mar-multiselect {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--marilo-space-xxs);
+  min-width: 160px;
+  min-height: 36px;
+  border: 1px solid var(--marilo-color-border);
+  border-radius: var(--marilo-radius-md);
+  background: var(--marilo-color-background);
+  padding: var(--marilo-space-xxs) var(--marilo-space-sm);
+  font-size: var(--marilo-font-size-base);
+  transition: border-color 0.15s ease;
+}
+.mar-multiselect:hover {
+  border-color: var(--marilo-color-border-strong);
+}
+.mar-multiselect--open {
+  border-color: var(--marilo-color-primary);
+}
+.mar-multiselect--disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.mar-multiselect--invalid {
+  border-color: var(--marilo-color-danger);
+}
+
+.mar-multiselect-popup {
+  --max-height: 158px;
+  color: var(--neutral-foreground-rest);
+  fill: currentcolor;
+  font-family: var(--body-font);
+  user-select: none;
+  box-shadow: var(--elevation-shadow-flyout);
+  background: var(--neutral-layer-floating);
+  border-radius: calc(var(--layer-corner-radius) * 1px);
+  border: calc(var(--stroke-width) * 1px) solid transparent;
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-direction: column;
+  left: 0;
+  max-height: calc(var(--max-height) - (var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px);
+  padding: calc((var(--design-unit) - var(--stroke-width)) * 1px);
+  overflow-y: auto;
+  min-width: 100%;
+  z-index: 1;
+  margin: 1px 0;
+  position: absolute;
+}
+
+.mar-multiselect-item {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--design-unit) * 1px);
+  position: relative;
+  box-sizing: border-box;
+  height: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px);
+  min-height: calc((var(--base-height-multiplier) + var(--density)) * var(--design-unit) * 1px);
+  padding: 0 calc(var(--base-horizontal-spacing-multiplier) * var(--design-unit) * 1px);
+  cursor: pointer;
+  font-family: var(--body-font);
+  font-size: var(--type-ramp-base-font-size);
+  line-height: var(--type-ramp-base-line-height);
+  color: var(--neutral-foreground-rest);
+  border: calc(var(--focus-stroke-width) * 1px) solid transparent;
+  border-radius: calc(var(--control-corner-radius) * 1px);
+  margin: 0 calc(var(--design-unit) * 1px);
+}
+.mar-multiselect-item:hover {
+  background: var(--neutral-fill-stealth-hover);
+}
+.mar-multiselect-item:active {
+  background: var(--neutral-fill-stealth-active);
+}
+.mar-multiselect-item--highlighted {
+  background: var(--neutral-fill-stealth-hover);
+}
+.mar-multiselect-item--selected {
+  background: var(--neutral-fill-stealth-hover);
+}
+.mar-multiselect-item:focus-visible {
+  outline: none;
+  border-color: var(--focus-stroke-outer);
+  box-shadow: inset 0 0 0 calc(var(--stroke-width) * 1px) var(--focus-stroke-inner);
+}
+
+.mar-multiselect-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--marilo-space-xxs);
+  padding: 1px var(--marilo-space-xs);
+  background: var(--marilo-color-surface);
+  border-radius: var(--marilo-radius-sm);
+  font-size: var(--marilo-font-size-sm);
+  line-height: 1.4;
+}
+
+.mar-dropdown-popup {
+  position: absolute;
+  z-index: 1;
+  background: var(--neutral-layer-floating);
+  border-radius: calc(var(--layer-corner-radius) * 1px);
+  border: calc(var(--stroke-width) * 1px) solid transparent;
+  box-shadow: var(--elevation-shadow-flyout);
+  box-sizing: border-box;
+  padding: calc((var(--design-unit) - var(--stroke-width)) * 1px);
+  margin: 1px 0;
+}
+
+/* --------------------------------------------------------------------------
+   Button: Extended FillMode & Rounded
+   -------------------------------------------------------------------------- */
+.mar-button--fill-outline {
+  background: transparent;
+  border: 1px solid currentColor;
+}
+
+.mar-button--fill-flat {
+  background: transparent;
+  border-color: transparent;
+}
+
+.mar-button--fill-flat:hover {
+  background: var(--marilo-color-surface-hover);
+}
+
+.mar-button--fill-link {
+  background: transparent;
+  border-color: transparent;
+  text-decoration: underline;
+  padding: 0;
+  min-height: auto;
+}
+
+.mar-button--fill-clear {
+  background: transparent;
+  border-color: transparent;
+}
+
+.mar-button--rounded-none {
+  border-radius: 0;
+}
+
+.mar-button--rounded-small {
+  border-radius: var(--marilo-radius-sm);
+}
+
+.mar-button--rounded-large {
+  border-radius: var(--marilo-radius-lg);
+}
+
+.mar-button--rounded-full {
+  border-radius: 9999px;
+}
+
+/* --------------------------------------------------------------------------
+   Slider: Orientation
+   -------------------------------------------------------------------------- */
+.mar-slider--vertical {
+  writing-mode: vertical-lr;
+  direction: rtl;
+  height: 200px;
+  width: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Tooltip: Extended ShowOn
+   -------------------------------------------------------------------------- */
+.mar-tooltip--show-click,
+.mar-tooltip--show-focus {
+  /* Show-on variants — behavior handled by component JS/Blazor logic */
+}
+
+/* --------------------------------------------------------------------------
+   Snackbar: Position Variants & Host
+   -------------------------------------------------------------------------- */
+.mar-snackbar-host {
+  position: fixed;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: var(--marilo-space-sm);
+  padding: var(--marilo-space-md);
+  pointer-events: none;
+}
+.mar-snackbar-host > * {
+  pointer-events: auto;
+}
+
+.mar-snackbar--top {
+  top: 0;
+}
+
+.mar-snackbar--bottom {
+  bottom: 0;
+}
+
+.mar-snackbar--left {
+  left: 0;
+  align-items: flex-start;
+}
+
+.mar-snackbar--center {
+  left: 50%;
+  transform: translateX(-50%);
+  align-items: center;
+}
+
+.mar-snackbar--right {
+  right: 0;
+  align-items: flex-end;
+}
+
+/* --------------------------------------------------------------------------
+   Dialog: Draggable
+   -------------------------------------------------------------------------- */
+.mar-dialog--draggable .mar-dialog-header {
+  cursor: grab;
+  user-select: none;
+}
+.mar-dialog--draggable .mar-dialog-header:active {
+  cursor: grabbing;
+}
+
+/* --------------------------------------------------------------------------
+   Autocomplete: Extended
+   -------------------------------------------------------------------------- */
+.mar-autocomplete--disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.mar-autocomplete--invalid {
+  border-color: var(--marilo-color-danger);
+}
+
+.mar-autocomplete-item {
+  padding: var(--marilo-space-xs) var(--marilo-space-sm);
+  cursor: pointer;
+  font-size: var(--marilo-font-size-base);
+}
+.mar-autocomplete-item--highlighted {
+  background: var(--marilo-color-surface-hover);
+}
+.mar-autocomplete-item--selected {
+  background: var(--marilo-color-primary-light);
+  color: var(--marilo-color-primary);
+}
+
+/* --------------------------------------------------------------------------
+   File Upload: File List
+   -------------------------------------------------------------------------- */
+.mar-file-upload-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--marilo-space-xs);
+  margin-top: var(--marilo-space-sm);
+}
+
+/* --------------------------------------------------------------------------
+   DataGrid: Extended
+   -------------------------------------------------------------------------- */
+.mar-datagrid-header-cell {
+  padding: var(--marilo-space-sm) var(--marilo-space-md);
+  font-weight: var(--marilo-font-weight-semibold);
+  text-align: left;
+  white-space: nowrap;
+  user-select: none;
+}
+.mar-datagrid-header-cell--sortable {
+  cursor: pointer;
+}
+.mar-datagrid-header-cell--sortable:hover {
+  background: var(--marilo-color-surface-hover);
+}
+.mar-datagrid-header-cell--sorted {
+  color: var(--marilo-color-primary);
+}
+
+.mar-datagrid-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--marilo-space-sm);
+  padding: var(--marilo-space-sm) var(--marilo-space-md);
+  border-bottom: 1px solid var(--marilo-color-border);
+}
+
+.mar-datagrid-filter-row {
+  background: var(--marilo-color-surface);
+}
+
+.mar-datagrid-filter-cell {
+  padding: var(--marilo-space-xs) var(--marilo-space-md);
+}
+
+.mar-datagrid-group-header {
+  font-weight: var(--marilo-font-weight-semibold);
+  background: var(--marilo-color-surface);
+  padding: var(--marilo-space-xs) var(--marilo-space-md);
+}
+
+/* --------------------------------------------------------------------------
+   ListView
+   -------------------------------------------------------------------------- */
+.mar-listview {
+  display: flex;
+  flex-direction: column;
+}
+
+.mar-listview-item {
+  padding: var(--marilo-space-sm) var(--marilo-space-md);
+  border-bottom: 1px solid var(--marilo-color-border);
+  transition: background 0.15s ease;
+}
+.mar-listview-item:hover {
+  background: var(--marilo-color-surface-hover);
+}
+.mar-listview-item--selected {
+  background: var(--marilo-color-primary-light);
+}
+
+/* --------------------------------------------------------------------------
+   Window
+   -------------------------------------------------------------------------- */
+.mar-window {
+  position: fixed;
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  background: var(--marilo-color-background);
+  border: 1px solid var(--marilo-color-border);
+  border-radius: var(--marilo-radius-lg);
+  box-shadow: var(--marilo-elevation-lg);
+  overflow: hidden;
+}
+.mar-window--modal {
+  z-index: 1060;
+}
+
+.mar-window-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--marilo-space-sm) var(--marilo-space-md);
+  background: var(--marilo-color-surface);
+  border-bottom: 1px solid var(--marilo-color-border);
+  font-weight: var(--marilo-font-weight-semibold);
+  user-select: none;
+}
+
+.mar-window-content {
+  flex: 1;
+  overflow: auto;
+  padding: var(--marilo-space-md);
+}
+
+.mar-window-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--marilo-space-xxs);
+}
+
+.mar-window-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1055;
+  background: var(--marilo-color-overlay);
+}
+
+/* --------------------------------------------------------------------------
+   Editor
+   -------------------------------------------------------------------------- */
+.mar-editor {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--marilo-color-border);
+  border-radius: var(--marilo-radius-md);
+  overflow: hidden;
+}
+
+.mar-editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--marilo-space-xxs);
+  padding: var(--marilo-space-xs) var(--marilo-space-sm);
+  background: var(--marilo-color-surface);
+  border-bottom: 1px solid var(--marilo-color-border);
+}
+
+.mar-editor-content {
+  flex: 1;
+  min-height: 200px;
+  padding: var(--marilo-space-md);
+  outline: none;
+  font-family: var(--marilo-font-family);
+  font-size: var(--marilo-font-size-base);
+  line-height: var(--marilo-line-height-base);
+  overflow-y: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Upload (Server)
+   -------------------------------------------------------------------------- */
+.mar-upload {
+  display: flex;
+  flex-direction: column;
+  gap: var(--marilo-space-sm);
+}
+
+.mar-upload-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--marilo-space-sm);
+  min-height: 120px;
+  border: 2px dashed var(--marilo-color-border);
+  border-radius: var(--marilo-radius-md);
+  padding: var(--marilo-space-lg);
+  text-align: center;
+  color: var(--marilo-color-text-secondary);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.mar-upload-dropzone:hover {
+  border-color: var(--marilo-color-border-strong);
+}
+.mar-upload-dropzone--active {
+  border-color: var(--marilo-color-primary);
+  background: var(--marilo-color-primary-light);
+}
+
+.mar-upload-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--marilo-space-xs);
+}
+
+.mar-upload-file-item {
+  display: flex;
+  align-items: center;
+  gap: var(--marilo-space-sm);
+  padding: var(--marilo-space-xs) var(--marilo-space-sm);
+  background: var(--marilo-color-surface);
+  border-radius: var(--marilo-radius-sm);
+  font-size: var(--marilo-font-size-sm);
 }

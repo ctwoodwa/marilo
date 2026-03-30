@@ -1,8 +1,9 @@
 @inherits MariloComponentBase
 
-<label class="@CombineClasses(CssProvider.CheckboxClass(Checked))" style="@CombineStyles()" @attributes="AdditionalAttributes">
+<label class="@GetCheckboxClass()" style="@CombineStyles()" @attributes="AdditionalAttributes">
     <input type="checkbox"
            checked="@Checked"
+           aria-checked="@GetAriaChecked()"
            @onchange="OnCheckChanged" />
     @if (!string.IsNullOrEmpty(Label))
     {
@@ -14,6 +15,23 @@
     [Parameter] public bool Checked { get; set; }
     [Parameter] public EventCallback<bool> CheckedChanged { get; set; }
     [Parameter] public string? Label { get; set; }
+    [Parameter] public bool Indeterminate { get; set; }
+
+    private string GetCheckboxClass()
+    {
+        var baseClass = CssProvider.CheckboxClass(Checked);
+        var builder = ClassBuilder.Clear()
+            .AddClass(baseClass)
+            .AddClass("mar-checkbox--indeterminate", Indeterminate)
+            .AddClass(Class);
+        return builder.Build();
+    }
+
+    private string GetAriaChecked()
+    {
+        if (Indeterminate) return "mixed";
+        return Checked ? "true" : "false";
+    }
 
     private async Task OnCheckChanged(ChangeEventArgs e)
     {

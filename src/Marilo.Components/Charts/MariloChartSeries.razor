@@ -1,0 +1,50 @@
+@inherits MariloComponentBase
+@implements IDisposable
+
+@code {
+    [CascadingParameter] public MariloChart? ParentChart { get; set; }
+
+    [Parameter] public string Name { get; set; } = "Series";
+    [Parameter] public IEnumerable<object>? Data { get; set; }
+    [Parameter] public string Field { get; set; } = "";
+    [Parameter] public string CategoryField { get; set; } = "";
+    [Parameter] public ChartSeriesType Type { get; set; } = ChartSeriesType.Line;
+    [Parameter] public string? Color { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ParentChart?.AddSeries(this);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            ParentChart?.RemoveSeries(this);
+        }
+        base.Dispose(disposing);
+    }
+
+    internal IReadOnlyList<(string Category, double Value)> GetDataPoints()
+    {
+        var points = new List<(string, double)>();
+        if (Data == null) return points;
+
+        foreach (var item in Data)
+        {
+            var type = item.GetType();
+            var valueProp = type.GetProperty(Field);
+            var categoryProp = type.GetProperty(CategoryField);
+
+            if (valueProp == null) continue;
+
+            var rawValue = valueProp.GetValue(item);
+            var numericValue = Convert.ToDouble(rawValue);
+            var category = categoryProp?.GetValue(item)?.ToString() ?? "";
+
+            points.Add((category, numericValue));
+        }
+
+        return points;
+    }
+}

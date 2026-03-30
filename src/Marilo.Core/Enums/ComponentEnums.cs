@@ -326,3 +326,18 @@ public enum Breakpoint
     /// <summary>Extra-extra-large viewport (ultra-wide).</summary>
     ExtraExtraLarge
 }
+
+/// <summary>
+/// Specifies the checkbox mode for a tree view component.
+/// </summary>
+public enum CheckBoxMode
+{
+    /// <summary>No checkboxes shown.</summary>
+    None,
+
+    /// <summary>Single checkbox selection.</summary>
+    Single,
+
+    /// <summary>Multiple checkbox selection.</summary>
+    Multiple
+}

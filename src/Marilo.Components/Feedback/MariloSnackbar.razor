@@ -3,12 +3,19 @@
 @if (IsOpen)
 {
     <div class="@CombineClasses(CssProvider.SnackbarClass())" style="@CombineStyles()" role="status" aria-live="polite" @attributes="AdditionalAttributes">
-        <span class="mar-snackbar__message">@Message</span>
+        @if (ContentTemplate != null)
+        {
+            @ContentTemplate
+        }
+        else
+        {
+            <span class="mar-snackbar__message">@Message</span>
+        }
         @if (!string.IsNullOrEmpty(ActionText))
         {
             <button class="mar-snackbar__action" @onclick="OnAction">@ActionText</button>
         }
-        <button class="mar-snackbar__dismiss" @onclick="OnDismiss" aria-label="Dismiss">&#x2715;</button>
+        <button class="mar-snackbar__dismiss" @onclick="HandleDismiss" aria-label="Dismiss">&#x2715;</button>
     </div>
 }
 
@@ -18,6 +25,8 @@
     [Parameter] public string? ActionText { get; set; }
     [Parameter] public EventCallback OnAction { get; set; }
     [Parameter] public EventCallback OnDismiss { get; set; }
+    [Parameter] public EventCallback ClosedCallback { get; set; }
+    [Parameter] public RenderFragment? ContentTemplate { get; set; }
     [Parameter] public int DurationMs { get; set; } = 3000;
 
     private System.Timers.Timer? _timer;
@@ -28,19 +37,28 @@
         {
             _timer?.Stop();
             _timer?.Dispose();
-            _timer = new System.Timers.Timer(DurationMs);
-            _timer.AutoReset = false;
-            _timer.Elapsed += async (_, _) => await InvokeAsync(async () =>
+            if (DurationMs > 0)
             {
-                await OnDismiss.InvokeAsync();
-                StateHasChanged();
-            });
-            _timer.Start();
+                _timer = new System.Timers.Timer(DurationMs);
+                _timer.AutoReset = false;
+                _timer.Elapsed += async (_, _) => await InvokeAsync(async () =>
+                {
+                    await HandleDismiss();
+                    StateHasChanged();
+                });
+                _timer.Start();
+            }
         }
         else
         {
             _timer?.Stop();
         }
+    }
+
+    private async Task HandleDismiss()
+    {
+        await OnDismiss.InvokeAsync();
+        await ClosedCallback.InvokeAsync();
     }
 
     protected override void Dispose(bool disposing)

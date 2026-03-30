@@ -2,15 +2,16 @@
 
 @if (IsOpen)
 {
-    <div class="@CombineClasses(CssProvider.DialogOverlayClass())" @onclick="OnClose">
-        <div class="@CssProvider.DialogClass()" style="@CombineStyles()" @onclick:stopPropagation="true" @attributes="AdditionalAttributes">
-            @if (!string.IsNullOrEmpty(Title))
-            {
-                <div class="marilo-dialog-title">@Title</div>
-            }
-            @ChildContent
+    @if (Modal)
+    {
+        <div class="@CombineClasses(CssProvider.DialogOverlayClass())" @onclick="OnClose">
+            @RenderDialogContent()
         </div>
-    </div>
+    }
+    else
+    {
+        @RenderDialogContent()
+    }
 }
 
 @code {
@@ -18,4 +19,25 @@
     [Parameter] public string? Title { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public string? Width { get; set; }
+    [Parameter] public string? Height { get; set; }
+    [Parameter] public bool Draggable { get; set; }
+    [Parameter] public bool Modal { get; set; } = true;
+
+    private RenderFragment RenderDialogContent() => __builder =>
+    {
+        var dimensionStyle = StyleBuilder.Clear()
+            .AddStyle("width", Width!, !string.IsNullOrEmpty(Width))
+            .AddStyle("height", Height!, !string.IsNullOrEmpty(Height))
+            .Build();
+        var combinedStyle = CombineStyles(dimensionStyle);
+
+        <div class="@CssProvider.DialogClass(Draggable)" style="@combinedStyle" @onclick:stopPropagation="true" @attributes="AdditionalAttributes">
+            @if (!string.IsNullOrEmpty(Title))
+            {
+                <div class="marilo-dialog-title">@Title</div>
+            }
+            @ChildContent
+        </div>
+    };
 }

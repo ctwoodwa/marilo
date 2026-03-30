@@ -1,0 +1,132 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses(CssProvider.EditorClass())"
+     style="@CombineStyles()"
+     @attributes="AdditionalAttributes">
+
+    @if (!ReadOnly)
+    {
+        <div class="@CssProvider.EditorToolbarClass()">
+            @foreach (var tool in ActiveTools)
+            {
+                <button type="button"
+                        class="mar-editor-tool-btn"
+                        title="@GetToolLabel(tool)"
+                        @onclick="() => OnToolClick(tool)">
+                    @GetToolLabel(tool)
+                </button>
+            }
+
+            <button type="button"
+                    class="mar-editor-tool-btn @(_showPreview ? "mar-editor-tool-btn--active" : "")"
+                    title="Preview"
+                    @onclick="TogglePreview">
+                Preview
+            </button>
+        </div>
+    }
+
+    @if (_showPreview)
+    {
+        <div class="@CssProvider.EditorContentClass()"
+             style="@($"height:{Height};overflow:auto;padding:8px")">
+            @((MarkupString)(Value ?? ""))
+        </div>
+    }
+    else
+    {
+        <textarea class="@CssProvider.EditorContentClass()"
+                  style="@($"height:{Height};width:100%;resize:vertical;font-family:monospace;padding:8px;box-sizing:border-box")"
+                  value="@Value"
+                  placeholder="@Placeholder"
+                  readonly="@ReadOnly"
+                  @oninput="HandleInput" />
+    }
+</div>
+
+@code {
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public bool ReadOnly { get; set; }
+    [Parameter] public IEnumerable<EditorTool>? Tools { get; set; }
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public string Height { get; set; } = "300px";
+    [Parameter] public EventCallback<string> OnChange { get; set; }
+
+    private bool _showPreview;
+
+    private IEnumerable<EditorTool> ActiveTools =>
+        Tools ?? Enum.GetValues<EditorTool>();
+
+    private async Task HandleInput(ChangeEventArgs e)
+    {
+        var newValue = e.Value?.ToString() ?? "";
+        Value = newValue;
+        await ValueChanged.InvokeAsync(newValue);
+        await OnChange.InvokeAsync(newValue);
+    }
+
+    private async Task OnToolClick(EditorTool tool)
+    {
+        var snippet = GetToolSnippet(tool);
+        if (string.IsNullOrEmpty(snippet)) return;
+
+        Value = (Value ?? "") + snippet;
+        await ValueChanged.InvokeAsync(Value);
+        await OnChange.InvokeAsync(Value);
+    }
+
+    private void TogglePreview()
+    {
+        _showPreview = !_showPreview;
+    }
+
+    private static string GetToolLabel(EditorTool tool) => tool switch
+    {
+        EditorTool.Bold => "B",
+        EditorTool.Italic => "I",
+        EditorTool.Underline => "U",
+        EditorTool.Strikethrough => "S",
+        EditorTool.OrderedList => "OL",
+        EditorTool.UnorderedList => "UL",
+        EditorTool.Indent => "→",
+        EditorTool.Outdent => "←",
+        EditorTool.AlignLeft => "AL",
+        EditorTool.AlignCenter => "AC",
+        EditorTool.AlignRight => "AR",
+        EditorTool.AlignJustify => "AJ",
+        EditorTool.Link => "Link",
+        EditorTool.Unlink => "Unlink",
+        EditorTool.Image => "Img",
+        EditorTool.HorizontalRule => "HR",
+        EditorTool.ClearFormatting => "Tx",
+        EditorTool.Undo => "↩",
+        EditorTool.Redo => "↪",
+        EditorTool.Table => "Table",
+        EditorTool.Format => "Format",
+        EditorTool.FontSize => "Size",
+        EditorTool.FontColor => "Color",
+        EditorTool.BackgroundColor => "BgColor",
+        EditorTool.Subscript => "Sub",
+        EditorTool.Superscript => "Sup",
+        EditorTool.ViewSource => "< >",
+        _ => tool.ToString()
+    };
+
+    private static string GetToolSnippet(EditorTool tool) => tool switch
+    {
+        EditorTool.Bold => "<strong></strong>",
+        EditorTool.Italic => "<em></em>",
+        EditorTool.Underline => "<u></u>",
+        EditorTool.Strikethrough => "<s></s>",
+        EditorTool.OrderedList => "<ol>\n  <li></li>\n</ol>",
+        EditorTool.UnorderedList => "<ul>\n  <li></li>\n</ul>",
+        EditorTool.Link => "<a href=\"\"></a>",
+        EditorTool.Image => "<img src=\"\" alt=\"\" />",
+        EditorTool.HorizontalRule => "<hr />",
+        EditorTool.Table => "<table>\n  <tr><td></td></tr>\n</table>",
+        EditorTool.Subscript => "<sub></sub>",
+        EditorTool.Superscript => "<sup></sup>",
+        _ => ""
+    };
+}

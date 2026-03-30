@@ -3,7 +3,7 @@
 @layout ComponentDemoLayout
 
 <PageSection Title="Overview">
-    <DemoSection Title="Basic Usage" Code="@_basicCode">
+    <DemoSection Title="Basic Usage (ChildContent)" Code="@_basicCode">
         <MariloTreeView>
             <MariloTreeItem Title="Documents" IsExpanded="true">
                 <MariloTreeItem Title="Reports">
@@ -15,6 +15,20 @@
             <MariloTreeItem Title="Downloads" />
             <MariloTreeItem Title="Desktop" />
         </MariloTreeView>
+    </DemoSection>
+
+    <DemoSection Title="Data-Driven (Flat Data)" Description="Provide flat data with IdField and ParentIdField to auto-build the tree." Code="@_flatDataCode">
+        <MariloTreeView Data="@_flatData"
+                        IdField="Id"
+                        ParentIdField="ParentId"
+                        TextField="Name" />
+    </DemoSection>
+
+    <DemoSection Title="Data-Driven (Hierarchical)" Description="Provide hierarchical data with ItemsField to render nested trees." Code="@_hierarchicalCode">
+        <MariloTreeView Data="@_hierarchicalData"
+                        IdField="Id"
+                        TextField="Name"
+                        ItemsField="Children" />
     </DemoSection>
 </PageSection>
 
@@ -73,7 +87,35 @@
 </PageSection>
 
 @code {
-    // Overview
+    // Flat data model
+    private record FlatNode(string Id, string? ParentId, string Name);
+    private readonly List<object> _flatData =
+    [
+        new FlatNode("1", null, "Documents"),
+        new FlatNode("2", "1", "Reports"),
+        new FlatNode("3", "1", "Images"),
+        new FlatNode("4", "2", "Q1 Report"),
+        new FlatNode("5", "2", "Q2 Report"),
+        new FlatNode("6", null, "Downloads"),
+        new FlatNode("7", null, "Desktop"),
+    ];
+
+    // Hierarchical data model
+    private record TreeData(string Id, string Name, List<TreeData>? Children = null);
+    private readonly List<object> _hierarchicalData =
+    [
+        new TreeData("1", "Documents", [
+            new TreeData("2", "Reports", [
+                new TreeData("4", "Q1 Report"),
+                new TreeData("5", "Q2 Report"),
+            ]),
+            new TreeData("3", "Images"),
+        ]),
+        new TreeData("6", "Downloads"),
+        new TreeData("7", "Desktop"),
+    ];
+
+    // Code samples
     private const string _basicCode =
         "<MariloTreeView>\n" +
         "    <MariloTreeItem Title=\"Documents\" IsExpanded=\"true\">\n" +
@@ -87,7 +129,34 @@
         "    <MariloTreeItem Title=\"Desktop\" />\n" +
         "</MariloTreeView>";
 
-    // Appearance
+    private const string _flatDataCode =
+        "<MariloTreeView Data=\"@_data\"\n" +
+        "                IdField=\"Id\"\n" +
+        "                ParentIdField=\"ParentId\"\n" +
+        "                TextField=\"Name\" />\n\n" +
+        "@code {\n" +
+        "    record FlatNode(string Id, string? ParentId, string Name);\n" +
+        "    List<object> _data = [\n" +
+        "        new FlatNode(\"1\", null, \"Documents\"),\n" +
+        "        new FlatNode(\"2\", \"1\", \"Reports\"),\n" +
+        "        new FlatNode(\"3\", \"1\", \"Images\"),\n" +
+        "    ];\n" +
+        "}";
+
+    private const string _hierarchicalCode =
+        "<MariloTreeView Data=\"@_data\"\n" +
+        "                IdField=\"Id\"\n" +
+        "                TextField=\"Name\"\n" +
+        "                ItemsField=\"Children\" />\n\n" +
+        "@code {\n" +
+        "    record TreeData(string Id, string Name, List<TreeData>? Children = null);\n" +
+        "    List<object> _data = [\n" +
+        "        new TreeData(\"1\", \"Documents\", [\n" +
+        "            new TreeData(\"2\", \"Reports\"),\n" +
+        "        ]),\n" +
+        "    ];\n" +
+        "}";
+
     private const string _iconsCode =
         "<MariloTreeView>\n" +
         "    <MariloTreeItem Title=\"Documents\" Icon=\"folder\" IsExpanded=\"true\">\n" +
@@ -107,7 +176,6 @@
         "    <MariloTreeItem Title=\"Option C\" />\n" +
         "</MariloTreeView>";
 
-    // Events
     private const string _selectedCode =
         "<MariloTreeView>\n" +
         "    <MariloTreeItem Title=\"Documents\" IsExpanded=\"true\">\n" +
@@ -128,7 +196,6 @@
         "    </MariloTreeItem>\n" +
         "</MariloTreeView>";
 
-    // Accessibility
     private static readonly (string Key, string Action)[] _keyboard =
     [
         ("Up Arrow", "Moves focus to the previous visible tree item"),

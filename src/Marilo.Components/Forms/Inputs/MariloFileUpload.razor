@@ -8,9 +8,9 @@
             @IconProvider.GetIcon("upload", IconSize.Medium)
         </span>
         <span class="mar-file-upload__text">
-            @if (_selectedFileNames.Any())
+            @if (_selectedFiles.Any())
             {
-                @string.Join(", ", _selectedFileNames)
+                @string.Join(", ", _selectedFiles.Select(f => f.Name))
             }
             else
             {
@@ -23,6 +23,28 @@
                    disabled="@Disabled"
                    class="mar-file-upload__input" />
     </label>
+
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <div class="mar-file-upload__error" role="alert">@_errorMessage</div>
+    }
+
+    @if (_selectedFiles.Any())
+    {
+        <ul class="@CssProvider.FileUploadFileListClass()">
+            @foreach (var file in _selectedFiles)
+            {
+                <li class="mar-file-upload__file-item">
+                    <span class="mar-file-upload__file-name">@file.Name</span>
+                    <span class="mar-file-upload__file-size">@FormatFileSize(file.Size)</span>
+                    <button type="button"
+                            class="mar-file-upload__file-remove"
+                            aria-label="Remove @file.Name"
+                            @onclick="() => RemoveFile(file)">&#x2715;</button>
+                </li>
+            }
+        </ul>
+    }
 </div>
 
 @code {
@@ -32,12 +54,37 @@
     [Parameter] public long MaxFileSize { get; set; } = 10 * 1024 * 1024;
     [Parameter] public bool Disabled { get; set; }
 
-    private List<string> _selectedFileNames = new();
+    private List<IBrowserFile> _selectedFiles = new();
+    private string? _errorMessage;
 
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
     {
+        _errorMessage = null;
         var files = Multiple ? e.GetMultipleFiles().ToList() : new List<IBrowserFile> { e.File };
-        _selectedFileNames = files.Select(f => f.Name).ToList();
+
+        var oversized = files.Where(f => f.Size > MaxFileSize).ToList();
+        if (oversized.Any())
+        {
+            var names = string.Join(", ", oversized.Select(f => f.Name));
+            _errorMessage = $"File(s) exceed maximum size of {FormatFileSize(MaxFileSize)}: {names}";
+            files = files.Except(oversized).ToList();
+        }
+
+        _selectedFiles = files;
         await OnFilesSelected.InvokeAsync(files);
+    }
+
+    private async Task RemoveFile(IBrowserFile file)
+    {
+        _selectedFiles.Remove(file);
+        _errorMessage = null;
+        await OnFilesSelected.InvokeAsync(_selectedFiles);
+    }
+
+    private static string FormatFileSize(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes} B";
+        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
+        return $"{bytes / (1024.0 * 1024.0):F1} MB";
     }
 }

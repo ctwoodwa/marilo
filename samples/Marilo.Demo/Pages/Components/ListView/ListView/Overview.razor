@@ -1,0 +1,66 @@
+@page "/components/listview"
+@page "/components/listview/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic ListView" Code="@_basicCode">
+        <MariloListView Data="_items" TItem="string">
+            <ItemTemplate Context="item">
+                <span>@item</span>
+            </ItemTemplate>
+        </MariloListView>
+    </DemoSection>
+
+    <DemoSection Title="Pageable ListView" Code="@_pageableCode">
+        <MariloListView Data="_manyItems" TItem="string" Pageable="true" PageSize="5">
+            <ItemTemplate Context="item">
+                <span>@item</span>
+            </ItemTemplate>
+        </MariloListView>
+    </DemoSection>
+
+    <DemoSection Title="Selectable ListView" Code="@_selectableCode">
+        <MariloListView Data="_items"
+                        TItem="string"
+                        SelectionMode="GridSelectionMode.Multiple"
+                        @bind-SelectedItems="_selectedItems">
+            <ItemTemplate Context="item">
+                <span>@item</span>
+            </ItemTemplate>
+        </MariloListView>
+        @if (_selectedItems?.Any() == true)
+        {
+            <p>Selected: @string.Join(", ", _selectedItems)</p>
+        }
+    </DemoSection>
+</PageSection>
+
+@code {
+    private List<string> _items = ["Apple", "Banana", "Cherry", "Date", "Elderberry"];
+    private List<string> _manyItems = Enumerable.Range(1, 25).Select(i => $"Item {i}").ToList();
+    private IEnumerable<string>? _selectedItems;
+
+    private const string _basicCode =
+        "<MariloListView Data=\"_items\" TItem=\"string\">\n" +
+        "    <ItemTemplate Context=\"item\">\n" +
+        "        <span>@item</span>\n" +
+        "    </ItemTemplate>\n" +
+        "</MariloListView>";
+
+    private const string _pageableCode =
+        "<MariloListView Data=\"_manyItems\" TItem=\"string\" Pageable=\"true\" PageSize=\"5\">\n" +
+        "    <ItemTemplate Context=\"item\">\n" +
+        "        <span>@item</span>\n" +
+        "    </ItemTemplate>\n" +
+        "</MariloListView>";
+
+    private const string _selectableCode =
+        "<MariloListView Data=\"_items\"\n" +
+        "                TItem=\"string\"\n" +
+        "                SelectionMode=\"GridSelectionMode.Multiple\"\n" +
+        "                @bind-SelectedItems=\"_selectedItems\">\n" +
+        "    <ItemTemplate Context=\"item\">\n" +
+        "        <span>@item</span>\n" +
+        "    </ItemTemplate>\n" +
+        "</MariloListView>";
+}

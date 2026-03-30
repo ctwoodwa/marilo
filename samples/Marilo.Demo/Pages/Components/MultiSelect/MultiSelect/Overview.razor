@@ -1,0 +1,88 @@
+@page "/components/multiselect"
+@page "/components/multiselect/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Code="@_basicCode">
+        <MariloField>
+            <MariloLabel>Countries</MariloLabel>
+            <MariloMultiSelect TItem="Country"
+                               TValue="int"
+                               Data="@_countries"
+                               TextField="Name"
+                               ValueField="Id"
+                               Values="@_selectedValues"
+                               ValuesChanged="@(v => _selectedValues = v.ToList())"
+                               Placeholder="Select countries..." />
+        </MariloField>
+        <p><strong>Selected IDs:</strong> @string.Join(", ", _selectedValues)</p>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Features">
+    <DemoSection Title="Single Tag Mode" Description="Show a summary count instead of individual tags." Code="@_singleTagCode">
+        <MariloMultiSelect TItem="Country"
+                           TValue="int"
+                           Data="@_countries"
+                           TextField="Name"
+                           ValueField="Id"
+                           Values="@_singleTagValues"
+                           ValuesChanged="@(v => _singleTagValues = v.ToList())"
+                           TagMode="MultiSelectTagMode.Single"
+                           Placeholder="Select countries..." />
+    </DemoSection>
+
+    <DemoSection Title="Auto Close and Clear" Description="Close after each selection and show a clear button." Code="@_autoCloseCode">
+        <MariloMultiSelect TItem="Country"
+                           TValue="int"
+                           Data="@_countries"
+                           TextField="Name"
+                           ValueField="Id"
+                           Values="@_autoCloseValues"
+                           ValuesChanged="@(v => _autoCloseValues = v.ToList())"
+                           AutoClose="true"
+                           ShowClearButton="true"
+                           Placeholder="Pick one at a time..." />
+    </DemoSection>
+</PageSection>
+
+@code {
+    private List<int> _selectedValues = new();
+    private List<int> _singleTagValues = new();
+    private List<int> _autoCloseValues = new();
+
+    private record Country(int Id, string Name, string Code);
+
+    private readonly List<Country> _countries = new()
+    {
+        new(1, "United States", "US"),
+        new(2, "Canada", "CA"),
+        new(3, "United Kingdom", "GB"),
+        new(4, "Germany", "DE"),
+        new(5, "France", "FR"),
+        new(6, "Japan", "JP"),
+        new(7, "Australia", "AU"),
+        new(8, "Brazil", "BR"),
+    };
+
+    private const string _basicCode =
+        "<MariloMultiSelect TItem=\"Country\" TValue=\"int\"\n" +
+        "                   Data=\"@_countries\"\n" +
+        "                   TextField=\"Name\" ValueField=\"Id\"\n" +
+        "                   Values=\"@_selected\" ValuesChanged=\"@(v => _selected = v.ToList())\"\n" +
+        "                   Placeholder=\"Select countries...\" />";
+
+    private const string _singleTagCode =
+        "<MariloMultiSelect TItem=\"Country\" TValue=\"int\"\n" +
+        "                   Data=\"@_countries\"\n" +
+        "                   TextField=\"Name\" ValueField=\"Id\"\n" +
+        "                   TagMode=\"MultiSelectTagMode.Single\"\n" +
+        "                   Placeholder=\"Select countries...\" />";
+
+    private const string _autoCloseCode =
+        "<MariloMultiSelect TItem=\"Country\" TValue=\"int\"\n" +
+        "                   Data=\"@_countries\"\n" +
+        "                   TextField=\"Name\" ValueField=\"Id\"\n" +
+        "                   AutoClose=\"true\" ShowClearButton=\"true\"\n" +
+        "                   Placeholder=\"Pick one at a time...\" />";
+}

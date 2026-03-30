@@ -1,0 +1,221 @@
+@inherits MariloComponentBase
+@typeparam TItem
+@typeparam TValue
+
+<div class="@CombineClasses(CssProvider.MultiSelectClass(_isOpen, Disabled, IsInvalid))"
+     style="@CombineStyles()"
+     @onclick="ToggleDropdown"
+     @onclick:stopPropagation="true"
+     @onkeydown="OnKeyDown"
+     tabindex="0"
+     role="listbox"
+     aria-multiselectable="true"
+     aria-expanded="@_isOpen.ToString().ToLowerInvariant()"
+     aria-disabled="@Disabled.ToString().ToLowerInvariant()"
+     @attributes="AdditionalAttributes">
+
+    <div class="mar-multiselect__input-area">
+        @if (_selectedItems.Count > 0)
+        {
+            @if (TagMode == MultiSelectTagMode.Single)
+            {
+                <span class="@CssProvider.MultiSelectTagClass()">
+                    @_selectedItems.Count item@(_selectedItems.Count != 1 ? "s" : "") selected
+                </span>
+            }
+            else
+            {
+                @foreach (var item in _selectedItems)
+                {
+                    var currentItem = item;
+                    <span class="@CssProvider.MultiSelectTagClass()">
+                        @GetText(currentItem)
+                        <button type="button"
+                                class="mar-multiselect-tag__remove"
+                                tabindex="-1"
+                                @onclick="() => RemoveItem(currentItem)"
+                                @onclick:stopPropagation="true">
+                            &times;
+                        </button>
+                    </span>
+                }
+            }
+
+            @if (ShowClearButton)
+            {
+                <button type="button"
+                        class="mar-multiselect__clear-btn"
+                        tabindex="-1"
+                        @onclick="ClearAll"
+                        @onclick:stopPropagation="true">
+                    &times;
+                </button>
+            }
+        }
+        else
+        {
+            <span class="mar-multiselect__placeholder">@Placeholder</span>
+        }
+    </div>
+
+    <DropdownPopup IsOpen="@_isOpen">
+        <div class="@CssProvider.MultiSelectPopupClass()">
+            <ul role="listbox">
+                @for (var i = 0; i < _allItems.Count; i++)
+                {
+                    var index = i;
+                    var item = _allItems[i];
+                    var isHighlighted = index == _highlightedIndex;
+                    var itemValue = GetValue(item);
+                    var isSelected = itemValue is not null && _selectedValues.Contains(itemValue);
+                    <li id="ms-option-@index"
+                        class="@CssProvider.MultiSelectItemClass(isHighlighted, isSelected)"
+                        role="option"
+                        aria-selected="@isSelected.ToString().ToLowerInvariant()"
+                        @onclick="() => ToggleItem(item)"
+                        @onclick:stopPropagation="true"
+                        @onmouseover="() => _highlightedIndex = index">
+                        <input type="checkbox" checked="@isSelected" tabindex="-1" @onclick:stopPropagation="true" @onclick:preventDefault="true" />
+                        @if (ItemTemplate is not null)
+                        {
+                            @ItemTemplate(item)
+                        }
+                        else
+                        {
+                            @GetText(item)
+                        }
+                    </li>
+                }
+            </ul>
+        </div>
+    </DropdownPopup>
+</div>
+
+@code {
+    [Parameter] public IEnumerable<TItem> Data { get; set; } = Enumerable.Empty<TItem>();
+    [Parameter] public string? TextField { get; set; }
+    [Parameter] public string? ValueField { get; set; }
+    [Parameter] public IEnumerable<TValue> Values { get; set; } = Enumerable.Empty<TValue>();
+    [Parameter] public EventCallback<IEnumerable<TValue>> ValuesChanged { get; set; }
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public bool IsInvalid { get; set; }
+    [Parameter] public MultiSelectTagMode TagMode { get; set; } = MultiSelectTagMode.Multiple;
+    [Parameter] public bool ShowClearButton { get; set; }
+    [Parameter] public bool AutoClose { get; set; }
+    [Parameter] public RenderFragment<TItem>? ItemTemplate { get; set; }
+
+    private bool _isOpen;
+    private int _highlightedIndex = -1;
+    private List<TItem> _allItems = new();
+    private List<TItem> _selectedItems = new();
+    private HashSet<TValue> _selectedValues = new();
+
+    protected override void OnParametersSet()
+    {
+        _allItems = Data.ToList();
+        _selectedValues = new HashSet<TValue>(Values ?? Enumerable.Empty<TValue>());
+        _selectedItems = _allItems.Where(item => _selectedValues.Contains(GetValue(item)!)).ToList();
+    }
+
+    private string? GetText(TItem item)
+    {
+        if (item is null) return null;
+        if (string.IsNullOrEmpty(TextField)) return item.ToString();
+        return typeof(TItem).GetProperty(TextField)?.GetValue(item)?.ToString();
+    }
+
+    private TValue? GetValue(TItem item)
+    {
+        if (item is null) return default;
+        if (string.IsNullOrEmpty(ValueField)) return (TValue?)(object?)item;
+        var propValue = typeof(TItem).GetProperty(ValueField)?.GetValue(item);
+        if (propValue is null) return default;
+        return (TValue?)Convert.ChangeType(propValue, typeof(TValue));
+    }
+
+    private void ToggleDropdown()
+    {
+        if (Disabled) return;
+        _isOpen = !_isOpen;
+        if (_isOpen) _highlightedIndex = -1;
+    }
+
+    private async Task ToggleItem(TItem item)
+    {
+        var value = GetValue(item);
+        if (value is null) return;
+
+        if (_selectedValues.Contains(value))
+        {
+            _selectedValues.Remove(value);
+            _selectedItems.RemoveAll(i => Equals(GetValue(i), value));
+        }
+        else
+        {
+            _selectedValues.Add(value);
+            _selectedItems.Add(item);
+        }
+
+        if (AutoClose) _isOpen = false;
+
+        await ValuesChanged.InvokeAsync(_selectedValues.ToList());
+    }
+
+    private async Task RemoveItem(TItem item)
+    {
+        var value = GetValue(item);
+        if (value is null) return;
+
+        _selectedValues.Remove(value);
+        _selectedItems.RemoveAll(i => Equals(GetValue(i), value));
+        await ValuesChanged.InvokeAsync(_selectedValues.ToList());
+    }
+
+    private async Task ClearAll()
+    {
+        _selectedValues.Clear();
+        _selectedItems.Clear();
+        await ValuesChanged.InvokeAsync(new List<TValue>());
+    }
+
+    private async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        if (Disabled) return;
+
+        switch (e.Key)
+        {
+            case "ArrowDown":
+                if (!_isOpen)
+                {
+                    _isOpen = true;
+                    _highlightedIndex = 0;
+                }
+                else if (_allItems.Count > 0)
+                {
+                    _highlightedIndex = (_highlightedIndex + 1) % _allItems.Count;
+                }
+                break;
+
+            case "ArrowUp":
+                if (_isOpen && _allItems.Count > 0)
+                {
+                    _highlightedIndex = _highlightedIndex <= 0
+                        ? _allItems.Count - 1
+                        : _highlightedIndex - 1;
+                }
+                break;
+
+            case "Enter":
+                if (_isOpen && _highlightedIndex >= 0 && _highlightedIndex < _allItems.Count)
+                {
+                    await ToggleItem(_allItems[_highlightedIndex]);
+                }
+                break;
+
+            case "Escape":
+                _isOpen = false;
+                break;
+        }
+    }
+}

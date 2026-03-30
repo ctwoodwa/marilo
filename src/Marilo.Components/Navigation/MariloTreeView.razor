@@ -1,9 +1,193 @@
 @inherits MariloComponentBase
 
 <ul class="@CombineClasses(CssProvider.TreeViewClass())" style="@CombineStyles()" role="tree" @attributes="AdditionalAttributes">
-    @ChildContent
+    @if (Data != null)
+    {
+        @RenderNodes(BuildTree())
+    }
+    else
+    {
+        @ChildContent
+    }
 </ul>
 
 @code {
     [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public IEnumerable<object>? Data { get; set; }
+    [Parameter] public string? IdField { get; set; }
+    [Parameter] public string? ParentIdField { get; set; }
+    [Parameter] public string? TextField { get; set; }
+    [Parameter] public string? ItemsField { get; set; }
+    [Parameter] public string? HasChildrenField { get; set; }
+    [Parameter] public CheckBoxMode CheckBoxMode { get; set; } = CheckBoxMode.None;
+
+    internal bool ShowCheckboxes => CheckBoxMode != CheckBoxMode.None;
+    internal bool IsSingleCheckMode => CheckBoxMode == CheckBoxMode.Single;
+
+    private HashSet<string> _expandedIds = new();
+    private HashSet<string> _checkedIds = new();
+
+    internal bool IsItemChecked(string? id) => id != null && _checkedIds.Contains(id);
+
+    internal void ToggleItemChecked(string? id)
+    {
+        if (id == null) return;
+        if (IsSingleCheckMode) _checkedIds.Clear();
+        if (!_checkedIds.Remove(id)) _checkedIds.Add(id);
+        StateHasChanged();
+    }
+
+    private record TreeNode(string Id, object Item, string Text, List<TreeNode> Children, bool HasChildren);
+
+    private string? GetPropertyString(object item, string? propertyName)
+    {
+        if (string.IsNullOrEmpty(propertyName)) return null;
+        return item.GetType().GetProperty(propertyName)?.GetValue(item)?.ToString();
+    }
+
+    private object? GetPropertyValue(object item, string? propertyName)
+    {
+        if (string.IsNullOrEmpty(propertyName)) return null;
+        return item.GetType().GetProperty(propertyName)?.GetValue(item);
+    }
+
+    private List<TreeNode> BuildTree()
+    {
+        if (Data == null) return new List<TreeNode>();
+
+        if (!string.IsNullOrEmpty(ItemsField))
+            return BuildHierarchical(Data, 0);
+
+        if (!string.IsNullOrEmpty(IdField) && !string.IsNullOrEmpty(ParentIdField))
+            return BuildFlat(Data);
+
+        int idx = 0;
+        return Data.Select(item => new TreeNode(
+            $"auto-{idx++}",
+            item,
+            GetPropertyString(item, TextField) ?? item.ToString() ?? "",
+            new List<TreeNode>(),
+            false
+        )).ToList();
+    }
+
+    private List<TreeNode> BuildHierarchical(IEnumerable<object> items, int depth)
+    {
+        var result = new List<TreeNode>();
+        int idx = 0;
+        foreach (var item in items)
+        {
+            var id = GetPropertyString(item, IdField) ?? $"h-{depth}-{idx++}";
+            var text = GetPropertyString(item, TextField) ?? item.ToString() ?? "";
+            var children = new List<TreeNode>();
+            var childItems = GetPropertyValue(item, ItemsField);
+
+            if (childItems is System.Collections.IEnumerable enumerable)
+            {
+                var childList = enumerable.Cast<object>().ToList();
+                if (childList.Any())
+                    children = BuildHierarchical(childList, depth + 1);
+            }
+
+            var hasChildren = children.Any();
+            if (!string.IsNullOrEmpty(HasChildrenField))
+            {
+                var hcVal = GetPropertyValue(item, HasChildrenField);
+                if (hcVal is bool b) hasChildren = b;
+            }
+
+            result.Add(new TreeNode(id, item, text, children, hasChildren));
+        }
+        return result;
+    }
+
+    private List<TreeNode> BuildFlat(IEnumerable<object> items)
+    {
+        var allItems = items.ToList();
+        var lookup = new Dictionary<string, TreeNode>();
+        var roots = new List<TreeNode>();
+
+        foreach (var item in allItems)
+        {
+            var id = GetPropertyString(item, IdField) ?? "";
+            var text = GetPropertyString(item, TextField) ?? item.ToString() ?? "";
+            var hasChildren = false;
+            if (!string.IsNullOrEmpty(HasChildrenField))
+            {
+                var hcVal = GetPropertyValue(item, HasChildrenField);
+                if (hcVal is bool b) hasChildren = b;
+            }
+            lookup[id] = new TreeNode(id, item, text, new List<TreeNode>(), hasChildren);
+        }
+
+        foreach (var item in allItems)
+        {
+            var id = GetPropertyString(item, IdField) ?? "";
+            var parentId = GetPropertyString(item, ParentIdField);
+            var node = lookup[id];
+
+            if (string.IsNullOrEmpty(parentId) || !lookup.ContainsKey(parentId))
+                roots.Add(node);
+            else
+                lookup[parentId].Children.Add(node);
+        }
+
+        return roots;
+    }
+
+    private RenderFragment RenderNodes(List<TreeNode> nodes) => builder =>
+    {
+        foreach (var node in nodes)
+        {
+            var isExpanded = _expandedIds.Contains(node.Id);
+            var hasKids = node.Children.Any() || node.HasChildren;
+
+            builder.OpenElement(0, "li");
+            builder.AddAttribute(1, "class", CssProvider.TreeItemClass(isExpanded, false));
+            builder.AddAttribute(2, "role", "treeitem");
+            if (hasKids)
+                builder.AddAttribute(3, "aria-expanded", isExpanded.ToString().ToLower());
+
+            // Header
+            builder.OpenElement(10, "div");
+            builder.AddAttribute(11, "class", "mar-tree-item__header");
+
+            if (hasKids)
+            {
+                var nodeId = node.Id;
+                builder.OpenElement(20, "button");
+                builder.AddAttribute(21, "type", "button");
+                builder.AddAttribute(22, "class", "mar-tree-item__toggle");
+                builder.AddAttribute(23, "aria-label", isExpanded ? "Collapse" : "Expand");
+                builder.AddAttribute(24, "onclick", EventCallback.Factory.Create(this, () => ToggleNode(nodeId)));
+                builder.AddContent(25, isExpanded ? "\u25BC" : "\u25B6");
+                builder.CloseElement(); // button
+            }
+
+            builder.OpenElement(30, "span");
+            builder.AddAttribute(31, "class", "mar-tree-item__title");
+            builder.AddContent(32, node.Text);
+            builder.CloseElement(); // span
+
+            builder.CloseElement(); // div header
+
+            // Children
+            if (hasKids && isExpanded && node.Children.Any())
+            {
+                builder.OpenElement(40, "ul");
+                builder.AddAttribute(41, "role", "group");
+                builder.AddAttribute(42, "class", "mar-tree-item__children");
+                builder.AddContent(43, RenderNodes(node.Children));
+                builder.CloseElement(); // ul
+            }
+
+            builder.CloseElement(); // li
+        }
+    };
+
+    private void ToggleNode(string id)
+    {
+        if (!_expandedIds.Remove(id))
+            _expandedIds.Add(id);
+    }
 }

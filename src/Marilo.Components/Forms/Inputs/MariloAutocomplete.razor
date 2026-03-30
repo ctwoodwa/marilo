@@ -1,37 +1,80 @@
+@typeparam TItem
 @inherits MariloComponentBase
+@implements IDisposable
 
-<div class="@CombineClasses(CssProvider.AutocompleteClass())"
+<div class="@CombineClasses(CssProvider.AutocompleteClass(_isOpen, Disabled, IsInvalid))"
      style="@CombineStyles()"
      @attributes="AdditionalAttributes">
-    <input type="text"
-           class="@CssProvider.TextFieldClass(false, Disabled)"
-           value="@Value"
-           placeholder="@Placeholder"
-           disabled="@Disabled"
-           role="combobox"
-           aria-expanded="@_isOpen.ToString().ToLowerInvariant()"
-           aria-autocomplete="list"
-           aria-activedescendant="@(_highlightedIndex >= 0 ? $"autocomplete-option-{_highlightedIndex}" : null)"
-           @oninput="OnInputChanged"
-           @onkeydown="OnKeyDown"
-           @onfocus="OpenDropdown"
-           @onblur="CloseDropdownDelayed" />
-    @if (_isOpen && _filteredItems.Any())
+    <div class="mar-autocomplete__input-wrapper">
+        <input type="text"
+               class="@CssProvider.TextFieldClass(IsInvalid, Disabled)"
+               value="@Value"
+               placeholder="@Placeholder"
+               disabled="@Disabled"
+               readonly="@ReadOnly"
+               role="combobox"
+               aria-expanded="@_isOpen.ToString().ToLowerInvariant()"
+               aria-autocomplete="list"
+               aria-activedescendant="@(_highlightedIndex >= 0 ? $"autocomplete-option-{_highlightedIndex}" : null)"
+               @oninput="OnInputChanged"
+               @onkeydown="OnKeyDown"
+               @onfocus="OpenDropdown"
+               @onblur="CloseDropdownDelayed" />
+        @if (ShowClearButton && !string.IsNullOrEmpty(Value))
+        {
+            <button type="button"
+                    class="mar-autocomplete__clear"
+                    aria-label="Clear"
+                    tabindex="-1"
+                    @onmousedown="ClearValue"
+                    @onmousedown:preventDefault>
+                &#x2715;
+            </button>
+        }
+    </div>
+    @if (_isOpen && (_filteredTItems.Any() || HeaderTemplate != null || FooterTemplate != null))
     {
-        <ul class="@CssProvider.MenuClass()" role="listbox">
-            @for (var i = 0; i < _filteredItems.Count; i++)
+        <div class="mar-autocomplete__dropdown">
+            @if (HeaderTemplate != null)
             {
-                var index = i;
-                var item = _filteredItems[i];
-                <li id="autocomplete-option-@index"
-                    class="@CssProvider.MenuItemClass(false)"
-                    role="option"
-                    aria-selected="@(index == _highlightedIndex ? "true" : "false")"
-                    @onmousedown="() => SelectItem(item)">
-                    @item
-                </li>
+                <div class="mar-autocomplete__header">
+                    @HeaderTemplate
+                </div>
             }
-        </ul>
+            @if (_filteredTItems.Any())
+            {
+                <ul class="@CssProvider.MenuClass()" role="listbox">
+                    @for (var i = 0; i < _filteredTItems.Count; i++)
+                    {
+                        var index = i;
+                        var item = _filteredTItems[i];
+                        var displayText = GetDisplayText(item);
+                        var isHighlighted = index == _highlightedIndex;
+                        var isSelected = displayText == Value;
+                        <li id="autocomplete-option-@index"
+                            class="@CssProvider.AutocompleteItemClass(isHighlighted, isSelected)"
+                            role="option"
+                            aria-selected="@(isHighlighted ? "true" : "false")"
+                            @onmousedown="() => SelectTItem(item)">
+                            @if (ItemTemplate != null)
+                            {
+                                @ItemTemplate(item)
+                            }
+                            else
+                            {
+                                @displayText
+                            }
+                        </li>
+                    }
+                </ul>
+            }
+            @if (FooterTemplate != null)
+            {
+                <div class="mar-autocomplete__footer">
+                    @FooterTemplate
+                </div>
+            }
+        </div>
     }
 </div>
 
@@ -39,27 +82,129 @@
     [Parameter] public string Value { get; set; } = string.Empty;
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
     [Parameter] public IEnumerable<string> Items { get; set; } = Enumerable.Empty<string>();
+    [Parameter] public IEnumerable<TItem>? Data { get; set; }
+    [Parameter] public string? TextField { get; set; }
+    [Parameter] public string? ValueField { get; set; }
     [Parameter] public string? Placeholder { get; set; }
     [Parameter] public bool Disabled { get; set; }
+    [Parameter] public bool IsInvalid { get; set; }
+    [Parameter] public bool ReadOnly { get; set; }
+    [Parameter] public bool ShowClearButton { get; set; }
+    [Parameter] public FilterOperator FilterOperator { get; set; } = FilterOperator.Contains;
+    [Parameter] public int DebounceDelay { get; set; } = 0;
+    [Parameter] public int MinLength { get; set; } = 1;
+    [Parameter] public RenderFragment<TItem>? ItemTemplate { get; set; }
+    [Parameter] public RenderFragment? HeaderTemplate { get; set; }
+    [Parameter] public RenderFragment? FooterTemplate { get; set; }
 
     private bool _isOpen;
-    private List<string> _filteredItems = new();
+    private List<TItem> _filteredTItems = new();
     private int _highlightedIndex = -1;
+    private Timer? _debounceTimer;
+    private string _pendingInput = string.Empty;
+
+    private bool UseGenericData => Data != null;
+
+    private IEnumerable<TItem> GetSourceItems()
+    {
+        if (UseGenericData)
+            return Data!;
+
+        // Fallback: when TItem is string and Items is provided
+        if (typeof(TItem) == typeof(string))
+            return (IEnumerable<TItem>)(object)Items;
+
+        return Enumerable.Empty<TItem>();
+    }
+
+    private string GetDisplayText(TItem item)
+    {
+        if (item is string s)
+            return s;
+
+        if (!string.IsNullOrEmpty(TextField))
+        {
+            var val = typeof(TItem).GetProperty(TextField)?.GetValue(item);
+            return val?.ToString() ?? string.Empty;
+        }
+
+        return item?.ToString() ?? string.Empty;
+    }
+
+    private string GetValueText(TItem item)
+    {
+        if (item is string s)
+            return s;
+
+        if (!string.IsNullOrEmpty(ValueField))
+        {
+            var val = typeof(TItem).GetProperty(ValueField)?.GetValue(item);
+            return val?.ToString() ?? string.Empty;
+        }
+
+        return GetDisplayText(item);
+    }
+
+    private bool MatchesFilter(string text, string search)
+    {
+        if (string.IsNullOrEmpty(search))
+            return true;
+
+        return FilterOperator switch
+        {
+            FilterOperator.Contains => text.Contains(search, StringComparison.OrdinalIgnoreCase),
+            FilterOperator.StartsWith => text.StartsWith(search, StringComparison.OrdinalIgnoreCase),
+            FilterOperator.EndsWith => text.EndsWith(search, StringComparison.OrdinalIgnoreCase),
+            FilterOperator.Equals => text.Equals(search, StringComparison.OrdinalIgnoreCase),
+            FilterOperator.NotEquals => !text.Equals(search, StringComparison.OrdinalIgnoreCase),
+            _ => text.Contains(search, StringComparison.OrdinalIgnoreCase),
+        };
+    }
 
     private void FilterItems()
     {
-        _filteredItems = Items
-            .Where(item => string.IsNullOrEmpty(Value) || item.Contains(Value, StringComparison.OrdinalIgnoreCase))
+        if (string.IsNullOrEmpty(Value) || Value.Length < MinLength)
+        {
+            _filteredTItems = new List<TItem>();
+            _highlightedIndex = -1;
+            return;
+        }
+
+        _filteredTItems = GetSourceItems()
+            .Where(item => MatchesFilter(GetDisplayText(item), Value))
             .ToList();
         _highlightedIndex = -1;
     }
 
     private async Task OnInputChanged(ChangeEventArgs e)
     {
-        Value = e.Value?.ToString() ?? string.Empty;
+        if (ReadOnly) return;
+
+        var newValue = e.Value?.ToString() ?? string.Empty;
+        Value = newValue;
         await ValueChanged.InvokeAsync(Value);
-        FilterItems();
-        _isOpen = _filteredItems.Any();
+
+        if (DebounceDelay > 0)
+        {
+            _pendingInput = newValue;
+            _debounceTimer?.Dispose();
+            _debounceTimer = new Timer(DebounceCallback, null, DebounceDelay, Timeout.Infinite);
+        }
+        else
+        {
+            FilterItems();
+            _isOpen = _filteredTItems.Any();
+        }
+    }
+
+    private void DebounceCallback(object? state)
+    {
+        InvokeAsync(() =>
+        {
+            FilterItems();
+            _isOpen = _filteredTItems.Any();
+            StateHasChanged();
+        });
     }
 
     private async Task OnKeyDown(KeyboardEventArgs e)
@@ -67,21 +212,21 @@
         switch (e.Key)
         {
             case "ArrowDown":
-                if (_isOpen && _filteredItems.Any())
+                if (_isOpen && _filteredTItems.Any())
                 {
-                    _highlightedIndex = (_highlightedIndex + 1) % _filteredItems.Count;
+                    _highlightedIndex = (_highlightedIndex + 1) % _filteredTItems.Count;
                 }
                 break;
             case "ArrowUp":
-                if (_isOpen && _filteredItems.Any())
+                if (_isOpen && _filteredTItems.Any())
                 {
-                    _highlightedIndex = _highlightedIndex <= 0 ? _filteredItems.Count - 1 : _highlightedIndex - 1;
+                    _highlightedIndex = _highlightedIndex <= 0 ? _filteredTItems.Count - 1 : _highlightedIndex - 1;
                 }
                 break;
             case "Enter":
-                if (_highlightedIndex >= 0 && _highlightedIndex < _filteredItems.Count)
+                if (_highlightedIndex >= 0 && _highlightedIndex < _filteredTItems.Count)
                 {
-                    await SelectItem(_filteredItems[_highlightedIndex]);
+                    await SelectTItem(_filteredTItems[_highlightedIndex]);
                 }
                 break;
             case "Escape":
@@ -90,26 +235,43 @@
         }
     }
 
-    private async Task SelectItem(string item)
+    private async Task SelectTItem(TItem item)
     {
-        Value = item;
+        Value = GetValueText(item);
         await ValueChanged.InvokeAsync(Value);
+        _isOpen = false;
+    }
+
+    private async Task ClearValue()
+    {
+        Value = string.Empty;
+        await ValueChanged.InvokeAsync(Value);
+        _filteredTItems.Clear();
         _isOpen = false;
     }
 
     private void OpenDropdown()
     {
+        if (ReadOnly || Disabled) return;
         FilterItems();
-        _isOpen = _filteredItems.Any();
+        _isOpen = _filteredTItems.Any();
     }
 
     private void CloseDropdownDelayed()
     {
-        // Delay to allow mousedown on items to fire first
         _ = Task.Delay(200).ContinueWith(_ =>
         {
             _isOpen = false;
             InvokeAsync(StateHasChanged);
         });
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _debounceTimer?.Dispose();
+        }
+        base.Dispose(disposing);
     }
 }
