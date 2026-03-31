@@ -100,27 +100,27 @@ This document defines the resolution strategy for all 87 Marilo Blazor component
 | MariloTimePicker | 5 | multi-pass | Yes (tumbler UI) | **T4 - Low** |
 | MariloFileUpload | 4 | multi-pass | Yes (async/chunk upload) | **T4 - Low** |
 | MariloUpload | 5 | multi-pass | Yes (chunk upload, drop zone) | **T4 - Low** |
-| MariloMaskedInput | 7 | single-pass | Yes (mask enforcement) | **T4 - Low** |
+| MariloMaskedInput | 7 | single-pass | Yes (mask enforcement) | **T4 - Low** | ✅ RESOLVED |
 | MariloMultiSelect | 5 | multi-pass | Yes (filtering, virtualization) | **T4 - Low** |
-| MariloRangeSlider | 6 | single-pass | No | **T4 - Low** |
-| MariloRating | 5 | single-pass | No | **T4 - Low** |
-| MariloSearchBox | 3 | single-pass | Yes (debounce, suggestions) | **T4 - Low** |
-| MariloDataBanner | 4 | single-pass | No | **T4 - Low** |
-| MariloDataToast | 4 | single-pass | No | **T4 - Low** |
-| MariloProgressCircle | 2 | single-pass | No | **T4 - Low** |
-| MariloSnackbar | 2 | single-pass | No | **T4 - Low** |
-| MariloSnackbarHost | 1 | single-pass | No | **T4 - Low** |
-| MariloSpinner | 3 | single-pass | No | **T4 - Low** |
-| MariloBreadcrumbItem | 3 | single-pass | No | **T4 - Low** |
-| MariloEnvironmentBadge | 2 | single-pass | No | **T4 - Low** |
-| MariloMenuItem | 3 | single-pass | No | **T4 - Low** |
-| MariloToolbarButton | 2 | single-pass | No | **T4 - Low** |
-| MariloToolbarGroup | 1 | single-pass | No | **T4 - Low** |
-| MariloToolbarSeparator | 1 | single-pass | No | **T4 - Low** |
-| MariloToolbarToggleButton | 3 | single-pass | No | **T4 - Low** |
-| MariloTreeItem | 3 | single-pass | No | **T4 - Low** |
-| MariloTimeRangeSelector | 3 | single-pass | No | **T4 - Low** |
-| TabStripTab | 1 | single-pass | No | **T4 - Low** |
+| MariloRangeSlider | 6 | single-pass | No | **T4 - Low** | ✅ RESOLVED |
+| MariloRating | 5 | single-pass | No | **T4 - Low** | ✅ RESOLVED |
+| MariloSearchBox | 3 | single-pass | Yes (debounce, suggestions) | **T4 - Low** | ✅ RESOLVED |
+| MariloDataBanner | 4 | single-pass | No | **T4 - Low** | ✅ RESOLVED |
+| MariloDataToast | 4 | single-pass | No | **T4 - Low** | ✅ RESOLVED |
+| MariloProgressCircle | 2 | single-pass | No | **T4 - Low** | ✅ RESOLVED |
+| MariloSnackbar | 2 | single-pass | No | **T4 - Low** | ✅ RESOLVED |
+| MariloSnackbarHost | 1 | single-pass | No | **T4 - Low** | ✅ RESOLVED |
+| MariloSpinner | 3 | single-pass | No | **T4 - Low** | ✅ RESOLVED |
+| MariloBreadcrumbItem | 3 | single-pass | No | **T4 - Low** | ✅ RESOLVED |
+| MariloEnvironmentBadge | 2 | single-pass | No | **T4 - Low** | ✅ RESOLVED |
+| MariloMenuItem | 3 | single-pass | No | **T4 - Low** | ✅ RESOLVED (in T2) |
+| MariloToolbarButton | 2 | single-pass | No | **T4 - Low** | ✅ RESOLVED |
+| MariloToolbarGroup | 1 | single-pass | No | **T4 - Low** | ✅ RESOLVED |
+| MariloToolbarSeparator | 1 | single-pass | No | **T4 - Low** | ✅ RESOLVED |
+| MariloToolbarToggleButton | 3 | single-pass | No | **T4 - Low** | ✅ RESOLVED |
+| MariloTreeItem | 3 | single-pass | No | **T4 - Low** | ✅ RESOLVED (in T2) |
+| MariloTimeRangeSelector | 3 | single-pass | No | **T4 - Low** | ✅ RESOLVED |
+| TabStripTab | 1 | single-pass | No | **T4 - Low** | ✅ RESOLVED |
 | MariloCardBody | 0 | n/a | No | **Complete** |
 | MariloHighlighter | 0 | n/a | No | **Complete** |
 | MariloImage | 0 | n/a | No | **Complete** |
