@@ -1,9 +1,9 @@
 namespace Marilo.Core.Enums;
 
 /// <summary>
-/// Specifies the visual state of a window.
+/// Specifies the visual display state of a window.
 /// </summary>
-public enum WindowState
+public enum WindowDisplayState
 {
     /// <summary>Normal sized and positioned window.</summary>
     Normal,

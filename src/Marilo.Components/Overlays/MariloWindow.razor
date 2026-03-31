@@ -39,9 +39,9 @@
                 {
                     <button type="button"
                             class="mar-window__action-btn mar-window__action-btn--maximize"
-                            aria-label="@(State == WindowState.Maximized ? "Restore" : "Maximize")"
+                            aria-label="@(State == WindowDisplayState.Maximized ? "Restore" : "Maximize")"
                             @onclick="HandleMaximizeRestore">
-                        @(State == WindowState.Maximized ? "\u29C9" : "\u25A1")
+                        @(State == WindowDisplayState.Maximized ? "\u29C9" : "\u25A1")
                     </button>
                 }
                 @if (Actions.HasFlag(WindowAction.Close))
@@ -57,7 +57,7 @@
         </div>
 
         @* Content *@
-        @if (State != WindowState.Minimized)
+        @if (State != WindowDisplayState.Minimized)
         {
             <div class="@CssProvider.WindowContentClass()">
                 @ChildContent
@@ -71,7 +71,7 @@
             }
 
             @* Resize handles (rendered but drag logic requires JS interop) *@
-            @if (Resizable && State == WindowState.Normal)
+            @if (Resizable && State == WindowDisplayState.Normal)
             {
                 <div class="mar-window__resize-handle mar-window__resize-handle--se" data-resize="se"></div>
                 <div class="mar-window__resize-handle mar-window__resize-handle--s" data-resize="s"></div>
@@ -93,8 +93,8 @@
     [Parameter] public bool Modal { get; set; }
 
     /// <summary>The current window state (Normal, Minimized, Maximized). Supports two-way binding.</summary>
-    [Parameter] public WindowState State { get; set; } = WindowState.Normal;
-    [Parameter] public EventCallback<WindowState> StateChanged { get; set; }
+    [Parameter] public WindowDisplayState State { get; set; } = WindowDisplayState.Normal;
+    [Parameter] public EventCallback<WindowDisplayState> StateChanged { get; set; }
 
     /// <summary>Whether the window can be dragged by the title bar.</summary>
     [Parameter] public bool Draggable { get; set; } = true;
@@ -160,8 +160,8 @@
         get
         {
             var cls = CssProvider.WindowClass(Modal);
-            if (State == WindowState.Maximized) cls += " mar-window--maximized";
-            if (State == WindowState.Minimized) cls += " mar-window--minimized";
+            if (State == WindowDisplayState.Maximized) cls += " mar-window--maximized";
+            if (State == WindowDisplayState.Minimized) cls += " mar-window--minimized";
             if (Draggable) cls += " mar-window--draggable";
             if (Resizable) cls += " mar-window--resizable";
             return cls;
@@ -170,7 +170,7 @@
 
     private string BuildWindowStyle()
     {
-        if (State == WindowState.Maximized)
+        if (State == WindowDisplayState.Maximized)
             return StyleBuilder.Clear().AddStyle(Style).Build();
 
         var sb = StyleBuilder.Clear();
@@ -205,7 +205,7 @@
     }
 
     /// <summary>Sets the window state programmatically.</summary>
-    public async Task SetStateAsync(WindowState state)
+    public async Task SetStateAsync(WindowDisplayState state)
     {
         State = state;
         await StateChanged.InvokeAsync(state);
@@ -223,14 +223,14 @@
 
     private async Task HandleMinimize()
     {
-        State = WindowState.Minimized;
+        State = WindowDisplayState.Minimized;
         await StateChanged.InvokeAsync(State);
         await OnAction.InvokeAsync(WindowAction.Minimize);
     }
 
     private async Task HandleMaximizeRestore()
     {
-        State = State == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+        State = State == WindowDisplayState.Maximized ? WindowDisplayState.Normal : WindowDisplayState.Maximized;
         await StateChanged.InvokeAsync(State);
         await OnAction.InvokeAsync(WindowAction.Maximize);
     }
