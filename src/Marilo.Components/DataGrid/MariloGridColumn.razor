@@ -19,17 +19,29 @@
     /// <summary>Whether this column is filterable. Defaults to true.</summary>
     [Parameter] public bool Filterable { get; set; } = true;
 
+    /// <summary>Whether this column is visible. Defaults to true.</summary>
+    [Parameter] public bool Visible { get; set; } = true;
+
     /// <summary>Custom cell template. Receives the row item as context.</summary>
     [Parameter] public RenderFragment<TItem>? Template { get; set; }
 
     /// <summary>Custom header template.</summary>
     [Parameter] public RenderFragment? HeaderTemplate { get; set; }
 
+    /// <summary>Custom editor template for inline/popup editing. Receives the row item as context.</summary>
+    [Parameter] public RenderFragment<TItem>? EditorTemplate { get; set; }
+
+    /// <summary>Custom footer template for column aggregates.</summary>
+    [Parameter] public RenderFragment? FooterTemplate { get; set; }
+
     /// <summary>Text alignment for the column (e.g. "left", "center", "right").</summary>
     [Parameter] public string? TextAlign { get; set; }
 
     /// <summary>Format string for displaying the cell value (e.g. "C2", "yyyy-MM-dd").</summary>
     [Parameter] public string? Format { get; set; }
+
+    /// <summary>Callback for per-cell render customization (CSS classes, styles).</summary>
+    [Parameter] public Action<GridCellRenderEventArgs<TItem>>? OnCellRender { get; set; }
 
     /// <summary>Gets the display title for the column header.</summary>
     internal string DisplayTitle => Title ?? Field;

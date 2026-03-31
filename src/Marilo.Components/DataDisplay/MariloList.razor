@@ -1,9 +1,148 @@
+@typeparam TItem
 @inherits MariloComponentBase
 
-<ul class="@CombineClasses(CssProvider.ListClass())" style="@CombineStyles()" @attributes="AdditionalAttributes">
-    @ChildContent
-</ul>
+<div class="@CombineClasses(CssProvider.ListClass())"
+     style="@CombineStyles(RootStyle)"
+     role="listbox"
+     aria-label="@AriaLabel"
+     aria-labelledby="@AriaLabelledBy"
+     aria-multiselectable="@(SelectionMode == GridSelectionMode.Multiple ? "true" : null)"
+     @attributes="AdditionalAttributes">
+
+    @if (Data != null && Data.Any())
+    {
+        <ul class="mar-list__items">
+            @foreach (var item in Data)
+            {
+                var isSelected = _selectedItems.Contains(item);
+                var isDisabled = !Enabled;
+
+                <li class="mar-list__item @(isSelected ? "mar-list__item--selected" : "") @(isDisabled ? "mar-list__item--disabled" : "")"
+                    role="option"
+                    aria-selected="@isSelected"
+                    aria-disabled="@(isDisabled ? "true" : null)"
+                    @onclick="() => HandleItemClick(item)">
+                    @if (ItemTemplate != null)
+                    {
+                        @ItemTemplate(item)
+                    }
+                    else
+                    {
+                        @GetTextValue(item)
+                    }
+                </li>
+            }
+        </ul>
+    }
+    else if (ChildContent != null)
+    {
+        <ul class="mar-list__items">
+            @ChildContent
+        </ul>
+    }
+    else
+    {
+        <div class="mar-list__empty">No items.</div>
+    }
+</div>
 
 @code {
+    private HashSet<TItem> _selectedItems = [];
+
+    /// <summary>Data source for the list items.</summary>
+    [Parameter] public IEnumerable<TItem>? Data { get; set; }
+
+    /// <summary>The property name on TItem to display as text.</summary>
+    [Parameter] public string TextField { get; set; } = "Text";
+
+    /// <summary>The property name on TItem to use as value.</summary>
+    [Parameter] public string ValueField { get; set; } = "Value";
+
+    /// <summary>Selection mode (None, Single, Multiple).</summary>
+    [Parameter] public GridSelectionMode SelectionMode { get; set; } = GridSelectionMode.None;
+
+    /// <summary>The currently selected items. Supports two-way binding.</summary>
+    [Parameter] public IEnumerable<TItem>? SelectedItems { get; set; }
+
+    /// <summary>Fires when the selected items change.</summary>
+    [Parameter] public EventCallback<IEnumerable<TItem>> SelectedItemsChanged { get; set; }
+
+    /// <summary>Whether the list is enabled for interaction. Defaults to true.</summary>
+    [Parameter] public bool Enabled { get; set; } = true;
+
+    /// <summary>Width of the list container.</summary>
+    [Parameter] public string? Width { get; set; }
+
+    /// <summary>Height of the list container (enables scrolling).</summary>
+    [Parameter] public string? Height { get; set; }
+
+    /// <summary>Custom template for rendering each item.</summary>
+    [Parameter] public RenderFragment<TItem>? ItemTemplate { get; set; }
+
+    /// <summary>Manual child content (MariloListItem components).</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Accessible label for the listbox.</summary>
+    [Parameter] public string? AriaLabel { get; set; }
+
+    /// <summary>ID of an element that labels the listbox.</summary>
+    [Parameter] public string? AriaLabelledBy { get; set; }
+
+    // ── Computed ────────────────────────────────────────────────────────
+
+    private string? RootStyle
+    {
+        get
+        {
+            var parts = new List<string>();
+            if (Width != null) parts.Add($"width:{Width};");
+            if (Height != null) parts.Add($"height:{Height};overflow:auto;");
+            return parts.Count > 0 ? string.Join("", parts) : null;
+        }
+    }
+
+    // ── Lifecycle ───────────────────────────────────────────────────────
+
+    protected override void OnParametersSet()
+    {
+        if (SelectedItems != null)
+            _selectedItems = new HashSet<TItem>(SelectedItems);
+    }
+
+    // ── Public API ──────────────────────────────────────────────────────
+
+    /// <summary>Forces the list to re-render with current data.</summary>
+    public void Rebind()
+    {
+        StateHasChanged();
+    }
+
+    // ── Event handlers ──────────────────────────────────────────────────
+
+    private async Task HandleItemClick(TItem item)
+    {
+        if (!Enabled || SelectionMode == GridSelectionMode.None) return;
+
+        if (SelectionMode == GridSelectionMode.Single)
+        {
+            _selectedItems.Clear();
+            _selectedItems.Add(item);
+        }
+        else if (SelectionMode == GridSelectionMode.Multiple)
+        {
+            if (!_selectedItems.Remove(item))
+                _selectedItems.Add(item);
+        }
+
+        await SelectedItemsChanged.InvokeAsync(_selectedItems.ToList());
+    }
+
+    // ── Helpers ─────────────────────────────────────────────────────────
+
+    private string GetTextValue(TItem item)
+    {
+        if (item is null) return string.Empty;
+        var prop = typeof(TItem).GetProperty(TextField);
+        return prop?.GetValue(item)?.ToString() ?? item.ToString() ?? string.Empty;
+    }
 }
