@@ -12672,6 +12672,162 @@ textarea.form-control-lg {
   --marilo-z-toast: 1090;
 }
 
+/* ── Theme bridge: map Marilo theme variables to Bootstrap component variables ── */
+.marilo-theme-provider {
+  --bs-primary: var(--marilo-color-primary);
+  --bs-secondary: var(--marilo-color-secondary);
+  --bs-success: var(--marilo-color-success);
+  --bs-danger: var(--marilo-color-danger);
+  --bs-warning: var(--marilo-color-warning);
+  --bs-info: var(--marilo-color-info);
+  --bs-body-bg: var(--marilo-color-bg);
+  --bs-body-color: var(--marilo-color-text);
+  --bs-border-color: var(--marilo-color-border);
+  --bs-link-color: var(--marilo-color-primary);
+  --bs-link-hover-color: var(--marilo-color-primary);
+  --bs-border-radius: var(--marilo-radius-md);
+  --bs-border-radius-lg: var(--marilo-radius-lg);
+  --bs-body-font-family: var(--marilo-font-family);
+  --bs-body-font-size: var(--marilo-font-size-base);
+}
+
+.marilo-theme-provider .btn-primary {
+  --bs-btn-bg: var(--marilo-color-primary);
+  --bs-btn-border-color: var(--marilo-color-primary);
+  --bs-btn-hover-bg: var(--marilo-color-primary);
+  --bs-btn-hover-border-color: var(--marilo-color-primary);
+  --bs-btn-active-bg: var(--marilo-color-primary);
+  --bs-btn-active-border-color: var(--marilo-color-primary);
+  --bs-btn-disabled-bg: var(--marilo-color-primary);
+  --bs-btn-disabled-border-color: var(--marilo-color-primary);
+}
+
+.marilo-theme-provider .btn-outline-primary {
+  --bs-btn-color: var(--marilo-color-primary);
+  --bs-btn-border-color: var(--marilo-color-primary);
+  --bs-btn-hover-bg: var(--marilo-color-primary);
+  --bs-btn-hover-border-color: var(--marilo-color-primary);
+  --bs-btn-active-bg: var(--marilo-color-primary);
+  --bs-btn-active-border-color: var(--marilo-color-primary);
+}
+
+.marilo-theme-provider .btn-secondary {
+  --bs-btn-bg: var(--marilo-color-secondary);
+  --bs-btn-border-color: var(--marilo-color-secondary);
+  --bs-btn-hover-bg: var(--marilo-color-secondary);
+  --bs-btn-hover-border-color: var(--marilo-color-secondary);
+  --bs-btn-active-bg: var(--marilo-color-secondary);
+  --bs-btn-active-border-color: var(--marilo-color-secondary);
+}
+
+.marilo-theme-provider .btn-success {
+  --bs-btn-bg: var(--marilo-color-success);
+  --bs-btn-border-color: var(--marilo-color-success);
+  --bs-btn-hover-bg: var(--marilo-color-success);
+  --bs-btn-hover-border-color: var(--marilo-color-success);
+  --bs-btn-active-bg: var(--marilo-color-success);
+  --bs-btn-active-border-color: var(--marilo-color-success);
+}
+
+.marilo-theme-provider .btn-danger {
+  --bs-btn-bg: var(--marilo-color-danger);
+  --bs-btn-border-color: var(--marilo-color-danger);
+  --bs-btn-hover-bg: var(--marilo-color-danger);
+  --bs-btn-hover-border-color: var(--marilo-color-danger);
+  --bs-btn-active-bg: var(--marilo-color-danger);
+  --bs-btn-active-border-color: var(--marilo-color-danger);
+}
+
+.marilo-theme-provider .btn-warning {
+  --bs-btn-bg: var(--marilo-color-warning);
+  --bs-btn-border-color: var(--marilo-color-warning);
+  --bs-btn-hover-bg: var(--marilo-color-warning);
+  --bs-btn-hover-border-color: var(--marilo-color-warning);
+  --bs-btn-active-bg: var(--marilo-color-warning);
+  --bs-btn-active-border-color: var(--marilo-color-warning);
+}
+
+.marilo-theme-provider .btn-info {
+  --bs-btn-bg: var(--marilo-color-info);
+  --bs-btn-border-color: var(--marilo-color-info);
+  --bs-btn-hover-bg: var(--marilo-color-info);
+  --bs-btn-hover-border-color: var(--marilo-color-info);
+  --bs-btn-active-bg: var(--marilo-color-info);
+  --bs-btn-active-border-color: var(--marilo-color-info);
+}
+
+.marilo-theme-provider .bg-primary { background-color: var(--marilo-color-primary) !important; }
+.marilo-theme-provider .bg-secondary { background-color: var(--marilo-color-secondary) !important; }
+.marilo-theme-provider .bg-success { background-color: var(--marilo-color-success) !important; }
+.marilo-theme-provider .bg-danger { background-color: var(--marilo-color-danger) !important; }
+.marilo-theme-provider .bg-warning { background-color: var(--marilo-color-warning) !important; }
+.marilo-theme-provider .bg-info { background-color: var(--marilo-color-info) !important; }
+
+.marilo-theme-provider .text-primary { color: var(--marilo-color-primary) !important; }
+.marilo-theme-provider .text-secondary { color: var(--marilo-color-secondary) !important; }
+.marilo-theme-provider .text-success { color: var(--marilo-color-success) !important; }
+.marilo-theme-provider .text-danger { color: var(--marilo-color-danger) !important; }
+.marilo-theme-provider .text-warning { color: var(--marilo-color-warning) !important; }
+.marilo-theme-provider .text-info { color: var(--marilo-color-info) !important; }
+
+.marilo-theme-provider .border-primary { border-color: var(--marilo-color-primary) !important; }
+.marilo-theme-provider .border-secondary { border-color: var(--marilo-color-secondary) !important; }
+.marilo-theme-provider .border-success { border-color: var(--marilo-color-success) !important; }
+.marilo-theme-provider .border-danger { border-color: var(--marilo-color-danger) !important; }
+.marilo-theme-provider .border-warning { border-color: var(--marilo-color-warning) !important; }
+.marilo-theme-provider .border-info { border-color: var(--marilo-color-info) !important; }
+
+.marilo-theme-provider .alert-info {
+  --bs-alert-color: var(--marilo-color-info);
+  --bs-alert-bg: var(--marilo-color-info-light, #cff4fc);
+  --bs-alert-border-color: var(--marilo-color-info);
+}
+
+.marilo-theme-provider .alert-success {
+  --bs-alert-color: var(--marilo-color-success);
+  --bs-alert-bg: var(--marilo-color-success-light, #d1e7dd);
+  --bs-alert-border-color: var(--marilo-color-success);
+}
+
+.marilo-theme-provider .alert-warning {
+  --bs-alert-color: var(--marilo-color-warning);
+  --bs-alert-bg: var(--marilo-color-warning-light, #fff3cd);
+  --bs-alert-border-color: var(--marilo-color-warning);
+}
+
+.marilo-theme-provider .alert-danger {
+  --bs-alert-color: var(--marilo-color-danger);
+  --bs-alert-bg: var(--marilo-color-danger-light, #f8d7da);
+  --bs-alert-border-color: var(--marilo-color-danger);
+}
+
+.marilo-theme-provider .form-control:focus {
+  border-color: var(--marilo-color-primary);
+  box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--marilo-color-primary) 25%, transparent);
+}
+
+.marilo-theme-provider .form-check-input:checked {
+  background-color: var(--marilo-color-primary);
+  border-color: var(--marilo-color-primary);
+}
+
+.marilo-theme-provider .page-link {
+  color: var(--marilo-color-primary);
+}
+
+.marilo-theme-provider .page-item.active .page-link {
+  background-color: var(--marilo-color-primary);
+  border-color: var(--marilo-color-primary);
+}
+
+.marilo-theme-provider .progress-bar {
+  background-color: var(--marilo-color-primary);
+}
+
+.marilo-theme-provider a {
+  color: var(--marilo-color-primary);
+}
+
 [data-bs-theme=dark] {
   --marilo-color-primary: rgb(109.8, 168, 253.8);
   --marilo-color-primary-hover: rgb(134, 182.5, 254);
