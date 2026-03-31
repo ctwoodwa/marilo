@@ -1,6 +1,9 @@
 @inherits MariloComponentBase
 
-<div class="@CombineClasses(CssProvider.CalloutClass(Type))" style="@CombineStyles()" @attributes="AdditionalAttributes">
+<div class="@CombineClasses(CssProvider.CalloutClass(Type))"
+     style="@CombineStyles()"
+     role="note"
+     @attributes="AdditionalAttributes">
     <div class="mar-callout__icon">
         @switch (Type)
         {
@@ -28,10 +31,16 @@
         }
         @ChildContent
     </div>
+    @if (IsDismissible)
+    {
+        <button type="button" class="mar-callout__dismiss" aria-label="Dismiss" @onclick="OnDismiss">&times;</button>
+    }
 </div>
 
 @code {
     [Parameter] public CalloutType Type { get; set; } = CalloutType.Info;
     [Parameter] public string? Title { get; set; }
+    [Parameter] public bool IsDismissible { get; set; }
+    [Parameter] public EventCallback OnDismiss { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
 }

@@ -7,45 +7,7 @@
     <div class="@CombineClasses(CssProvider.MenuClass())" style="@CombineStyles()" role="menu" @attributes="AdditionalAttributes">
         @if (Data != null)
         {
-            @foreach (var item in Data)
-            {
-                var isSeparator = GetBool(item, SeparatorField);
-                var isDisabled  = GetBool(item, DisabledField);
-                var text        = GetString(item, TextField);
-                var icon        = GetString(item, IconField);
-                var url         = GetString(item, UrlField);
-
-                if (isSeparator)
-                {
-                    <div class="@CssProvider.MenuDividerClass()" role="separator"></div>
-                }
-                else if (!string.IsNullOrEmpty(url))
-                {
-                    <a class="@CssProvider.MenuItemClass(isDisabled)"
-                       href="@url"
-                       role="menuitem"
-                       aria-disabled="@isDisabled">
-                        @if (!string.IsNullOrEmpty(icon))
-                        {
-                            <span class="mar-menu-item__icon">@icon</span>
-                        }
-                        @text
-                    </a>
-                }
-                else
-                {
-                    <button type="button"
-                            class="@CssProvider.MenuItemClass(isDisabled)"
-                            role="menuitem"
-                            disabled="@isDisabled">
-                        @if (!string.IsNullOrEmpty(icon))
-                        {
-                            <span class="mar-menu-item__icon">@icon</span>
-                        }
-                        @text
-                    </button>
-                }
-            }
+            @RenderMenuItems(BuildMenuTree())
         }
         else
         {
@@ -58,51 +20,202 @@
     /// <summary>Whether the menu is open.</summary>
     [Parameter] public bool IsOpen { get; set; }
 
-    /// <summary>Callback invoked when the open state changes (supports two-way binding).</summary>
+    /// <summary>Fires when the open state changes (supports two-way binding).</summary>
     [Parameter] public EventCallback<bool> IsOpenChanged { get; set; }
+
+    /// <summary>Whether clicking a menu item closes the menu. Defaults to true.</summary>
+    [Parameter] public bool CloseOnClick { get; set; } = true;
+
+    /// <summary>Fires when a menu item is clicked. Receives the data item.</summary>
+    [Parameter] public EventCallback<object> OnClick { get; set; }
 
     /// <summary>Child content rendered when <see cref="Data"/> is not set.</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
     // ── Data-binding parameters ──────────────────────────────────────
 
-    /// <summary>The collection of menu items to render. When set, child content is ignored.</summary>
     [Parameter] public IEnumerable<object>? Data { get; set; }
-
-    /// <summary>Field name for the item text. Default: <c>Text</c>.</summary>
     [Parameter] public string TextField { get; set; } = "Text";
-
-    /// <summary>Field name for the item icon. Default: <c>Icon</c>.</summary>
     [Parameter] public string IconField { get; set; } = "Icon";
-
-    /// <summary>Field name for the item URL. Default: <c>Url</c>.</summary>
     [Parameter] public string UrlField { get; set; } = "Url";
-
-    /// <summary>Field name for the separator flag. Default: <c>Separator</c>.</summary>
     [Parameter] public string SeparatorField { get; set; } = "Separator";
-
-    /// <summary>Field name for the disabled flag. Default: <c>Disabled</c>.</summary>
     [Parameter] public string DisabledField { get; set; } = "Disabled";
-
-    /// <summary>Field name for the item id. Default: <c>Id</c>.</summary>
     [Parameter] public string IdField { get; set; } = "Id";
-
-    /// <summary>Field name for the parent id (flat data). Default: <c>ParentId</c>.</summary>
     [Parameter] public string ParentIdField { get; set; } = "ParentId";
-
-    /// <summary>Field name for the child items collection (hierarchical data). Default: <c>Items</c>.</summary>
     [Parameter] public string ItemsField { get; set; } = "Items";
-
-    /// <summary>Field name for the has-children hint. Default: <c>HasChildren</c>.</summary>
     [Parameter] public string HasChildrenField { get; set; } = "HasChildren";
 
-    // ── Helpers ──────────────────────────────────────────────────────
+    // ── Public API ──────────────────────────────────────────────────────
+
+    /// <summary>Shows the menu programmatically.</summary>
+    public async Task ShowAsync()
+    {
+        IsOpen = true;
+        await IsOpenChanged.InvokeAsync(true);
+        StateHasChanged();
+    }
+
+    /// <summary>Hides the menu programmatically.</summary>
+    public async Task HideAsync()
+    {
+        IsOpen = false;
+        await IsOpenChanged.InvokeAsync(false);
+        StateHasChanged();
+    }
+
+    // ── Hierarchical data building ──────────────────────────────────────
+
+    private record MenuNode(object Item, string? Text, string? Icon, string? Url, bool IsSeparator, bool IsDisabled, List<MenuNode> Children);
+
+    private List<MenuNode> BuildMenuTree()
+    {
+        if (Data == null) return [];
+
+        var items = Data.ToList();
+
+        // Check if hierarchical (has ItemsField)
+        if (items.Any(i => GetValue(i, ItemsField) is System.Collections.IEnumerable))
+            return BuildHierarchical(items);
+
+        // Check if flat with parent/child
+        if (items.Any(i => GetString(i, ParentIdField) != null))
+            return BuildFlat(items);
+
+        // Simple flat list
+        return items.Select(ToMenuNode).ToList();
+    }
+
+    private List<MenuNode> BuildHierarchical(IEnumerable<object> items)
+    {
+        return items.Select(item =>
+        {
+            var children = new List<MenuNode>();
+            if (GetValue(item, ItemsField) is System.Collections.IEnumerable childEnum)
+                children = BuildHierarchical(childEnum.Cast<object>());
+            return new MenuNode(item, GetString(item, TextField), GetString(item, IconField),
+                GetString(item, UrlField), GetBool(item, SeparatorField), GetBool(item, DisabledField), children);
+        }).ToList();
+    }
+
+    private List<MenuNode> BuildFlat(List<object> items)
+    {
+        var lookup = new Dictionary<string, MenuNode>();
+        var roots = new List<MenuNode>();
+
+        foreach (var item in items)
+        {
+            var id = GetString(item, IdField) ?? "";
+            lookup[id] = new MenuNode(item, GetString(item, TextField), GetString(item, IconField),
+                GetString(item, UrlField), GetBool(item, SeparatorField), GetBool(item, DisabledField), []);
+        }
+
+        foreach (var item in items)
+        {
+            var id = GetString(item, IdField) ?? "";
+            var parentId = GetString(item, ParentIdField);
+            if (string.IsNullOrEmpty(parentId) || !lookup.ContainsKey(parentId))
+                roots.Add(lookup[id]);
+            else
+                lookup[parentId].Children.Add(lookup[id]);
+        }
+
+        return roots;
+    }
+
+    private MenuNode ToMenuNode(object item) =>
+        new(item, GetString(item, TextField), GetString(item, IconField),
+            GetString(item, UrlField), GetBool(item, SeparatorField), GetBool(item, DisabledField), []);
+
+    // ── Rendering ───────────────────────────────────────────────────────
+
+    private RenderFragment RenderMenuItems(List<MenuNode> nodes) => builder =>
+    {
+        foreach (var node in nodes)
+        {
+            if (node.IsSeparator)
+            {
+                builder.OpenElement(0, "div");
+                builder.AddAttribute(1, "class", CssProvider.MenuDividerClass());
+                builder.AddAttribute(2, "role", "separator");
+                builder.CloseElement();
+                continue;
+            }
+
+            var hasChildren = node.Children.Any();
+
+            if (!string.IsNullOrEmpty(node.Url))
+            {
+                builder.OpenElement(10, "a");
+                builder.AddAttribute(11, "class", CssProvider.MenuItemClass(node.IsDisabled));
+                builder.AddAttribute(12, "href", node.Url);
+                builder.AddAttribute(13, "role", "menuitem");
+                builder.AddAttribute(14, "aria-disabled", node.IsDisabled);
+                var clickItem = node.Item;
+                builder.AddAttribute(15, "onclick", EventCallback.Factory.Create(this, () => HandleItemClick(clickItem)));
+            }
+            else
+            {
+                builder.OpenElement(10, "button");
+                builder.AddAttribute(11, "type", "button");
+                builder.AddAttribute(12, "class", CssProvider.MenuItemClass(node.IsDisabled));
+                builder.AddAttribute(13, "role", "menuitem");
+                builder.AddAttribute(14, "disabled", node.IsDisabled);
+                if (hasChildren) builder.AddAttribute(15, "aria-haspopup", "true");
+                var clickItem = node.Item;
+                builder.AddAttribute(16, "onclick", EventCallback.Factory.Create(this, () => HandleItemClick(clickItem)));
+            }
+
+            if (!string.IsNullOrEmpty(node.Icon))
+            {
+                builder.OpenElement(20, "span");
+                builder.AddAttribute(21, "class", "mar-menu-item__icon");
+                builder.AddContent(22, node.Icon);
+                builder.CloseElement();
+            }
+
+            builder.AddContent(25, node.Text);
+
+            if (hasChildren)
+            {
+                builder.OpenElement(30, "span");
+                builder.AddAttribute(31, "class", "mar-menu-item__arrow");
+                builder.AddContent(32, "\u25B6");
+                builder.CloseElement();
+            }
+
+            builder.CloseElement(); // a or button
+
+            // Render sub-menu
+            if (hasChildren)
+            {
+                builder.OpenElement(40, "div");
+                builder.AddAttribute(41, "class", "mar-menu__submenu");
+                builder.AddAttribute(42, "role", "menu");
+                builder.AddContent(43, RenderMenuItems(node.Children));
+                builder.CloseElement();
+            }
+        }
+    };
+
+    // ── Event handlers ──────────────────────────────────────────────────
+
+    private async Task HandleItemClick(object item)
+    {
+        if (OnClick.HasDelegate)
+            await OnClick.InvokeAsync(item);
+
+        if (CloseOnClick)
+            await HandleClose();
+    }
 
     private async Task HandleClose()
     {
+        IsOpen = false;
         if (IsOpenChanged.HasDelegate)
             await IsOpenChanged.InvokeAsync(false);
     }
+
+    // ── Helpers ──────────────────────────────────────────────────────────
 
     private static string? GetString(object item, string field)
     {
@@ -114,5 +227,11 @@
     {
         var prop = item.GetType().GetProperty(field, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
         return prop?.GetValue(item) is true;
+    }
+
+    private static object? GetValue(object item, string field)
+    {
+        var prop = item.GetType().GetProperty(field, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+        return prop?.GetValue(item);
     }
 }

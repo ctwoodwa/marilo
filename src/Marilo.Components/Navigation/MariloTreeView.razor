@@ -1,13 +1,18 @@
 @inherits MariloComponentBase
 
-<ul class="@CombineClasses(CssProvider.TreeViewClass())" style="@CombineStyles()" role="tree" @attributes="AdditionalAttributes">
+<ul class="@CombineClasses(CssProvider.TreeViewClass())"
+    style="@CombineStyles(SizeStyle)"
+    role="tree"
+    @attributes="AdditionalAttributes">
     @if (Data != null)
     {
         @RenderNodes(BuildTree())
     }
     else
     {
-        @ChildContent
+        <CascadingValue Value="this" IsFixed="true">
+            @ChildContent
+        </CascadingValue>
     }
 </ul>
 
@@ -17,18 +22,56 @@
     [Parameter] public string? IdField { get; set; }
     [Parameter] public string? ParentIdField { get; set; }
     [Parameter] public string? TextField { get; set; }
+    [Parameter] public string? IconField { get; set; }
     [Parameter] public string? ItemsField { get; set; }
     [Parameter] public string? HasChildrenField { get; set; }
     [Parameter] public CheckBoxMode CheckBoxMode { get; set; } = CheckBoxMode.None;
     [Parameter] public RenderFragment<object>? ItemTemplate { get; set; }
+
+    /// <summary>The size of tree items (affects padding/font). E.g. "sm", "md", "lg".</summary>
+    [Parameter] public string? Size { get; set; }
+
+    /// <summary>The currently expanded item IDs. Supports two-way binding.</summary>
+    [Parameter] public IEnumerable<string>? ExpandedItems { get; set; }
+
+    /// <summary>Fires when expanded items change.</summary>
+    [Parameter] public EventCallback<IEnumerable<string>> ExpandedItemsChanged { get; set; }
+
+    /// <summary>The currently selected item IDs. Supports two-way binding.</summary>
+    [Parameter] public IEnumerable<string>? SelectedItems { get; set; }
+
+    /// <summary>Fires when selected items change.</summary>
+    [Parameter] public EventCallback<IEnumerable<string>> SelectedItemsChanged { get; set; }
+
+    /// <summary>Fires when a tree item is clicked.</summary>
+    [Parameter] public EventCallback<object> OnItemClick { get; set; }
 
     internal bool ShowCheckboxes => CheckBoxMode != CheckBoxMode.None;
     internal bool IsSingleCheckMode => CheckBoxMode == CheckBoxMode.Single;
 
     private HashSet<string> _expandedIds = new();
     private HashSet<string> _checkedIds = new();
+    private HashSet<string> _selectedIds = new();
+
+    private string? SizeStyle => Size != null ? $"font-size:{Size};" : null;
+
+    // ── Lifecycle ───────────────────────────────────────────────────────
+
+    protected override void OnParametersSet()
+    {
+        if (ExpandedItems != null)
+            _expandedIds = new HashSet<string>(ExpandedItems);
+        if (SelectedItems != null)
+            _selectedIds = new HashSet<string>(SelectedItems);
+    }
+
+    // ── Public API ──────────────────────────────────────────────────────
+
+    /// <summary>Forces re-render with current data.</summary>
+    public void Rebind() => StateHasChanged();
 
     internal bool IsItemChecked(string? id) => id != null && _checkedIds.Contains(id);
+    internal bool IsItemSelected(string? id) => id != null && _selectedIds.Contains(id);
 
     internal void ToggleItemChecked(string? id)
     {
@@ -38,7 +81,18 @@
         StateHasChanged();
     }
 
-    private record TreeNode(string Id, object Item, string Text, List<TreeNode> Children, bool HasChildren);
+    internal async Task SelectItem(string id, object item)
+    {
+        _selectedIds.Clear();
+        _selectedIds.Add(id);
+        await SelectedItemsChanged.InvokeAsync(_selectedIds.ToList());
+        if (OnItemClick.HasDelegate)
+            await OnItemClick.InvokeAsync(item);
+    }
+
+    // ── Tree building ───────────────────────────────────────────────────
+
+    private record TreeNode(string Id, object Item, string Text, string? Icon, List<TreeNode> Children, bool HasChildren);
 
     private string? GetPropertyString(object item, string? propertyName)
     {
@@ -67,6 +121,7 @@
             $"auto-{idx++}",
             item,
             GetPropertyString(item, TextField) ?? item.ToString() ?? "",
+            GetPropertyString(item, IconField),
             new List<TreeNode>(),
             false
         )).ToList();
@@ -80,6 +135,7 @@
         {
             var id = GetPropertyString(item, IdField) ?? $"h-{depth}-{idx++}";
             var text = GetPropertyString(item, TextField) ?? item.ToString() ?? "";
+            var icon = GetPropertyString(item, IconField);
             var children = new List<TreeNode>();
             var childItems = GetPropertyValue(item, ItemsField);
 
@@ -97,7 +153,7 @@
                 if (hcVal is bool b) hasChildren = b;
             }
 
-            result.Add(new TreeNode(id, item, text, children, hasChildren));
+            result.Add(new TreeNode(id, item, text, icon, children, hasChildren));
         }
         return result;
     }
@@ -112,13 +168,14 @@
         {
             var id = GetPropertyString(item, IdField) ?? "";
             var text = GetPropertyString(item, TextField) ?? item.ToString() ?? "";
+            var icon = GetPropertyString(item, IconField);
             var hasChildren = false;
             if (!string.IsNullOrEmpty(HasChildrenField))
             {
                 var hcVal = GetPropertyValue(item, HasChildrenField);
                 if (hcVal is bool b) hasChildren = b;
             }
-            lookup[id] = new TreeNode(id, item, text, new List<TreeNode>(), hasChildren);
+            lookup[id] = new TreeNode(id, item, text, icon, new List<TreeNode>(), hasChildren);
         }
 
         foreach (var item in allItems)
@@ -136,18 +193,22 @@
         return roots;
     }
 
+    // ── Rendering ───────────────────────────────────────────────────────
+
     private RenderFragment RenderNodes(List<TreeNode> nodes) => builder =>
     {
         foreach (var node in nodes)
         {
             var isExpanded = _expandedIds.Contains(node.Id);
+            var isSelected = _selectedIds.Contains(node.Id);
             var hasKids = node.Children.Any() || node.HasChildren;
 
             builder.OpenElement(0, "li");
-            builder.AddAttribute(1, "class", CssProvider.TreeItemClass(isExpanded, false));
+            builder.AddAttribute(1, "class", CssProvider.TreeItemClass(isExpanded, isSelected));
             builder.AddAttribute(2, "role", "treeitem");
             if (hasKids)
                 builder.AddAttribute(3, "aria-expanded", isExpanded.ToString().ToLower());
+            builder.AddAttribute(4, "aria-selected", isSelected.ToString().ToLower());
 
             // Header
             builder.OpenElement(10, "div");
@@ -160,21 +221,42 @@
                 builder.AddAttribute(21, "type", "button");
                 builder.AddAttribute(22, "class", "mar-tree-item__toggle");
                 builder.AddAttribute(23, "aria-label", isExpanded ? "Collapse" : "Expand");
-                builder.AddAttribute(24, "onclick", EventCallback.Factory.Create(this, () => ToggleNode(nodeId)));
+                builder.AddAttribute(24, "onclick", EventCallback.Factory.Create(this, () => ToggleNodeAsync(nodeId)));
                 builder.AddContent(25, isExpanded ? "\u25BC" : "\u25B6");
-                builder.CloseElement(); // button
+                builder.CloseElement();
+            }
+
+            if (ShowCheckboxes)
+            {
+                var cbId = node.Id;
+                builder.OpenElement(26, "input");
+                builder.AddAttribute(27, "type", "checkbox");
+                builder.AddAttribute(28, "class", "mar-tree-item__checkbox");
+                builder.AddAttribute(29, "checked", IsItemChecked(cbId));
+                builder.AddAttribute(30, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, _ => ToggleItemChecked(cbId)));
+                builder.CloseElement();
+            }
+
+            if (!string.IsNullOrEmpty(node.Icon))
+            {
+                builder.OpenElement(31, "span");
+                builder.AddAttribute(32, "class", "mar-tree-item__icon");
+                builder.AddContent(33, IconProvider.GetIcon(node.Icon, Marilo.Core.Enums.IconSize.Small));
+                builder.CloseElement();
             }
 
             if (ItemTemplate != null)
             {
-                builder.AddContent(30, ItemTemplate(node.Item));
+                builder.AddContent(35, ItemTemplate(node.Item));
             }
             else
             {
-                builder.OpenElement(30, "span");
-                builder.AddAttribute(31, "class", "mar-tree-item__title");
-                builder.AddContent(32, node.Text);
-                builder.CloseElement(); // span
+                var clickNode = node;
+                builder.OpenElement(35, "span");
+                builder.AddAttribute(36, "class", "mar-tree-item__title");
+                builder.AddAttribute(37, "onclick", EventCallback.Factory.Create(this, () => SelectItem(clickNode.Id, clickNode.Item)));
+                builder.AddContent(38, node.Text);
+                builder.CloseElement();
             }
 
             builder.CloseElement(); // div header
@@ -186,16 +268,19 @@
                 builder.AddAttribute(41, "role", "group");
                 builder.AddAttribute(42, "class", "mar-tree-item__children");
                 builder.AddContent(43, RenderNodes(node.Children));
-                builder.CloseElement(); // ul
+                builder.CloseElement();
             }
 
             builder.CloseElement(); // li
         }
     };
 
-    private void ToggleNode(string id)
+    private async Task ToggleNodeAsync(string id)
     {
         if (!_expandedIds.Remove(id))
             _expandedIds.Add(id);
+
+        if (ExpandedItemsChanged.HasDelegate)
+            await ExpandedItemsChanged.InvokeAsync(_expandedIds.ToList());
     }
 }

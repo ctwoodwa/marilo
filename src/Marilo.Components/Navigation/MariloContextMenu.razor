@@ -1,8 +1,15 @@
 @inherits MariloComponentBase
+@using System.Reflection
 
-<div class="mar-context-menu-trigger" @oncontextmenu="OnContextMenu" @oncontextmenu:preventDefault="true" @attributes="AdditionalAttributes">
-    @ChildContent
-</div>
+@if (string.IsNullOrEmpty(Selector))
+{
+    <div class="mar-context-menu-trigger"
+         @oncontextmenu="OnContextMenu"
+         @oncontextmenu:preventDefault="true"
+         @attributes="AdditionalAttributes">
+        @ChildContent
+    </div>
+}
 
 @if (_isOpen)
 {
@@ -10,7 +17,40 @@
     <div class="@CombineClasses(CssProvider.ContextMenuClass())"
          style="@CombineStyles($"position:fixed;left:{_x}px;top:{_y}px")"
          role="menu">
-        @MenuContent
+        @if (Data != null)
+        {
+            @foreach (var item in Data)
+            {
+                var isSeparator = GetBool(item, SeparatorField);
+                var isDisabled = GetBool(item, DisabledField);
+                var text = GetString(item, TextField);
+                var icon = GetString(item, IconField);
+
+                if (isSeparator)
+                {
+                    <div class="@CssProvider.MenuDividerClass()" role="separator"></div>
+                }
+                else
+                {
+                    var clickItem = item;
+                    <button type="button"
+                            class="@CssProvider.MenuItemClass(isDisabled)"
+                            role="menuitem"
+                            disabled="@isDisabled"
+                            @onclick="() => HandleItemClick(clickItem)">
+                        @if (!string.IsNullOrEmpty(icon))
+                        {
+                            <span class="mar-menu-item__icon">@icon</span>
+                        }
+                        @text
+                    </button>
+                }
+            }
+        }
+        else
+        {
+            @MenuContent
+        }
     </div>
 }
 
@@ -19,8 +59,59 @@
     private double _x;
     private double _y;
 
+    /// <summary>Trigger content (the element that responds to right-click).</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Menu content (rendered inside the context menu popup).</summary>
     [Parameter] public RenderFragment? MenuContent { get; set; }
+
+    /// <summary>
+    /// CSS selector for external target elements. When set, the inline trigger (ChildContent) is not used.
+    /// Requires JS interop for selector-based targeting (placeholder for future implementation).
+    /// </summary>
+    [Parameter] public string? Selector { get; set; }
+
+    /// <summary>Fires when a data-bound menu item is clicked.</summary>
+    [Parameter] public EventCallback<object> OnClick { get; set; }
+
+    // ── Data-binding parameters ──────────────────────────────────────
+
+    /// <summary>Data source for menu items.</summary>
+    [Parameter] public IEnumerable<object>? Data { get; set; }
+
+    /// <summary>Field name for item text.</summary>
+    [Parameter] public string TextField { get; set; } = "Text";
+
+    /// <summary>Field name for item icon.</summary>
+    [Parameter] public string IconField { get; set; } = "Icon";
+
+    /// <summary>Field name for separator flag.</summary>
+    [Parameter] public string SeparatorField { get; set; } = "Separator";
+
+    /// <summary>Field name for disabled flag.</summary>
+    [Parameter] public string DisabledField { get; set; } = "Disabled";
+
+    // ── Public API ──────────────────────────────────────────────────────
+
+    /// <summary>Shows the context menu at the specified position.</summary>
+    public async Task ShowAsync(double x, double y)
+    {
+        _x = x;
+        _y = y;
+        _isOpen = true;
+        StateHasChanged();
+        await Task.CompletedTask;
+    }
+
+    /// <summary>Hides the context menu.</summary>
+    public async Task HideAsync()
+    {
+        _isOpen = false;
+        StateHasChanged();
+        await Task.CompletedTask;
+    }
+
+    // ── Event handlers ──────────────────────────────────────────────────
 
     private void OnContextMenu(MouseEventArgs e)
     {
@@ -29,8 +120,29 @@
         _isOpen = true;
     }
 
+    private async Task HandleItemClick(object item)
+    {
+        if (OnClick.HasDelegate)
+            await OnClick.InvokeAsync(item);
+        _isOpen = false;
+    }
+
     private void Close()
     {
         _isOpen = false;
+    }
+
+    // ── Helpers ──────────────────────────────────────────────────────────
+
+    private static string? GetString(object item, string field)
+    {
+        var prop = item.GetType().GetProperty(field, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+        return prop?.GetValue(item)?.ToString();
+    }
+
+    private static bool GetBool(object item, string field)
+    {
+        var prop = item.GetType().GetProperty(field, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+        return prop?.GetValue(item) is true;
     }
 }

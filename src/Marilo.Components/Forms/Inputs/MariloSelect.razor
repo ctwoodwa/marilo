@@ -33,6 +33,7 @@ else
     [Parameter] public string Value { get; set; } = string.Empty;
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
     [Parameter] public bool IsInvalid { get; set; }
+    [Parameter] public bool Enabled { get; set; } = true;
     [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public bool Filterable { get; set; }
     [Parameter] public EventCallback<string> OnFilterTextChanged { get; set; }
