@@ -65,35 +65,35 @@ This document defines the resolution strategy for all 87 Marilo Blazor component
 | MariloBadge | 8 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
 | MariloCard | 4 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
 | MariloCardActions | 1 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
-| MariloCardHeader | 5 | single-pass | No | **T3 - Medium** |
-| MariloCarousel | 10 | multi-pass | Yes (generic TItem, data-driven) | **T3 - Medium** |
+| MariloCardHeader | 5 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
+| MariloCarousel | 10 | multi-pass | Yes (generic TItem, data-driven) | **T3 - Medium** | ✅ RESOLVED |
 | MariloListItem | 2 | single-pass | No | **T3 - Medium** | ✅ RESOLVED (in T2) |
-| MariloListView | 6 | single-pass | No | **T3 - Medium** |
-| MariloTooltip | 7 | multi-pass | Yes (selector-based targeting) | **T3 - Medium** |
+| MariloListView | 6 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
+| MariloTooltip | 7 | multi-pass | Yes (selector-based targeting) | **T3 - Medium** | ✅ RESOLVED |
 | MariloAlert | 5 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
-| MariloAlertStrip | 3 | single-pass | No | **T3 - Medium** |
+| MariloAlertStrip | 3 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
 | MariloCallout | 3 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
 | MariloProgressBar | 4 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
 | MariloSkeleton | 3 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
 | MariloToast | 8 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
-| MariloAutocomplete | 6 | single-pass | No | **T3 - Medium** |
+| MariloAutocomplete | 6 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
 | MariloCheckbox | 5 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
-| MariloComboBox | 6 | single-pass | No | **T3 - Medium** |
-| MariloDatePicker | 9 | single-pass | No | **T3 - Medium** |
-| MariloDropDownList | 6 | single-pass | No | **T3 - Medium** |
-| MariloNumericInput | 5 | single-pass | No | **T3 - Medium** |
-| MariloRadio | 5 | multi-pass | Yes (RadioGroup data binding) | **T3 - Medium** |
+| MariloComboBox | 6 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
+| MariloDatePicker | 9 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
+| MariloDropDownList | 6 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
+| MariloNumericInput | 5 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
+| MariloRadio | 5 | multi-pass | Yes (RadioGroup data binding) | **T3 - Medium** | ✅ RESOLVED |
 | MariloTextField | 6 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
 | MariloTextArea | 5 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
 | MariloSelect | 2 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
 | MariloSwitch | 5 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
 | MariloSlider | 5 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
 | MariloAccordionItem | 4 | single-pass | No | **T3 - Medium** | ✅ RESOLVED (in T2) |
-| MariloAppBar | 5 | multi-pass | Yes (child components) | **T3 - Medium** |
-| MariloTabStrip | 4 | single-pass | No | **T3 - Medium** |
+| MariloAppBar | 5 | multi-pass | Yes (child components) | **T3 - Medium** | ✅ RESOLVED |
+| MariloTabStrip | 4 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
 | MariloStep | 5 | single-pass | No | **T3 - Medium** | ✅ RESOLVED (in T2) |
-| MariloBreadcrumb | 7 | multi-pass | Yes (data binding, collapse) | **T3 - Medium** |
-| MariloToolbar | 5 | multi-pass | Yes (overflow, adaptive) | **T3 - Medium** |
+| MariloBreadcrumb | 7 | multi-pass | Yes (data binding, collapse) | **T3 - Medium** | ✅ RESOLVED |
+| MariloToolbar | 5 | multi-pass | Yes (overflow, adaptive) | **T3 - Medium** | ✅ RESOLVED |
 | MariloColorPicker | 8 | multi-pass | Yes (HSV canvas, palette) | **T4 - Low** |
 | MariloDateRangePicker | 10 | multi-pass | Yes (dual-calendar popup) | **T4 - Low** |
 | MariloDateTimePicker | 8 | multi-pass | Yes (calendar + time tumblers) | **T4 - Low** |

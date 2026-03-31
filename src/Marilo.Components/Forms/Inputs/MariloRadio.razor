@@ -5,6 +5,7 @@
            name="@Name"
            value="@Value"
            checked="@IsSelected"
+           disabled="@(!Enabled)"
            @onchange="OnSelectionChanged" />
     @if (!string.IsNullOrEmpty(Label))
     {
@@ -18,6 +19,7 @@
     [Parameter] public bool IsSelected { get; set; }
     [Parameter] public string? Label { get; set; }
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
+    [Parameter] public bool Enabled { get; set; } = true;
 
     private async Task OnSelectionChanged(ChangeEventArgs e)
     {

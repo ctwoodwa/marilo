@@ -1,15 +1,18 @@
 @inherits MariloComponentBase
 
-<div class="@CombineClasses(CssProvider.CarouselClass())" style="@CombineStyles()" @attributes="AdditionalAttributes">
+<div class="@CombineClasses(CssProvider.CarouselClass())" style="@CombineStyles(SizeStyle)" @attributes="AdditionalAttributes">
     <div class="mar-carousel__track">
         @ChildContent
     </div>
-    <button class="mar-carousel__prev" @onclick="Previous" aria-label="Previous">
-        @IconProvider.GetIcon("chevron-left", IconSize.Medium)
-    </button>
-    <button class="mar-carousel__next" @onclick="Next" aria-label="Next">
-        @IconProvider.GetIcon("chevron-right", IconSize.Medium)
-    </button>
+    @if (ShowArrows)
+    {
+        <button class="mar-carousel__prev" @onclick="Previous" aria-label="Previous">
+            @IconProvider.GetIcon("chevron-left", IconSize.Medium)
+        </button>
+        <button class="mar-carousel__next" @onclick="Next" aria-label="Next">
+            @IconProvider.GetIcon("chevron-right", IconSize.Medium)
+        </button>
+    }
     <div class="mar-carousel__dots">
         @for (var i = 0; i < ItemCount; i++)
         {
@@ -26,7 +29,23 @@
     [Parameter] public int ItemCount { get; set; } = 1;
     [Parameter] public bool AutoPlay { get; set; }
     [Parameter] public int IntervalMs { get; set; } = 5000;
+    [Parameter] public bool ShowArrows { get; set; } = true;
+    [Parameter] public bool Pageable { get; set; } = true;
+    [Parameter] public bool LoopPages { get; set; } = true;
+    [Parameter] public string? Width { get; set; }
+    [Parameter] public string? Height { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private string? SizeStyle
+    {
+        get
+        {
+            var parts = new List<string>();
+            if (Width != null) parts.Add($"width:{Width};");
+            if (Height != null) parts.Add($"height:{Height};");
+            return parts.Count > 0 ? string.Join("", parts) : null;
+        }
+    }
 
     private System.Timers.Timer? _timer;
 
@@ -46,13 +65,19 @@
 
     private async Task Previous()
     {
-        ActiveIndex = (ActiveIndex - 1 + ItemCount) % ItemCount;
+        if (LoopPages)
+            ActiveIndex = (ActiveIndex - 1 + ItemCount) % ItemCount;
+        else if (ActiveIndex > 0)
+            ActiveIndex--;
         await ActiveIndexChanged.InvokeAsync(ActiveIndex);
     }
 
     private async Task Next()
     {
-        ActiveIndex = (ActiveIndex + 1) % ItemCount;
+        if (LoopPages)
+            ActiveIndex = (ActiveIndex + 1) % ItemCount;
+        else if (ActiveIndex < ItemCount - 1)
+            ActiveIndex++;
         await ActiveIndexChanged.InvokeAsync(ActiveIndex);
     }
 
