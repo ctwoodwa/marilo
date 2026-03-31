@@ -196,6 +196,18 @@ public enum TabStripScrollButtonsVisibility
 }
 
 /// <summary>
+/// Specifies the layout orientation of a stepper control.
+/// </summary>
+public enum StepperOrientation
+{
+    /// <summary>Steps are arranged horizontally.</summary>
+    Horizontal,
+
+    /// <summary>Steps are arranged vertically.</summary>
+    Vertical
+}
+
+/// <summary>
 /// Specifies the current status of a step in a stepper control.
 /// </summary>
 public enum StepStatus

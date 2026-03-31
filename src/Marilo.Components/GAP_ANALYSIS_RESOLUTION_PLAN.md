@@ -44,13 +44,13 @@ This document defines the resolution strategy for all 87 Marilo Blazor component
 | MariloPopover | 10 | multi-pass | Yes (anchor positioning) | **T2 - High** | 🔧 IN PROGRESS |
 | MariloDrawer | 10 | multi-pass | Yes (Mode, MiniMode, data binding) | **T2 - High** | 🔧 IN PROGRESS |
 | MariloList | 13 | multi-pass | Yes (data binding, selection, drag-drop) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloTreeView | 6 | multi-pass | Yes (expanded/selected binding, drag-drop) | **T2 - High** |
-| MariloMenu | 7 | multi-pass | Yes (hierarchy rendering) | **T2 - High** |
-| MariloContextMenu | 8 | multi-pass | Yes (selector pattern, data binding) | **T2 - High** |
+| MariloTreeView | 6 | multi-pass | Yes (expanded/selected binding, drag-drop) | **T2 - High** | 🔧 IN PROGRESS |
+| MariloMenu | 7 | multi-pass | Yes (hierarchy rendering) | **T2 - High** | 🔧 IN PROGRESS |
+| MariloContextMenu | 8 | multi-pass | Yes (selector pattern, data binding) | **T2 - High** | 🔧 IN PROGRESS |
 | MariloAccordion | 9 | multi-pass | Yes (data binding, hierarchy) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloSplitter | 8 | multi-pass | Yes (interactive resize, state) | **T2 - High** |
-| MariloPanel | 7 | multi-pass | Yes (data binding, expand/collapse) | **T2 - High** |
-| MariloStepper | 6 | multi-pass | Yes (orientation, linear flow) | **T2 - High** |
+| MariloSplitter | 8 | multi-pass | Yes (interactive resize, state) | **T2 - High** | 🔧 IN PROGRESS |
+| MariloPanel | 7 | multi-pass | Yes (data binding, expand/collapse) | **T2 - High** | 🔧 IN PROGRESS |
+| MariloStepper | 6 | multi-pass | Yes (orientation, linear flow) | **T2 - High** | 🔧 IN PROGRESS |
 | MariloPagination | 6 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED |
 | MariloButton | 8 | single-pass | No | **T3 - Medium** |
 | MariloButtonGroup | 6 | multi-pass | Yes (child component architecture) | **T3 - Medium** |
