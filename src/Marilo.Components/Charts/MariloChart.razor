@@ -27,6 +27,24 @@
     [Parameter] public string? Title { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
+    /// <summary>Whether chart animations are enabled. Defaults to true.</summary>
+    [Parameter] public bool EnableAnimations { get; set; } = true;
+
+    /// <summary>Whether to enable data decimation for large datasets. Defaults to false.</summary>
+    [Parameter] public bool EnableDataDecimation { get; set; }
+
+    /// <summary>Custom color palette. When null, uses the default palette.</summary>
+    [Parameter] public string[]? Palette { get; set; }
+
+    /// <summary>Whether to show the chart legend. Defaults to true.</summary>
+    [Parameter] public bool ShowLegend { get; set; } = true;
+
+    /// <summary>Whether to show tooltips on hover. Defaults to true.</summary>
+    [Parameter] public bool ShowTooltips { get; set; } = true;
+
+    /// <summary>Fires when a data point is clicked.</summary>
+    [Parameter] public EventCallback<ChartClickEventArgs> OnClick { get; set; }
+
     private readonly List<MariloChartSeries> _series = new();
 
     internal void AddSeries(MariloChartSeries series)

@@ -1,6 +1,21 @@
 namespace Marilo.Core.Enums;
 
 /// <summary>
+/// Specifies the visual display state of a window.
+/// </summary>
+public enum WindowDisplayState
+{
+    /// <summary>Normal sized and positioned window.</summary>
+    Normal,
+
+    /// <summary>Minimized to a collapsed state.</summary>
+    Minimized,
+
+    /// <summary>Maximized to fill the viewport.</summary>
+    Maximized
+}
+
+/// <summary>
 /// Specifies the available actions for a Window title bar.
 /// </summary>
 [Flags]

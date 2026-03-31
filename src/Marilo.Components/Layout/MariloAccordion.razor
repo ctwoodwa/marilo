@@ -1,4 +1,3 @@
-@typeparam TItem
 @inherits MariloComponentBase
 
 <div class="@CombineClasses(CssProvider.AccordionClass())"
@@ -64,11 +63,11 @@
 </div>
 
 @code {
-    private HashSet<TItem> _expandedItems = [];
+    private HashSet<object> _expandedItems = [];
     private readonly List<MariloAccordionItem> _items = [];
 
     /// <summary>Data source for data-driven accordion items.</summary>
-    [Parameter] public IEnumerable<TItem>? Data { get; set; }
+    [Parameter] public IEnumerable<object>? Data { get; set; }
 
     /// <summary>Property name for the item display text.</summary>
     [Parameter] public string TextField { get; set; } = "Text";
@@ -86,16 +85,16 @@
     [Parameter] public AccordionExpandMode ExpandMode { get; set; } = AccordionExpandMode.Multiple;
 
     /// <summary>The currently expanded items. Supports two-way binding.</summary>
-    [Parameter] public IEnumerable<TItem>? ExpandedItems { get; set; }
+    [Parameter] public IEnumerable<object>? ExpandedItems { get; set; }
 
     /// <summary>Fires when the expanded items collection changes.</summary>
-    [Parameter] public EventCallback<IEnumerable<TItem>> ExpandedItemsChanged { get; set; }
+    [Parameter] public EventCallback<IEnumerable<object>> ExpandedItemsChanged { get; set; }
 
     /// <summary>Custom header template for data-driven items.</summary>
-    [Parameter] public RenderFragment<TItem>? HeaderTemplate { get; set; }
+    [Parameter] public RenderFragment<object>? HeaderTemplate { get; set; }
 
     /// <summary>Custom content template for data-driven items.</summary>
-    [Parameter] public RenderFragment<TItem>? ContentTemplate { get; set; }
+    [Parameter] public RenderFragment<object>? ContentTemplate { get; set; }
 
     /// <summary>Manual child content (MariloAccordionItem components).</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
@@ -105,7 +104,7 @@
     protected override void OnParametersSet()
     {
         if (ExpandedItems != null)
-            _expandedItems = new HashSet<TItem>(ExpandedItems);
+            _expandedItems = new HashSet<object>(ExpandedItems);
     }
 
     // ── Public API ──────────────────────────────────────────────────────
@@ -141,7 +140,7 @@
 
     // ── Data-driven event handlers ──────────────────────────────────────
 
-    private async Task HandleItemToggle(TItem item)
+    private async Task HandleItemToggle(object item)
     {
         if (IsItemDisabled(item)) return;
 
@@ -161,16 +160,16 @@
 
     // ── Helpers ─────────────────────────────────────────────────────────
 
-    private static string? GetPropertyValue(TItem item, string propertyName)
+    private static string? GetPropertyValue(object item, string propertyName)
     {
         if (item is null) return null;
-        return typeof(TItem).GetProperty(propertyName)?.GetValue(item)?.ToString();
+        return item.GetType().GetProperty(propertyName)?.GetValue(item)?.ToString();
     }
 
-    private bool IsItemDisabled(TItem item)
+    private bool IsItemDisabled(object item)
     {
         if (item is null) return false;
-        var prop = typeof(TItem).GetProperty(DisabledField);
+        var prop = item.GetType().GetProperty(DisabledField);
         if (prop is null) return false;
         return prop.GetValue(item) is true;
     }
