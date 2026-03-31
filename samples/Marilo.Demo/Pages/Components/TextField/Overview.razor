@@ -1,5 +1,5 @@
-@page "/components/text-field"
-@page "/components/text-field/overview"
+@page "/components/TextField"
+@page "/components/TextField/overview"
 @layout ComponentDemoLayout
 
 <PageSection Title="Overview">
@@ -46,6 +46,107 @@
                 <Suffix><span>USD</span></Suffix>
             </MariloTextField>
         </MariloField>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Playground">
+    <DemoSection Title="Interactive Adornments" Description="Configure prefix and suffix adornments dynamically. Toggle adornments on or off, choose an icon from the dropdown, or enter custom text.">
+        <div class="demo-playground">
+            <div class="demo-playground-controls">
+                <h4>Prefix</h4>
+                <MariloField>
+                    <MariloLabel>Mode</MariloLabel>
+                    <MariloDropDownList TItem="string" TValue="string"
+                                        Data="@_adornmentModes"
+                                        Value="@_prefixMode"
+                                        ValueChanged="@(v => _prefixMode = v ?? "none")"
+                                        Placeholder="Select mode" />
+                </MariloField>
+                @if (_prefixMode == "icon")
+                {
+                    <MariloField>
+                        <MariloLabel>Icon</MariloLabel>
+                        <MariloDropDownList TItem="string" TValue="string"
+                                            Data="@_iconNames"
+                                            Value="@_prefixIcon"
+                                            ValueChanged="@(v => _prefixIcon = v ?? _iconNames[0])"
+                                            Filterable="true"
+                                            Placeholder="Pick an icon" />
+                    </MariloField>
+                }
+                else if (_prefixMode == "text")
+                {
+                    <MariloField>
+                        <MariloLabel>Text</MariloLabel>
+                        <MariloTextField Value="@_prefixText" ValueChanged="@(v => _prefixText = v)" Placeholder="e.g. https://" />
+                    </MariloField>
+                }
+                @if (_prefixMode != "none")
+                {
+                    <MariloField>
+                        <MariloCheckbox Checked="@_prefixSep" CheckedChanged="@(v => _prefixSep = v)" Label="Show separator" />
+                    </MariloField>
+                }
+
+                <h4>Suffix</h4>
+                <MariloField>
+                    <MariloLabel>Mode</MariloLabel>
+                    <MariloDropDownList TItem="string" TValue="string"
+                                        Data="@_adornmentModes"
+                                        Value="@_suffixMode"
+                                        ValueChanged="@(v => _suffixMode = v ?? "none")"
+                                        Placeholder="Select mode" />
+                </MariloField>
+                @if (_suffixMode == "icon")
+                {
+                    <MariloField>
+                        <MariloLabel>Icon</MariloLabel>
+                        <MariloDropDownList TItem="string" TValue="string"
+                                            Data="@_iconNames"
+                                            Value="@_suffixIcon"
+                                            ValueChanged="@(v => _suffixIcon = v ?? _iconNames[0])"
+                                            Filterable="true"
+                                            Placeholder="Pick an icon" />
+                    </MariloField>
+                }
+                else if (_suffixMode == "text")
+                {
+                    <MariloField>
+                        <MariloLabel>Text</MariloLabel>
+                        <MariloTextField Value="@_suffixText" ValueChanged="@(v => _suffixText = v)" Placeholder="e.g. USD" />
+                    </MariloField>
+                }
+                @if (_suffixMode != "none")
+                {
+                    <MariloField>
+                        <MariloCheckbox Checked="@_suffixSep" CheckedChanged="@(v => _suffixSep = v)" Label="Show separator" />
+                    </MariloField>
+                }
+
+                <h4>Input</h4>
+                <MariloField>
+                    <MariloLabel>Placeholder</MariloLabel>
+                    <MariloTextField Value="@_playPlaceholder" ValueChanged="@(v => _playPlaceholder = v)" Placeholder="Placeholder text" />
+                </MariloField>
+                <MariloField>
+                    <MariloCheckbox Checked="@_playDisabled" CheckedChanged="@(v => _playDisabled = v)" Label="Disabled" />
+                </MariloField>
+                <MariloField>
+                    <MariloCheckbox Checked="@_playInvalid" CheckedChanged="@(v => _playInvalid = v)" Label="Invalid" />
+                </MariloField>
+            </div>
+
+            <div class="demo-playground-preview">
+                <h4>Result</h4>
+                <MariloField>
+                    <MariloLabel>Preview</MariloLabel>
+                    @RenderPreviewTextField()
+                </MariloField>
+                <p style="margin-top: 8px; font-size: 0.85rem; color: var(--color-text-muted);">
+                    <strong>Value:</strong> @(string.IsNullOrEmpty(_playValue) ? "(empty)" : _playValue)
+                </p>
+            </div>
+        </div>
     </DemoSection>
 </PageSection>
 
@@ -101,6 +202,62 @@
         "    <Prefix><span>$</span></Prefix>\n" +
         "    <Suffix><span>USD</span></Suffix>\n" +
         "</MariloTextField>";
+
+    // Playground
+    private static readonly string[] _adornmentModes = ["none", "icon", "text"];
+    private static readonly string[] _iconNames =
+    [
+        "search", "calendar", "clock", "edit", "trash", "upload", "download",
+        "info", "warning", "error", "success", "check", "close", "plus", "minus",
+        "refresh", "layers", "code", "copy", "monitor"
+    ];
+
+    private RenderFragment RenderPreviewTextField() => __builder =>
+    {
+        var hasPrefix = _prefixMode != "none";
+        var hasSuffix = _suffixMode != "none";
+
+        // Build prefix fragment
+        RenderFragment? prefix = _prefixMode switch
+        {
+            "icon" => b => { b.OpenComponent<MariloIcon>(0); b.AddAttribute(1, "Name", _prefixIcon); b.AddAttribute(2, "Size", IconSize.Small); b.CloseComponent(); },
+            "text" => b => { b.OpenElement(0, "span"); b.AddContent(1, _prefixText); b.CloseElement(); },
+            _ => null
+        };
+
+        // Build suffix fragment
+        RenderFragment? suffix = _suffixMode switch
+        {
+            "icon" => b => { b.OpenComponent<MariloIcon>(0); b.AddAttribute(1, "Name", _suffixIcon); b.AddAttribute(2, "Size", IconSize.Small); b.CloseComponent(); },
+            "text" => b => { b.OpenElement(0, "span"); b.AddContent(1, _suffixText); b.CloseElement(); },
+            _ => null
+        };
+
+        __builder.OpenComponent<MariloTextField>(0);
+        __builder.AddAttribute(1, "Value", _playValue);
+        __builder.AddAttribute(2, "ValueChanged", EventCallback.Factory.Create<string>(this, v => { _playValue = v; StateHasChanged(); }));
+        __builder.AddAttribute(3, "Placeholder", _playPlaceholder);
+        __builder.AddAttribute(4, "Disabled", _playDisabled);
+        __builder.AddAttribute(5, "IsInvalid", _playInvalid);
+        __builder.AddAttribute(6, "ShowPrefixSeparator", hasPrefix && _prefixSep);
+        __builder.AddAttribute(7, "ShowSuffixSeparator", hasSuffix && _suffixSep);
+        if (prefix != null) __builder.AddAttribute(8, "Prefix", prefix);
+        if (suffix != null) __builder.AddAttribute(9, "Suffix", suffix);
+        __builder.CloseComponent();
+    };
+
+    private string _prefixMode = "none";
+    private string _prefixIcon = "search";
+    private string _prefixText = "$";
+    private bool _prefixSep;
+    private string _suffixMode = "none";
+    private string _suffixIcon = "check";
+    private string _suffixText = "USD";
+    private bool _suffixSep;
+    private string _playValue = "";
+    private string _playPlaceholder = "Type here...";
+    private bool _playDisabled;
+    private bool _playInvalid;
 
     // Events
     private string _evName = "";

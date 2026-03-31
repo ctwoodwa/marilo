@@ -5,7 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Marilo Component Gallery</title>
     <base href="/" />
-    <link rel="stylesheet" href="_content/Marilo.Providers.FluentUI/css/marilo-fluentui.css" />
+    <link id="marilo-provider-fluentui" rel="stylesheet" href="_content/Marilo.Providers.FluentUI/css/marilo-fluentui.css" />
+    <link id="marilo-provider-bootstrap" rel="stylesheet" href="_content/Marilo.Providers.Bootstrap/css/marilo-bootstrap.css" disabled />
+    <script>
+        // Apply stored provider immediately to prevent flash of wrong styles
+        try {
+            if (localStorage.getItem('marilo:provider') === 'bootstrap') {
+                document.getElementById('marilo-provider-fluentui').disabled = true;
+                document.getElementById('marilo-provider-bootstrap').disabled = false;
+            }
+        } catch(e) {}
+    </script>
     <link rel="stylesheet" href="css/app.css" />
     <link rel="stylesheet" href="Marilo.Demo.styles.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />

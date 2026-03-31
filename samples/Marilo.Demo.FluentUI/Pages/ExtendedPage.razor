@@ -49,9 +49,9 @@
 
     <DemoSection Title="Toggle Button" Code="@_toggleCode">
         <div class="demo-row">
-            <MariloToggleButton IsActive="@_bold" IsActiveChanged="@(v => _bold = v)">Bold</MariloToggleButton>
-            <MariloToggleButton IsActive="@_italic" IsActiveChanged="@(v => _italic = v)">Italic</MariloToggleButton>
-            <MariloToggleButton IsActive="@_underline" IsActiveChanged="@(v => _underline = v)">Underline</MariloToggleButton>
+            <MariloToggleButton Selected="@_bold" SelectedChanged="@((bool v) => _bold = v)">Bold</MariloToggleButton>
+            <MariloToggleButton Selected="@_italic" SelectedChanged="@((bool v) => _italic = v)">Italic</MariloToggleButton>
+            <MariloToggleButton Selected="@_underline" SelectedChanged="@((bool v) => _underline = v)">Underline</MariloToggleButton>
         </div>
         <p style="@ToggleStyle">
             Preview text with applied formatting.

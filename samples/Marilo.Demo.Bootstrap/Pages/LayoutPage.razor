@@ -1,0 +1,34 @@
+@page "/layout"
+
+<div class="demo-page">
+    <h1>Layout</h1>
+    <p class="text-body-secondary mb-4">Structural components for page layout and composition.</p>
+
+    <DemoSection Title="Stack" Description="Flexbox-based layout container.">
+        <MariloStack VerticalAlign="StackAlignment.Center">
+            <div class="p-3 bg-primary text-white rounded">Item 1</div>
+            <div class="p-3 bg-secondary text-white rounded">Item 2</div>
+            <div class="p-3 bg-success text-white rounded">Item 3</div>
+        </MariloStack>
+    </DemoSection>
+
+    <DemoSection Title="Accordion" Description="Collapsible content panels.">
+        <MariloAccordion>
+            <MariloAccordionItem Title="Section One" IsExpanded="true">
+                Content for the first section. This panel is expanded by default.
+            </MariloAccordionItem>
+            <MariloAccordionItem Title="Section Two">
+                Content for the second section.
+            </MariloAccordionItem>
+            <MariloAccordionItem Title="Section Three">
+                Content for the third section.
+            </MariloAccordionItem>
+        </MariloAccordion>
+    </DemoSection>
+
+    <DemoSection Title="Divider" Description="Visual separator between content.">
+        <p>Content above the divider.</p>
+        <MariloDivider />
+        <p>Content below the divider.</p>
+    </DemoSection>
+</div>

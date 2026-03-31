@@ -1,11 +1,11 @@
-@page "/components/container"
-@page "/components/container/overview"
+@page "/components/Container"
+@page "/components/Container/overview"
 @layout ComponentDemoLayout
 
 <PageSection Title="Overview">
     <DemoSection Title="Basic Usage" Code="@_basicCode">
         <MariloContainer>
-            <MariloAlert Variant="AlertVariant.Info">This alert is inside a container that centers and constrains its width.</MariloAlert>
+            <MariloAlert Severity="AlertSeverity.Info">This alert is inside a container that centers and constrains its width.</MariloAlert>
         </MariloContainer>
     </DemoSection>
 </PageSection>
@@ -13,13 +13,13 @@
 <PageSection Title="Appearance">
     <DemoSection Title="Max Width" Description="Containers support different maximum width presets." Code="@_maxWidthCode">
         <MariloContainer MaxWidth="ContainerMaxWidth.Small">
-            <MariloAlert Variant="AlertVariant.Info">Small container</MariloAlert>
+            <MariloAlert Severity="AlertSeverity.Info">Small container</MariloAlert>
         </MariloContainer>
         <MariloContainer MaxWidth="ContainerMaxWidth.Medium">
-            <MariloAlert Variant="AlertVariant.Info">Medium container</MariloAlert>
+            <MariloAlert Severity="AlertSeverity.Info">Medium container</MariloAlert>
         </MariloContainer>
         <MariloContainer MaxWidth="ContainerMaxWidth.Large">
-            <MariloAlert Variant="AlertVariant.Info">Large container</MariloAlert>
+            <MariloAlert Severity="AlertSeverity.Info">Large container</MariloAlert>
         </MariloContainer>
     </DemoSection>
 </PageSection>

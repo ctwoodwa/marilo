@@ -679,12 +679,15 @@
    Navigation: Breadcrumb
    -------------------------------------------------------------------------- */
 .mar-breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: var(--marilo-space-xs);
   font-family: var(--marilo-font-family);
   font-size: var(--marilo-font-size-base);
   color: var(--marilo-color-text-secondary);
+}
+
+.mar-breadcrumb > ol {
+  display: flex;
+  align-items: center;
+  gap: var(--marilo-space-xs);
   list-style: none;
   padding: 0;
   margin: 0;
@@ -3019,7 +3022,7 @@
   background: var(--marilo-color-primary-light);
 }
 
-.mar-breadcrumb {
+.mar-breadcrumb > ol {
   display: flex;
   align-items: center;
   list-style: none;

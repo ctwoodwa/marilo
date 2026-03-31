@@ -1,0 +1,55 @@
+// =================================================================
+// Marilo Bootstrap Provider — Dark Mode Tokens
+// =================================================================
+// Uses Bootstrap 5.3's color-mode() mixin to scope dark theme
+// overrides. Values are derived from Bootstrap Sass color functions.
+// =================================================================
+
+@include color-mode(dark) {
+  --marilo-color-primary: #{tint-color($primary, 40%)};
+  --marilo-color-primary-hover: #{tint-color($primary, 50%)};
+  --marilo-color-primary-active: #{tint-color($primary, 60%)};
+  --marilo-color-primary-light: #{shade-color($primary, 80%)};
+
+  --marilo-color-success: #{tint-color($success, 40%)};
+  --marilo-color-success-light: #{shade-color($success, 80%)};
+  --marilo-color-warning: #{tint-color($warning, 40%)};
+  --marilo-color-warning-light: #{shade-color($warning, 80%)};
+  --marilo-color-danger: #{tint-color($danger, 40%)};
+  --marilo-color-danger-light: #{shade-color($danger, 80%)};
+  --marilo-color-info: #{tint-color($info, 40%)};
+  --marilo-color-info-light: #{shade-color($info, 80%)};
+
+  --marilo-color-bg: #{$gray-900};
+  --marilo-color-surface: #{mix($gray-800, $gray-900, 50%)};
+  --marilo-color-text: #{$gray-300};
+  --marilo-color-text-secondary: #{$gray-500};
+  --marilo-color-text-disabled: #{$gray-600};
+  --marilo-color-border: #{$gray-700};
+  --marilo-color-border-strong: #{$gray-600};
+}
+
+// Also support Marilo's own theme attribute
+[data-marilo-theme="dark"] {
+  --marilo-color-primary: #{tint-color($primary, 40%)};
+  --marilo-color-primary-hover: #{tint-color($primary, 50%)};
+  --marilo-color-primary-active: #{tint-color($primary, 60%)};
+  --marilo-color-primary-light: #{shade-color($primary, 80%)};
+
+  --marilo-color-success: #{tint-color($success, 40%)};
+  --marilo-color-success-light: #{shade-color($success, 80%)};
+  --marilo-color-warning: #{tint-color($warning, 40%)};
+  --marilo-color-warning-light: #{shade-color($warning, 80%)};
+  --marilo-color-danger: #{tint-color($danger, 40%)};
+  --marilo-color-danger-light: #{shade-color($danger, 80%)};
+  --marilo-color-info: #{tint-color($info, 40%)};
+  --marilo-color-info-light: #{shade-color($info, 80%)};
+
+  --marilo-color-bg: #{$gray-900};
+  --marilo-color-surface: #{mix($gray-800, $gray-900, 50%)};
+  --marilo-color-text: #{$gray-300};
+  --marilo-color-text-secondary: #{$gray-500};
+  --marilo-color-text-disabled: #{$gray-600};
+  --marilo-color-border: #{$gray-700};
+  --marilo-color-border-strong: #{$gray-600};
+}

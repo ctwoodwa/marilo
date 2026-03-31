@@ -1,0 +1,20 @@
+@page "/extended"
+
+<div class="demo-page">
+    <h1>Extended Components</h1>
+    <p class="text-body-secondary mb-4">Advanced components that go beyond basic UI primitives.</p>
+
+    <DemoSection Title="Callout" Description="Highlighted informational panel.">
+        <MariloCallout Type="CalloutType.Info">This is an informational callout for drawing attention to important details.</MariloCallout>
+        <MariloCallout Type="CalloutType.Warning">Be careful when performing this operation.</MariloCallout>
+        <MariloCallout Type="CalloutType.Success">Your changes have been saved successfully.</MariloCallout>
+    </DemoSection>
+
+    <DemoSection Title="Skeleton" Description="Placeholder loading states.">
+        <div class="d-flex flex-column gap-2" style="max-width:400px;">
+            <MariloSkeleton Variant="SkeletonVariant.Text" />
+            <MariloSkeleton Variant="SkeletonVariant.Text" />
+            <MariloSkeleton Variant="SkeletonVariant.Rectangular" />
+        </div>
+    </DemoSection>
+</div>

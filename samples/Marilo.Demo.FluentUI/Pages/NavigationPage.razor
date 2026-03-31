@@ -12,7 +12,7 @@
     </DemoSection>
 
     <DemoSection Title="Pagination" Code="@_paginationCode">
-        <MariloPagination CurrentPage="@_page" CurrentPageChanged="@(p => _page = p)" TotalPages="10" />
+        <MariloPagination Page="@_page" PageChanged="@(p => _page = p)" Total="100" PageSize="10" />
         <p style="margin-top:8px;">Current page: @_page</p>
     </DemoSection>
 
@@ -72,9 +72,9 @@
     <MariloBreadcrumbItem IsActive=""true"">Current Page</MariloBreadcrumbItem>
 </MariloBreadcrumb>";
 
-    private const string _paginationCode = @"<MariloPagination CurrentPage=""@_page""
-    CurrentPageChanged=""@(p => _page = p)""
-    TotalPages=""10"" />";
+    private const string _paginationCode = @"<MariloPagination Page=""@_page""
+    PageChanged=""@(p => _page = p)""
+    Total=""100"" PageSize=""10"" />";
 
     private const string _toolbarCode = @"<MariloToolbar>
     <MariloToolbarGroup>
