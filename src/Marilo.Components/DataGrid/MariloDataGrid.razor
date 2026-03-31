@@ -148,7 +148,11 @@
                                 <td class="@cellClass"
                                     role="gridcell"
                                     style="@cellStyle">
-                                    @if (column.Template != null)
+                                    @if (IsItemEditing(item) && column.EditorTemplate != null)
+                                    {
+                                        @column.EditorTemplate(item)
+                                    }
+                                    else if (column.Template != null)
                                     {
                                         @column.Template(item)
                                     }
@@ -302,6 +306,41 @@
     /// <summary>Callback for per-row render customization (CSS classes, styles).</summary>
     [Parameter] public Action<GridRowRenderEventArgs<TItem>>? OnRowRender { get; set; }
 
+    // ── Editing parameters ──────────────────────────────────────────────
+
+    /// <summary>The editing mode. Defaults to None (no editing).</summary>
+    [Parameter] public GridEditMode EditMode { get; set; } = GridEditMode.None;
+
+    /// <summary>Fires when the user initiates adding a new item (e.g. clicks Add in toolbar).</summary>
+    [Parameter] public EventCallback<GridEditEventArgs<TItem>> OnAdd { get; set; }
+
+    /// <summary>Fires when a new item is confirmed for creation.</summary>
+    [Parameter] public EventCallback<GridEditEventArgs<TItem>> OnCreate { get; set; }
+
+    /// <summary>Fires when an existing item's edit is confirmed.</summary>
+    [Parameter] public EventCallback<GridEditEventArgs<TItem>> OnUpdate { get; set; }
+
+    /// <summary>Fires when an item is deleted.</summary>
+    [Parameter] public EventCallback<GridEditEventArgs<TItem>> OnDelete { get; set; }
+
+    /// <summary>Fires when a row enters edit mode.</summary>
+    [Parameter] public EventCallback<GridEditEventArgs<TItem>> OnEdit { get; set; }
+
+    /// <summary>Fires when editing is cancelled.</summary>
+    [Parameter] public EventCallback<GridEditEventArgs<TItem>> OnCancel { get; set; }
+
+    /// <summary>Fires when a new model is needed for creation. Set the Item property on the args.</summary>
+    [Parameter] public EventCallback<GridModelInitEventArgs<TItem>> OnModelInit { get; set; }
+
+    /// <summary>Fires when a custom command is executed on a row.</summary>
+    [Parameter] public EventCallback<GridCommandEventArgs<TItem>> OnCommand { get; set; }
+
+    // ── Editing state ───────────────────────────────────────────────────
+
+    private TItem? _editingItem;
+    private TItem? _originalItem;
+    private bool _isCreating;
+
     // ── Internal API for child columns ──────────────────────────────────
 
     internal void RegisterColumn(MariloGridColumn<TItem> column)
@@ -331,6 +370,91 @@
         GroupDescriptors = _state.GroupDescriptors.Select(g => new GroupDescriptor { Field = g.Field }).ToList(),
         TotalCount = _state.TotalCount
     };
+
+    /// <summary>Whether a row is currently being edited.</summary>
+    public bool IsEditing => _editingItem != null;
+
+    /// <summary>Whether a new item is being created.</summary>
+    public bool IsCreating => _isCreating;
+
+    /// <summary>Begins editing the specified item (Inline/InCell mode).</summary>
+    public async Task BeginEdit(TItem item)
+    {
+        if (EditMode == GridEditMode.None) return;
+        _originalItem = item;
+        _editingItem = item;
+        _isCreating = false;
+        if (OnEdit.HasDelegate)
+            await OnEdit.InvokeAsync(new GridEditEventArgs<TItem> { Item = item });
+        StateHasChanged();
+    }
+
+    /// <summary>Begins adding a new item. Fires OnModelInit to get a blank model.</summary>
+    public async Task BeginAdd()
+    {
+        if (EditMode == GridEditMode.None) return;
+        var initArgs = new GridModelInitEventArgs<TItem>();
+        if (OnModelInit.HasDelegate)
+            await OnModelInit.InvokeAsync(initArgs);
+        _editingItem = initArgs.Item;
+        _isCreating = true;
+        if (OnAdd.HasDelegate)
+            await OnAdd.InvokeAsync(new GridEditEventArgs<TItem> { Item = _editingItem });
+        StateHasChanged();
+    }
+
+    /// <summary>Saves the current edit (create or update).</summary>
+    public async Task SaveEdit()
+    {
+        if (_editingItem == null) return;
+        var args = new GridEditEventArgs<TItem> { Item = _editingItem };
+        if (_isCreating)
+        {
+            if (OnCreate.HasDelegate) await OnCreate.InvokeAsync(args);
+        }
+        else
+        {
+            if (OnUpdate.HasDelegate) await OnUpdate.InvokeAsync(args);
+        }
+        if (!args.IsCancelled)
+        {
+            _editingItem = default;
+            _isCreating = false;
+            await ProcessDataAsync();
+        }
+        StateHasChanged();
+    }
+
+    /// <summary>Cancels the current edit operation.</summary>
+    public async Task CancelEdit()
+    {
+        if (_editingItem == null) return;
+        if (OnCancel.HasDelegate)
+            await OnCancel.InvokeAsync(new GridEditEventArgs<TItem> { Item = _editingItem });
+        _editingItem = default;
+        _isCreating = false;
+        StateHasChanged();
+    }
+
+    /// <summary>Deletes the specified item.</summary>
+    public async Task DeleteItem(TItem item)
+    {
+        var args = new GridEditEventArgs<TItem> { Item = item };
+        if (OnDelete.HasDelegate) await OnDelete.InvokeAsync(args);
+        if (!args.IsCancelled)
+            await ProcessDataAsync();
+        StateHasChanged();
+    }
+
+    /// <summary>Executes a custom command on a row.</summary>
+    public async Task ExecuteCommand(string commandId, TItem? item = default)
+    {
+        if (OnCommand.HasDelegate)
+            await OnCommand.InvokeAsync(new GridCommandEventArgs<TItem> { CommandId = commandId, Item = item });
+    }
+
+    /// <summary>Checks if the given item is currently being edited.</summary>
+    internal bool IsItemEditing(TItem item) => _editingItem != null && EqualityComparer<TItem>.Default.Equals(_editingItem, item);
 
     /// <summary>Forces the grid to re-read its data source. Useful when external data changes.</summary>
     public async Task Rebind()

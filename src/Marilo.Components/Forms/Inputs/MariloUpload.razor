@@ -77,6 +77,16 @@
     [Parameter] public IEnumerable<string>? AllowedExtensions { get; set; }
     [Parameter] public bool AutoUpload { get; set; } = true;
     [Parameter] public bool WithCredentials { get; set; }
+    [Parameter] public bool Enabled { get; set; } = true;
+
+    /// <summary>Upload strategy: Simple (multipart), Chunked, or TusResumable.</summary>
+    [Parameter] public string UploadStrategy { get; set; } = "Simple";
+
+    /// <summary>Chunk size in bytes for chunked/tus upload. Default 1MB.</summary>
+    [Parameter] public long ChunkSize { get; set; } = 1_048_576;
+
+    /// <summary>Minimum file size in bytes. Files smaller than this are rejected.</summary>
+    [Parameter] public long MinFileSize { get; set; }
     [Parameter] public EventCallback<UploadEventArgs> OnUpload { get; set; }
     [Parameter] public EventCallback<UploadEventArgs> OnRemove { get; set; }
     [Parameter] public EventCallback<UploadErrorEventArgs> OnError { get; set; }

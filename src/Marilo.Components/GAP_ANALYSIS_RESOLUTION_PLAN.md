@@ -35,10 +35,10 @@ This document defines the resolution strategy for all 87 Marilo Blazor component
 | MariloDataGrid | 44 | multi-pass | Yes (virtual scroll, grouping, CRUD, export) | **T2 - High** | 🔧 IN PROGRESS |
 | MariloGridColumn | 8 | single-pass | No | **T2 - High** | 🔧 IN PROGRESS |
 | MariloGridToolbar | 2 | single-pass | No | **T2 - High** | 🔧 IN PROGRESS |
-| MariloEditor | 54 | multi-pass | Yes (ProseMirror / rich-text engine) | **T2 - High** |
-| MariloChart | 27 | multi-pass | Yes (charting engine decision) | **T2 - High** |
-| MariloChartSeries | 17 | multi-pass | Yes (scatter/bubble data models) | **T2 - High** |
-| MariloWindow | 32 | multi-pass | Yes (JS interop for drag/resize) | **T2 - High** |
+| MariloEditor | 54 | multi-pass | Yes (ProseMirror / rich-text engine) | **T2 - High** | ✅ API SURFACE (Tiptap-agnostic) |
+| MariloChart | 27 | multi-pass | Yes (charting engine decision) | **T2 - High** | ✅ API SURFACE (Chart.js-agnostic) |
+| MariloChartSeries | 17 | multi-pass | Yes (scatter/bubble data models) | **T2 - High** | ✅ API SURFACE (Chart.js-agnostic) |
+| MariloWindow | 32 | multi-pass | Yes (JS interop for drag/resize) | **T2 - High** | ✅ API SURFACE (Custom JS) |
 | MariloDialog | 9 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED |
 | MariloConfirmDialog | 8 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED |
 | MariloPopover | 10 | multi-pass | Yes (anchor positioning) | **T2 - High** | 🔧 IN PROGRESS |
@@ -94,14 +94,14 @@ This document defines the resolution strategy for all 87 Marilo Blazor component
 | MariloStep | 5 | single-pass | No | **T3 - Medium** | ✅ RESOLVED (in T2) |
 | MariloBreadcrumb | 7 | multi-pass | Yes (data binding, collapse) | **T3 - Medium** | ✅ RESOLVED |
 | MariloToolbar | 5 | multi-pass | Yes (overflow, adaptive) | **T3 - Medium** | ✅ RESOLVED |
-| MariloColorPicker | 8 | multi-pass | Yes (HSV canvas, palette) | **T4 - Low** |
-| MariloDateRangePicker | 10 | multi-pass | Yes (dual-calendar popup) | **T4 - Low** |
-| MariloDateTimePicker | 8 | multi-pass | Yes (calendar + time tumblers) | **T4 - Low** |
-| MariloTimePicker | 5 | multi-pass | Yes (tumbler UI) | **T4 - Low** |
-| MariloFileUpload | 4 | multi-pass | Yes (async/chunk upload) | **T4 - Low** |
-| MariloUpload | 5 | multi-pass | Yes (chunk upload, drop zone) | **T4 - Low** |
+| MariloColorPicker | 8 | multi-pass | Yes (HSV canvas, palette) | **T4 - Low** | ✅ API SURFACE (Custom canvas) |
+| MariloDateRangePicker | 10 | multi-pass | Yes (dual-calendar popup) | **T4 - Low** | ✅ API SURFACE (Floating UI) |
+| MariloDateTimePicker | 8 | multi-pass | Yes (calendar + time tumblers) | **T4 - Low** | ✅ API SURFACE (Floating UI) |
+| MariloTimePicker | 5 | multi-pass | Yes (tumbler UI) | **T4 - Low** | ✅ API SURFACE (Custom tumbler) |
+| MariloFileUpload | 4 | multi-pass | Yes (async/chunk upload) | **T4 - Low** | ✅ API SURFACE (tus protocol) |
+| MariloUpload | 5 | multi-pass | Yes (chunk upload, drop zone) | **T4 - Low** | ✅ API SURFACE (tus protocol) |
 | MariloMaskedInput | 7 | single-pass | Yes (mask enforcement) | **T4 - Low** | ✅ RESOLVED |
-| MariloMultiSelect | 5 | multi-pass | Yes (filtering, virtualization) | **T4 - Low** |
+| MariloMultiSelect | 5 | multi-pass | Yes (filtering, virtualization) | **T4 - Low** | ✅ API SURFACE (TanStack Virtual) |
 | MariloRangeSlider | 6 | single-pass | No | **T4 - Low** | ✅ RESOLVED |
 | MariloRating | 5 | single-pass | No | **T4 - Low** | ✅ RESOLVED |
 | MariloSearchBox | 3 | single-pass | Yes (debounce, suggestions) | **T4 - Low** | ✅ RESOLVED |

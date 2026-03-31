@@ -4,59 +4,118 @@
      style="@CombineStyles()"
      @attributes="AdditionalAttributes">
 
-    @if (!ReadOnly)
+    @if (!ReadOnly && !Disabled)
     {
         <div class="@CssProvider.EditorToolbarClass()">
-            @foreach (var tool in ActiveTools)
+            @if (ToolbarTemplate != null)
             {
-                <button type="button"
-                        class="mar-editor-tool-btn"
-                        title="@GetToolLabel(tool)"
-                        @onclick="() => OnToolClick(tool)">
-                    @GetToolLabel(tool)
-                </button>
+                @ToolbarTemplate
             }
-
-            <button type="button"
-                    class="mar-editor-tool-btn @(_showPreview ? "mar-editor-tool-btn--active" : "")"
-                    title="Preview"
-                    @onclick="TogglePreview">
-                Preview
-            </button>
+            else
+            {
+                @foreach (var tool in ActiveTools)
+                {
+                    <button type="button"
+                            class="mar-editor-tool-btn"
+                            title="@GetToolLabel(tool)"
+                            @onclick="() => ExecuteToolAsync(tool)">
+                        @GetToolLabel(tool)
+                    </button>
+                }
+            }
         </div>
     }
 
-    @if (_showPreview)
+    @* Content area — currently textarea fallback; Tiptap interop replaces this *@
+    @if (EditMode == EditorEditMode.Preview)
     {
         <div class="@CssProvider.EditorContentClass()"
-             style="@($"height:{Height};overflow:auto;padding:8px")">
-            @((MarkupString)(Value ?? ""))
+             style="@ContentStyle">
+            @((MarkupString)SanitizedValue)
         </div>
     }
     else
     {
         <textarea class="@CssProvider.EditorContentClass()"
-                  style="@($"height:{Height};width:100%;resize:vertical;font-family:monospace;padding:8px;box-sizing:border-box")"
+                  style="@ContentStyle"
                   value="@Value"
                   placeholder="@Placeholder"
                   readonly="@ReadOnly"
+                  disabled="@Disabled"
                   @oninput="HandleInput" />
     }
 </div>
 
 @code {
+    /// <summary>The HTML content of the editor. Supports two-way binding.</summary>
     [Parameter] public string? Value { get; set; }
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
+
+    /// <summary>Whether the editor is read-only (content visible but not editable).</summary>
     [Parameter] public bool ReadOnly { get; set; }
+
+    /// <summary>Whether the editor is disabled.</summary>
+    [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>The edit mode: Edit (rich editor), Preview (rendered HTML), or Source (raw HTML).</summary>
+    [Parameter] public EditorEditMode EditMode { get; set; } = EditorEditMode.Edit;
+
+    /// <summary>Fires when the edit mode changes.</summary>
+    [Parameter] public EventCallback<EditorEditMode> EditModeChanged { get; set; }
+
+    /// <summary>The toolbar tools to show. If null, shows all standard tools.</summary>
     [Parameter] public IEnumerable<EditorTool>? Tools { get; set; }
+
+    /// <summary>Custom toolbar template (replaces the default tool buttons).</summary>
+    [Parameter] public RenderFragment? ToolbarTemplate { get; set; }
+
+    /// <summary>Placeholder text shown when the editor is empty.</summary>
     [Parameter] public string? Placeholder { get; set; }
+
+    /// <summary>Height of the content area (CSS value).</summary>
     [Parameter] public string Height { get; set; } = "300px";
+
+    /// <summary>Debounce delay in milliseconds for value change events. Default 0 (immediate).</summary>
+    [Parameter] public int DebounceDelay { get; set; }
+
+    // ── Events (engine-agnostic) ────────────────────────────────────────
+
+    /// <summary>Fires when the content changes.</summary>
     [Parameter] public EventCallback<string> OnChange { get; set; }
 
-    private bool _showPreview;
+    /// <summary>Fires when the text selection changes.</summary>
+    [Parameter] public EventCallback OnSelectionChange { get; set; }
 
-    private IEnumerable<EditorTool> ActiveTools =>
-        Tools ?? Enum.GetValues<EditorTool>();
+    /// <summary>Fires when a command is executed.</summary>
+    [Parameter] public EventCallback<string> OnCommand { get; set; }
+
+    // ── Computed ────────────────────────────────────────────────────────
+
+    private IEnumerable<EditorTool> ActiveTools => Tools ?? Enum.GetValues<EditorTool>();
+
+    private string ContentStyle => $"height:{Height};width:100%;resize:vertical;padding:8px;box-sizing:border-box;overflow:auto;"
+        + (EditMode == EditorEditMode.Edit ? "font-family:monospace;" : "");
+
+    private string SanitizedValue => Value ?? "";
+
+    // ── Public API (engine-agnostic) ────────────────────────────────────
+
+    /// <summary>Executes a formatting command by name (e.g. "bold", "italic", "insertLink").</summary>
+    public async Task ExecuteCommandAsync(string command)
+    {
+        if (OnCommand.HasDelegate)
+            await OnCommand.InvokeAsync(command);
+    }
+
+    /// <summary>Sets the edit mode programmatically.</summary>
+    public async Task SetModeAsync(EditorEditMode mode)
+    {
+        EditMode = mode;
+        await EditModeChanged.InvokeAsync(mode);
+        StateHasChanged();
+    }
+
+    // ── Event handlers ──────────────────────────────────────────────────
 
     private async Task HandleInput(ChangeEventArgs e)
     {
@@ -66,19 +125,16 @@
         await OnChange.InvokeAsync(newValue);
     }
 
-    private async Task OnToolClick(EditorTool tool)
+    private async Task ExecuteToolAsync(EditorTool tool)
     {
         var snippet = GetToolSnippet(tool);
-        if (string.IsNullOrEmpty(snippet)) return;
-
-        Value = (Value ?? "") + snippet;
-        await ValueChanged.InvokeAsync(Value);
-        await OnChange.InvokeAsync(Value);
-    }
-
-    private void TogglePreview()
-    {
-        _showPreview = !_showPreview;
+        if (!string.IsNullOrEmpty(snippet))
+        {
+            Value = (Value ?? "") + snippet;
+            await ValueChanged.InvokeAsync(Value);
+            await OnChange.InvokeAsync(Value);
+        }
+        await ExecuteCommandAsync(tool.ToString().ToLowerInvariant());
     }
 
     private static string GetToolLabel(EditorTool tool) => tool switch
@@ -89,8 +145,8 @@
         EditorTool.Strikethrough => "S",
         EditorTool.OrderedList => "OL",
         EditorTool.UnorderedList => "UL",
-        EditorTool.Indent => "→",
-        EditorTool.Outdent => "←",
+        EditorTool.Indent => "\u2192",
+        EditorTool.Outdent => "\u2190",
         EditorTool.AlignLeft => "AL",
         EditorTool.AlignCenter => "AC",
         EditorTool.AlignRight => "AR",
@@ -100,8 +156,8 @@
         EditorTool.Image => "Img",
         EditorTool.HorizontalRule => "HR",
         EditorTool.ClearFormatting => "Tx",
-        EditorTool.Undo => "↩",
-        EditorTool.Redo => "↪",
+        EditorTool.Undo => "\u21A9",
+        EditorTool.Redo => "\u21AA",
         EditorTool.Table => "Table",
         EditorTool.Format => "Format",
         EditorTool.FontSize => "Size",
