@@ -161,6 +161,7 @@ public interface IMariloCssProvider
     string WindowContentClass();
     string WindowActionsClass();
     string WindowOverlayClass();
+    string WindowFooterClass();
 
     // ── Editor ──────────────────────────────────────────────────────────
     string EditorClass();

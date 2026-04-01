@@ -1,0 +1,21 @@
+@* ChartTitle — configures the chart title and optional description for accessibility. *@
+
+@code {
+    [CascadingParameter] internal MariloChart? ParentChart { get; set; }
+
+    /// <summary>The title text.</summary>
+    [Parameter] public string? Text { get; set; }
+
+    /// <summary>A longer description for screen readers.</summary>
+    [Parameter] public string? Description { get; set; }
+
+    /// <summary>Position of the title relative to the chart.</summary>
+    [Parameter] public ChartPosition Position { get; set; } = ChartPosition.Top;
+
+    protected override void OnInitialized()
+    {
+        if (ParentChart is null)
+            throw new InvalidOperationException("ChartTitle must be placed inside a MariloChart.");
+        ParentChart.SetChartTitle(this);
+    }
+}

@@ -541,6 +541,8 @@ public class FluentUICssProvider : IMariloCssProvider
 
     public string WindowOverlayClass() => "mar-window-overlay";
 
+    public string WindowFooterClass() => "mar-window-footer";
+
     // Editor
     public string EditorClass() => "mar-editor";
 

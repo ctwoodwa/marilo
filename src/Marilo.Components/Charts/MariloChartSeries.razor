@@ -1,50 +1,157 @@
-@inherits MariloComponentBase
 @implements IDisposable
 
 @code {
     [CascadingParameter] public MariloChart? ParentChart { get; set; }
 
+    /// <summary>Display name for the series (shown in legend).</summary>
     [Parameter] public string Name { get; set; } = "Series";
+
+    /// <summary>The data source for this series.</summary>
     [Parameter] public IEnumerable<object>? Data { get; set; }
+
+    /// <summary>Property name for the value (Y axis) in data items.</summary>
     [Parameter] public string Field { get; set; } = "";
+
+    /// <summary>Property name for the category (X axis label) in data items.</summary>
     [Parameter] public string CategoryField { get; set; } = "";
+
+    /// <summary>Property name for X values in scatter/bubble charts.</summary>
+    [Parameter] public string? XField { get; set; }
+
+    /// <summary>Property name for Y values in scatter/bubble charts.</summary>
+    [Parameter] public string? YField { get; set; }
+
+    /// <summary>Property name for bubble size in bubble charts.</summary>
+    [Parameter] public string? SizeField { get; set; }
+
+    /// <summary>Chart type for this series.</summary>
     [Parameter] public ChartSeriesType Type { get; set; } = ChartSeriesType.Line;
+
+    /// <summary>Custom color for the series.</summary>
     [Parameter] public string? Color { get; set; }
+
+    /// <summary>Whether this series is visible. Supports legend-driven toggle.</summary>
+    [Parameter] public bool Visible { get; set; } = true;
+
+    /// <summary>Gap between categories (0-1 ratio for bar/column).</summary>
+    [Parameter] public double? Gap { get; set; }
+
+    /// <summary>Spacing between bars in a group (0-1 ratio).</summary>
+    [Parameter] public double? Spacing { get; set; }
 
     protected override void OnInitialized()
     {
         ParentChart?.AddSeries(this);
     }
 
-    protected override void Dispose(bool disposing)
+    protected void Dispose(bool disposing)
     {
         if (disposing)
         {
             ParentChart?.RemoveSeries(this);
         }
-        base.Dispose(disposing);
     }
 
-    internal IReadOnlyList<(string Category, double Value)> GetDataPoints()
+    public void Dispose()
     {
-        var points = new List<(string, double)>();
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Extracts data points from the Data collection. Handles both model objects (with Field/CategoryField)
+    /// and primitive values (index-based categories).
+    /// </summary>
+    internal IReadOnlyList<ChartDataPoint> GetDataPoints()
+    {
+        var points = new List<ChartDataPoint>();
         if (Data == null) return points;
 
+        int index = 0;
         foreach (var item in Data)
         {
-            var type = item.GetType();
-            var valueProp = type.GetProperty(Field);
-            var categoryProp = type.GetProperty(CategoryField);
+            var itemType = item.GetType();
 
-            if (valueProp == null) continue;
+            // Check for primitive / numeric data (no Field required)
+            if (string.IsNullOrEmpty(Field) || itemType.IsPrimitive || item is decimal)
+            {
+                var numericValue = Convert.ToDouble(item);
+                points.Add(new ChartDataPoint
+                {
+                    Category = index.ToString(),
+                    Value = numericValue,
+                    DataItem = item,
+                    Index = index
+                });
+            }
+            else if (!string.IsNullOrEmpty(XField) && !string.IsNullOrEmpty(YField))
+            {
+                // XY scatter/bubble mode
+                var xProp = itemType.GetProperty(XField);
+                var yProp = itemType.GetProperty(YField);
+                var sizeProp = !string.IsNullOrEmpty(SizeField) ? itemType.GetProperty(SizeField) : null;
 
-            var rawValue = valueProp.GetValue(item);
-            var numericValue = Convert.ToDouble(rawValue);
-            var category = categoryProp?.GetValue(item)?.ToString() ?? "";
+                double xVal = xProp != null ? Convert.ToDouble(xProp.GetValue(item)) : index;
+                double yVal = yProp != null ? Convert.ToDouble(yProp.GetValue(item)) : 0;
+                double sizeVal = sizeProp != null ? Convert.ToDouble(sizeProp.GetValue(item)) : 0;
 
-            points.Add((category, numericValue));
+                points.Add(new ChartDataPoint
+                {
+                    X = xVal,
+                    Y = yVal,
+                    Value = yVal,
+                    BubbleSize = sizeVal,
+                    Category = xVal.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                    DataItem = item,
+                    Index = index
+                });
+            }
+            else
+            {
+                // Standard field-based data binding
+                var valueProp = itemType.GetProperty(Field);
+                var categoryProp = !string.IsNullOrEmpty(CategoryField) ? itemType.GetProperty(CategoryField) : null;
+
+                if (valueProp == null) { index++; continue; }
+
+                var rawValue = valueProp.GetValue(item);
+                var numericValue = Convert.ToDouble(rawValue);
+                var category = categoryProp?.GetValue(item)?.ToString() ?? index.ToString();
+
+                points.Add(new ChartDataPoint
+                {
+                    Category = category,
+                    Value = numericValue,
+                    DataItem = item,
+                    Index = index
+                });
+            }
+
+            index++;
         }
 
         return points;
     }
+
+    /// <summary>
+    /// Legacy method for backward compatibility.
+    /// </summary>
+    internal IReadOnlyList<(string Category, double Value)> GetLegacyDataPoints()
+    {
+        return GetDataPoints().Select(p => (p.Category, p.Value)).ToList();
+    }
+}
+
+/// <summary>
+/// Represents a single data point extracted from a chart series.
+/// </summary>
+public class ChartDataPoint
+{
+    public string Category { get; init; } = "";
+    public double Value { get; init; }
+    public double X { get; init; }
+    public double Y { get; init; }
+    public double BubbleSize { get; init; }
+    public object? DataItem { get; init; }
+    public int Index { get; init; }
 }

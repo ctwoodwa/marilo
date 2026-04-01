@@ -36,9 +36,9 @@ This document defines the resolution strategy for all 87 Marilo Blazor component
 | MariloGridColumn | 8 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED (all 4 gaps resolved Pass 1 + footer rendering) |
 | MariloGridToolbar | 2 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED (ARIA + GridCommandButton) |
 | MariloEditor | 54 | multi-pass | Yes (ProseMirror / rich-text engine) | **T2 - High** | ✅ API SURFACE (Tiptap-agnostic) |
-| MariloChart | 27 | multi-pass | Yes (charting engine decision) | **T2 - High** | ✅ API SURFACE (Chart.js-agnostic) |
-| MariloChartSeries | 17 | multi-pass | Yes (scatter/bubble data models) | **T2 - High** | ✅ API SURFACE (Chart.js-agnostic) |
-| MariloWindow | 32 | multi-pass | Yes (JS interop for drag/resize) | **T2 - High** | ✅ API SURFACE (Custom JS) |
+| MariloChart | 27 | multi-pass | Yes (charting engine decision) | **T2 - High** | ✅ IMPLEMENTED (tooltips, events, legend, axis config, a11y, bar fix; advanced types deferred) |
+| MariloChartSeries | 17 | multi-pass | Yes (scatter/bubble data models) | **T2 - High** | ✅ IMPLEMENTED (XField/YField, primitive data, Visible, ScatterLine/Bubble types) |
+| MariloWindow | 32 | multi-pass | Yes (JS interop for drag/resize) | **T2 - High** | ✅ IMPLEMENTED (drag, resize, child components, state, keyboard, a11y; 4 deferred) |
 | MariloDialog | 9 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED |
 | MariloConfirmDialog | 8 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED |
 | MariloPopover | 10 | multi-pass | Yes (anchor positioning) | **T2 - High** | ✅ IMPLEMENTED (animation, keyboard, a11y) |

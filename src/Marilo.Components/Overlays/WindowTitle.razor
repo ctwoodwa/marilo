@@ -1,0 +1,16 @@
+@* WindowTitle — semantic child component for MariloWindow title content. *@
+
+@ChildContent
+
+@code {
+    [CascadingParameter] internal MariloWindow? ParentWindow { get; set; }
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (ParentWindow is null)
+            throw new InvalidOperationException("WindowTitle must be placed inside a MariloWindow.");
+        ParentWindow.SetTitleFragment(ChildContent);
+    }
+}

@@ -1,0 +1,16 @@
+@* WindowFooter — semantic child component for MariloWindow footer content. *@
+
+@ChildContent
+
+@code {
+    [CascadingParameter] internal MariloWindow? ParentWindow { get; set; }
+
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (ParentWindow is null)
+            throw new InvalidOperationException("WindowFooter must be placed inside a MariloWindow.");
+        ParentWindow.SetFooterFragment(ChildContent);
+    }
+}

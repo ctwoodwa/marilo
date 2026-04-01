@@ -1,0 +1,24 @@
+@* ChartTooltip — configures chart-level tooltip behavior. *@
+
+@code {
+    [CascadingParameter] internal MariloChart? ParentChart { get; set; }
+
+    /// <summary>Whether tooltips are visible on hover.</summary>
+    [Parameter] public bool Visible { get; set; } = true;
+
+    /// <summary>Background color of the tooltip.</summary>
+    [Parameter] public string? Background { get; set; }
+
+    /// <summary>Text color of the tooltip.</summary>
+    [Parameter] public string? Color { get; set; }
+
+    /// <summary>Custom format string for the tooltip value.</summary>
+    [Parameter] public string? Format { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (ParentChart is null)
+            throw new InvalidOperationException("ChartTooltip must be placed inside a MariloChart.");
+        ParentChart.SetChartTooltip(this);
+    }
+}

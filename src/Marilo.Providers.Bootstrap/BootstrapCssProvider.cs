@@ -722,6 +722,8 @@ public class BootstrapCssProvider : IMariloCssProvider
 
     public string WindowOverlayClass() => "modal-backdrop fade show";
 
+    public string WindowFooterClass() => "card-footer mar-bs-window-footer";
+
     // ───────────────────────────────────────────────
     // Editor
     // ───────────────────────────────────────────────

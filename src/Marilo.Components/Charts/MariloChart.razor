@@ -1,51 +1,129 @@
 @inherits MariloComponentBase
+@inject IJSRuntime JS
+@implements IAsyncDisposable
 
 <div class="@CombineClasses(CssProvider.ChartContainerClass())"
      style="@CombineStyles($"width:{Width};height:{Height}")"
+     role="graphics-document"
+     aria-roledescription="chart"
+     aria-label="@ChartAriaLabel"
+     tabindex="0"
+     @ref="_chartRef"
      @attributes="AdditionalAttributes">
 
-    @if (!string.IsNullOrEmpty(Title))
-    {
-        <div class="mar-chart-title">@Title</div>
-    }
-
     <CascadingValue Value="this" IsFixed="true">
-        @ChildContent
+        <div style="display:none;">@ChildContent</div>
     </CascadingValue>
+
+    @* Title *@
+    @if (_chartTitle != null)
+    {
+        <div class="mar-chart-title" role="heading" aria-level="3">
+            @_chartTitle.Text
+            @if (!string.IsNullOrEmpty(_chartTitle.Description))
+            {
+                <span class="mar-sr-only">@_chartTitle.Description</span>
+            }
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(Title))
+    {
+        <div class="mar-chart-title" role="heading" aria-level="3">@Title</div>
+    }
 
     @if (_series.Count > 0)
     {
         @RenderChart()
     }
+    else
+    {
+        <div class="mar-chart-no-data">No data available</div>
+    }
+
+    @* Tooltip element (positioned via JS) *@
+    @if (TooltipsEnabled)
+    {
+        <div class="mar-chart-tooltip" @ref="_tooltipRef"
+             style="@TooltipStyle"
+             role="tooltip">
+            @_tooltipContent
+        </div>
+    }
 </div>
 
 @code {
     private static readonly string[] DefaultColors = ["#4e79a7", "#f28e2b", "#e15759", "#76b7b2", "#59a14f", "#edc948", "#b07aa1", "#ff9da7"];
+    private ElementReference _chartRef;
+    private ElementReference _tooltipRef;
+    private IJSObjectReference? _jsModule;
+    private DotNetObjectReference<MariloChart>? _dotNetRef;
+
+    // Child component registrations
+    private ChartTitle? _chartTitle;
+    private ChartLegend? _chartLegend;
+    private ChartTooltip? _chartTooltip;
+    private ChartCategoryAxis? _categoryAxis;
+    private ChartValueAxis? _valueAxis;
+
+    // Tooltip state
+    private string? _tooltipContent;
+    private bool _tooltipVisible;
+    private double _tooltipX;
+    private double _tooltipY;
+
+    private readonly List<MariloChartSeries> _series = new();
+
+    // ── Parameters ─────────────────────────────────────────────────────
 
     [Parameter] public string Width { get; set; } = "100%";
     [Parameter] public string Height { get; set; } = "300px";
     [Parameter] public string? Title { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    /// <summary>Whether chart animations are enabled. Defaults to true.</summary>
-    [Parameter] public bool EnableAnimations { get; set; } = true;
+    /// <summary>Whether chart animations are enabled.</summary>
+    [Parameter] public bool Transitions { get; set; } = true;
 
-    /// <summary>Whether to enable data decimation for large datasets. Defaults to false.</summary>
-    [Parameter] public bool EnableDataDecimation { get; set; }
-
-    /// <summary>Custom color palette. When null, uses the default palette.</summary>
+    /// <summary>Custom color palette.</summary>
     [Parameter] public string[]? Palette { get; set; }
 
-    /// <summary>Whether to show the chart legend. Defaults to true.</summary>
+    /// <summary>Whether to show the chart legend. Used when ChartLegend child is not provided.</summary>
     [Parameter] public bool ShowLegend { get; set; } = true;
 
-    /// <summary>Whether to show tooltips on hover. Defaults to true.</summary>
+    /// <summary>Whether to show tooltips on hover. Used when ChartTooltip child is not provided.</summary>
     [Parameter] public bool ShowTooltips { get; set; } = true;
 
+    // ── Events ─────────────────────────────────────────────────────────
+
     /// <summary>Fires when a data point is clicked.</summary>
+    [Parameter] public EventCallback<ChartSeriesClickEventArgs> OnSeriesClick { get; set; }
+
+    /// <summary>Legacy alias for OnSeriesClick.</summary>
     [Parameter] public EventCallback<ChartClickEventArgs> OnClick { get; set; }
 
-    private readonly List<MariloChartSeries> _series = new();
+    /// <summary>Fires when a legend item is clicked.</summary>
+    [Parameter] public EventCallback<ChartLegendItemClickEventArgs> OnLegendItemClick { get; set; }
+
+    // ── Computed ───────────────────────────────────────────────────────
+
+    private bool LegendVisible => _chartLegend?.Visible ?? ShowLegend;
+    private ChartPosition LegendPosition => _chartLegend?.Position ?? ChartPosition.Bottom;
+    private bool TooltipsEnabled => _chartTooltip?.Visible ?? ShowTooltips;
+    private string ChartAriaLabel => _chartTitle?.Description ?? _chartTitle?.Text ?? Title ?? "Chart";
+
+    private string TooltipStyle =>
+        _tooltipVisible
+            ? $"position:absolute;left:{Fmt(_tooltipX)}px;top:{Fmt(_tooltipY)}px;display:block;" +
+              (!string.IsNullOrEmpty(_chartTooltip?.Background) ? $"background:{_chartTooltip.Background};" : "") +
+              (!string.IsNullOrEmpty(_chartTooltip?.Color) ? $"color:{_chartTooltip.Color};" : "")
+            : "display:none;";
+
+    // ── Child component registration ───────────────────────────────────
+
+    internal void SetChartTitle(ChartTitle title) => _chartTitle = title;
+    internal void SetChartLegend(ChartLegend legend) => _chartLegend = legend;
+    internal void SetChartTooltip(ChartTooltip tooltip) => _chartTooltip = tooltip;
+    internal void SetCategoryAxis(ChartCategoryAxis axis) => _categoryAxis = axis;
+    internal void SetValueAxis(ChartValueAxis axis) => _valueAxis = axis;
 
     internal void AddSeries(MariloChartSeries series)
     {
@@ -61,27 +139,38 @@
         _series.Remove(series);
     }
 
-    private string GetSeriesColor(int index, MariloChartSeries series)
+    // ── Public API ─────────────────────────────────────────────────────
+
+    /// <summary>Forces a re-render of the chart.</summary>
+    public void Refresh() => StateHasChanged();
+
+    // ── Color helpers ──────────────────────────────────────────────────
+
+    private string[] EffectivePalette => Palette ?? DefaultColors;
+
+    internal string GetSeriesColor(int index, MariloChartSeries series)
     {
-        return series.Color ?? DefaultColors[index % DefaultColors.Length];
+        return series.Color ?? EffectivePalette[index % EffectivePalette.Length];
     }
+
+    // ── Rendering ──────────────────────────────────────────────────────
 
     private RenderFragment RenderChart() => builder =>
     {
-        // Check if any series is a pie/donut type
-        var hasPieOrDonut = _series.Any(s => s.Type is ChartSeriesType.Pie or ChartSeriesType.Donut);
+        var visibleSeries = _series.Where(s => s.Visible).ToList();
+        if (visibleSeries.Count == 0) return;
+
+        var hasPieOrDonut = visibleSeries.Any(s => s.Type is ChartSeriesType.Pie or ChartSeriesType.Donut);
 
         if (hasPieOrDonut)
-        {
-            RenderPieDonutChart(builder);
-        }
+            RenderPieDonutChart(builder, visibleSeries);
         else
-        {
-            RenderCartesianChart(builder);
-        }
+            RenderCartesianChart(builder, visibleSeries);
     };
 
-    private void RenderCartesianChart(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder)
+    private void RenderCartesianChart(
+        Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder,
+        List<MariloChartSeries> visibleSeries)
     {
         const double svgWidth = 600;
         const double svgHeight = 300;
@@ -92,47 +181,52 @@
         double plotWidth = svgWidth - marginLeft - marginRight;
         double plotHeight = svgHeight - marginTop - marginBottom;
 
-        // Collect all data points
-        var allPoints = _series.Select(s => s.GetDataPoints()).ToList();
-
+        var allPoints = visibleSeries.Select(s => s.GetDataPoints()).ToList();
         if (allPoints.All(p => p.Count == 0)) return;
 
         // Calculate Y range
-        double minY = 0;
-        double maxY = allPoints.SelectMany(p => p).Select(p => p.Value).DefaultIfEmpty(0).Max();
-        maxY = maxY == 0 ? 10 : maxY * 1.1; // Add 10% headroom
+        double minY = _valueAxis?.Min ?? 0;
+        double maxY = _valueAxis?.Max ??
+            allPoints.SelectMany(p => p).Select(p => p.Value).DefaultIfEmpty(0).Max() * 1.1;
+        if (maxY <= minY) maxY = minY + 10;
 
-        // Get categories from first series
-        var categories = allPoints.First().Select(p => p.Category).ToList();
+        // Get categories — from axis config, or from first series data
+        var categories = _categoryAxis?.Categories?.ToList()
+            ?? allPoints.First().Select(p => p.Category).ToList();
         int categoryCount = Math.Max(categories.Count, 1);
 
+        // SVG element
         builder.OpenElement(0, "svg");
         builder.AddAttribute(1, "viewBox", $"0 0 {svgWidth} {svgHeight}");
         builder.AddAttribute(2, "style", "width:100%;height:calc(100% - 40px)");
         builder.AddAttribute(3, "xmlns", "http://www.w3.org/2000/svg");
+        builder.AddAttribute(4, "role", "graphics-object");
 
         // Gridlines
         int gridLineCount = 5;
+        var axisColor = _categoryAxis?.Color ?? "#666";
+        var valueAxisColor = _valueAxis?.Color ?? "#666";
+
         for (int i = 0; i <= gridLineCount; i++)
         {
             double y = marginTop + plotHeight - (plotHeight * i / gridLineCount);
             double labelValue = minY + (maxY - minY) * i / gridLineCount;
 
             builder.OpenElement(10, "line");
-            builder.AddAttribute(11, "x1", marginLeft.ToString(System.Globalization.CultureInfo.InvariantCulture));
-            builder.AddAttribute(12, "y1", y.ToString(System.Globalization.CultureInfo.InvariantCulture));
-            builder.AddAttribute(13, "x2", (svgWidth - marginRight).ToString(System.Globalization.CultureInfo.InvariantCulture));
-            builder.AddAttribute(14, "y2", y.ToString(System.Globalization.CultureInfo.InvariantCulture));
+            builder.AddAttribute(11, "x1", Fmt(marginLeft));
+            builder.AddAttribute(12, "y1", Fmt(y));
+            builder.AddAttribute(13, "x2", Fmt(svgWidth - marginRight));
+            builder.AddAttribute(14, "y2", Fmt(y));
             builder.AddAttribute(15, "stroke", "#e0e0e0");
             builder.AddAttribute(16, "stroke-width", "1");
             builder.CloseElement();
 
             builder.OpenElement(17, "text");
-            builder.AddAttribute(18, "x", (marginLeft - 5).ToString(System.Globalization.CultureInfo.InvariantCulture));
-            builder.AddAttribute(19, "y", (y + 4).ToString(System.Globalization.CultureInfo.InvariantCulture));
+            builder.AddAttribute(18, "x", Fmt(marginLeft - 5));
+            builder.AddAttribute(19, "y", Fmt(y + 4));
             builder.AddAttribute(20, "text-anchor", "end");
             builder.AddAttribute(21, "font-size", "11");
-            builder.AddAttribute(22, "fill", "#666");
+            builder.AddAttribute(22, "fill", valueAxisColor);
             builder.AddContent(23, labelValue.ToString("N0"));
             builder.CloseElement();
         }
@@ -143,185 +237,355 @@
             double x = marginLeft + (plotWidth * (i + 0.5) / categoryCount);
 
             builder.OpenElement(30, "text");
-            builder.AddAttribute(31, "x", x.ToString(System.Globalization.CultureInfo.InvariantCulture));
-            builder.AddAttribute(32, "y", (svgHeight - 10).ToString(System.Globalization.CultureInfo.InvariantCulture));
+            builder.AddAttribute(31, "x", Fmt(x));
+            builder.AddAttribute(32, "y", Fmt(svgHeight - 10));
             builder.AddAttribute(33, "text-anchor", "middle");
             builder.AddAttribute(34, "font-size", "11");
-            builder.AddAttribute(35, "fill", "#666");
+            builder.AddAttribute(35, "fill", axisColor);
             builder.AddContent(36, categories[i]);
             builder.CloseElement();
         }
 
-        // Axes
-        builder.OpenElement(40, "line");
-        builder.AddAttribute(41, "x1", marginLeft.ToString(System.Globalization.CultureInfo.InvariantCulture));
-        builder.AddAttribute(42, "y1", marginTop.ToString(System.Globalization.CultureInfo.InvariantCulture));
-        builder.AddAttribute(43, "x2", marginLeft.ToString(System.Globalization.CultureInfo.InvariantCulture));
-        builder.AddAttribute(44, "y2", (svgHeight - marginBottom).ToString(System.Globalization.CultureInfo.InvariantCulture));
-        builder.AddAttribute(45, "stroke", "#333");
-        builder.AddAttribute(46, "stroke-width", "1");
+        // Axis titles
+        if (!string.IsNullOrEmpty(_valueAxis?.Title))
+        {
+            builder.OpenElement(37, "text");
+            builder.AddAttribute(38, "x", "15");
+            builder.AddAttribute(39, "y", Fmt(marginTop + plotHeight / 2));
+            builder.AddAttribute(40, "text-anchor", "middle");
+            builder.AddAttribute(41, "font-size", "12");
+            builder.AddAttribute(42, "fill", valueAxisColor);
+            builder.AddAttribute(43, "transform", $"rotate(-90, 15, {Fmt(marginTop + plotHeight / 2)})");
+            builder.AddContent(44, _valueAxis.Title);
+            builder.CloseElement();
+        }
+
+        if (!string.IsNullOrEmpty(_categoryAxis?.Title))
+        {
+            builder.OpenElement(45, "text");
+            builder.AddAttribute(46, "x", Fmt(marginLeft + plotWidth / 2));
+            builder.AddAttribute(47, "y", Fmt(svgHeight - 2));
+            builder.AddAttribute(48, "text-anchor", "middle");
+            builder.AddAttribute(49, "font-size", "12");
+            builder.AddAttribute(50, "fill", axisColor);
+            builder.AddContent(51, _categoryAxis.Title);
+            builder.CloseElement();
+        }
+
+        // Axes lines
+        builder.OpenElement(52, "line");
+        builder.AddAttribute(53, "x1", Fmt(marginLeft));
+        builder.AddAttribute(54, "y1", Fmt(marginTop));
+        builder.AddAttribute(55, "x2", Fmt(marginLeft));
+        builder.AddAttribute(56, "y2", Fmt(svgHeight - marginBottom));
+        builder.AddAttribute(57, "stroke", "#333");
+        builder.AddAttribute(58, "stroke-width", "1");
         builder.CloseElement();
 
-        builder.OpenElement(47, "line");
-        builder.AddAttribute(48, "x1", marginLeft.ToString(System.Globalization.CultureInfo.InvariantCulture));
-        builder.AddAttribute(49, "y1", (svgHeight - marginBottom).ToString(System.Globalization.CultureInfo.InvariantCulture));
-        builder.AddAttribute(50, "x2", (svgWidth - marginRight).ToString(System.Globalization.CultureInfo.InvariantCulture));
-        builder.AddAttribute(51, "y2", (svgHeight - marginBottom).ToString(System.Globalization.CultureInfo.InvariantCulture));
-        builder.AddAttribute(52, "stroke", "#333");
-        builder.AddAttribute(53, "stroke-width", "1");
+        builder.OpenElement(59, "line");
+        builder.AddAttribute(60, "x1", Fmt(marginLeft));
+        builder.AddAttribute(61, "y1", Fmt(svgHeight - marginBottom));
+        builder.AddAttribute(62, "x2", Fmt(svgWidth - marginRight));
+        builder.AddAttribute(63, "y2", Fmt(svgHeight - marginBottom));
+        builder.AddAttribute(64, "stroke", "#333");
+        builder.AddAttribute(65, "stroke-width", "1");
         builder.CloseElement();
 
         // Render each series
-        int totalBarSeries = _series.Count(s => s.Type is ChartSeriesType.Bar or ChartSeriesType.Column);
+        int totalBarSeries = visibleSeries.Count(s => s.Type == ChartSeriesType.Column);
+        int totalHBarSeries = visibleSeries.Count(s => s.Type == ChartSeriesType.Bar);
         int barSeriesIndex = 0;
 
-        for (int si = 0; si < _series.Count; si++)
+        for (int si = 0; si < visibleSeries.Count; si++)
         {
-            var series = _series[si];
+            var series = visibleSeries[si];
             var points = allPoints[si];
-            var color = GetSeriesColor(si, series);
+            var color = GetSeriesColor(_series.IndexOf(series), series);
+            int seriesGlobalIndex = _series.IndexOf(series);
+
+            builder.OpenElement(66, "g");
+            builder.AddAttribute(67, "role", "graphics-symbol");
+            builder.AddAttribute(68, "aria-label", $"Series: {series.Name}");
 
             switch (series.Type)
             {
                 case ChartSeriesType.Line:
-                    RenderLineSeries(builder, points, color, plotWidth, plotHeight, marginLeft, marginTop, maxY, categoryCount, false);
+                    RenderLineSeries(builder, points, color, plotWidth, plotHeight, marginLeft, marginTop, minY, maxY, categoryCount, false, seriesGlobalIndex);
                     break;
                 case ChartSeriesType.Area:
-                    RenderLineSeries(builder, points, color, plotWidth, plotHeight, marginLeft, marginTop, maxY, categoryCount, true);
+                    RenderLineSeries(builder, points, color, plotWidth, plotHeight, marginLeft, marginTop, minY, maxY, categoryCount, true, seriesGlobalIndex);
                     break;
-                case ChartSeriesType.Bar:
                 case ChartSeriesType.Column:
-                    RenderColumnSeries(builder, points, color, plotWidth, plotHeight, marginLeft, marginTop, maxY, categoryCount, barSeriesIndex, totalBarSeries);
+                    RenderColumnSeries(builder, points, color, plotWidth, plotHeight, marginLeft, marginTop, minY, maxY, categoryCount, barSeriesIndex, totalBarSeries, seriesGlobalIndex);
                     barSeriesIndex++;
                     break;
+                case ChartSeriesType.Bar:
+                    RenderBarSeries(builder, points, color, plotWidth, plotHeight, marginLeft, marginTop, minY, maxY, categoryCount, seriesGlobalIndex);
+                    break;
                 case ChartSeriesType.Scatter:
-                    RenderScatterSeries(builder, points, color, plotWidth, plotHeight, marginLeft, marginTop, maxY, categoryCount);
+                case ChartSeriesType.ScatterLine:
+                    RenderScatterSeries(builder, points, color, plotWidth, plotHeight, marginLeft, marginTop, minY, maxY, categoryCount, series.Type == ChartSeriesType.ScatterLine, seriesGlobalIndex);
                     break;
             }
+
+            builder.CloseElement(); // g
         }
 
         builder.CloseElement(); // svg
 
         // Legend
-        RenderLegend(builder);
+        if (LegendVisible)
+            RenderLegend(builder);
     }
 
     private void RenderLineSeries(
         Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder,
-        IReadOnlyList<(string Category, double Value)> points,
-        string color, double plotWidth, double plotHeight,
-        double marginLeft, double marginTop, double maxY,
-        int categoryCount, bool isArea)
+        IReadOnlyList<ChartDataPoint> points, string color,
+        double plotWidth, double plotHeight, double marginLeft, double marginTop,
+        double minY, double maxY, int categoryCount, bool isArea, int seriesIndex)
     {
         if (points.Count == 0) return;
+        double yRange = maxY - minY;
 
         var svgPoints = new List<(double x, double y)>();
         for (int i = 0; i < points.Count; i++)
         {
             double x = marginLeft + (plotWidth * (i + 0.5) / categoryCount);
-            double y = marginTop + plotHeight - (plotHeight * points[i].Value / maxY);
+            double y = marginTop + plotHeight - (plotHeight * (points[i].Value - minY) / yRange);
             svgPoints.Add((x, y));
         }
 
-        var pointsStr = string.Join(" ", svgPoints.Select(p =>
-            $"{p.x.ToString(System.Globalization.CultureInfo.InvariantCulture)},{p.y.ToString(System.Globalization.CultureInfo.InvariantCulture)}"));
+        var pointsStr = string.Join(" ", svgPoints.Select(p => $"{Fmt(p.x)},{Fmt(p.y)}"));
 
         if (isArea)
         {
             double baseY = marginTop + plotHeight;
-            var areaPoints = $"{svgPoints[0].x.ToString(System.Globalization.CultureInfo.InvariantCulture)},{baseY.ToString(System.Globalization.CultureInfo.InvariantCulture)} {pointsStr} {svgPoints[^1].x.ToString(System.Globalization.CultureInfo.InvariantCulture)},{baseY.ToString(System.Globalization.CultureInfo.InvariantCulture)}";
-            builder.OpenElement(60, "polygon");
-            builder.AddAttribute(61, "points", areaPoints);
-            builder.AddAttribute(62, "fill", color);
-            builder.AddAttribute(63, "fill-opacity", "0.3");
-            builder.AddAttribute(64, "stroke", "none");
+            var areaPoints = $"{Fmt(svgPoints[0].x)},{Fmt(baseY)} {pointsStr} {Fmt(svgPoints[^1].x)},{Fmt(baseY)}";
+            builder.OpenElement(70, "polygon");
+            builder.AddAttribute(71, "points", areaPoints);
+            builder.AddAttribute(72, "fill", color);
+            builder.AddAttribute(73, "fill-opacity", "0.3");
+            builder.AddAttribute(74, "stroke", "none");
             builder.CloseElement();
         }
 
-        builder.OpenElement(65, "polyline");
-        builder.AddAttribute(66, "points", pointsStr);
-        builder.AddAttribute(67, "fill", "none");
-        builder.AddAttribute(68, "stroke", color);
-        builder.AddAttribute(69, "stroke-width", "2");
+        builder.OpenElement(75, "polyline");
+        builder.AddAttribute(76, "points", pointsStr);
+        builder.AddAttribute(77, "fill", "none");
+        builder.AddAttribute(78, "stroke", color);
+        builder.AddAttribute(79, "stroke-width", "2");
+        if (Transitions) builder.AddAttribute(80, "class", "mar-chart-animate");
         builder.CloseElement();
 
-        // Data point circles
-        foreach (var (x, y) in svgPoints)
+        // Data point circles (interactive)
+        for (int i = 0; i < svgPoints.Count; i++)
         {
-            builder.OpenElement(70, "circle");
-            builder.AddAttribute(71, "cx", x.ToString(System.Globalization.CultureInfo.InvariantCulture));
-            builder.AddAttribute(72, "cy", y.ToString(System.Globalization.CultureInfo.InvariantCulture));
-            builder.AddAttribute(73, "r", "4");
-            builder.AddAttribute(74, "fill", color);
+            var (x, y) = svgPoints[i];
+            var pt = points[i];
+            builder.OpenElement(81, "circle");
+            builder.AddAttribute(82, "cx", Fmt(x));
+            builder.AddAttribute(83, "cy", Fmt(y));
+            builder.AddAttribute(84, "r", "4");
+            builder.AddAttribute(85, "fill", color);
+            builder.AddAttribute(86, "class", "mar-chart-point");
+            builder.AddAttribute(87, "tabindex", "0");
+            builder.AddAttribute(88, "role", "graphics-symbol");
+            builder.AddAttribute(89, "aria-label", $"{pt.Category}: {pt.Value}");
+            var capturedIndex = i;
+            var capturedSeriesIndex = seriesIndex;
+            var capturedColor = color;
+            builder.AddAttribute(90, "onclick",
+                EventCallback.Factory.Create<Microsoft.AspNetCore.Components.Web.MouseEventArgs>(this,
+                    () => HandleDataPointClick(capturedSeriesIndex, capturedIndex, pt, capturedColor)));
+            if (TooltipsEnabled)
+            {
+                builder.AddAttribute(91, "onmouseenter",
+                    EventCallback.Factory.Create<Microsoft.AspNetCore.Components.Web.MouseEventArgs>(this,
+                        (e) => ShowTooltip(pt, capturedColor, x, y)));
+                builder.AddAttribute(92, "onmouseleave",
+                    EventCallback.Factory.Create<Microsoft.AspNetCore.Components.Web.MouseEventArgs>(this,
+                        _ => HideTooltip()));
+            }
             builder.CloseElement();
         }
     }
 
     private void RenderColumnSeries(
         Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder,
-        IReadOnlyList<(string Category, double Value)> points,
-        string color, double plotWidth, double plotHeight,
-        double marginLeft, double marginTop, double maxY,
-        int categoryCount, int seriesIndex, int totalBarSeries)
+        IReadOnlyList<ChartDataPoint> points, string color,
+        double plotWidth, double plotHeight, double marginLeft, double marginTop,
+        double minY, double maxY, int categoryCount,
+        int seriesIndex, int totalBarSeries, int globalSeriesIndex)
     {
+        double yRange = maxY - minY;
         double slotWidth = plotWidth / categoryCount;
         double barGroupWidth = slotWidth * 0.7;
-        double barWidth = barGroupWidth / totalBarSeries;
+        double barWidth = barGroupWidth / Math.Max(totalBarSeries, 1);
         double baseY = marginTop + plotHeight;
 
         for (int i = 0; i < points.Count; i++)
         {
+            var pt = points[i];
             double slotX = marginLeft + (slotWidth * i);
             double groupStart = slotX + (slotWidth - barGroupWidth) / 2;
             double x = groupStart + (barWidth * seriesIndex);
-            double barHeight = plotHeight * points[i].Value / maxY;
+            double barHeight = plotHeight * (pt.Value - minY) / yRange;
             double y = baseY - barHeight;
 
-            builder.OpenElement(80, "rect");
-            builder.AddAttribute(81, "x", x.ToString(System.Globalization.CultureInfo.InvariantCulture));
-            builder.AddAttribute(82, "y", y.ToString(System.Globalization.CultureInfo.InvariantCulture));
-            builder.AddAttribute(83, "width", barWidth.ToString(System.Globalization.CultureInfo.InvariantCulture));
-            builder.AddAttribute(84, "height", barHeight.ToString(System.Globalization.CultureInfo.InvariantCulture));
-            builder.AddAttribute(85, "fill", color);
+            builder.OpenElement(100, "rect");
+            builder.AddAttribute(101, "x", Fmt(x));
+            builder.AddAttribute(102, "y", Fmt(y));
+            builder.AddAttribute(103, "width", Fmt(barWidth));
+            builder.AddAttribute(104, "height", Fmt(Math.Max(barHeight, 0)));
+            builder.AddAttribute(105, "fill", color);
+            builder.AddAttribute(106, "class", "mar-chart-point");
+            builder.AddAttribute(107, "tabindex", "0");
+            builder.AddAttribute(108, "role", "graphics-symbol");
+            builder.AddAttribute(109, "aria-label", $"{pt.Category}: {pt.Value}");
+            var capturedIndex = i;
+            var capturedColor = color;
+            builder.AddAttribute(110, "onclick",
+                EventCallback.Factory.Create<Microsoft.AspNetCore.Components.Web.MouseEventArgs>(this,
+                    () => HandleDataPointClick(globalSeriesIndex, capturedIndex, pt, capturedColor)));
+            if (TooltipsEnabled)
+            {
+                double tipX = x + barWidth / 2;
+                double tipY = y;
+                builder.AddAttribute(111, "onmouseenter",
+                    EventCallback.Factory.Create<Microsoft.AspNetCore.Components.Web.MouseEventArgs>(this,
+                        _ => ShowTooltip(pt, capturedColor, tipX, tipY)));
+                builder.AddAttribute(112, "onmouseleave",
+                    EventCallback.Factory.Create<Microsoft.AspNetCore.Components.Web.MouseEventArgs>(this,
+                        _ => HideTooltip()));
+            }
+            builder.CloseElement();
+        }
+    }
+
+    private void RenderBarSeries(
+        Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder,
+        IReadOnlyList<ChartDataPoint> points, string color,
+        double plotWidth, double plotHeight, double marginLeft, double marginTop,
+        double minY, double maxY, int categoryCount, int globalSeriesIndex)
+    {
+        // Horizontal bars: categories on Y axis, values on X axis
+        double yRange = maxY - minY;
+        double slotHeight = plotHeight / categoryCount;
+        double barHeight = slotHeight * 0.7;
+
+        for (int i = 0; i < points.Count; i++)
+        {
+            var pt = points[i];
+            double y = marginTop + (slotHeight * i) + (slotHeight - barHeight) / 2;
+            double barWidth = plotWidth * (pt.Value - minY) / yRange;
+
+            builder.OpenElement(120, "rect");
+            builder.AddAttribute(121, "x", Fmt(marginLeft));
+            builder.AddAttribute(122, "y", Fmt(y));
+            builder.AddAttribute(123, "width", Fmt(Math.Max(barWidth, 0)));
+            builder.AddAttribute(124, "height", Fmt(barHeight));
+            builder.AddAttribute(125, "fill", color);
+            builder.AddAttribute(126, "class", "mar-chart-point");
+            builder.AddAttribute(127, "tabindex", "0");
+            builder.AddAttribute(128, "role", "graphics-symbol");
+            builder.AddAttribute(129, "aria-label", $"{pt.Category}: {pt.Value}");
+            var capturedIndex = i;
+            var capturedColor = color;
+            builder.AddAttribute(130, "onclick",
+                EventCallback.Factory.Create<Microsoft.AspNetCore.Components.Web.MouseEventArgs>(this,
+                    () => HandleDataPointClick(globalSeriesIndex, capturedIndex, pt, capturedColor)));
+            if (TooltipsEnabled)
+            {
+                double tipX = marginLeft + barWidth;
+                double tipY = y + barHeight / 2;
+                builder.AddAttribute(131, "onmouseenter",
+                    EventCallback.Factory.Create<Microsoft.AspNetCore.Components.Web.MouseEventArgs>(this,
+                        _ => ShowTooltip(pt, capturedColor, tipX, tipY)));
+                builder.AddAttribute(132, "onmouseleave",
+                    EventCallback.Factory.Create<Microsoft.AspNetCore.Components.Web.MouseEventArgs>(this,
+                        _ => HideTooltip()));
+            }
             builder.CloseElement();
         }
     }
 
     private void RenderScatterSeries(
         Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder,
-        IReadOnlyList<(string Category, double Value)> points,
-        string color, double plotWidth, double plotHeight,
-        double marginLeft, double marginTop, double maxY,
-        int categoryCount)
+        IReadOnlyList<ChartDataPoint> points, string color,
+        double plotWidth, double plotHeight, double marginLeft, double marginTop,
+        double minY, double maxY, int categoryCount, bool connectLines, int globalSeriesIndex)
     {
+        if (points.Count == 0) return;
+        double yRange = maxY - minY;
+
+        var svgPoints = new List<(double x, double y)>();
         for (int i = 0; i < points.Count; i++)
         {
             double x = marginLeft + (plotWidth * (i + 0.5) / categoryCount);
-            double y = marginTop + plotHeight - (plotHeight * points[i].Value / maxY);
+            double y = marginTop + plotHeight - (plotHeight * (points[i].Value - minY) / yRange);
+            svgPoints.Add((x, y));
+        }
 
-            builder.OpenElement(90, "circle");
-            builder.AddAttribute(91, "cx", x.ToString(System.Globalization.CultureInfo.InvariantCulture));
-            builder.AddAttribute(92, "cy", y.ToString(System.Globalization.CultureInfo.InvariantCulture));
-            builder.AddAttribute(93, "r", "5");
-            builder.AddAttribute(94, "fill", color);
+        if (connectLines && svgPoints.Count > 1)
+        {
+            var pointsStr = string.Join(" ", svgPoints.Select(p => $"{Fmt(p.x)},{Fmt(p.y)}"));
+            builder.OpenElement(140, "polyline");
+            builder.AddAttribute(141, "points", pointsStr);
+            builder.AddAttribute(142, "fill", "none");
+            builder.AddAttribute(143, "stroke", color);
+            builder.AddAttribute(144, "stroke-width", "1.5");
+            builder.AddAttribute(145, "stroke-dasharray", "4,4");
+            builder.CloseElement();
+        }
+
+        for (int i = 0; i < svgPoints.Count; i++)
+        {
+            var (x, y) = svgPoints[i];
+            var pt = points[i];
+
+            builder.OpenElement(150, "circle");
+            builder.AddAttribute(151, "cx", Fmt(x));
+            builder.AddAttribute(152, "cy", Fmt(y));
+            builder.AddAttribute(153, "r", "5");
+            builder.AddAttribute(154, "fill", color);
+            builder.AddAttribute(155, "class", "mar-chart-point");
+            builder.AddAttribute(156, "tabindex", "0");
+            builder.AddAttribute(157, "role", "graphics-symbol");
+            builder.AddAttribute(158, "aria-label", $"{pt.Category}: {pt.Value}");
+            var capturedIndex = i;
+            var capturedColor = color;
+            builder.AddAttribute(159, "onclick",
+                EventCallback.Factory.Create<Microsoft.AspNetCore.Components.Web.MouseEventArgs>(this,
+                    () => HandleDataPointClick(globalSeriesIndex, capturedIndex, pt, capturedColor)));
+            if (TooltipsEnabled)
+            {
+                builder.AddAttribute(160, "onmouseenter",
+                    EventCallback.Factory.Create<Microsoft.AspNetCore.Components.Web.MouseEventArgs>(this,
+                        _ => ShowTooltip(pt, capturedColor, x, y)));
+                builder.AddAttribute(161, "onmouseleave",
+                    EventCallback.Factory.Create<Microsoft.AspNetCore.Components.Web.MouseEventArgs>(this,
+                        _ => HideTooltip()));
+            }
             builder.CloseElement();
         }
     }
 
-    private void RenderPieDonutChart(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder)
+    private void RenderPieDonutChart(
+        Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder,
+        List<MariloChartSeries> visibleSeries)
     {
         const double svgSize = 300;
         const double cx = 150;
         const double cy = 150;
         const double outerRadius = 120;
 
-        builder.OpenElement(100, "svg");
-        builder.AddAttribute(101, "viewBox", $"0 0 {svgSize} {svgSize}");
-        builder.AddAttribute(102, "style", "width:100%;height:calc(100% - 40px)");
-        builder.AddAttribute(103, "xmlns", "http://www.w3.org/2000/svg");
+        builder.OpenElement(200, "svg");
+        builder.AddAttribute(201, "viewBox", $"0 0 {svgSize} {svgSize}");
+        builder.AddAttribute(202, "style", "width:100%;height:calc(100% - 40px)");
+        builder.AddAttribute(203, "xmlns", "http://www.w3.org/2000/svg");
+        builder.AddAttribute(204, "role", "graphics-object");
 
-        // Use first pie/donut series
-        var series = _series.FirstOrDefault(s => s.Type is ChartSeriesType.Pie or ChartSeriesType.Donut);
+        var series = visibleSeries.FirstOrDefault(s => s.Type is ChartSeriesType.Pie or ChartSeriesType.Donut);
         if (series == null) { builder.CloseElement(); return; }
 
         var points = series.GetDataPoints();
@@ -330,15 +594,18 @@
 
         bool isDonut = series.Type == ChartSeriesType.Donut;
         double innerRadius = isDonut ? outerRadius * 0.6 : 0;
+        int seriesGlobalIndex = _series.IndexOf(series);
 
-        double currentAngle = -Math.PI / 2; // Start at top
+        double currentAngle = -Math.PI / 2;
 
         for (int i = 0; i < points.Count; i++)
         {
-            double sliceAngle = 2 * Math.PI * Math.Abs(points[i].Value) / total;
+            var pt = points[i];
+            double sliceAngle = 2 * Math.PI * Math.Abs(pt.Value) / total;
             double endAngle = currentAngle + sliceAngle;
             int largeArc = sliceAngle > Math.PI ? 1 : 0;
-            var color = DefaultColors[i % DefaultColors.Length];
+            var color = EffectivePalette[i % EffectivePalette.Length];
+            double percentage = pt.Value / total * 100;
 
             double x1Outer = cx + outerRadius * Math.Cos(currentAngle);
             double y1Outer = cy + outerRadius * Math.Sin(currentAngle);
@@ -352,7 +619,6 @@
                 double y1Inner = cy + innerRadius * Math.Sin(currentAngle);
                 double x2Inner = cx + innerRadius * Math.Cos(endAngle);
                 double y2Inner = cy + innerRadius * Math.Sin(endAngle);
-
                 d = $"M {Fmt(x1Outer)} {Fmt(y1Outer)} A {Fmt(outerRadius)} {Fmt(outerRadius)} 0 {largeArc} 1 {Fmt(x2Outer)} {Fmt(y2Outer)} L {Fmt(x2Inner)} {Fmt(y2Inner)} A {Fmt(innerRadius)} {Fmt(innerRadius)} 0 {largeArc} 0 {Fmt(x1Inner)} {Fmt(y1Inner)} Z";
             }
             else
@@ -360,11 +626,36 @@
                 d = $"M {Fmt(cx)} {Fmt(cy)} L {Fmt(x1Outer)} {Fmt(y1Outer)} A {Fmt(outerRadius)} {Fmt(outerRadius)} 0 {largeArc} 1 {Fmt(x2Outer)} {Fmt(y2Outer)} Z";
             }
 
-            builder.OpenElement(110, "path");
-            builder.AddAttribute(111, "d", d);
-            builder.AddAttribute(112, "fill", color);
-            builder.AddAttribute(113, "stroke", "white");
-            builder.AddAttribute(114, "stroke-width", "2");
+            // Midpoint for tooltip
+            double midAngle = currentAngle + sliceAngle / 2;
+            double midR = (outerRadius + innerRadius) / 2;
+            double tipX = cx + midR * Math.Cos(midAngle);
+            double tipY = cy + midR * Math.Sin(midAngle);
+
+            builder.OpenElement(210, "path");
+            builder.AddAttribute(211, "d", d);
+            builder.AddAttribute(212, "fill", color);
+            builder.AddAttribute(213, "stroke", "white");
+            builder.AddAttribute(214, "stroke-width", "2");
+            builder.AddAttribute(215, "class", "mar-chart-point");
+            builder.AddAttribute(216, "tabindex", "0");
+            builder.AddAttribute(217, "role", "graphics-symbol");
+            builder.AddAttribute(218, "aria-label", $"{pt.Category}: {pt.Value} ({percentage:F1}%)");
+            var capturedIndex = i;
+            var capturedColor = color;
+            var capturedPercentage = percentage;
+            builder.AddAttribute(219, "onclick",
+                EventCallback.Factory.Create<Microsoft.AspNetCore.Components.Web.MouseEventArgs>(this,
+                    () => HandlePieClick(seriesGlobalIndex, capturedIndex, pt, capturedColor, capturedPercentage)));
+            if (TooltipsEnabled)
+            {
+                builder.AddAttribute(220, "onmouseenter",
+                    EventCallback.Factory.Create<Microsoft.AspNetCore.Components.Web.MouseEventArgs>(this,
+                        _ => ShowPieTooltip(pt, capturedColor, capturedPercentage, tipX, tipY)));
+                builder.AddAttribute(221, "onmouseleave",
+                    EventCallback.Factory.Create<Microsoft.AspNetCore.Components.Web.MouseEventArgs>(this,
+                        _ => HideTooltip()));
+            }
             builder.CloseElement();
 
             currentAngle = endAngle;
@@ -372,61 +663,178 @@
 
         builder.CloseElement(); // svg
 
-        // Legend for pie/donut
-        RenderLegend(builder);
+        if (LegendVisible)
+            RenderPieLegend(builder, points);
     }
+
+    // ── Legend rendering ───────────────────────────────────────────────
 
     private void RenderLegend(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder)
     {
-        // Check if we have a pie/donut - legend items come from data points
-        var pieSeries = _series.FirstOrDefault(s => s.Type is ChartSeriesType.Pie or ChartSeriesType.Donut);
-        if (pieSeries != null)
+        var flexDir = LegendPosition is ChartPosition.Left or ChartPosition.Right ? "column" : "row";
+
+        builder.OpenElement(300, "div");
+        builder.AddAttribute(301, "class", "mar-chart-legend");
+        builder.AddAttribute(302, "role", "list");
+        builder.AddAttribute(303, "aria-label", "Chart legend");
+        builder.AddAttribute(304, "style", $"display:flex;flex-wrap:wrap;flex-direction:{flexDir};gap:12px;justify-content:center;padding:8px");
+
+        for (int si = 0; si < _series.Count; si++)
         {
-            var points = pieSeries.GetDataPoints();
-            builder.OpenElement(120, "div");
-            builder.AddAttribute(121, "class", "mar-chart-legend");
-            builder.AddAttribute(122, "style", "display:flex;flex-wrap:wrap;gap:12px;justify-content:center;padding:8px");
+            var series = _series[si];
+            var color = GetSeriesColor(si, series);
+            var isVisible = series.Visible;
+            var capturedIndex = si;
 
-            for (int i = 0; i < points.Count; i++)
-            {
-                var color = DefaultColors[i % DefaultColors.Length];
-                builder.OpenElement(123, "span");
-                builder.AddAttribute(124, "class", "mar-chart-legend-item");
-                builder.AddAttribute(125, "style", "display:inline-flex;align-items:center;gap:4px;font-size:12px");
+            builder.OpenElement(310, "span");
+            builder.AddAttribute(311, "class", $"mar-chart-legend-item{(isVisible ? "" : " mar-chart-legend-item--hidden")}");
+            builder.AddAttribute(312, "role", "listitem");
+            builder.AddAttribute(313, "style", $"display:inline-flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;{(isVisible ? "" : "opacity:0.4;")}");
+            builder.AddAttribute(314, "onclick",
+                EventCallback.Factory.Create<Microsoft.AspNetCore.Components.Web.MouseEventArgs>(this,
+                    () => HandleLegendClick(capturedIndex)));
 
-                builder.OpenElement(126, "span");
-                builder.AddAttribute(127, "style", $"width:12px;height:12px;background:{color};border-radius:2px;display:inline-block");
-                builder.CloseElement();
+            builder.OpenElement(315, "span");
+            builder.AddAttribute(316, "style", $"width:12px;height:12px;background:{color};border-radius:2px;display:inline-block");
+            builder.CloseElement();
 
-                builder.AddContent(128, points[i].Category);
-                builder.CloseElement();
-            }
-
+            builder.AddContent(317, series.Name);
             builder.CloseElement();
         }
-        else
+
+        builder.CloseElement();
+    }
+
+    private void RenderPieLegend(
+        Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder,
+        IReadOnlyList<ChartDataPoint> points)
+    {
+        builder.OpenElement(320, "div");
+        builder.AddAttribute(321, "class", "mar-chart-legend");
+        builder.AddAttribute(322, "role", "list");
+        builder.AddAttribute(323, "aria-label", "Chart legend");
+        builder.AddAttribute(324, "style", "display:flex;flex-wrap:wrap;gap:12px;justify-content:center;padding:8px");
+
+        for (int i = 0; i < points.Count; i++)
         {
-            builder.OpenElement(130, "div");
-            builder.AddAttribute(131, "class", "mar-chart-legend");
-            builder.AddAttribute(132, "style", "display:flex;flex-wrap:wrap;gap:12px;justify-content:center;padding:8px");
+            var color = EffectivePalette[i % EffectivePalette.Length];
 
-            for (int si = 0; si < _series.Count; si++)
-            {
-                var color = GetSeriesColor(si, _series[si]);
-                builder.OpenElement(133, "span");
-                builder.AddAttribute(134, "class", "mar-chart-legend-item");
-                builder.AddAttribute(135, "style", "display:inline-flex;align-items:center;gap:4px;font-size:12px");
+            builder.OpenElement(330, "span");
+            builder.AddAttribute(331, "class", "mar-chart-legend-item");
+            builder.AddAttribute(332, "role", "listitem");
+            builder.AddAttribute(333, "style", "display:inline-flex;align-items:center;gap:4px;font-size:12px");
 
-                builder.OpenElement(136, "span");
-                builder.AddAttribute(137, "style", $"width:12px;height:12px;background:{color};border-radius:2px;display:inline-block");
-                builder.CloseElement();
+            builder.OpenElement(334, "span");
+            builder.AddAttribute(335, "style", $"width:12px;height:12px;background:{color};border-radius:2px;display:inline-block");
+            builder.CloseElement();
 
-                builder.AddContent(138, _series[si].Name);
-                builder.CloseElement();
-            }
-
+            builder.AddContent(336, points[i].Category);
             builder.CloseElement();
         }
+
+        builder.CloseElement();
+    }
+
+    // ── Events ────────────────────────────────────────────────────────
+
+    private async Task HandleDataPointClick(int seriesIndex, int pointIndex, ChartDataPoint pt, string color)
+    {
+        var args = new ChartSeriesClickEventArgs
+        {
+            SeriesIndex = seriesIndex,
+            CategoryIndex = pointIndex,
+            Category = pt.Category,
+            Value = pt.Value,
+            DataItem = pt.DataItem,
+            SeriesName = seriesIndex < _series.Count ? _series[seriesIndex].Name : null,
+            SeriesColor = color
+        };
+
+        if (OnSeriesClick.HasDelegate)
+            await OnSeriesClick.InvokeAsync(args);
+        if (OnClick.HasDelegate)
+            await OnClick.InvokeAsync(args);
+    }
+
+    private async Task HandlePieClick(int seriesIndex, int pointIndex, ChartDataPoint pt, string color, double percentage)
+    {
+        var args = new ChartSeriesClickEventArgs
+        {
+            SeriesIndex = seriesIndex,
+            CategoryIndex = pointIndex,
+            Category = pt.Category,
+            Value = pt.Value,
+            Percentage = percentage,
+            DataItem = pt.DataItem,
+            SeriesName = seriesIndex < _series.Count ? _series[seriesIndex].Name : null,
+            SeriesColor = color
+        };
+
+        if (OnSeriesClick.HasDelegate)
+            await OnSeriesClick.InvokeAsync(args);
+        if (OnClick.HasDelegate)
+            await OnClick.InvokeAsync(args);
+    }
+
+    private async Task HandleLegendClick(int seriesIndex)
+    {
+        if (seriesIndex >= 0 && seriesIndex < _series.Count)
+        {
+            // Toggle visibility
+            _series[seriesIndex].Visible = !_series[seriesIndex].Visible;
+
+            if (OnLegendItemClick.HasDelegate)
+            {
+                await OnLegendItemClick.InvokeAsync(new ChartLegendItemClickEventArgs
+                {
+                    SeriesIndex = seriesIndex,
+                    Text = _series[seriesIndex].Name
+                });
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    // ── Tooltips ──────────────────────────────────────────────────────
+
+    private void ShowTooltip(ChartDataPoint pt, string color, double x, double y)
+    {
+        var format = _chartTooltip?.Format;
+        _tooltipContent = format != null
+            ? string.Format(format, pt.Value)
+            : $"{pt.Category}: {pt.Value}";
+        _tooltipX = x;
+        _tooltipY = y - 30;
+        _tooltipVisible = true;
+        StateHasChanged();
+    }
+
+    private void ShowPieTooltip(ChartDataPoint pt, string color, double percentage, double x, double y)
+    {
+        _tooltipContent = $"{pt.Category}: {pt.Value} ({percentage:F1}%)";
+        _tooltipX = x;
+        _tooltipY = y - 30;
+        _tooltipVisible = true;
+        StateHasChanged();
+    }
+
+    private void HideTooltip()
+    {
+        _tooltipVisible = false;
+        StateHasChanged();
+    }
+
+    // ── Disposal ──────────────────────────────────────────────────────
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_jsModule is not null)
+        {
+            try { await _jsModule.DisposeAsync(); }
+            catch (JSDisconnectedException) { }
+        }
+        _dotNetRef?.Dispose();
     }
 
     private static string Fmt(double v) => v.ToString(System.Globalization.CultureInfo.InvariantCulture);

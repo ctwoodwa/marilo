@@ -24,5 +24,22 @@ public enum ChartSeriesType
     Donut,
 
     /// <summary>A scatter plot of individual data points.</summary>
-    Scatter
+    Scatter,
+
+    /// <summary>A scatter plot with connected lines.</summary>
+    ScatterLine,
+
+    /// <summary>A bubble chart (scatter with sized markers).</summary>
+    Bubble
+}
+
+/// <summary>
+/// Specifies the position of a chart legend or title.
+/// </summary>
+public enum ChartPosition
+{
+    Top,
+    Bottom,
+    Left,
+    Right
 }
