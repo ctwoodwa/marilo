@@ -303,12 +303,7 @@ a:hover {
    ══════════════════════════════════════════════════ */
 
 .toc-sidebar {
-    position: sticky;
-    top: calc(60px + 1.6rem);
-    flex: 0.35;
-    max-width: 360px;
-    height: calc(100vh - 60px - 1.6rem);
-    flex-shrink: 0;
+    height: 100%;
     overflow-y: auto;
     overflow-x: hidden;
     padding: 0 16px 20px 0;

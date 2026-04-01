@@ -145,72 +145,91 @@
     <main class="main-container">
         @if (ShowSidebar())
         {
-            <aside class="toc-sidebar">
-                <nav class="toc-nav">
-                    @if (Favorites.Favorites.Count > 0)
-                    {
-                        <div class="toc-section-title favorites-section-title">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" style="vertical-align: -2px; margin-right: 4px;">
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                            </svg>
-                            Favorites
-                        </div>
-                        @foreach (var fav in Favorites.Favorites)
-                        {
-                            <div class="toc-fav-item">
-                                <a class="toc-link @(IsActive(fav.Url.TrimStart('/').TrimEnd('/')) ? "active" : "")"
-                                   href="@fav.Url">@fav.Title</a>
-                                <button class="toc-fav-remove" title="Remove favorite"
-                                        @onclick="() => RemoveFavorite(fav.Id)"
-                                        @onclick:stopPropagation>
-                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-                                </button>
-                            </div>
-                        }
-                        <div class="toc-fav-divider"></div>
-                    }
-                    @if (IsComponentDetailView())
-                    {
-                        var comp = GetCurrentComponent();
-                        @if (comp is not null)
-                        {
-                            <div class="toc-section-title">@comp.Category</div>
-                            @foreach (var sibling in ComponentRegistry.GetByCategory(comp.CategorySlug))
+            <MariloSplitter Orientation="StackDirection.Horizontal"
+                            Width="100%"
+                            Height="calc(100vh - 60px)"
+                            Collapsible="true">
+                <MariloSplitterPane Size="260px" Min="180px" Max="400px" Collapsible="true">
+                    <aside class="toc-sidebar">
+                        <nav class="toc-nav">
+                            @if (Favorites.Favorites.Count > 0)
                             {
-                                var isCurrent = sibling.Slug == comp.Slug;
-                                <div class="toc-item @(isCurrent ? "expanded" : "")">
-                                    <a class="toc-link @(isCurrent ? "active" : "")"
-                                       href="/components/@sibling.Slug">@sibling.Name</a>
+                                <div class="toc-section-title favorites-section-title">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" style="vertical-align: -2px; margin-right: 4px;">
+                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                                    </svg>
+                                    Favorites
                                 </div>
+                                @foreach (var fav in Favorites.Favorites)
+                                {
+                                    <div class="toc-fav-item">
+                                        <a class="toc-link @(IsActive(fav.Url.TrimStart('/').TrimEnd('/')) ? "active" : "")"
+                                           href="@fav.Url">@fav.Title</a>
+                                        <button class="toc-fav-remove" title="Remove favorite"
+                                                @onclick="() => RemoveFavorite(fav.Id)"
+                                                @onclick:stopPropagation>
+                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                                        </button>
+                                    </div>
+                                }
+                                <div class="toc-fav-divider"></div>
                             }
-                        }
-                    }
-                    else
-                    {
-                        @foreach (var category in ComponentRegistry.GetCategories())
-                        {
-                            var components = ComponentRegistry.GetByCategory(category.Slug);
-                            <div class="toc-section-title">@category.Name</div>
-                            @foreach (var comp in components)
+                            @if (IsComponentDetailView())
                             {
-                                <a class="toc-link @(IsComponentActive(comp.Slug) ? "active" : "")"
-                                   href="/components/@comp.Slug">@comp.Name</a>
+                                var comp = GetCurrentComponent();
+                                @if (comp is not null)
+                                {
+                                    <div class="toc-section-title">@comp.Category</div>
+                                    @foreach (var sibling in ComponentRegistry.GetByCategory(comp.CategorySlug))
+                                    {
+                                        var isCurrent = sibling.Slug == comp.Slug;
+                                        <div class="toc-item @(isCurrent ? "expanded" : "")">
+                                            <a class="toc-link @(isCurrent ? "active" : "")"
+                                               href="/components/@sibling.Slug">@sibling.Name</a>
+                                        </div>
+                                    }
+                                }
                             }
-                        }
-                        <div class="toc-section-title">Resources</div>
-                        <a class="toc-link @(IsActive("icons") ? "active" : "")" href="/icons">Icons</a>
-                    }
-                </nav>
-            </aside>
-        }
+                            else
+                            {
+                                @foreach (var category in ComponentRegistry.GetCategories())
+                                {
+                                    var components = ComponentRegistry.GetByCategory(category.Slug);
+                                    <div class="toc-section-title">@category.Name</div>
+                                    @foreach (var comp in components)
+                                    {
+                                        <a class="toc-link @(IsComponentActive(comp.Slug) ? "active" : "")"
+                                           href="/components/@comp.Slug">@comp.Name</a>
+                                    }
+                                }
+                                <div class="toc-section-title">Resources</div>
+                                <a class="toc-link @(IsActive("icons") ? "active" : "")" href="/icons">Icons</a>
+                            }
+                        </nav>
+                    </aside>
+                </MariloSplitterPane>
 
-        <div class="content-area @(ShowSidebar() ? "" : "content-full")">
-            <CascadingValue Value="_isDark" Name="IsDarkMode">
-                <MariloThemeProvider Theme="@_selectedPreset.Theme">
-                    @Body
-                </MariloThemeProvider>
-            </CascadingValue>
-        </div>
+                <MariloSplitterPane>
+                    <div class="content-area">
+                        <CascadingValue Value="_isDark" Name="IsDarkMode">
+                            <MariloThemeProvider Theme="@_selectedPreset.Theme">
+                                @Body
+                            </MariloThemeProvider>
+                        </CascadingValue>
+                    </div>
+                </MariloSplitterPane>
+            </MariloSplitter>
+        }
+        else
+        {
+            <div class="content-area content-full">
+                <CascadingValue Value="_isDark" Name="IsDarkMode">
+                    <MariloThemeProvider Theme="@_selectedPreset.Theme">
+                        @Body
+                    </MariloThemeProvider>
+                </CascadingValue>
+            </div>
+        }
     </main>
 
     <footer class="site-footer">

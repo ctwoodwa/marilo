@@ -679,15 +679,12 @@
    Navigation: Breadcrumb
    -------------------------------------------------------------------------- */
 .mar-breadcrumb {
-  font-family: var(--marilo-font-family);
-  font-size: var(--marilo-font-size-base);
-  color: var(--marilo-color-text-secondary);
-}
-
-.mar-breadcrumb > ol {
   display: flex;
   align-items: center;
   gap: var(--marilo-space-xs);
+  font-family: var(--marilo-font-family);
+  font-size: var(--marilo-font-size-base);
+  color: var(--marilo-color-text-secondary);
   list-style: none;
   padding: 0;
   margin: 0;
@@ -810,37 +807,6 @@
 .mar-tree-item--selected {
   background: var(--marilo-color-primary-light);
   color: var(--marilo-color-primary);
-}
-
-.mar-tree-item__header {
-  display: flex;
-  align-items: center;
-  gap: var(--marilo-space-xs);
-}
-
-.mar-tree-item__toggle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  font-size: 0.65em;
-  color: inherit;
-  transition: transform var(--marilo-transition-fast);
-}
-
-.mar-tree-item__toggle:hover {
-  color: var(--marilo-color-primary);
-}
-
-.mar-tree-item__children {
-  list-style: none;
-  padding-left: var(--marilo-space-lg);
-  margin: 0;
 }
 
 /* --------------------------------------------------------------------------
@@ -1341,7 +1307,7 @@
 /* --------------------------------------------------------------------------
    Forms: Text Inputs
    -------------------------------------------------------------------------- */
-.mar-textfield {
+.mar-textbox {
   display: flex;
   align-items: center;
   border: 1px solid var(--marilo-color-border-strong);
@@ -1351,16 +1317,16 @@
   transition: border-color var(--marilo-transition-fast), box-shadow var(--marilo-transition-fast);
 }
 
-.mar-textfield:hover {
+.mar-textbox:hover {
   border-color: var(--marilo-color-on-background);
 }
 
-.mar-textfield:focus-within {
+.mar-textbox:focus-within {
   border-color: var(--marilo-color-primary);
   box-shadow: 0 0 0 1px var(--marilo-color-primary);
 }
 
-.mar-textfield input {
+.mar-textbox input {
   flex: 1;
   min-width: 0;
   padding: 6px 10px;
@@ -1372,12 +1338,12 @@
   outline: none;
 }
 
-.mar-textfield input::placeholder {
+.mar-textbox input::placeholder {
   color: var(--marilo-color-text-secondary);
 }
 
-.mar-textfield__prefix,
-.mar-textfield__suffix {
+.mar-textbox__prefix,
+.mar-textbox__suffix {
   display: flex;
   align-items: center;
   padding: 0 8px;
@@ -1387,49 +1353,49 @@
   white-space: nowrap;
 }
 
-.mar-textfield__prefix {
+.mar-textbox__prefix {
   padding-left: 10px;
 }
 
-.mar-textfield__suffix {
+.mar-textbox__suffix {
   padding-right: 10px;
 }
 
-.mar-textfield__prefix--sep {
+.mar-textbox__prefix--sep {
   border-right: 1px solid var(--marilo-color-border);
   margin-right: -1px;
   padding-right: 10px;
 }
 
-.mar-textfield__suffix--sep {
+.mar-textbox__suffix--sep {
   border-left: 1px solid var(--marilo-color-border);
   margin-left: -1px;
   padding-left: 10px;
 }
 
-.mar-textfield:has(.mar-textfield__prefix) input {
+.mar-textbox:has(.mar-textbox__prefix) input {
   padding-left: 4px;
 }
 
-.mar-textfield:has(.mar-textfield__suffix) input {
+.mar-textbox:has(.mar-textbox__suffix) input {
   padding-right: 4px;
 }
 
-.mar-textfield--invalid {
+.mar-textbox--invalid {
   border-color: var(--marilo-color-danger);
 }
 
-.mar-textfield--invalid:focus-within {
+.mar-textbox--invalid:focus-within {
   box-shadow: 0 0 0 1px var(--marilo-color-danger);
 }
 
-.mar-textfield--disabled {
+.mar-textbox--disabled {
   background: var(--marilo-color-surface);
   border-color: var(--marilo-color-border);
   cursor: not-allowed;
 }
 
-.mar-textfield--disabled input {
+.mar-textbox--disabled input {
   color: var(--marilo-color-text-disabled);
   cursor: not-allowed;
 }
@@ -1484,12 +1450,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--marilo-space-xs);
-}
-
-.mar-searchbox {
-  position: relative;
-  display: flex;
-  align-items: center;
 }
 
 .mar-autocomplete {
@@ -3053,7 +3013,7 @@
   background: var(--marilo-color-primary-light);
 }
 
-.mar-breadcrumb > ol {
+.mar-breadcrumb {
   display: flex;
   align-items: center;
   list-style: none;
@@ -4808,4 +4768,197 @@
   background: var(--marilo-color-surface);
   border-radius: var(--marilo-radius-sm);
   font-size: var(--marilo-font-size-sm);
+}
+
+.mar-signalr-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--mar-color-neutral-stroke-1);
+  border-radius: var(--mar-radius-md, 4px);
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.875rem;
+  line-height: 1;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+.mar-signalr-status:hover {
+  background: var(--mar-color-neutral-background-1-hover, rgba(0, 0, 0, 0.04));
+}
+.mar-signalr-status--healthy {
+  color: var(--mar-color-success-foreground-1, #107c10);
+  border-color: var(--mar-color-success-stroke-1, #107c10);
+}
+.mar-signalr-status--degraded {
+  color: var(--mar-color-warning-foreground-1, #d47d00);
+  border-color: var(--mar-color-warning-stroke-1, #d47d00);
+}
+.mar-signalr-status--offline {
+  color: var(--mar-color-danger-foreground-1, #d13438);
+  border-color: var(--mar-color-danger-stroke-1, #d13438);
+}
+.mar-signalr-status--partial {
+  color: var(--mar-color-info-foreground-1, #0078d4);
+  border-color: var(--mar-color-info-stroke-1, #0078d4);
+}
+.mar-signalr-status--compact {
+  padding: 0.25rem 0.375rem;
+  font-size: 0.75rem;
+}
+.mar-signalr-status__count {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.mar-signalr-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+}
+
+.mar-signalr-popup {
+  position: absolute;
+  z-index: 1000;
+  right: 0;
+  top: 100%;
+  margin-top: 0.25rem;
+  min-width: 20rem;
+  max-width: 28rem;
+  background: var(--mar-color-neutral-background-1, #fff);
+  border: 1px solid var(--mar-color-neutral-stroke-1, #d1d1d1);
+  border-radius: var(--mar-radius-lg, 8px);
+  box-shadow: var(--mar-shadow-16, 0 8px 16px rgba(0, 0, 0, 0.14));
+}
+.mar-signalr-popup__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--mar-color-neutral-stroke-2, #e0e0e0);
+}
+.mar-signalr-popup__title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  flex: 0 0 auto;
+}
+.mar-signalr-popup__summary {
+  flex: 1 1 auto;
+  font-size: 0.75rem;
+  color: var(--mar-color-neutral-foreground-3, #707070);
+  text-align: right;
+}
+.mar-signalr-popup__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: var(--mar-color-neutral-foreground-2, #484848);
+  padding: 0.25rem;
+  line-height: 1;
+}
+.mar-signalr-popup__body {
+  padding: 0.5rem 0;
+  max-height: 24rem;
+  overflow-y: auto;
+}
+.mar-signalr-popup__group-label {
+  display: block;
+  padding: 0.25rem 1rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--mar-color-neutral-foreground-3, #707070);
+}
+
+.mar-signalr-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+}
+.mar-signalr-row:hover {
+  background: var(--mar-color-neutral-background-1-hover, rgba(0, 0, 0, 0.02));
+}
+.mar-signalr-row__info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.mar-signalr-row__name {
+  display: block;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  line-height: 1.3;
+}
+.mar-signalr-row__endpoint {
+  display: block;
+  font-size: 0.6875rem;
+  color: var(--mar-color-neutral-foreground-3, #707070);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mar-signalr-row__details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.125rem;
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--mar-color-neutral-foreground-3, #707070);
+}
+.mar-signalr-row__error {
+  color: var(--mar-color-danger-foreground-1, #d13438);
+  max-width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mar-signalr-row__action {
+  background: none;
+  border: 1px solid var(--mar-color-neutral-stroke-1, #d1d1d1);
+  border-radius: var(--mar-radius-sm, 2px);
+  padding: 0.125rem 0.5rem;
+  font-size: 0.6875rem;
+  cursor: pointer;
+  color: var(--mar-color-brand-foreground-1, #0078d4);
+  white-space: nowrap;
+}
+.mar-signalr-row__action:hover {
+  background: var(--mar-color-neutral-background-1-hover, rgba(0, 0, 0, 0.04));
+}
+
+.mar-signalr-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 4rem;
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--mar-radius-sm, 2px);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+.mar-signalr-badge--healthy {
+  background: var(--mar-color-success-background-1, #dff6dd);
+  color: var(--mar-color-success-foreground-1, #107c10);
+}
+.mar-signalr-badge--connecting {
+  background: var(--mar-color-info-background-1, #deecf9);
+  color: var(--mar-color-info-foreground-1, #0078d4);
+}
+.mar-signalr-badge--recovering {
+  background: var(--mar-color-warning-background-1, #fff4ce);
+  color: var(--mar-color-warning-foreground-1, #d47d00);
+}
+.mar-signalr-badge--degraded {
+  background: var(--mar-color-danger-background-1, #fde7e9);
+  color: var(--mar-color-danger-foreground-1, #d13438);
+}
+.mar-signalr-badge--offline {
+  background: var(--mar-color-danger-background-1, #fde7e9);
+  color: var(--mar-color-danger-foreground-1, #d13438);
 }

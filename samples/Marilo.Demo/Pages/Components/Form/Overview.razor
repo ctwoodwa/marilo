@@ -1,0 +1,35 @@
+@page "/components/form"
+@page "/components/form/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Description="Form provides validation, field layout, and submit handling for input components." Code="@_basicCode">
+        <div class="demo-row">
+            <MariloForm>
+                <MariloField>
+                    <MariloLabel>Name</MariloLabel>
+                    <MariloTextBox @bind-Value="_name" />
+                </MariloField>
+                <MariloField>
+                    <MariloLabel>Email</MariloLabel>
+                    <MariloTextBox @bind-Value="_email" />
+                </MariloField>
+                <MariloButton Variant="ButtonVariant.Primary">Submit</MariloButton>
+            </MariloForm>
+        </div>
+    </DemoSection>
+</PageSection>
+
+@code {
+    private string? _name;
+    private string? _email;
+
+    private const string _basicCode =
+        "<MariloForm>\n" +
+        "    <MariloField>\n" +
+        "        <MariloLabel>Name</MariloLabel>\n" +
+        "        <MariloTextBox @bind-Value=\"_name\" />\n" +
+        "    </MariloField>\n" +
+        "    <MariloButton Variant=\"ButtonVariant.Primary\">Submit</MariloButton>\n" +
+        "</MariloForm>";
+}

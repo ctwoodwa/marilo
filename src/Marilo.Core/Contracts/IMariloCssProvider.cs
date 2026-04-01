@@ -64,7 +64,7 @@ public interface IMariloCssProvider
     string FabClass(FabSize size);
 
     // ── Forms — Inputs ──────────────────────────────────────────────────
-    string TextFieldClass(bool isInvalid, bool isDisabled);
+    string TextBoxClass(bool isInvalid, bool isDisabled);
     string TextAreaClass(bool isInvalid);
     string NumericInputClass();
     string SearchBoxClass();
@@ -184,6 +184,12 @@ public interface IMariloCssProvider
     // ── Overlays ────────────────────────────────────────────────────────
     string ModalClass(ModalSize size);
     string ModalOverlayClass();
+
+    // ── SignalR Status ─────────────────────────────────────────────────
+    string SignalRStatusClass(AggregateConnectionState state, bool isCompact);
+    string SignalRPopupClass();
+    string SignalRRowClass(ConnectionHealthState health);
+    string SignalRBadgeClass(ConnectionHealthState health);
 
     // ── Utility ─────────────────────────────────────────────────────────
     string IconClass(string iconName, IconSize size, IconFlip flip = IconFlip.None, IconThemeColor themeColor = IconThemeColor.Base);

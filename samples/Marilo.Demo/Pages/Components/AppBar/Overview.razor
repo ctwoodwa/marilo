@@ -1,0 +1,20 @@
+@page "/components/appbar"
+@page "/components/appbar/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Description="AppBar provides a top-level navigation bar for your application." Code="@_basicCode">
+        <div class="demo-row">
+            <MariloAppBar Position="AppBarPosition.Top">
+                <span>My Application</span>
+            </MariloAppBar>
+        </div>
+    </DemoSection>
+</PageSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloAppBar Position=\"AppBarPosition.Top\">\n" +
+        "    <span>My Application</span>\n" +
+        "</MariloAppBar>";
+}

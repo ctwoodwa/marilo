@@ -303,12 +303,12 @@ public class BootstrapCssProvider : IMariloCssProvider
     // Forms - Inputs
     // ───────────────────────────────────────────────
 
-    public string TextFieldClass(bool isInvalid, bool isDisabled) =>
+    public string TextBoxClass(bool isInvalid, bool isDisabled) =>
         new CssClassBuilder()
             .AddClass("input-group")
-            .AddClass("mar-bs-textfield")
+            .AddClass("mar-bs-textbox")
             .AddClass("is-invalid", isInvalid)
-            .AddClass("mar-bs-textfield--disabled", isDisabled)
+            .AddClass("mar-bs-textbox--disabled", isDisabled)
             .Build();
 
     public string TextAreaClass(bool isInvalid) =>
@@ -319,7 +319,7 @@ public class BootstrapCssProvider : IMariloCssProvider
 
     public string NumericInputClass() => "form-control mar-bs-numeric-input";
 
-    public string SearchBoxClass() => "mar-bs-searchbox";
+    public string SearchBoxClass() => "mar-search-box";
 
     public string AutocompleteClass() => "mar-bs-autocomplete";
 
@@ -816,4 +816,49 @@ public class BootstrapCssProvider : IMariloCssProvider
             .Build();
 
     public string ScrollViewClass() => "overflow-auto mar-bs-scrollview";
+
+    // SignalR Status
+    public string SignalRStatusClass(AggregateConnectionState state, bool isCompact) =>
+        new CssClassBuilder()
+            .AddClass("btn btn-sm mar-signalr-status")
+            .AddClass(state switch
+            {
+                AggregateConnectionState.Healthy => "btn-outline-success",
+                AggregateConnectionState.Degraded => "btn-outline-warning",
+                AggregateConnectionState.Offline => "btn-outline-danger",
+                AggregateConnectionState.Partial => "btn-outline-info",
+                _ => "btn-outline-secondary"
+            })
+            .AddClass("mar-signalr-status--compact", isCompact)
+            .Build();
+
+    public string SignalRPopupClass() => "card shadow-lg border mar-signalr-popup";
+
+    public string SignalRRowClass(ConnectionHealthState health) =>
+        new CssClassBuilder()
+            .AddClass("list-group-item d-flex align-items-center mar-signalr-row")
+            .AddClass(health switch
+            {
+                ConnectionHealthState.Healthy => "list-group-item-success",
+                ConnectionHealthState.Recovering => "list-group-item-warning",
+                ConnectionHealthState.Offline => "list-group-item-danger",
+                ConnectionHealthState.Degraded => "list-group-item-danger",
+                ConnectionHealthState.Connecting => "list-group-item-info",
+                _ => ""
+            })
+            .Build();
+
+    public string SignalRBadgeClass(ConnectionHealthState health) =>
+        new CssClassBuilder()
+            .AddClass("badge mar-signalr-badge")
+            .AddClass(health switch
+            {
+                ConnectionHealthState.Healthy => "bg-success",
+                ConnectionHealthState.Recovering => "bg-warning text-dark",
+                ConnectionHealthState.Offline => "bg-danger",
+                ConnectionHealthState.Degraded => "bg-danger",
+                ConnectionHealthState.Connecting => "bg-info text-dark",
+                _ => "bg-secondary"
+            })
+            .Build();
 }

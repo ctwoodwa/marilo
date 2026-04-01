@@ -1,0 +1,16 @@
+@page "/components/gantt"
+@page "/components/gantt/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Description="Gantt chart displays project tasks on a timeline with dependencies and progress tracking." Code="@_basicCode">
+        <div class="demo-row">
+            <MariloGantt Style="height:300px;" />
+        </div>
+    </DemoSection>
+</PageSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloGantt Style=\"height:300px;\" />";
+}

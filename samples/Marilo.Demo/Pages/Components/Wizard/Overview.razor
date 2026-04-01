@@ -1,0 +1,30 @@
+@page "/components/wizard"
+@page "/components/wizard/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Description="Wizard guides users through a multi-step process with back/next navigation." Code="@_basicCode">
+        <div class="demo-row">
+            <MariloWizard>
+                <WizardStep Title="Step 1">
+                    <p>Enter your details.</p>
+                </WizardStep>
+                <WizardStep Title="Step 2">
+                    <p>Review and confirm.</p>
+                </WizardStep>
+                <WizardStep Title="Step 3">
+                    <p>Done!</p>
+                </WizardStep>
+            </MariloWizard>
+        </div>
+    </DemoSection>
+</PageSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloWizard>\n" +
+        "    <WizardStep Title=\"Step 1\"><p>Enter your details.</p></WizardStep>\n" +
+        "    <WizardStep Title=\"Step 2\"><p>Review and confirm.</p></WizardStep>\n" +
+        "    <WizardStep Title=\"Step 3\"><p>Done!</p></WizardStep>\n" +
+        "</MariloWizard>";
+}

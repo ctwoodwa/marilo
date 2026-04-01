@@ -1,24 +1,24 @@
-@page "/components/TextField"
-@page "/components/TextField/overview"
+@page "/components/TextBox"
+@page "/components/TextBox/overview"
 @layout ComponentDemoLayout
 
 <PageSection Title="Overview">
     <DemoSection Title="Basic Usage" Code="@_basicCode">
         <MariloField>
             <MariloLabel>Name</MariloLabel>
-            <MariloTextField Value="@_name" ValueChanged="@(v => _name = v)" Placeholder="Enter your name" />
+            <MariloTextBox Value="@_name" ValueChanged="@(v => _name = v)" Placeholder="Enter your name" />
         </MariloField>
     </DemoSection>
 
     <DemoSection Title="States" Code="@_statesCode">
         <MariloField>
             <MariloLabel>Invalid Input</MariloLabel>
-            <MariloTextField Value="" IsInvalid="true" Placeholder="This field has an error" />
+            <MariloTextBox Value="" IsInvalid="true" Placeholder="This field has an error" />
             <MariloValidation Severity="ValidationSeverity.Error" Message="This field is required." />
         </MariloField>
         <MariloField>
             <MariloLabel>Disabled Input</MariloLabel>
-            <MariloTextField Value="Cannot edit" Disabled="true" />
+            <MariloTextBox Value="Cannot edit" Disabled="true" />
         </MariloField>
     </DemoSection>
 </PageSection>
@@ -27,24 +27,24 @@
     <DemoSection Title="Adornments" Description="Prefix and suffix adornments enhance inputs with icons, labels, or actions." Code="@_adornmentsCode">
         <MariloField>
             <MariloLabel>Email</MariloLabel>
-            <MariloTextField Value="@_email" ValueChanged="@(v => _email = v)" Placeholder="Enter email" InputType="email" ShowPrefixSeparator="true">
+            <MariloTextBox Value="@_email" ValueChanged="@(v => _email = v)" Placeholder="Enter email" InputType="email" ShowPrefixSeparator="true">
                 <Prefix>
                     <MariloIcon Name="mail" Size="IconSize.Small" />
                 </Prefix>
-            </MariloTextField>
+            </MariloTextBox>
         </MariloField>
         <MariloField>
             <MariloLabel>Website</MariloLabel>
-            <MariloTextField Value="@_website" ValueChanged="@(v => _website = v)" Placeholder="example.com" ShowPrefixSeparator="true">
+            <MariloTextBox Value="@_website" ValueChanged="@(v => _website = v)" Placeholder="example.com" ShowPrefixSeparator="true">
                 <Prefix><span>https://</span></Prefix>
-            </MariloTextField>
+            </MariloTextBox>
         </MariloField>
         <MariloField>
             <MariloLabel>Price</MariloLabel>
-            <MariloTextField Value="@_price" ValueChanged="@(v => _price = v)" Placeholder="0.00">
+            <MariloTextBox Value="@_price" ValueChanged="@(v => _price = v)" Placeholder="0.00">
                 <Prefix><span>$</span></Prefix>
                 <Suffix><span>USD</span></Suffix>
-            </MariloTextField>
+            </MariloTextBox>
         </MariloField>
     </DemoSection>
 </PageSection>
@@ -78,7 +78,7 @@
                 {
                     <MariloField>
                         <MariloLabel>Text</MariloLabel>
-                        <MariloTextField Value="@_prefixText" ValueChanged="@(v => _prefixText = v)" Placeholder="e.g. https://" />
+                        <MariloTextBox Value="@_prefixText" ValueChanged="@(v => _prefixText = v)" Placeholder="e.g. https://" />
                     </MariloField>
                 }
                 @if (_prefixMode != "none")
@@ -113,7 +113,7 @@
                 {
                     <MariloField>
                         <MariloLabel>Text</MariloLabel>
-                        <MariloTextField Value="@_suffixText" ValueChanged="@(v => _suffixText = v)" Placeholder="e.g. USD" />
+                        <MariloTextBox Value="@_suffixText" ValueChanged="@(v => _suffixText = v)" Placeholder="e.g. USD" />
                     </MariloField>
                 }
                 @if (_suffixMode != "none")
@@ -126,7 +126,7 @@
                 <h4>Input</h4>
                 <MariloField>
                     <MariloLabel>Placeholder</MariloLabel>
-                    <MariloTextField Value="@_playPlaceholder" ValueChanged="@(v => _playPlaceholder = v)" Placeholder="Placeholder text" />
+                    <MariloTextBox Value="@_playPlaceholder" ValueChanged="@(v => _playPlaceholder = v)" Placeholder="Placeholder text" />
                 </MariloField>
                 <MariloField>
                     <MariloCheckbox Checked="@_playDisabled" CheckedChanged="@(v => _playDisabled = v)" Label="Disabled" />
@@ -140,7 +140,7 @@
                 <h4>Result</h4>
                 <MariloField>
                     <MariloLabel>Preview</MariloLabel>
-                    @RenderPreviewTextField()
+                    @RenderPreviewTextBox()
                 </MariloField>
                 <p style="margin-top: 8px; font-size: 0.85rem; color: var(--color-text-muted);">
                     <strong>Value:</strong> @(string.IsNullOrEmpty(_playValue) ? "(empty)" : _playValue)
@@ -154,7 +154,7 @@
     <DemoSection Title="Interactive" Description="Handle value changes with the ValueChanged callback." Code="@_interactiveCode">
         <MariloField>
             <MariloLabel>Type something</MariloLabel>
-            <MariloTextField Value="@_evName" ValueChanged="@(v => _evName = v)" Placeholder="Enter your name" />
+            <MariloTextBox Value="@_evName" ValueChanged="@(v => _evName = v)" Placeholder="Enter your name" />
         </MariloField>
         <p><strong>Value:</strong> @_evName</p>
     </DemoSection>
@@ -174,16 +174,16 @@
     private const string _basicCode =
         "<MariloField>\n" +
         "    <MariloLabel>Name</MariloLabel>\n" +
-        "    <MariloTextField Value=\"@_name\" ValueChanged=\"@(v => _name = v)\" Placeholder=\"Enter your name\" />\n" +
+        "    <MariloTextBox Value=\"@_name\" ValueChanged=\"@(v => _name = v)\" Placeholder=\"Enter your name\" />\n" +
         "</MariloField>";
 
     private const string _statesCode =
         "<MariloField>\n" +
-        "    <MariloTextField Value=\"\" IsInvalid=\"true\" Placeholder=\"This field has an error\" />\n" +
+        "    <MariloTextBox Value=\"\" IsInvalid=\"true\" Placeholder=\"This field has an error\" />\n" +
         "    <MariloValidation Severity=\"ValidationSeverity.Error\" Message=\"This field is required.\" />\n" +
         "</MariloField>\n\n" +
         "<MariloField>\n" +
-        "    <MariloTextField Value=\"Cannot edit\" Disabled=\"true\" />\n" +
+        "    <MariloTextBox Value=\"Cannot edit\" Disabled=\"true\" />\n" +
         "</MariloField>";
 
     // Appearance
@@ -192,16 +192,16 @@
     private string _price = "";
 
     private const string _adornmentsCode =
-        "<MariloTextField Value=\"@_email\" Placeholder=\"Enter email\" ShowPrefixSeparator=\"true\">\n" +
+        "<MariloTextBox Value=\"@_email\" Placeholder=\"Enter email\" ShowPrefixSeparator=\"true\">\n" +
         "    <Prefix><MariloIcon Name=\"mail\" Size=\"IconSize.Small\" /></Prefix>\n" +
-        "</MariloTextField>\n\n" +
-        "<MariloTextField Value=\"@_website\" Placeholder=\"example.com\" ShowPrefixSeparator=\"true\">\n" +
+        "</MariloTextBox>\n\n" +
+        "<MariloTextBox Value=\"@_website\" Placeholder=\"example.com\" ShowPrefixSeparator=\"true\">\n" +
         "    <Prefix><span>https://</span></Prefix>\n" +
-        "</MariloTextField>\n\n" +
-        "<MariloTextField Value=\"@_price\" Placeholder=\"0.00\">\n" +
+        "</MariloTextBox>\n\n" +
+        "<MariloTextBox Value=\"@_price\" Placeholder=\"0.00\">\n" +
         "    <Prefix><span>$</span></Prefix>\n" +
         "    <Suffix><span>USD</span></Suffix>\n" +
-        "</MariloTextField>";
+        "</MariloTextBox>";
 
     // Playground
     private static readonly string[] _adornmentModes = ["none", "icon", "text"];
@@ -212,7 +212,7 @@
         "refresh", "layers", "code", "copy", "monitor"
     ];
 
-    private RenderFragment RenderPreviewTextField() => __builder =>
+    private RenderFragment RenderPreviewTextBox() => __builder =>
     {
         var hasPrefix = _prefixMode != "none";
         var hasSuffix = _suffixMode != "none";
@@ -233,7 +233,7 @@
             _ => null
         };
 
-        __builder.OpenComponent<MariloTextField>(0);
+        __builder.OpenComponent<MariloTextBox>(0);
         __builder.AddAttribute(1, "Value", _playValue);
         __builder.AddAttribute(2, "ValueChanged", EventCallback.Factory.Create<string>(this, v => { _playValue = v; StateHasChanged(); }));
         __builder.AddAttribute(3, "Placeholder", _playPlaceholder);
@@ -263,7 +263,7 @@
     private string _evName = "";
 
     private const string _interactiveCode =
-        "<MariloTextField Value=\"@_name\" ValueChanged=\"@(v => _name = v)\" Placeholder=\"Enter your name\" />\n" +
+        "<MariloTextBox Value=\"@_name\" ValueChanged=\"@(v => _name = v)\" Placeholder=\"Enter your name\" />\n" +
         "<p><strong>Value:</strong> @_name</p>\n\n" +
         "@code {\n" +
         "    private string _name = \"\";\n" +

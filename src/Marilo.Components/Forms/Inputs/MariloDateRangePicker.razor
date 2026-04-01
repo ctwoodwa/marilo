@@ -7,7 +7,7 @@
         @IconProvider.GetIcon("calendar", IconSize.Small)
     </span>
     <input type="date"
-           class="@CssProvider.TextFieldClass(false, !Enabled)"
+           class="@CssProvider.TextBoxClass(false, !Enabled)"
            value="@FormatDate(StartDate)"
            min="@FormatDate(Min)"
            max="@FormatDate(Max)"
@@ -17,7 +17,7 @@
            @onchange="OnStartDateChanged" />
     <span class="mar-date-range-picker__separator" aria-hidden="true">&ndash;</span>
     <input type="date"
-           class="@CssProvider.TextFieldClass(false, !Enabled)"
+           class="@CssProvider.TextBoxClass(false, !Enabled)"
            value="@FormatDate(EndDate)"
            min="@FormatDate(Min)"
            max="@FormatDate(Max)"

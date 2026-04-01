@@ -1,0 +1,27 @@
+@page "/components/popover"
+@page "/components/popover/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Description="Popover displays rich content in a floating panel anchored to a trigger element." Code="@_basicCode">
+        <div class="demo-row">
+            <MariloButton OnClick="@(() => _showPopover = !_showPopover)">Toggle Popover</MariloButton>
+            @if (_showPopover)
+            {
+                <MariloPopover>
+                    <p>Popover content goes here.</p>
+                </MariloPopover>
+            }
+        </div>
+    </DemoSection>
+</PageSection>
+
+@code {
+    private bool _showPopover;
+
+    private const string _basicCode =
+        "<MariloButton OnClick=\"@(() => _show = !_show)\">Toggle Popover</MariloButton>\n" +
+        "<MariloPopover>\n" +
+        "    <p>Popover content goes here.</p>\n" +
+        "</MariloPopover>";
+}

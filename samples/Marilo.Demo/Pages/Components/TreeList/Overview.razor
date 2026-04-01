@@ -1,0 +1,21 @@
+@page "/components/treelist"
+@page "/components/treelist/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Description="TreeList displays hierarchical data in a grid-like format with expand/collapse and column definitions." Code="@_basicCode">
+        <div class="demo-row">
+            <MariloAlert Severity="AlertSeverity.Info">
+                <strong>TreeList</strong> requires typed data and column definitions. See the component spec for full examples.
+            </MariloAlert>
+        </div>
+    </DemoSection>
+</PageSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloTreeList TItem=\"MyItem\" Data=\"@_data\">\n" +
+        "    <MariloGridColumn Field=\"Name\" Title=\"Name\" />\n" +
+        "    <MariloGridColumn Field=\"Size\" Title=\"Size\" />\n" +
+        "</MariloTreeList>";
+}

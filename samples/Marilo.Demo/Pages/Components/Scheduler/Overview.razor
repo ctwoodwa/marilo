@@ -1,0 +1,16 @@
+@page "/components/scheduler"
+@page "/components/scheduler/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Description="Scheduler displays events on a calendar with day, week, and month views." Code="@_basicCode">
+        <div class="demo-row">
+            <MariloScheduler Style="height:500px;" />
+        </div>
+    </DemoSection>
+</PageSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloScheduler Style=\"height:500px;\" />";
+}

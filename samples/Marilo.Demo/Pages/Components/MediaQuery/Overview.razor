@@ -1,0 +1,20 @@
+@page "/components/mediaquery"
+@page "/components/mediaquery/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Description="MediaQuery detects viewport breakpoints and provides responsive rendering context." Code="@_basicCode">
+        <div class="demo-row">
+            <MariloMediaQuery>
+                <MariloAlert Severity="AlertSeverity.Info">Responsive content area</MariloAlert>
+            </MariloMediaQuery>
+        </div>
+    </DemoSection>
+</PageSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloMediaQuery>\n" +
+        "    <!-- Content adapts to viewport size -->\n" +
+        "</MariloMediaQuery>";
+}

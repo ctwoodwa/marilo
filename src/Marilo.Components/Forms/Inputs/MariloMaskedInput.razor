@@ -1,7 +1,7 @@
 @inherits MariloComponentBase
 
 <input type="text"
-       class="@CombineClasses(CssProvider.TextFieldClass(IsInvalid, !Enabled))"
+       class="@CombineClasses(CssProvider.TextBoxClass(IsInvalid, !Enabled))"
        style="@CombineStyles()"
        value="@Value"
        placeholder="@(Placeholder ?? Mask)"

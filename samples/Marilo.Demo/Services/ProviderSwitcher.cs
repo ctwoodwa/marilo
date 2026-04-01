@@ -114,7 +114,7 @@ public class ProviderSwitcher : IMariloCssProvider, IMariloIconProvider, IMarilo
     public string FabClass(FabSize size) => Css.FabClass(size);
 
     // ── Forms — Inputs ──
-    public string TextFieldClass(bool isInvalid, bool isDisabled) => Css.TextFieldClass(isInvalid, isDisabled);
+    public string TextBoxClass(bool isInvalid, bool isDisabled) => Css.TextBoxClass(isInvalid, isDisabled);
     public string TextAreaClass(bool isInvalid) => Css.TextAreaClass(isInvalid);
     public string NumericInputClass() => Css.NumericInputClass();
     public string SearchBoxClass() => Css.SearchBoxClass();
@@ -234,6 +234,12 @@ public class ProviderSwitcher : IMariloCssProvider, IMariloIconProvider, IMarilo
     // ── Overlays ──
     public string ModalClass(ModalSize size) => Css.ModalClass(size);
     public string ModalOverlayClass() => Css.ModalOverlayClass();
+
+    // ── SignalR Status ──
+    public string SignalRStatusClass(AggregateConnectionState state, bool isCompact) => Css.SignalRStatusClass(state, isCompact);
+    public string SignalRPopupClass() => Css.SignalRPopupClass();
+    public string SignalRRowClass(ConnectionHealthState health) => Css.SignalRRowClass(health);
+    public string SignalRBadgeClass(ConnectionHealthState health) => Css.SignalRBadgeClass(health);
 
     // ── Utility ──
     public string IconClass(string iconName, IconSize size, IconFlip flip = IconFlip.None, IconThemeColor themeColor = IconThemeColor.Base) => Css.IconClass(iconName, size, flip, themeColor);

@@ -1,0 +1,24 @@
+@page "/components/animationcontainer"
+@page "/components/animationcontainer/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Description="AnimationContainer wraps content and applies entry/exit animations." Code="@_basicCode">
+        <div class="demo-row">
+            <MariloButton OnClick="@(() => _show = !_show)">Toggle</MariloButton>
+            <MariloAnimationContainer @bind-Visible="_show">
+                <MariloAlert Severity="AlertSeverity.Info">Animated content</MariloAlert>
+            </MariloAnimationContainer>
+        </div>
+    </DemoSection>
+</PageSection>
+
+@code {
+    private bool _show = true;
+
+    private const string _basicCode =
+        "<MariloButton OnClick=\"@(() => _show = !_show)\">Toggle</MariloButton>\n" +
+        "<MariloAnimationContainer @bind-Visible=\"_show\">\n" +
+        "    <MariloAlert Severity=\"AlertSeverity.Info\">Animated content</MariloAlert>\n" +
+        "</MariloAnimationContainer>";
+}

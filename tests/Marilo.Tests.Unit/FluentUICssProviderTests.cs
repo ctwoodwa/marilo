@@ -116,4 +116,60 @@ public class FluentUICssProviderTests
         Assert.Contains("mar-listview-item", result);
         Assert.Contains("mar-listview-item--selected", result);
     }
+
+    // ── SignalR Status ──────────────────────────────────────────────────
+
+    [Theory]
+    [InlineData(AggregateConnectionState.Healthy, "mar-signalr-status--healthy")]
+    [InlineData(AggregateConnectionState.Degraded, "mar-signalr-status--degraded")]
+    [InlineData(AggregateConnectionState.Offline, "mar-signalr-status--offline")]
+    [InlineData(AggregateConnectionState.Partial, "mar-signalr-status--partial")]
+    public void SignalRStatusClass_ReturnsStateClass(AggregateConnectionState state, string expected)
+    {
+        var result = _provider.SignalRStatusClass(state, false);
+
+        Assert.Contains("mar-signalr-status", result);
+        Assert.Contains(expected, result);
+    }
+
+    [Fact]
+    public void SignalRStatusClass_Compact_AddsCompactClass()
+    {
+        var result = _provider.SignalRStatusClass(AggregateConnectionState.Healthy, true);
+
+        Assert.Contains("mar-signalr-status--compact", result);
+    }
+
+    [Fact]
+    public void SignalRPopupClass_ReturnsExpectedClass()
+    {
+        var result = _provider.SignalRPopupClass();
+
+        Assert.Contains("mar-signalr-popup", result);
+    }
+
+    [Theory]
+    [InlineData(ConnectionHealthState.Healthy, "mar-signalr-row--healthy")]
+    [InlineData(ConnectionHealthState.Recovering, "mar-signalr-row--recovering")]
+    [InlineData(ConnectionHealthState.Offline, "mar-signalr-row--offline")]
+    [InlineData(ConnectionHealthState.Degraded, "mar-signalr-row--degraded")]
+    [InlineData(ConnectionHealthState.Connecting, "mar-signalr-row--connecting")]
+    public void SignalRRowClass_ReturnsHealthClass(ConnectionHealthState health, string expected)
+    {
+        var result = _provider.SignalRRowClass(health);
+
+        Assert.Contains("mar-signalr-row", result);
+        Assert.Contains(expected, result);
+    }
+
+    [Theory]
+    [InlineData(ConnectionHealthState.Healthy, "mar-signalr-badge--healthy")]
+    [InlineData(ConnectionHealthState.Offline, "mar-signalr-badge--offline")]
+    public void SignalRBadgeClass_ReturnsHealthClass(ConnectionHealthState health, string expected)
+    {
+        var result = _provider.SignalRBadgeClass(health);
+
+        Assert.Contains("mar-signalr-badge", result);
+        Assert.Contains(expected, result);
+    }
 }

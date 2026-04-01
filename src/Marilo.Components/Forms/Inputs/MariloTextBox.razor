@@ -1,11 +1,11 @@
 @inherits MariloComponentBase
 
-<div class="@CombineClasses(CssProvider.TextFieldClass(IsInvalid, Disabled))"
+<div class="@CombineClasses(CssProvider.TextBoxClass(IsInvalid, Disabled))"
      style="@CombineStyles()"
      @attributes="AdditionalAttributes">
     @if (Prefix != null)
     {
-        <span class="mar-textfield__prefix @(ShowPrefixSeparator ? "mar-textfield__prefix--sep" : "")">
+        <span class="mar-textbox__prefix @(ShowPrefixSeparator ? "mar-textbox__prefix--sep" : "")">
             @Prefix
         </span>
     }
@@ -19,11 +19,11 @@
            @oninput="OnInputChanged" />
     @if (ShowClearButton && !string.IsNullOrEmpty(Value) && !Disabled && !ReadOnly)
     {
-        <button type="button" class="mar-textfield__clear" aria-label="Clear" @onclick="ClearValue">&times;</button>
+        <button type="button" class="mar-textbox__clear" aria-label="Clear" @onclick="ClearValue">&times;</button>
     }
     @if (Suffix != null)
     {
-        <span class="mar-textfield__suffix @(ShowSuffixSeparator ? "mar-textfield__suffix--sep" : "")">
+        <span class="mar-textbox__suffix @(ShowSuffixSeparator ? "mar-textbox__suffix--sep" : "")">
             @Suffix
         </span>
     }

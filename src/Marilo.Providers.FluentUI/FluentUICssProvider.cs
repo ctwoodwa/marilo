@@ -223,11 +223,11 @@ public class FluentUICssProvider : IMariloCssProvider
             .Build();
 
     // Forms - Inputs
-    public string TextFieldClass(bool isInvalid, bool isDisabled) =>
+    public string TextBoxClass(bool isInvalid, bool isDisabled) =>
         new CssClassBuilder()
-            .AddClass("mar-textfield")
-            .AddClass("mar-textfield--invalid", isInvalid)
-            .AddClass("mar-textfield--disabled", isDisabled)
+            .AddClass("mar-textbox")
+            .AddClass("mar-textbox--invalid", isInvalid)
+            .AddClass("mar-textbox--disabled", isDisabled)
             .Build();
 
     public string TextAreaClass(bool isInvalid) =>
@@ -238,7 +238,7 @@ public class FluentUICssProvider : IMariloCssProvider
 
     public string NumericInputClass() => "mar-numeric-input";
 
-    public string SearchBoxClass() => "mar-searchbox";
+    public string SearchBoxClass() => "mar-search-box";
 
     public string AutocompleteClass() => "mar-autocomplete";
 
@@ -599,4 +599,26 @@ public class FluentUICssProvider : IMariloCssProvider
             .Build();
 
     public string ScrollViewClass() => "mar-scrollview";
+
+    // SignalR Status
+    public string SignalRStatusClass(AggregateConnectionState state, bool isCompact) =>
+        new CssClassBuilder()
+            .AddClass("mar-signalr-status")
+            .AddClass($"mar-signalr-status--{state.ToString().ToLower()}")
+            .AddClass("mar-signalr-status--compact", isCompact)
+            .Build();
+
+    public string SignalRPopupClass() => "mar-signalr-popup";
+
+    public string SignalRRowClass(ConnectionHealthState health) =>
+        new CssClassBuilder()
+            .AddClass("mar-signalr-row")
+            .AddClass($"mar-signalr-row--{health.ToString().ToLower()}")
+            .Build();
+
+    public string SignalRBadgeClass(ConnectionHealthState health) =>
+        new CssClassBuilder()
+            .AddClass("mar-signalr-badge")
+            .AddClass($"mar-signalr-badge--{health.ToString().ToLower()}")
+            .Build();
 }

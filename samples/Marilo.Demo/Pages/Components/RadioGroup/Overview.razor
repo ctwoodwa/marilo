@@ -1,0 +1,27 @@
+@page "/components/radiogroup"
+@page "/components/radiogroup/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Description="RadioGroup manages a set of mutually exclusive radio options." Code="@_basicCode">
+        <div class="demo-row">
+            <MariloRadioGroup @bind-Value="_selected">
+                <MariloRadio Value="@("option1")">Option 1</MariloRadio>
+                <MariloRadio Value="@("option2")">Option 2</MariloRadio>
+                <MariloRadio Value="@("option3")">Option 3</MariloRadio>
+            </MariloRadioGroup>
+            <span>Selected: @_selected</span>
+        </div>
+    </DemoSection>
+</PageSection>
+
+@code {
+    private string? _selected = "option1";
+
+    private const string _basicCode =
+        "<MariloRadioGroup @bind-Value=\"_selected\">\n" +
+        "    <MariloRadio Value=\"@(\"option1\")\">Option 1</MariloRadio>\n" +
+        "    <MariloRadio Value=\"@(\"option2\")\">Option 2</MariloRadio>\n" +
+        "    <MariloRadio Value=\"@(\"option3\")\">Option 3</MariloRadio>\n" +
+        "</MariloRadioGroup>";
+}

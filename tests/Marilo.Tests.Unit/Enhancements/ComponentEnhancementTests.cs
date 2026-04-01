@@ -61,9 +61,9 @@ public class ComponentEnhancementTests : MariloTestBase
     }
 
     [Fact]
-    public void TextField_Renders_Readonly_Attribute()
+    public void TextBox_Renders_Readonly_Attribute()
     {
-        var cut = Render<MariloTextField>(parameters => parameters
+        var cut = Render<MariloTextBox>(parameters => parameters
             .Add(p => p.ReadOnly, true)
             .Add(p => p.Value, "test")
         );
@@ -85,9 +85,9 @@ public class ComponentEnhancementTests : MariloTestBase
     }
 
     [Fact]
-    public void TextField_Renders_MaxLength_Attribute()
+    public void TextBox_Renders_MaxLength_Attribute()
     {
-        var cut = Render<MariloTextField>(parameters => parameters
+        var cut = Render<MariloTextBox>(parameters => parameters
             .Add(p => p.MaxLength, 50)
             .Add(p => p.Value, "test")
         );

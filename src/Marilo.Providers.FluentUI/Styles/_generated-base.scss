@@ -951,7 +951,7 @@
    Forms: Text Inputs
    -------------------------------------------------------------------------- */
 
-.mar-textfield {
+.mar-textbox {
     display: flex;
     align-items: center;
     border: 1px solid var(--marilo-color-border-strong);
@@ -961,16 +961,16 @@
     transition: border-color var(--marilo-transition-fast), box-shadow var(--marilo-transition-fast);
 }
 
-.mar-textfield:hover {
+.mar-textbox:hover {
     border-color: var(--marilo-color-on-background);
 }
 
-.mar-textfield:focus-within {
+.mar-textbox:focus-within {
     border-color: var(--marilo-color-primary);
     box-shadow: 0 0 0 1px var(--marilo-color-primary);
 }
 
-.mar-textfield input {
+.mar-textbox input {
     flex: 1;
     min-width: 0;
     padding: 6px 10px;
@@ -982,12 +982,12 @@
     outline: none;
 }
 
-.mar-textfield input::placeholder {
+.mar-textbox input::placeholder {
     color: var(--marilo-color-text-secondary);
 }
 
-.mar-textfield__prefix,
-.mar-textfield__suffix {
+.mar-textbox__prefix,
+.mar-textbox__suffix {
     display: flex;
     align-items: center;
     padding: 0 8px;
@@ -997,49 +997,49 @@
     white-space: nowrap;
 }
 
-.mar-textfield__prefix {
+.mar-textbox__prefix {
     padding-left: 10px;
 }
 
-.mar-textfield__suffix {
+.mar-textbox__suffix {
     padding-right: 10px;
 }
 
-.mar-textfield__prefix--sep {
+.mar-textbox__prefix--sep {
     border-right: 1px solid var(--marilo-color-border);
     margin-right: -1px;
     padding-right: 10px;
 }
 
-.mar-textfield__suffix--sep {
+.mar-textbox__suffix--sep {
     border-left: 1px solid var(--marilo-color-border);
     margin-left: -1px;
     padding-left: 10px;
 }
 
-.mar-textfield:has(.mar-textfield__prefix) input {
+.mar-textbox:has(.mar-textbox__prefix) input {
     padding-left: 4px;
 }
 
-.mar-textfield:has(.mar-textfield__suffix) input {
+.mar-textbox:has(.mar-textbox__suffix) input {
     padding-right: 4px;
 }
 
-.mar-textfield--invalid {
+.mar-textbox--invalid {
     border-color: var(--marilo-color-danger);
 }
 
-.mar-textfield--invalid:focus-within {
+.mar-textbox--invalid:focus-within {
     box-shadow: 0 0 0 1px var(--marilo-color-danger);
 }
 
-.mar-textfield--disabled {
+.mar-textbox--disabled {
     background: var(--marilo-color-surface);
     border-color: var(--marilo-color-border);
     cursor: not-allowed;
 }
 
-.mar-textfield--disabled input {
+.mar-textbox--disabled input {
     color: var(--marilo-color-text-disabled);
     cursor: not-allowed;
 }
@@ -1091,7 +1091,6 @@
 }
 
 .mar-numeric-input { display: flex; flex-direction: column; gap: var(--marilo-space-xs); }
-.mar-searchbox { position: relative; display: flex; align-items: center; }
 .mar-autocomplete { position: relative; }
 
 /* --------------------------------------------------------------------------

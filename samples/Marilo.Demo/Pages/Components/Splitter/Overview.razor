@@ -1,0 +1,26 @@
+@page "/components/splitter"
+@page "/components/splitter/overview"
+@layout ComponentDemoLayout
+
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Description="Splitter divides the layout into resizable panes." Code="@_basicCode">
+        <div class="demo-row" style="height:300px;">
+            <MariloSplitter Orientation="StackDirection.Horizontal">
+                <MariloSplitterPane Size="50%">
+                    <div style="padding:1rem;">Left Pane</div>
+                </MariloSplitterPane>
+                <MariloSplitterPane Size="50%">
+                    <div style="padding:1rem;">Right Pane</div>
+                </MariloSplitterPane>
+            </MariloSplitter>
+        </div>
+    </DemoSection>
+</PageSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloSplitter Orientation=\"StackDirection.Horizontal\">\n" +
+        "    <MariloSplitterPane Size=\"50%\">Left</MariloSplitterPane>\n" +
+        "    <MariloSplitterPane Size=\"50%\">Right</MariloSplitterPane>\n" +
+        "</MariloSplitter>";
+}
