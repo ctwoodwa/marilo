@@ -3,7 +3,7 @@
 @layout ComponentDemoLayout
 
 <PageSection Title="Overview">
-    <DemoSection Title="Basic Usage" Description="Splitter divides the layout into resizable panes." Code="@_basicCode">
+    <DemoSection Title="Basic Horizontal" Description="Drag the separator to resize panes. Sizes are expressed in percentages." Code="@_basicCode">
         <div class="demo-row" style="height:300px;">
             <MariloSplitter Orientation="StackDirection.Horizontal">
                 <MariloSplitterPane Size="50%">
@@ -15,12 +15,357 @@
             </MariloSplitter>
         </div>
     </DemoSection>
+
+    <DemoSection Title="Vertical Orientation" Description="Set Orientation to Vertical to stack panes top-to-bottom." Code="@_verticalCode">
+        <div class="demo-row" style="height:400px;">
+            <MariloSplitter Orientation="StackDirection.Vertical" Height="100%">
+                <MariloSplitterPane Size="40%">
+                    <div style="padding:1rem;">Top Pane</div>
+                </MariloSplitterPane>
+                <MariloSplitterPane>
+                    <div style="padding:1rem;">Bottom Pane (fills remaining space)</div>
+                </MariloSplitterPane>
+            </MariloSplitter>
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Constraints">
+    <DemoSection Title="Min / Max Size" Description="Use Min and Max to constrain pane sizes. Try dragging past the limits." Code="@_constraintsCode">
+        <div class="demo-row" style="height:300px;">
+            <MariloSplitter Orientation="StackDirection.Horizontal">
+                <MariloSplitterPane Size="250px" Min="150px" Max="400px">
+                    <div style="padding:1rem;">
+                        <strong>Constrained Pane</strong><br />
+                        Min: 150px &middot; Max: 400px
+                    </div>
+                </MariloSplitterPane>
+                <MariloSplitterPane>
+                    <div style="padding:1rem;">Flexible Pane</div>
+                </MariloSplitterPane>
+            </MariloSplitter>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Non-Resizable Pane" Description="Set Resizable=false to lock a pane's size." Code="@_nonResizableCode">
+        <div class="demo-row" style="height:300px;">
+            <MariloSplitter Orientation="StackDirection.Horizontal">
+                <MariloSplitterPane Size="200px" Resizable="false">
+                    <div style="padding:1rem;">
+                        <strong>Fixed (200px)</strong><br />
+                        Resizable = false
+                    </div>
+                </MariloSplitterPane>
+                <MariloSplitterPane Size="50%">
+                    <div style="padding:1rem;">Resizable Pane</div>
+                </MariloSplitterPane>
+                <MariloSplitterPane>
+                    <div style="padding:1rem;">Fill Pane</div>
+                </MariloSplitterPane>
+            </MariloSplitter>
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Collapse">
+    <DemoSection Title="Collapsible Panes" Description="Double-click the separator or click the collapse button to toggle. Keyboard: press Enter on a focused separator." Code="@_collapsibleCode">
+        <div class="demo-row" style="height:300px;">
+            <MariloSplitter Orientation="StackDirection.Horizontal" Collapsible="true"
+                            OnCollapse="@OnCollapseHandler" OnExpand="@OnExpandHandler">
+                <MariloSplitterPane Size="30%">
+                    <div style="padding:1rem;">Sidebar</div>
+                </MariloSplitterPane>
+                <MariloSplitterPane>
+                    <div style="padding:1rem;">
+                        Main Content
+                        @if (!string.IsNullOrEmpty(_collapseLog))
+                        {
+                            <div style="margin-top:0.5rem;font-size:0.8rem;color:var(--marilo-color-text-secondary);">
+                                @_collapseLog
+                            </div>
+                        }
+                    </div>
+                </MariloSplitterPane>
+            </MariloSplitter>
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Multiple Panes">
+    <DemoSection Title="Three Panes" Description="The splitter supports any number of panes. The last pane automatically fills remaining space." Code="@_threePaneCode">
+        <div class="demo-row" style="height:300px;">
+            <MariloSplitter Orientation="StackDirection.Horizontal" Collapsible="true">
+                <MariloSplitterPane Size="200px" Min="120px">
+                    <div style="padding:1rem;">Navigation</div>
+                </MariloSplitterPane>
+                <MariloSplitterPane Size="50%">
+                    <div style="padding:1rem;">Content</div>
+                </MariloSplitterPane>
+                <MariloSplitterPane Min="150px">
+                    <div style="padding:1rem;">Details</div>
+                </MariloSplitterPane>
+            </MariloSplitter>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Nested Splitters" Description="Nest splitters with different orientations to build complex layouts." Code="@_nestedCode">
+        <div class="demo-row" style="height:400px;">
+            <MariloSplitter Orientation="StackDirection.Horizontal" Height="100%">
+                <MariloSplitterPane Size="200px" Min="120px">
+                    <div style="padding:1rem;">Sidebar</div>
+                </MariloSplitterPane>
+                <MariloSplitterPane>
+                    <MariloSplitter Orientation="StackDirection.Vertical" Height="100%">
+                        <MariloSplitterPane Size="60%">
+                            <div style="padding:1rem;">Editor</div>
+                        </MariloSplitterPane>
+                        <MariloSplitterPane>
+                            <div style="padding:1rem;">Terminal</div>
+                        </MariloSplitterPane>
+                    </MariloSplitter>
+                </MariloSplitterPane>
+            </MariloSplitter>
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Events">
+    <DemoSection Title="Resize Events" Description="OnResizeStart, OnResize, and OnResizeEnd fire during the drag lifecycle." Code="@_eventsCode">
+        <div class="demo-row" style="height:300px;">
+            <MariloSplitter Orientation="StackDirection.Horizontal"
+                            OnResizeStart="@OnResizeStartHandler"
+                            OnResize="@OnResizeHandler"
+                            OnResizeEnd="@OnResizeEndHandler">
+                <MariloSplitterPane Size="50%">
+                    <div style="padding:1rem;">Drag to resize</div>
+                </MariloSplitterPane>
+                <MariloSplitterPane>
+                    <div style="padding:1rem;">
+                        <strong>Event Log</strong>
+                        <div style="font-size:0.8rem;white-space:pre-wrap;max-height:200px;overflow:auto;margin-top:0.5rem;">@_eventLog</div>
+                    </div>
+                </MariloSplitterPane>
+            </MariloSplitter>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="State Management" Description="Use GetState() and SetState() to save and restore splitter layout." Code="@_stateCode">
+        <div style="margin-bottom:0.5rem;">
+            <MariloButton OnClick="SaveState">Save State</MariloButton>
+            <MariloButton OnClick="RestoreState" Disabled="@(_savedState is null)">Restore State</MariloButton>
+        </div>
+        <div class="demo-row" style="height:300px;">
+            <MariloSplitter @ref="_stateSplitter" Orientation="StackDirection.Horizontal" Collapsible="true">
+                <MariloSplitterPane Size="30%">
+                    <div style="padding:1rem;">Pane 1</div>
+                </MariloSplitterPane>
+                <MariloSplitterPane Size="40%">
+                    <div style="padding:1rem;">Pane 2</div>
+                </MariloSplitterPane>
+                <MariloSplitterPane>
+                    <div style="padding:1rem;">Pane 3</div>
+                </MariloSplitterPane>
+            </MariloSplitter>
+        </div>
+        @if (_savedState is not null)
+        {
+            <div style="font-size:0.8rem;margin-top:0.5rem;color:var(--marilo-color-text-secondary);">
+                Saved: @string.Join(", ", _savedState.PaneSizes)
+            </div>
+        }
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Styling">
+    <DemoSection Title="Custom Bar Size" Description="Override --mar-splitter-bar-size to change the separator thickness." Code="@_barSizeCode">
+        <div class="demo-row" style="height:250px;">
+            <MariloSplitter Orientation="StackDirection.Horizontal"
+                            Style="--mar-splitter-bar-size: 10px;">
+                <MariloSplitterPane Size="50%">
+                    <div style="padding:1rem;">Thicker separator (10px)</div>
+                </MariloSplitterPane>
+                <MariloSplitterPane>
+                    <div style="padding:1rem;">Right Pane</div>
+                </MariloSplitterPane>
+            </MariloSplitter>
+        </div>
+    </DemoSection>
 </PageSection>
 
 @code {
+    // ── Collapse demo ───────────────────────────────────────────────────
+    private string _collapseLog = "";
+
+    private void OnCollapseHandler(SplitterCollapseEventArgs args)
+    {
+        _collapseLog = $"Pane {args.PaneIndex} collapsed";
+    }
+
+    private void OnExpandHandler(SplitterCollapseEventArgs args)
+    {
+        _collapseLog = $"Pane {args.PaneIndex} expanded";
+    }
+
+    // ── Events demo ─────────────────────────────────────────────────────
+    private string _eventLog = "";
+
+    private void OnResizeStartHandler(SplitterResizeEventArgs args)
+    {
+        _eventLog = $"ResizeStart: pane {args.PaneIndex}\n" + _eventLog;
+    }
+
+    private void OnResizeHandler(SplitterResizeEventArgs args)
+    {
+        // Only keep last few lines to avoid flooding
+        var lines = _eventLog.Split('\n');
+        if (lines.Length > 20)
+            _eventLog = string.Join('\n', lines[..20]);
+        _eventLog = $"Resize: pane {args.PaneIndex} → {args.NewSize}\n" + _eventLog;
+    }
+
+    private void OnResizeEndHandler(SplitterResizeEventArgs args)
+    {
+        _eventLog = $"ResizeEnd: pane {args.PaneIndex} → {args.NewSize}\n" + _eventLog;
+    }
+
+    // ── State demo ──────────────────────────────────────────────────────
+    private MariloSplitter? _stateSplitter;
+    private SplitterState? _savedState;
+
+    private void SaveState()
+    {
+        _savedState = _stateSplitter?.GetState();
+    }
+
+    private void RestoreState()
+    {
+        if (_savedState is not null)
+            _stateSplitter?.SetState(_savedState);
+    }
+
+    // ── Code snippets ───────────────────────────────────────────────────
     private const string _basicCode =
         "<MariloSplitter Orientation=\"StackDirection.Horizontal\">\n" +
-        "    <MariloSplitterPane Size=\"50%\">Left</MariloSplitterPane>\n" +
-        "    <MariloSplitterPane Size=\"50%\">Right</MariloSplitterPane>\n" +
+        "    <MariloSplitterPane Size=\"50%\">\n" +
+        "        Left Pane\n" +
+        "    </MariloSplitterPane>\n" +
+        "    <MariloSplitterPane Size=\"50%\">\n" +
+        "        Right Pane\n" +
+        "    </MariloSplitterPane>\n" +
+        "</MariloSplitter>";
+
+    private const string _verticalCode =
+        "<MariloSplitter Orientation=\"StackDirection.Vertical\" Height=\"100%\">\n" +
+        "    <MariloSplitterPane Size=\"40%\">\n" +
+        "        Top Pane\n" +
+        "    </MariloSplitterPane>\n" +
+        "    <MariloSplitterPane>\n" +
+        "        Bottom Pane (fills remaining space)\n" +
+        "    </MariloSplitterPane>\n" +
+        "</MariloSplitter>";
+
+    private const string _constraintsCode =
+        "<MariloSplitter Orientation=\"StackDirection.Horizontal\">\n" +
+        "    <MariloSplitterPane Size=\"250px\" Min=\"150px\" Max=\"400px\">\n" +
+        "        Constrained: Min 150px, Max 400px\n" +
+        "    </MariloSplitterPane>\n" +
+        "    <MariloSplitterPane>\n" +
+        "        Flexible Pane\n" +
+        "    </MariloSplitterPane>\n" +
+        "</MariloSplitter>";
+
+    private const string _nonResizableCode =
+        "<MariloSplitter Orientation=\"StackDirection.Horizontal\">\n" +
+        "    <MariloSplitterPane Size=\"200px\" Resizable=\"false\">\n" +
+        "        Fixed (200px)\n" +
+        "    </MariloSplitterPane>\n" +
+        "    <MariloSplitterPane Size=\"50%\">\n" +
+        "        Resizable Pane\n" +
+        "    </MariloSplitterPane>\n" +
+        "    <MariloSplitterPane>\n" +
+        "        Fill Pane\n" +
+        "    </MariloSplitterPane>\n" +
+        "</MariloSplitter>";
+
+    private const string _collapsibleCode =
+        "<MariloSplitter Orientation=\"StackDirection.Horizontal\" Collapsible=\"true\"\n" +
+        "                OnCollapse=\"@OnCollapseHandler\" OnExpand=\"@OnExpandHandler\">\n" +
+        "    <MariloSplitterPane Size=\"30%\">\n" +
+        "        Sidebar\n" +
+        "    </MariloSplitterPane>\n" +
+        "    <MariloSplitterPane>\n" +
+        "        Main Content\n" +
+        "    </MariloSplitterPane>\n" +
+        "</MariloSplitter>";
+
+    private const string _threePaneCode =
+        "<MariloSplitter Orientation=\"StackDirection.Horizontal\" Collapsible=\"true\">\n" +
+        "    <MariloSplitterPane Size=\"200px\" Min=\"120px\">\n" +
+        "        Navigation\n" +
+        "    </MariloSplitterPane>\n" +
+        "    <MariloSplitterPane Size=\"50%\">\n" +
+        "        Content\n" +
+        "    </MariloSplitterPane>\n" +
+        "    <MariloSplitterPane Min=\"150px\">\n" +
+        "        Details\n" +
+        "    </MariloSplitterPane>\n" +
+        "</MariloSplitter>";
+
+    private const string _nestedCode =
+        "<MariloSplitter Orientation=\"StackDirection.Horizontal\" Height=\"100%\">\n" +
+        "    <MariloSplitterPane Size=\"200px\" Min=\"120px\">\n" +
+        "        Sidebar\n" +
+        "    </MariloSplitterPane>\n" +
+        "    <MariloSplitterPane>\n" +
+        "        <MariloSplitter Orientation=\"StackDirection.Vertical\" Height=\"100%\">\n" +
+        "            <MariloSplitterPane Size=\"60%\">\n" +
+        "                Editor\n" +
+        "            </MariloSplitterPane>\n" +
+        "            <MariloSplitterPane>\n" +
+        "                Terminal\n" +
+        "            </MariloSplitterPane>\n" +
+        "        </MariloSplitter>\n" +
+        "    </MariloSplitterPane>\n" +
+        "</MariloSplitter>";
+
+    private const string _eventsCode =
+        "<MariloSplitter Orientation=\"StackDirection.Horizontal\"\n" +
+        "                OnResizeStart=\"@OnStart\"\n" +
+        "                OnResize=\"@OnResize\"\n" +
+        "                OnResizeEnd=\"@OnEnd\">\n" +
+        "    <MariloSplitterPane Size=\"50%\">\n" +
+        "        Drag to resize\n" +
+        "    </MariloSplitterPane>\n" +
+        "    <MariloSplitterPane>\n" +
+        "        Event Log\n" +
+        "    </MariloSplitterPane>\n" +
+        "</MariloSplitter>";
+
+    private const string _stateCode =
+        "@* Save and restore splitter layout *@\n" +
+        "<MariloButton OnClick=\"SaveState\">Save State</MariloButton>\n" +
+        "<MariloButton OnClick=\"RestoreState\">Restore State</MariloButton>\n" +
+        "\n" +
+        "<MariloSplitter @ref=\"_splitter\" Collapsible=\"true\">\n" +
+        "    <MariloSplitterPane Size=\"30%\">Pane 1</MariloSplitterPane>\n" +
+        "    <MariloSplitterPane Size=\"40%\">Pane 2</MariloSplitterPane>\n" +
+        "    <MariloSplitterPane>Pane 3</MariloSplitterPane>\n" +
+        "</MariloSplitter>\n" +
+        "\n" +
+        "@code {\n" +
+        "    MariloSplitter? _splitter;\n" +
+        "    SplitterState? _saved;\n" +
+        "    void SaveState() => _saved = _splitter?.GetState();\n" +
+        "    void RestoreState() { if (_saved is not null) _splitter?.SetState(_saved); }\n" +
+        "}";
+
+    private const string _barSizeCode =
+        "<MariloSplitter Style=\"--mar-splitter-bar-size: 10px;\">\n" +
+        "    <MariloSplitterPane Size=\"50%\">\n" +
+        "        Thicker separator (10px)\n" +
+        "    </MariloSplitterPane>\n" +
+        "    <MariloSplitterPane>\n" +
+        "        Right Pane\n" +
+        "    </MariloSplitterPane>\n" +
         "</MariloSplitter>";
 }

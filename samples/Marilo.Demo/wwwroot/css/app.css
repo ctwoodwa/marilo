@@ -68,7 +68,8 @@ body {
 .app-root {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
     background: var(--color-bg);
     color: var(--color-text);
     transition: background 200ms ease, color 200ms ease;
@@ -290,11 +291,13 @@ a:hover {
 
 .main-container {
     display: flex;
-    max-width: 1768px;
+    /* max-width: 1768px; */
     margin: 0 auto;
     width: 100%;
     flex: 1;
-    padding: 0 0.75rem;
+    min-height: 0;
+    padding: 0 0.2rem 0.75rem;
+    overflow: hidden;
 }
 
 
@@ -371,13 +374,11 @@ a:hover {
     min-width: 0;
     height: 100%;
     overflow-y: auto;
-    margin: 0 3rem;
-    padding-top: 1.6rem;
-    padding-bottom: 2rem;
+    padding: 1.6rem 3rem 2rem;
 }
 
 .content-full {
-    margin-left: 0;
+    padding-left: 0.75rem;
 }
 
 
@@ -997,14 +998,14 @@ a:hover {
 
 @media (max-width: 1100px) {
     .affix-sidebar { display: none; }
-    .content-area { margin: 0 1rem; }
+    .content-area { padding-left: 1rem; padding-right: 1rem; }
 }
 
 @media (max-width: 768px) {
     .top-navbar-inner { padding: 0 0.5rem; }
     .demo-navbar-search { width: 160px; }
     .toc-sidebar { display: none; }
-    .content-area { margin: 0; }
+    .content-area { padding-left: 0.5rem; padding-right: 0.5rem; }
     .main-container { padding: 0 0.5rem; }
     .component-tabs { overflow-x: auto; }
     .component-tab { white-space: nowrap; }

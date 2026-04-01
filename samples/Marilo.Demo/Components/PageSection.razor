@@ -12,10 +12,16 @@
     [CascadingParameter] public PageSectionTracker? SectionTracker { get; set; }
 
     private string _anchorId = "";
+    private int _order;
+
+    protected override void OnInitialized()
+    {
+        _order = SectionTracker?.NextOrder() ?? 0;
+    }
 
     protected override void OnParametersSet()
     {
         _anchorId = PageSectionTracker.ToAnchorId(Title);
-        SectionTracker?.RegisterSection(_anchorId, Title);
+        SectionTracker?.RegisterSection(_anchorId, Title, _order);
     }
 }

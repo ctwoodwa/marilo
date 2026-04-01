@@ -81,11 +81,11 @@
         if (ActiveSectionId is not null)
         {
             if (KeyboardInteractions?.Length > 0)
-                SectionTracker?.RegisterSubSection(ActiveSectionId, "keyboard-navigation", "Keyboard Navigation");
+                SectionTracker?.RegisterSubSection(ActiveSectionId, "keyboard-navigation", "Keyboard Navigation", SectionTracker.NextOrder());
             if (AriaAttributes?.Length > 0)
-                SectionTracker?.RegisterSubSection(ActiveSectionId, "aria-attributes", "ARIA Attributes");
+                SectionTracker?.RegisterSubSection(ActiveSectionId, "aria-attributes", "ARIA Attributes", SectionTracker.NextOrder());
             if (ScreenReaderNotes?.Length > 0)
-                SectionTracker?.RegisterSubSection(ActiveSectionId, "screen-reader-notes", "Screen Reader Notes");
+                SectionTracker?.RegisterSubSection(ActiveSectionId, "screen-reader-notes", "Screen Reader Notes", SectionTracker.NextOrder());
         }
     }
 }

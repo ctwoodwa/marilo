@@ -1,6 +1,9 @@
 @inherits MariloComponentBase
+@inject IJSRuntime JS
+@implements IAsyncDisposable
 
-<div class="@CombineClasses(CssProvider.SplitterClass(Orientation))"
+<div @ref="_containerRef"
+     class="@CombineClasses(CssProvider.SplitterClass(Orientation))"
      style="@CombineStyles(RootStyle)"
      @attributes="AdditionalAttributes">
 
@@ -22,6 +25,7 @@
             {
                 var idx = i;
                 var prevPane = _panes[idx];
+                var isCollapsible = Collapsible || prevPane.Collapsible;
                 <div class="mar-splitter__handle @(_activeSeparator == idx ? "mar-splitter__handle--active" : "")"
                      role="separator"
                      tabindex="0"
@@ -33,14 +37,14 @@
                      @onkeydown="(e) => HandleSeparatorKeyDown(e, idx)"
                      @onmousedown="(e) => HandleMouseDown(e, idx)"
                      @ondblclick="() => HandleSeparatorDoubleClick(idx)">
-                    @if (Collapsible)
+                    @if (isCollapsible)
                     {
                         <button type="button"
                                 class="mar-splitter__collapse-btn"
                                 aria-label="@(prevPane.EffectiveCollapsed ? "Expand pane" : "Collapse pane")"
                                 @onclick="() => TogglePaneCollapse(idx)"
                                 @onclick:stopPropagation="true">
-                            @(prevPane.EffectiveCollapsed ? "\u25B6" : "\u25C0")
+                            @GetCollapseArrow(prevPane.EffectiveCollapsed)
                         </button>
                     }
                 </div>
@@ -81,7 +85,12 @@
     private bool _isDragging;
     private double _dragStartPos;
     private double _dragStartSizePx;
+    private double _containerSizePx;
+    private bool _dragStartedWithPercent;
     private const double KeyboardResizeStep = 10.0;
+    private ElementReference _containerRef;
+    private IJSObjectReference? _jsModule;
+    private DotNetObjectReference<MariloSplitter>? _dotNetRef;
 
     [Parameter] public StackDirection Orientation { get; set; } = StackDirection.Horizontal;
     [Parameter] public string? Width { get; set; }
@@ -89,7 +98,10 @@
     [Parameter] public bool Collapsible { get; set; }
     [Parameter] public string? AriaLabel { get; set; }
     [Parameter] public EventCallback<SplitterResizeEventArgs> OnResize { get; set; }
-    [Parameter] public EventCallback<int> OnCollapse { get; set; }
+    [Parameter] public EventCallback<SplitterResizeEventArgs> OnResizeStart { get; set; }
+    [Parameter] public EventCallback<SplitterResizeEventArgs> OnResizeEnd { get; set; }
+    [Parameter] public EventCallback<SplitterCollapseEventArgs> OnCollapse { get; set; }
+    [Parameter] public EventCallback<SplitterCollapseEventArgs> OnExpand { get; set; }
 
     // Legacy 2-pane parameters
     [Parameter] public string? FirstPaneSize { get; set; } = "50%";
@@ -108,6 +120,95 @@
         }
     }
 
+    // ── JS Interop ──────────────────────────────────────────────────────
+
+    private static string GetSplitterScript() => """
+    (() => {
+        const mod = {};
+        let containerEl = null;
+        let dotNetRef = null;
+        let activeIndex = -1;
+        let orientation = 'horizontal';
+        let startPos = 0;
+
+        mod.init = (el, ref) => {
+            containerEl = el;
+            dotNetRef = ref;
+        };
+
+        mod.getContainerSize = (orient) => {
+            if (!containerEl) return 0;
+            const rect = containerEl.getBoundingClientRect();
+            return orient === 'horizontal' ? rect.width : rect.height;
+        };
+
+        mod.startPointerCapture = (handleEl, orient, sepIndex) => {
+            if (!handleEl) return;
+            orientation = orient;
+            activeIndex = sepIndex;
+
+            const onMove = (e) => {
+                e.preventDefault();
+                const pos = orientation === 'horizontal' ? e.clientX : e.clientY;
+                if (dotNetRef) {
+                    dotNetRef.invokeMethodAsync('OnPointerMoveFromJs', pos);
+                }
+            };
+
+            const onUp = (e) => {
+                document.removeEventListener('pointermove', onMove);
+                document.removeEventListener('pointerup', onUp);
+                if (dotNetRef) {
+                    dotNetRef.invokeMethodAsync('OnPointerUpFromJs');
+                }
+            };
+
+            document.addEventListener('pointermove', onMove);
+            document.addEventListener('pointerup', onUp);
+        };
+
+        mod.dispose = () => {
+            containerEl = null;
+            dotNetRef = null;
+        };
+
+        return mod;
+    })()
+    """;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _dotNetRef = DotNetObjectReference.Create(this);
+            _jsModule = await JS.InvokeAsync<IJSObjectReference>("eval", GetSplitterScript());
+            await _jsModule.InvokeVoidAsync("init", _containerRef, _dotNetRef);
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_jsModule is not null)
+        {
+            try
+            {
+                await _jsModule.InvokeVoidAsync("dispose");
+                await _jsModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException) { }
+        }
+        _dotNetRef?.Dispose();
+    }
+
+    private async Task<double> GetContainerSizePx()
+    {
+        if (_jsModule is null) return 1000; // fallback
+        var orient = Orientation == StackDirection.Horizontal ? "horizontal" : "vertical";
+        return await _jsModule.InvokeAsync<double>("getContainerSize", orient);
+    }
+
+    // ── Pane style building ─────────────────────────────────────────────
+
     private string BuildPaneStyle(MariloSplitterPane pane, bool isLast)
     {
         if (pane.EffectiveCollapsed)
@@ -118,7 +219,6 @@
 
         if (isLast)
         {
-            // Last pane fills remaining space
             parts.Add("flex:1 1 0;");
         }
         else
@@ -142,6 +242,8 @@
             return (int)pct;
         return 50;
     }
+
+    // ── State management ────────────────────────────────────────────────
 
     public SplitterState GetState() => new()
     {
@@ -173,43 +275,87 @@
         StateHasChanged();
     }
 
-    // ── Drag-to-resize (pixel-based) ────────────────────────────────────
+    // ── Drag-to-resize ──────────────────────────────────────────────────
 
-    private void HandleMouseDown(MouseEventArgs e, int separatorIndex)
+    private async Task HandleMouseDown(MouseEventArgs e, int separatorIndex)
     {
         if (!_panes[separatorIndex].Resizable) return;
 
         _activeSeparator = separatorIndex;
         _isDragging = true;
         _dragStartPos = Orientation == StackDirection.Horizontal ? e.ClientX : e.ClientY;
-        _dragStartSizePx = ParseSize(_panes[separatorIndex].EffectiveSize);
+
+        // Measure container for accurate percent conversion
+        _containerSizePx = await GetContainerSizePx();
+
+        var currentSize = _panes[separatorIndex].EffectiveSize;
+        _dragStartedWithPercent = currentSize != null && currentSize.EndsWith('%');
+        _dragStartSizePx = ResolveToPx(currentSize, _containerSizePx);
+
+        await NotifyResizeStart(separatorIndex);
     }
 
     private async Task HandleMouseMove(MouseEventArgs e)
     {
         if (!_isDragging || _activeSeparator < 0) return;
+        await ApplyDrag(Orientation == StackDirection.Horizontal ? e.ClientX : e.ClientY);
+    }
 
-        var currentPos = Orientation == StackDirection.Horizontal ? e.ClientX : e.ClientY;
+    private async Task HandleMouseUp(MouseEventArgs e)
+    {
+        await FinishDrag();
+    }
+
+    // ── JS pointer event callbacks ──────────────────────────────────────
+
+    [JSInvokable]
+    public async Task OnPointerMoveFromJs(double position)
+    {
+        if (!_isDragging || _activeSeparator < 0) return;
+        await ApplyDrag(position);
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public async Task OnPointerUpFromJs()
+    {
+        await FinishDrag();
+        StateHasChanged();
+    }
+
+    private async Task ApplyDrag(double currentPos)
+    {
         var deltaPx = currentPos - _dragStartPos;
         var newSizePx = _dragStartSizePx + deltaPx;
 
         // Clamp to min/max
-        var minPx = ParseSize(_panes[_activeSeparator].Min, 0);
-        var maxPx = ParseSize(_panes[_activeSeparator].Max, 10000);
+        var minPx = ResolveToPx(_panes[_activeSeparator].Min, _containerSizePx, 0);
+        var maxPx = ResolveToPx(_panes[_activeSeparator].Max, _containerSizePx, _containerSizePx);
         newSizePx = Math.Clamp(newSizePx, minPx, maxPx);
 
-        // Only update the dragged pane; the last pane uses flex:1 to fill the rest
-        _panes[_activeSeparator].SetSize($"{newSizePx:F0}px");
+        // Preserve the original unit: if the pane started with %, keep it in %
+        if (_dragStartedWithPercent && _containerSizePx > 0)
+        {
+            var pct = newSizePx / _containerSizePx * 100;
+            pct = Math.Clamp(pct, 1, 99);
+            _panes[_activeSeparator].SetSize($"{pct:F1}%");
+        }
+        else
+        {
+            _panes[_activeSeparator].SetSize($"{newSizePx:F0}px");
+        }
 
         await NotifyResize(_activeSeparator);
     }
 
-    private Task HandleMouseUp(MouseEventArgs e)
+    private async Task FinishDrag()
     {
+        if (_isDragging && _activeSeparator >= 0)
+            await NotifyResizeEnd(_activeSeparator);
+
         _isDragging = false;
         _activeSeparator = -1;
         StateHasChanged();
-        return Task.CompletedTask;
     }
 
     // ── Keyboard resize ─────────────────────────────────────────────────
@@ -227,15 +373,27 @@
             var direction = e.Key == growKey ? 1.0 : -1.0;
             var stepPx = e.ShiftKey ? KeyboardResizeStep * 5 : KeyboardResizeStep;
 
-            var currentPx = ParseSize(_panes[index].EffectiveSize);
-            var minPx = ParseSize(_panes[index].Min, 0);
-            var maxPx = ParseSize(_panes[index].Max, 10000);
+            var containerSize = await GetContainerSizePx();
+            var currentSize = _panes[index].EffectiveSize;
+            var isPercent = currentSize != null && currentSize.EndsWith('%');
+            var currentPx = ResolveToPx(currentSize, containerSize);
+            var minPx = ResolveToPx(_panes[index].Min, containerSize, 0);
+            var maxPx = ResolveToPx(_panes[index].Max, containerSize, containerSize);
             var newPx = Math.Clamp(currentPx + direction * stepPx, minPx, maxPx);
 
-            _panes[index].SetSize($"{newPx:F0}px");
+            if (isPercent && containerSize > 0)
+            {
+                var pct = newPx / containerSize * 100;
+                _panes[index].SetSize($"{pct:F1}%");
+            }
+            else
+            {
+                _panes[index].SetSize($"{newPx:F0}px");
+            }
+
             await NotifyResize(index);
         }
-        else if (e.Key == "Enter" && Collapsible)
+        else if (e.Key == "Enter" && (Collapsible || _panes[index].Collapsible))
         {
             await TogglePaneCollapse(index);
         }
@@ -245,19 +403,46 @@
 
     private async Task TogglePaneCollapse(int index)
     {
-        if (index >= 0 && index < _panes.Count)
+        if (index < 0 || index >= _panes.Count) return;
+
+        var wasCollapsed = _panes[index].EffectiveCollapsed;
+        _panes[index].SetCollapsed(!wasCollapsed);
+
+        var args = new SplitterCollapseEventArgs { PaneIndex = index };
+
+        if (wasCollapsed)
         {
-            _panes[index].SetCollapsed(!_panes[index].EffectiveCollapsed);
-            if (OnCollapse.HasDelegate)
-                await OnCollapse.InvokeAsync(index);
-            StateHasChanged();
+            if (OnExpand.HasDelegate)
+                await OnExpand.InvokeAsync(args);
         }
+        else
+        {
+            if (OnCollapse.HasDelegate)
+                await OnCollapse.InvokeAsync(args);
+        }
+
+        StateHasChanged();
     }
 
     private async Task HandleSeparatorDoubleClick(int index)
     {
-        if (Collapsible)
+        if (Collapsible || (index < _panes.Count && _panes[index].Collapsible))
             await TogglePaneCollapse(index);
+    }
+
+    // ── Event notifications ─────────────────────────────────────────────
+
+    private async Task NotifyResizeStart(int index)
+    {
+        if (OnResizeStart.HasDelegate)
+        {
+            await OnResizeStart.InvokeAsync(new SplitterResizeEventArgs
+            {
+                PaneIndex = index,
+                NewSize = _panes[index].EffectiveSize ?? "",
+                AdjacentSize = index + 1 < _panes.Count ? _panes[index + 1].EffectiveSize ?? "" : ""
+            });
+        }
     }
 
     private async Task NotifyResize(int index)
@@ -273,16 +458,41 @@
         }
     }
 
-    // ── Helpers ──────────────────────────────────────────────────────────
+    private async Task NotifyResizeEnd(int index)
+    {
+        if (OnResizeEnd.HasDelegate)
+        {
+            await OnResizeEnd.InvokeAsync(new SplitterResizeEventArgs
+            {
+                PaneIndex = index,
+                NewSize = _panes[index].EffectiveSize ?? "",
+                AdjacentSize = index + 1 < _panes.Count ? _panes[index + 1].EffectiveSize ?? "" : ""
+            });
+        }
+    }
 
-    /// <summary>Parse a CSS size value to pixels. Percentages are treated as-is (rough).</summary>
-    private static double ParseSize(string? size, double fallback = 200)
+    // ── Collapse arrow helper ───────────────────────────────────────────
+
+    private string GetCollapseArrow(bool isCollapsed)
+    {
+        if (Orientation == StackDirection.Horizontal)
+            return isCollapsed ? "\u25B6" : "\u25C0"; // ▶ / ◀
+        else
+            return isCollapsed ? "\u25BC" : "\u25B2"; // ▼ / ▲
+    }
+
+    // ── Size parsing helpers ────────────────────────────────────────────
+
+    /// <summary>
+    /// Resolve a CSS size value to pixels, using the container size for percent conversion.
+    /// </summary>
+    private static double ResolveToPx(string? size, double containerSizePx, double fallback = 200)
     {
         if (string.IsNullOrEmpty(size)) return fallback;
         if (size.EndsWith("px") && double.TryParse(size.AsSpan(0, size.Length - 2), out var px))
             return px;
         if (size.EndsWith('%') && double.TryParse(size.AsSpan(0, size.Length - 1), out var pct))
-            return pct * 10; // rough: 1% ≈ 10px for common screen widths
+            return pct / 100.0 * containerSizePx;
         if (double.TryParse(size, out var raw))
             return raw;
         return fallback;

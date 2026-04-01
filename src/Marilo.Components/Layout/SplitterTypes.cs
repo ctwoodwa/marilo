@@ -16,6 +16,15 @@ public class SplitterResizeEventArgs
 }
 
 /// <summary>
+/// Event arguments for splitter pane collapse and expand events.
+/// </summary>
+public class SplitterCollapseEventArgs
+{
+    /// <summary>The index of the pane being collapsed or expanded.</summary>
+    public int PaneIndex { get; set; }
+}
+
+/// <summary>
 /// Represents the persisted state of a splitter, including pane sizes and collapse state.
 /// </summary>
 public class SplitterState

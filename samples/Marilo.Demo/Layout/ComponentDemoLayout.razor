@@ -43,7 +43,7 @@
                         <a class="affix-link" href="javascript:void(0)"
                            @onclick="() => ScrollToSection(sectionId)"
                            @onclick:preventDefault>@sectionItem.Title</a>
-                        @foreach (var sub in sectionItem.SubSections)
+                        @foreach (var sub in sectionItem.SubSections.OrderBy(s => s.Order))
                         {
                             var subId = sub.Id;
                             <a class="affix-link affix-link--sub" href="javascript:void(0)"

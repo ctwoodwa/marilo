@@ -32,21 +32,23 @@
 
 ## 3. MariloSplitter
 
-**Spec:** Multiple panes via `<SplitterPane>` children, per-pane `Size`/`Min`/`Max`/`Collapsible`/`Resizable`, `Width`/`Height`, `Orientation`, `AriaLabel`, state management (`GetState`/`SetState`), events, collapse/resize interaction.
+**Spec:** Multiple panes via `<SplitterPane>` children, per-pane `Size`/`Min`/`Max`/`Collapsible`/`Resizable`, `Width`/`Height`, `Orientation`, `AriaLabel`, state management (`GetState`/`SetState`), events, collapse/resize interaction. Reference APIs (Toolbelt, Radzen, Blazorise) additionally expose percentage-based responsive sizing, touch/pointer support, nested splitter layouts, CSS custom properties for bar sizing, and lifecycle events (`OnResizeStart`/`OnResizeEnd`/`OnExpand`).
 
-**Current:** Hard-coded two-pane layout with `FirstPane`/`SecondPane` RenderFragments. Static `FirstPaneSize`. Non-interactive separator (no drag resize). Uses `StackDirection` enum instead of `SplitterOrientation`.
+**Current:** N-pane support via `MariloSplitterPane` child components. Interactive mouse + pointer drag-to-resize with JS interop for accurate container measurement. Percent sizes preserved during drag (percent↔pixel conversion via `getContainerSize` JS call). Keyboard resize (arrow keys, Shift for larger steps). Collapse/expand via double-click, collapse button, or Enter key. Per-pane `Min`/`Max` constraints, `Collapsible`, `Resizable` flags. `Width`/`Height` parameters. `AriaLabel`, `aria-valuenow/min/max`. State management via `GetState()`/`SetState()`. Events: `OnResize`, `OnResizeStart`, `OnResizeEnd`, `OnCollapse`, `OnExpand`. CSS custom property `--mar-splitter-bar-size`. Touch support via `touch-action: none` and pointer event listeners. Vertical orientation collapse arrows (▲/▼). Legacy 2-pane backwards compat retained.
 
 | Gap | Severity |
 |-----|----------|
-| Only supports 2 panes; spec supports N panes via child components | **[High]** |
-| No interactive resize (drag handle) | **[High]** |
-| No collapse/expand functionality per pane | **[High]** |
-| No per-pane `Min`/`Max` constraints | **[High]** |
-| No `Width`/`Height` parameters | **[Medium]** |
-| No state management (`GetState`/`SetState`) | **[Medium]** |
-| No events (resize, collapse) | **[Medium]** |
-| No `AriaLabel` parameter | **[Low]** |
-| Uses `StackDirection` enum instead of `SplitterOrientation` | **[Low]** |
+| ~~Only supports 2 panes~~ **Resolved** — N panes via `MariloSplitterPane` | ~~High~~ **Done** |
+| ~~No interactive resize~~ **Resolved** — mouse drag + pointer events + keyboard | ~~High~~ **Done** |
+| ~~No collapse/expand~~ **Resolved** — button, double-click, Enter key | ~~High~~ **Done** |
+| ~~No Min/Max constraints~~ **Resolved** — per-pane `Min`/`Max` with pixel + percent | ~~High~~ **Done** |
+| ~~No Width/Height~~ **Resolved** | ~~Medium~~ **Done** |
+| ~~No state management~~ **Resolved** — `GetState()`/`SetState()` | ~~Medium~~ **Done** |
+| ~~No events~~ **Resolved** — `OnResize`, `OnResizeStart`, `OnResizeEnd`, `OnCollapse`, `OnExpand` | ~~Medium~~ **Done** |
+| ~~No AriaLabel~~ **Resolved** | ~~Low~~ **Done** |
+| No `PersistKey` for automatic localStorage state persistence | **[Low]** |
+| No `ResizeObserver` for container-resize recalculation when window resizes | **[Low]** |
+| Uses `StackDirection` enum instead of `SplitterOrientation` (acceptable — shared enum) | **[Low]** |
 
 ---
 
@@ -134,7 +136,7 @@
 |-----------|------------|-----------|
 | MariloPanel | **Critical** | Placeholder div; entire PanelBar feature set missing |
 | MariloRow | **None** | No spec; appears complete |
-| MariloSplitter | **Critical** | Hard-coded 2 panes, no interactivity |
+| MariloSplitter | **Low** | Fully interactive N-pane splitter; only PersistKey and ResizeObserver remain |
 | MariloStack | **Medium** | Missing Spacing, Width/Height, split alignment |
 | MariloStep | **Medium** | Missing Icon, Disabled, validation |
 | MariloStepper | **High** | Missing orientation, linear flow, clickable steps |
