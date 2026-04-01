@@ -1,6 +1,21 @@
 namespace Marilo.Core.Enums;
 
 /// <summary>
+/// Specifies the HTML type attribute for a button element.
+/// </summary>
+public enum ButtonType
+{
+    /// <summary>A standard button that does not submit a form.</summary>
+    Button,
+
+    /// <summary>Submits the associated form.</summary>
+    Submit,
+
+    /// <summary>Resets the associated form.</summary>
+    Reset
+}
+
+/// <summary>
 /// Specifies the visual style variant of a button.
 /// </summary>
 public enum ButtonVariant

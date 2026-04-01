@@ -2,7 +2,11 @@
 @inherits MariloComponentBase
 @implements IDisposable
 
-<div class="@CombineClasses(CssProvider.AutocompleteClass(_isOpen, Disabled, IsInvalid))"
+@{
+    var adaptiveClass = AdaptiveMode == AutoCompleteAdaptiveMode.Auto ? "mar-autocomplete--adaptive" : "";
+}
+
+<div class="@CombineClasses(CssProvider.AutocompleteClass(_isOpen, Disabled, IsInvalid)) @adaptiveClass"
      style="@CombineStyles()"
      @attributes="AdditionalAttributes">
     <div class="mar-autocomplete__input-wrapper">
@@ -77,6 +81,31 @@
                             }
                         }
                     }
+                    else if (EnableVirtualization)
+                    {
+                        <Virtualize Items="@_filteredTItems" ItemSize="@VirtualItemSize" Context="item">
+                            @{
+                                var vIndex = _filteredTItems.IndexOf(item);
+                                var vDisplayText = GetDisplayText(item);
+                                var vIsHighlighted = vIndex == _highlightedIndex;
+                                var vIsSelected = vDisplayText == Value;
+                            }
+                            <li id="autocomplete-option-@vIndex"
+                                class="@CssProvider.AutocompleteItemClass(vIsHighlighted, vIsSelected)"
+                                role="option"
+                                aria-selected="@(vIsHighlighted ? "true" : "false")"
+                                @onmousedown="() => SelectTItem(item)">
+                                @if (ItemTemplate != null)
+                                {
+                                    @ItemTemplate(item)
+                                }
+                                else
+                                {
+                                    @vDisplayText
+                                }
+                            </li>
+                        </Virtualize>
+                    }
                     else
                     {
                         @for (var i = 0; i < _filteredTItems.Count; i++)
@@ -123,6 +152,7 @@
     [Parameter] public string? ValueField { get; set; }
     [Parameter] public string? Placeholder { get; set; }
     [Parameter] public bool Disabled { get; set; }
+    [Parameter] public bool Enabled { get; set; } = true;
     [Parameter] public bool IsInvalid { get; set; }
     [Parameter] public bool ReadOnly { get; set; }
     [Parameter] public bool ShowClearButton { get; set; }
@@ -133,6 +163,14 @@
     [Parameter] public RenderFragment? HeaderTemplate { get; set; }
     [Parameter] public RenderFragment? FooterTemplate { get; set; }
     [Parameter] public string? GroupField { get; set; }
+    [Parameter] public bool EnableVirtualization { get; set; }
+    [Parameter] public float VirtualItemSize { get; set; } = 36;
+
+    /// <summary>
+    /// When set to Auto, the autocomplete renders as a full-screen action sheet
+    /// on small viewports (via CSS media query class), providing a mobile-friendly experience.
+    /// </summary>
+    [Parameter] public AutoCompleteAdaptiveMode AdaptiveMode { get; set; } = AutoCompleteAdaptiveMode.None;
 
     private bool _isOpen;
     private List<TItem> _filteredTItems = new();

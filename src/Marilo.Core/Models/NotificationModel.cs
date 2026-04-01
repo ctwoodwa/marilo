@@ -31,4 +31,10 @@ public class NotificationModel
     /// Whether the notification can be dismissed by the user.
     /// </summary>
     public bool Closeable { get; set; } = true;
+
+    /// <summary>
+    /// Optional custom theme color CSS value (e.g. "#ff5722", "var(--brand-primary)").
+    /// When set, overrides the default severity-based coloring.
+    /// </summary>
+    public string? ThemeColor { get; set; }
 }

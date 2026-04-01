@@ -1,15 +1,24 @@
 @inherits MariloComponentBase
 
-<div class="@CombineClasses(CssProvider.SliderClass(Orientation))"
+<div class="@CombineClasses(SliderClass)"
      style="@CombineStyles()">
+    @if (ShowButtons)
+    {
+        <button type="button" class="mar-slider__btn" disabled="@(!Enabled)" @onclick="Decrement" aria-label="Decrease">-</button>
+    }
     <input type="range"
            value="@Value"
            min="@Min"
            max="@Max"
            step="@Step"
+           disabled="@(!Enabled)"
            orient="@(Orientation == SliderOrientation.Vertical ? "vertical" : "horizontal")"
            @oninput="OnSliderChanged"
            @attributes="AdditionalAttributes" />
+    @if (ShowButtons)
+    {
+        <button type="button" class="mar-slider__btn" disabled="@(!Enabled)" @onclick="Increment" aria-label="Increase">+</button>
+    }
     @if (LargeStep.HasValue)
     {
         <div class="mar-slider__ticks">
@@ -41,6 +50,18 @@
     [Parameter] public SliderOrientation Orientation { get; set; } = SliderOrientation.Horizontal;
     [Parameter] public double? LargeStep { get; set; }
     [Parameter] public RenderFragment<double>? LabelTemplate { get; set; }
+    [Parameter] public bool Enabled { get; set; } = true;
+    [Parameter] public bool ShowButtons { get; set; }
+
+    private string SliderClass
+    {
+        get
+        {
+            var cls = CssProvider.SliderClass(Orientation);
+            if (!Enabled) cls += " mar-slider--disabled";
+            return cls;
+        }
+    }
 
     private async Task OnSliderChanged(ChangeEventArgs e)
     {
@@ -49,5 +70,17 @@
             Value = val;
             await ValueChanged.InvokeAsync(Value);
         }
+    }
+
+    private async Task Decrement()
+    {
+        Value = Math.Max(Min, Value - Step);
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    private async Task Increment()
+    {
+        Value = Math.Min(Max, Value + Step);
+        await ValueChanged.InvokeAsync(Value);
     }
 }

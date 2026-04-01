@@ -1,6 +1,21 @@
 namespace Marilo.Core.Enums;
 
 /// <summary>
+/// Specifies the editing mode of the editor component.
+/// </summary>
+public enum EditorEditMode
+{
+    /// <summary>Rich text editing mode (WYSIWYG when engine is loaded, textarea fallback otherwise).</summary>
+    Edit,
+
+    /// <summary>Preview mode showing rendered HTML content.</summary>
+    Preview,
+
+    /// <summary>Raw HTML source editing mode.</summary>
+    Source
+}
+
+/// <summary>
 /// Specifies available toolbar tools in a WYSIWYG editor.
 /// </summary>
 public enum EditorTool

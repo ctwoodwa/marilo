@@ -1,13 +1,18 @@
 @inherits LayoutComponentBase
+@implements IDisposable
 @inject NavigationManager Nav
 @inject SiteLinks Links
+@inject FavoritesService Favorites
+@inject IMariloThemeService ThemeService
+@inject ProviderSwitcher ProviderSwitcher
+@inject IJSRuntime JS
 @using Marilo.Demo.Data
 
-<div class="app-root @(_isDark ? "app-dark" : "")">
+<div class="app-root @(_isDark ? "app-dark" : "")" style="@(_settingsLoaded ? "" : "visibility:hidden")">
     <header class="top-navbar">
         <nav class="top-navbar-inner">
-            <a class="navbar-brand" href="/">
-                <svg width="20" height="20" viewBox="0 0 28 28" fill="none" class="navbar-logo">
+            <a class="demo-navbar-brand" href="/">
+                <svg width="20" height="20" viewBox="0 0 28 28" fill="none" class="demo-navbar-logo">
                     <rect x="2" y="2" width="24" height="24" rx="6" stroke="currentColor" stroke-width="2" />
                     <path d="M9 9l5 5-5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     <path d="M15 14h4" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
@@ -15,23 +20,91 @@
                 <span>Marilo</span>
             </a>
 
-            <div class="navbar-nav">
-                <a class="nav-link" href="@Links.GettingStarted">Getting Started</a>
-                <a class="nav-link @(IsNavActive("components") || IsNavActive("icons") ? "active" : "")"
-                   href="/components">Components</a>
-                <a class="nav-link" href="@Links.Theming">Theming</a>
-                <a class="nav-link" href="@Links.ApiReference">API Reference</a>
-            </div>
+            <MariloNavMenu Class="demo-navbar-nav">
+                <MariloNavItem Href="@Links.GettingStarted">Getting Started</MariloNavItem>
+                <MariloNavItem Href="/components"
+                               IsActive="@(IsNavActive("components") || IsNavActive("icons"))">Components</MariloNavItem>
+                <MariloNavItem Href="@Links.Theming">Theming</MariloNavItem>
+                <MariloNavItem Href="@Links.ApiReference">API Reference</MariloNavItem>
+            </MariloNavMenu>
 
-            <div class="navbar-actions">
-                <div class="navbar-search">
+            <div class="demo-navbar-actions">
+                <div class="demo-navbar-search">
                     <MariloSearchBox Value="@_search"
                                      ValueChanged="OnSearchChanged"
                                      Placeholder="Search components..."
                                      OnEscape="ClearSearch"
                                      OnSearch="@((_) => NavigateFirstResult())" />
                 </div>
-                <button class="theme-toggle" @onclick="ToggleTheme"
+                <div class="theme-picker-wrapper">
+                    <button class="theme-picker-trigger" @onclick="ToggleThemePicker"
+                            title="Change theme">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20 7 7 0 0 1 0-14 3.5 3.5 0 0 0 0-6"/></svg>
+                        <span class="theme-picker-label">@(_activeProvider == DesignProvider.FluentUI ? "Fluent" : "Bootstrap") · @_selectedPreset.Name</span>
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    @if (_showThemePicker)
+                    {
+                        <div class="theme-picker-overlay" @onclick="CloseThemePicker"></div>
+                        <div class="theme-picker-dropdown">
+                            <div class="theme-picker-section-title">Theme</div>
+                            @foreach (var preset in ThemePresets.All)
+                            {
+                                var p = preset;
+                                <button class="theme-picker-option @(p.Name == _selectedPreset.Name ? "active" : "")"
+                                        @onclick="() => SelectTheme(p)">
+                                    <span class="theme-picker-swatch" style="background: @p.Theme.Colors.Primary;"></span>
+                                    <span>@p.Name</span>
+                                    @if (p.Name == _selectedPreset.Name)
+                                    {
+                                        <svg class="theme-picker-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                    }
+                                </button>
+                            }
+                            <div class="theme-picker-divider"></div>
+                            <div class="theme-picker-section-title">Design System</div>
+                            <button class="theme-picker-option @(_activeProvider == DesignProvider.FluentUI ? "active" : "")"
+                                    @onclick="() => SwitchProvider(DesignProvider.FluentUI)">
+                                <span class="theme-picker-swatch" style="background: #0078d4;"></span>
+                                <span>Fluent UI</span>
+                                @if (_activeProvider == DesignProvider.FluentUI)
+                                {
+                                    <svg class="theme-picker-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                }
+                            </button>
+                            <button class="theme-picker-option @(_activeProvider == DesignProvider.Bootstrap ? "active" : "")"
+                                    @onclick="() => SwitchProvider(DesignProvider.Bootstrap)">
+                                <span class="theme-picker-swatch" style="background: #7952b3;"></span>
+                                <span>Bootstrap</span>
+                                @if (_activeProvider == DesignProvider.Bootstrap)
+                                {
+                                    <svg class="theme-picker-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                }
+                            </button>
+                            <div class="theme-picker-divider"></div>
+                            <div class="theme-picker-section-title">Mode</div>
+                            <button class="theme-picker-option @(!_isDark ? "active" : "")"
+                                    @onclick="() => SetDarkMode(false)">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" /></svg>
+                                <span>Light</span>
+                                @if (!_isDark)
+                                {
+                                    <svg class="theme-picker-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                }
+                            </button>
+                            <button class="theme-picker-option @(_isDark ? "active" : "")"
+                                    @onclick="() => SetDarkMode(true)">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+                                <span>Dark</span>
+                                @if (_isDark)
+                                {
+                                    <svg class="theme-picker-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                }
+                            </button>
+                        </div>
+                    }
+                </div>
+                <button class="theme-toggle" @onclick="ToggleDarkMode"
                         title="@(_isDark ? "Switch to light mode" : "Switch to dark mode")">
                     @if (_isDark)
                     {
@@ -74,6 +147,28 @@
         {
             <aside class="toc-sidebar">
                 <nav class="toc-nav">
+                    @if (Favorites.Favorites.Count > 0)
+                    {
+                        <div class="toc-section-title favorites-section-title">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" style="vertical-align: -2px; margin-right: 4px;">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                            </svg>
+                            Favorites
+                        </div>
+                        @foreach (var fav in Favorites.Favorites)
+                        {
+                            <div class="toc-fav-item">
+                                <a class="toc-link @(IsActive(fav.Url.TrimStart('/').TrimEnd('/')) ? "active" : "")"
+                                   href="@fav.Url">@fav.Title</a>
+                                <button class="toc-fav-remove" title="Remove favorite"
+                                        @onclick="() => RemoveFavorite(fav.Id)"
+                                        @onclick:stopPropagation>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                                </button>
+                            </div>
+                        }
+                        <div class="toc-fav-divider"></div>
+                    }
                     @if (IsComponentDetailView())
                     {
                         var comp = GetCurrentComponent();
@@ -111,7 +206,9 @@
 
         <div class="content-area @(ShowSidebar() ? "" : "content-full")">
             <CascadingValue Value="_isDark" Name="IsDarkMode">
-                @Body
+                <MariloThemeProvider Theme="@_selectedPreset.Theme">
+                    @Body
+                </MariloThemeProvider>
             </CascadingValue>
         </div>
     </main>
@@ -125,7 +222,12 @@
 
 @code {
     private bool _isDark;
+    private bool _settingsLoaded;
     private string _search = "";
+    private bool _showThemePicker;
+    private ThemePresets.ThemePreset _selectedPreset = ThemePresets.All[0];
+    private DesignProvider _activeProvider = DesignProvider.FluentUI;
+    private IJSObjectReference? _providerModule;
 
     private record NavEntry(string Label, string Href, string Group);
 
@@ -170,7 +272,47 @@
         Nav.NavigateTo($"/{path}");
     }
 
-    private void ToggleTheme() => _isDark = !_isDark;
+    private async Task ToggleDarkMode()
+    {
+        _isDark = !_isDark;
+        await ThemeService.ToggleDarkModeAsync();
+        await PersistDarkMode();
+    }
+
+    private async Task SetDarkMode(bool dark)
+    {
+        if (_isDark == dark) return;
+        _isDark = dark;
+        await ThemeService.ToggleDarkModeAsync();
+        await PersistDarkMode();
+        _showThemePicker = false;
+    }
+
+    private async Task SelectTheme(ThemePresets.ThemePreset preset)
+    {
+        _selectedPreset = preset;
+        await ThemeService.SetThemeAsync(preset.Theme);
+        _providerModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/provider-switcher.js");
+        await _providerModule.InvokeVoidAsync("setTheme", preset.Name);
+        _showThemePicker = false;
+    }
+
+    private async Task PersistDarkMode()
+    {
+        _providerModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/provider-switcher.js");
+        await _providerModule.InvokeVoidAsync("setDarkMode", _isDark);
+    }
+
+    private async Task SwitchProvider(DesignProvider provider)
+    {
+        if (_activeProvider == provider) return;
+
+        _providerModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/provider-switcher.js");
+        await _providerModule.InvokeVoidAsync("setProvider", provider == DesignProvider.Bootstrap ? "bootstrap" : "fluentui");
+    }
+
+    private void ToggleThemePicker() => _showThemePicker = !_showThemePicker;
+    private void CloseThemePicker() => _showThemePicker = false;
 
     private string GetRelativeUri() => Nav.ToBaseRelativePath(Nav.Uri).TrimEnd('/');
 
@@ -206,6 +348,63 @@
     {
         var segments = GetRelativeUri().Split('/');
         return segments.Length >= 2 ? ComponentRegistry.GetBySlug(segments[1]) : null;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Favorites.EnsureInitializedAsync();
+            Favorites.OnChanged += OnFavoritesChanged;
+
+            // Restore all settings from localStorage
+            _providerModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/provider-switcher.js");
+
+            var storedProvider = await _providerModule.InvokeAsync<string>("getStoredProvider");
+            if (storedProvider == "bootstrap")
+            {
+                _activeProvider = DesignProvider.Bootstrap;
+                ProviderSwitcher.SetProvider(DesignProvider.Bootstrap);
+                await _providerModule.InvokeVoidAsync("applyProvider", "bootstrap");
+            }
+
+            var storedTheme = await _providerModule.InvokeAsync<string>("getStoredTheme");
+            var preset = ThemePresets.GetByName(storedTheme);
+            if (preset.Name != _selectedPreset.Name)
+            {
+                _selectedPreset = preset;
+                await ThemeService.SetThemeAsync(preset.Theme);
+            }
+
+            var storedDark = await _providerModule.InvokeAsync<bool>("getStoredDarkMode");
+            if (storedDark != _isDark)
+            {
+                _isDark = storedDark;
+                await ThemeService.ToggleDarkModeAsync();
+            }
+
+            _settingsLoaded = true;
+            StateHasChanged();
+        }
+    }
+
+    private void OnFavoritesChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task RemoveFavorite(string id)
+    {
+        await Favorites.RemoveAsync(id);
+    }
+
+    public void Dispose()
+    {
+        Favorites.OnChanged -= OnFavoritesChanged;
+        if (_providerModule is not null)
+        {
+            _ = _providerModule.DisposeAsync();
+        }
     }
 
 }

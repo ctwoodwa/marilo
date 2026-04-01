@@ -32,6 +32,8 @@
     [Parameter] public EventCallback<int> ValueChanged { get; set; }
     [Parameter] public int Max { get; set; } = 5;
     [Parameter] public bool IsReadOnly { get; set; }
+    [Parameter] public bool Enabled { get; set; } = true;
+    [Parameter] public string? Label { get; set; }
 
     private async Task SetRating(int rating)
     {

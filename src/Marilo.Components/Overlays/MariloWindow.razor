@@ -7,7 +7,7 @@
         <div class="@CssProvider.WindowOverlayClass()" @onclick="HandleOverlayClick"></div>
     }
 
-    <div class="@CombineClasses(CssProvider.WindowClass(Modal))"
+    <div class="@CombineClasses(WindowRootClass)"
          style="@BuildWindowStyle()"
          role="dialog"
          aria-modal="@Modal.ToString().ToLower()"
@@ -31,7 +31,7 @@
                     <button type="button"
                             class="mar-window__action-btn mar-window__action-btn--minimize"
                             aria-label="Minimize"
-                            @onclick="() => HandleAction(WindowAction.Minimize)">
+                            @onclick="HandleMinimize">
                         &#x2212;
                     </button>
                 }
@@ -39,9 +39,9 @@
                 {
                     <button type="button"
                             class="mar-window__action-btn mar-window__action-btn--maximize"
-                            aria-label="Maximize"
-                            @onclick="() => HandleAction(WindowAction.Maximize)">
-                        &#x25A1;
+                            aria-label="@(State == WindowDisplayState.Maximized ? "Restore" : "Maximize")"
+                            @onclick="HandleMaximizeRestore">
+                        @(State == WindowDisplayState.Maximized ? "\u29C9" : "\u25A1")
                     </button>
                 }
                 @if (Actions.HasFlag(WindowAction.Close))
@@ -49,7 +49,7 @@
                     <button type="button"
                             class="mar-window__action-btn mar-window__action-btn--close"
                             aria-label="Close"
-                            @onclick="() => HandleAction(WindowAction.Close)">
+                            @onclick="HandleClose">
                         &#x2715;
                     </button>
                 }
@@ -57,54 +57,187 @@
         </div>
 
         @* Content *@
-        <div class="@CssProvider.WindowContentClass()">
-            @ChildContent
-        </div>
+        @if (State != WindowDisplayState.Minimized)
+        {
+            <div class="@CssProvider.WindowContentClass()">
+                @ChildContent
+            </div>
+
+            @if (FooterTemplate != null)
+            {
+                <div class="mar-window__footer">
+                    @FooterTemplate
+                </div>
+            }
+
+            @* Resize handles (rendered but drag logic requires JS interop) *@
+            @if (Resizable && State == WindowDisplayState.Normal)
+            {
+                <div class="mar-window__resize-handle mar-window__resize-handle--se" data-resize="se"></div>
+                <div class="mar-window__resize-handle mar-window__resize-handle--s" data-resize="s"></div>
+                <div class="mar-window__resize-handle mar-window__resize-handle--e" data-resize="e"></div>
+            }
+        }
     </div>
 }
 
 @code {
+    /// <summary>The window title text.</summary>
     [Parameter] public string? Title { get; set; }
+
+    /// <summary>Whether the window is visible. Supports two-way binding.</summary>
     [Parameter] public bool Visible { get; set; }
     [Parameter] public EventCallback<bool> VisibleChanged { get; set; }
+
+    /// <summary>Whether the window is modal (shows overlay backdrop).</summary>
     [Parameter] public bool Modal { get; set; }
-    [Parameter] public string? Width { get; set; }
-    [Parameter] public string? Height { get; set; }
-    [Parameter] public string? Top { get; set; }
-    [Parameter] public string? Left { get; set; }
-    [Parameter] public WindowAction Actions { get; set; } = WindowAction.Close;
+
+    /// <summary>The current window state (Normal, Minimized, Maximized). Supports two-way binding.</summary>
+    [Parameter] public WindowDisplayState State { get; set; } = WindowDisplayState.Normal;
+    [Parameter] public EventCallback<WindowDisplayState> StateChanged { get; set; }
+
+    /// <summary>Whether the window can be dragged by the title bar.</summary>
     [Parameter] public bool Draggable { get; set; } = true;
+
+    /// <summary>Whether the window can be resized via handles.</summary>
+    [Parameter] public bool Resizable { get; set; }
+
+    /// <summary>Width of the window (CSS value).</summary>
+    [Parameter] public string? Width { get; set; }
+    [Parameter] public EventCallback<string?> WidthChanged { get; set; }
+
+    /// <summary>Height of the window (CSS value).</summary>
+    [Parameter] public string? Height { get; set; }
+    [Parameter] public EventCallback<string?> HeightChanged { get; set; }
+
+    /// <summary>Top position (CSS value).</summary>
+    [Parameter] public string? Top { get; set; }
+    [Parameter] public EventCallback<string?> TopChanged { get; set; }
+
+    /// <summary>Left position (CSS value).</summary>
+    [Parameter] public string? Left { get; set; }
+    [Parameter] public EventCallback<string?> LeftChanged { get; set; }
+
+    /// <summary>Minimum width constraint.</summary>
+    [Parameter] public string? MinWidth { get; set; }
+
+    /// <summary>Maximum width constraint.</summary>
+    [Parameter] public string? MaxWidth { get; set; }
+
+    /// <summary>Minimum height constraint.</summary>
+    [Parameter] public string? MinHeight { get; set; }
+
+    /// <summary>Maximum height constraint.</summary>
+    [Parameter] public string? MaxHeight { get; set; }
+
+    /// <summary>Which title bar action buttons to show.</summary>
+    [Parameter] public WindowAction Actions { get; set; } = WindowAction.Close;
+
+    /// <summary>Window body content.</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Custom title bar template (replaces default title text).</summary>
     [Parameter] public RenderFragment? TitleBarTemplate { get; set; }
+
+    /// <summary>Optional footer template below the content area.</summary>
+    [Parameter] public RenderFragment? FooterTemplate { get; set; }
+
+    // ── Events (engine-agnostic — no DOM/JS types in signatures) ────────
+
+    /// <summary>Fires when an action button is clicked.</summary>
     [Parameter] public EventCallback<WindowAction> OnAction { get; set; }
+
+    /// <summary>Fires after the window is moved (position changed).</summary>
+    [Parameter] public EventCallback OnMove { get; set; }
+
+    /// <summary>Fires after the window is resized.</summary>
+    [Parameter] public EventCallback OnResize { get; set; }
+
+    // ── Computed ────────────────────────────────────────────────────────
+
+    private string WindowRootClass
+    {
+        get
+        {
+            var cls = CssProvider.WindowClass(Modal);
+            if (State == WindowDisplayState.Maximized) cls += " mar-window--maximized";
+            if (State == WindowDisplayState.Minimized) cls += " mar-window--minimized";
+            if (Draggable) cls += " mar-window--draggable";
+            if (Resizable) cls += " mar-window--resizable";
+            return cls;
+        }
+    }
 
     private string BuildWindowStyle()
     {
+        if (State == WindowDisplayState.Maximized)
+            return StyleBuilder.Clear().AddStyle(Style).Build();
+
         var sb = StyleBuilder.Clear();
         if (!string.IsNullOrEmpty(Width)) sb.AddStyle($"width:{Width}");
         if (!string.IsNullOrEmpty(Height)) sb.AddStyle($"height:{Height}");
         if (!string.IsNullOrEmpty(Top)) sb.AddStyle($"top:{Top}");
         if (!string.IsNullOrEmpty(Left)) sb.AddStyle($"left:{Left}");
+        if (!string.IsNullOrEmpty(MinWidth)) sb.AddStyle($"min-width:{MinWidth}");
+        if (!string.IsNullOrEmpty(MaxWidth)) sb.AddStyle($"max-width:{MaxWidth}");
+        if (!string.IsNullOrEmpty(MinHeight)) sb.AddStyle($"min-height:{MinHeight}");
+        if (!string.IsNullOrEmpty(MaxHeight)) sb.AddStyle($"max-height:{MaxHeight}");
         sb.AddStyle(Style);
         return sb.Build();
     }
 
-    private async Task HandleAction(WindowAction action)
-    {
-        if (action == WindowAction.Close)
-        {
-            Visible = false;
-            await VisibleChanged.InvokeAsync(false);
-        }
+    // ── Public API ──────────────────────────────────────────────────────
 
-        await OnAction.InvokeAsync(action);
+    /// <summary>Shows the window.</summary>
+    public async Task ShowAsync()
+    {
+        Visible = true;
+        await VisibleChanged.InvokeAsync(true);
+        StateHasChanged();
+    }
+
+    /// <summary>Hides the window.</summary>
+    public async Task HideAsync()
+    {
+        Visible = false;
+        await VisibleChanged.InvokeAsync(false);
+        StateHasChanged();
+    }
+
+    /// <summary>Sets the window state programmatically.</summary>
+    public async Task SetStateAsync(WindowDisplayState state)
+    {
+        State = state;
+        await StateChanged.InvokeAsync(state);
+        StateHasChanged();
+    }
+
+    // ── Event handlers ──────────────────────────────────────────────────
+
+    private async Task HandleClose()
+    {
+        Visible = false;
+        await VisibleChanged.InvokeAsync(false);
+        await OnAction.InvokeAsync(WindowAction.Close);
+    }
+
+    private async Task HandleMinimize()
+    {
+        State = WindowDisplayState.Minimized;
+        await StateChanged.InvokeAsync(State);
+        await OnAction.InvokeAsync(WindowAction.Minimize);
+    }
+
+    private async Task HandleMaximizeRestore()
+    {
+        State = State == WindowDisplayState.Maximized ? WindowDisplayState.Normal : WindowDisplayState.Maximized;
+        await StateChanged.InvokeAsync(State);
+        await OnAction.InvokeAsync(WindowAction.Maximize);
     }
 
     private async Task HandleOverlayClick()
     {
         if (Actions.HasFlag(WindowAction.Close))
-        {
-            await HandleAction(WindowAction.Close);
-        }
+            await HandleClose();
     }
 }

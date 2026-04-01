@@ -1,0 +1,181 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses("mar-scheduler")"
+     style="@CombineStyles()"
+     @attributes="AdditionalAttributes">
+
+    @* Header / Navigation *@
+    <div class="mar-scheduler__header">
+        <button type="button" class="mar-btn mar-btn--flat" @onclick="NavigatePrevious">&#9664;</button>
+        <span class="mar-scheduler__title">@GetHeaderTitle()</span>
+        <button type="button" class="mar-btn mar-btn--flat" @onclick="NavigateNext">&#9654;</button>
+        <span class="mar-scheduler__spacer"></span>
+        <button type="button" class="mar-btn mar-btn--flat @(View == SchedulerView.Day ? "mar-btn--primary" : "")"
+                @onclick="() => SetView(SchedulerView.Day)">Day</button>
+        <button type="button" class="mar-btn mar-btn--flat @(View == SchedulerView.Week ? "mar-btn--primary" : "")"
+                @onclick="() => SetView(SchedulerView.Week)">Week</button>
+        <button type="button" class="mar-btn mar-btn--flat @(View == SchedulerView.Month ? "mar-btn--primary" : "")"
+                @onclick="() => SetView(SchedulerView.Month)">Month</button>
+    </div>
+
+    @* Calendar view *@
+    @if (View == SchedulerView.Month)
+    {
+        <div class="mar-scheduler__month">
+            <div class="mar-scheduler__weekday-headers">
+                @foreach (var day in _dayNames)
+                {
+                    <span class="mar-scheduler__weekday">@day</span>
+                }
+            </div>
+            <div class="mar-scheduler__month-grid">
+                @foreach (var day in GetMonthDays())
+                {
+                    var d = day;
+                    var isToday = d == DateOnly.FromDateTime(DateTime.Today);
+                    var isCurrentMonth = d.Month == CurrentDate.Month;
+                    <div class="mar-scheduler__day-cell @(isToday ? "mar-scheduler__day-cell--today" : "") @(!isCurrentMonth ? "mar-scheduler__day-cell--outside" : "")"
+                         @onclick="() => OnDateClick.InvokeAsync(d.ToDateTime(TimeOnly.MinValue))">
+                        <span class="mar-scheduler__day-number">@d.Day</span>
+                        @foreach (var appt in GetAppointmentsForDate(d))
+                        {
+                            var a = appt;
+                            <div class="mar-scheduler__appointment"
+                                 style="@(!string.IsNullOrEmpty(a.Color) ? $"background-color:{a.Color};" : "")"
+                                 @onclick:stopPropagation="true"
+                                 @onclick="() => OnAppointmentClick.InvokeAsync(a)">
+                                @a.Title
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    else if (View == SchedulerView.Week || View == SchedulerView.Day)
+    {
+        var days = View == SchedulerView.Week ? GetWeekDays() : new List<DateOnly> { DateOnly.FromDateTime(CurrentDate) };
+        <div class="mar-scheduler__time-grid">
+            <div class="mar-scheduler__time-labels">
+                @for (var h = StartHour; h <= EndHour; h++)
+                {
+                    <div class="mar-scheduler__time-label">@($"{h:D2}:00")</div>
+                }
+            </div>
+            @foreach (var day in days)
+            {
+                var d = day;
+                <div class="mar-scheduler__day-column">
+                    <div class="mar-scheduler__day-column-header">@d.ToString("ddd M/d")</div>
+                    <div class="mar-scheduler__day-slots" style="position: relative;">
+                        @for (var h = StartHour; h <= EndHour; h++)
+                        {
+                            <div class="mar-scheduler__time-slot"></div>
+                        }
+                        @foreach (var appt in GetAppointmentsForDate(d))
+                        {
+                            var a = appt;
+                            var top = (a.Start.Hour - StartHour + a.Start.Minute / 60.0) * 48;
+                            var height = (a.End - a.Start).TotalHours * 48;
+                            <div class="mar-scheduler__appointment mar-scheduler__appointment--timed"
+                                 style="top: @(top)px; height: @(height)px; @(!string.IsNullOrEmpty(a.Color) ? $"background-color:{a.Color};" : "")"
+                                 @onclick="() => OnAppointmentClick.InvokeAsync(a)">
+                                @a.Title
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter] public DateTime CurrentDate { get; set; } = DateTime.Today;
+    [Parameter] public EventCallback<DateTime> CurrentDateChanged { get; set; }
+    [Parameter] public SchedulerView View { get; set; } = SchedulerView.Month;
+    [Parameter] public EventCallback<SchedulerView> ViewChanged { get; set; }
+    [Parameter] public IEnumerable<SchedulerAppointment> Appointments { get; set; } = Enumerable.Empty<SchedulerAppointment>();
+    [Parameter] public int StartHour { get; set; } = 8;
+    [Parameter] public int EndHour { get; set; } = 18;
+    [Parameter] public EventCallback<SchedulerAppointment> OnAppointmentClick { get; set; }
+    [Parameter] public EventCallback<DateTime> OnDateClick { get; set; }
+    [Parameter] public EventCallback<SchedulerAppointment> OnAppointmentCreate { get; set; }
+
+    private static readonly string[] _dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    private string GetHeaderTitle() => View switch
+    {
+        SchedulerView.Month => CurrentDate.ToString("MMMM yyyy"),
+        SchedulerView.Week => $"Week of {GetWeekStart():MMM d, yyyy}",
+        SchedulerView.Day => CurrentDate.ToString("dddd, MMM d, yyyy"),
+        _ => CurrentDate.ToString("MMMM yyyy")
+    };
+
+    private async Task SetView(SchedulerView view)
+    {
+        View = view;
+        await ViewChanged.InvokeAsync(view);
+    }
+
+    private async Task NavigatePrevious()
+    {
+        CurrentDate = View switch
+        {
+            SchedulerView.Month => CurrentDate.AddMonths(-1),
+            SchedulerView.Week => CurrentDate.AddDays(-7),
+            SchedulerView.Day => CurrentDate.AddDays(-1),
+            _ => CurrentDate.AddMonths(-1)
+        };
+        await CurrentDateChanged.InvokeAsync(CurrentDate);
+    }
+
+    private async Task NavigateNext()
+    {
+        CurrentDate = View switch
+        {
+            SchedulerView.Month => CurrentDate.AddMonths(1),
+            SchedulerView.Week => CurrentDate.AddDays(7),
+            SchedulerView.Day => CurrentDate.AddDays(1),
+            _ => CurrentDate.AddMonths(1)
+        };
+        await CurrentDateChanged.InvokeAsync(CurrentDate);
+    }
+
+    private DateTime GetWeekStart()
+    {
+        var diff = (int)CurrentDate.DayOfWeek;
+        return CurrentDate.AddDays(-diff);
+    }
+
+    private List<DateOnly> GetMonthDays()
+    {
+        var days = new List<DateOnly>();
+        var first = new DateOnly(CurrentDate.Year, CurrentDate.Month, 1);
+        var startOffset = (int)first.DayOfWeek;
+        for (var i = startOffset - 1; i >= 0; i--)
+            days.Add(first.AddDays(-(i + 1)));
+        var daysInMonth = DateTime.DaysInMonth(CurrentDate.Year, CurrentDate.Month);
+        for (var d = 1; d <= daysInMonth; d++)
+            days.Add(new DateOnly(CurrentDate.Year, CurrentDate.Month, d));
+        while (days.Count % 7 != 0)
+            days.Add(days[^1].AddDays(1));
+        return days;
+    }
+
+    private List<DateOnly> GetWeekDays()
+    {
+        var start = DateOnly.FromDateTime(GetWeekStart());
+        return Enumerable.Range(0, 7).Select(i => start.AddDays(i)).ToList();
+    }
+
+    private IEnumerable<SchedulerAppointment> GetAppointmentsForDate(DateOnly date)
+    {
+        return Appointments.Where(a =>
+        {
+            var apptDate = DateOnly.FromDateTime(a.Start);
+            var apptEnd = DateOnly.FromDateTime(a.End);
+            return date >= apptDate && date <= apptEnd;
+        });
+    }
+}

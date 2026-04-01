@@ -6,6 +6,10 @@
         disabled="@(!Enabled)"
         @onclick="HandleClick"
         @attributes="AdditionalAttributes">
+    @if (Icon != null)
+    {
+        <span class="mar-button__icon">@Icon</span>
+    }
     @ChildContent
 </button>
 
@@ -14,10 +18,13 @@
     [Parameter] public EventCallback<bool> SelectedChanged { get; set; }
     [Parameter] public EventCallback<MouseEventArgs> OnClick { get; set; }
     [Parameter] public bool Enabled { get; set; } = true;
+    [Parameter] public ButtonSize Size { get; set; } = ButtonSize.Medium;
+    [Parameter] public RenderFragment? Icon { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
     private async Task HandleClick(MouseEventArgs args)
     {
+        if (!Enabled) return;
         await OnClick.InvokeAsync(args);
         Selected = !Selected;
         await SelectedChanged.InvokeAsync(Selected);

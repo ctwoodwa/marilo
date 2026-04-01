@@ -1,5 +1,7 @@
 @page "/"
+@implements IDisposable
 @inject SiteLinks Links
+@inject ProviderSwitcher ProviderSwitcher
 
 <div class="landing-page">
     <div class="landing-hero">
@@ -35,7 +37,7 @@
             <MariloBadge Variant="BadgeVariant.Success">Active</MariloBadge>
         </div>
         <MariloAlert Severity="AlertSeverity.Info">
-            This gallery is running with the <strong>Fluent UI</strong> provider. All styles come from <code>marilo-fluentui.css</code>.
+            This gallery is running with the <strong>@_providerName</strong> provider. All styles come from <code>@_providerCss</code>. Use the theme picker in the toolbar to switch providers.
         </MariloAlert>
     </div>
 
@@ -66,7 +68,7 @@ Marilo.Providers.*   - Provider implementations (FluentUI, Bootstrap, etc.)</div
                 <tr>
                     <td>Bootstrap 5</td>
                     <td><code>Marilo.Providers.Bootstrap</code></td>
-                    <td><span class="status-badge planned">Planned</span></td>
+                    <td><span class="status-badge available">Available</span></td>
                 </tr>
                 <tr>
                     <td>Material Design 3</td>
@@ -77,3 +79,23 @@ Marilo.Providers.*   - Provider implementations (FluentUI, Bootstrap, etc.)</div
         </table>
     </div>
 </div>
+
+@code {
+    private string _providerName => ProviderSwitcher.ActiveProvider == DesignProvider.FluentUI ? "Fluent UI" : "Bootstrap";
+    private string _providerCss => ProviderSwitcher.ActiveProvider == DesignProvider.FluentUI ? "marilo-fluentui.css" : "marilo-bootstrap.css";
+
+    protected override void OnInitialized()
+    {
+        ProviderSwitcher.OnProviderChanged += OnProviderChanged;
+    }
+
+    private void OnProviderChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        ProviderSwitcher.OnProviderChanged -= OnProviderChanged;
+    }
+}

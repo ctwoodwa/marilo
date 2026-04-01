@@ -1,0 +1,124 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses("mar-wizard")"
+     style="@CombineStyles()"
+     @attributes="AdditionalAttributes">
+
+    @* Step indicators *@
+    <div class="mar-wizard__steps" role="tablist">
+        @for (var i = 0; i < _steps.Count; i++)
+        {
+            var stepIndex = i;
+            var step = _steps[i];
+            var isCurrent = stepIndex == ActiveStepIndex;
+            var isCompleted = stepIndex < ActiveStepIndex;
+            var isDisabled = !AllowStepClick && !isCurrent;
+            <button type="button"
+                    class="mar-wizard__step @(isCurrent ? "mar-wizard__step--active" : "") @(isCompleted ? "mar-wizard__step--completed" : "") @(step.Disabled ? "mar-wizard__step--disabled" : "")"
+                    role="tab"
+                    aria-selected="@isCurrent.ToString().ToLowerInvariant()"
+                    disabled="@(isDisabled || step.Disabled)"
+                    @onclick="() => GoToStep(stepIndex)">
+                <span class="mar-wizard__step-number">@(isCompleted ? "\u2713" : (stepIndex + 1).ToString())</span>
+                @if (!string.IsNullOrEmpty(step.Label))
+                {
+                    <span class="mar-wizard__step-label">@step.Label</span>
+                }
+            </button>
+            @if (i < _steps.Count - 1)
+            {
+                <span class="mar-wizard__connector @(isCompleted ? "mar-wizard__connector--completed" : "")"></span>
+            }
+        }
+    </div>
+
+    @* Active step content *@
+    <div class="mar-wizard__content" role="tabpanel">
+        @if (ActiveStepIndex >= 0 && ActiveStepIndex < _steps.Count)
+        {
+            @_steps[ActiveStepIndex].ChildContent
+        }
+    </div>
+
+    @* Navigation buttons *@
+    <div class="mar-wizard__actions">
+        @if (ActiveStepIndex > 0)
+        {
+            <button type="button" class="mar-btn mar-btn--flat" @onclick="PreviousStep">
+                @(PreviousText ?? "Previous")
+            </button>
+        }
+        <span class="mar-wizard__spacer"></span>
+        @if (ActiveStepIndex < _steps.Count - 1)
+        {
+            <button type="button" class="mar-btn mar-btn--primary" @onclick="NextStep">
+                @(NextText ?? "Next")
+            </button>
+        }
+        else
+        {
+            <button type="button" class="mar-btn mar-btn--primary" @onclick="HandleFinish">
+                @(FinishText ?? "Finish")
+            </button>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public int ActiveStepIndex { get; set; }
+    [Parameter] public EventCallback<int> ActiveStepIndexChanged { get; set; }
+    [Parameter] public bool AllowStepClick { get; set; }
+    [Parameter] public string? PreviousText { get; set; }
+    [Parameter] public string? NextText { get; set; }
+    [Parameter] public string? FinishText { get; set; }
+    [Parameter] public EventCallback OnFinish { get; set; }
+    [Parameter] public EventCallback<int> OnStepChange { get; set; }
+
+    private readonly List<WizardStep> _steps = new();
+
+    protected override void OnInitialized()
+    {
+        // ChildContent will render WizardStep children which self-register
+    }
+
+    internal void RegisterStep(WizardStep step)
+    {
+        if (!_steps.Contains(step))
+        {
+            _steps.Add(step);
+            StateHasChanged();
+        }
+    }
+
+    internal void UnregisterStep(WizardStep step)
+    {
+        _steps.Remove(step);
+        StateHasChanged();
+    }
+
+    private async Task GoToStep(int index)
+    {
+        if (index < 0 || index >= _steps.Count || _steps[index].Disabled) return;
+        ActiveStepIndex = index;
+        await ActiveStepIndexChanged.InvokeAsync(ActiveStepIndex);
+        await OnStepChange.InvokeAsync(ActiveStepIndex);
+    }
+
+    private async Task NextStep()
+    {
+        if (ActiveStepIndex < _steps.Count - 1)
+            await GoToStep(ActiveStepIndex + 1);
+    }
+
+    private async Task PreviousStep()
+    {
+        if (ActiveStepIndex > 0)
+            await GoToStep(ActiveStepIndex - 1);
+    }
+
+    private async Task HandleFinish()
+    {
+        await OnFinish.InvokeAsync();
+    }
+}

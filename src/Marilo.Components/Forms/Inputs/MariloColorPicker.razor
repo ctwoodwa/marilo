@@ -3,20 +3,80 @@
 <div class="@CombineClasses(CssProvider.ColorPickerClass())"
      style="@CombineStyles()"
      @attributes="AdditionalAttributes">
+
+    @* Native color input as fallback; custom HSV canvas interop will replace this *@
     <input type="color"
            value="@Value"
-           disabled="@Disabled"
+           disabled="@(!Enabled)"
            @oninput="OnColorChanged" />
+
+    @if (ShowPreview)
+    {
+        <div class="mar-colorpicker__preview" style="background-color:@Value;"></div>
+    }
+
+    @if (ShowClearButton && !ReadOnly && Enabled)
+    {
+        <button type="button" class="mar-colorpicker__clear" aria-label="Clear color"
+                @onclick="ClearColor">&times;</button>
+    }
+
+    @if (Presets != null && Presets.Any())
+    {
+        <div class="mar-colorpicker__presets">
+            @foreach (var preset in Presets)
+            {
+                <button type="button"
+                        class="mar-colorpicker__preset @(preset == Value ? "mar-colorpicker__preset--active" : "")"
+                        style="background-color:@preset;"
+                        aria-label="Select @preset"
+                        @onclick="() => SelectPreset(preset)"></button>
+            }
+        </div>
+    }
 </div>
 
 @code {
+    /// <summary>The selected color value (hex string, e.g. "#ff0000"). Supports two-way binding.</summary>
     [Parameter] public string Value { get; set; } = "#000000";
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
-    [Parameter] public bool Disabled { get; set; }
+
+    /// <summary>Whether the color picker is enabled.</summary>
+    [Parameter] public bool Enabled { get; set; } = true;
+
+    /// <summary>Whether the color picker is read-only.</summary>
+    [Parameter] public bool ReadOnly { get; set; }
+
+    /// <summary>Whether to show a preview swatch of the current color.</summary>
+    [Parameter] public bool ShowPreview { get; set; } = true;
+
+    /// <summary>Whether to show a clear button.</summary>
+    [Parameter] public bool ShowClearButton { get; set; }
+
+    /// <summary>Preset color values to display as quick-select swatches.</summary>
+    [Parameter] public string[]? Presets { get; set; }
+
+    /// <summary>Fires when the color changes (including during drag/preview).</summary>
+    [Parameter] public EventCallback<string> OnColorChanged_ { get; set; }
+
+    /// <summary>Fires during preview (while dragging in HSV canvas) before confirming.</summary>
+    [Parameter] public EventCallback<string> OnPreviewChanged { get; set; }
 
     private async Task OnColorChanged(ChangeEventArgs e)
     {
         Value = e.Value?.ToString() ?? "#000000";
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    private async Task SelectPreset(string color)
+    {
+        Value = color;
+        await ValueChanged.InvokeAsync(Value);
+    }
+
+    private async Task ClearColor()
+    {
+        Value = "";
         await ValueChanged.InvokeAsync(Value);
     }
 }

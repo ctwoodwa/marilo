@@ -7,7 +7,7 @@
       "request": "launch",
       "preLaunchTask": "dotnet:build:demo+docs",
       "program": "${workspaceFolder}/samples/Marilo.Demo/bin/Debug/net10.0/Marilo.Demo.dll",
-      "args": [],
+      "args": ["--urls", "https://localhost:5301;http://localhost:5300"],
       "cwd": "${workspaceFolder}/samples/Marilo.Demo",
       "stopAtEntry": false,
       "env": {
@@ -24,8 +24,25 @@
       "request": "launch",
       "preLaunchTask": "build:all",
       "program": "${workspaceFolder}/samples/Marilo.Demo.FluentUI/bin/Debug/net10.0/Marilo.Demo.FluentUI.dll",
-      "args": [],
+      "args": ["--urls", "https://localhost:5101;http://localhost:5100"],
       "cwd": "${workspaceFolder}/samples/Marilo.Demo.FluentUI",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      }
+    },
+    {
+      "name": "Marilo Demo Bootstrap",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build:bootstrap",
+      "program": "${workspaceFolder}/samples/Marilo.Demo.Bootstrap/bin/Debug/net10.0/Marilo.Demo.Bootstrap.dll",
+      "args": ["--urls", "https://localhost:5201;http://localhost:5200"],
+      "cwd": "${workspaceFolder}/samples/Marilo.Demo.Bootstrap",
       "stopAtEntry": false,
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development"

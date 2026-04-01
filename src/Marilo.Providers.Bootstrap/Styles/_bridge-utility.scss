@@ -1,0 +1,122 @@
+// =================================================================
+// Marilo Bootstrap Provider — Utility Bridge Styles
+// =================================================================
+
+// Icon sizing and transforms
+.mar-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+
+  &--small { width: 16px; height: 16px; }
+  &--medium { width: 20px; height: 20px; }
+  &--large { width: 24px; height: 24px; }
+  &--extralarge { width: 32px; height: 32px; }
+
+  &--flip-horizontal { transform: scaleX(-1); }
+  &--flip-vertical { transform: scaleY(-1); }
+  &--flip-both { transform: scale(-1); }
+}
+
+// Drag and Drop
+.mar-bs-dragdrop {
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.mar-bs-dropzone,
+.mar-bs-upload-dropzone {
+  &.border-dashed {
+    border-style: dashed !important;
+  }
+}
+
+// ScrollView
+.mar-bs-scrollview {
+  max-height: 100%;
+}
+
+// Link
+.mar-bs-link {
+  color: var(--marilo-color-primary);
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--marilo-color-primary-hover);
+  }
+}
+
+// Selection / Dropdowns
+.mar-bs-combobox,
+.mar-bs-multiselect,
+.mar-bs-dropdownlist {
+  position: relative;
+
+  .form-control,
+  .form-select {
+    cursor: pointer;
+  }
+
+  &--open .dropdown-menu {
+    display: block;
+  }
+}
+
+.mar-bs-multiselect-tag {
+  cursor: pointer;
+  font-weight: 400;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.mar-bs-item--highlighted {
+  background-color: var(--marilo-color-surface);
+}
+
+// Time Range Selector
+.mar-bs-time-range-selector {
+  gap: var(--marilo-space-sm);
+  align-items: center;
+}
+
+// Charts
+.mar-bs-chart-container {
+  position: relative;
+  width: 100%;
+
+  svg {
+    width: 100%;
+    height: auto;
+  }
+}
+
+.mar-bs-gauge {
+  display: inline-block;
+  position: relative;
+}
+
+// Scheduling
+.mar-bs-calendar {
+  border: 1px solid var(--marilo-color-border);
+  border-radius: var(--marilo-radius-md);
+  padding: var(--marilo-space-md);
+}
+
+.mar-bs-scheduler {
+  border: 1px solid var(--marilo-color-border);
+  border-radius: var(--marilo-radius-md);
+}
+
+// File Upload
+.mar-bs-file-upload-list {
+  .list-group-item {
+    font-size: var(--marilo-font-size-sm);
+  }
+}

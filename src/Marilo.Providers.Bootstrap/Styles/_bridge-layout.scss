@@ -1,0 +1,85 @@
+// =================================================================
+// Marilo Bootstrap Provider — Layout Bridge Styles
+// =================================================================
+
+.mar-bs-grid {
+  padding: 0;
+}
+
+.mar-bs-divider {
+  margin: var(--marilo-space-md) 0;
+  border: 0;
+}
+
+.mar-bs-panel {
+  border: 1px solid var(--marilo-color-border);
+}
+
+// Stepper
+.mar-bs-stepper {
+  gap: var(--marilo-space-sm);
+  align-items: center;
+}
+
+.mar-bs-step {
+  display: flex;
+  align-items: center;
+  gap: var(--marilo-space-xs);
+  padding: var(--marilo-space-sm) var(--marilo-space-md);
+  border-radius: var(--marilo-radius-md);
+  font-size: var(--marilo-font-size-sm);
+
+  &--active {
+    font-weight: 600;
+    color: var(--marilo-color-primary);
+    background-color: var(--marilo-color-primary-light);
+  }
+
+  &--completed {
+    color: var(--marilo-color-success);
+  }
+
+  &--error {
+    background-color: var(--marilo-color-danger-light);
+  }
+}
+
+// Splitter
+.mar-bs-splitter {
+  width: 100%;
+  min-height: 200px;
+  border: 1px solid var(--marilo-color-border);
+  border-radius: var(--marilo-radius-md);
+
+  .mar-bs-splitter-pane {
+    flex: 1;
+    overflow: auto;
+    padding: var(--marilo-space-md);
+  }
+
+  .mar-bs-splitter-bar {
+    flex: 0 0 6px;
+    background-color: var(--marilo-color-surface);
+    border-left: 1px solid var(--marilo-color-border);
+    border-right: 1px solid var(--marilo-color-border);
+    cursor: col-resize;
+
+    &:hover {
+      background-color: var(--marilo-color-primary-light);
+    }
+  }
+}
+
+.mar-bs-splitter.flex-column .mar-bs-splitter-bar {
+  cursor: row-resize;
+  border-left: 0;
+  border-right: 0;
+  border-top: 1px solid var(--marilo-color-border);
+  border-bottom: 1px solid var(--marilo-color-border);
+}
+
+// Context Menu
+.mar-bs-context-menu {
+  position: absolute;
+  z-index: var(--marilo-z-dropdown);
+}

@@ -66,6 +66,7 @@
     [Parameter] public SliderOrientation Orientation { get; set; } = SliderOrientation.Horizontal;
     [Parameter] public double? LargeStep { get; set; }
     [Parameter] public RenderFragment<double>? LabelTemplate { get; set; }
+    [Parameter] public bool Enabled { get; set; } = true;
 
     private async Task OnStartChanged(ChangeEventArgs e)
     {

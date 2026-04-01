@@ -1,0 +1,31 @@
+@page "/feedback"
+
+<div class="demo-page">
+    <h1>Feedback</h1>
+    <p class="text-body-secondary mb-4">Components that communicate status and provide feedback to users.</p>
+
+    <DemoSection Title="Alerts" Description="Contextual feedback messages.">
+        <div class="d-flex flex-column gap-2">
+            <MariloAlert Severity="AlertSeverity.Info">This is an informational alert.</MariloAlert>
+            <MariloAlert Severity="AlertSeverity.Success">Operation completed successfully!</MariloAlert>
+            <MariloAlert Severity="AlertSeverity.Warning">Please review your input before continuing.</MariloAlert>
+            <MariloAlert Severity="AlertSeverity.Critical">An error occurred. Please try again.</MariloAlert>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Spinners" Description="Loading indicators.">
+        <div class="demo-row">
+            <MariloSpinner Size="SpinnerSize.Small" />
+            <MariloSpinner Size="SpinnerSize.Medium" />
+            <MariloSpinner Size="SpinnerSize.Large" />
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Progress" Description="Linear progress indicator.">
+        <div class="d-flex flex-column gap-3" style="max-width:400px;">
+            <MariloProgressBar Value="25" />
+            <MariloProgressBar Value="50" />
+            <MariloProgressBar Value="75" />
+        </div>
+    </DemoSection>
+</div>

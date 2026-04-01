@@ -1,6 +1,6 @@
 @inherits MariloComponentBase
 
-<div class="@CombineClasses(CssProvider.DatePickerClass())"
+<div class="@CombineClasses(CssProvider.DatePickerClass()) @(AdaptiveMode ? "mar-datepicker--adaptive" : "")"
      style="@CombineStyles()"
      @attributes="AdditionalAttributes">
     <div class="mar-datepicker__input-wrapper">
@@ -18,8 +18,8 @@
     </div>
     @if (_isCalendarOpen && !Disabled)
     {
-        <div class="mar-datepicker__overlay" @onclick="CloseCalendar"></div>
-        <div class="@CssProvider.CalendarClass()" role="dialog" aria-label="Date picker calendar">
+        <div class="mar-datepicker__overlay @(AdaptiveMode ? "mar-datepicker__overlay--adaptive" : "")" @onclick="CloseCalendar"></div>
+        <div class="@CssProvider.CalendarClass() @(AdaptiveMode ? "mar-calendar--adaptive" : "")" role="dialog" aria-label="Date picker calendar">
             <div class="mar-calendar__header">
                 <button type="button"
                         class="mar-calendar__nav-btn"
@@ -73,8 +73,18 @@
     [Parameter] public DateOnly? Min { get; set; }
     [Parameter] public DateOnly? Max { get; set; }
     [Parameter] public bool Disabled { get; set; }
+    [Parameter] public bool Enabled { get; set; } = true;
+    [Parameter] public bool ReadOnly { get; set; }
+    [Parameter] public bool ShowClearButton { get; set; }
+    [Parameter] public bool ShowWeekNumbers { get; set; }
     [Parameter] public IEnumerable<DateOnly>? DisabledDates { get; set; }
     [Parameter] public string Format { get; set; } = "yyyy-MM-dd";
+
+    /// <summary>
+    /// When true, the calendar popup renders as a full-screen overlay on small viewports
+    /// using the CSS class mar-datepicker--adaptive. A media query applies full-screen styling.
+    /// </summary>
+    [Parameter] public bool AdaptiveMode { get; set; }
 
     private bool _isCalendarOpen;
     private DateOnly _displayMonth;

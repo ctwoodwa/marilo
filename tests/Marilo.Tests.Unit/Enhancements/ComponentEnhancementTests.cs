@@ -39,7 +39,7 @@ public class ComponentEnhancementTests : MariloTestBase
     public void Dialog_Renders_Draggable_Class()
     {
         var cut = Render<MariloDialog>(parameters => parameters
-            .Add(p => p.IsOpen, true)
+            .Add(p => p.Visible, true)
             .Add(p => p.Draggable, true)
             .Add(p => p.Title, "Test Dialog")
         );
@@ -100,7 +100,7 @@ public class ComponentEnhancementTests : MariloTestBase
     public void Dialog_Without_Modal_Does_Not_Render_Overlay()
     {
         var cut = Render<MariloDialog>(parameters => parameters
-            .Add(p => p.IsOpen, true)
+            .Add(p => p.Visible, true)
             .Add(p => p.Modal, false)
             .Add(p => p.Title, "Test")
         );
@@ -112,7 +112,7 @@ public class ComponentEnhancementTests : MariloTestBase
     public void Dialog_With_Modal_Renders_Overlay()
     {
         var cut = Render<MariloDialog>(parameters => parameters
-            .Add(p => p.IsOpen, true)
+            .Add(p => p.Visible, true)
             .Add(p => p.Modal, true)
             .Add(p => p.Title, "Test")
         );

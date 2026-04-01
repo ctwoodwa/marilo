@@ -46,7 +46,7 @@
 
     <DemoSection Title="Dialog" Code="@_dialogCode">
         <MariloButton OnClick="@(() => _dialogOpen = true)">Open Dialog</MariloButton>
-        <MariloDialog IsOpen="@_dialogOpen" Title="Example Dialog" OnClose="@(() => _dialogOpen = false)">
+        <MariloDialog @bind-Visible="_dialogOpen" Title="Example Dialog">
             <p>This is a dialog component rendered with pure HTML and CSS.</p>
             <MariloButton Variant="ButtonVariant.Primary" OnClick="@(() => _dialogOpen = false)">Close</MariloButton>
         </MariloDialog>
@@ -54,13 +54,13 @@
 
     <DemoSection Title="Confirm Dialog" Code="@_confirmCode">
         <MariloButton Variant="ButtonVariant.Danger" OnClick="@(() => _confirmOpen = true)">Delete Item</MariloButton>
-        <MariloConfirmDialog IsOpen="@_confirmOpen"
+        <MariloConfirmDialog @bind-Visible="_confirmOpen"
                              Title="Confirm Delete"
                              Message="Are you sure you want to delete this item? This action cannot be undone."
                              IsDangerous="true"
                              ConfirmText="Delete"
-                             OnConfirm="@(() => { _confirmOpen = false; _confirmResult = "Confirmed!"; })"
-                             OnCancel="@(() => { _confirmOpen = false; _confirmResult = "Cancelled."; })" />
+                             OnConfirm="@(() => _confirmResult = "Confirmed!")"
+                             OnCancel="@(() => _confirmResult = "Cancelled.")" />
         @if (!string.IsNullOrEmpty(_confirmResult))
         {
             <p style="margin-top: 8px;">Result: <strong>@_confirmResult</strong></p>
@@ -96,18 +96,16 @@
 <MariloSkeleton Variant=""SkeletonVariant.Rectangular"" Width=""200px"" Height=""120px"" />";
 
     private const string _dialogCode = @"<MariloButton OnClick=""@(() => _dialogOpen = true)"">Open Dialog</MariloButton>
-<MariloDialog IsOpen=""@_dialogOpen"" Title=""Example Dialog"" OnClose=""@(() => _dialogOpen = false)"">
+<MariloDialog @bind-Visible=""_dialogOpen"" Title=""Example Dialog"">
     <p>Dialog content here.</p>
     <MariloButton Variant=""ButtonVariant.Primary"" OnClick=""@(() => _dialogOpen = false)"">Close</MariloButton>
 </MariloDialog>
 
 @code { private bool _dialogOpen; }";
 
-    private const string _confirmCode = @"<MariloConfirmDialog IsOpen=""@_confirmOpen""
+    private const string _confirmCode = @"<MariloConfirmDialog @bind-Visible=""_confirmOpen""
     Title=""Confirm Delete""
     Message=""Are you sure?""
     IsDangerous=""true""
-    ConfirmText=""Delete""
-    OnConfirm=""@(() => _confirmOpen = false)""
-    OnCancel=""@(() => _confirmOpen = false)"" />";
+    ConfirmText=""Delete"" />";
 }

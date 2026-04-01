@@ -1,0 +1,54 @@
+@page "/"
+
+<div class="demo-page">
+    <h1>Marilo Component Gallery</h1>
+    <p class="text-body-secondary">Provider-first Blazor component library. Currently running the <strong>Bootstrap 5.3</strong> provider.</p>
+
+    <div class="mb-5">
+        <h2 class="h5">Quick Preview</h2>
+        <div class="demo-row mb-3">
+            <MariloButton Variant="ButtonVariant.Primary">Primary</MariloButton>
+            <MariloButton Variant="ButtonVariant.Secondary">Secondary</MariloButton>
+            <MariloButton Variant="ButtonVariant.Danger">Danger</MariloButton>
+            <MariloButton Variant="ButtonVariant.Success">Success</MariloButton>
+            <MariloButton Variant="ButtonVariant.Warning">Warning</MariloButton>
+            <MariloButton IsOutline="true">Outline</MariloButton>
+        </div>
+
+        <div class="demo-row mb-3">
+            <MariloChip Label="Default" />
+            <MariloChip Variant="ChipVariant.Primary" Label="Primary" />
+            <MariloChip Variant="ChipVariant.Success" Label="Success" IsSelected="true" />
+        </div>
+
+        <div class="demo-row mb-3">
+            <MariloBadge Variant="BadgeVariant.Primary">New</MariloBadge>
+            <MariloBadge Variant="BadgeVariant.Danger">3</MariloBadge>
+            <MariloBadge Variant="BadgeVariant.Success">Active</MariloBadge>
+        </div>
+
+        <MariloAlert Severity="AlertSeverity.Info">
+            This is Marilo running with the Bootstrap 5.3 provider. All styles come from <code>marilo-bootstrap.css</code> — no separate Bootstrap CDN link needed.
+        </MariloAlert>
+    </div>
+
+    <div class="mb-5">
+        <h2 class="h5">Cards</h2>
+        <div class="demo-card-grid">
+            <MariloCard>
+                <MariloCardHeader>Getting Started</MariloCardHeader>
+                <MariloCardBody>Install Marilo.Core, Marilo.Components, and the Bootstrap provider package.</MariloCardBody>
+                <MariloCardActions>
+                    <MariloButton Variant="ButtonVariant.Primary" Size="ButtonSize.Small">Learn More</MariloButton>
+                </MariloCardActions>
+            </MariloCard>
+            <MariloCard>
+                <MariloCardHeader>Providers</MariloCardHeader>
+                <MariloCardBody>Swap the look-and-feel by choosing a different provider — Bootstrap, Fluent UI, Tailwind, or Material.</MariloCardBody>
+                <MariloCardActions>
+                    <MariloButton Variant="ButtonVariant.Secondary" Size="ButtonSize.Small">Browse</MariloButton>
+                </MariloCardActions>
+            </MariloCard>
+        </div>
+    </div>
+</div>

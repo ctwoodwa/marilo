@@ -24,11 +24,10 @@ public class FluentUICssProvider : IMariloCssProvider
             .AddClass($"mar-col--offset-{offset}", offset.HasValue)
             .Build();
 
-    public string StackClass(StackDirection direction, StackAlignment align) =>
+    public string StackClass(StackDirection orientation) =>
         new CssClassBuilder()
             .AddClass("mar-stack")
-            .AddClass($"mar-stack--{direction.ToString().ToLower()}")
-            .AddClass($"mar-stack--{align.ToString().ToLower()}")
+            .AddClass($"mar-stack--{orientation.ToString().ToLower()}")
             .Build();
 
     public string DividerClass(bool vertical) =>

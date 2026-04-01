@@ -4,9 +4,11 @@
     <Project Path="src/Marilo.Components/Marilo.Components.csproj" />
     <Project Path="src/Marilo.Icons/Marilo.Icons.csproj" />
     <Project Path="src/Marilo.Providers.FluentUI/Marilo.Providers.FluentUI.csproj" />
+    <Project Path="src/Marilo.Providers.Bootstrap/Marilo.Providers.Bootstrap.csproj" />
   </Folder>
   <Folder Name="/samples/">
     <Project Path="samples/Marilo.Demo/Marilo.Demo.csproj" />
+    <Project Path="samples/Marilo.Demo.Bootstrap/Marilo.Demo.Bootstrap.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Marilo.Tests.Unit/Marilo.Tests.Unit.csproj" />

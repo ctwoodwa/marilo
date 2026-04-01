@@ -1,6 +1,18 @@
 namespace Marilo.Core.Enums;
 
 /// <summary>
+/// Specifies how accordion items expand (single or multiple expanded at once).
+/// </summary>
+public enum AccordionExpandMode
+{
+    /// <summary>Only one item can be expanded at a time. Expanding one collapses others.</summary>
+    Single,
+
+    /// <summary>Multiple items can be expanded simultaneously.</summary>
+    Multiple
+}
+
+/// <summary>
 /// Specifies the layout direction of a stack container.
 /// </summary>
 public enum StackDirection
@@ -34,6 +46,18 @@ public enum StackAlignment
 
     /// <summary>Items are evenly distributed with space around them.</summary>
     SpaceAround
+}
+
+/// <summary>
+/// Specifies the display mode of a drawer.
+/// </summary>
+public enum DrawerMode
+{
+    /// <summary>Drawer overlays the page content with a backdrop.</summary>
+    Overlay,
+
+    /// <summary>Drawer pushes the page content aside.</summary>
+    Push
 }
 
 /// <summary>
@@ -172,6 +196,18 @@ public enum TabStripScrollButtonsVisibility
 }
 
 /// <summary>
+/// Specifies the layout orientation of a stepper control.
+/// </summary>
+public enum StepperOrientation
+{
+    /// <summary>Steps are arranged horizontally.</summary>
+    Horizontal,
+
+    /// <summary>Steps are arranged vertically.</summary>
+    Vertical
+}
+
+/// <summary>
 /// Specifies the current status of a step in a stepper control.
 /// </summary>
 public enum StepStatus
@@ -187,4 +223,31 @@ public enum StepStatus
 
     /// <summary>The step encountered an error.</summary>
     Error
+}
+
+/// <summary>
+/// Specifies the animation type for MariloAnimationContainer.
+/// </summary>
+public enum AnimationType
+{
+    /// <summary>Fade in/out animation.</summary>
+    Fade,
+
+    /// <summary>Slide up animation.</summary>
+    SlideUp,
+
+    /// <summary>Slide down animation.</summary>
+    SlideDown,
+
+    /// <summary>Slide left animation.</summary>
+    SlideLeft,
+
+    /// <summary>Slide right animation.</summary>
+    SlideRight,
+
+    /// <summary>Zoom in/out animation.</summary>
+    Zoom,
+
+    /// <summary>Expand/collapse animation.</summary>
+    Expand
 }

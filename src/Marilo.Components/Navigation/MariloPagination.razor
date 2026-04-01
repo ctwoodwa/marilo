@@ -1,9 +1,14 @@
 @inherits MariloComponentBase
 
-<nav class="@CombineClasses(CssProvider.PaginationClass())" style="@CombineStyles()" role="navigation" aria-label="pagination" @attributes="AdditionalAttributes">
+<nav class="@CombineClasses(CssProvider.PaginationClass())" style="@CombineStyles()" role="navigation" aria-label="@AriaLabel" @attributes="AdditionalAttributes">
+    @if (ShowInfo)
+    {
+        <span class="mar-pagination__info">@GetInfoText()</span>
+    }
+
     <button type="button"
             class="mar-pagination__prev"
-            disabled="@(CurrentPage <= 1)"
+            disabled="@(Page <= 1)"
             aria-label="Previous page"
             @onclick="PreviousPage">
         &laquo;
@@ -13,8 +18,8 @@
     {
         var p = page;
         <button type="button"
-                class="@CssProvider.PaginationItemClass(p == CurrentPage)"
-                aria-current="@(p == CurrentPage ? "page" : null)"
+                class="@CssProvider.PaginationItemClass(p == Page)"
+                aria-current="@(p == Page ? "page" : null)"
                 @onclick="() => GoToPage(p)">
             @p
         </button>
@@ -22,25 +27,81 @@
 
     <button type="button"
             class="mar-pagination__next"
-            disabled="@(CurrentPage >= TotalPages)"
+            disabled="@(Page >= ComputedTotalPages)"
             aria-label="Next page"
             @onclick="NextPage">
         &raquo;
     </button>
+
+    @if (PageSizes is { Count: > 0 })
+    {
+        <select class="mar-pagination__page-size"
+                aria-label="Items per page"
+                value="@PageSize"
+                @onchange="HandlePageSizeChange">
+            @foreach (var size in PageSizes)
+            {
+                <option value="@size" selected="@(size == PageSize)">@size</option>
+            }
+        </select>
+    }
 </nav>
 
 @code {
-    [Parameter] public int CurrentPage { get; set; } = 1;
-    [Parameter] public EventCallback<int> CurrentPageChanged { get; set; }
-    [Parameter] public int TotalPages { get; set; }
-    [Parameter] public int MaxVisiblePages { get; set; } = 5;
+    /// <summary>
+    /// The current 1-based page number. Supports two-way binding.
+    /// </summary>
+    [Parameter] public int Page { get; set; } = 1;
+
+    /// <summary>
+    /// Callback fired when the page changes.
+    /// </summary>
+    [Parameter] public EventCallback<int> PageChanged { get; set; }
+
+    /// <summary>
+    /// The total number of items across all pages. Used with PageSize to compute total pages.
+    /// </summary>
+    [Parameter] public int Total { get; set; }
+
+    /// <summary>
+    /// The number of items per page. Default is 10.
+    /// </summary>
+    [Parameter] public int PageSize { get; set; } = 10;
+
+    /// <summary>
+    /// Callback fired when page size changes (from PageSizes dropdown).
+    /// </summary>
+    [Parameter] public EventCallback<int> PageSizeChanged { get; set; }
+
+    /// <summary>
+    /// List of available page sizes for the page-size dropdown. When empty, no dropdown is shown.
+    /// </summary>
+    [Parameter] public List<int>? PageSizes { get; set; }
+
+    /// <summary>
+    /// The number of page buttons to display. Default is 5.
+    /// </summary>
+    [Parameter] public int ButtonCount { get; set; } = 5;
+
+    /// <summary>
+    /// Whether to show page info text (e.g., "1-10 of 100 items"). Default is false.
+    /// </summary>
+    [Parameter] public bool ShowInfo { get; set; }
+
+    /// <summary>
+    /// Accessible label for the pagination nav element.
+    /// </summary>
+    [Parameter] public string AriaLabel { get; set; } = "pagination";
+
+    private int ComputedTotalPages => PageSize > 0 ? Math.Max(1, (int)Math.Ceiling((double)Total / PageSize)) : 1;
 
     private IEnumerable<int> GetVisiblePages()
     {
-        var half = MaxVisiblePages / 2;
-        var start = Math.Max(1, CurrentPage - half);
-        var end = Math.Min(TotalPages, start + MaxVisiblePages - 1);
-        start = Math.Max(1, end - MaxVisiblePages + 1);
+        var totalPages = ComputedTotalPages;
+        var half = ButtonCount / 2;
+        var start = Math.Max(1, Page - half);
+        var end = Math.Min(totalPages, start + ButtonCount - 1);
+        start = Math.Max(1, end - ButtonCount + 1);
 
         for (var i = start; i <= end; i++)
             yield return i;
@@ -48,10 +109,32 @@
 
     private async Task GoToPage(int page)
     {
-        CurrentPage = page;
-        await CurrentPageChanged.InvokeAsync(page);
+        page = Math.Clamp(page, 1, ComputedTotalPages);
+        if (page != Page)
+        {
+            Page = page;
+            await PageChanged.InvokeAsync(page);
+        }
     }
 
-    private Task PreviousPage() => GoToPage(CurrentPage - 1);
-    private Task NextPage() => GoToPage(CurrentPage + 1);
+    private Task PreviousPage() => GoToPage(Page - 1);
+    private Task NextPage() => GoToPage(Page + 1);
+
+    private async Task HandlePageSizeChange(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var newSize) && newSize > 0)
+        {
+            PageSize = newSize;
+            await PageSizeChanged.InvokeAsync(newSize);
+            // Reset to page 1 when page size changes
+            await GoToPage(1);
+        }
+    }
+
+    private string GetInfoText()
+    {
+        var start = (Page - 1) * PageSize + 1;
+        var end = Math.Min(Page * PageSize, Total);
+        return $"{start}-{end} of {Total} items";
+    }
 }

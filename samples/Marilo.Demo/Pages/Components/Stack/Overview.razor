@@ -1,10 +1,10 @@
-@page "/components/stack"
-@page "/components/stack/overview"
+@page "/components/Stack"
+@page "/components/Stack/overview"
 @layout ComponentDemoLayout
 
 <PageSection Title="Overview">
     <DemoSection Title="Horizontal" Code="@_horizontalCode">
-        <MariloStack Direction="StackDirection.Horizontal" Alignment="StackAlignment.Center">
+        <MariloStack VerticalAlign="StackAlignment.Center">
             <MariloBadge Variant="BadgeVariant.Primary">Primary</MariloBadge>
             <MariloBadge Variant="BadgeVariant.Secondary">Secondary</MariloBadge>
             <MariloBadge Variant="BadgeVariant.Success">Success</MariloBadge>
@@ -12,7 +12,7 @@
     </DemoSection>
 
     <DemoSection Title="Vertical" Code="@_verticalCode">
-        <MariloStack Direction="StackDirection.Vertical">
+        <MariloStack Orientation="StackDirection.Vertical">
             <MariloButton Size="ButtonSize.Small">Button 1</MariloButton>
             <MariloButton Size="ButtonSize.Small">Button 2</MariloButton>
             <MariloButton Size="ButtonSize.Small">Button 3</MariloButton>
@@ -22,7 +22,7 @@
 
 <PageSection Title="Appearance">
     <DemoSection Title="Spacing" Description="Control the gap between stack items with the Spacing parameter." Code="@_spacingCode">
-        <MariloStack Direction="StackDirection.Horizontal" Spacing="24px">
+        <MariloStack Spacing="24px">
             <MariloBadge Variant="BadgeVariant.Primary">Item 1</MariloBadge>
             <MariloBadge Variant="BadgeVariant.Secondary">Item 2</MariloBadge>
             <MariloBadge Variant="BadgeVariant.Success">Item 3</MariloBadge>
@@ -30,13 +30,13 @@
     </DemoSection>
 
     <DemoSection Title="Alignment" Description="Align items along the cross axis." Code="@_alignmentCode">
-        <MariloStack Direction="StackDirection.Horizontal" Alignment="StackAlignment.Start" style="height:80px;background:var(--marilo-color-surface);">
+        <MariloStack VerticalAlign="StackAlignment.Start" Style="height:80px;background:var(--marilo-color-surface);">
             <MariloBadge Variant="BadgeVariant.Primary">Start</MariloBadge>
         </MariloStack>
-        <MariloStack Direction="StackDirection.Horizontal" Alignment="StackAlignment.Center" style="height:80px;background:var(--marilo-color-surface);">
+        <MariloStack VerticalAlign="StackAlignment.Center" Style="height:80px;background:var(--marilo-color-surface);">
             <MariloBadge Variant="BadgeVariant.Primary">Center</MariloBadge>
         </MariloStack>
-        <MariloStack Direction="StackDirection.Horizontal" Alignment="StackAlignment.End" style="height:80px;background:var(--marilo-color-surface);">
+        <MariloStack VerticalAlign="StackAlignment.End" Style="height:80px;background:var(--marilo-color-surface);">
             <MariloBadge Variant="BadgeVariant.Primary">End</MariloBadge>
         </MariloStack>
     </DemoSection>
@@ -51,34 +51,34 @@
 
 @code {
     private const string _horizontalCode =
-        "<MariloStack Direction=\"StackDirection.Horizontal\" Alignment=\"StackAlignment.Center\">\n" +
+        "<MariloStack VerticalAlign=\"StackAlignment.Center\">\n" +
         "    <MariloBadge Variant=\"BadgeVariant.Primary\">Primary</MariloBadge>\n" +
         "    <MariloBadge Variant=\"BadgeVariant.Secondary\">Secondary</MariloBadge>\n" +
         "    <MariloBadge Variant=\"BadgeVariant.Success\">Success</MariloBadge>\n" +
         "</MariloStack>";
 
     private const string _verticalCode =
-        "<MariloStack Direction=\"StackDirection.Vertical\">\n" +
+        "<MariloStack Orientation=\"StackDirection.Vertical\">\n" +
         "    <MariloButton Size=\"ButtonSize.Small\">Button 1</MariloButton>\n" +
         "    <MariloButton Size=\"ButtonSize.Small\">Button 2</MariloButton>\n" +
         "    <MariloButton Size=\"ButtonSize.Small\">Button 3</MariloButton>\n" +
         "</MariloStack>";
 
     private const string _spacingCode =
-        "<MariloStack Direction=\"StackDirection.Horizontal\" Spacing=\"24px\">\n" +
+        "<MariloStack Spacing=\"24px\">\n" +
         "    <MariloBadge Variant=\"BadgeVariant.Primary\">Item 1</MariloBadge>\n" +
         "    <MariloBadge Variant=\"BadgeVariant.Secondary\">Item 2</MariloBadge>\n" +
         "    <MariloBadge Variant=\"BadgeVariant.Success\">Item 3</MariloBadge>\n" +
         "</MariloStack>";
 
     private const string _alignmentCode =
-        "<MariloStack Direction=\"StackDirection.Horizontal\" Alignment=\"StackAlignment.Start\">\n" +
+        "<MariloStack VerticalAlign=\"StackAlignment.Start\">\n" +
         "    <MariloBadge>Start</MariloBadge>\n" +
         "</MariloStack>\n" +
-        "<MariloStack Direction=\"StackDirection.Horizontal\" Alignment=\"StackAlignment.Center\">\n" +
+        "<MariloStack VerticalAlign=\"StackAlignment.Center\">\n" +
         "    <MariloBadge>Center</MariloBadge>\n" +
         "</MariloStack>\n" +
-        "<MariloStack Direction=\"StackDirection.Horizontal\" Alignment=\"StackAlignment.End\">\n" +
+        "<MariloStack VerticalAlign=\"StackAlignment.End\">\n" +
         "    <MariloBadge>End</MariloBadge>\n" +
         "</MariloStack>";
 

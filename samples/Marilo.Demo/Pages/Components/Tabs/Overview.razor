@@ -1,5 +1,5 @@
-@page "/components/tabs"
-@page "/components/tabs/overview"
+@page "/components/TabStrip"
+@page "/components/TabStrip/overview"
 @layout ComponentDemoLayout
 @using Marilo.Components.Layout
 
@@ -55,6 +55,31 @@
             </TabStripTab>
         </MariloTabStrip>
     </DemoSection>
+
+    <DemoSection Title="Overflow Menu Mode" Description="When OverflowMode is set to Menu with MaxVisibleTabs, tabs beyond that count are placed in a dropdown." Code="@_overflowCode">
+        <MariloTabStrip @bind-ActiveTabId="@_overflowActiveId"
+                        OverflowMode="TabStripOverflowMode.Menu"
+                        MaxVisibleTabs="3">
+            <TabStripTab Id="tab1" Title="Dashboard">
+                <p>Dashboard content.</p>
+            </TabStripTab>
+            <TabStripTab Id="tab2" Title="Reports">
+                <p>Reports content.</p>
+            </TabStripTab>
+            <TabStripTab Id="tab3" Title="Analytics">
+                <p>Analytics content.</p>
+            </TabStripTab>
+            <TabStripTab Id="tab4" Title="Settings">
+                <p>Settings content (overflow).</p>
+            </TabStripTab>
+            <TabStripTab Id="tab5" Title="Users">
+                <p>Users content (overflow).</p>
+            </TabStripTab>
+            <TabStripTab Id="tab6" Title="Billing">
+                <p>Billing content (overflow).</p>
+            </TabStripTab>
+        </MariloTabStrip>
+    </DemoSection>
 </PageSection>
 
 <PageSection Title="Events">
@@ -104,6 +129,7 @@
     // Appearance
     private string _multiActiveId = "active";
     private string _richActiveId  = "profile";
+    private string _overflowActiveId = "tab1";
 
     private const string _multiCode =
         "<MariloTabStrip @bind-ActiveTabId=\"@_activeTabId\">\n" +
@@ -123,6 +149,18 @@
         "    <TabStripTab Id=\"prefs\" Title=\"Preferences\">\n" +
         "        <MariloField><MariloSwitch Label=\"Dark mode\" /></MariloField>\n" +
         "    </TabStripTab>\n" +
+        "</MariloTabStrip>";
+
+    private const string _overflowCode =
+        "<MariloTabStrip @bind-ActiveTabId=\"@_activeTabId\"\n" +
+        "                OverflowMode=\"TabStripOverflowMode.Menu\"\n" +
+        "                MaxVisibleTabs=\"3\">\n" +
+        "    <TabStripTab Id=\"tab1\" Title=\"Dashboard\">...</TabStripTab>\n" +
+        "    <TabStripTab Id=\"tab2\" Title=\"Reports\">...</TabStripTab>\n" +
+        "    <TabStripTab Id=\"tab3\" Title=\"Analytics\">...</TabStripTab>\n" +
+        "    <TabStripTab Id=\"tab4\" Title=\"Settings\">...</TabStripTab>\n" +
+        "    <TabStripTab Id=\"tab5\" Title=\"Users\">...</TabStripTab>\n" +
+        "    <TabStripTab Id=\"tab6\" Title=\"Billing\">...</TabStripTab>\n" +
         "</MariloTabStrip>";
 
     // Events

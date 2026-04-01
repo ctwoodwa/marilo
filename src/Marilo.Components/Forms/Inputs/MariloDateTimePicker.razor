@@ -7,32 +7,46 @@
         @IconProvider.GetIcon("calendar", IconSize.Small)
     </span>
     <input type="datetime-local"
-           class="@CssProvider.TextFieldClass(false, Disabled)"
+           class="@CssProvider.TextFieldClass(false, !Enabled)"
            value="@FormatValue()"
+           min="@FormatDateTime(Min)"
+           max="@FormatDateTime(Max)"
            placeholder="@Placeholder"
-           disabled="@Disabled"
+           disabled="@(!Enabled)"
+           readonly="@ReadOnly"
            @onchange="OnDateTimeChanged" />
+    @if (ShowClearButton && Enabled && !ReadOnly && Value.HasValue)
+    {
+        <button type="button" class="mar-datepicker__clear" aria-label="Clear" @onclick="ClearValue">&times;</button>
+    }
 </div>
 
 @code {
     [Parameter] public DateTime? Value { get; set; }
     [Parameter] public EventCallback<DateTime?> ValueChanged { get; set; }
     [Parameter] public string? Placeholder { get; set; }
-    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public bool Enabled { get; set; } = true;
+    [Parameter] public bool ReadOnly { get; set; }
+    [Parameter] public DateTime? Min { get; set; }
+    [Parameter] public DateTime? Max { get; set; }
+    [Parameter] public string? Format { get; set; }
+    [Parameter] public bool ShowClearButton { get; set; }
+
+    /// <summary>Fires when the value is confirmed.</summary>
+    [Parameter] public EventCallback<DateTime?> OnConfirm { get; set; }
 
     private string? FormatValue() => Value?.ToString("yyyy-MM-ddTHH:mm");
+    private string? FormatDateTime(DateTime? dt) => dt?.ToString("yyyy-MM-ddTHH:mm");
 
     private async Task OnDateTimeChanged(ChangeEventArgs e)
     {
-        var str = e.Value?.ToString();
-        if (DateTime.TryParse(str, out var dateTime))
-        {
-            Value = dateTime;
-        }
-        else
-        {
-            Value = null;
-        }
+        Value = DateTime.TryParse(e.Value?.ToString(), out var dt) ? dt : null;
         await ValueChanged.InvokeAsync(Value);
+    }
+
+    private async Task ClearValue()
+    {
+        Value = null;
+        await ValueChanged.InvokeAsync(null);
     }
 }

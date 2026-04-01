@@ -1,0 +1,155 @@
+// =================================================================
+// Marilo Bootstrap Provider — Data Display Bridge Styles
+// =================================================================
+
+// Avatar
+.mar-bs-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--marilo-color-primary);
+  color: #{color-contrast($primary)};
+  font-weight: 600;
+  overflow: hidden;
+
+  &--xs { width: 24px; height: 24px; font-size: 0.625rem; }
+  &--sm { width: 32px; height: 32px; font-size: 0.75rem; }
+  &--md { width: 40px; height: 40px; font-size: 0.875rem; }
+  &--lg { width: 56px; height: 56px; font-size: 1.125rem; }
+  &--xl { width: 72px; height: 72px; font-size: 1.5rem; }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+// Tooltip
+.mar-bs-tooltip {
+  &--show-click,
+  &--show-focus {
+    pointer-events: auto;
+  }
+}
+
+// Popover
+.mar-bs-popover {
+  position: absolute;
+  z-index: var(--marilo-z-popover);
+}
+
+// Timeline
+.mar-bs-timeline {
+  position: relative;
+  padding-left: 2rem;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0.75rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: var(--marilo-color-border);
+  }
+}
+
+.mar-bs-timeline-item {
+  position: relative;
+  padding-bottom: var(--marilo-space-xl);
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: -1.625rem;
+    top: 0.25rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--marilo-color-primary);
+    border: 2px solid var(--marilo-color-bg);
+  }
+}
+
+// DataGrid
+.mar-bs-datagrid {
+  border: 1px solid var(--marilo-color-border);
+  border-radius: var(--marilo-radius-md);
+
+  table {
+    margin-bottom: 0;
+  }
+}
+
+.mar-bs-datagrid-header-cell {
+  &--sortable {
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+      background-color: var(--marilo-color-surface);
+    }
+  }
+
+  &--sorted {
+    font-weight: 600;
+    color: var(--marilo-color-primary);
+  }
+}
+
+.mar-bs-datagrid-row--striped {
+  &:nth-child(even) {
+    background-color: #{$table-striped-bg};
+  }
+}
+
+.mar-bs-datagrid-pager {
+  padding: var(--marilo-space-sm) var(--marilo-space-md);
+  border-top: 1px solid var(--marilo-color-border);
+}
+
+.mar-bs-datagrid-toolbar {
+  padding: var(--marilo-space-sm);
+  border-bottom: 1px solid var(--marilo-color-border);
+}
+
+.mar-bs-datagrid-filter-row {
+  background-color: var(--marilo-color-surface);
+}
+
+.mar-bs-datagrid-filter-cell {
+  padding: var(--marilo-space-xs) var(--marilo-space-sm);
+
+  .form-control {
+    font-size: var(--marilo-font-size-sm);
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+.mar-bs-datagrid-group-header td {
+  padding: var(--marilo-space-sm) var(--marilo-space-md);
+}
+
+// TreeView
+.mar-bs-treeview {
+  .mar-bs-tree-item--expanded > .mar-bs-tree-children {
+    display: block;
+  }
+
+  .mar-bs-tree-children {
+    display: none;
+    padding-left: var(--marilo-space-lg);
+  }
+
+  .list-group-item {
+    border-left: 0;
+    border-right: 0;
+    cursor: pointer;
+  }
+}
+
+// ListView
+.mar-bs-listview {
+  // Inherits list-group styles; no additional bridge needed
+}
