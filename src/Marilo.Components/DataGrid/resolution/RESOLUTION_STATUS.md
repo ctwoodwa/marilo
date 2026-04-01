@@ -1,11 +1,11 @@
 ---
 component: MariloDataGrid, MariloGridColumn, MariloGridToolbar
 phase: 2
-status: in-progress
+status: complete
 complexity: multi-pass
 priority: high
 owner: "claude"
-last-updated: 2026-03-31
+last-updated: 2026-04-01
 depends-on: [MariloThemeProvider, MariloPagination, MariloForm]
 external-resources:
   - name: "Blazor Virtualize"
@@ -17,7 +17,7 @@ external-resources:
 # Resolution Status: MariloDataGrid, MariloGridColumn, MariloGridToolbar
 
 ## Current Phase
-Phase 2: Data grid infrastructure — Pass 1 complete
+Phase 2: Complete. Remaining work tracked in `../GAP_ANALYSIS.md` (Phases A–D).
 
 ## Gap Summary
 MariloDataGrid had 44 gaps. MariloGridColumn had 8 gaps. MariloGridToolbar had 2 gaps.
@@ -50,7 +50,7 @@ MariloDataGrid had 44 gaps. MariloGridColumn had 8 gaps. MariloGridToolbar had 2
 | # | Gap | Severity | Resolution |
 |---|-----|----------|------------|
 | 1 | No `Visible` parameter | **Medium** | Added `Visible` parameter (default true). Grid filters by `_visibleColumns`. |
-| 2 | No `EditorTemplate` | **High** | Added `EditorTemplate` RenderFragment<TItem> parameter (ready for editing pass). |
+| 2 | No `EditorTemplate` | **High** | Added `EditorTemplate` RenderFragment<TItem> parameter. |
 | 3 | No `FooterTemplate` | **Low** | Added `FooterTemplate` RenderFragment parameter. |
 | 4 | No `OnCellRender` event | **Medium** | Added `OnCellRender` Action<GridCellRenderEventArgs<TItem>> for per-cell CSS customization. |
 
@@ -60,34 +60,47 @@ MariloDataGrid had 44 gaps. MariloGridColumn had 8 gaps. MariloGridToolbar had 2
 |---|-----|----------|------------|
 | 1 | No ARIA role | **Low** | Added `role="toolbar"` and `aria-label`. |
 
-### New Files Created
+### New Files Created (Pass 1)
 
 | File | Purpose |
 |------|---------|
 | `GridEventArgs.cs` | Event args: `GridRowClickEventArgs<T>`, `GridReadEventArgs<T>`, `GridRowRenderEventArgs<T>`, `GridCellRenderEventArgs<T>`, `GridStateChangedEventArgs` |
 
-## Remaining Gaps (Deferred to Pass 2+)
+## Pass 2 Resolutions (2026-03-31)
 
-| Gap | Severity | Notes |
-|-----|----------|-------|
-| Editing (CRUD) — InCell, Inline, Popup modes | **High** | Requires command column, edit templates, CUD events |
-| Grouping | **Medium** | GroupDescriptors added to GridState; rendering not yet implemented |
-| Virtual scrolling | **Medium** | Will use Blazor `<Virtualize>` |
-| Column resizing | **Medium** | Requires JS interop |
-| Column reordering | **Medium** | Requires JS interop |
-| Frozen/locked columns | **Low** | Sticky positioning |
-| Column menu | **Low** | Popup per column header |
-| Multi-column headers | **Low** | Nested column groups |
-| Hierarchy / DetailTemplate | **Medium** | Row expansion |
-| Row drag and drop | **Low** | Requires JS interop |
-| Export (Excel) | **Low** | Requires library decision |
-| Loading animation | **Low** | Skeleton/spinner overlay |
-| Aggregates / FooterTemplate rendering | **Low** | Template added, rendering not wired |
-| Multi-sort (Ctrl+click) | **Low** | Currently single-sort only |
-| FilterMenu mode | **Medium** | Only FilterRow implemented |
-| GridCommandButton for toolbar | **Medium** | Toolbar cascades grid, but no command button component yet |
+### MariloDataGrid — Resolved Gaps
 
-## Blockers
-- Editing support requires decision on command column architecture
-- Virtual scrolling requires JS interop infrastructure
-- Column resize/reorder requires shared JS interop module (shared with MariloWindow/MariloSplitter)
+| # | Gap | Severity | Resolution |
+|---|-----|----------|------------|
+| 1 | No editing support (CRUD) | **High** | Implemented Inline, InCell, and Popup edit modes with full CRUD lifecycle. |
+| 2 | No CUD events | **High** | Added OnAdd, OnCreate, OnUpdate, OnDelete, OnEdit, OnCancel, OnModelInit, OnCommand EventCallbacks. |
+| 3 | No command column | **High** | Inline/Popup modes render Edit/Delete and Save/Cancel buttons in command cell. |
+| 4 | No DetailTemplate / hierarchy | **Medium** | Added DetailTemplate RenderFragment<TItem>, expand/collapse button, OnRowExpand/OnRowCollapse events. |
+| 5 | No FilterMenu mode | **Medium** | Added FilterMenu with operator dropdown (11 operators), value input, Apply/Clear actions. |
+| 6 | Extended filter operators incomplete | **Low** | All 11 FilterOperator values now work: Contains, Equals, NotEquals, StartsWith, EndsWith, GT, GTE, LT, LTE, IsNull, IsNotNull with IComparable type-aware comparison. |
+| 7 | Single-sort only | **Low** | Multi-sort via Ctrl+Click with ThenBy/ThenByDescending chaining and sort-order indicator. |
+| 8 | No loading animation | **Low** | Added `IsLoading` parameter with overlay (`aria-busy`, loading spinner). |
+| 9 | No virtual scrolling | **Medium** | Added `EnableVirtualization` and `VirtualizeOverscanCount` parameters using Blazor `<Virtualize>`. |
+| 10 | No footer rendering | **Low** | Added `<tfoot>` section that renders `FooterTemplate` from each column. |
+| 11 | InCell double-click editing | **Medium** | InCell mode: double-click cell to edit, inline ✓/✗ save/cancel buttons per cell. |
+
+### New Files Created (Pass 2)
+
+| File | Purpose |
+|------|---------|
+| `GridCommandTypes.cs` | `GridCommandDefinition`, `GridCommandPlacement` enum, `GridEditEventArgs<T>`, `GridModelInitEventArgs<T>`, `GridCommandEventArgs<T>` |
+| `MariloGridCommandButton.razor` | Reusable command button component with CascadingParameter to parent grid |
+| `MariloDataGrid.Editing.cs` | Partial class: BeginEdit, BeginCellEdit, BeginAdd, SaveEdit, CancelEdit, DeleteItem, ExecuteCommand, ToggleDetailRow |
+| `MariloDataGrid.Data.cs` | Partial class: ProcessDataAsync, ApplyFilter (11 operators), ApplySort (multi), event handlers |
+| `MariloDataGrid.Rendering.cs` | Partial class: RenderDataRow, RenderEditRow, RenderFilterMenu, row/cell render callbacks |
+
+## Remaining Work
+
+All remaining gaps are tracked in `../GAP_ANALYSIS.md` with phased task breakdowns:
+
+| Phase | Description | Task Count |
+|-------|-------------|------------|
+| A | Pure C# features (grouping, auto-columns, search, templates, CSV export) | 42 |
+| B | JS interop features (keyboard nav, column resize/reorder, row drag, frozen cols) | 28 |
+| C | Advanced features (Excel/PDF export, column menu/chooser, cell selection, validation) | 29 |
+| D | Future/out-of-scope (AI, popup templates, toolbar tools, adaptive mode) | 21 |

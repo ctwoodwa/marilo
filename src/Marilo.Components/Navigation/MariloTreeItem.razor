@@ -1,6 +1,6 @@
 @inherits MariloComponentBase
 
-<li class="@CombineClasses(CssProvider.TreeItemClass(IsExpanded, IsSelected))"
+<li class="@CombineClasses(ItemClass)"
     style="@CombineStyles()"
     role="treeitem"
     aria-expanded="@(HasChildren ? IsExpanded.ToString().ToLower() : null)"
@@ -12,15 +12,21 @@
             <button type="button"
                     class="mar-tree-item__toggle"
                     aria-label="@(IsExpanded ? "Collapse" : "Expand")"
+                    tabindex="-1"
+                    disabled="@(TreeView?.Disabled == true)"
                     @onclick="ToggleExpanded">
                 @(IsExpanded ? "\u25BC" : "\u25B6")
             </button>
         }
         @if (TreeView?.ShowCheckboxes == true)
         {
+            var checkState = TreeView.GetCheckState(Id ?? Title);
             <input type="checkbox"
-                   class="mar-tree-item__checkbox"
-                   checked="@(TreeView.IsItemChecked(Id ?? Title))"
+                   class="@CheckboxClass(checkState)"
+                   checked="@(checkState == true)"
+                   disabled="@(TreeView.Disabled || TreeView.ReadOnly)"
+                   tabindex="-1"
+                   aria-checked="@(checkState switch { true => "true", false => "false", _ => "mixed" })"
                    @onchange="OnCheckboxChanged" />
         }
         @if (!string.IsNullOrEmpty(Icon))
@@ -43,53 +49,3 @@
         </ul>
     }
 </li>
-
-@code {
-    [CascadingParameter] public MariloTreeView? TreeView { get; set; }
-
-    /// <summary>Unique identifier for this item.</summary>
-    [Parameter] public string? Id { get; set; }
-
-    /// <summary>Display text for the tree item.</summary>
-    [Parameter] public string Title { get; set; } = "";
-
-    /// <summary>Icon name/class for the tree item.</summary>
-    [Parameter] public string? Icon { get; set; }
-
-    /// <summary>Navigation URL. When set, the title renders as a link.</summary>
-    [Parameter] public string? Url { get; set; }
-
-    /// <summary>Whether this item is expanded.</summary>
-    [Parameter] public bool IsExpanded { get; set; }
-
-    /// <summary>Fires when the expanded state changes.</summary>
-    [Parameter] public EventCallback<bool> IsExpandedChanged { get; set; }
-
-    /// <summary>Whether this item is selected.</summary>
-    [Parameter] public bool IsSelected { get; set; }
-
-    /// <summary>Fires when clicked.</summary>
-    [Parameter] public EventCallback OnClick { get; set; }
-
-    /// <summary>Child tree items.</summary>
-    [Parameter] public RenderFragment? ChildContent { get; set; }
-
-    private bool HasChildren => ChildContent != null;
-
-    private async Task ToggleExpanded()
-    {
-        IsExpanded = !IsExpanded;
-        await IsExpandedChanged.InvokeAsync(IsExpanded);
-    }
-
-    private async Task HandleClick()
-    {
-        if (OnClick.HasDelegate)
-            await OnClick.InvokeAsync();
-    }
-
-    private void OnCheckboxChanged(ChangeEventArgs e)
-    {
-        TreeView?.ToggleItemChecked(Id ?? Title);
-    }
-}

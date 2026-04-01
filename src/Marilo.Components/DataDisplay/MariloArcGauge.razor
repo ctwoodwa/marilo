@@ -29,10 +29,10 @@
         @* Center label *@
         @if (ShowLabel)
         {
-            <g><text x="@cx" y="@(cy + 6)" text-anchor="middle" font-size="@(Size / 6)"
+            <svg:text x="@cx" y="@(cy + 6)" text-anchor="middle" font-size="@(Size / 6)"
                   fill="currentColor" class="mar-arc-gauge__label">
                 @Value.ToString(Format ?? "F0")
-            </text></g>
+            </svg:text>
         }
     </svg>
 </div>

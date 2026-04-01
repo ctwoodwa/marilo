@@ -21,7 +21,7 @@
             var val = minPrice + priceRange * i / 5;
             var y = ChartTop + ChartHeight - (ChartHeight * i / 5.0);
             <line x1="55" y1="@y" x2="@Width" y2="@y" stroke="#e0e0e0" stroke-width="0.5" />
-            <g><text x="50" y="@(y + 4)" text-anchor="end" font-size="10" fill="#666">@val.ToString("F0")</text></g>
+            <svg:text x="50" y="@(y + 4)" text-anchor="end" font-size="10" fill="#666">@val.ToString("F0")</svg:text>
         }
 
         @* Candlesticks *@

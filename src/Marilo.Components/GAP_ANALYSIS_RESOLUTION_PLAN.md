@@ -32,25 +32,25 @@ This document defines the resolution strategy for all 87 Marilo Blazor component
 | MariloRow | 0 | single-pass | No | **T1 - Critical** | ✅ COMPLETE (0 gaps) |
 | MariloColumn | 0 | single-pass | No | **T1 - Critical** | ✅ COMPLETE (0 gaps) |
 | MariloDivider | 0 | single-pass | No | **T1 - Critical** | ✅ COMPLETE (0 gaps) |
-| MariloDataGrid | 44 | multi-pass | Yes (virtual scroll, grouping, CRUD, export) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloGridColumn | 8 | single-pass | No | **T2 - High** | 🔧 IN PROGRESS |
-| MariloGridToolbar | 2 | single-pass | No | **T2 - High** | 🔧 IN PROGRESS |
+| MariloDataGrid | 44 | multi-pass | Yes (virtual scroll, grouping, CRUD, export) | **T2 - High** | ✅ IMPLEMENTED (Pass 2: editing modes, detail template, FilterMenu, loading, footer, extended filters) |
+| MariloGridColumn | 8 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED (all 4 gaps resolved Pass 1 + footer rendering) |
+| MariloGridToolbar | 2 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED (ARIA + GridCommandButton) |
 | MariloEditor | 54 | multi-pass | Yes (ProseMirror / rich-text engine) | **T2 - High** | ✅ API SURFACE (Tiptap-agnostic) |
 | MariloChart | 27 | multi-pass | Yes (charting engine decision) | **T2 - High** | ✅ API SURFACE (Chart.js-agnostic) |
 | MariloChartSeries | 17 | multi-pass | Yes (scatter/bubble data models) | **T2 - High** | ✅ API SURFACE (Chart.js-agnostic) |
 | MariloWindow | 32 | multi-pass | Yes (JS interop for drag/resize) | **T2 - High** | ✅ API SURFACE (Custom JS) |
 | MariloDialog | 9 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED |
 | MariloConfirmDialog | 8 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED |
-| MariloPopover | 10 | multi-pass | Yes (anchor positioning) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloDrawer | 10 | multi-pass | Yes (Mode, MiniMode, data binding) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloList | 13 | multi-pass | Yes (data binding, selection, drag-drop) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloTreeView | 6 | multi-pass | Yes (expanded/selected binding, drag-drop) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloMenu | 7 | multi-pass | Yes (hierarchy rendering) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloContextMenu | 8 | multi-pass | Yes (selector pattern, data binding) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloAccordion | 9 | multi-pass | Yes (data binding, hierarchy) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloSplitter | 8 | multi-pass | Yes (interactive resize, state) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloPanel | 7 | multi-pass | Yes (data binding, expand/collapse) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloStepper | 6 | multi-pass | Yes (orientation, linear flow) | **T2 - High** | 🔧 IN PROGRESS |
+| MariloPopover | 10 | multi-pass | Yes (anchor positioning) | **T2 - High** | ✅ IMPLEMENTED (animation, keyboard, a11y) |
+| MariloDrawer | 10 | multi-pass | Yes (Mode, MiniMode, data binding) | **T2 - High** | ✅ IMPLEMENTED (all 10 gaps resolved) |
+| MariloList | 13 | multi-pass | Yes (data binding, selection, drag-drop) | **T2 - High** | ✅ IMPLEMENTED (toolbar, keyboard nav, size, reorder) |
+| MariloTreeView | 6+16 | multi-pass | Yes (expanded/selected binding, drag-drop) | **T2 - High** | ✅ IMPLEMENTED (21/22 gaps resolved; 1 deferred: virtualization. Partial file refactor, tri-state checkboxes, multi-select, lazy load, keyboard nav, context menu, inline edit) |
+| MariloMenu | 7 | multi-pass | Yes (hierarchy rendering) | **T2 - High** | ✅ IMPLEMENTED (4/5 gaps; ShowOn/collision deferred) |
+| MariloContextMenu | 8 | multi-pass | Yes (selector pattern, data binding) | **T2 - High** | ✅ IMPLEMENTED (hierarchy, templates, keyboard, data binding) |
+| MariloAccordion | 9 | multi-pass | Yes (data binding, hierarchy) | **T2 - High** | ✅ IMPLEMENTED (all 9 gaps resolved: data binding, expandmode, templates) |
+| MariloSplitter | 8 | multi-pass | Yes (interactive resize, state) | **T2 - High** | ✅ IMPLEMENTED (drag resize, keyboard resize, state, aria, collapse) |
+| MariloPanel | 7 | multi-pass | Yes (data binding, expand/collapse) | **T2 - High** | ✅ IMPLEMENTED (single-panel design; templates, expand/collapse) |
+| MariloStepper | 6 | multi-pass | Yes (orientation, linear flow) | **T2 - High** | ✅ IMPLEMENTED (4/7 gaps; orientation, linear, clickable nav) |
 | MariloPagination | 6 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED |
 | MariloButton | 8 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
 | MariloButtonGroup | 6 | multi-pass | Yes (child component architecture) | **T3 - Medium** | ✅ RESOLVED |
