@@ -49,9 +49,18 @@
     internal bool ShowCheckboxes => CheckBoxMode != CheckBoxMode.None;
     internal bool IsSingleCheckMode => CheckBoxMode == CheckBoxMode.Single;
 
+    /// <summary>Enable drag-and-drop reordering of tree items.</summary>
+    [Parameter] public bool EnableDragDrop { get; set; }
+
+    /// <summary>Fires when a tree node is dropped onto another node. Provides (draggedId, targetId).</summary>
+    [Parameter] public EventCallback<(string DraggedId, string TargetId)> OnDrop { get; set; }
+
     private HashSet<string> _expandedIds = new();
     private HashSet<string> _checkedIds = new();
     private HashSet<string> _selectedIds = new();
+    private HashSet<string> _loadingIds = new();
+    private string? _draggedNodeId;
+    private string? _dragOverNodeId;
 
     private string? SizeStyle => Size != null ? $"font-size:{Size};" : null;
 
@@ -295,6 +304,17 @@
             builder.CloseElement(); // li
         }
     };
+
+    private async Task HandleDrop(string targetId)
+    {
+        if (_draggedNodeId != null && _draggedNodeId != targetId)
+        {
+            if (OnDrop.HasDelegate)
+                await OnDrop.InvokeAsync((_draggedNodeId, targetId));
+        }
+        _draggedNodeId = null;
+        _dragOverNodeId = null;
+    }
 
     private async Task ToggleNodeAsync(string id)
     {

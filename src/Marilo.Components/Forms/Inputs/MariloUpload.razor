@@ -93,12 +93,6 @@
     [Parameter] public EventCallback<UploadSelectEventArgs> OnSelect { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    /// <summary>
-    /// Chunk size in bytes for chunked uploads. When set to a value > 0,
-    /// files are uploaded in chunks of this size. Each chunk is sent as a
-    /// separate POST with metadata headers (X-Chunk-Index, X-Total-Chunks, X-File-Name).
-    /// </summary>
-    [Parameter] public long ChunkSize { get; set; }
 
     private readonly List<UploadFileInfo> _files = [];
     private bool _isDragOver;

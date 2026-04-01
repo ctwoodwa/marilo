@@ -44,10 +44,10 @@
         @* Label *@
         @if (ShowLabel)
         {
-            <text x="@cx" y="@(cy + radius * 0.35)" text-anchor="middle" font-size="@(Size / 7)"
+            <g><text x="@cx" y="@(cy + radius * 0.35)" text-anchor="middle" font-size="@(Size / 7)"
                   fill="currentColor">
                 @Value.ToString(Format ?? "F0")
-            </text>
+            </text></g>
         }
     </svg>
 </div>

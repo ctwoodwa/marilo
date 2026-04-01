@@ -19,7 +19,7 @@
             </tr>
         </thead>
         <tbody>
-            @{ RenderRows(_rootItems, 0); }
+            @RenderRows(_rootItems, 0)
         </tbody>
     </table>
 </div>
@@ -121,7 +121,7 @@
         return item.GetType().GetProperty(propName)?.GetValue(item);
     }
 
-    private void RenderRows(List<TreeListNode> nodes, int depth)
+    private RenderFragment RenderRows(List<TreeListNode> nodes, int depth) => __builder =>
     {
         foreach (var node in nodes)
         {
@@ -164,12 +164,12 @@
                 }
             </tr>
 
-            if (hasKids && isExpanded)
+            @if (hasKids && isExpanded)
             {
-                RenderRows(node.Children, depth + 1);
+                @RenderRows(node.Children, depth + 1)
             }
         }
-    }
+    };
 
     private string? GetCellValue(TItem item, TreeListColumn col)
     {

@@ -27,10 +27,10 @@
                 transform="rotate(-90 @cx @cy)" />
         @if (ShowLabel)
         {
-            <text x="@cx" y="@(cy + 6)" text-anchor="middle" font-size="@(Size / 5)"
+            <g><text x="@cx" y="@(cy + 6)" text-anchor="middle" font-size="@(Size / 5)"
                   fill="currentColor">
                 @Value.ToString(Format ?? "F0")
-            </text>
+            </text></g>
         }
     </svg>
 </div>
