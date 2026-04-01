@@ -169,6 +169,72 @@ public enum PopoverCollision
 }
 
 /// <summary>
+/// Specifies the position of the toolbar in a list component.
+/// </summary>
+public enum ListToolbarPosition
+{
+    /// <summary>Toolbar on the right side.</summary>
+    Right,
+
+    /// <summary>Toolbar on the left side.</summary>
+    Left,
+
+    /// <summary>Toolbar above the list.</summary>
+    Top,
+
+    /// <summary>Toolbar below the list.</summary>
+    Bottom
+}
+
+/// <summary>
+/// Specifies the animation type for popover show/hide transitions.
+/// </summary>
+public enum PopoverAnimationType
+{
+    /// <summary>No animation.</summary>
+    None,
+
+    /// <summary>Fade in/out.</summary>
+    Fade,
+
+    /// <summary>Push up from bottom.</summary>
+    PushUp,
+
+    /// <summary>Push down from top.</summary>
+    PushDown,
+
+    /// <summary>Push left from right.</summary>
+    PushLeft,
+
+    /// <summary>Push right from left.</summary>
+    PushRight,
+
+    /// <summary>Reveal vertically from center.</summary>
+    RevealVertical,
+
+    /// <summary>Slide up into view.</summary>
+    SlideUp,
+
+    /// <summary>Slide inward.</summary>
+    SlideIn,
+
+    /// <summary>Slide down into view (default).</summary>
+    SlideDown,
+
+    /// <summary>Slide right into view.</summary>
+    SlideRight,
+
+    /// <summary>Slide left into view.</summary>
+    SlideLeft,
+
+    /// <summary>Zoom in from smaller scale.</summary>
+    ZoomIn,
+
+    /// <summary>Zoom out from larger scale.</summary>
+    ZoomOut
+}
+
+/// <summary>
 /// Specifies the semantic typography variant for text rendering.
 /// </summary>
 public enum TypographyVariant

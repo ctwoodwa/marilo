@@ -13,39 +13,16 @@
 
 @if (_isOpen)
 {
-    <div class="mar-menu-overlay" @onclick="Close"></div>
+    <div class="mar-menu-overlay" @onclick="Close" @oncontextmenu="CloseOnContext" @oncontextmenu:preventDefault="true"></div>
     <div class="@CombineClasses(CssProvider.ContextMenuClass())"
          style="@CombineStyles($"position:fixed;left:{_x}px;top:{_y}px")"
-         role="menu">
+         role="menu"
+         aria-label="Context menu"
+         @onkeydown="HandleKeyDown"
+         tabindex="-1">
         @if (Data != null)
         {
-            @foreach (var item in Data)
-            {
-                var isSeparator = GetBool(item, SeparatorField);
-                var isDisabled = GetBool(item, DisabledField);
-                var text = GetString(item, TextField);
-                var icon = GetString(item, IconField);
-
-                if (isSeparator)
-                {
-                    <div class="@CssProvider.MenuDividerClass()" role="separator"></div>
-                }
-                else
-                {
-                    var clickItem = item;
-                    <button type="button"
-                            class="@CssProvider.MenuItemClass(isDisabled)"
-                            role="menuitem"
-                            disabled="@isDisabled"
-                            @onclick="() => HandleItemClick(clickItem)">
-                        @if (!string.IsNullOrEmpty(icon))
-                        {
-                            <span class="mar-menu-item__icon">@icon</span>
-                        }
-                        @text
-                    </button>
-                }
-            }
+            @RenderItems(Data)
         }
         else
         {
@@ -67,12 +44,15 @@
 
     /// <summary>
     /// CSS selector for external target elements. When set, the inline trigger (ChildContent) is not used.
-    /// Requires JS interop for selector-based targeting (placeholder for future implementation).
+    /// Requires JS interop for selector-based targeting.
     /// </summary>
     [Parameter] public string? Selector { get; set; }
 
     /// <summary>Fires when a data-bound menu item is clicked.</summary>
     [Parameter] public EventCallback<object> OnClick { get; set; }
+
+    /// <summary>Custom template for rendering individual menu items.</summary>
+    [Parameter] public RenderFragment<object>? ItemTemplate { get; set; }
 
     // ── Data-binding parameters ──────────────────────────────────────
 
@@ -90,6 +70,9 @@
 
     /// <summary>Field name for disabled flag.</summary>
     [Parameter] public string DisabledField { get; set; } = "Disabled";
+
+    /// <summary>Field name for child items collection (enables hierarchical menus).</summary>
+    [Parameter] public string ItemsField { get; set; } = "Items";
 
     // ── Public API ──────────────────────────────────────────────────────
 
@@ -111,6 +94,61 @@
         await Task.CompletedTask;
     }
 
+    // ── Rendering ───────────────────────────────────────────────────────
+
+    private RenderFragment RenderItems(IEnumerable<object> items) => __builder =>
+    {
+        foreach (var item in items)
+        {
+            var isSeparator = GetBool(item, SeparatorField);
+            var isDisabled = GetBool(item, DisabledField);
+            var text = GetString(item, TextField);
+            var icon = GetString(item, IconField);
+            var children = GetChildren(item);
+            var hasChildren = children != null && children.Any();
+
+            if (isSeparator)
+            {
+                <div class="@CssProvider.MenuDividerClass()" role="separator"></div>
+            }
+            else
+            {
+                var clickItem = item;
+                <div class="mar-context-menu__item-wrapper @(hasChildren ? "mar-context-menu__item-wrapper--has-children" : "")">
+                    <button type="button"
+                            class="@CssProvider.MenuItemClass(isDisabled)"
+                            role="menuitem"
+                            disabled="@isDisabled"
+                            aria-haspopup="@(hasChildren ? "true" : null)"
+                            @onclick="() => HandleItemClick(clickItem)">
+                        @if (ItemTemplate != null)
+                        {
+                            @ItemTemplate(clickItem)
+                        }
+                        else
+                        {
+                            @if (!string.IsNullOrEmpty(icon))
+                            {
+                                <span class="mar-menu-item__icon">@icon</span>
+                            }
+                            <span class="mar-menu-item__text">@text</span>
+                            @if (hasChildren)
+                            {
+                                <span class="mar-menu-item__arrow">▸</span>
+                            }
+                        }
+                    </button>
+                    @if (hasChildren)
+                    {
+                        <div class="mar-context-menu__submenu" role="menu">
+                            @RenderItems(children!)
+                        </div>
+                    }
+                </div>
+            }
+        }
+    };
+
     // ── Event handlers ──────────────────────────────────────────────────
 
     private void OnContextMenu(MouseEventArgs e)
@@ -122,6 +160,9 @@
 
     private async Task HandleItemClick(object item)
     {
+        var children = GetChildren(item);
+        if (children != null && children.Any()) return; // Don't close on parent click
+
         if (OnClick.HasDelegate)
             await OnClick.InvokeAsync(item);
         _isOpen = false;
@@ -130,6 +171,19 @@
     private void Close()
     {
         _isOpen = false;
+    }
+
+    private void CloseOnContext(MouseEventArgs e)
+    {
+        _isOpen = false;
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            await HideAsync();
+        }
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────
@@ -144,5 +198,16 @@
     {
         var prop = item.GetType().GetProperty(field, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
         return prop?.GetValue(item) is true;
+    }
+
+    private IEnumerable<object>? GetChildren(object item)
+    {
+        var prop = item.GetType().GetProperty(ItemsField, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+        if (prop?.GetValue(item) is System.Collections.IEnumerable enumerable)
+        {
+            var list = enumerable.Cast<object>().ToList();
+            return list.Count > 0 ? list : null;
+        }
+        return null;
     }
 }
