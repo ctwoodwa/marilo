@@ -44,7 +44,7 @@ This document defines the resolution strategy for all 87 Marilo Blazor component
 | MariloPopover | 10 | multi-pass | Yes (anchor positioning) | **T2 - High** | ✅ IMPLEMENTED (animation, keyboard, a11y) |
 | MariloDrawer | 10 | multi-pass | Yes (Mode, MiniMode, data binding) | **T2 - High** | ✅ IMPLEMENTED (all 10 gaps resolved) |
 | MariloList | 13 | multi-pass | Yes (data binding, selection, drag-drop) | **T2 - High** | ✅ IMPLEMENTED (toolbar, keyboard nav, size, reorder) |
-| MariloTreeView | 6+16 | multi-pass | Yes (expanded/selected binding, drag-drop) | **T2 - High** | 🔄 IN PROGRESS (6 original resolved; 16 new gaps from source review — refactor to partial files + Phase 1 core gaps) |
+| MariloTreeView | 6+16 | multi-pass | Yes (expanded/selected binding, drag-drop) | **T2 - High** | ✅ IMPLEMENTED (21/22 gaps resolved; 1 deferred: virtualization. Partial file refactor, tri-state checkboxes, multi-select, lazy load, keyboard nav, context menu, inline edit) |
 | MariloMenu | 7 | multi-pass | Yes (hierarchy rendering) | **T2 - High** | ✅ IMPLEMENTED (4/5 gaps; ShowOn/collision deferred) |
 | MariloContextMenu | 8 | multi-pass | Yes (selector pattern, data binding) | **T2 - High** | ✅ IMPLEMENTED (hierarchy, templates, keyboard, data binding) |
 | MariloAccordion | 9 | multi-pass | Yes (data binding, hierarchy) | **T2 - High** | ✅ IMPLEMENTED (all 9 gaps resolved: data binding, expandmode, templates) |

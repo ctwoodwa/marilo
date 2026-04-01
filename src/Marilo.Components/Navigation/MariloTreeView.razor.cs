@@ -1,5 +1,6 @@
 using Marilo.Core.Base;
 using Marilo.Core.Enums;
+using Marilo.Core.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
@@ -18,6 +19,8 @@ public partial class MariloTreeView : MariloComponentBase
     private string? _focusedNodeId;
     private bool _preventKeyDefault;
     private List<TreeNode>? _cachedTree;
+    private string? _editingNodeId;
+    private string _editingText = "";
 
     // ── Parameters: Content ─────────────────────────────────────────────
 
@@ -114,6 +117,24 @@ public partial class MariloTreeView : MariloComponentBase
     /// <summary>Shows current state but prevents changes.</summary>
     [Parameter] public bool ReadOnly { get; set; }
 
+    // ── Parameters: Context Menu ──────────────────────────────────────
+
+    /// <summary>Fires when a tree item is right-clicked. Provides the item and mouse event args.</summary>
+    [Parameter] public EventCallback<TreeItemContextMenuEventArgs> OnItemContextMenu { get; set; }
+
+    // ── Parameters: Checkbox Template ───────────────────────────────────
+
+    /// <summary>Custom render fragment for checkbox display. Receives CheckboxContext with Checked, Indeterminate, OnChange, Disabled.</summary>
+    [Parameter] public RenderFragment<CheckboxContext>? CheckboxTemplate { get; set; }
+
+    // ── Parameters: Inline Editing ──────────────────────────────────────
+
+    /// <summary>Enables inline editing of node text via double-click or F2.</summary>
+    [Parameter] public bool AllowEditing { get; set; }
+
+    /// <summary>Fires when a node's text is edited. Provides the node ID and new text value.</summary>
+    [Parameter] public EventCallback<TreeItemEditEventArgs> OnItemEdit { get; set; }
+
     // ── Parameters: Filtering ───────────────────────────────────────────
 
     /// <summary>Predicate to filter visible nodes. Ancestors of matching nodes remain visible.</summary>
@@ -173,6 +194,32 @@ public partial class MariloTreeView : MariloComponentBase
     /// <summary>Clears the current filter and shows all nodes.</summary>
     public void ClearFilter()
     {
+        _cachedTree = null;
+        StateHasChanged();
+    }
+
+    /// <summary>Programmatically navigates to a node: expands all ancestors, selects it, and sets focus.</summary>
+    public async Task SelectNodeAsync(string id)
+    {
+        var tree = GetTree();
+        var node = FindNode(tree, id);
+        if (node == null) return;
+
+        // Expand ancestors
+        var ancestors = new List<string>();
+        CollectAncestorIds(tree, id, ancestors);
+        foreach (var ancestorId in ancestors)
+            _expandedIds.Add(ancestorId);
+
+        if (ExpandedItemsChanged.HasDelegate)
+            await ExpandedItemsChanged.InvokeAsync(_expandedIds.ToList());
+
+        // Select the node
+        _selectedIds.Clear();
+        _selectedIds.Add(id);
+        _focusedNodeId = id;
+        await SelectedItemsChanged.InvokeAsync(_selectedIds.ToList());
+
         _cachedTree = null;
         StateHasChanged();
     }
@@ -441,14 +488,23 @@ public partial class MariloTreeView : MariloComponentBase
                 builder.AddEventPreventDefaultAttribute(17, "ondragover", true);
             }
 
+            // Context menu
+            if (OnItemContextMenu.HasDelegate)
+            {
+                var ctxNode = node;
+                builder.AddAttribute(18, "oncontextmenu", EventCallback.Factory.Create<MouseEventArgs>(this, (MouseEventArgs args) =>
+                    OnItemContextMenu.InvokeAsync(new TreeItemContextMenuEventArgs { Item = ctxNode.Item, ItemId = ctxNode.Id, MouseEventArgs = args })));
+                builder.AddEventPreventDefaultAttribute(19, "oncontextmenu", true);
+            }
+
             // ExpandOnClick / ExpandOnDoubleClick on header
             if (hasKids && !Disabled)
             {
                 var clickNodeId = node.Id;
                 if (ExpandOnClick)
-                    builder.AddAttribute(18, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, () => ToggleNodeAsync(clickNodeId)));
-                if (ExpandOnDoubleClick)
-                    builder.AddAttribute(19, "ondblclick", EventCallback.Factory.Create<MouseEventArgs>(this, () => ToggleNodeAsync(clickNodeId)));
+                    builder.AddAttribute(20, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, () => ToggleNodeAsync(clickNodeId)));
+                if (ExpandOnDoubleClick && !AllowEditing)
+                    builder.AddAttribute(21, "ondblclick", EventCallback.Factory.Create<MouseEventArgs>(this, () => ToggleNodeAsync(clickNodeId)));
             }
 
             // Toggle button
@@ -470,22 +526,36 @@ public partial class MariloTreeView : MariloComponentBase
             if (ShowCheckboxes)
             {
                 var cbId = node.Id;
-                builder.OpenElement(30, "input");
-                builder.AddAttribute(31, "type", "checkbox");
-                builder.AddAttribute(32, "class",
-                    "mar-tree-item__checkbox" +
-                    (checkState == null ? " mar-tree-item__checkbox--indeterminate" : ""));
-                builder.AddAttribute(33, "checked", checkState == true);
-                builder.AddAttribute(34, "disabled", Disabled || ReadOnly);
-                builder.AddAttribute(35, "tabindex", "-1");
-                builder.AddAttribute(36, "aria-checked", checkState switch
+                if (CheckboxTemplate != null)
                 {
-                    true => "true",
-                    false => "false",
-                    null => "mixed"
-                });
-                builder.AddAttribute(37, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, _ => ToggleItemChecked(cbId)));
-                builder.CloseElement();
+                    var ctx = new CheckboxContext
+                    {
+                        Checked = checkState == true,
+                        Indeterminate = checkState == null,
+                        Disabled = Disabled || ReadOnly,
+                        OnChange = (val) => { if (val != (checkState == true)) ToggleItemChecked(cbId); }
+                    };
+                    builder.AddContent(30, CheckboxTemplate(ctx));
+                }
+                else
+                {
+                    builder.OpenElement(30, "input");
+                    builder.AddAttribute(31, "type", "checkbox");
+                    builder.AddAttribute(32, "class",
+                        "mar-tree-item__checkbox" +
+                        (checkState == null ? " mar-tree-item__checkbox--indeterminate" : ""));
+                    builder.AddAttribute(33, "checked", checkState == true);
+                    builder.AddAttribute(34, "disabled", Disabled || ReadOnly);
+                    builder.AddAttribute(35, "tabindex", "-1");
+                    builder.AddAttribute(36, "aria-checked", checkState switch
+                    {
+                        true => "true",
+                        false => "false",
+                        null => "mixed"
+                    });
+                    builder.AddAttribute(37, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, _ => ToggleItemChecked(cbId)));
+                    builder.CloseElement();
+                }
             }
 
             // Icon
@@ -497,8 +567,25 @@ public partial class MariloTreeView : MariloComponentBase
                 builder.CloseElement();
             }
 
-            // Content (template or text label)
-            if (ItemTemplate != null)
+            // Content (template, inline edit, or text label)
+            if (_editingNodeId == node.Id && AllowEditing)
+            {
+                var editId = node.Id;
+                builder.OpenElement(50, "input");
+                builder.AddAttribute(51, "type", "text");
+                builder.AddAttribute(52, "class", "mar-tree-item__edit-input");
+                builder.AddAttribute(53, "value", _editingText);
+                builder.AddAttribute(54, "oninput", EventCallback.Factory.Create<ChangeEventArgs>(this, e => _editingText = e.Value?.ToString() ?? ""));
+                builder.AddAttribute(55, "onblur", EventCallback.Factory.Create<FocusEventArgs>(this, () => CommitEdit(editId)));
+                builder.AddAttribute(56, "onkeydown", EventCallback.Factory.Create<KeyboardEventArgs>(this, e =>
+                {
+                    if (e.Key == "Enter") CommitEdit(editId);
+                    else if (e.Key == "Escape") CancelEdit();
+                }));
+                builder.AddAttribute(57, "autofocus", true);
+                builder.CloseElement();
+            }
+            else if (ItemTemplate != null)
             {
                 builder.AddContent(50, ItemTemplate(node.Item));
             }
@@ -509,7 +596,9 @@ public partial class MariloTreeView : MariloComponentBase
                 builder.AddAttribute(51, "class", "mar-tree-item__title");
                 if (!Disabled)
                     builder.AddAttribute(52, "onclick", EventCallback.Factory.Create(this, () => SelectItem(clickNode.Id, clickNode.Item)));
-                builder.AddContent(53, node.Text);
+                if (AllowEditing && !Disabled && !ReadOnly)
+                    builder.AddAttribute(53, "ondblclick", EventCallback.Factory.Create<MouseEventArgs>(this, () => StartEdit(clickNode.Id, clickNode.Text)));
+                builder.AddContent(54, node.Text);
                 builder.CloseElement();
             }
 
@@ -690,6 +779,22 @@ public partial class MariloTreeView : MariloComponentBase
                 _focusedNodeId = visibleIds[^1];
                 break;
 
+            case "F2":
+                // Start inline editing of focused node
+                if (AllowEditing && !ReadOnly && _focusedNodeId != null)
+                {
+                    var editTree = GetTree();
+                    var editNode = FindNode(editTree, _focusedNodeId);
+                    if (editNode != null)
+                        StartEdit(editNode.Id, editNode.Text);
+                }
+                break;
+
+            case "Escape":
+                if (_editingNodeId != null)
+                    CancelEdit();
+                break;
+
             case "*":
                 // Expand all siblings of focused node
                 var sibTree = GetTree();
@@ -855,6 +960,36 @@ public partial class MariloTreeView : MariloComponentBase
         if (string.IsNullOrEmpty(propertyName)) return null;
         return item.GetType().GetProperty(propertyName)?.GetValue(item);
     }
+
+    // ── Inline Editing ────────────────────────────────────────────────
+
+    private void StartEdit(string nodeId, string currentText)
+    {
+        _editingNodeId = nodeId;
+        _editingText = currentText;
+        StateHasChanged();
+    }
+
+    private async void CommitEdit(string nodeId)
+    {
+        if (_editingNodeId != nodeId) return;
+        var newText = _editingText.Trim();
+        _editingNodeId = null;
+
+        if (!string.IsNullOrEmpty(newText) && OnItemEdit.HasDelegate)
+            await OnItemEdit.InvokeAsync(new TreeItemEditEventArgs { ItemId = nodeId, NewText = newText });
+
+        StateHasChanged();
+    }
+
+    private void CancelEdit()
+    {
+        _editingNodeId = null;
+        _editingText = "";
+        StateHasChanged();
+    }
+
+    internal bool IsEditing(string id) => _editingNodeId == id;
 
     // ── Helper: notify checked changed ──────────────────────────────────
 
