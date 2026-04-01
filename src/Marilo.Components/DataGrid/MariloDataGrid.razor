@@ -51,7 +51,7 @@
                             role="columnheader"
                             style="@(string.IsNullOrEmpty(combinedStyle) ? null : combinedStyle)"
                             aria-sort="@GetAriaSortValue(sortDir)"
-                            @onclick="() => OnHeaderClick(column, isSortable)">
+                            @onclick="(e) => OnHeaderClick(column, isSortable, e)">
                             @if (column.HeaderTemplate != null)
                             {
                                 @column.HeaderTemplate
@@ -67,6 +67,10 @@
                                 </span>
                             }
                         </th>
+                    }
+                    @if (EditMode != GridEditMode.None)
+                    {
+                        <th class="mar-datagrid-command-header" role="columnheader">Commands</th>
                     }
                 </tr>
 
@@ -106,63 +110,18 @@
                         </td>
                     </tr>
                 }
+                else if (EnableVirtualization)
+                {
+                    <Virtualize Items="@_displayedItems" Context="item" OverscanCount="5">
+                        @{ RenderDataRow(item, _displayedItems.IndexOf(item)); }
+                    </Virtualize>
+                }
                 else
                 {
                     @for (var i = 0; i < _displayedItems.Count; i++)
                     {
                         var item = _displayedItems[i];
-                        var isSelected = _selectedItems.Contains(item);
-                        var isStripedRow = Striped && i % 2 == 1;
-                        var rowClass = CssProvider.DataGridRowClass(isSelected, isStripedRow);
-                        var rowRenderArgs = GetRowRenderArgs(item);
-                        var finalRowClass = rowRenderArgs?.Class != null ? $"{rowClass} {rowRenderArgs.Class}" : rowClass;
-                        var rowStyle = rowRenderArgs?.Style;
-
-                        <tr class="@finalRowClass"
-                            role="row"
-                            style="@rowStyle"
-                            aria-selected="@(isSelected ? "true" : null)"
-                            @onclick="(e) => HandleRowClick(item, e)"
-                            @ondblclick="(e) => HandleRowDoubleClick(item, e)"
-                            @oncontextmenu="(e) => HandleRowContextMenu(item, e)">
-                            @if (ShowCheckboxColumn)
-                            {
-                                <td class="mar-datagrid-checkbox-cell" role="gridcell">
-                                    <input type="checkbox"
-                                           checked="@isSelected"
-                                           aria-label="Select row"
-                                           @onclick:stopPropagation="true"
-                                           @onchange="() => OnCheckboxToggle(item)" />
-                                </td>
-                            }
-                            @foreach (var column in _visibleColumns)
-                            {
-                                var cellRenderArgs = GetCellRenderArgs(column, item);
-                                var baseCellStyle = column.TextAlign != null ? $"text-align:{column.TextAlign};" : null;
-                                var cellClass = CssProvider.DataGridCellClass();
-                                if (cellRenderArgs?.Class != null) cellClass = $"{cellClass} {cellRenderArgs.Class}";
-                                var cellStyle = cellRenderArgs?.Style != null
-                                    ? (baseCellStyle != null ? $"{baseCellStyle}{cellRenderArgs.Style}" : cellRenderArgs.Style)
-                                    : baseCellStyle;
-
-                                <td class="@cellClass"
-                                    role="gridcell"
-                                    style="@cellStyle">
-                                    @if (IsItemEditing(item) && column.EditorTemplate != null)
-                                    {
-                                        @column.EditorTemplate(item)
-                                    }
-                                    else if (column.Template != null)
-                                    {
-                                        @column.Template(item)
-                                    }
-                                    else
-                                    {
-                                        @column.GetDisplayValue(item)
-                                    }
-                                </td>
-                            }
-                        </tr>
+                        @RenderDataRow(item, i)
                     }
                 }
             </tbody>
@@ -271,6 +230,9 @@
 
     /// <summary>Whether keyboard navigation is enabled within the grid.</summary>
     [Parameter] public bool Navigable { get; set; }
+
+    /// <summary>Whether to use Blazor Virtualize for row rendering. Improves performance for large datasets.</summary>
+    [Parameter] public bool EnableVirtualization { get; set; }
 
     /// <summary>Column definitions (MariloGridColumn components).</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
@@ -467,7 +429,7 @@
 
     private List<MariloGridColumn<TItem>> _visibleColumns => _columns.Where(c => c.Visible).ToList();
 
-    private int TotalColumnCount => _visibleColumns.Count + (ShowCheckboxColumn ? 1 : 0);
+    private int TotalColumnCount => _visibleColumns.Count + (ShowCheckboxColumn ? 1 : 0) + (EditMode != GridEditMode.None ? 1 : 0);
 
     internal int TotalPages => _state.TotalCount > 0 && _state.PageSize > 0
         ? (int)Math.Ceiling((double)_state.TotalCount / _state.PageSize)
@@ -624,14 +586,17 @@
 
     // ── Event handlers ──────────────────────────────────────────────────
 
-    private async Task OnHeaderClick(MariloGridColumn<TItem> column, bool isSortable)
+    private async Task OnHeaderClick(MariloGridColumn<TItem> column, bool isSortable, MouseEventArgs? e = null)
     {
         if (!isSortable) return;
 
+        var isMultiSort = e?.CtrlKey == true || e?.MetaKey == true;
         var existing = _state.SortDescriptors.FirstOrDefault(s => s.Field == column.Field);
+
         if (existing is null)
         {
-            _state.SortDescriptors.Clear();
+            if (!isMultiSort)
+                _state.SortDescriptors.Clear();
             _state.SortDescriptors.Add(new SortDescriptor
             {
                 Field = column.Field,
@@ -801,6 +766,79 @@
             await NotifyStateChanged("PageSize");
         }
     }
+
+    // ── Row rendering ────────────────────────────────────────────────────
+
+    private RenderFragment RenderDataRow(TItem item, int index) => __builder =>
+    {
+        var isSelected = _selectedItems.Contains(item);
+        var isStripedRow = Striped && index % 2 == 1;
+        var isEditing = IsItemEditing(item);
+        var rowClass = CssProvider.DataGridRowClass(isSelected, isStripedRow);
+        var rowRenderArgs = GetRowRenderArgs(item);
+        var finalRowClass = rowRenderArgs?.Class != null ? $"{rowClass} {rowRenderArgs.Class}" : rowClass;
+        if (isEditing) finalRowClass += " mar-datagrid-row--editing";
+        var rowStyle = rowRenderArgs?.Style;
+
+        <tr class="@finalRowClass"
+            role="row"
+            style="@rowStyle"
+            aria-selected="@(isSelected ? "true" : null)"
+            @onclick="(e) => HandleRowClick(item, e)"
+            @ondblclick="(e) => HandleRowDoubleClick(item, e)"
+            @oncontextmenu="(e) => HandleRowContextMenu(item, e)">
+            @if (ShowCheckboxColumn)
+            {
+                <td class="mar-datagrid-checkbox-cell" role="gridcell">
+                    <input type="checkbox"
+                           checked="@isSelected"
+                           aria-label="Select row"
+                           @onclick:stopPropagation="true"
+                           @onchange="() => OnCheckboxToggle(item)" />
+                </td>
+            }
+            @foreach (var column in _visibleColumns)
+            {
+                var cellRenderArgs = GetCellRenderArgs(column, item);
+                var baseCellStyle = column.TextAlign != null ? $"text-align:{column.TextAlign};" : null;
+                var cellClass = CssProvider.DataGridCellClass();
+                if (cellRenderArgs?.Class != null) cellClass = $"{cellClass} {cellRenderArgs.Class}";
+                var cellStyle = cellRenderArgs?.Style != null
+                    ? (baseCellStyle != null ? $"{baseCellStyle}{cellRenderArgs.Style}" : cellRenderArgs.Style)
+                    : baseCellStyle;
+
+                <td class="@cellClass" role="gridcell" style="@cellStyle">
+                    @if (isEditing && column.EditorTemplate != null)
+                    {
+                        @column.EditorTemplate(item)
+                    }
+                    else if (column.Template != null)
+                    {
+                        @column.Template(item)
+                    }
+                    else
+                    {
+                        @column.GetDisplayValue(item)
+                    }
+                </td>
+            }
+            @if (EditMode != GridEditMode.None)
+            {
+                <td class="mar-datagrid-command-cell" role="gridcell">
+                    @if (isEditing)
+                    {
+                        <button type="button" class="mar-datagrid-cmd-btn" @onclick="SaveEdit" @onclick:stopPropagation="true">Save</button>
+                        <button type="button" class="mar-datagrid-cmd-btn" @onclick="CancelEdit" @onclick:stopPropagation="true">Cancel</button>
+                    }
+                    else
+                    {
+                        <button type="button" class="mar-datagrid-cmd-btn" @onclick="() => BeginEdit(item)" @onclick:stopPropagation="true">Edit</button>
+                        <button type="button" class="mar-datagrid-cmd-btn mar-datagrid-cmd-btn--delete" @onclick="() => DeleteItem(item)" @onclick:stopPropagation="true">Delete</button>
+                    }
+                </td>
+            }
+        </tr>
+    };
 
     // ── Row/Cell render callbacks ───────────────────────────────────────
 

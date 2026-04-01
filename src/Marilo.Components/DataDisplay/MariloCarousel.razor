@@ -2,7 +2,21 @@
 
 <div class="@CombineClasses(CssProvider.CarouselClass())" style="@CombineStyles(SizeStyle)" @attributes="AdditionalAttributes">
     <div class="mar-carousel__track">
-        @ChildContent
+        @if (Data != null && ItemTemplate != null)
+        {
+            @* Data-driven mode *@
+            var dataList = Data.ToList();
+            @if (ActiveIndex >= 0 && ActiveIndex < dataList.Count)
+            {
+                <div class="mar-carousel__slide">
+                    @ItemTemplate(dataList[ActiveIndex])
+                </div>
+            }
+        }
+        else
+        {
+            @ChildContent
+        }
     </div>
     @if (ShowArrows)
     {
@@ -14,7 +28,7 @@
         </button>
     }
     <div class="mar-carousel__dots">
-        @for (var i = 0; i < ItemCount; i++)
+        @for (var i = 0; i < EffectiveItemCount; i++)
         {
             var idx = i;
             <button class="mar-carousel__dot @(idx == ActiveIndex ? "mar-carousel__dot--active" : "")"
@@ -27,6 +41,8 @@
     [Parameter] public int ActiveIndex { get; set; }
     [Parameter] public EventCallback<int> ActiveIndexChanged { get; set; }
     [Parameter] public int ItemCount { get; set; } = 1;
+
+    private int EffectiveItemCount => Data != null ? Data.Count() : ItemCount;
     [Parameter] public bool AutoPlay { get; set; }
     [Parameter] public int IntervalMs { get; set; } = 5000;
     [Parameter] public bool ShowArrows { get; set; } = true;
@@ -35,6 +51,12 @@
     [Parameter] public string? Width { get; set; }
     [Parameter] public string? Height { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Data source for data-driven carousel. When set with ItemTemplate, renders slides from data.</summary>
+    [Parameter] public IEnumerable<object>? Data { get; set; }
+
+    /// <summary>Template for rendering each data item as a slide.</summary>
+    [Parameter] public RenderFragment<object>? ItemTemplate { get; set; }
 
     private string? SizeStyle
     {
@@ -66,7 +88,7 @@
     private async Task Previous()
     {
         if (LoopPages)
-            ActiveIndex = (ActiveIndex - 1 + ItemCount) % ItemCount;
+            ActiveIndex = (ActiveIndex - 1 + EffectiveItemCount) % EffectiveItemCount;
         else if (ActiveIndex > 0)
             ActiveIndex--;
         await ActiveIndexChanged.InvokeAsync(ActiveIndex);
@@ -75,8 +97,8 @@
     private async Task Next()
     {
         if (LoopPages)
-            ActiveIndex = (ActiveIndex + 1) % ItemCount;
-        else if (ActiveIndex < ItemCount - 1)
+            ActiveIndex = (ActiveIndex + 1) % EffectiveItemCount;
+        else if (ActiveIndex < EffectiveItemCount - 1)
             ActiveIndex++;
         await ActiveIndexChanged.InvokeAsync(ActiveIndex);
     }
