@@ -21,19 +21,27 @@
             @if (i < _panes.Count - 1)
             {
                 var idx = i;
-                <div class="mar-splitter__handle"
+                var prevPane = _panes[idx];
+                var nextPane = _panes[idx + 1];
+                <div class="mar-splitter__handle @(_activeSeparator == idx ? "mar-splitter__handle--active" : "")"
                      role="separator"
                      tabindex="0"
                      aria-orientation="@(Orientation == StackDirection.Horizontal ? "vertical" : "horizontal")"
-                     aria-label="Resize pane"
+                     aria-label="@(AriaLabel ?? $"Resize pane {idx + 1} and {idx + 2}")"
+                     aria-valuenow="@GetPaneSizePercent(idx)"
+                     aria-valuemin="0"
+                     aria-valuemax="100"
+                     @onkeydown="(e) => HandleSeparatorKeyDown(e, idx)"
+                     @onmousedown="(e) => HandleMouseDown(e, idx)"
                      @ondblclick="() => HandleSeparatorDoubleClick(idx)">
                     @if (Collapsible)
                     {
                         <button type="button"
                                 class="mar-splitter__collapse-btn"
-                                aria-label="@(pane.Collapsed ? "Expand pane" : "Collapse pane")"
-                                @onclick="() => TogglePaneCollapse(idx)">
-                            @(pane.Collapsed ? "\u25B6" : "\u25C0")
+                                aria-label="@(prevPane.Collapsed ? "Expand pane" : "Collapse pane")"
+                                @onclick="() => TogglePaneCollapse(idx)"
+                                @onclick:stopPropagation="true">
+                            @(prevPane.Collapsed ? "\u25B6" : "\u25C0")
                         </button>
                     }
                 </div>
@@ -59,10 +67,25 @@
     <CascadingValue Value="this" IsFixed="true">
         @ChildContent
     </CascadingValue>
+
+    @* Overlay for capturing mouse events during drag resize *@
+    @if (_isDragging)
+    {
+        <div class="mar-splitter__drag-overlay"
+             style="position:fixed;inset:0;z-index:9999;cursor:@(Orientation == StackDirection.Horizontal ? "col-resize" : "row-resize")"
+             @onmousemove="HandleMouseMove"
+             @onmouseup="HandleMouseUp">
+        </div>
+    }
 </div>
 
 @code {
     private readonly List<MariloSplitterPane> _panes = [];
+    private int _activeSeparator = -1;
+    private bool _isDragging;
+    private double _dragStartPos;
+    private double _dragStartSize;
+    private const double KeyboardResizeStep = 10.0; // pixels per key press
 
     /// <summary>Orientation of the splitter (Horizontal or Vertical).</summary>
     [Parameter] public StackDirection Orientation { get; set; } = StackDirection.Horizontal;
@@ -76,8 +99,11 @@
     /// <summary>Whether panes can be collapsed via the separator button.</summary>
     [Parameter] public bool Collapsible { get; set; }
 
-    /// <summary>Fires when a pane is resized.</summary>
-    [Parameter] public EventCallback OnResize { get; set; }
+    /// <summary>Accessible label for the splitter separator handles.</summary>
+    [Parameter] public string? AriaLabel { get; set; }
+
+    /// <summary>Fires when a pane is resized. Contains the pane index and new sizes.</summary>
+    [Parameter] public EventCallback<SplitterResizeEventArgs> OnResize { get; set; }
 
     /// <summary>Fires when a pane is collapsed or expanded.</summary>
     [Parameter] public EventCallback<int> OnCollapse { get; set; }
@@ -119,6 +145,41 @@
         return string.Join("", parts);
     }
 
+    private int GetPaneSizePercent(int index)
+    {
+        if (index < 0 || index >= _panes.Count) return 50;
+        var size = _panes[index].Size;
+        if (size != null && size.EndsWith('%') && double.TryParse(size.TrimEnd('%'), out var pct))
+            return (int)pct;
+        return 50;
+    }
+
+    // ── Public API ──────────────────────────────────────────────────────
+
+    /// <summary>Returns the current pane sizes as a state snapshot.</summary>
+    public SplitterState GetState()
+    {
+        return new SplitterState
+        {
+            PaneSizes = _panes.Select(p => p.Size ?? "").ToList(),
+            CollapsedPanes = _panes.Select(p => p.Collapsed).ToList()
+        };
+    }
+
+    /// <summary>Restores a previously saved state.</summary>
+    public void SetState(SplitterState state)
+    {
+        for (int i = 0; i < Math.Min(_panes.Count, state.PaneSizes.Count); i++)
+        {
+            _panes[i].Size = state.PaneSizes[i];
+        }
+        for (int i = 0; i < Math.Min(_panes.Count, state.CollapsedPanes.Count); i++)
+        {
+            _panes[i].Collapsed = state.CollapsedPanes[i];
+        }
+        StateHasChanged();
+    }
+
     // ── Internal API for child panes ────────────────────────────────────
 
     internal void RegisterPane(MariloSplitterPane pane)
@@ -134,6 +195,86 @@
     {
         _panes.Remove(pane);
         StateHasChanged();
+    }
+
+    // ── Drag-to-resize ─────────────────────────────────────────────────
+
+    private void HandleMouseDown(MouseEventArgs e, int separatorIndex)
+    {
+        if (!_panes[separatorIndex].Resizable) return;
+
+        _activeSeparator = separatorIndex;
+        _isDragging = true;
+        _dragStartPos = Orientation == StackDirection.Horizontal ? e.ClientX : e.ClientY;
+
+        // Parse current size as pixels (approximate from percentage)
+        var currentSize = _panes[separatorIndex].Size;
+        if (currentSize != null && currentSize.EndsWith('%') && double.TryParse(currentSize.TrimEnd('%'), out var pct))
+            _dragStartSize = pct;
+        else
+            _dragStartSize = 50;
+    }
+
+    private async Task HandleMouseMove(MouseEventArgs e)
+    {
+        if (!_isDragging || _activeSeparator < 0) return;
+
+        var currentPos = Orientation == StackDirection.Horizontal ? e.ClientX : e.ClientY;
+        var delta = currentPos - _dragStartPos;
+
+        // Convert delta to approximate percentage (assuming ~1000px container)
+        var deltaPercent = delta * 0.1;
+        var newSize = Math.Clamp(_dragStartSize + deltaPercent, 5, 95);
+        var adjacentSize = Math.Clamp(100 - newSize, 5, 95);
+
+        _panes[_activeSeparator].Size = $"{newSize:F1}%";
+        if (_activeSeparator + 1 < _panes.Count)
+            _panes[_activeSeparator + 1].Size = $"{adjacentSize:F1}%";
+
+        await NotifyResize(_activeSeparator);
+    }
+
+    private async Task HandleMouseUp(MouseEventArgs e)
+    {
+        if (_isDragging)
+        {
+            _isDragging = false;
+            _activeSeparator = -1;
+            StateHasChanged();
+        }
+        await Task.CompletedTask;
+    }
+
+    // ── Keyboard resize ─────────────────────────────────────────────────
+
+    private async Task HandleSeparatorKeyDown(KeyboardEventArgs e, int index)
+    {
+        if (!_panes[index].Resizable) return;
+
+        var isHorizontal = Orientation == StackDirection.Horizontal;
+        var growKey = isHorizontal ? "ArrowRight" : "ArrowDown";
+        var shrinkKey = isHorizontal ? "ArrowLeft" : "ArrowUp";
+
+        if (e.Key == growKey || e.Key == shrinkKey)
+        {
+            var direction = e.Key == growKey ? 1.0 : -1.0;
+            var step = e.ShiftKey ? KeyboardResizeStep * 5 : KeyboardResizeStep;
+            var deltaPercent = direction * step * 0.1;
+
+            var currentSize = GetPaneSizePercent(index);
+            var newSize = Math.Clamp(currentSize + deltaPercent, 5, 95);
+            var adjacentSize = Math.Clamp(100 - newSize, 5, 95);
+
+            _panes[index].Size = $"{newSize:F1}%";
+            if (index + 1 < _panes.Count)
+                _panes[index + 1].Size = $"{adjacentSize:F1}%";
+
+            await NotifyResize(index);
+        }
+        else if (e.Key == "Enter" && Collapsible)
+        {
+            await TogglePaneCollapse(index);
+        }
     }
 
     // ── Event handlers ──────────────────────────────────────────────────
@@ -153,5 +294,18 @@
     {
         if (Collapsible)
             await TogglePaneCollapse(index);
+    }
+
+    private async Task NotifyResize(int index)
+    {
+        if (OnResize.HasDelegate)
+        {
+            await OnResize.InvokeAsync(new SplitterResizeEventArgs
+            {
+                PaneIndex = index,
+                NewSize = _panes[index].Size ?? "",
+                AdjacentSize = index + 1 < _panes.Count ? _panes[index + 1].Size ?? "" : ""
+            });
+        }
     }
 }

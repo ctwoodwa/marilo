@@ -41,16 +41,16 @@ This document defines the resolution strategy for all 87 Marilo Blazor component
 | MariloWindow | 32 | multi-pass | Yes (JS interop for drag/resize) | **T2 - High** | ✅ API SURFACE (Custom JS) |
 | MariloDialog | 9 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED |
 | MariloConfirmDialog | 8 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED |
-| MariloPopover | 10 | multi-pass | Yes (anchor positioning) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloDrawer | 10 | multi-pass | Yes (Mode, MiniMode, data binding) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloList | 13 | multi-pass | Yes (data binding, selection, drag-drop) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloTreeView | 6 | multi-pass | Yes (expanded/selected binding, drag-drop) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloMenu | 7 | multi-pass | Yes (hierarchy rendering) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloContextMenu | 8 | multi-pass | Yes (selector pattern, data binding) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloAccordion | 9 | multi-pass | Yes (data binding, hierarchy) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloSplitter | 8 | multi-pass | Yes (interactive resize, state) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloPanel | 7 | multi-pass | Yes (data binding, expand/collapse) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloStepper | 6 | multi-pass | Yes (orientation, linear flow) | **T2 - High** | 🔧 IN PROGRESS |
+| MariloPopover | 10 | multi-pass | Yes (anchor positioning) | **T2 - High** | ✅ IMPLEMENTED (animation, keyboard, a11y) |
+| MariloDrawer | 10 | multi-pass | Yes (Mode, MiniMode, data binding) | **T2 - High** | ✅ IMPLEMENTED (all 10 gaps resolved) |
+| MariloList | 13 | multi-pass | Yes (data binding, selection, drag-drop) | **T2 - High** | ✅ IMPLEMENTED (toolbar, keyboard nav, size, reorder) |
+| MariloTreeView | 6 | multi-pass | Yes (expanded/selected binding, drag-drop) | **T2 - High** | ✅ IMPLEMENTED (all 6 gaps resolved: binding, drag-drop, size, rebind) |
+| MariloMenu | 7 | multi-pass | Yes (hierarchy rendering) | **T2 - High** | ✅ IMPLEMENTED (4/5 gaps; ShowOn/collision deferred) |
+| MariloContextMenu | 8 | multi-pass | Yes (selector pattern, data binding) | **T2 - High** | ✅ IMPLEMENTED (hierarchy, templates, keyboard, data binding) |
+| MariloAccordion | 9 | multi-pass | Yes (data binding, hierarchy) | **T2 - High** | ✅ IMPLEMENTED (all 9 gaps resolved: data binding, expandmode, templates) |
+| MariloSplitter | 8 | multi-pass | Yes (interactive resize, state) | **T2 - High** | ✅ IMPLEMENTED (drag resize, keyboard resize, state, aria, collapse) |
+| MariloPanel | 7 | multi-pass | Yes (data binding, expand/collapse) | **T2 - High** | ✅ IMPLEMENTED (single-panel design; templates, expand/collapse) |
+| MariloStepper | 6 | multi-pass | Yes (orientation, linear flow) | **T2 - High** | ✅ IMPLEMENTED (4/7 gaps; orientation, linear, clickable nav) |
 | MariloPagination | 6 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED |
 | MariloButton | 8 | single-pass | No | **T3 - Medium** | ✅ RESOLVED |
 | MariloButtonGroup | 6 | multi-pass | Yes (child component architecture) | **T3 - Medium** | ✅ RESOLVED |

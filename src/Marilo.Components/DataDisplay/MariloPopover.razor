@@ -2,7 +2,8 @@
 
 <div class="@CombineClasses(CssProvider.PopoverClass())"
      style="@CombineStyles(RootStyle)"
-     @attributes="AdditionalAttributes">
+     @attributes="AdditionalAttributes"
+     @onkeydown="OnKeyDown">
 
     @* Inline trigger (used when no AnchorSelector is set) *@
     @if (string.IsNullOrEmpty(AnchorSelector))
@@ -12,28 +13,33 @@
              @onmouseenter="OnTriggerMouseEnter"
              @onmouseleave="OnTriggerMouseLeave"
              aria-haspopup="true"
-             aria-expanded="@IsOpen">
+             aria-expanded="@IsOpen"
+             aria-controls="@(IsOpen ? _popoverId : null)">
             @ChildContent
         </div>
     }
 
     @if (IsOpen)
     {
-        <div class="mar-popover__content mar-popover__content--@Position.ToString().ToLowerInvariant()"
+        <div id="@_popoverId"
+             class="@PopoverContentClasses"
              style="@PopoverContentStyle"
-             role="dialog"
-             aria-modal="false">
+             role="@(HasFocusableContent ? "dialog" : "tooltip")"
+             aria-modal="false"
+             aria-labelledby="@(HeaderContent != null ? _headerId : null)"
+             aria-describedby="@_bodyId"
+             tabindex="-1">
             @if (ShowCallout)
             {
                 <div class="mar-popover__callout"></div>
             }
             @if (HeaderContent != null)
             {
-                <div class="mar-popover__header">
+                <div id="@_headerId" class="mar-popover__header">
                     @HeaderContent
                 </div>
             }
-            <div class="mar-popover__body">
+            <div id="@_bodyId" class="mar-popover__body">
                 @PopoverContent
             </div>
             @if (ActionsContent != null)
@@ -47,6 +53,10 @@
 </div>
 
 @code {
+    private string _popoverId = $"mar-popover-{Guid.NewGuid():N}";
+    private string _headerId = $"mar-popover-header-{Guid.NewGuid():N}";
+    private string _bodyId = $"mar-popover-body-{Guid.NewGuid():N}";
+
     /// <summary>Whether the popover is open. Supports two-way binding.</summary>
     [Parameter] public bool IsOpen { get; set; }
 
@@ -83,6 +93,12 @@
     /// <summary>The layout direction for the actions region.</summary>
     [Parameter] public ActionsLayout ActionsLayout { get; set; } = ActionsLayout.End;
 
+    /// <summary>The animation type for show/hide transitions. Defaults to <see cref="PopoverAnimationType.SlideDown"/>.</summary>
+    [Parameter] public PopoverAnimationType AnimationType { get; set; } = PopoverAnimationType.SlideDown;
+
+    /// <summary>The duration of the show/hide animation in milliseconds. Defaults to 300.</summary>
+    [Parameter] public int AnimationDuration { get; set; } = 300;
+
     /// <summary>The trigger content (rendered as an inline anchor when <see cref="AnchorSelector"/> is not set).</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
@@ -95,9 +111,27 @@
     /// <summary>Optional actions region content (buttons, links).</summary>
     [Parameter] public RenderFragment? ActionsContent { get; set; }
 
-    // ── Computed styles ─────────────────────────────────────────────────
+    // ── Computed values ────────────────────────────────────────────────
+
+    /// <summary>Whether the popover content has focusable elements (actions), used to determine ARIA role.</summary>
+    private bool HasFocusableContent => ActionsContent != null;
 
     private string? RootStyle => null;
+
+    private string PopoverContentClasses
+    {
+        get
+        {
+            var position = Position.ToString().ToLowerInvariant();
+            var animation = AnimationType != PopoverAnimationType.None
+                ? $" mar-popover__content--anim-{AnimationType.ToString().ToLowerInvariant()}"
+                : "";
+            var collision = Collision != PopoverCollision.None
+                ? $" mar-popover__content--collision-{Collision.ToString().ToLowerInvariant()}"
+                : "";
+            return $"mar-popover__content mar-popover__content--{position}{animation}{collision}";
+        }
+    }
 
     private string? PopoverContentStyle
     {
@@ -118,6 +152,10 @@
                     _ => null
                 };
                 if (margin != null) parts.Add(margin);
+            }
+            if (AnimationType != PopoverAnimationType.None && AnimationDuration > 0)
+            {
+                parts.Add($"animation-duration:{AnimationDuration}ms;");
             }
             return parts.Count > 0 ? string.Join("", parts) : null;
         }
@@ -174,6 +212,14 @@
     private async Task OnTriggerMouseLeave()
     {
         if (ShowOn == PopoverShowOn.MouseEnter)
+        {
+            await Hide();
+        }
+    }
+
+    private async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape" && IsOpen)
         {
             await Hide();
         }
