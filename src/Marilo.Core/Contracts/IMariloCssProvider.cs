@@ -14,7 +14,7 @@ public interface IMariloCssProvider
     string GridClass();
     string RowClass();
     string ColumnClass(int? span = null, int? offset = null);
-    string StackClass(StackDirection direction, StackAlignment align);
+    string StackClass(StackDirection orientation);
     string DividerClass(bool vertical);
     string PanelClass();
     string DrawerClass(DrawerPosition position, bool isOpen);

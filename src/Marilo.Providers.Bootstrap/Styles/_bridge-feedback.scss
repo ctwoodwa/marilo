@@ -1,0 +1,80 @@
+// =================================================================
+// Marilo Bootstrap Provider — Feedback Bridge Styles
+// =================================================================
+
+.mar-bs-alert-strip {
+  padding: var(--marilo-space-sm) var(--marilo-space-md);
+  border-radius: 0;
+  margin-bottom: 0;
+}
+
+.mar-bs-snackbar {
+  &--top { top: var(--marilo-space-lg); }
+  &--bottom { bottom: var(--marilo-space-lg); }
+  &--start { left: var(--marilo-space-lg); }
+  &--center { left: 50%; transform: translateX(-50%); }
+  &--end { right: var(--marilo-space-lg); }
+}
+
+.mar-bs-dialog--draggable {
+  cursor: move;
+}
+
+.mar-bs-progress-circle {
+  display: inline-block;
+  width: 48px;
+  height: 48px;
+  position: relative;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+}
+
+.mar-bs-skeleton {
+  &--text {
+    height: 1em;
+    width: 100%;
+    border-radius: var(--marilo-radius-sm);
+  }
+
+  &--rect {
+    height: 100px;
+    width: 100%;
+  }
+
+  &--circle {
+    width: 48px;
+    height: 48px;
+  }
+
+  &--rounded {
+    height: 100px;
+    width: 100%;
+  }
+
+  .placeholder {
+    background-color: var(--marilo-color-surface);
+  }
+}
+
+.mar-bs-spinner--lg {
+  width: 3rem;
+  height: 3rem;
+}
+
+.mar-bs-callout {
+  padding: var(--marilo-space-md) var(--marilo-space-lg);
+  margin-bottom: var(--marilo-space-md);
+  border-left: 4px solid;
+  border-radius: var(--marilo-radius-sm);
+  background-color: var(--marilo-color-surface);
+
+  &--info { border-left-color: var(--marilo-color-info); }
+  &--warning { border-left-color: var(--marilo-color-warning); }
+  &--danger { border-left-color: var(--marilo-color-danger); }
+  &--success { border-left-color: var(--marilo-color-success); }
+  &--note { border-left-color: var(--marilo-color-secondary); }
+}

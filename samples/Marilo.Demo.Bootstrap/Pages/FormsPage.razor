@@ -1,0 +1,46 @@
+@page "/forms"
+
+<div class="demo-page">
+    <h1>Forms</h1>
+    <p class="text-body-secondary mb-4">Form controls styled through the Bootstrap provider.</p>
+
+    <DemoSection Title="Text Fields" Description="Standard text input with validation states.">
+        <div class="d-flex flex-column gap-3" style="max-width:400px;">
+            <MariloTextField Label="Name" Placeholder="Enter your name" />
+            <MariloTextField Label="Email" Placeholder="user@example.com" IsInvalid="true" />
+            <MariloTextField Label="Disabled" Placeholder="Cannot edit" Disabled="true" />
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Select" Description="Dropdown select input.">
+        <div style="max-width:300px;">
+            <MariloSelect Label="Country" @bind-Value="_selectedCountry">
+                <option value="">Choose...</option>
+                <option value="us">United States</option>
+                <option value="uk">United Kingdom</option>
+                <option value="de">Germany</option>
+            </MariloSelect>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Checkbox & Switch" Description="Toggle controls for boolean values.">
+        <div class="d-flex flex-column gap-2">
+            <MariloCheckbox Label="Accept terms" @bind-Value="_checked" />
+            <MariloSwitch Label="Enable notifications" @bind-Value="_switched" />
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Slider" Description="Range input for numeric values.">
+        <div style="max-width:400px;">
+            <MariloSlider @bind-Value="_sliderValue" />
+            <p class="text-body-secondary small mt-1">Value: @_sliderValue</p>
+        </div>
+    </DemoSection>
+</div>
+
+@code {
+    private string _selectedCountry = "";
+    private bool _checked;
+    private bool _switched = true;
+    private double _sliderValue = 50;
+}

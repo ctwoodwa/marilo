@@ -1,6 +1,24 @@
 namespace Marilo.Core.Enums;
 
 /// <summary>
+/// Specifies the layout alignment of action buttons in dialogs, popovers, and similar containers.
+/// </summary>
+public enum ActionsLayout
+{
+    /// <summary>Actions are aligned to the start (left in LTR).</summary>
+    Start,
+
+    /// <summary>Actions are centered.</summary>
+    Center,
+
+    /// <summary>Actions are aligned to the end (right in LTR).</summary>
+    End,
+
+    /// <summary>Actions are stretched to fill the available width.</summary>
+    Stretch
+}
+
+/// <summary>
 /// Specifies the visual style variant of a chip.
 /// </summary>
 public enum ChipVariant
@@ -121,6 +139,33 @@ public enum TooltipPosition
 
     /// <summary>Tooltip appears to the right of the anchor.</summary>
     Right
+}
+
+/// <summary>
+/// Specifies the trigger that shows a popover or tooltip.
+/// </summary>
+public enum PopoverShowOn
+{
+    /// <summary>Show on click (toggle).</summary>
+    Click,
+
+    /// <summary>Show on mouse enter, hide on mouse leave.</summary>
+    MouseEnter
+}
+
+/// <summary>
+/// Specifies the collision behavior when a popover would overflow the viewport.
+/// </summary>
+public enum PopoverCollision
+{
+    /// <summary>No collision detection; popover may overflow viewport.</summary>
+    None,
+
+    /// <summary>Flip to the opposite position if the popover overflows.</summary>
+    Flip,
+
+    /// <summary>Shift the popover along the axis to stay within the viewport.</summary>
+    Fit
 }
 
 /// <summary>

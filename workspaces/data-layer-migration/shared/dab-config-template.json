@@ -1,0 +1,62 @@
+{
+  "$schema": "https://github.com/Azure/data-api-builder/releases/download/v1.x.x/dab.draft.schema.json",
+  "data-source": {
+    "database-type": "mssql",
+    "connection-string": "@env('DATABASE_CONNECTION_STRING')"
+  },
+  "runtime": {
+    "rest": {
+      "enabled": true,
+      "path": "/api",
+      "request-body-strict": true
+    },
+    "graphql": {
+      "enabled": true,
+      "path": "/graphql",
+      "allow-introspection": true
+    },
+    "host": {
+      "mode": "development",
+      "cors": {
+        "origins": [
+          "http://localhost:5000",
+          "http://localhost:5001"
+        ],
+        "allow-credentials": true
+      },
+      "authentication": {
+        "provider": "StaticWebApps"
+      }
+    }
+  },
+  "entities": {
+    "ExampleEntity": {
+      "_comment": "Remove this example entity and replace with your entities from Stage 01",
+      "source": {
+        "object": "dbo.ExampleTable",
+        "type": "table"
+      },
+      "rest": {
+        "enabled": true,
+        "path": "/example-entities"
+      },
+      "graphql": {
+        "enabled": true,
+        "type": {
+          "singular": "ExampleEntity",
+          "plural": "ExampleEntities"
+        }
+      },
+      "permissions": [
+        {
+          "role": "anonymous",
+          "actions": ["read"]
+        },
+        {
+          "role": "authenticated",
+          "actions": ["create", "read", "update", "delete"]
+        }
+      ]
+    }
+  }
+}

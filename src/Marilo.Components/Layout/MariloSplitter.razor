@@ -1,19 +1,157 @@
 @inherits MariloComponentBase
 
-<div class="@CombineClasses(CssProvider.SplitterClass(Orientation))" style="@CombineStyles()" @attributes="AdditionalAttributes">
-    <div class="mar-splitter__pane mar-splitter__pane--first" style="flex-basis:@FirstPaneSize">
-        @FirstPane
-    </div>
-    <div class="mar-splitter__handle" role="separator" aria-orientation="@(Orientation == StackDirection.Horizontal ? "vertical" : "horizontal")"></div>
-    <div class="mar-splitter__pane mar-splitter__pane--second">
-        @SecondPane
-    </div>
+<div class="@CombineClasses(CssProvider.SplitterClass(Orientation))"
+     style="@CombineStyles(RootStyle)"
+     @attributes="AdditionalAttributes">
+
+    @if (_panes.Count > 0)
+    {
+        @* Data-driven panes from registered SplitterPane children *@
+        @for (var i = 0; i < _panes.Count; i++)
+        {
+            var pane = _panes[i];
+            var isCollapsed = pane.Collapsed;
+            var paneStyle = BuildPaneStyle(pane);
+
+            <div class="mar-splitter__pane @(isCollapsed ? "mar-splitter__pane--collapsed" : "")"
+                 style="@paneStyle">
+                @pane.ChildContent
+            </div>
+
+            @if (i < _panes.Count - 1)
+            {
+                var idx = i;
+                <div class="mar-splitter__handle"
+                     role="separator"
+                     tabindex="0"
+                     aria-orientation="@(Orientation == StackDirection.Horizontal ? "vertical" : "horizontal")"
+                     aria-label="Resize pane"
+                     @ondblclick="() => HandleSeparatorDoubleClick(idx)">
+                    @if (Collapsible)
+                    {
+                        <button type="button"
+                                class="mar-splitter__collapse-btn"
+                                aria-label="@(pane.Collapsed ? "Expand pane" : "Collapse pane")"
+                                @onclick="() => TogglePaneCollapse(idx)">
+                            @(pane.Collapsed ? "\u25B6" : "\u25C0")
+                        </button>
+                    }
+                </div>
+            }
+        }
+    }
+    else
+    {
+        @* Legacy 2-pane mode for backwards compatibility *@
+        <div class="mar-splitter__pane mar-splitter__pane--first" style="flex-basis:@FirstPaneSize">
+            @FirstPane
+        </div>
+        <div class="mar-splitter__handle"
+             role="separator"
+             aria-orientation="@(Orientation == StackDirection.Horizontal ? "vertical" : "horizontal")">
+        </div>
+        <div class="mar-splitter__pane mar-splitter__pane--second">
+            @SecondPane
+        </div>
+    }
+
+    @* Register child panes via CascadingValue *@
+    <CascadingValue Value="this" IsFixed="true">
+        @ChildContent
+    </CascadingValue>
 </div>
 
 @code {
+    private readonly List<MariloSplitterPane> _panes = [];
+
+    /// <summary>Orientation of the splitter (Horizontal or Vertical).</summary>
     [Parameter] public StackDirection Orientation { get; set; } = StackDirection.Horizontal;
+
+    /// <summary>Width of the splitter container.</summary>
+    [Parameter] public string? Width { get; set; }
+
+    /// <summary>Height of the splitter container.</summary>
+    [Parameter] public string? Height { get; set; }
+
+    /// <summary>Whether panes can be collapsed via the separator button.</summary>
+    [Parameter] public bool Collapsible { get; set; }
+
+    /// <summary>Fires when a pane is resized.</summary>
+    [Parameter] public EventCallback OnResize { get; set; }
+
+    /// <summary>Fires when a pane is collapsed or expanded.</summary>
+    [Parameter] public EventCallback<int> OnCollapse { get; set; }
+
+    // ── Legacy 2-pane parameters (backwards compatible) ─────────────────
     [Parameter] public string? FirstPaneSize { get; set; } = "50%";
     [Parameter] public RenderFragment? FirstPane { get; set; }
     [Parameter] public RenderFragment? SecondPane { get; set; }
+
+    /// <summary>Child content (MariloSplitterPane components).</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    // ── Computed ────────────────────────────────────────────────────────
+
+    private string? RootStyle
+    {
+        get
+        {
+            var parts = new List<string>();
+            if (Width != null) parts.Add($"width:{Width};");
+            if (Height != null) parts.Add($"height:{Height};");
+            return parts.Count > 0 ? string.Join("", parts) : null;
+        }
+    }
+
+    private string BuildPaneStyle(MariloSplitterPane pane)
+    {
+        var parts = new List<string>();
+        if (pane.Collapsed)
+        {
+            parts.Add("flex-basis:0;overflow:hidden;");
+        }
+        else
+        {
+            if (!string.IsNullOrEmpty(pane.Size)) parts.Add($"flex-basis:{pane.Size};");
+            if (!string.IsNullOrEmpty(pane.Min)) parts.Add($"min-{(Orientation == StackDirection.Horizontal ? "width" : "height")}:{pane.Min};");
+            if (!string.IsNullOrEmpty(pane.Max)) parts.Add($"max-{(Orientation == StackDirection.Horizontal ? "width" : "height")}:{pane.Max};");
+        }
+        return string.Join("", parts);
+    }
+
+    // ── Internal API for child panes ────────────────────────────────────
+
+    internal void RegisterPane(MariloSplitterPane pane)
+    {
+        if (!_panes.Contains(pane))
+        {
+            _panes.Add(pane);
+            StateHasChanged();
+        }
+    }
+
+    internal void UnregisterPane(MariloSplitterPane pane)
+    {
+        _panes.Remove(pane);
+        StateHasChanged();
+    }
+
+    // ── Event handlers ──────────────────────────────────────────────────
+
+    private async Task TogglePaneCollapse(int index)
+    {
+        if (index >= 0 && index < _panes.Count)
+        {
+            _panes[index].Collapsed = !_panes[index].Collapsed;
+            if (OnCollapse.HasDelegate)
+                await OnCollapse.InvokeAsync(index);
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleSeparatorDoubleClick(int index)
+    {
+        if (Collapsible)
+            await TogglePaneCollapse(index);
+    }
 }

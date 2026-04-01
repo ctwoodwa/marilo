@@ -3,10 +3,10 @@
 @inherits MariloComponentBase
 
 <div class="@CombineClasses(CssProvider.DataGridClass())"
-     style="@CombineStyles()"
+     style="@CombineStyles(RootStyle)"
      role="grid"
      aria-rowcount="@_displayedItems.Count"
-     aria-colcount="@_columns.Count"
+     aria-colcount="@_visibleColumns.Count"
      @attributes="AdditionalAttributes">
 
     @* Toolbar area *@
@@ -20,109 +20,113 @@
         @ChildContent
     </CascadingValue>
 
-    <table>
-        @* Header row *@
-        <thead>
-            <tr class="@CssProvider.DataGridHeaderClass()" role="row">
-                @foreach (var column in _columns)
-                {
-                    var isSortable = Sortable && column.Sortable;
-                    var isSorted = _state.SortDescriptors.Any(s => s.Field == column.Field);
-                    var sortDir = _state.SortDescriptors.FirstOrDefault(s => s.Field == column.Field);
-                    var headerCellClass = CssProvider.DataGridHeaderCellClass(isSortable, isSorted);
-                    var headerStyle = column.Width != null ? $"width:{column.Width};" : null;
-                    var textAlignStyle = column.TextAlign != null ? $"text-align:{column.TextAlign};" : null;
-                    var combinedStyle = string.Join("", new[] { headerStyle, textAlignStyle }.Where(s => s != null));
-
-                    <th class="@headerCellClass"
-                        role="columnheader"
-                        style="@(string.IsNullOrEmpty(combinedStyle) ? null : combinedStyle)"
-                        aria-sort="@GetAriaSortValue(sortDir)"
-                        @onclick="() => OnHeaderClick(column, isSortable)">
-                        @if (column.HeaderTemplate != null)
-                        {
-                            @column.HeaderTemplate
-                        }
-                        else
-                        {
-                            @column.DisplayTitle
-                        }
-                        @if (isSorted && sortDir != null)
-                        {
-                            <span class="mar-datagrid-sort-indicator" aria-hidden="true">
-                                @(sortDir.Direction == SortDirection.Ascending ? "\u25B2" : "\u25BC")
-                            </span>
-                        }
-                    </th>
-                }
-            </tr>
-
-            @* Filter row *@
-            @if (FilterMode == GridFilterMode.FilterRow)
-            {
-                <tr class="@CssProvider.DataGridFilterRowClass()" role="row">
-                    @foreach (var column in _columns)
+    <div class="mar-datagrid-content" style="@ContentStyle">
+        <table>
+            @* Header row *@
+            <thead>
+                <tr class="@CssProvider.DataGridHeaderClass()" role="row">
+                    @if (ShowCheckboxColumn)
                     {
-                        <td class="@CssProvider.DataGridFilterCellClass()" role="gridcell">
-                            @if (column.Filterable)
+                        <th class="mar-datagrid-checkbox-cell" role="columnheader" style="width:40px;">
+                            @if (SelectionMode == GridSelectionMode.Multiple)
                             {
-                                var currentFilter = _state.FilterDescriptors.FirstOrDefault(f => f.Field == column.Field);
-                                <input type="text"
-                                       value="@(currentFilter?.Value?.ToString() ?? "")"
-                                       placeholder="Filter..."
-                                       aria-label="@($"Filter {column.DisplayTitle}")"
-                                       @onchange="(e) => OnFilterChanged(column.Field, e)" />
+                                <input type="checkbox"
+                                       checked="@(_selectedItems.Count > 0 && _selectedItems.Count == _displayedItems.Count)"
+                                       aria-label="Select all rows"
+                                       @onchange="OnSelectAllChanged" />
                             }
-                        </td>
+                        </th>
+                    }
+                    @foreach (var column in _visibleColumns)
+                    {
+                        var isSortable = Sortable && column.Sortable;
+                        var isSorted = _state.SortDescriptors.Any(s => s.Field == column.Field);
+                        var sortDir = _state.SortDescriptors.FirstOrDefault(s => s.Field == column.Field);
+                        var headerCellClass = CssProvider.DataGridHeaderCellClass(isSortable, isSorted);
+                        var headerStyle = column.Width != null ? $"width:{column.Width};" : null;
+                        var textAlignStyle = column.TextAlign != null ? $"text-align:{column.TextAlign};" : null;
+                        var combinedStyle = string.Join("", new[] { headerStyle, textAlignStyle }.Where(s => s != null));
+
+                        <th class="@headerCellClass"
+                            role="columnheader"
+                            style="@(string.IsNullOrEmpty(combinedStyle) ? null : combinedStyle)"
+                            aria-sort="@GetAriaSortValue(sortDir)"
+                            @onclick="(e) => OnHeaderClick(column, isSortable, e)">
+                            @if (column.HeaderTemplate != null)
+                            {
+                                @column.HeaderTemplate
+                            }
+                            else
+                            {
+                                @column.DisplayTitle
+                            }
+                            @if (isSorted && sortDir != null)
+                            {
+                                <span class="mar-datagrid-sort-indicator" aria-hidden="true">
+                                    @(sortDir.Direction == SortDirection.Ascending ? "\u25B2" : "\u25BC")
+                                </span>
+                            }
+                        </th>
+                    }
+                    @if (EditMode != GridEditMode.None)
+                    {
+                        <th class="mar-datagrid-command-header" role="columnheader">Commands</th>
                     }
                 </tr>
-            }
-        </thead>
 
-        @* Data rows *@
-        <tbody>
-            @if (_displayedItems.Count == 0)
-            {
-                <tr role="row">
-                    <td colspan="@_columns.Count" role="gridcell" class="mar-datagrid-empty">
-                        No data available.
-                    </td>
-                </tr>
-            }
-            else
-            {
-                @for (var i = 0; i < _displayedItems.Count; i++)
+                @* Filter row *@
+                @if (FilterMode == GridFilterMode.FilterRow)
                 {
-                    var item = _displayedItems[i];
-                    var isSelected = _selectedItems.Contains(item);
-                    var isStripedRow = Striped && i % 2 == 1;
-                    var rowClass = CssProvider.DataGridRowClass(isSelected, isStripedRow);
-
-                    <tr class="@rowClass"
-                        role="row"
-                        aria-selected="@(isSelected ? "true" : null)"
-                        @onclick="() => OnRowClick(item)">
-                        @foreach (var column in _columns)
+                    <tr class="@CssProvider.DataGridFilterRowClass()" role="row">
+                        @if (ShowCheckboxColumn)
                         {
-                            var cellStyle = column.TextAlign != null ? $"text-align:{column.TextAlign};" : null;
-                            <td class="@CssProvider.DataGridCellClass()"
-                                role="gridcell"
-                                style="@cellStyle">
-                                @if (column.Template != null)
+                            <td class="@CssProvider.DataGridFilterCellClass()" role="gridcell"></td>
+                        }
+                        @foreach (var column in _visibleColumns)
+                        {
+                            <td class="@CssProvider.DataGridFilterCellClass()" role="gridcell">
+                                @if (column.Filterable)
                                 {
-                                    @column.Template(item)
-                                }
-                                else
-                                {
-                                    @column.GetDisplayValue(item)
+                                    var currentFilter = _state.FilterDescriptors.FirstOrDefault(f => f.Field == column.Field);
+                                    <input type="text"
+                                           value="@(currentFilter?.Value?.ToString() ?? "")"
+                                           placeholder="Filter..."
+                                           aria-label="@($"Filter {column.DisplayTitle}")"
+                                           @onchange="(e) => OnFilterChanged(column.Field, e)" />
                                 }
                             </td>
                         }
                     </tr>
                 }
-            }
-        </tbody>
-    </table>
+            </thead>
+
+            @* Data rows *@
+            <tbody>
+                @if (_displayedItems.Count == 0)
+                {
+                    <tr role="row">
+                        <td colspan="@TotalColumnCount" role="gridcell" class="mar-datagrid-empty">
+                            No data available.
+                        </td>
+                    </tr>
+                }
+                else if (EnableVirtualization)
+                {
+                    <Virtualize Items="@_displayedItems" Context="item" OverscanCount="5">
+                        @{ RenderDataRow(item, _displayedItems.IndexOf(item)); }
+                    </Virtualize>
+                }
+                else
+                {
+                    @for (var i = 0; i < _displayedItems.Count; i++)
+                    {
+                        var item = _displayedItems[i];
+                        @RenderDataRow(item, i)
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
 
     @* Pager *@
     @if (Pageable)
@@ -147,6 +151,19 @@
                     @onclick="GoToNextPage">
                 Next &raquo;
             </button>
+
+            @if (PageSizes != null && PageSizes.Any())
+            {
+                <select class="mar-datagrid-pagesize-select"
+                        value="@_state.PageSize"
+                        aria-label="Items per page"
+                        @onchange="OnPageSizeDropdownChanged">
+                    @foreach (var size in PageSizes)
+                    {
+                        <option value="@size" selected="@(size == _state.PageSize)">@size</option>
+                    }
+                </select>
+            }
         </div>
     }
 </div>
@@ -156,20 +173,33 @@
     private readonly GridState _state = new();
     private List<TItem> _displayedItems = [];
     private HashSet<TItem> _selectedItems = [];
+    private bool _stateInitialized;
 
     // ── Parameters ──────────────────────────────────────────────────────
 
-    /// <summary>Client-side data source.</summary>
+    /// <summary>Client-side data source. Mutually exclusive with <see cref="OnRead"/>.</summary>
     [Parameter] public IEnumerable<TItem>? Data { get; set; }
 
-    /// <summary>Server-side data read callback.</summary>
-    [Parameter] public EventCallback<DataRequest> OnRead { get; set; }
+    /// <summary>Server-side data read callback. When bound, the grid delegates sorting/filtering/paging to the consumer.</summary>
+    [Parameter] public EventCallback<GridReadEventArgs<TItem>> OnRead { get; set; }
 
     /// <summary>Whether paging is enabled.</summary>
     [Parameter] public bool Pageable { get; set; }
 
     /// <summary>Number of items per page. Defaults to 10.</summary>
     [Parameter] public int PageSize { get; set; } = 10;
+
+    /// <summary>The current page number (1-based). Supports two-way binding.</summary>
+    [Parameter] public int Page { get; set; }
+
+    /// <summary>Fires when the current page changes.</summary>
+    [Parameter] public EventCallback<int> PageChanged { get; set; }
+
+    /// <summary>Available page sizes for the page-size dropdown. Set to null to hide the dropdown.</summary>
+    [Parameter] public int[]? PageSizes { get; set; }
+
+    /// <summary>Fires when the page size changes.</summary>
+    [Parameter] public EventCallback<int> PageSizeChanged { get; set; }
 
     /// <summary>Whether sorting is enabled. Defaults to true.</summary>
     [Parameter] public bool Sortable { get; set; } = true;
@@ -180,7 +210,10 @@
     /// <summary>The selection mode for the grid.</summary>
     [Parameter] public GridSelectionMode SelectionMode { get; set; } = GridSelectionMode.None;
 
-    /// <summary>The currently selected items.</summary>
+    /// <summary>Whether to show a checkbox column for selection.</summary>
+    [Parameter] public bool ShowCheckboxColumn { get; set; }
+
+    /// <summary>The currently selected items. Supports two-way binding.</summary>
     [Parameter] public IEnumerable<TItem>? SelectedItems { get; set; }
 
     /// <summary>Fires when the selected items change.</summary>
@@ -189,11 +222,86 @@
     /// <summary>Whether to apply striped row styling.</summary>
     [Parameter] public bool Striped { get; set; }
 
+    /// <summary>The height of the grid (e.g. "400px", "50vh"). Enables vertical scrolling when content overflows.</summary>
+    [Parameter] public string? Height { get; set; }
+
+    /// <summary>The width of the grid (e.g. "100%", "800px").</summary>
+    [Parameter] public string? Width { get; set; }
+
+    /// <summary>Whether keyboard navigation is enabled within the grid.</summary>
+    [Parameter] public bool Navigable { get; set; }
+
+    /// <summary>Whether to use Blazor Virtualize for row rendering. Improves performance for large datasets.</summary>
+    [Parameter] public bool EnableVirtualization { get; set; }
+
     /// <summary>Column definitions (MariloGridColumn components).</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>Optional toolbar content rendered above the grid.</summary>
     [Parameter] public RenderFragment? ToolbarTemplate { get; set; }
+
+    // ── State events ────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Fires once when the grid initializes. Set properties on the provided <see cref="GridState"/>
+    /// to restore a previously saved state (page, sorts, filters, etc.).
+    /// </summary>
+    [Parameter] public EventCallback<GridState> OnStateInit { get; set; }
+
+    /// <summary>
+    /// Fires after any state change (page, sort, filter, selection).
+    /// Use this to persist grid state.
+    /// </summary>
+    [Parameter] public EventCallback<GridStateChangedEventArgs> OnStateChanged { get; set; }
+
+    // ── Row events ──────────────────────────────────────────────────────
+
+    /// <summary>Fires when a row is clicked.</summary>
+    [Parameter] public EventCallback<GridRowClickEventArgs<TItem>> OnRowClick { get; set; }
+
+    /// <summary>Fires when a row is double-clicked.</summary>
+    [Parameter] public EventCallback<GridRowClickEventArgs<TItem>> OnRowDoubleClick { get; set; }
+
+    /// <summary>Fires when a row is right-clicked.</summary>
+    [Parameter] public EventCallback<GridRowClickEventArgs<TItem>> OnRowContextMenu { get; set; }
+
+    /// <summary>Callback for per-row render customization (CSS classes, styles).</summary>
+    [Parameter] public Action<GridRowRenderEventArgs<TItem>>? OnRowRender { get; set; }
+
+    // ── Editing parameters ──────────────────────────────────────────────
+
+    /// <summary>The editing mode. Defaults to None (no editing).</summary>
+    [Parameter] public GridEditMode EditMode { get; set; } = GridEditMode.None;
+
+    /// <summary>Fires when the user initiates adding a new item (e.g. clicks Add in toolbar).</summary>
+    [Parameter] public EventCallback<GridEditEventArgs<TItem>> OnAdd { get; set; }
+
+    /// <summary>Fires when a new item is confirmed for creation.</summary>
+    [Parameter] public EventCallback<GridEditEventArgs<TItem>> OnCreate { get; set; }
+
+    /// <summary>Fires when an existing item's edit is confirmed.</summary>
+    [Parameter] public EventCallback<GridEditEventArgs<TItem>> OnUpdate { get; set; }
+
+    /// <summary>Fires when an item is deleted.</summary>
+    [Parameter] public EventCallback<GridEditEventArgs<TItem>> OnDelete { get; set; }
+
+    /// <summary>Fires when a row enters edit mode.</summary>
+    [Parameter] public EventCallback<GridEditEventArgs<TItem>> OnEdit { get; set; }
+
+    /// <summary>Fires when editing is cancelled.</summary>
+    [Parameter] public EventCallback<GridEditEventArgs<TItem>> OnCancel { get; set; }
+
+    /// <summary>Fires when a new model is needed for creation. Set the Item property on the args.</summary>
+    [Parameter] public EventCallback<GridModelInitEventArgs<TItem>> OnModelInit { get; set; }
+
+    /// <summary>Fires when a custom command is executed on a row.</summary>
+    [Parameter] public EventCallback<GridCommandEventArgs<TItem>> OnCommand { get; set; }
+
+    // ── Editing state ───────────────────────────────────────────────────
+
+    private TItem? _editingItem;
+    private TItem? _originalItem;
+    private bool _isCreating;
 
     // ── Internal API for child columns ──────────────────────────────────
 
@@ -212,27 +320,185 @@
         StateHasChanged();
     }
 
+    // ── Public API ──────────────────────────────────────────────────────
+
+    /// <summary>Gets a snapshot of the current grid state.</summary>
+    public GridState GetState() => new()
+    {
+        CurrentPage = _state.CurrentPage,
+        PageSize = _state.PageSize,
+        SortDescriptors = _state.SortDescriptors.Select(s => new SortDescriptor { Field = s.Field, Direction = s.Direction }).ToList(),
+        FilterDescriptors = _state.FilterDescriptors.Select(f => new FilterDescriptor { Field = f.Field, Operator = f.Operator, Value = f.Value }).ToList(),
+        GroupDescriptors = _state.GroupDescriptors.Select(g => new GroupDescriptor { Field = g.Field }).ToList(),
+        TotalCount = _state.TotalCount
+    };
+
+    /// <summary>Whether a row is currently being edited.</summary>
+    public bool IsEditing => _editingItem != null;
+
+    /// <summary>Whether a new item is being created.</summary>
+    public bool IsCreating => _isCreating;
+
+    /// <summary>Begins editing the specified item (Inline/InCell mode).</summary>
+    public async Task BeginEdit(TItem item)
+    {
+        if (EditMode == GridEditMode.None) return;
+        _originalItem = item;
+        _editingItem = item;
+        _isCreating = false;
+        if (OnEdit.HasDelegate)
+            await OnEdit.InvokeAsync(new GridEditEventArgs<TItem> { Item = item });
+        StateHasChanged();
+    }
+
+    /// <summary>Begins adding a new item. Fires OnModelInit to get a blank model.</summary>
+    public async Task BeginAdd()
+    {
+        if (EditMode == GridEditMode.None) return;
+        var initArgs = new GridModelInitEventArgs<TItem>();
+        if (OnModelInit.HasDelegate)
+            await OnModelInit.InvokeAsync(initArgs);
+        _editingItem = initArgs.Item;
+        _isCreating = true;
+        if (OnAdd.HasDelegate)
+            await OnAdd.InvokeAsync(new GridEditEventArgs<TItem> { Item = _editingItem });
+        StateHasChanged();
+    }
+
+    /// <summary>Saves the current edit (create or update).</summary>
+    public async Task SaveEdit()
+    {
+        if (_editingItem == null) return;
+        var args = new GridEditEventArgs<TItem> { Item = _editingItem };
+        if (_isCreating)
+        {
+            if (OnCreate.HasDelegate) await OnCreate.InvokeAsync(args);
+        }
+        else
+        {
+            if (OnUpdate.HasDelegate) await OnUpdate.InvokeAsync(args);
+        }
+        if (!args.IsCancelled)
+        {
+            _editingItem = default;
+            _isCreating = false;
+            await ProcessDataAsync();
+        }
+        StateHasChanged();
+    }
+
+    /// <summary>Cancels the current edit operation.</summary>
+    public async Task CancelEdit()
+    {
+        if (_editingItem == null) return;
+        if (OnCancel.HasDelegate)
+            await OnCancel.InvokeAsync(new GridEditEventArgs<TItem> { Item = _editingItem });
+        _editingItem = default;
+        _isCreating = false;
+        StateHasChanged();
+    }
+
+    /// <summary>Deletes the specified item.</summary>
+    public async Task DeleteItem(TItem item)
+    {
+        var args = new GridEditEventArgs<TItem> { Item = item };
+        if (OnDelete.HasDelegate) await OnDelete.InvokeAsync(args);
+        if (!args.IsCancelled)
+            await ProcessDataAsync();
+        StateHasChanged();
+    }
+
+    /// <summary>Executes a custom command on a row.</summary>
+    public async Task ExecuteCommand(string commandId, TItem? item = default)
+    {
+        if (OnCommand.HasDelegate)
+            await OnCommand.InvokeAsync(new GridCommandEventArgs<TItem> { CommandId = commandId, Item = item });
+    }
+
+    /// <summary>Checks if the given item is currently being edited.</summary>
+    internal bool IsItemEditing(TItem item) => _editingItem != null && EqualityComparer<TItem>.Default.Equals(_editingItem, item);
+
+    /// <summary>Forces the grid to re-read its data source. Useful when external data changes.</summary>
+    public async Task Rebind()
+    {
+        await ProcessDataAsync();
+        StateHasChanged();
+    }
+
     // ── Computed properties ─────────────────────────────────────────────
+
+    private List<MariloGridColumn<TItem>> _visibleColumns => _columns.Where(c => c.Visible).ToList();
+
+    private int TotalColumnCount => _visibleColumns.Count + (ShowCheckboxColumn ? 1 : 0) + (EditMode != GridEditMode.None ? 1 : 0);
 
     internal int TotalPages => _state.TotalCount > 0 && _state.PageSize > 0
         ? (int)Math.Ceiling((double)_state.TotalCount / _state.PageSize)
         : 1;
 
+    private string? RootStyle
+    {
+        get
+        {
+            var parts = new List<string>();
+            if (Width != null) parts.Add($"width:{Width};");
+            if (parts.Count == 0) return null;
+            return string.Join("", parts);
+        }
+    }
+
+    private string? ContentStyle
+    {
+        get
+        {
+            if (Height == null) return null;
+            return $"max-height:{Height};overflow:auto;";
+        }
+    }
+
     // ── Lifecycle ───────────────────────────────────────────────────────
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         _state.PageSize = PageSize;
+
+        if (Page > 0)
+            _state.CurrentPage = Page;
 
         if (SelectedItems != null)
             _selectedItems = new HashSet<TItem>(SelectedItems);
 
-        ProcessData();
+        if (!_stateInitialized)
+        {
+            _stateInitialized = true;
+            if (OnStateInit.HasDelegate)
+            {
+                await OnStateInit.InvokeAsync(_state);
+            }
+        }
+
+        await ProcessDataAsync();
     }
 
     // ── Data processing ─────────────────────────────────────────────────
 
-    private void ProcessData()
+    private async Task ProcessDataAsync()
+    {
+        if (OnRead.HasDelegate)
+        {
+            // Server-side mode: delegate all operations to the consumer
+            var args = new GridReadEventArgs<TItem> { Request = GetState() };
+            await OnRead.InvokeAsync(args);
+            _displayedItems = args.Data.ToList();
+            _state.TotalCount = args.Total;
+        }
+        else
+        {
+            // Client-side mode: grid handles sort/filter/page
+            ProcessDataClientSide();
+        }
+    }
+
+    private void ProcessDataClientSide()
     {
         if (Data is null)
         {
@@ -285,6 +551,8 @@
                 string.Equals(prop.GetValue(item)?.ToString(), filterValue, StringComparison.OrdinalIgnoreCase)),
             FilterOperator.StartsWith => items.Where(item =>
                 prop.GetValue(item)?.ToString()?.StartsWith(filterValue, StringComparison.OrdinalIgnoreCase) == true),
+            FilterOperator.EndsWith => items.Where(item =>
+                prop.GetValue(item)?.ToString()?.EndsWith(filterValue, StringComparison.OrdinalIgnoreCase) == true),
             _ => items
         };
     }
@@ -318,14 +586,17 @@
 
     // ── Event handlers ──────────────────────────────────────────────────
 
-    private void OnHeaderClick(MariloGridColumn<TItem> column, bool isSortable)
+    private async Task OnHeaderClick(MariloGridColumn<TItem> column, bool isSortable, MouseEventArgs? e = null)
     {
         if (!isSortable) return;
 
+        var isMultiSort = e?.CtrlKey == true || e?.MetaKey == true;
         var existing = _state.SortDescriptors.FirstOrDefault(s => s.Field == column.Field);
+
         if (existing is null)
         {
-            _state.SortDescriptors.Clear();
+            if (!isMultiSort)
+                _state.SortDescriptors.Clear();
             _state.SortDescriptors.Add(new SortDescriptor
             {
                 Field = column.Field,
@@ -342,10 +613,12 @@
         }
 
         _state.CurrentPage = 1;
-        ProcessData();
+        await ProcessDataAsync();
+        await NotifyPageChanged();
+        await NotifyStateChanged("Sort");
     }
 
-    private void OnFilterChanged(string field, ChangeEventArgs e)
+    private async Task OnFilterChanged(string field, ChangeEventArgs e)
     {
         var value = e.Value?.ToString();
         var existing = _state.FilterDescriptors.FirstOrDefault(f => f.Field == field);
@@ -373,13 +646,56 @@
         }
 
         _state.CurrentPage = 1;
-        ProcessData();
+        await ProcessDataAsync();
+        await NotifyPageChanged();
+        await NotifyStateChanged("Filter");
     }
 
-    private async Task OnRowClick(TItem item)
+    private async Task HandleRowClick(TItem item, MouseEventArgs e)
     {
-        if (SelectionMode == GridSelectionMode.None) return;
+        // Selection logic (when no checkbox column, clicking row toggles selection)
+        if (SelectionMode != GridSelectionMode.None && !ShowCheckboxColumn)
+        {
+            await ToggleSelection(item);
+        }
 
+        // Fire public OnRowClick event
+        if (OnRowClick.HasDelegate)
+        {
+            await OnRowClick.InvokeAsync(new GridRowClickEventArgs<TItem>
+            {
+                Item = item,
+                EventArgs = e
+            });
+        }
+    }
+
+    private async Task HandleRowDoubleClick(TItem item, MouseEventArgs e)
+    {
+        if (OnRowDoubleClick.HasDelegate)
+        {
+            await OnRowDoubleClick.InvokeAsync(new GridRowClickEventArgs<TItem>
+            {
+                Item = item,
+                EventArgs = e
+            });
+        }
+    }
+
+    private async Task HandleRowContextMenu(TItem item, MouseEventArgs e)
+    {
+        if (OnRowContextMenu.HasDelegate)
+        {
+            await OnRowContextMenu.InvokeAsync(new GridRowClickEventArgs<TItem>
+            {
+                Item = item,
+                EventArgs = e
+            });
+        }
+    }
+
+    private async Task ToggleSelection(TItem item)
+    {
         if (SelectionMode == GridSelectionMode.Single)
         {
             _selectedItems.Clear();
@@ -392,23 +708,178 @@
         }
 
         await SelectedItemsChanged.InvokeAsync(_selectedItems.ToList());
+        await NotifyStateChanged("Selection");
     }
 
-    private void GoToPreviousPage()
+    private async Task OnCheckboxToggle(TItem item)
+    {
+        await ToggleSelection(item);
+    }
+
+    private async Task OnSelectAllChanged(ChangeEventArgs e)
+    {
+        var selectAll = e.Value is true or "true";
+        if (selectAll)
+        {
+            _selectedItems = new HashSet<TItem>(_displayedItems);
+        }
+        else
+        {
+            _selectedItems.Clear();
+        }
+
+        await SelectedItemsChanged.InvokeAsync(_selectedItems.ToList());
+        await NotifyStateChanged("Selection");
+    }
+
+    private async Task GoToPreviousPage()
     {
         if (_state.CurrentPage > 1)
         {
             _state.CurrentPage--;
-            ProcessData();
+            await ProcessDataAsync();
+            await NotifyPageChanged();
+            await NotifyStateChanged("Page");
         }
     }
 
-    private void GoToNextPage()
+    private async Task GoToNextPage()
     {
         if (_state.CurrentPage < TotalPages)
         {
             _state.CurrentPage++;
-            ProcessData();
+            await ProcessDataAsync();
+            await NotifyPageChanged();
+            await NotifyStateChanged("Page");
+        }
+    }
+
+    private async Task OnPageSizeDropdownChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var newSize) && newSize > 0)
+        {
+            _state.PageSize = newSize;
+            _state.CurrentPage = 1;
+            await ProcessDataAsync();
+            await PageSizeChanged.InvokeAsync(newSize);
+            await NotifyPageChanged();
+            await NotifyStateChanged("PageSize");
+        }
+    }
+
+    // ── Row rendering ────────────────────────────────────────────────────
+
+    private RenderFragment RenderDataRow(TItem item, int index) => __builder =>
+    {
+        var isSelected = _selectedItems.Contains(item);
+        var isStripedRow = Striped && index % 2 == 1;
+        var isEditing = IsItemEditing(item);
+        var rowClass = CssProvider.DataGridRowClass(isSelected, isStripedRow);
+        var rowRenderArgs = GetRowRenderArgs(item);
+        var finalRowClass = rowRenderArgs?.Class != null ? $"{rowClass} {rowRenderArgs.Class}" : rowClass;
+        if (isEditing) finalRowClass += " mar-datagrid-row--editing";
+        var rowStyle = rowRenderArgs?.Style;
+
+        <tr class="@finalRowClass"
+            role="row"
+            style="@rowStyle"
+            aria-selected="@(isSelected ? "true" : null)"
+            @onclick="(e) => HandleRowClick(item, e)"
+            @ondblclick="(e) => HandleRowDoubleClick(item, e)"
+            @oncontextmenu="(e) => HandleRowContextMenu(item, e)">
+            @if (ShowCheckboxColumn)
+            {
+                <td class="mar-datagrid-checkbox-cell" role="gridcell">
+                    <input type="checkbox"
+                           checked="@isSelected"
+                           aria-label="Select row"
+                           @onclick:stopPropagation="true"
+                           @onchange="() => OnCheckboxToggle(item)" />
+                </td>
+            }
+            @foreach (var column in _visibleColumns)
+            {
+                var cellRenderArgs = GetCellRenderArgs(column, item);
+                var baseCellStyle = column.TextAlign != null ? $"text-align:{column.TextAlign};" : null;
+                var cellClass = CssProvider.DataGridCellClass();
+                if (cellRenderArgs?.Class != null) cellClass = $"{cellClass} {cellRenderArgs.Class}";
+                var cellStyle = cellRenderArgs?.Style != null
+                    ? (baseCellStyle != null ? $"{baseCellStyle}{cellRenderArgs.Style}" : cellRenderArgs.Style)
+                    : baseCellStyle;
+
+                <td class="@cellClass" role="gridcell" style="@cellStyle">
+                    @if (isEditing && column.EditorTemplate != null)
+                    {
+                        @column.EditorTemplate(item)
+                    }
+                    else if (column.Template != null)
+                    {
+                        @column.Template(item)
+                    }
+                    else
+                    {
+                        @column.GetDisplayValue(item)
+                    }
+                </td>
+            }
+            @if (EditMode != GridEditMode.None)
+            {
+                <td class="mar-datagrid-command-cell" role="gridcell">
+                    @if (isEditing)
+                    {
+                        <button type="button" class="mar-datagrid-cmd-btn" @onclick="SaveEdit" @onclick:stopPropagation="true">Save</button>
+                        <button type="button" class="mar-datagrid-cmd-btn" @onclick="CancelEdit" @onclick:stopPropagation="true">Cancel</button>
+                    }
+                    else
+                    {
+                        <button type="button" class="mar-datagrid-cmd-btn" @onclick="() => BeginEdit(item)" @onclick:stopPropagation="true">Edit</button>
+                        <button type="button" class="mar-datagrid-cmd-btn mar-datagrid-cmd-btn--delete" @onclick="() => DeleteItem(item)" @onclick:stopPropagation="true">Delete</button>
+                    }
+                </td>
+            }
+        </tr>
+    };
+
+    // ── Row/Cell render callbacks ───────────────────────────────────────
+
+    private GridRowRenderEventArgs<TItem>? GetRowRenderArgs(TItem item)
+    {
+        if (OnRowRender is null) return null;
+        var args = new GridRowRenderEventArgs<TItem> { Item = item };
+        OnRowRender(args);
+        return args;
+    }
+
+    private GridCellRenderEventArgs<TItem>? GetCellRenderArgs(MariloGridColumn<TItem> column, TItem item)
+    {
+        if (column.OnCellRender is null) return null;
+        var args = new GridCellRenderEventArgs<TItem>
+        {
+            Item = item,
+            Field = column.Field,
+            Value = column.GetValue(item)
+        };
+        column.OnCellRender(args);
+        return args;
+    }
+
+    // ── State notification helpers ──────────────────────────────────────
+
+    private async Task NotifyPageChanged()
+    {
+        if (PageChanged.HasDelegate)
+            await PageChanged.InvokeAsync(_state.CurrentPage);
+    }
+
+    private async Task NotifyStateChanged(string propertyName)
+    {
+        if (OnStateChanged.HasDelegate)
+        {
+            await OnStateChanged.InvokeAsync(new GridStateChangedEventArgs
+            {
+                PropertyName = propertyName,
+                State = GetState()
+            });
         }
     }
 

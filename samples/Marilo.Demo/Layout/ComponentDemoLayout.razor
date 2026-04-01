@@ -10,14 +10,18 @@
 {
     <div class="content-with-affix">
         <div class="content-page">
-            <nav class="breadcrumb-nav" aria-label="breadcrumb">
-                <a href="/components">Components</a>
-                <span class="breadcrumb-sep">/</span>
-                <span class="breadcrumb-current">@_component.Name</span>
-            </nav>
+            <MariloBreadcrumb Class="demo-breadcrumb">
+                <MariloBreadcrumbItem Href="/components">Components</MariloBreadcrumbItem>
+                <MariloBreadcrumbItem IsActive="true">@_component.Name</MariloBreadcrumbItem>
+            </MariloBreadcrumb>
 
             <article>
-                <h1>@_component.Name</h1>
+                <div class="article-header">
+                    <h1>@_component.Name</h1>
+                    <FavoriteToggle PageId="@_component.Slug"
+                                    PageTitle="@_component.Name"
+                                    PageUrl="@($"/components/{_component.Slug}")" />
+                </div>
                 <p class="article-description">@_component.Description</p>
 
                 <CascadingValue Value="_sectionTracker">

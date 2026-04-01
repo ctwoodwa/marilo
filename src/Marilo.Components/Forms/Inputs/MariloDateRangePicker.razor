@@ -7,18 +7,28 @@
         @IconProvider.GetIcon("calendar", IconSize.Small)
     </span>
     <input type="date"
-           class="@CssProvider.TextFieldClass(false, Disabled)"
+           class="@CssProvider.TextFieldClass(false, !Enabled)"
            value="@FormatDate(StartDate)"
-           disabled="@Disabled"
+           min="@FormatDate(Min)"
+           max="@FormatDate(Max)"
+           disabled="@(!Enabled)"
+           readonly="@ReadOnly"
            aria-label="Start date"
            @onchange="OnStartDateChanged" />
     <span class="mar-date-range-picker__separator" aria-hidden="true">&ndash;</span>
     <input type="date"
-           class="@CssProvider.TextFieldClass(false, Disabled)"
+           class="@CssProvider.TextFieldClass(false, !Enabled)"
            value="@FormatDate(EndDate)"
-           disabled="@Disabled"
+           min="@FormatDate(Min)"
+           max="@FormatDate(Max)"
+           disabled="@(!Enabled)"
+           readonly="@ReadOnly"
            aria-label="End date"
            @onchange="OnEndDateChanged" />
+    @if (ShowClearButton && Enabled && !ReadOnly && (StartDate.HasValue || EndDate.HasValue))
+    {
+        <button type="button" class="mar-datepicker__clear" aria-label="Clear" @onclick="ClearDates">&times;</button>
+    }
 </div>
 
 @code {
@@ -26,21 +36,38 @@
     [Parameter] public EventCallback<DateOnly?> StartDateChanged { get; set; }
     [Parameter] public DateOnly? EndDate { get; set; }
     [Parameter] public EventCallback<DateOnly?> EndDateChanged { get; set; }
-    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public bool Enabled { get; set; } = true;
+    [Parameter] public bool ReadOnly { get; set; }
+    [Parameter] public DateOnly? Min { get; set; }
+    [Parameter] public DateOnly? Max { get; set; }
+    [Parameter] public string? Format { get; set; }
+    [Parameter] public bool ShowClearButton { get; set; }
+    [Parameter] public bool ShowWeekNumbers { get; set; }
+
+    /// <summary>Fires when either start or end date changes.</summary>
+    [Parameter] public EventCallback OnRangeChanged { get; set; }
 
     private string? FormatDate(DateOnly? date) => date?.ToString("yyyy-MM-dd");
 
     private async Task OnStartDateChanged(ChangeEventArgs e)
     {
-        var str = e.Value?.ToString();
-        StartDate = DateOnly.TryParse(str, out var date) ? date : null;
+        StartDate = DateOnly.TryParse(e.Value?.ToString(), out var date) ? date : null;
         await StartDateChanged.InvokeAsync(StartDate);
+        await OnRangeChanged.InvokeAsync();
     }
 
     private async Task OnEndDateChanged(ChangeEventArgs e)
     {
-        var str = e.Value?.ToString();
-        EndDate = DateOnly.TryParse(str, out var date) ? date : null;
+        EndDate = DateOnly.TryParse(e.Value?.ToString(), out var date) ? date : null;
         await EndDateChanged.InvokeAsync(EndDate);
+        await OnRangeChanged.InvokeAsync();
+    }
+
+    private async Task ClearDates()
+    {
+        StartDate = null; EndDate = null;
+        await StartDateChanged.InvokeAsync(null);
+        await EndDateChanged.InvokeAsync(null);
+        await OnRangeChanged.InvokeAsync();
     }
 }

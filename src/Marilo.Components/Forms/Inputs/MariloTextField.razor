@@ -17,6 +17,10 @@
            maxlength="@MaxLength"
            autocomplete="@Autocomplete"
            @oninput="OnInputChanged" />
+    @if (ShowClearButton && !string.IsNullOrEmpty(Value) && !Disabled && !ReadOnly)
+    {
+        <button type="button" class="mar-textfield__clear" aria-label="Clear" @onclick="ClearValue">&times;</button>
+    }
     @if (Suffix != null)
     {
         <span class="mar-textfield__suffix @(ShowSuffixSeparator ? "mar-textfield__suffix--sep" : "")">
@@ -40,6 +44,9 @@
     [Parameter] public int? MaxLength { get; set; }
     [Parameter] public int DebounceDelay { get; set; }
     [Parameter] public string? Autocomplete { get; set; }
+
+    /// <summary>Whether to show a clear button when the field has a value.</summary>
+    [Parameter] public bool ShowClearButton { get; set; }
 
     private System.Timers.Timer? _debounceTimer;
     private string _pendingValue = string.Empty;
@@ -68,6 +75,12 @@
             Value = newValue;
             await ValueChanged.InvokeAsync(Value);
         }
+    }
+
+    private async Task ClearValue()
+    {
+        Value = string.Empty;
+        await ValueChanged.InvokeAsync(Value);
     }
 
     protected override void Dispose(bool disposing)

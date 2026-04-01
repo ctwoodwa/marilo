@@ -24,13 +24,13 @@
 
     <DemoSection Title="Stack" Code="@_stackCode">
         <h3>Horizontal</h3>
-        <MariloStack Direction="StackDirection.Horizontal" Alignment="StackAlignment.Center">
+        <MariloStack VerticalAlign="StackAlignment.Center">
             <MariloBadge Variant="BadgeVariant.Primary">Item 1</MariloBadge>
             <MariloBadge Variant="BadgeVariant.Secondary">Item 2</MariloBadge>
             <MariloBadge Variant="BadgeVariant.Success">Item 3</MariloBadge>
         </MariloStack>
         <h3 style="margin-top: 16px;">Vertical</h3>
-        <MariloStack Direction="StackDirection.Vertical">
+        <MariloStack Orientation="StackDirection.Vertical">
             <MariloButton Variant="ButtonVariant.Primary" Size="ButtonSize.Small">First</MariloButton>
             <MariloButton Variant="ButtonVariant.Secondary" Size="ButtonSize.Small">Second</MariloButton>
             <MariloButton Variant="ButtonVariant.Success" Size="ButtonSize.Small">Third</MariloButton>
@@ -69,12 +69,12 @@
     </MariloRow>
 </MariloGrid>";
 
-    private const string _stackCode = @"<MariloStack Direction=""StackDirection.Horizontal"" Alignment=""StackAlignment.Center"">
+    private const string _stackCode = @"<MariloStack VerticalAlign=""StackAlignment.Center"">
     <MariloBadge Variant=""BadgeVariant.Primary"">Item 1</MariloBadge>
     <MariloBadge Variant=""BadgeVariant.Secondary"">Item 2</MariloBadge>
 </MariloStack>
 
-<MariloStack Direction=""StackDirection.Vertical"">
+<MariloStack Orientation=""StackDirection.Vertical"">
     <MariloButton Size=""ButtonSize.Small"">First</MariloButton>
     <MariloButton Size=""ButtonSize.Small"">Second</MariloButton>
 </MariloStack>";

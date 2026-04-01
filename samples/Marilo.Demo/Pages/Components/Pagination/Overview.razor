@@ -1,30 +1,31 @@
-@page "/components/pagination"
-@page "/components/pagination/overview"
+@page "/components/Pagination"
+@page "/components/Pagination/overview"
 @layout ComponentDemoLayout
 
 <PageSection Title="Overview">
     <DemoSection Title="Basic Usage" Code="@_basicCode">
-        <MariloPagination TotalPages="10" CurrentPage="@_page" CurrentPageChanged="@(v => _page = v)" />
+        <MariloPagination Total="100" PageSize="10" Page="@_page" PageChanged="@(v => _page = v)" />
         <p><strong>Current page:</strong> @_page</p>
     </DemoSection>
 </PageSection>
 
-<PageSection Title="Appearance">
-    <DemoSection Title="Sizes" Description="Pagination supports different sizes." Code="@_sizesCode">
-        <MariloPagination TotalPages="5" CurrentPage="1" Size="PaginationSize.Small" />
-        <MariloPagination TotalPages="5" CurrentPage="1" Size="PaginationSize.Medium" />
-        <MariloPagination TotalPages="5" CurrentPage="1" Size="PaginationSize.Large" />
+<PageSection Title="Features">
+    <DemoSection Title="Page Size Selector" Description="Allow users to change the number of items per page." Code="@_pageSizesCode">
+        <MariloPagination Total="100" PageSize="@_pageSize" PageSizeChanged="@(s => _pageSize = s)"
+                          PageSizes="@(new List<int> { 5, 10, 25, 50 })"
+                          Page="@_pageSizePage" PageChanged="@(v => _pageSizePage = v)"
+                          ShowInfo="true" />
+        <p><strong>Page size:</strong> @_pageSize | <strong>Page:</strong> @_pageSizePage</p>
     </DemoSection>
 
-    <DemoSection Title="Variants" Description="Pagination can be displayed with different visual styles." Code="@_variantsCode">
-        <MariloPagination TotalPages="5" CurrentPage="1" Variant="PaginationVariant.Default" />
-        <MariloPagination TotalPages="5" CurrentPage="1" Variant="PaginationVariant.Outlined" />
+    <DemoSection Title="Page Info" Description="Display item range and total count." Code="@_infoCode">
+        <MariloPagination Total="47" PageSize="10" Page="1" ShowInfo="true" />
     </DemoSection>
 </PageSection>
 
 <PageSection Title="Events">
-    <DemoSection Title="CurrentPageChanged" Description="Handle page changes with the CurrentPageChanged callback." Code="@_pageChangedCode">
-        <MariloPagination TotalPages="10" CurrentPage="@_currentPage" CurrentPageChanged="@OnPageChanged" />
+    <DemoSection Title="PageChanged" Description="Handle page changes with the PageChanged callback." Code="@_pageChangedCode">
+        <MariloPagination Total="100" PageSize="10" Page="@_currentPage" PageChanged="@OnPageChanged" />
         <p><strong>Current page:</strong> @_currentPage</p>
         <p><strong>Last change:</strong> @_lastChange</p>
     </DemoSection>
@@ -40,6 +41,8 @@
 @code {
     private int _page = 1;
     private int _currentPage = 1;
+    private int _pageSize = 10;
+    private int _pageSizePage = 1;
     private string _lastChange = "None";
 
     private void OnPageChanged(int page)
@@ -49,23 +52,23 @@
     }
 
     private const string _basicCode =
-        "<MariloPagination TotalPages=\"10\" CurrentPage=\"@_page\" CurrentPageChanged=\"@(v => _page = v)\" />\n" +
+        "<MariloPagination Total=\"100\" PageSize=\"10\" Page=\"@_page\" PageChanged=\"@(v => _page = v)\" />\n" +
         "<p><strong>Current page:</strong> @_page</p>\n\n" +
         "@code {\n" +
         "    private int _page = 1;\n" +
         "}";
 
-    private const string _sizesCode =
-        "<MariloPagination TotalPages=\"5\" CurrentPage=\"1\" Size=\"PaginationSize.Small\" />\n" +
-        "<MariloPagination TotalPages=\"5\" CurrentPage=\"1\" Size=\"PaginationSize.Medium\" />\n" +
-        "<MariloPagination TotalPages=\"5\" CurrentPage=\"1\" Size=\"PaginationSize.Large\" />";
+    private const string _pageSizesCode =
+        "<MariloPagination Total=\"100\" PageSize=\"@_pageSize\" PageSizeChanged=\"@(s => _pageSize = s)\"\n" +
+        "                  PageSizes=\"@(new List<int> { 5, 10, 25, 50 })\"\n" +
+        "                  Page=\"@_page\" PageChanged=\"@(v => _page = v)\"\n" +
+        "                  ShowInfo=\"true\" />";
 
-    private const string _variantsCode =
-        "<MariloPagination TotalPages=\"5\" CurrentPage=\"1\" Variant=\"PaginationVariant.Default\" />\n" +
-        "<MariloPagination TotalPages=\"5\" CurrentPage=\"1\" Variant=\"PaginationVariant.Outlined\" />";
+    private const string _infoCode =
+        "<MariloPagination Total=\"47\" PageSize=\"10\" Page=\"1\" ShowInfo=\"true\" />";
 
     private const string _pageChangedCode =
-        "<MariloPagination TotalPages=\"10\" CurrentPage=\"@_currentPage\" CurrentPageChanged=\"@OnPageChanged\" />\n" +
+        "<MariloPagination Total=\"100\" PageSize=\"10\" Page=\"@_currentPage\" PageChanged=\"@OnPageChanged\" />\n" +
         "<p><strong>Current page:</strong> @_currentPage</p>\n" +
         "<p><strong>Last change:</strong> @_lastChange</p>\n\n" +
         "@code {\n" +
@@ -88,14 +91,14 @@
 
     private static readonly (string Attribute, string Description)[] _aria =
     [
-        ("nav aria-label=\"Pagination\"", "The pagination is wrapped in a nav element with aria-label=\"Pagination\""),
+        ("nav aria-label=\"pagination\"", "The pagination is wrapped in a nav element with aria-label"),
         ("aria-current=\"page\"", "Applied to the currently selected page button to indicate the active page"),
-        ("aria-label", "Each page button has an aria-label such as \"Page 1\", \"Page 2\", etc."),
+        ("aria-label", "Previous and next buttons have descriptive aria-labels"),
     ];
 
     private static readonly string[] _screenReader =
     [
-        "The pagination is announced as a navigation landmark with the label \"Pagination\".",
+        "The pagination is announced as a navigation landmark.",
         "The current page button is announced with \"current page\" to indicate the selected page.",
         "Previous and next buttons are labeled to indicate their navigation direction.",
     ];

@@ -1,0 +1,83 @@
+// =================================================================
+// Marilo Bootstrap Provider — Design Tokens
+// =================================================================
+// CSS custom properties derived from Bootstrap Sass variables.
+// Because Bootstrap is compiled in, these use Sass values directly
+// instead of hardcoded hex fallbacks.
+// =================================================================
+
+:root {
+  // Primary palette
+  --marilo-color-primary: #{$primary};
+  --marilo-color-primary-hover: #{shade-color($primary, 20%)};
+  --marilo-color-primary-active: #{shade-color($primary, 25%)};
+  --marilo-color-primary-light: #{tint-color($primary, 80%)};
+
+  // Semantic palette
+  --marilo-color-secondary: #{$secondary};
+  --marilo-color-success: #{$success};
+  --marilo-color-success-light: #{tint-color($success, 80%)};
+  --marilo-color-warning: #{$warning};
+  --marilo-color-warning-light: #{tint-color($warning, 80%)};
+  --marilo-color-danger: #{$danger};
+  --marilo-color-danger-light: #{tint-color($danger, 80%)};
+  --marilo-color-info: #{$info};
+  --marilo-color-info-light: #{tint-color($info, 80%)};
+
+  // Neutral palette
+  --marilo-color-bg: #{$body-bg};
+  --marilo-color-surface: #{$gray-100};
+  --marilo-color-text: #{$body-color};
+  --marilo-color-text-secondary: #{$gray-600};
+  --marilo-color-text-disabled: #{$gray-500};
+  --marilo-color-border: #{$border-color};
+  --marilo-color-border-strong: #{$gray-500};
+
+  // Typography
+  --marilo-font-family: #{inspect($font-family-base)};
+  --marilo-font-size-xs: #{$font-size-base * 0.75};
+  --marilo-font-size-sm: #{$font-size-sm};
+  --marilo-font-size-base: #{$font-size-base};
+  --marilo-font-size-md: #{$font-size-base * 1.125};
+  --marilo-font-size-lg: #{$font-size-lg};
+  --marilo-font-size-xl: #{$h4-font-size};
+  --marilo-font-size-2xl: #{$h3-font-size};
+  --marilo-font-size-3xl: #{$h2-font-size};
+
+  // Spacing
+  --marilo-space-xxs: 2px;
+  --marilo-space-xs: #{$spacer * 0.25};
+  --marilo-space-sm: #{$spacer * 0.5};
+  --marilo-space-md: #{$spacer * 0.75};
+  --marilo-space-lg: #{$spacer};
+  --marilo-space-xl: #{$spacer * 1.5};
+  --marilo-space-2xl: #{$spacer * 2};
+  --marilo-space-3xl: #{$spacer * 3};
+
+  // Shape
+  --marilo-radius-sm: #{$border-radius-sm};
+  --marilo-radius-md: #{$border-radius};
+  --marilo-radius-lg: #{$border-radius-lg};
+  --marilo-radius-xl: #{$border-radius-xl};
+  --marilo-radius-full: 50rem;
+
+  // Shadows
+  --marilo-shadow-sm: #{$box-shadow-sm};
+  --marilo-shadow-md: #{$box-shadow};
+  --marilo-shadow-lg: #{$box-shadow-lg};
+
+  // Transitions
+  --marilo-transition-fast: 150ms ease-in-out;
+  --marilo-transition-normal: 200ms ease-in-out;
+  --marilo-transition-slow: 300ms ease-in-out;
+
+  // Z-index hierarchy
+  --marilo-z-dropdown: #{$zindex-dropdown};
+  --marilo-z-sticky: #{$zindex-sticky};
+  --marilo-z-fixed: #{$zindex-fixed};
+  --marilo-z-modal-overlay: #{$zindex-modal-backdrop};
+  --marilo-z-modal: #{$zindex-modal};
+  --marilo-z-popover: #{$zindex-popover};
+  --marilo-z-tooltip: #{$zindex-tooltip};
+  --marilo-z-toast: #{$zindex-toast};
+}

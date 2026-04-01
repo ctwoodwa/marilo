@@ -16,9 +16,9 @@ public class EditorTests : MariloTestBase
         var toolbar = cut.Find(".mar-editor-toolbar");
         Assert.NotNull(toolbar);
 
-        // 3 tool buttons + 1 Preview button
+        // 3 tool buttons (Preview is now controlled via EditMode, not a toolbar button)
         var buttons = toolbar.QuerySelectorAll("button");
-        Assert.Equal(4, buttons.Length);
+        Assert.Equal(3, buttons.Length);
     }
 
     [Fact]
@@ -29,8 +29,8 @@ public class EditorTests : MariloTestBase
         var toolbar = cut.Find(".mar-editor-toolbar");
         var buttons = toolbar.QuerySelectorAll("button");
 
-        // All EditorTool values + Preview button
-        var expectedCount = Enum.GetValues<EditorTool>().Length + 1;
+        // All EditorTool values (Preview is now controlled via EditMode)
+        var expectedCount = Enum.GetValues<EditorTool>().Length;
         Assert.Equal(expectedCount, buttons.Length);
     }
 

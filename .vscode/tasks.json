@@ -71,6 +71,19 @@
       "dependsOn": ["dotnet:build:demo", "docs:serve"],
       "dependsOrder": "parallel",
       "problemMatcher": []
+    },
+    {
+      "label": "dotnet:build:bootstrap",
+      "type": "shell",
+      "command": "dotnet build samples/Marilo.Demo.Bootstrap/Marilo.Demo.Bootstrap.csproj",
+      "group": "build",
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "build:bootstrap",
+      "dependsOn": ["scss:build", "dotnet:build:bootstrap"],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
     }
   ]
 }
