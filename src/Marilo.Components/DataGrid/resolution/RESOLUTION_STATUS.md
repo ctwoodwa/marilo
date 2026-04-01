@@ -94,13 +94,47 @@ MariloDataGrid had 44 gaps. MariloGridColumn had 8 gaps. MariloGridToolbar had 2
 | `MariloDataGrid.Data.cs` | Partial class: ProcessDataAsync, ApplyFilter (11 operators), ApplySort (multi), event handlers |
 | `MariloDataGrid.Rendering.cs` | Partial class: RenderDataRow, RenderEditRow, RenderFilterMenu, row/cell render callbacks |
 
+## Pass 3 Resolutions (2026-04-01)
+
+### MariloDataGrid — Resolved Gaps
+
+| # | Gap | Severity | Resolution |
+|---|-----|----------|------------|
+| 1 | No grouping support | **High** | Full grouping: `Groupable` parameter, `GroupBy`/`Ungroup`/`UngroupAll` API, multi-level nested groups, collapsible group headers, `GroupHeaderTemplate`/`GroupFooterTemplate`, group state in GridState. |
+| 2 | `GroupDescriptor` missing sort direction | **Medium** | Added `Direction` property (SortDirection) to GroupDescriptor. Groups are sorted by key. |
+| 3 | No `AutoGenerateColumns` | **Medium** | Added `AutoGenerateColumns` parameter. When true and no explicit columns defined, generates columns from TItem's public simple-type properties via reflection. Titles auto-split from camelCase. |
+| 4 | No column resize | **High** | Added `Resizable` parameter. JS interop adds drag handles to header cells. Fires `OnColumnResize` event. |
+| 5 | No column reorder | **High** | Added `Reorderable` parameter. JS interop enables HTML5 drag-and-drop on header cells. Fires `OnColumnReorder` event. |
+| 6 | No keyboard navigation | **Medium** | Full keyboard nav when `Navigable` is true: Arrow keys, Home/End (with Ctrl), Enter/Space to activate. JS interop manages focus tracking across cells. |
+| 7 | No `NoDataTemplate` | **Medium** | Added `NoDataTemplate` RenderFragment for customizable empty state. Falls back to "No data available." text. |
+| 8 | No `RowTemplate` | **Low** | Added `RowTemplate` RenderFragment<TItem> for full custom row rendering. |
+| 9 | No search/filter box | **Medium** | Added `ShowSearchBox` parameter with `SearchBoxPlaceholder`. Global text search across all visible columns. |
+| 10 | No CSV export | **Low** | Added `ExportToCsv()` public method. Generates CSV from all filtered/sorted data (not just current page). Proper escaping. |
+| 11 | `GridState` missing fields | **Medium** | Added `SearchFilter`, `EditItem`, `OriginalEditItem`, `InsertedItem`, `ExpandedItems`, `CollapsedGroups`, `ColumnStates` to GridState. Added `GridColumnState` class. |
+
+### New Files Created (Pass 3)
+
+| File | Purpose |
+|------|---------|
+| `MariloDataGrid.Interop.cs` | Partial class: JS interop for column resize, column reorder, keyboard navigation. `ColumnResizeEventArgs`, `ColumnState` types. |
+
+### New Types Added (Pass 3)
+
+| Type | Purpose |
+|------|---------|
+| `GridGroupRow<TItem>` | Represents a group of items with key, depth, child groups |
+| `GridGroupHeaderContext<TItem>` | Context for GroupHeaderTemplate/GroupFooterTemplate |
+| `ColumnResizeEventArgs` | Event args for OnColumnResize |
+| `ColumnState` | Runtime column visual state |
+| `GridColumnState` | Persisted column state in GridState |
+
 ## Remaining Work
 
 All remaining gaps are tracked in `../GAP_ANALYSIS.md` with phased task breakdowns:
 
 | Phase | Description | Task Count |
 |-------|-------------|------------|
-| A | Pure C# features (grouping, auto-columns, search, templates, CSV export) | 42 |
-| B | JS interop features (keyboard nav, column resize/reorder, row drag, frozen cols) | 28 |
-| C | Advanced features (Excel/PDF export, column menu/chooser, cell selection, validation) | 29 |
-| D | Future/out-of-scope (AI, popup templates, toolbar tools, adaptive mode) | 21 |
+| A | Pure C# features (validation, stacked columns) | ~10 |
+| B | JS interop features (row drag-to-reorder, frozen columns, sticky header) | ~15 |
+| C | Advanced features (Excel/PDF export, column menu/chooser, cell selection) | ~25 |
+| D | Future/out-of-scope (AI, popup templates, toolbar tools, adaptive mode) | ~21 |

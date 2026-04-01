@@ -4,7 +4,7 @@ namespace Marilo.Components.DataGrid;
 
 /// <summary>
 /// Represents the current state of a <see cref="MariloDataGrid{TItem}"/>,
-/// including paging, sorting, filtering, and grouping descriptors.
+/// including paging, sorting, filtering, grouping, editing, and column state.
 /// Can be used with <c>OnStateInit</c> and <c>OnStateChanged</c> to persist and restore state.
 /// </summary>
 public class GridState
@@ -29,4 +29,43 @@ public class GridState
 
     /// <summary>The currently selected item keys (for state persistence).</summary>
     public HashSet<object> SelectedKeys { get; set; } = [];
+
+    /// <summary>The current search/filter text from the search box.</summary>
+    public string? SearchFilter { get; set; }
+
+    /// <summary>The item currently being edited (null if none).</summary>
+    public object? EditItem { get; set; }
+
+    /// <summary>The original item before editing began (for cancellation).</summary>
+    public object? OriginalEditItem { get; set; }
+
+    /// <summary>The item being created (null if not in add mode).</summary>
+    public object? InsertedItem { get; set; }
+
+    /// <summary>Keys of currently expanded detail rows.</summary>
+    public HashSet<object> ExpandedItems { get; set; } = [];
+
+    /// <summary>Keys of collapsed groups.</summary>
+    public HashSet<string> CollapsedGroups { get; set; } = [];
+
+    /// <summary>Persisted column states (width, order, visibility).</summary>
+    public List<GridColumnState> ColumnStates { get; set; } = [];
+}
+
+/// <summary>
+/// Persisted state for a single grid column.
+/// </summary>
+public class GridColumnState
+{
+    /// <summary>The column field name.</summary>
+    public string Field { get; set; } = "";
+
+    /// <summary>The column width.</summary>
+    public string? Width { get; set; }
+
+    /// <summary>The display order index.</summary>
+    public int Order { get; set; }
+
+    /// <summary>Whether the column is visible.</summary>
+    public bool Visible { get; set; } = true;
 }

@@ -84,3 +84,60 @@ public class GridStateChangedEventArgs
     /// <summary>A snapshot of the current grid state.</summary>
     public GridState State { get; init; } = default!;
 }
+
+/// <summary>
+/// Represents a group of items in a grouped data grid.
+/// </summary>
+public class GridGroupRow<TItem>
+{
+    /// <summary>The field name this group is grouped by.</summary>
+    public string Field { get; init; } = "";
+
+    /// <summary>The group key value.</summary>
+    public object? Key { get; init; }
+
+    /// <summary>Display text for the group key.</summary>
+    public string KeyText => Key?.ToString() ?? "(null)";
+
+    /// <summary>The items in this group.</summary>
+    public List<TItem> Items { get; init; } = [];
+
+    /// <summary>Number of items in this group.</summary>
+    public int Count => Items.Count;
+
+    /// <summary>The nesting depth (0 = top-level group).</summary>
+    public int Depth { get; init; }
+
+    /// <summary>A unique key for this group used for collapse state tracking.</summary>
+    public string GroupKey => $"{Field}:{Key}";
+
+    /// <summary>Child groups when multiple grouping levels are applied.</summary>
+    public List<GridGroupRow<TItem>> ChildGroups { get; init; } = [];
+
+    /// <summary>Whether this group has child groups (multi-level grouping).</summary>
+    public bool HasChildGroups => ChildGroups.Count > 0;
+}
+
+/// <summary>
+/// Context provided to <c>GroupHeaderTemplate</c> and <c>GroupFooterTemplate</c>.
+/// </summary>
+public class GridGroupHeaderContext<TItem>
+{
+    /// <summary>The field name being grouped.</summary>
+    public string Field { get; init; } = "";
+
+    /// <summary>The group key value.</summary>
+    public object? Value { get; init; }
+
+    /// <summary>The items in this group.</summary>
+    public IReadOnlyList<TItem> Items { get; init; } = [];
+
+    /// <summary>Number of items in this group.</summary>
+    public int Count => Items.Count;
+
+    /// <summary>The nesting depth (0 = top-level).</summary>
+    public int Depth { get; init; }
+
+    /// <summary>Whether this group is collapsed.</summary>
+    public bool IsCollapsed { get; init; }
+}

@@ -2,7 +2,8 @@
 @typeparam TItem
 @inherits MariloComponentBase
 
-<div class="@CombineClasses(CssProvider.DataGridClass())"
+<div id="@_gridId"
+     class="@CombineClasses(CssProvider.DataGridClass())"
      style="@CombineStyles(RootStyle)"
      role="grid"
      aria-rowcount="@_displayedItems.Count"
@@ -16,6 +17,19 @@
         <CascadingValue Value="this" IsFixed="true">
             @ToolbarTemplate
         </CascadingValue>
+    }
+
+    @* Search box *@
+    @if (ShowSearchBox)
+    {
+        <div class="mar-datagrid-searchbox" role="search">
+            <input type="text"
+                   class="mar-datagrid-searchbox-input"
+                   placeholder="@SearchBoxPlaceholder"
+                   value="@_searchText"
+                   aria-label="Search grid"
+                   @onchange="OnSearchChanged" />
+        </div>
     }
 
     @* Column definitions (hidden, just registers via CascadingValue) *@
@@ -158,13 +172,31 @@
                     @RenderEditRow(_editingItem)
                 }
 
-                @if (_displayedItems.Count == 0 && !_isCreating)
+                @if (_displayedItems.Count == 0 && _groupedRows.Count == 0 && !_isCreating)
                 {
                     <tr role="row">
                         <td colspan="@TotalColumnCount" role="gridcell" class="mar-datagrid-empty">
-                            No data available.
+                            @if (NoDataTemplate != null)
+                            {
+                                @NoDataTemplate
+                            }
+                            else
+                            {
+                                <text>No data available.</text>
+                            }
                         </td>
                     </tr>
+                }
+                else if (_groupedRows.Count > 0)
+                {
+                    @RenderGroupRows(_groupedRows)
+                }
+                else if (RowTemplate != null)
+                {
+                    @foreach (var item in _displayedItems)
+                    {
+                        @RowTemplate(item)
+                    }
                 }
                 else if (EnableVirtualization)
                 {

@@ -333,6 +333,132 @@ public partial class MariloDataGrid<TItem>
         builder.CloseElement(); // div filter-menu
     };
 
+    // ── Group Row Rendering ───────────────────────────────────────────────
+
+    internal RenderFragment RenderGroupHeaderRow(GridGroupRow<TItem> group) => builder =>
+    {
+        var isCollapsed = IsGroupCollapsed(group.GroupKey);
+        var column = _visibleColumns.FirstOrDefault(c => c.Field == group.Field);
+        var displayField = column?.DisplayTitle ?? group.Field;
+        var indent = group.Depth * 20;
+
+        builder.OpenElement(0, "tr");
+        builder.AddAttribute(1, "class", $"{CssProvider.DataGridGroupHeaderClass()} mar-datagrid-group-depth-{group.Depth}");
+        builder.AddAttribute(2, "role", "row");
+
+        builder.OpenElement(3, "td");
+        builder.AddAttribute(4, "colspan", TotalColumnCount.ToString());
+        builder.AddAttribute(5, "class", "mar-datagrid-group-cell");
+        builder.AddAttribute(6, "role", "gridcell");
+        if (indent > 0) builder.AddAttribute(7, "style", $"padding-left:{indent}px;");
+
+        // Expand/collapse toggle
+        var gk = group.GroupKey;
+        builder.OpenElement(10, "button");
+        builder.AddAttribute(11, "type", "button");
+        builder.AddAttribute(12, "class", "mar-datagrid-group-toggle");
+        builder.AddAttribute(13, "aria-expanded", (!isCollapsed).ToString().ToLower());
+        builder.AddAttribute(14, "aria-label", isCollapsed ? $"Expand group {group.KeyText}" : $"Collapse group {group.KeyText}");
+        builder.AddAttribute(15, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, async (_) => await ToggleGroup(gk)));
+        builder.AddContent(16, isCollapsed ? "\u25B6" : "\u25BC");
+        builder.CloseElement(); // button
+
+        // Group content
+        if (GroupHeaderTemplate != null)
+        {
+            var context = new GridGroupHeaderContext<TItem>
+            {
+                Field = group.Field,
+                Value = group.Key,
+                Items = group.Items,
+                Depth = group.Depth,
+                IsCollapsed = isCollapsed
+            };
+            builder.AddContent(20, GroupHeaderTemplate(context));
+        }
+        else
+        {
+            builder.OpenElement(20, "span");
+            builder.AddAttribute(21, "class", "mar-datagrid-group-text");
+            builder.AddContent(22, $"{displayField}: {group.KeyText} ({group.Count} {(group.Count == 1 ? "item" : "items")})");
+            builder.CloseElement();
+        }
+
+        builder.CloseElement(); // td
+        builder.CloseElement(); // tr
+    };
+
+    internal RenderFragment RenderGroupFooterRow(GridGroupRow<TItem> group) => builder =>
+    {
+        if (GroupFooterTemplate is null) return;
+
+        var context = new GridGroupHeaderContext<TItem>
+        {
+            Field = group.Field,
+            Value = group.Key,
+            Items = group.Items,
+            Depth = group.Depth,
+            IsCollapsed = IsGroupCollapsed(group.GroupKey)
+        };
+
+        builder.OpenElement(0, "tr");
+        builder.AddAttribute(1, "class", "mar-datagrid-group-footer mar-datagrid-group-depth-" + group.Depth);
+        builder.AddAttribute(2, "role", "row");
+
+        builder.OpenElement(3, "td");
+        builder.AddAttribute(4, "colspan", TotalColumnCount.ToString());
+        builder.AddAttribute(5, "class", "mar-datagrid-group-footer-cell");
+        builder.AddAttribute(6, "role", "gridcell");
+        builder.AddContent(7, GroupFooterTemplate(context));
+        builder.CloseElement(); // td
+        builder.CloseElement(); // tr
+    };
+
+    internal RenderFragment RenderGroupRows(List<GridGroupRow<TItem>> groups) => builder =>
+    {
+        foreach (var group in groups)
+        {
+            // Render group header
+            builder.AddContent(0, RenderGroupHeaderRow(group));
+
+            var isCollapsed = IsGroupCollapsed(group.GroupKey);
+            if (!isCollapsed)
+            {
+                if (group.HasChildGroups)
+                {
+                    // Nested groups
+                    builder.AddContent(1, RenderGroupRows(group.ChildGroups));
+                }
+                else
+                {
+                    // Leaf group: render data rows
+                    for (var i = 0; i < group.Items.Count; i++)
+                    {
+                        var item = group.Items[i];
+                        builder.AddContent(2, RenderDataRow(item, i));
+
+                        // Detail row
+                        if (DetailTemplate != null && _expandedDetailItems.Contains(item))
+                        {
+                            builder.OpenElement(3, "tr");
+                            builder.AddAttribute(4, "class", "mar-datagrid-detail-row");
+                            builder.AddAttribute(5, "role", "row");
+                            builder.OpenElement(6, "td");
+                            builder.AddAttribute(7, "colspan", TotalColumnCount.ToString());
+                            builder.AddAttribute(8, "role", "gridcell");
+                            builder.AddContent(9, DetailTemplate(item));
+                            builder.CloseElement();
+                            builder.CloseElement();
+                        }
+                    }
+                }
+
+                // Render group footer
+                builder.AddContent(10, RenderGroupFooterRow(group));
+            }
+        }
+    };
+
     // ── Row/Cell Render Callbacks ────────────────────────────────────────
 
     private GridRowRenderEventArgs<TItem>? GetRowRenderArgs(TItem item)

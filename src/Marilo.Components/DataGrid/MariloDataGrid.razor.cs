@@ -16,11 +16,21 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
     internal HashSet<TItem> _expandedDetailItems = [];
     private bool _stateInitialized;
 
+    // Grouping state
+    internal List<GridGroupRow<TItem>> _groupedRows = [];
+    internal HashSet<string> _collapsedGroups = [];
+
     // Editing state (managed in MariloDataGrid.Editing.cs)
     internal TItem? _editingItem;
     internal TItem? _originalItem;
     internal bool _isCreating;
     internal string? _inCellEditingField;
+
+    // AutoGenerate state
+    internal bool _autoColumnsGenerated;
+
+    // Search state
+    internal string _searchText = "";
 
     // FilterMenu state
     internal string? _filterMenuField;
@@ -55,13 +65,22 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
     /// <summary>Fires when the page size changes.</summary>
     [Parameter] public EventCallback<int> PageSizeChanged { get; set; }
 
-    // ── Parameters: Sorting & Filtering ─────────────────────────────────
+    // ── Parameters: Sorting, Filtering & Grouping ────────────────────────
 
     /// <summary>Whether sorting is enabled. Defaults to true.</summary>
     [Parameter] public bool Sortable { get; set; } = true;
 
     /// <summary>The filter mode for the grid.</summary>
     [Parameter] public GridFilterMode FilterMode { get; set; } = GridFilterMode.None;
+
+    /// <summary>Whether grouping is enabled. When true, columns can be grouped via the API.</summary>
+    [Parameter] public bool Groupable { get; set; }
+
+    /// <summary>Template for group header rows. Receives a <see cref="GridGroupHeaderContext{TItem}"/> as context.</summary>
+    [Parameter] public RenderFragment<GridGroupHeaderContext<TItem>>? GroupHeaderTemplate { get; set; }
+
+    /// <summary>Template for group footer rows. Receives a <see cref="GridGroupHeaderContext{TItem}"/> as context.</summary>
+    [Parameter] public RenderFragment<GridGroupHeaderContext<TItem>>? GroupFooterTemplate { get; set; }
 
     // ── Parameters: Selection ───────────────────────────────────────────
 
@@ -91,6 +110,9 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
     /// <summary>Whether keyboard navigation is enabled within the grid.</summary>
     [Parameter] public bool Navigable { get; set; }
 
+    /// <summary>When true, columns are auto-generated from TItem's public properties if no explicit columns are defined.</summary>
+    [Parameter] public bool AutoGenerateColumns { get; set; }
+
     /// <summary>Whether to use Blazor Virtualize for row rendering.</summary>
     [Parameter] public bool EnableVirtualization { get; set; }
 
@@ -99,6 +121,12 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
 
     /// <summary>Whether data is currently loading. Shows a loading overlay.</summary>
     [Parameter] public bool IsLoading { get; set; }
+
+    /// <summary>Whether to show a built-in search box above the grid. Searches across all visible columns.</summary>
+    [Parameter] public bool ShowSearchBox { get; set; }
+
+    /// <summary>Placeholder text for the search box.</summary>
+    [Parameter] public string SearchBoxPlaceholder { get; set; } = "Search...";
 
     // ── Parameters: Templates ───────────────────────────────────────────
 
@@ -110,6 +138,12 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
 
     /// <summary>Detail row template for master-detail expansion. Receives the row item as context.</summary>
     [Parameter] public RenderFragment<TItem>? DetailTemplate { get; set; }
+
+    /// <summary>Custom template displayed when the grid has no data.</summary>
+    [Parameter] public RenderFragment? NoDataTemplate { get; set; }
+
+    /// <summary>Custom row template. When set, replaces the default row rendering. Receives the row item as context.</summary>
+    [Parameter] public RenderFragment<TItem>? RowTemplate { get; set; }
 
     // ── Parameters: State Events ────────────────────────────────────────
 
@@ -239,7 +273,52 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
             }
         }
 
+        // Auto-generate columns from TItem's public properties
+        if (AutoGenerateColumns && !_autoColumnsGenerated && _columns.Count == 0)
+        {
+            _autoColumnsGenerated = true;
+            GenerateColumnsFromModel();
+        }
+
         await ProcessDataAsync();
+    }
+
+    private void GenerateColumnsFromModel()
+    {
+        var props = typeof(TItem).GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+        foreach (var prop in props)
+        {
+            // Skip indexers and non-readable properties
+            if (prop.GetIndexParameters().Length > 0 || !prop.CanRead) continue;
+
+            // Skip complex types (collections, etc.) — only include simple/primitive types
+            var type = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+            if (!IsSimpleType(type)) continue;
+
+            var col = new MariloGridColumn<TItem>();
+            // Set properties via reflection since Parameters are normally set by Blazor
+            typeof(MariloGridColumn<TItem>).GetProperty(nameof(MariloGridColumn<TItem>.Field))!.SetValue(col, prop.Name);
+            typeof(MariloGridColumn<TItem>).GetProperty(nameof(MariloGridColumn<TItem>.Title))!.SetValue(col, SplitCamelCase(prop.Name));
+            _columns.Add(col);
+        }
+    }
+
+    private static bool IsSimpleType(Type type) =>
+        type.IsPrimitive || type.IsEnum || type == typeof(string) || type == typeof(decimal)
+        || type == typeof(DateTime) || type == typeof(DateTimeOffset) || type == typeof(TimeSpan)
+        || type == typeof(Guid) || type == typeof(DateOnly) || type == typeof(TimeOnly);
+
+    private static string SplitCamelCase(string input)
+    {
+        if (string.IsNullOrEmpty(input)) return input;
+        var result = new System.Text.StringBuilder();
+        for (var i = 0; i < input.Length; i++)
+        {
+            if (i > 0 && char.IsUpper(input[i]) && !char.IsUpper(input[i - 1]))
+                result.Append(' ');
+            result.Append(input[i]);
+        }
+        return result.ToString();
     }
 
     // ── Public API ──────────────────────────────────────────────────────
@@ -251,8 +330,20 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
         PageSize = _state.PageSize,
         SortDescriptors = _state.SortDescriptors.Select(s => new SortDescriptor { Field = s.Field, Direction = s.Direction }).ToList(),
         FilterDescriptors = _state.FilterDescriptors.Select(f => new FilterDescriptor { Field = f.Field, Operator = f.Operator, Value = f.Value }).ToList(),
-        GroupDescriptors = _state.GroupDescriptors.Select(g => new GroupDescriptor { Field = g.Field }).ToList(),
-        TotalCount = _state.TotalCount
+        GroupDescriptors = _state.GroupDescriptors.Select(g => new GroupDescriptor { Field = g.Field, Direction = g.Direction }).ToList(),
+        TotalCount = _state.TotalCount,
+        SearchFilter = _searchText,
+        EditItem = _editingItem,
+        OriginalEditItem = _originalItem,
+        InsertedItem = _isCreating ? _editingItem : default,
+        CollapsedGroups = new HashSet<string>(_collapsedGroups),
+        ColumnStates = _visibleColumns.Select((c, i) => new GridColumnState
+        {
+            Field = c.Field,
+            Width = c.Width,
+            Order = i,
+            Visible = c.Visible
+        }).ToList()
     };
 
     /// <summary>Whether a row is currently being edited.</summary>

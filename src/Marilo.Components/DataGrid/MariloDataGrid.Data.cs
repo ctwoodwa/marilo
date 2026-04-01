@@ -32,11 +32,18 @@ public partial class MariloDataGrid<TItem>
         if (Data is null)
         {
             _displayedItems = [];
+            _groupedRows = [];
             _state.TotalCount = 0;
             return;
         }
 
         IEnumerable<TItem> items = Data;
+
+        // Apply global search
+        if (!string.IsNullOrWhiteSpace(_searchText))
+        {
+            items = ApplySearch(items, _searchText);
+        }
 
         // Apply filters
         foreach (var filter in _state.FilterDescriptors)
@@ -50,16 +57,229 @@ public partial class MariloDataGrid<TItem>
         var allItems = items.ToList();
         _state.TotalCount = allItems.Count;
 
-        // Apply paging
-        if (Pageable && _state.PageSize > 0)
+        // Apply grouping
+        if (_state.GroupDescriptors.Count > 0)
         {
-            var skip = (_state.CurrentPage - 1) * _state.PageSize;
-            _displayedItems = allItems.Skip(skip).Take(_state.PageSize).ToList();
+            _groupedRows = BuildGroups(allItems, _state.GroupDescriptors, 0);
+
+            // For grouped data, build a flat display list respecting collapsed state
+            _displayedItems = FlattenGroups(_groupedRows);
+
+            // Paging on grouped data applies to the flattened visible items
+            if (Pageable && _state.PageSize > 0)
+            {
+                // TotalCount should reflect total data items, not group rows
+                _state.TotalCount = allItems.Count;
+            }
         }
         else
         {
-            _displayedItems = allItems;
+            _groupedRows = [];
+
+            // Apply paging
+            if (Pageable && _state.PageSize > 0)
+            {
+                var skip = (_state.CurrentPage - 1) * _state.PageSize;
+                _displayedItems = allItems.Skip(skip).Take(_state.PageSize).ToList();
+            }
+            else
+            {
+                _displayedItems = allItems;
+            }
         }
+    }
+
+    // ── Grouping ────────────────────────────────────────────────────────
+
+    private List<GridGroupRow<TItem>> BuildGroups(
+        List<TItem> items,
+        List<GroupDescriptor> descriptors,
+        int depth)
+    {
+        if (depth >= descriptors.Count)
+            return [];
+
+        var descriptor = descriptors[depth];
+        var prop = typeof(TItem).GetProperty(descriptor.Field);
+        if (prop is null) return [];
+
+        var grouped = items.GroupBy(item => prop.GetValue(item));
+
+        // Sort groups by key
+        var orderedGroups = descriptor.Direction == SortDirection.Ascending
+            ? grouped.OrderBy(g => g.Key)
+            : grouped.OrderByDescending(g => g.Key);
+
+        var result = new List<GridGroupRow<TItem>>();
+        foreach (var group in orderedGroups)
+        {
+            var groupItems = group.ToList();
+            var groupRow = new GridGroupRow<TItem>
+            {
+                Field = descriptor.Field,
+                Key = group.Key,
+                Items = groupItems,
+                Depth = depth,
+                ChildGroups = depth + 1 < descriptors.Count
+                    ? BuildGroups(groupItems, descriptors, depth + 1)
+                    : []
+            };
+            result.Add(groupRow);
+        }
+
+        return result;
+    }
+
+    private List<TItem> FlattenGroups(List<GridGroupRow<TItem>> groups)
+    {
+        var result = new List<TItem>();
+        foreach (var group in groups)
+        {
+            if (_collapsedGroups.Contains(group.GroupKey))
+                continue; // Group is collapsed, skip its items
+
+            if (group.HasChildGroups)
+            {
+                result.AddRange(FlattenGroups(group.ChildGroups));
+            }
+            else
+            {
+                result.AddRange(group.Items);
+            }
+        }
+        return result;
+    }
+
+    /// <summary>Toggles a group's collapsed state.</summary>
+    internal async Task ToggleGroup(string groupKey)
+    {
+        if (!_collapsedGroups.Remove(groupKey))
+            _collapsedGroups.Add(groupKey);
+
+        // Rebuild the flat display list
+        if (_state.GroupDescriptors.Count > 0)
+        {
+            _displayedItems = FlattenGroups(_groupedRows);
+        }
+
+        await NotifyStateChanged("Group");
+        StateHasChanged();
+    }
+
+    /// <summary>Adds a group descriptor and reprocesses data.</summary>
+    public async Task GroupBy(string field, SortDirection direction = SortDirection.Ascending)
+    {
+        if (!Groupable) return;
+        if (_state.GroupDescriptors.Any(g => g.Field == field)) return;
+
+        _state.GroupDescriptors.Add(new GroupDescriptor { Field = field, Direction = direction });
+        _state.CurrentPage = 1;
+        await ProcessDataAsync();
+        await NotifyStateChanged("Group");
+        StateHasChanged();
+    }
+
+    /// <summary>Removes a group descriptor and reprocesses data.</summary>
+    public async Task Ungroup(string field)
+    {
+        var existing = _state.GroupDescriptors.FirstOrDefault(g => g.Field == field);
+        if (existing is null) return;
+
+        _state.GroupDescriptors.Remove(existing);
+        _collapsedGroups.RemoveWhere(k => k.StartsWith($"{field}:"));
+        _state.CurrentPage = 1;
+        await ProcessDataAsync();
+        await NotifyStateChanged("Group");
+        StateHasChanged();
+    }
+
+    /// <summary>Removes all group descriptors.</summary>
+    public async Task UngroupAll()
+    {
+        _state.GroupDescriptors.Clear();
+        _collapsedGroups.Clear();
+        _state.CurrentPage = 1;
+        await ProcessDataAsync();
+        await NotifyStateChanged("Group");
+        StateHasChanged();
+    }
+
+    /// <summary>Whether the given group key is collapsed.</summary>
+    internal bool IsGroupCollapsed(string groupKey) => _collapsedGroups.Contains(groupKey);
+
+    // ── Search ──────────────────────────────────────────────────────────
+
+    private IEnumerable<TItem> ApplySearch(IEnumerable<TItem> items, string searchText)
+    {
+        var lower = searchText.ToLowerInvariant();
+        var props = _visibleColumns
+            .Where(c => !string.IsNullOrEmpty(c.Field))
+            .Select(c => typeof(TItem).GetProperty(c.Field))
+            .Where(p => p is not null)
+            .ToList();
+
+        return items.Where(item =>
+            props.Any(prop =>
+                prop!.GetValue(item)?.ToString()?.Contains(lower, StringComparison.OrdinalIgnoreCase) == true));
+    }
+
+    internal async Task OnSearchChanged(ChangeEventArgs e)
+    {
+        _searchText = e.Value?.ToString() ?? "";
+        _state.CurrentPage = 1;
+        await ProcessDataAsync();
+        await NotifyStateChanged("Search");
+    }
+
+    // ── CSV Export ──────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Generates CSV content from the current data (after filtering/sorting, before paging).
+    /// Returns the CSV as a string. Use with JS interop to trigger download.
+    /// </summary>
+    public string ExportToCsv(bool includeHeaders = true, string separator = ",")
+    {
+        var sb = new System.Text.StringBuilder();
+        var columns = _visibleColumns;
+
+        if (includeHeaders)
+        {
+            sb.AppendLine(string.Join(separator, columns.Select(c => EscapeCsv(c.DisplayTitle, separator))));
+        }
+
+        // Use all filtered/sorted data, not just current page
+        IEnumerable<TItem> items;
+        if (Data is not null)
+        {
+            items = Data;
+            if (!string.IsNullOrWhiteSpace(_searchText))
+                items = ApplySearch(items, _searchText);
+            foreach (var filter in _state.FilterDescriptors)
+                items = ApplyFilter(items, filter);
+            items = ApplySort(items);
+        }
+        else
+        {
+            items = _displayedItems;
+        }
+
+        foreach (var item in items)
+        {
+            var values = columns.Select(c => EscapeCsv(c.GetDisplayValue(item), separator));
+            sb.AppendLine(string.Join(separator, values));
+        }
+
+        return sb.ToString();
+    }
+
+    private static string EscapeCsv(string value, string separator)
+    {
+        if (string.IsNullOrEmpty(value)) return "";
+        if (value.Contains(separator) || value.Contains('"') || value.Contains('\n') || value.Contains('\r'))
+        {
+            return $"\"{value.Replace("\"", "\"\"")}\"";
+        }
+        return value;
     }
 
     // ── Filtering (extended operators) ──────────────────────────────────
