@@ -32,9 +32,9 @@ This document defines the resolution strategy for all 87 Marilo Blazor component
 | MariloRow | 0 | single-pass | No | **T1 - Critical** | ✅ COMPLETE (0 gaps) |
 | MariloColumn | 0 | single-pass | No | **T1 - Critical** | ✅ COMPLETE (0 gaps) |
 | MariloDivider | 0 | single-pass | No | **T1 - Critical** | ✅ COMPLETE (0 gaps) |
-| MariloDataGrid | 44 | multi-pass | Yes (virtual scroll, grouping, CRUD, export) | **T2 - High** | 🔧 IN PROGRESS |
-| MariloGridColumn | 8 | single-pass | No | **T2 - High** | 🔧 IN PROGRESS |
-| MariloGridToolbar | 2 | single-pass | No | **T2 - High** | 🔧 IN PROGRESS |
+| MariloDataGrid | 44 | multi-pass | Yes (virtual scroll, grouping, CRUD, export) | **T2 - High** | ✅ IMPLEMENTED (Pass 2: editing modes, detail template, FilterMenu, loading, footer, extended filters) |
+| MariloGridColumn | 8 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED (all 4 gaps resolved Pass 1 + footer rendering) |
+| MariloGridToolbar | 2 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED (ARIA + GridCommandButton) |
 | MariloEditor | 54 | multi-pass | Yes (ProseMirror / rich-text engine) | **T2 - High** | ✅ API SURFACE (Tiptap-agnostic) |
 | MariloChart | 27 | multi-pass | Yes (charting engine decision) | **T2 - High** | ✅ API SURFACE (Chart.js-agnostic) |
 | MariloChartSeries | 17 | multi-pass | Yes (scatter/bubble data models) | **T2 - High** | ✅ API SURFACE (Chart.js-agnostic) |
