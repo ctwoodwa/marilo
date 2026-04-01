@@ -10,8 +10,9 @@
     {
         var id = notification.Id;
         var animClass = GetAnimationClass(notification);
+        var themeStyle = GetThemeColorStyle(notification);
         <div class="@GetNotificationClass(notification) @animClass" role="status" aria-live="polite"
-             style="@GetAnimationStyle()">
+             style="@GetAnimationStyle()@themeStyle">
             <span class="mar-snackbar__message">@notification.Message</span>
             @if (notification.Closeable)
             {
@@ -121,6 +122,12 @@
     {
         if (AnimationType == NotificationAnimation.None) return "";
         return $"animation-duration: {AnimationDurationMs}ms;";
+    }
+
+    private static string GetThemeColorStyle(NotificationModel notification)
+    {
+        if (string.IsNullOrEmpty(notification.ThemeColor)) return "";
+        return $"background-color: {notification.ThemeColor};";
     }
 
     private string GetNotificationClass(NotificationModel notification)
