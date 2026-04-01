@@ -20,7 +20,7 @@
                        value="@itemValue"
                        checked="@isSelected"
                        disabled="@(!Enabled)"
-                       @onchange="() => SelectValue(itemValue ?? "")" />
+                       @onchange="() => SelectValue(itemValue ?? string.Empty)" />
                 <span>@itemText</span>
             </label>
         }

@@ -12,7 +12,7 @@
         var animClass = GetAnimationClass(notification);
         var themeStyle = GetThemeColorStyle(notification);
         <div class="@GetNotificationClass(notification) @animClass" role="status" aria-live="polite"
-             style="@GetAnimationStyle()@themeStyle">
+             style="@(GetAnimationStyle() + themeStyle)">
             <span class="mar-snackbar__message">@notification.Message</span>
             @if (notification.Closeable)
             {
