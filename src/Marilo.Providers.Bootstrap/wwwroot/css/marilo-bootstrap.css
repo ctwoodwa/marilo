@@ -12776,33 +12776,78 @@ textarea.form-control-lg {
 }
 
 .mar-bs-splitter {
-  width: 100%;
-  min-height: 200px;
-  border: 1px solid var(--marilo-color-border);
-  border-radius: var(--marilo-radius-md);
-}
-.mar-bs-splitter .mar-bs-splitter-pane {
-  flex: 1;
-  overflow: auto;
-  padding: var(--marilo-space-md);
-}
-.mar-bs-splitter .mar-bs-splitter-bar {
-  flex: 0 0 6px;
-  background-color: var(--marilo-color-surface);
-  border-left: 1px solid var(--marilo-color-border);
-  border-right: 1px solid var(--marilo-color-border);
-  cursor: col-resize;
-}
-.mar-bs-splitter .mar-bs-splitter-bar:hover {
-  background-color: var(--marilo-color-primary-light);
+  overflow: hidden;
 }
 
-.mar-bs-splitter.flex-column .mar-bs-splitter-bar {
+.mar-splitter__pane {
+  overflow: hidden;
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+.mar-splitter__pane--fill {
+  flex: 1 1 0 !important;
+}
+
+.mar-splitter__pane--collapsed {
+  flex: 0 0 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.mar-splitter__handle {
+  flex: 0 0 5px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #dee2e6;
+  cursor: col-resize;
+  user-select: none;
+  z-index: 1;
+  transition: background-color 0.15s;
+}
+.mar-splitter__handle:hover, .mar-splitter__handle--active {
+  background-color: #0d6efd;
+}
+
+.flex-column .mar-splitter__handle {
   cursor: row-resize;
-  border-left: 0;
-  border-right: 0;
-  border-top: 1px solid var(--marilo-color-border);
-  border-bottom: 1px solid var(--marilo-color-border);
+  width: auto;
+  height: 5px;
+}
+
+.mar-splitter__collapse-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  background: #fff;
+  color: var(--bs-secondary-color);
+  font-size: 8px;
+  cursor: pointer;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.mar-splitter__handle:hover .mar-splitter__collapse-btn {
+  opacity: 1;
+}
+
+.mar-splitter__collapse-btn:hover {
+  background: #e9ecef;
+  color: #212529;
 }
 
 .mar-bs-context-menu {

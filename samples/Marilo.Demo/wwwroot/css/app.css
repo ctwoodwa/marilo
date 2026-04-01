@@ -369,6 +369,8 @@ a:hover {
     flex-direction: column;
     flex: 1;
     min-width: 0;
+    height: 100%;
+    overflow-y: auto;
     margin: 0 3rem;
     padding-top: 1.6rem;
     padding-bottom: 2rem;

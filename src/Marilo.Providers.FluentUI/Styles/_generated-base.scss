@@ -2091,12 +2091,97 @@
    Layout: Splitter
    -------------------------------------------------------------------------- */
 
-.mar-splitter { display: flex; height: 100%; }
-.mar-splitter--vertical { flex-direction: column; }
-.mar-splitter__pane { overflow: auto; }
-.mar-splitter__handle { flex-shrink: 0; background: var(--marilo-color-border); cursor: col-resize; width: 4px; }
-.mar-splitter--vertical .mar-splitter__handle { cursor: row-resize; width: auto; height: 4px; }
-.mar-splitter__handle:hover { background: var(--marilo-color-primary); }
+.mar-splitter {
+    display: flex;
+    height: 100%;
+    overflow: hidden;
+}
+
+.mar-splitter--vertical {
+    flex-direction: column;
+}
+
+.mar-splitter__pane {
+    overflow: hidden;
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+}
+
+.mar-splitter__pane--fill {
+    flex: 1 1 0 !important;
+}
+
+.mar-splitter__pane--collapsed {
+    flex: 0 0 0 !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+
+.mar-splitter__handle {
+    flex-shrink: 0;
+    flex-grow: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--marilo-color-border);
+    cursor: col-resize;
+    width: 5px;
+    transition: background-color 0.15s, width 0.15s;
+    user-select: none;
+    z-index: 1;
+}
+
+.mar-splitter__handle:hover,
+.mar-splitter__handle--active {
+    background: var(--marilo-color-primary);
+    width: 5px;
+}
+
+.mar-splitter--vertical .mar-splitter__handle {
+    cursor: row-resize;
+    width: auto;
+    height: 5px;
+}
+
+.mar-splitter--vertical .mar-splitter__handle:hover,
+.mar-splitter--vertical .mar-splitter__handle--active {
+    height: 5px;
+    width: auto;
+}
+
+.mar-splitter__collapse-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 18px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-sm);
+    background: var(--marilo-color-background);
+    color: var(--marilo-color-text-secondary);
+    font-size: 8px;
+    cursor: pointer;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.mar-splitter__handle:hover .mar-splitter__collapse-btn {
+    opacity: 1;
+}
+
+.mar-splitter__collapse-btn:hover {
+    background: var(--marilo-color-surface-hover, #f0f0f0);
+    color: var(--marilo-color-on-background);
+}
 
 /* --------------------------------------------------------------------------
    Navigation Components

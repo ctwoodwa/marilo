@@ -6,14 +6,14 @@
 
     @if (_panes.Count > 0)
     {
-        @* Data-driven panes from registered SplitterPane children *@
         @for (var i = 0; i < _panes.Count; i++)
         {
             var pane = _panes[i];
             var isCollapsed = pane.EffectiveCollapsed;
-            var paneStyle = BuildPaneStyle(pane);
+            var isLast = i == _panes.Count - 1;
+            var paneStyle = BuildPaneStyle(pane, isLast);
 
-            <div class="mar-splitter__pane @(isCollapsed ? "mar-splitter__pane--collapsed" : "")"
+            <div class="mar-splitter__pane @(isCollapsed ? "mar-splitter__pane--collapsed" : "") @(isLast ? "mar-splitter__pane--fill" : "")"
                  style="@paneStyle">
                 @pane.ChildContent
             </div>
@@ -22,7 +22,6 @@
             {
                 var idx = i;
                 var prevPane = _panes[idx];
-                var nextPane = _panes[idx + 1];
                 <div class="mar-splitter__handle @(_activeSeparator == idx ? "mar-splitter__handle--active" : "")"
                      role="separator"
                      tabindex="0"
@@ -50,7 +49,6 @@
     }
     else
     {
-        @* Legacy 2-pane mode for backwards compatibility *@
         <div class="mar-splitter__pane mar-splitter__pane--first" style="flex-basis:@FirstPaneSize">
             @FirstPane
         </div>
@@ -58,17 +56,15 @@
              role="separator"
              aria-orientation="@(Orientation == StackDirection.Horizontal ? "vertical" : "horizontal")">
         </div>
-        <div class="mar-splitter__pane mar-splitter__pane--second">
+        <div class="mar-splitter__pane mar-splitter__pane--second mar-splitter__pane--fill">
             @SecondPane
         </div>
     }
 
-    @* Register child panes via CascadingValue *@
     <CascadingValue Value="this" IsFixed="true">
         @ChildContent
     </CascadingValue>
 
-    @* Overlay for capturing mouse events during drag resize *@
     @if (_isDragging)
     {
         <div class="mar-splitter__drag-overlay"
@@ -84,39 +80,22 @@
     private int _activeSeparator = -1;
     private bool _isDragging;
     private double _dragStartPos;
-    private double _dragStartSize;
-    private const double KeyboardResizeStep = 10.0; // pixels per key press
+    private double _dragStartSizePx;
+    private const double KeyboardResizeStep = 10.0;
 
-    /// <summary>Orientation of the splitter (Horizontal or Vertical).</summary>
     [Parameter] public StackDirection Orientation { get; set; } = StackDirection.Horizontal;
-
-    /// <summary>Width of the splitter container.</summary>
     [Parameter] public string? Width { get; set; }
-
-    /// <summary>Height of the splitter container.</summary>
     [Parameter] public string? Height { get; set; }
-
-    /// <summary>Whether panes can be collapsed via the separator button.</summary>
     [Parameter] public bool Collapsible { get; set; }
-
-    /// <summary>Accessible label for the splitter separator handles.</summary>
     [Parameter] public string? AriaLabel { get; set; }
-
-    /// <summary>Fires when a pane is resized. Contains the pane index and new sizes.</summary>
     [Parameter] public EventCallback<SplitterResizeEventArgs> OnResize { get; set; }
-
-    /// <summary>Fires when a pane is collapsed or expanded.</summary>
     [Parameter] public EventCallback<int> OnCollapse { get; set; }
 
-    // ── Legacy 2-pane parameters (backwards compatible) ─────────────────
+    // Legacy 2-pane parameters
     [Parameter] public string? FirstPaneSize { get; set; } = "50%";
     [Parameter] public RenderFragment? FirstPane { get; set; }
     [Parameter] public RenderFragment? SecondPane { get; set; }
-
-    /// <summary>Child content (MariloSplitterPane components).</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
-
-    // ── Computed ────────────────────────────────────────────────────────
 
     private string? RootStyle
     {
@@ -129,19 +108,29 @@
         }
     }
 
-    private string BuildPaneStyle(MariloSplitterPane pane)
+    private string BuildPaneStyle(MariloSplitterPane pane, bool isLast)
     {
-        var parts = new List<string>();
         if (pane.EffectiveCollapsed)
+            return "flex:0 0 0;overflow:hidden;min-width:0;min-height:0;";
+
+        var parts = new List<string>();
+        var dim = Orientation == StackDirection.Horizontal ? "width" : "height";
+
+        if (isLast)
         {
-            parts.Add("flex-basis:0;overflow:hidden;");
+            // Last pane fills remaining space
+            parts.Add("flex:1 1 0;");
         }
         else
         {
-            if (!string.IsNullOrEmpty(pane.EffectiveSize)) parts.Add($"flex-basis:{pane.EffectiveSize};");
-            if (!string.IsNullOrEmpty(pane.Min)) parts.Add($"min-{(Orientation == StackDirection.Horizontal ? "width" : "height")}:{pane.Min};");
-            if (!string.IsNullOrEmpty(pane.Max)) parts.Add($"max-{(Orientation == StackDirection.Horizontal ? "width" : "height")}:{pane.Max};");
+            if (!string.IsNullOrEmpty(pane.EffectiveSize))
+                parts.Add($"flex:0 0 {pane.EffectiveSize};");
+            if (!string.IsNullOrEmpty(pane.Min))
+                parts.Add($"min-{dim}:{pane.Min};");
+            if (!string.IsNullOrEmpty(pane.Max))
+                parts.Add($"max-{dim}:{pane.Max};");
         }
+
         return string.Join("", parts);
     }
 
@@ -154,33 +143,20 @@
         return 50;
     }
 
-    // ── Public API ──────────────────────────────────────────────────────
-
-    /// <summary>Returns the current pane sizes as a state snapshot.</summary>
-    public SplitterState GetState()
+    public SplitterState GetState() => new()
     {
-        return new SplitterState
-        {
-            PaneSizes = _panes.Select(p => p.EffectiveSize ?? "").ToList(),
-            CollapsedPanes = _panes.Select(p => p.EffectiveCollapsed).ToList()
-        };
-    }
+        PaneSizes = _panes.Select(p => p.EffectiveSize ?? "").ToList(),
+        CollapsedPanes = _panes.Select(p => p.EffectiveCollapsed).ToList()
+    };
 
-    /// <summary>Restores a previously saved state.</summary>
     public void SetState(SplitterState state)
     {
         for (int i = 0; i < Math.Min(_panes.Count, state.PaneSizes.Count); i++)
-        {
             _panes[i].SetSize(state.PaneSizes[i]);
-        }
         for (int i = 0; i < Math.Min(_panes.Count, state.CollapsedPanes.Count); i++)
-        {
             _panes[i].SetCollapsed(state.CollapsedPanes[i]);
-        }
         StateHasChanged();
     }
-
-    // ── Internal API for child panes ────────────────────────────────────
 
     internal void RegisterPane(MariloSplitterPane pane)
     {
@@ -197,7 +173,7 @@
         StateHasChanged();
     }
 
-    // ── Drag-to-resize ─────────────────────────────────────────────────
+    // ── Drag-to-resize (pixel-based) ────────────────────────────────────
 
     private void HandleMouseDown(MouseEventArgs e, int separatorIndex)
     {
@@ -206,13 +182,7 @@
         _activeSeparator = separatorIndex;
         _isDragging = true;
         _dragStartPos = Orientation == StackDirection.Horizontal ? e.ClientX : e.ClientY;
-
-        // Parse current size as pixels (approximate from percentage)
-        var currentSize = _panes[separatorIndex].EffectiveSize;
-        if (currentSize != null && currentSize.EndsWith('%') && double.TryParse(currentSize.TrimEnd('%'), out var pct))
-            _dragStartSize = pct;
-        else
-            _dragStartSize = 50;
+        _dragStartSizePx = ParseSize(_panes[separatorIndex].EffectiveSize);
     }
 
     private async Task HandleMouseMove(MouseEventArgs e)
@@ -220,29 +190,26 @@
         if (!_isDragging || _activeSeparator < 0) return;
 
         var currentPos = Orientation == StackDirection.Horizontal ? e.ClientX : e.ClientY;
-        var delta = currentPos - _dragStartPos;
+        var deltaPx = currentPos - _dragStartPos;
+        var newSizePx = _dragStartSizePx + deltaPx;
 
-        // Convert delta to approximate percentage (assuming ~1000px container)
-        var deltaPercent = delta * 0.1;
-        var newSize = Math.Clamp(_dragStartSize + deltaPercent, 5, 95);
-        var adjacentSize = Math.Clamp(100 - newSize, 5, 95);
+        // Clamp to min/max
+        var minPx = ParseSize(_panes[_activeSeparator].Min, 0);
+        var maxPx = ParseSize(_panes[_activeSeparator].Max, 10000);
+        newSizePx = Math.Clamp(newSizePx, minPx, maxPx);
 
-        _panes[_activeSeparator].SetSize($"{newSize:F1}%");
-        if (_activeSeparator + 1 < _panes.Count)
-            _panes[_activeSeparator + 1].SetSize($"{adjacentSize:F1}%");
+        // Only update the dragged pane; the last pane uses flex:1 to fill the rest
+        _panes[_activeSeparator].SetSize($"{newSizePx:F0}px");
 
         await NotifyResize(_activeSeparator);
     }
 
-    private async Task HandleMouseUp(MouseEventArgs e)
+    private Task HandleMouseUp(MouseEventArgs e)
     {
-        if (_isDragging)
-        {
-            _isDragging = false;
-            _activeSeparator = -1;
-            StateHasChanged();
-        }
-        await Task.CompletedTask;
+        _isDragging = false;
+        _activeSeparator = -1;
+        StateHasChanged();
+        return Task.CompletedTask;
     }
 
     // ── Keyboard resize ─────────────────────────────────────────────────
@@ -258,17 +225,14 @@
         if (e.Key == growKey || e.Key == shrinkKey)
         {
             var direction = e.Key == growKey ? 1.0 : -1.0;
-            var step = e.ShiftKey ? KeyboardResizeStep * 5 : KeyboardResizeStep;
-            var deltaPercent = direction * step * 0.1;
+            var stepPx = e.ShiftKey ? KeyboardResizeStep * 5 : KeyboardResizeStep;
 
-            var currentSize = GetPaneSizePercent(index);
-            var newSize = Math.Clamp(currentSize + deltaPercent, 5, 95);
-            var adjacentSize = Math.Clamp(100 - newSize, 5, 95);
+            var currentPx = ParseSize(_panes[index].EffectiveSize);
+            var minPx = ParseSize(_panes[index].Min, 0);
+            var maxPx = ParseSize(_panes[index].Max, 10000);
+            var newPx = Math.Clamp(currentPx + direction * stepPx, minPx, maxPx);
 
-            _panes[index].SetSize($"{newSize:F1}%");
-            if (index + 1 < _panes.Count)
-                _panes[index + 1].SetSize($"{adjacentSize:F1}%");
-
+            _panes[index].SetSize($"{newPx:F0}px");
             await NotifyResize(index);
         }
         else if (e.Key == "Enter" && Collapsible)
@@ -277,7 +241,7 @@
         }
     }
 
-    // ── Event handlers ──────────────────────────────────────────────────
+    // ── Collapse ────────────────────────────────────────────────────────
 
     private async Task TogglePaneCollapse(int index)
     {
@@ -307,5 +271,20 @@
                 AdjacentSize = index + 1 < _panes.Count ? _panes[index + 1].EffectiveSize ?? "" : ""
             });
         }
+    }
+
+    // ── Helpers ──────────────────────────────────────────────────────────
+
+    /// <summary>Parse a CSS size value to pixels. Percentages are treated as-is (rough).</summary>
+    private static double ParseSize(string? size, double fallback = 200)
+    {
+        if (string.IsNullOrEmpty(size)) return fallback;
+        if (size.EndsWith("px") && double.TryParse(size.AsSpan(0, size.Length - 2), out var px))
+            return px;
+        if (size.EndsWith('%') && double.TryParse(size.AsSpan(0, size.Length - 1), out var pct))
+            return pct * 10; // rough: 1% ≈ 10px for common screen widths
+        if (double.TryParse(size, out var raw))
+            return raw;
+        return fallback;
     }
 }
