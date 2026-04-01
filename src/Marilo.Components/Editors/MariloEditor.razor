@@ -1,12 +1,21 @@
 @inherits MariloComponentBase
+@implements IAsyncDisposable
+@inject IJSRuntime JS
 
 <div class="@CombineClasses(CssProvider.EditorClass())"
-     style="@CombineStyles()"
+     style="@CombineStyles(WidthStyle)"
+     role="application"
+     aria-label="Rich text editor"
      @attributes="AdditionalAttributes">
 
-    @if (!ReadOnly && !Disabled)
+    <CascadingValue Value="this" IsFixed="true">
+        <div style="display:none;">@ChildContent</div>
+    </CascadingValue>
+
+    @* Toolbar *@
+    @if (!ReadOnly && !Disabled && EditMode != EditorEditMode.Source)
     {
-        <div class="@CssProvider.EditorToolbarClass()">
+        <div class="@CssProvider.EditorToolbarClass()" role="toolbar" aria-label="Editor formatting">
             @if (ToolbarTemplate != null)
             {
                 @ToolbarTemplate
@@ -16,8 +25,11 @@
                 @foreach (var tool in ActiveTools)
                 {
                     <button type="button"
-                            class="mar-editor-tool-btn"
+                            class="mar-editor-tool-btn @(IsToolActive(tool) ? "mar-editor-tool-btn--active" : "")"
                             title="@GetToolLabel(tool)"
+                            aria-label="@GetToolLabel(tool)"
+                            aria-pressed="@(IsToolActive(tool) ? "true" : "false")"
+                            disabled="@Disabled"
                             @onclick="() => ExecuteToolAsync(tool)">
                         @GetToolLabel(tool)
                     </button>
@@ -26,61 +38,102 @@
         </div>
     }
 
-    @* Content area — currently textarea fallback; Tiptap interop replaces this *@
+    @* Content area *@
     @if (EditMode == EditorEditMode.Preview)
     {
-        <div class="@CssProvider.EditorContentClass()"
-             style="@ContentStyle">
-            @((MarkupString)SanitizedValue)
+        <div class="@CssProvider.EditorContentClass() mar-editor-preview"
+             style="@ContentStyle"
+             aria-label="Preview"
+             @ref="_previewRef">
+            @((MarkupString)SanitizeHtml(Value ?? ""))
         </div>
     }
-    else
+    else if (EditMode == EditorEditMode.Source)
     {
-        <textarea class="@CssProvider.EditorContentClass()"
+        <textarea class="@CssProvider.EditorContentClass() mar-editor-source"
                   style="@ContentStyle"
                   value="@Value"
                   placeholder="@Placeholder"
                   readonly="@ReadOnly"
                   disabled="@Disabled"
-                  @oninput="HandleInput" />
+                  aria-label="HTML source"
+                  @oninput="HandleSourceInput" />
+    }
+    else
+    {
+        @* WYSIWYG contenteditable div *@
+        <div class="@CssProvider.EditorContentClass() mar-editor-wysiwyg"
+             style="@ContentStyle"
+             @ref="_editorRef"
+             contenteditable="@(!ReadOnly && !Disabled ? "true" : "false")"
+             role="textbox"
+             aria-multiline="true"
+             aria-readonly="@(ReadOnly ? "true" : null)"
+             aria-labelledby="@AriaLabelledBy"
+             aria-describedby="@AriaDescribedBy"
+             data-placeholder="@Placeholder"
+             tabindex="0"
+             spellcheck="true">
+        </div>
     }
 </div>
 
 @code {
+    private ElementReference _editorRef;
+    private ElementReference _previewRef;
+    private IJSObjectReference? _jsModule;
+    private DotNetObjectReference<MariloEditor>? _dotNetRef;
+    private EditorPasteSettings? _pasteSettings;
+    private System.Timers.Timer? _debounceTimer;
+    private string? _pendingValue;
+    private HashSet<string> _activeFormats = new();
+
+    // ── Parameters ─────────────────────────────────────────────────────
+
     /// <summary>The HTML content of the editor. Supports two-way binding.</summary>
     [Parameter] public string? Value { get; set; }
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
 
-    /// <summary>Whether the editor is read-only (content visible but not editable).</summary>
+    /// <summary>Whether the editor is read-only.</summary>
     [Parameter] public bool ReadOnly { get; set; }
 
     /// <summary>Whether the editor is disabled.</summary>
     [Parameter] public bool Disabled { get; set; }
 
-    /// <summary>The edit mode: Edit (rich editor), Preview (rendered HTML), or Source (raw HTML).</summary>
+    /// <summary>The edit mode: Edit (WYSIWYG), Preview (rendered HTML), or Source (raw HTML).</summary>
     [Parameter] public EditorEditMode EditMode { get; set; } = EditorEditMode.Edit;
-
-    /// <summary>Fires when the edit mode changes.</summary>
     [Parameter] public EventCallback<EditorEditMode> EditModeChanged { get; set; }
 
-    /// <summary>The toolbar tools to show. If null, shows all standard tools.</summary>
+    /// <summary>The toolbar tools to show.</summary>
     [Parameter] public IEnumerable<EditorTool>? Tools { get; set; }
 
-    /// <summary>Custom toolbar template (replaces the default tool buttons).</summary>
+    /// <summary>Custom toolbar template.</summary>
     [Parameter] public RenderFragment? ToolbarTemplate { get; set; }
+
+    /// <summary>Child content for child components (EditorPasteSettings, etc.).</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
 
     /// <summary>Placeholder text shown when the editor is empty.</summary>
     [Parameter] public string? Placeholder { get; set; }
 
-    /// <summary>Height of the content area (CSS value).</summary>
-    [Parameter] public string Height { get; set; } = "300px";
+    /// <summary>Height of the content area.</summary>
+    [Parameter] public string Height { get; set; } = "250px";
 
-    /// <summary>Debounce delay in milliseconds for value change events. Default 0 (immediate).</summary>
-    [Parameter] public int DebounceDelay { get; set; }
+    /// <summary>Width of the editor.</summary>
+    [Parameter] public string? Width { get; set; }
 
-    // ── Events (engine-agnostic) ────────────────────────────────────────
+    /// <summary>Debounce delay in milliseconds for value change events.</summary>
+    [Parameter] public int DebounceDelay { get; set; } = 100;
 
-    /// <summary>Fires when the content changes.</summary>
+    /// <summary>Maps to aria-labelledby on the content area.</summary>
+    [Parameter] public string? AriaLabelledBy { get; set; }
+
+    /// <summary>Maps to aria-describedby on the content area.</summary>
+    [Parameter] public string? AriaDescribedBy { get; set; }
+
+    // ── Events ─────────────────────────────────────────────────────────
+
+    /// <summary>Fires when the content changes (after debounce).</summary>
     [Parameter] public EventCallback<string> OnChange { get; set; }
 
     /// <summary>Fires when the text selection changes.</summary>
@@ -89,35 +142,382 @@
     /// <summary>Fires when a command is executed.</summary>
     [Parameter] public EventCallback<string> OnCommand { get; set; }
 
-    // ── Computed ────────────────────────────────────────────────────────
+    // ── Computed ───────────────────────────────────────────────────────
 
-    private IEnumerable<EditorTool> ActiveTools => Tools ?? Enum.GetValues<EditorTool>();
+    private IEnumerable<EditorTool> ActiveTools => Tools ?? DefaultTools;
 
-    private string ContentStyle => $"height:{Height};width:100%;resize:vertical;padding:8px;box-sizing:border-box;overflow:auto;"
-        + (EditMode == EditorEditMode.Edit ? "font-family:monospace;" : "");
+    private static readonly EditorTool[] DefaultTools =
+    [
+        EditorTool.Bold, EditorTool.Italic, EditorTool.Underline, EditorTool.Strikethrough,
+        EditorTool.OrderedList, EditorTool.UnorderedList,
+        EditorTool.Indent, EditorTool.Outdent,
+        EditorTool.AlignLeft, EditorTool.AlignCenter, EditorTool.AlignRight,
+        EditorTool.Link, EditorTool.Unlink, EditorTool.Image,
+        EditorTool.HorizontalRule,
+        EditorTool.Undo, EditorTool.Redo,
+        EditorTool.ClearFormatting, EditorTool.ViewSource
+    ];
 
-    private string SanitizedValue => Value ?? "";
+    private string ContentStyle =>
+        $"height:{Height};width:100%;padding:8px;box-sizing:border-box;overflow:auto;";
 
-    // ── Public API (engine-agnostic) ────────────────────────────────────
+    private string? WidthStyle => Width != null ? $"width:{Width}" : null;
 
-    /// <summary>Executes a formatting command by name (e.g. "bold", "italic", "insertLink").</summary>
+    // ── Child component registration ───────────────────────────────────
+
+    internal void SetPasteSettings(EditorPasteSettings settings) => _pasteSettings = settings;
+
+    // ── Public API ─────────────────────────────────────────────────────
+
+    /// <summary>Executes a formatting command programmatically.</summary>
+    public async Task ExecuteAsync(EditorCommandArgs args)
+    {
+        if (_jsModule is null) return;
+
+        switch (args)
+        {
+            case HtmlCommandArgs html:
+                await _jsModule.InvokeVoidAsync("insertHtml", html.Html);
+                break;
+            case FormatCommandArgs format:
+                await _jsModule.InvokeVoidAsync("execCommand", "formatBlock", format.Tag);
+                break;
+            case LinkCommandArgs link:
+                await _jsModule.InvokeVoidAsync("createLink", link.Href, link.Text, link.Target, link.Title);
+                break;
+            case ImageCommandArgs img:
+                var imgHtml = $"<img src=\"{SanitizeAttr(img.Src)}\" alt=\"{SanitizeAttr(img.Alt)}\""
+                    + (img.Width != null ? $" width=\"{SanitizeAttr(img.Width)}\"" : "")
+                    + (img.Height != null ? $" height=\"{SanitizeAttr(img.Height)}\"" : "")
+                    + " />";
+                await _jsModule.InvokeVoidAsync("insertHtml", imgHtml);
+                break;
+            case TableCommandArgs table:
+                await _jsModule.InvokeVoidAsync("insertTable", table.Rows, table.Columns);
+                break;
+            case ColorCommandArgs color when args.Command == "foreColor":
+                await _jsModule.InvokeVoidAsync("execCommand", "foreColor", color.Color);
+                break;
+            case ColorCommandArgs color:
+                await _jsModule.InvokeVoidAsync("execCommand", "hiliteColor", color.Color);
+                break;
+            case FontSizeCommandArgs fontSize:
+                await _jsModule.InvokeVoidAsync("execCommand", "fontSize", fontSize.Size);
+                break;
+            case FontFamilyCommandArgs fontFamily:
+                await _jsModule.InvokeVoidAsync("execCommand", "fontName", fontFamily.Family);
+                break;
+            default:
+                await _jsModule.InvokeVoidAsync("execCommand", args.Command, null);
+                break;
+        }
+
+        await OnCommand.InvokeAsync(args.Command);
+    }
+
+    /// <summary>Executes a command by name.</summary>
     public async Task ExecuteCommandAsync(string command)
     {
-        if (OnCommand.HasDelegate)
-            await OnCommand.InvokeAsync(command);
+        await ExecuteAsync(new ToolCommandArgs { Command = command });
     }
 
     /// <summary>Sets the edit mode programmatically.</summary>
     public async Task SetModeAsync(EditorEditMode mode)
     {
+        if (mode == EditorEditMode.Source && EditMode == EditorEditMode.Edit)
+        {
+            // Capture current content from WYSIWYG before switching to source
+            if (_jsModule is not null)
+            {
+                Value = await _jsModule.InvokeAsync<string>("getContent");
+                await ValueChanged.InvokeAsync(Value);
+            }
+        }
+
         EditMode = mode;
         await EditModeChanged.InvokeAsync(mode);
         StateHasChanged();
+
+        if (mode == EditorEditMode.Edit)
+        {
+            // Will set content in OnAfterRenderAsync
+            await Task.Yield();
+            StateHasChanged();
+        }
     }
 
-    // ── Event handlers ──────────────────────────────────────────────────
+    /// <summary>Gets the current HTML content.</summary>
+    public async Task<string> GetHtmlAsync()
+    {
+        if (_jsModule is not null && EditMode == EditorEditMode.Edit)
+            return await _jsModule.InvokeAsync<string>("getContent");
+        return Value ?? "";
+    }
 
-    private async Task HandleInput(ChangeEventArgs e)
+    // ── JS Interop ─────────────────────────────────────────────────────
+
+    private string GetEditorScript() => $$"""
+    (() => {
+        const mod = {};
+        let editorEl = null;
+        let dotNetRef = null;
+        let debounceTimer = null;
+        let debounceMs = {{DebounceDelay}};
+
+        mod.init = (el, ref, initialHtml, debounce) => {
+            editorEl = el;
+            dotNetRef = ref;
+            debounceMs = debounce;
+            if (initialHtml) editorEl.innerHTML = initialHtml;
+
+            editorEl.addEventListener('input', onInput);
+            editorEl.addEventListener('paste', onPaste);
+            editorEl.addEventListener('keydown', onKeyDown);
+            document.addEventListener('selectionchange', onSelectionChange);
+        };
+
+        function onInput() {
+            if (!editorEl || !dotNetRef) return;
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                const html = editorEl.innerHTML;
+                dotNetRef.invokeMethodAsync('OnContentChangedFromJs', html);
+            }, debounceMs);
+        }
+
+        function onPaste(e) {
+            if (!dotNetRef) return;
+            e.preventDefault();
+            const html = e.clipboardData.getData('text/html');
+            const text = e.clipboardData.getData('text/plain');
+            // Use HTML if available, otherwise plain text
+            const content = html || text.replace(/\n/g, '<br>');
+            dotNetRef.invokeMethodAsync('OnPasteFromJs', content).then(cleaned => {
+                if (cleaned) document.execCommand('insertHTML', false, cleaned);
+            });
+        }
+
+        function onKeyDown(e) {
+            // Keyboard shortcuts
+            if ((e.ctrlKey || e.metaKey) && !e.shiftKey) {
+                switch (e.key.toLowerCase()) {
+                    case 'b': e.preventDefault(); document.execCommand('bold'); onInput(); break;
+                    case 'i': e.preventDefault(); document.execCommand('italic'); onInput(); break;
+                    case 'u': e.preventDefault(); document.execCommand('underline'); onInput(); break;
+                    case 'z': e.preventDefault(); document.execCommand('undo'); onInput(); break;
+                    case 'y': e.preventDefault(); document.execCommand('redo'); onInput(); break;
+                }
+            }
+        }
+
+        function onSelectionChange() {
+            if (!editorEl || !dotNetRef) return;
+            const sel = window.getSelection();
+            if (sel && editorEl.contains(sel.anchorNode)) {
+                // Detect active formats
+                const formats = [];
+                if (document.queryCommandState('bold')) formats.push('bold');
+                if (document.queryCommandState('italic')) formats.push('italic');
+                if (document.queryCommandState('underline')) formats.push('underline');
+                if (document.queryCommandState('strikeThrough')) formats.push('strikethrough');
+                if (document.queryCommandState('insertOrderedList')) formats.push('orderedlist');
+                if (document.queryCommandState('insertUnorderedList')) formats.push('unorderedlist');
+                if (document.queryCommandState('subscript')) formats.push('subscript');
+                if (document.queryCommandState('superscript')) formats.push('superscript');
+                dotNetRef.invokeMethodAsync('OnSelectionChangedFromJs', formats);
+            }
+        }
+
+        mod.execCommand = (cmd, value) => {
+            if (!editorEl) return;
+            editorEl.focus();
+            document.execCommand(cmd, false, value);
+            onInput();
+        };
+
+        mod.insertHtml = (html) => {
+            if (!editorEl) return;
+            editorEl.focus();
+            document.execCommand('insertHTML', false, html);
+            onInput();
+        };
+
+        mod.createLink = (href, text, target, title) => {
+            if (!editorEl) return;
+            editorEl.focus();
+            const sel = window.getSelection();
+            if (text && (!sel || sel.isCollapsed)) {
+                const a = document.createElement('a');
+                a.href = href;
+                a.textContent = text;
+                if (target) a.target = target;
+                if (title) a.title = title;
+                document.execCommand('insertHTML', false, a.outerHTML);
+            } else {
+                document.execCommand('createLink', false, href);
+                // Apply target/title to the newly created link
+                if (target || title) {
+                    const links = editorEl.querySelectorAll('a[href="' + href + '"]');
+                    const link = links[links.length - 1];
+                    if (link) {
+                        if (target) link.target = target;
+                        if (title) link.title = title;
+                    }
+                }
+            }
+            onInput();
+        };
+
+        mod.insertTable = (rows, cols) => {
+            if (!editorEl) return;
+            editorEl.focus();
+            let html = '<table style="border-collapse:collapse;width:100%">';
+            for (let r = 0; r < rows; r++) {
+                html += '<tr>';
+                for (let c = 0; c < cols; c++) {
+                    html += '<td style="border:1px solid #ccc;padding:4px">&nbsp;</td>';
+                }
+                html += '</tr>';
+            }
+            html += '</table>';
+            document.execCommand('insertHTML', false, html);
+            onInput();
+        };
+
+        mod.getContent = () => editorEl ? editorEl.innerHTML : '';
+
+        mod.setContent = (html) => {
+            if (editorEl) editorEl.innerHTML = html || '';
+        };
+
+        mod.focus = () => { if (editorEl) editorEl.focus(); };
+
+        mod.dispose = () => {
+            if (editorEl) {
+                editorEl.removeEventListener('input', onInput);
+                editorEl.removeEventListener('paste', onPaste);
+                editorEl.removeEventListener('keydown', onKeyDown);
+            }
+            document.removeEventListener('selectionchange', onSelectionChange);
+            clearTimeout(debounceTimer);
+            editorEl = null;
+            dotNetRef = null;
+        };
+
+        return mod;
+    })()
+    """;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (EditMode == EditorEditMode.Edit && _jsModule is null)
+        {
+            await InitJsModule();
+        }
+        else if (EditMode == EditorEditMode.Edit && _jsModule is not null && firstRender)
+        {
+            await _jsModule.InvokeVoidAsync("setContent", Value);
+        }
+    }
+
+    private async Task InitJsModule()
+    {
+        _dotNetRef = DotNetObjectReference.Create(this);
+        _jsModule = await JS.InvokeAsync<IJSObjectReference>("eval", GetEditorScript());
+        await _jsModule.InvokeVoidAsync("init", _editorRef, _dotNetRef, Value, DebounceDelay);
+    }
+
+    // ── JS Callbacks ───────────────────────────────────────────────────
+
+    [JSInvokable]
+    public async Task OnContentChangedFromJs(string html)
+    {
+        Value = html;
+        await ValueChanged.InvokeAsync(html);
+        await OnChange.InvokeAsync(html);
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public async Task<string?> OnPasteFromJs(string html)
+    {
+        return SanitizeHtml(CleanPastedContent(html));
+    }
+
+    [JSInvokable]
+    public async Task OnSelectionChangedFromJs(string[] activeFormats)
+    {
+        _activeFormats = new HashSet<string>(activeFormats, StringComparer.OrdinalIgnoreCase);
+        if (OnSelectionChange.HasDelegate)
+            await OnSelectionChange.InvokeAsync();
+        StateHasChanged();
+    }
+
+    // ── Tool execution ─────────────────────────────────────────────────
+
+    private async Task ExecuteToolAsync(EditorTool tool)
+    {
+        if (_jsModule is null && EditMode == EditorEditMode.Edit)
+            await InitJsModule();
+
+        if (tool == EditorTool.ViewSource)
+        {
+            var newMode = EditMode == EditorEditMode.Source ? EditorEditMode.Edit : EditorEditMode.Source;
+            await SetModeAsync(newMode);
+            return;
+        }
+
+        if (_jsModule is null) return;
+
+        var command = GetExecCommand(tool);
+        if (command != null)
+        {
+            await _jsModule.InvokeVoidAsync("execCommand", command, null);
+            await OnCommand.InvokeAsync(tool.ToString().ToLowerInvariant());
+        }
+    }
+
+    private bool IsToolActive(EditorTool tool) => tool switch
+    {
+        EditorTool.Bold => _activeFormats.Contains("bold"),
+        EditorTool.Italic => _activeFormats.Contains("italic"),
+        EditorTool.Underline => _activeFormats.Contains("underline"),
+        EditorTool.Strikethrough => _activeFormats.Contains("strikethrough"),
+        EditorTool.OrderedList => _activeFormats.Contains("orderedlist"),
+        EditorTool.UnorderedList => _activeFormats.Contains("unorderedlist"),
+        EditorTool.Subscript => _activeFormats.Contains("subscript"),
+        EditorTool.Superscript => _activeFormats.Contains("superscript"),
+        EditorTool.ViewSource => EditMode == EditorEditMode.Source,
+        _ => false
+    };
+
+    private static string? GetExecCommand(EditorTool tool) => tool switch
+    {
+        EditorTool.Bold => "bold",
+        EditorTool.Italic => "italic",
+        EditorTool.Underline => "underline",
+        EditorTool.Strikethrough => "strikeThrough",
+        EditorTool.OrderedList => "insertOrderedList",
+        EditorTool.UnorderedList => "insertUnorderedList",
+        EditorTool.Indent => "indent",
+        EditorTool.Outdent => "outdent",
+        EditorTool.AlignLeft => "justifyLeft",
+        EditorTool.AlignCenter => "justifyCenter",
+        EditorTool.AlignRight => "justifyRight",
+        EditorTool.AlignJustify => "justifyFull",
+        EditorTool.Unlink => "unlink",
+        EditorTool.HorizontalRule => "insertHorizontalRule",
+        EditorTool.ClearFormatting => "removeFormat",
+        EditorTool.Undo => "undo",
+        EditorTool.Redo => "redo",
+        EditorTool.Subscript => "subscript",
+        EditorTool.Superscript => "superscript",
+        _ => null
+    };
+
+    // ── Source mode handler ────────────────────────────────────────────
+
+    private async Task HandleSourceInput(ChangeEventArgs e)
     {
         var newValue = e.Value?.ToString() ?? "";
         Value = newValue;
@@ -125,17 +525,97 @@
         await OnChange.InvokeAsync(newValue);
     }
 
-    private async Task ExecuteToolAsync(EditorTool tool)
+    // ── Content security ───────────────────────────────────────────────
+
+    /// <summary>
+    /// Sanitizes HTML to prevent XSS attacks. Strips script tags, event handlers,
+    /// javascript: URLs, and data: URLs in sensitive attributes.
+    /// </summary>
+    private static string SanitizeHtml(string html)
     {
-        var snippet = GetToolSnippet(tool);
-        if (!string.IsNullOrEmpty(snippet))
-        {
-            Value = (Value ?? "") + snippet;
-            await ValueChanged.InvokeAsync(Value);
-            await OnChange.InvokeAsync(Value);
-        }
-        await ExecuteCommandAsync(tool.ToString().ToLowerInvariant());
+        if (string.IsNullOrEmpty(html)) return "";
+
+        // Remove script tags and their content
+        html = System.Text.RegularExpressions.Regex.Replace(
+            html, @"<script[^>]*>[\s\S]*?</script>", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+        // Remove event handler attributes (on*)
+        html = System.Text.RegularExpressions.Regex.Replace(
+            html, @"\s+on\w+\s*=\s*""[^""]*""", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        html = System.Text.RegularExpressions.Regex.Replace(
+            html, @"\s+on\w+\s*=\s*'[^']*'", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+        // Remove javascript: and vbscript: URLs
+        html = System.Text.RegularExpressions.Regex.Replace(
+            html, @"(href|src|action)\s*=\s*[""']?\s*javascript\s*:", "$1=\"\"",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        html = System.Text.RegularExpressions.Regex.Replace(
+            html, @"(href|src|action)\s*=\s*[""']?\s*vbscript\s*:", "$1=\"\"",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+        // Remove style expressions (IE)
+        html = System.Text.RegularExpressions.Regex.Replace(
+            html, @"expression\s*\(", "blocked(",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+        return html;
     }
+
+    private static string SanitizeAttr(string value)
+    {
+        return value.Replace("\"", "&quot;").Replace("<", "&lt;").Replace(">", "&gt;");
+    }
+
+    // ── Paste cleanup ──────────────────────────────────────────────────
+
+    private string CleanPastedContent(string html)
+    {
+        if (string.IsNullOrEmpty(html)) return "";
+
+        if (_pasteSettings != null)
+        {
+            if (_pasteSettings.RemoveHtmlComments)
+                html = System.Text.RegularExpressions.Regex.Replace(html, @"<!--[\s\S]*?-->", "");
+
+            if (_pasteSettings.RemoveMsClasses)
+                html = System.Text.RegularExpressions.Regex.Replace(
+                    html, @"\s+class\s*=\s*""[^""]*Mso[^""]*""", "",
+                    System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+            if (_pasteSettings.RemoveMsStyles)
+                html = System.Text.RegularExpressions.Regex.Replace(
+                    html, @"\s+style\s*=\s*""[^""]*mso-[^""]*""", "",
+                    System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+            if (_pasteSettings.RemoveAllAttributes)
+                html = System.Text.RegularExpressions.Regex.Replace(
+                    html, @"(<\w+)\s+[^>]*?(>)", "$1$2");
+
+            if (!string.IsNullOrEmpty(_pasteSettings.StripTags))
+            {
+                foreach (var tag in _pasteSettings.StripTags.Split(',', StringSplitOptions.TrimEntries))
+                {
+                    html = System.Text.RegularExpressions.Regex.Replace(
+                        html, $@"</?{tag}[^>]*>", "",
+                        System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(_pasteSettings.RemoveAttributes))
+            {
+                foreach (var attr in _pasteSettings.RemoveAttributes.Split(',', StringSplitOptions.TrimEntries))
+                {
+                    html = System.Text.RegularExpressions.Regex.Replace(
+                        html, $@"\s+{attr}\s*=\s*""[^""]*""", "",
+                        System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+                }
+            }
+        }
+
+        return SanitizeHtml(html);
+    }
+
+    // ── Labels ─────────────────────────────────────────────────────────
 
     private static string GetToolLabel(EditorTool tool) => tool switch
     {
@@ -161,6 +641,7 @@
         EditorTool.Table => "Table",
         EditorTool.Format => "Format",
         EditorTool.FontSize => "Size",
+        EditorTool.FontFamily => "Font",
         EditorTool.FontColor => "Color",
         EditorTool.BackgroundColor => "BgColor",
         EditorTool.Subscript => "Sub",
@@ -169,20 +650,20 @@
         _ => tool.ToString()
     };
 
-    private static string GetToolSnippet(EditorTool tool) => tool switch
+    // ── Disposal ───────────────────────────────────────────────────────
+
+    public async ValueTask DisposeAsync()
     {
-        EditorTool.Bold => "<strong></strong>",
-        EditorTool.Italic => "<em></em>",
-        EditorTool.Underline => "<u></u>",
-        EditorTool.Strikethrough => "<s></s>",
-        EditorTool.OrderedList => "<ol>\n  <li></li>\n</ol>",
-        EditorTool.UnorderedList => "<ul>\n  <li></li>\n</ul>",
-        EditorTool.Link => "<a href=\"\"></a>",
-        EditorTool.Image => "<img src=\"\" alt=\"\" />",
-        EditorTool.HorizontalRule => "<hr />",
-        EditorTool.Table => "<table>\n  <tr><td></td></tr>\n</table>",
-        EditorTool.Subscript => "<sub></sub>",
-        EditorTool.Superscript => "<sup></sup>",
-        _ => ""
-    };
+        if (_jsModule is not null)
+        {
+            try
+            {
+                await _jsModule.InvokeVoidAsync("dispose");
+                await _jsModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException) { }
+        }
+        _dotNetRef?.Dispose();
+        _debounceTimer?.Dispose();
+    }
 }

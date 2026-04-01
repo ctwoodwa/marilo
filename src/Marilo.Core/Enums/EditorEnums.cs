@@ -5,7 +5,7 @@ namespace Marilo.Core.Enums;
 /// </summary>
 public enum EditorEditMode
 {
-    /// <summary>Rich text editing mode (WYSIWYG when engine is loaded, textarea fallback otherwise).</summary>
+    /// <summary>Rich text editing mode (WYSIWYG contenteditable).</summary>
     Edit,
 
     /// <summary>Preview mode showing rendered HTML content.</summary>
@@ -20,84 +20,42 @@ public enum EditorEditMode
 /// </summary>
 public enum EditorTool
 {
-    /// <summary>Bold text formatting.</summary>
     Bold,
-
-    /// <summary>Italic text formatting.</summary>
     Italic,
-
-    /// <summary>Underline text formatting.</summary>
     Underline,
-
-    /// <summary>Strikethrough text formatting.</summary>
     Strikethrough,
-
-    /// <summary>Ordered (numbered) list.</summary>
     OrderedList,
-
-    /// <summary>Unordered (bullet) list.</summary>
     UnorderedList,
-
-    /// <summary>Indent content.</summary>
     Indent,
-
-    /// <summary>Outdent content.</summary>
     Outdent,
-
-    /// <summary>Align text left.</summary>
     AlignLeft,
-
-    /// <summary>Align text center.</summary>
     AlignCenter,
-
-    /// <summary>Align text right.</summary>
     AlignRight,
-
-    /// <summary>Justify text.</summary>
     AlignJustify,
-
-    /// <summary>Insert hyperlink.</summary>
     Link,
-
-    /// <summary>Remove hyperlink.</summary>
     Unlink,
-
-    /// <summary>Insert image.</summary>
     Image,
-
-    /// <summary>Insert horizontal rule.</summary>
     HorizontalRule,
-
-    /// <summary>Clear formatting.</summary>
     ClearFormatting,
-
-    /// <summary>Undo last action.</summary>
     Undo,
-
-    /// <summary>Redo last undone action.</summary>
     Redo,
-
-    /// <summary>Insert table.</summary>
     Table,
-
-    /// <summary>Heading/paragraph format selector.</summary>
     Format,
-
-    /// <summary>Font size selector.</summary>
     FontSize,
-
-    /// <summary>Font color selector.</summary>
+    FontFamily,
     FontColor,
-
-    /// <summary>Background color selector.</summary>
     BackgroundColor,
-
-    /// <summary>Subscript text.</summary>
     Subscript,
-
-    /// <summary>Superscript text.</summary>
     Superscript,
-
-    /// <summary>View or edit HTML source.</summary>
-    ViewSource
+    ViewSource,
+    // Table manipulation tools
+    AddColumnBefore,
+    AddColumnAfter,
+    AddRowBefore,
+    AddRowAfter,
+    DeleteColumn,
+    DeleteRow,
+    DeleteTable,
+    MergeCells,
+    SplitCell
 }
