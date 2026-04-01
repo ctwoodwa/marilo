@@ -1,7 +1,7 @@
 - name: Getting Started
   href: articles/getting-started/
 - name: Components
-  href: http://localhost:8080/components
+  href: https://localhost:5301/components
 - name: Component Specs
   href: ../docs/component-specs/toc.yml
 - name: Theming

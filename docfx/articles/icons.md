@@ -7,7 +7,7 @@ description: Browse all 362 hand-crafted SVG icons included with Marilo.
 
 362 essential icons across 18 categories. 24×24 grid, 2px stroke, round joins, `currentColor` for effortless theming.
 
-> **Interactive demo** — For live component examples (sizing, coloring, icon-in-button, etc.), see the [Marilo demo site](http://localhost:8080/icons).
+> **Interactive demo** — For live component examples (sizing, coloring, icon-in-button, etc.), see the [Marilo demo site](https://localhost:5301/icons).
 
 ## Installation
 

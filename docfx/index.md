@@ -9,7 +9,7 @@ Marilo is a provider-first Blazor component library. Components define behavior;
 ## Quick Links
 
 - [Getting Started](articles/getting-started/overview.md) - Installation and first component
-- [Components](http://localhost:8080/components) - Live component demos and usage guides
+- [Components](https://localhost:5301/components) - Live component demos and usage guides
 - [Theming](articles/theming/overview.md) - Provider system and custom themes
 - [API Reference](api/toc.yml) - Auto-generated API docs from source code
 

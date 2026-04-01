@@ -43,7 +43,7 @@ builder.Services.AddSingleton(sp =>
     return new SiteLinks
     {
         DocsBaseUrl = config["docsBaseUrl"] ?? "http://localhost:8081",
-        DemoBaseUrl = config["demoBaseUrl"] ?? "http://localhost:8080"
+        DemoBaseUrl = config["demoBaseUrl"] ?? "https://localhost:5301"
     };
 });
 

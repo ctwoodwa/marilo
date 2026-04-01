@@ -188,7 +188,7 @@ npm install && npm run build
 dotnet run --project samples/Marilo.Demo
 ```
 
-Open `http://localhost:8080`.
+Open `https://localhost:5301`.
 
 ---
 
