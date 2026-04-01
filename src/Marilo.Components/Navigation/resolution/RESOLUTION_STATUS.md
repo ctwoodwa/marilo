@@ -1,17 +1,17 @@
 ---
 component: MariloBreadcrumb, MariloBreadcrumbItem, MariloContextMenu, MariloEnvironmentBadge, MariloMenu, MariloMenuItem, MariloPagination, MariloTimeRangeSelector, MariloToolbar, MariloToolbarButton, MariloToolbarGroup, MariloToolbarSeparator, MariloToolbarToggleButton, MariloTreeItem, MariloTreeView
 phase: 2
-status: not-started
+status: in-progress
 complexity: mixed
 priority: high
 owner: ""
-last-updated: 2026-03-31
+last-updated: 2026-04-01
 depends-on: [MariloThemeProvider]
 external-resources:
-  - name: ""
-    url: ""
-    license: ""
-    approved: false
+  - name: "Radzen Tree, MudBlazor TreeView, BlazorVirtualTreeView, Fancytree, excubo-ag, jsTree"
+    url: "see Sources Evaluated table below"
+    license: "MIT"
+    approved: true
 ---
 
 # Resolution Status: Navigation
@@ -28,7 +28,7 @@ TreeView has 6 gaps (no expanded/selected binding), Menu has 7 gaps (hierarchy n
 - [x] **MariloPagination** — IMPLEMENTED (6/6 gaps resolved): Added `Total`+`PageSize` model (auto-computes pages), renamed `CurrentPage`→`Page`, `MaxVisiblePages`→`ButtonCount`, added `PageSizes` dropdown, `PageSizeChanged` event, `ShowInfo` page info text. Updated all sample pages.
 
 ### In Progress
-- [ ] **MariloTreeView** — 6 original gaps IMPLEMENTED; **16 new gaps identified** from source review (see below)
+- [ ] **MariloTreeView** — 6 original gaps + 15/16 source-review gaps IMPLEMENTED (Gap 18 virtualization deferred); refactored to partial files
 
 ### Not Started
 - [ ] MariloMenu — 7 gaps
@@ -68,42 +68,48 @@ TreeView has 6 gaps (no expanded/selected binding), Menu has 7 gaps (hierarchy n
 
 ### New Gaps Identified from Source Review (16 gaps)
 
-#### Priority 1 — Core Behavioral Gaps
+#### Priority 1 — Core Behavioral Gaps (ALL IMPLEMENTED)
 
-| # | Gap | Severity | Source(s) | Description | Recommended Pattern |
-|---|-----|----------|-----------|-------------|---------------------|
-| 7 | **Tri-state checkbox propagation** | High | Radzen, MudBlazor, Fancytree | Checking a parent should cascade to children; checking all children should update parent to checked; partial children = indeterminate state. Current `CheckBoxMode` only supports `None`/`Single` with no hierarchical propagation. | **Radzen pattern**: Add `AllowCheckChildren` (bool, default true) and `AllowCheckParents` (bool, default true) parameters. Implement `GetAllChildValues()` recursive helper and `IsChecked()` returning `bool?` (null = indeterminate). Use `CheckedValues`/`CheckedValuesChanged` bindable collection instead of internal `_checkedIds`. Render indeterminate state via HTML `indeterminate` property (requires minimal JS interop or CSS `:indeterminate`). |
-| 8 | **CheckedItems two-way binding** | High | Radzen, MudBlazor | `_checkedIds` is internal-only; consumers cannot bind to or observe checked state. | Expose `CheckedItems` / `CheckedItemsChanged` as `IEnumerable<string>` parameters mirroring `ExpandedItems` pattern already in place. Sync from parameter in `OnParametersSet`. |
-| 9 | **Multi-selection mode** | High | MudBlazor, Fancytree, Telerik | `SelectItem()` always clears `_selectedIds` (single-select only). No multi-select or toggle-select support. | **MudBlazor pattern**: Add `SelectionMode` enum (`Single`, `Multiple`, `Toggle`). In `Multiple` mode, hold Ctrl/Shift to add; in `Toggle`, click toggles individual items. Keep `SelectedItems`/`SelectedItemsChanged` binding. |
-| 10 | **Lazy loading callback** | High | MudBlazor, Fluent UI, Fancytree, Syncfusion | `HasChildrenField` marks expandable nodes and a loading indicator exists, but there is no actual callback to load children on demand. | **MudBlazor/Fluent UI pattern**: Add `LoadChildrenAsync` parameter of type `Func<object, Task<IEnumerable<object>>>`. On first expand of a node with `HasChildren=true` and empty children, invoke callback, merge results into tree, clear loading state. Track loaded state per-node to avoid re-fetching. |
-| 11 | **Keyboard navigation** | High | Fancytree, Telerik, Syncfusion | No keyboard support. Tree should be navigable via arrow keys, expandable via Right/Left, activatable via Enter/Space. | **Fancytree pattern**: Tree is single tab-stop (`tabindex="0"` on `<ul role="tree">`). Track `_focusedNodeId`. Arrow Up/Down move focus, Left collapses or moves to parent, Right expands or moves to first child, Enter/Space selects/toggles. Add `@onkeydown` handler on root element. |
+| # | Gap | Status | Implementation |
+|---|-----|--------|----------------|
+| 7 | **Tri-state checkbox propagation** | ✅ Done | `AllowCheckChildren`/`AllowCheckParents` bools, `GetCheckState()` returns `bool?`, `UpdateAncestorCheckState()` recursive walk, `aria-checked="mixed"` for indeterminate |
+| 8 | **CheckedItems two-way binding** | ✅ Done | `@bind-CheckedItems` via `IEnumerable<string>` + `CheckedItemsChanged`, synced in `OnParametersSet` |
+| 9 | **Multi-selection mode** | ✅ Done | `TreeSelectionMode` enum (`None`/`Single`/`Multiple`), toggle behavior in Multiple mode, separate from checkbox state |
+| 10 | **Lazy loading callback** | ✅ Done | `LoadChildrenAsync` `Func<object, Task<IEnumerable<object>>>`, load-once via `_loadedNodeIds` guard, loading indicator while async |
+| 11 | **Keyboard navigation** | ✅ Done | WAI-ARIA TreeView: ArrowUp/Down, Left/Right expand/collapse, Enter/Space select+check, Home/End, * expand siblings, F2 edit |
 
-#### Priority 2 — Enhanced Interaction Gaps
+#### Priority 2 — Enhanced Interaction Gaps (ALL IMPLEMENTED)
 
-| # | Gap | Severity | Source(s) | Description | Recommended Pattern |
-|---|-----|----------|-----------|-------------|---------------------|
-| 12 | **ExpandOnClick / ExpandOnDoubleClick** | Medium | MudBlazor | Currently only the toggle button (▶/▼) expands nodes. Clicking the label should optionally expand. | Add `ExpandOnClick` (bool) and `ExpandOnDoubleClick` (bool) parameters. Wire `onclick`/`ondblclick` on the header `<div>` to call `ToggleNodeAsync` when enabled. |
-| 13 | **SingleExpand (accordion) mode** | Medium | Radzen | No option to auto-collapse siblings when a node expands. | Add `SingleExpand` (bool) parameter. In `ToggleNodeAsync`, when expanding and `SingleExpand=true`, remove sibling IDs from `_expandedIds` before adding the new one. Requires tracking parent-child relationships in the flattened ID set. |
-| 14 | **AutoExpand to show selection** | Medium | MudBlazor | When `SelectedItems` is set programmatically, ancestor nodes should auto-expand to reveal the selected node. | Add `AutoExpand` (bool) parameter. In `OnParametersSet`, when `SelectedItems` changes and `AutoExpand=true`, walk the tree to find ancestors of selected nodes and add them to `_expandedIds`. |
-| 15 | **ExpandAllAsync / CollapseAllAsync** | Medium | MudBlazor, BlazorVirtualTreeView | Only `Rebind()` is exposed. No batch expand/collapse. | Add public `ExpandAllAsync()` and `CollapseAllAsync()` methods. `ExpandAll` walks tree recursively adding all IDs to `_expandedIds`; `CollapseAll` clears `_expandedIds`. Both fire `ExpandedItemsChanged`. |
-| 16 | **FilterFunc / Search** | Medium | MudBlazor, Fancytree, jsTree | No filtering or search capability. | Add `FilterFunc` parameter as `Func<object, bool>` (or async variant). In `RenderNodes`, skip nodes that don't match predicate but keep ancestors of matching nodes visible. Add `FilterAsync()` public method to trigger re-evaluation. |
-| 17 | **Disabled / ReadOnly** | Medium | MudBlazor, Fancytree | No way to disable the entire tree or make it read-only. | Add `Disabled` (bool) and `ReadOnly` (bool) parameters. When `Disabled`, suppress all click/drag/keyboard handlers and apply `aria-disabled`. When `ReadOnly`, show current state but prevent changes. |
+| # | Gap | Status | Implementation |
+|---|-----|--------|----------------|
+| 12 | **ExpandOnClick / ExpandOnDoubleClick** | ✅ Done | Bool parameters wired to header `onclick`/`ondblclick` → `ToggleNodeAsync` |
+| 13 | **SingleExpand (accordion) mode** | ✅ Done | `SingleExpand` bool, `FindSiblingIds()` removes sibling expanded IDs before adding new |
+| 14 | **AutoExpand to show selection** | ✅ Done | `AutoExpand` bool, `ExpandAncestorsOfSelected()` in `OnParametersSet` via `CollectAncestorIds()` |
+| 15 | **ExpandAllAsync / CollapseAllAsync** | ✅ Done | Public async methods, `CollectAllIds()` recursive walk, fires `ExpandedItemsChanged` |
+| 16 | **FilterFunc / Search** | ✅ Done | `Func<object, bool>` predicate, `ApplyFilter()` preserves ancestor chains, `ClearFilter()` public method, `.mar-tree-item--filter-match` CSS class |
+| 17 | **Disabled / ReadOnly** | ✅ Done | Both parameters guard all interactions (click, drag, keyboard, checkboxes), `aria-disabled` on root |
 
-#### Priority 3 — Advanced / Enterprise Gaps
+#### Priority 3 — Advanced / Enterprise Gaps (4/5 IMPLEMENTED, 1 DEFERRED)
 
-| # | Gap | Severity | Source(s) | Description | Recommended Pattern |
-|---|-----|----------|-----------|-------------|---------------------|
-| 18 | **Virtualization** | Medium | BlazorVirtualTreeView | All nodes render to DOM regardless of visibility. Degrades with 1000+ nodes. | **BlazorVirtualTreeView pattern**: Flatten visible tree into a list (only expanded branches), wrap in Blazor `<Virtualize>` component with `ItemSize` parameter. Maintain a `FlattenVisibleNodes()` method that recomputes on expand/collapse. This is the most architecturally significant enhancement. |
-| 19 | **Programmatic navigation (SelectNodeAsync)** | Low | BlazorVirtualTreeView | No way to programmatically navigate to a node, expanding its ancestors and scrolling it into view. | Add `SelectNodeAsync(string id)` method that expands all ancestors, sets selection, and (with virtualization) scrolls to the node. |
-| 20 | **ItemContextMenu event** | Low | Radzen, jsTree, Fancytree | No right-click/context menu integration point. | Add `OnItemContextMenu` `EventCallback<(object Item, MouseEventArgs Args)>`. Wire `@oncontextmenu` on item headers. Pairs with `MariloContextMenu` component. |
-| 21 | **CheckboxTemplate** | Low | excubo-ag | Checkbox rendering is hardcoded `<input type="checkbox">`. No customization. | Add `CheckboxTemplate` `RenderFragment<CheckboxContext>` where `CheckboxContext` includes `(bool Checked, bool? Indeterminate, Action<bool> OnChange, bool Disabled)`. |
-| 22 | **Node editing (inline rename)** | Low | jsTree, Fancytree, Syncfusion | No inline editing of node text. | Add `AllowEditing` (bool) and `OnItemEdit` `EventCallback<(string Id, string NewText)>`. Double-click or F2 replaces label with input field. |
+| # | Gap | Status | Implementation |
+|---|-----|--------|----------------|
+| 18 | **Virtualization** | ⏳ Deferred | Requires architectural change to flatten tree + `<Virtualize>` component. Deferred to future iteration — `GetVisibleNodeIds()` flattening is in place as a foundation. |
+| 19 | **Programmatic navigation (SelectNodeAsync)** | ✅ Done | `SelectNodeAsync(string id)` expands all ancestors via `CollectAncestorIds()`, selects, sets focus, fires both binding callbacks |
+| 20 | **ItemContextMenu event** | ✅ Done | `OnItemContextMenu` `EventCallback<TreeItemContextMenuEventArgs>`, wired via `@oncontextmenu` on header with `preventDefault` |
+| 21 | **CheckboxTemplate** | ✅ Done | `RenderFragment<CheckboxContext>` parameter, `CheckboxContext` provides `Checked`, `Indeterminate`, `Disabled`, `OnChange` delegate |
+| 22 | **Node editing (inline rename)** | ✅ Done | `AllowEditing` bool + `OnItemEdit` `EventCallback<TreeItemEditEventArgs>`, double-click or F2 activates, Enter commits, Escape cancels, blur commits |
 
-### Implementation Priority Recommendation
+### Implementation Summary
 
-**Phase 1 (Core):** Gaps 7-11 — Tri-state checkboxes, CheckedItems binding, multi-selection, lazy loading, keyboard navigation
-**Phase 2 (Enhanced):** Gaps 12-17 — ExpandOnClick, SingleExpand, AutoExpand, batch expand/collapse, filtering, disabled/readonly
-**Phase 3 (Advanced):** Gaps 18-22 — Virtualization, programmatic navigation, context menu, checkbox template, inline editing
+| Phase | Gaps | Status |
+|-------|------|--------|
+| **Phase 1 (Core)** | Gaps 7-11 | ✅ ALL IMPLEMENTED |
+| **Phase 2 (Enhanced)** | Gaps 12-17 | ✅ ALL IMPLEMENTED |
+| **Phase 3 (Advanced)** | Gaps 19-22 | ✅ 4/5 IMPLEMENTED |
+| **Phase 3 (Deferred)** | Gap 18 (Virtualization) | ⏳ DEFERRED |
+
+**Architecture:** Refactored to partial file pattern (`.razor` + `.razor.cs`) matching `MariloDataGrid` convention.
+**New types added:** `TreeSelectionMode` enum, `TreeItemContextMenuEventArgs`, `TreeItemEditEventArgs`, `CheckboxContext` models.
 
 ## Blockers
 - None
