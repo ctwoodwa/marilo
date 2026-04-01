@@ -224,3 +224,30 @@ public enum StepStatus
     /// <summary>The step encountered an error.</summary>
     Error
 }
+
+/// <summary>
+/// Specifies the animation type for MariloAnimationContainer.
+/// </summary>
+public enum AnimationType
+{
+    /// <summary>Fade in/out animation.</summary>
+    Fade,
+
+    /// <summary>Slide up animation.</summary>
+    SlideUp,
+
+    /// <summary>Slide down animation.</summary>
+    SlideDown,
+
+    /// <summary>Slide left animation.</summary>
+    SlideLeft,
+
+    /// <summary>Slide right animation.</summary>
+    SlideRight,
+
+    /// <summary>Zoom in/out animation.</summary>
+    Zoom,
+
+    /// <summary>Expand/collapse animation.</summary>
+    Expand
+}
