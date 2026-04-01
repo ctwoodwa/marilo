@@ -26,6 +26,24 @@
     /// <summary>Pane content.</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
+    // Internal state managed by the parent MariloSplitter to avoid BL0005 warnings.
+    // These override the [Parameter] values when set by the parent.
+    private string? _internalSize;
+    private bool? _internalCollapsed;
+
+    internal string? EffectiveSize => _internalSize ?? Size;
+    internal bool EffectiveCollapsed => _internalCollapsed ?? Collapsed;
+
+    internal void SetSize(string? size) => _internalSize = size;
+    internal void SetCollapsed(bool collapsed) => _internalCollapsed = collapsed;
+
+    protected override void OnParametersSet()
+    {
+        // Sync internal state when parameters are set externally
+        _internalSize = null;
+        _internalCollapsed = null;
+    }
+
     protected override void OnInitialized()
     {
         ParentSplitter?.RegisterPane(this);

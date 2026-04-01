@@ -13649,3 +13649,37 @@ textarea.form-control-lg {
   border-color: var(--bs-form-invalid-border-color);
   box-shadow: 0 0 0 0.25rem rgba(var(--bs-danger-rgb), 0.25);
 }
+
+/* --------------------------------------------------------------------------
+   Navigation: TreeView
+   -------------------------------------------------------------------------- */
+
+.mar-tree-item__header {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.mar-tree-item__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.65em;
+  color: inherit;
+}
+
+.mar-tree-item__toggle:hover {
+  color: var(--bs-primary);
+}
+
+.mar-tree-item__children {
+  list-style: none;
+  padding-left: 1rem;
+  margin: 0;
+}

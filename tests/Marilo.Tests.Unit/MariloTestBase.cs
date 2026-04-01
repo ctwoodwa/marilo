@@ -14,7 +14,7 @@ namespace Marilo.Tests.Unit;
 /// Base class for Marilo component tests. Registers the FluentUI provider
 /// and core services so components can render without additional setup.
 /// </summary>
-public abstract class MariloTestBase : TestContext
+public abstract class MariloTestBase : BunitContext
 {
     protected MariloTestBase()
     {
@@ -29,7 +29,9 @@ public abstract class MariloTestBase : TestContext
         public MariloTheme CurrentTheme { get; } = new();
         public bool IsDarkMode => false;
         public bool IsRtl => false;
+#pragma warning disable CS0067 // Required by IMariloThemeService interface
         public event EventHandler<ThemeChangedEventArgs>? ThemeChanged;
+#pragma warning restore CS0067
 
         public Task SetThemeAsync(MariloTheme theme) => Task.CompletedTask;
         public Task ToggleDarkModeAsync() => Task.CompletedTask;

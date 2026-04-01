@@ -812,6 +812,37 @@
   color: var(--marilo-color-primary);
 }
 
+.mar-tree-item__header {
+  display: flex;
+  align-items: center;
+  gap: var(--marilo-space-xs);
+}
+
+.mar-tree-item__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.65em;
+  color: inherit;
+  transition: transform var(--marilo-transition-fast);
+}
+
+.mar-tree-item__toggle:hover {
+  color: var(--marilo-color-primary);
+}
+
+.mar-tree-item__children {
+  list-style: none;
+  padding-left: var(--marilo-space-lg);
+  margin: 0;
+}
+
 /* --------------------------------------------------------------------------
    Navigation: Toolbar / Link
    -------------------------------------------------------------------------- */

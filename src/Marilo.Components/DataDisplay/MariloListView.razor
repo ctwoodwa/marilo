@@ -100,7 +100,7 @@
     private List<TItem> _allItems = [];
     private IEnumerable<TItem>? _pagedItems;
     private HashSet<TItem> _selectedItems = new();
-    private TItem? _editingItem;
+    private TItem? _editingItem = default;
     private int _currentPage;
     private int _totalCount;
 

@@ -10,7 +10,7 @@
         @for (var i = 0; i < _panes.Count; i++)
         {
             var pane = _panes[i];
-            var isCollapsed = pane.Collapsed;
+            var isCollapsed = pane.EffectiveCollapsed;
             var paneStyle = BuildPaneStyle(pane);
 
             <div class="mar-splitter__pane @(isCollapsed ? "mar-splitter__pane--collapsed" : "")"
@@ -38,10 +38,10 @@
                     {
                         <button type="button"
                                 class="mar-splitter__collapse-btn"
-                                aria-label="@(prevPane.Collapsed ? "Expand pane" : "Collapse pane")"
+                                aria-label="@(prevPane.EffectiveCollapsed ? "Expand pane" : "Collapse pane")"
                                 @onclick="() => TogglePaneCollapse(idx)"
                                 @onclick:stopPropagation="true">
-                            @(prevPane.Collapsed ? "\u25B6" : "\u25C0")
+                            @(prevPane.EffectiveCollapsed ? "\u25B6" : "\u25C0")
                         </button>
                     }
                 </div>
@@ -132,13 +132,13 @@
     private string BuildPaneStyle(MariloSplitterPane pane)
     {
         var parts = new List<string>();
-        if (pane.Collapsed)
+        if (pane.EffectiveCollapsed)
         {
             parts.Add("flex-basis:0;overflow:hidden;");
         }
         else
         {
-            if (!string.IsNullOrEmpty(pane.Size)) parts.Add($"flex-basis:{pane.Size};");
+            if (!string.IsNullOrEmpty(pane.EffectiveSize)) parts.Add($"flex-basis:{pane.EffectiveSize};");
             if (!string.IsNullOrEmpty(pane.Min)) parts.Add($"min-{(Orientation == StackDirection.Horizontal ? "width" : "height")}:{pane.Min};");
             if (!string.IsNullOrEmpty(pane.Max)) parts.Add($"max-{(Orientation == StackDirection.Horizontal ? "width" : "height")}:{pane.Max};");
         }
@@ -148,7 +148,7 @@
     private int GetPaneSizePercent(int index)
     {
         if (index < 0 || index >= _panes.Count) return 50;
-        var size = _panes[index].Size;
+        var size = _panes[index].EffectiveSize;
         if (size != null && size.EndsWith('%') && double.TryParse(size.TrimEnd('%'), out var pct))
             return (int)pct;
         return 50;
@@ -161,8 +161,8 @@
     {
         return new SplitterState
         {
-            PaneSizes = _panes.Select(p => p.Size ?? "").ToList(),
-            CollapsedPanes = _panes.Select(p => p.Collapsed).ToList()
+            PaneSizes = _panes.Select(p => p.EffectiveSize ?? "").ToList(),
+            CollapsedPanes = _panes.Select(p => p.EffectiveCollapsed).ToList()
         };
     }
 
@@ -171,11 +171,11 @@
     {
         for (int i = 0; i < Math.Min(_panes.Count, state.PaneSizes.Count); i++)
         {
-            _panes[i].Size = state.PaneSizes[i];
+            _panes[i].SetSize(state.PaneSizes[i]);
         }
         for (int i = 0; i < Math.Min(_panes.Count, state.CollapsedPanes.Count); i++)
         {
-            _panes[i].Collapsed = state.CollapsedPanes[i];
+            _panes[i].SetCollapsed(state.CollapsedPanes[i]);
         }
         StateHasChanged();
     }
@@ -208,7 +208,7 @@
         _dragStartPos = Orientation == StackDirection.Horizontal ? e.ClientX : e.ClientY;
 
         // Parse current size as pixels (approximate from percentage)
-        var currentSize = _panes[separatorIndex].Size;
+        var currentSize = _panes[separatorIndex].EffectiveSize;
         if (currentSize != null && currentSize.EndsWith('%') && double.TryParse(currentSize.TrimEnd('%'), out var pct))
             _dragStartSize = pct;
         else
@@ -227,9 +227,9 @@
         var newSize = Math.Clamp(_dragStartSize + deltaPercent, 5, 95);
         var adjacentSize = Math.Clamp(100 - newSize, 5, 95);
 
-        _panes[_activeSeparator].Size = $"{newSize:F1}%";
+        _panes[_activeSeparator].SetSize($"{newSize:F1}%");
         if (_activeSeparator + 1 < _panes.Count)
-            _panes[_activeSeparator + 1].Size = $"{adjacentSize:F1}%";
+            _panes[_activeSeparator + 1].SetSize($"{adjacentSize:F1}%");
 
         await NotifyResize(_activeSeparator);
     }
@@ -265,9 +265,9 @@
             var newSize = Math.Clamp(currentSize + deltaPercent, 5, 95);
             var adjacentSize = Math.Clamp(100 - newSize, 5, 95);
 
-            _panes[index].Size = $"{newSize:F1}%";
+            _panes[index].SetSize($"{newSize:F1}%");
             if (index + 1 < _panes.Count)
-                _panes[index + 1].Size = $"{adjacentSize:F1}%";
+                _panes[index + 1].SetSize($"{adjacentSize:F1}%");
 
             await NotifyResize(index);
         }
@@ -283,7 +283,7 @@
     {
         if (index >= 0 && index < _panes.Count)
         {
-            _panes[index].Collapsed = !_panes[index].Collapsed;
+            _panes[index].SetCollapsed(!_panes[index].EffectiveCollapsed);
             if (OnCollapse.HasDelegate)
                 await OnCollapse.InvokeAsync(index);
             StateHasChanged();
@@ -303,8 +303,8 @@
             await OnResize.InvokeAsync(new SplitterResizeEventArgs
             {
                 PaneIndex = index,
-                NewSize = _panes[index].Size ?? "",
-                AdjacentSize = index + 1 < _panes.Count ? _panes[index + 1].Size ?? "" : ""
+                NewSize = _panes[index].EffectiveSize ?? "",
+                AdjacentSize = index + 1 < _panes.Count ? _panes[index + 1].EffectiveSize ?? "" : ""
             });
         }
     }
