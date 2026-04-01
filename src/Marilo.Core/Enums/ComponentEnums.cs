@@ -454,6 +454,21 @@ public enum CheckBoxMode
 }
 
 /// <summary>
+/// Specifies the selection mode for a tree view component.
+/// </summary>
+public enum TreeSelectionMode
+{
+    /// <summary>No selection allowed.</summary>
+    None,
+
+    /// <summary>Only one item can be selected at a time.</summary>
+    Single,
+
+    /// <summary>Multiple items can be selected simultaneously.</summary>
+    Multiple
+}
+
+/// <summary>
 /// Specifies the adaptive rendering mode for autocomplete on mobile devices.
 /// </summary>
 public enum AutoCompleteAdaptiveMode
