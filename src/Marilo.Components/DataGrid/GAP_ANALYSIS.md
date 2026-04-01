@@ -2,6 +2,7 @@
 
 Generated: 2026-03-30 | Last Updated: 2026-04-01
 Spec Source: `/docs/component-specs/grid/` (78 files)
+Research: `resolution/RESEARCH_LOG.md` — patterns from Radzen, QuickGrid, MudBlazor, Tabulator, AG Grid
 
 ---
 
@@ -57,16 +58,20 @@ GridEventArgs.cs               — Row/cell/read event arg types
 
 ### A1: Grouping
 Spec: `grouping/overview.md`, `grouping/aggregates.md`, `grouping/load-on-demand.md`
+Reference: RESEARCH_LOG.md §1 — Radzen `GroupByMany` recursive tree, collapse-by-exception pattern
 
 - [ ] A1.1 — Add `Groupable` parameter to `MariloGridColumn` (default: true)
-- [ ] A1.2 — Implement client-side grouping in `ProcessDataClientSide()` using `GroupDescriptors`
-- [ ] A1.3 — Render group header rows with collapse/expand toggle
-- [ ] A1.4 — Track collapsed groups in `_collapsedGroups` HashSet
-- [ ] A1.5 — Add `GroupHeaderTemplate` RenderFragment<GroupHeaderContext<TItem>> to grid
-- [ ] A1.6 — Add `GroupFooterTemplate` RenderFragment<GroupFooterContext<TItem>> to grid
-- [ ] A1.7 — Implement aggregate functions (Count, Sum, Average, Min, Max) for group footers
-- [ ] A1.8 — Add `CollapsedGroups` to `GridState` for state persistence
-- [ ] A1.9 — Support OnRead grouping (pass GroupDescriptors in request, expect pre-grouped data)
+- [ ] A1.2 — Create `GroupResult<TItem>` type (Key, Count, Items, Subgroups) for recursive group tree
+- [ ] A1.3 — Implement `GroupByMany` recursive grouping in `ProcessDataClientSide()` using `GroupDescriptors`
+- [ ] A1.4 — Render group header rows with collapse/expand toggle (full-width `<tr>` with colspan)
+- [ ] A1.5 — Track collapsed groups via **collapse-by-exception**: `HashSet<string>` of collapsed group key paths (all default expanded)
+- [ ] A1.6 — Add `GroupHeaderTemplate` RenderFragment<GroupHeaderContext<TItem>> to grid
+- [ ] A1.7 — Add `GroupFooterTemplate` RenderFragment<GroupFooterContext<TItem>> to grid
+- [ ] A1.8 — Implement aggregate functions (Count, Sum, Average, Min, Max) for group footers; recompute only affected branch on data change
+- [ ] A1.9 — Add `CollapsedGroups` to `GridState` for state persistence (keyed by path string, not index)
+- [ ] A1.10 — Include `GroupDescriptors` in `GridReadEventArgs` so OnRead consumers can group server-side (avoid MudBlazor #9295 pitfall)
+- [ ] A1.11 — Support `HideGroupedColumn` bool parameter
+- [ ] A1.12 — Filter leaf rows first, then hide empty groups (AG Grid pattern)
 
 ### A2: AutoGenerateColumns
 Spec: `columns/auto-generated.md`
@@ -79,12 +84,14 @@ Spec: `columns/auto-generated.md`
 
 ### A3: SearchBox Filter
 Spec: `filtering/searchbox.md`
+Reference: RESEARCH_LOG.md §8 — MudBlazor programmatic filter API
 
 - [ ] A3.1 — Add `ShowSearchBox` bool parameter
 - [ ] A3.2 — Render search input in toolbar area
 - [ ] A3.3 — Implement global text search across all string-type visible columns
 - [ ] A3.4 — Add `SearchFilter` string to `GridState` for persistence
 - [ ] A3.5 — Debounce input (configurable `SearchDelay` parameter, default 300ms)
+- [ ] A3.6 — Expose `AddFilter(FilterDescriptor)` / `ClearFilters()` public methods on grid for programmatic filter control
 
 ### A4: Additional Templates
 Spec: `templates/no-data.md`, `templates/row.md`
@@ -106,17 +113,20 @@ Spec: `columns/bound.md`, `columns/frozen.md`, `columns/visible.md`
 
 ### A6: GridState Enrichment
 Spec: `state.md`
+Reference: RESEARCH_LOG.md §1 (group state), §7 (QuickGrid decoupled pagination)
+Note: Radzen uses a `DataGridSettings` object with `SaveSettings()`/`LoadSettings()` for full state round-tripping — consider exposing a similar `Settings` parameter alongside the event-based approach.
 
 - [ ] A6.1 — Add `EditItem` property to GridState
 - [ ] A6.2 — Add `OriginalEditItem` property to GridState
 - [ ] A6.3 — Add `InsertedItem` property to GridState
 - [ ] A6.4 — Add `ExpandedItems` HashSet to GridState
-- [ ] A6.5 — Add `ColumnStates` list (order, width, visible) to GridState
+- [ ] A6.5 — Add `ColumnStates` list (order, width, visible) to GridState — each entry: `ColumnState { Field, OrderIndex, Width, Visible }`
 - [ ] A6.6 — Add `SearchFilter` string to GridState
 - [ ] A6.7 — Add `Skip` int to GridState (for virtual scroll position)
 - [ ] A6.8 — Add `TableWidth` string to GridState
 - [ ] A6.9 — Sync editing state (_editingItem, _originalItem) to GridState on changes
 - [ ] A6.10 — Sync _expandedDetailItems to GridState.ExpandedItems on changes
+- [ ] A6.11 — Add `CancellationToken` to `GridReadEventArgs` for long-running server queries (QuickGrid pattern)
 
 ### A7: Highlighting & Size
 Spec: `highlighting.md`, `sizing.md`
@@ -128,57 +138,68 @@ Spec: `highlighting.md`, `sizing.md`
 
 ### A8: CSV Export
 Spec: `export/csv.md`, `export/events.md`
+Reference: RESEARCH_LOG.md §2 (Radzen) — Radzen keeps export logic outside the grid; grid exposes `ColumnsCollection` + current query state so export is composable. Consider exposing visible columns + current filter/sort as public API so export can be implemented as extension method or separate service.
 
 - [ ] A8.1 — Add `ExportToCsv()` public method
-- [ ] A8.2 — Generate CSV from visible columns and current data
-- [ ] A8.3 — Trigger browser download via JS interop (`URL.createObjectURL` + click)
-- [ ] A8.4 — Add `OnBeforeExport` / `OnAfterExport` EventCallback parameters
-- [ ] A8.5 — Support export of all data (not just current page) via `ExportAllPages` option
+- [ ] A8.2 — Expose `GetExportData()` internal method that returns visible columns + current data (respecting sort/filter)
+- [ ] A8.3 — Generate CSV from visible columns and current data
+- [ ] A8.4 — Trigger browser download via JS interop (`URL.createObjectURL` + click)
+- [ ] A8.5 — Add `OnBeforeExport` / `OnAfterExport` EventCallback parameters
+- [ ] A8.6 — Support export of all data (not just current page) via `ExportAllPages` option
 
 ---
 
 ## Phase B — JS Interop Features
 
 *Estimated effort: High. All tasks require a shared `marilo-datagrid.js` module and `IJSRuntime` injection.*
+*Community consensus: column resize + reorder are "table stakes" — prioritize B2/B3 first.*
 
 ### B0: JS Interop Infrastructure
-- [ ] B0.1 — Create `wwwroot/js/marilo-datagrid.js` module
+- [ ] B0.1 — Create `wwwroot/js/marilo-datagrid.js` ES module
 - [ ] B0.2 — Register JS module in `MariloDataGrid` via `IJSRuntime.InvokeAsync<IJSObjectReference>("import", ...)`
 - [ ] B0.3 — Add `IAsyncDisposable` implementation to dispose JS module reference
 - [ ] B0.4 — Add `[Inject] IJSRuntime JS { get; set; }` to MariloDataGrid.razor.cs
+- [ ] B0.5 — Add `<colgroup>/<col>` elements to markup for efficient column width management (Radzen pattern — enables resize without full re-render)
 
 ### B1: Keyboard Navigation
 Spec: `keyboard-navigation.md`
+Reference: RESEARCH_LOG.md §5 — Radzen split: C# owns logical index state, JS owns DOM focus
 
-- [ ] B1.1 — Add `@onkeydown` handler to grid root element
-- [ ] B1.2 — Track focused cell position (`_focusedRow`, `_focusedCol`)
-- [ ] B1.3 — Arrow keys: move focus between cells
-- [ ] B1.4 — Enter: begin edit on focused cell (InCell mode) or focused row (Inline mode)
-- [ ] B1.5 — Escape: cancel edit
-- [ ] B1.6 — Tab/Shift+Tab: move between editable cells
-- [ ] B1.7 — Add `aria-activedescendant` for screen reader support
-- [ ] B1.8 — Add `tabindex` management for focusable cells
-- [ ] B1.9 — Add `CustomKeyboardShortcuts` Dictionary parameter for user-defined shortcuts
+- [ ] B1.1 — Add `tabindex="0"` and `@onkeydown` handler to grid root `<div>`
+- [ ] B1.2 — Track focused cell position in C#: `_focusedRow` (int), `_focusedCol` (int)
+- [ ] B1.3 — JS: `focusCell(gridId, rowIndex, cellIndex)` — queries DOM rows/cells, sets focus, returns `int[]` with actual new position back to .NET
+- [ ] B1.4 — Arrow keys: call JS focusCell, update C# indices from return value
+- [ ] B1.5 — Enter: begin edit on focused cell (InCell) or focused row (Inline); on header row trigger sort
+- [ ] B1.6 — Escape: cancel edit
+- [ ] B1.7 — Tab/Shift+Tab: move between editable cells
+- [ ] B1.8 — Alt+ArrowDown on filter-enabled header: open filter popup
+- [ ] B1.9 — Add `aria-activedescendant` for screen reader support
+- [ ] B1.10 — Add `CustomKeyboardShortcuts` Dictionary parameter for user-defined shortcuts
 
-### B2: Column Resizing
+### B2: Column Resizing ⚡ (table stakes)
 Spec: `columns/resize.md`
+Reference: RESEARCH_LOG.md §2 — Radzen `<colgroup>/<col>` pattern, single JS→.NET callback on mouseup
 
-- [ ] B2.1 — Add `Resizable` bool parameter to `MariloGridColumn` (default: false)
-- [ ] B2.2 — Add `MinResizableWidth` / `MaxResizableWidth` string parameters
-- [ ] B2.3 — Render drag handle element in header cells for resizable columns
-- [ ] B2.4 — JS: `initColumnResize(elementRef, dotNetRef)` — mousedown/mousemove/mouseup handlers
-- [ ] B2.5 — .NET callback: `OnColumnResized(string field, double newWidth)` updates column width
-- [ ] B2.6 — Persist widths in `GridState.ColumnStates`
-- [ ] B2.7 — Add `OnColumnResized` EventCallback parameter
+- [ ] B2.1 — Add `AllowColumnResize` bool parameter on grid (default: false)
+- [ ] B2.2 — Add `Resizable` bool parameter to `MariloGridColumn` (default: true when grid allows)
+- [ ] B2.3 — Add `MinResizableWidth` / `MaxResizableWidth` string parameters on column
+- [ ] B2.4 — Render drag handle `<div>` in header cells for resizable columns
+- [ ] B2.5 — JS: `startColumnResize(gridId, elementRef, colIndex, clientX)` — mousedown captures initial state, mousemove updates `<col>` widths directly in DOM (no .NET calls during drag)
+- [ ] B2.6 — JS→.NET: `[JSInvokable] OnColumnResized(int colIndex, double newWidth)` fires **once on mouseup** — updates column width and fires event
+- [ ] B2.7 — Persist widths in `GridState.ColumnStates`
+- [ ] B2.8 — Add `OnColumnResized` EventCallback<DataGridColumnResizedEventArgs> parameter
 
-### B3: Column Reordering
+### B3: Column Reordering ⚡ (table stakes)
 Spec: `columns/reorder.md`
+Reference: RESEARCH_LOG.md §3 — Radzen visual clone + cancelable pre-event
 
-- [ ] B3.1 — Add `Reorderable` bool parameter to `MariloGridColumn` (default: false)
-- [ ] B3.2 — JS: `initColumnReorder(elementRef, dotNetRef)` — HTML5 drag-and-drop on headers
-- [ ] B3.3 — .NET callback: `OnColumnReordered(string field, int newIndex)` reorders `_columns` list
-- [ ] B3.4 — Persist column order in `GridState.ColumnStates`
-- [ ] B3.5 — Add `OnColumnReordered` EventCallback parameter
+- [ ] B3.1 — Add `AllowColumnReorder` bool parameter on grid (default: false)
+- [ ] B3.2 — Add `Reorderable` bool parameter to `MariloGridColumn` (default: true when grid allows)
+- [ ] B3.3 — Add `OrderIndex` (int?) property to `MariloGridColumn` for persistence
+- [ ] B3.4 — JS: `initColumnReorder(gridId, elementRef, dotNetRef)` — HTML5 drag-and-drop with visual clone `<th>` positioned absolutely
+- [ ] B3.5 — .NET: cancelable `OnColumnReordering` event fires before move; `OnColumnReordered(OldIndex, NewIndex)` fires after
+- [ ] B3.6 — Remove column from `_columns` and re-insert at target index; call `SetOrderIndex` on all columns
+- [ ] B3.7 — Persist column order in `GridState.ColumnStates`
 
 ### B4: Row Drag-and-Drop
 Spec: `row-drag-drop.md`
@@ -192,12 +213,15 @@ Spec: `row-drag-drop.md`
 
 ### B5: Frozen/Locked Columns
 Spec: `columns/frozen.md`
+Reference: RESEARCH_LOG.md §4 — Radzen stacked `position: sticky` offsets, boundary shadow classes
 
 - [ ] B5.1 — Add `Locked` bool parameter to `MariloGridColumn` (default: false)
-- [ ] B5.2 — Add `Lockable` bool parameter to `MariloGridColumn` (default: true)
-- [ ] B5.3 — Apply `position: sticky` and calculated `left`/`right` offsets via JS measurement
-- [ ] B5.4 — Add CSS class `mar-datagrid-col--locked` with z-index layering
-- [ ] B5.5 — JS: calculate and set left offset for each locked column on resize/reorder
+- [ ] B5.2 — Add `FrozenPosition` enum (Left, Right) parameter on column (default: Left)
+- [ ] B5.3 — Add `Lockable` bool parameter to `MariloGridColumn` (default: true)
+- [ ] B5.4 — Apply `position: sticky` with computed `inset-inline-start`/`inset-inline-end` — sum widths of preceding frozen columns for offset
+- [ ] B5.5 — CSS classes: `mar-datagrid-col--locked`, `mar-datagrid-col--locked-end` (shadow on boundary column)
+- [ ] B5.6 — Z-index layering: 2 for header+frozen, 1 for body+frozen
+- [ ] B5.7 — JS: recalculate offsets on column resize/reorder
 
 ---
 
@@ -332,11 +356,11 @@ Spec: `overview.md`
 
 | Phase | Total Tasks | Completed | Status |
 |-------|------------|-----------|--------|
-| A — Pure C# | 42 | 0 | Not Started |
-| B — JS Interop | 28 | 0 | Not Started |
+| A — Pure C# | 49 | 0 | Not Started |
+| B — JS Interop | 35 | 0 | Not Started |
 | C — Advanced | 29 | 0 | Not Started |
 | D — Future | 21 | 0 | Not Started |
-| **Total** | **120** | **0** | — |
+| **Total** | **134** | **0** | — |
 
 ## Session Log
 
