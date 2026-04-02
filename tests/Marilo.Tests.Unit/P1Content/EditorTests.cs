@@ -29,9 +29,8 @@ public class EditorTests : MariloTestBase
         var toolbar = cut.Find(".mar-editor-toolbar");
         var buttons = toolbar.QuerySelectorAll("button");
 
-        // All EditorTool values (Preview is now controlled via EditMode)
-        var expectedCount = Enum.GetValues<EditorTool>().Length;
-        Assert.Equal(expectedCount, buttons.Length);
+        // Default tools list has 19 items (a curated subset of EditorTool)
+        Assert.Equal(19, buttons.Length);
     }
 
     [Fact]
@@ -40,8 +39,10 @@ public class EditorTests : MariloTestBase
         var cut = Render<MariloEditor>(parameters => parameters
             .Add(p => p.Value, "<p>Hello</p>"));
 
-        var textarea = cut.Find("textarea.mar-editor-content");
-        Assert.NotNull(textarea);
+        // Default edit mode renders a contenteditable WYSIWYG div
+        var wysiwyg = cut.Find("div.mar-editor-wysiwyg");
+        Assert.NotNull(wysiwyg);
+        Assert.Equal("true", wysiwyg.GetAttribute("contenteditable"));
     }
 
     [Fact]
@@ -57,9 +58,11 @@ public class EditorTests : MariloTestBase
     [Fact]
     public void Editor_Value_Binding_Works()
     {
+        // Source mode uses a textarea that supports standard input events
         string? currentValue = "<p>Initial</p>";
 
         var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.EditMode, EditorEditMode.Source)
             .Add(p => p.Value, currentValue)
             .Add(p => p.ValueChanged, (string val) => currentValue = val));
 
@@ -75,8 +78,9 @@ public class EditorTests : MariloTestBase
         var cut = Render<MariloEditor>(parameters => parameters
             .Add(p => p.Placeholder, "Enter text..."));
 
-        var textarea = cut.Find("textarea");
-        Assert.Equal("Enter text...", textarea.GetAttribute("placeholder"));
+        // WYSIWYG mode uses data-placeholder attribute on the contenteditable div
+        var editor = cut.Find("div.mar-editor-wysiwyg");
+        Assert.Equal("Enter text...", editor.GetAttribute("data-placeholder"));
     }
 
     [Fact]

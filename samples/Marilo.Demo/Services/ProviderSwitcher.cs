@@ -161,6 +161,8 @@ public class ProviderSwitcher : IMariloCssProvider, IMariloIconProvider, IMarilo
     public string CardHeaderClass() => Css.CardHeaderClass();
     public string CardBodyClass() => Css.CardBodyClass();
     public string CardActionsClass() => Css.CardActionsClass();
+    public string CardFooterClass() => Css.CardFooterClass();
+    public string CardImageClass() => Css.CardImageClass();
     public string ListClass() => Css.ListClass();
     public string ListItemClass() => Css.ListItemClass();
     public string TableClass() => Css.TableClass();

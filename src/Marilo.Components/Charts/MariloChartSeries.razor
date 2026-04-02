@@ -33,6 +33,12 @@
     /// <summary>Whether this series is visible. Supports legend-driven toggle.</summary>
     [Parameter] public bool Visible { get; set; } = true;
 
+    /// <summary>Runtime visibility state set by legend toggle. When non-null, takes precedence over Visible parameter.</summary>
+    internal bool? RuntimeVisible { get; set; }
+
+    /// <summary>Gets the effective visibility (runtime override or parameter value).</summary>
+    internal bool IsVisible => RuntimeVisible ?? Visible;
+
     /// <summary>Gap between categories (0-1 ratio for bar/column).</summary>
     [Parameter] public double? Gap { get; set; }
 

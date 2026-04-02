@@ -13,6 +13,12 @@
     /// <summary>CSS width for the column (e.g. "200px", "25%").</summary>
     [Parameter] public string? Width { get; set; }
 
+    /// <summary>Runtime width set by column resize interop. Takes precedence over the Width parameter.</summary>
+    internal string? RuntimeWidth { get; set; }
+
+    /// <summary>Gets the effective width (runtime override or parameter value).</summary>
+    internal string? EffectiveWidth => RuntimeWidth ?? Width;
+
     /// <summary>Whether this column is sortable. Defaults to true.</summary>
     [Parameter] public bool Sortable { get; set; } = true;
 

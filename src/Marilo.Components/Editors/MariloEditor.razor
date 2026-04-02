@@ -84,8 +84,9 @@
     private IJSObjectReference? _jsModule;
     private DotNetObjectReference<MariloEditor>? _dotNetRef;
     private EditorPasteSettings? _pasteSettings;
+#pragma warning disable CS0649 // Field is assigned via JS interop lifecycle
     private System.Timers.Timer? _debounceTimer;
-    private string? _pendingValue;
+#pragma warning restore CS0649
     private HashSet<string> _activeFormats = new();
 
     // ── Parameters ─────────────────────────────────────────────────────

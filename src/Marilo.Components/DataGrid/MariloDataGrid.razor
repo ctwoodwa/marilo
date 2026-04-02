@@ -74,7 +74,7 @@
                         var isSorted = _state.SortDescriptors.Any(s => s.Field == column.Field);
                         var sortDir = _state.SortDescriptors.FirstOrDefault(s => s.Field == column.Field);
                         var headerCellClass = CssProvider.DataGridHeaderCellClass(isSortable, isSorted);
-                        var headerStyle = column.Width != null ? $"width:{column.Width};" : null;
+                        var headerStyle = column.EffectiveWidth != null ? $"width:{column.EffectiveWidth};" : null;
                         var textAlignStyle = column.TextAlign != null ? $"text-align:{column.TextAlign};" : null;
                         var combinedStyle = string.Join("", new[] { headerStyle, textAlignStyle }.Where(s => s != null));
 
