@@ -60,7 +60,7 @@ public partial class MariloDataGrid<TItem> : IAsyncDisposable
         if (columnIndex >= 0 && columnIndex < _visibleColumns.Count)
         {
             var column = _visibleColumns[columnIndex];
-            column.Width = $"{newWidth}px";
+            column.RuntimeWidth = $"{newWidth}px";
 
             if (OnColumnResize.HasDelegate)
             {

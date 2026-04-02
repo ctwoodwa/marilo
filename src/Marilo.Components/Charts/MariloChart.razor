@@ -55,8 +55,10 @@
     private static readonly string[] DefaultColors = ["#4e79a7", "#f28e2b", "#e15759", "#76b7b2", "#59a14f", "#edc948", "#b07aa1", "#ff9da7"];
     private ElementReference _chartRef;
     private ElementReference _tooltipRef;
+#pragma warning disable CS0649 // Fields are assigned via JS interop lifecycle
     private IJSObjectReference? _jsModule;
     private DotNetObjectReference<MariloChart>? _dotNetRef;
+#pragma warning restore CS0649
 
     // Child component registrations
     private ChartTitle? _chartTitle;
@@ -157,7 +159,7 @@
 
     private RenderFragment RenderChart() => builder =>
     {
-        var visibleSeries = _series.Where(s => s.Visible).ToList();
+        var visibleSeries = _series.Where(s => s.IsVisible).ToList();
         if (visibleSeries.Count == 0) return;
 
         var hasPieOrDonut = visibleSeries.Any(s => s.Type is ChartSeriesType.Pie or ChartSeriesType.Donut);
@@ -683,7 +685,7 @@
         {
             var series = _series[si];
             var color = GetSeriesColor(si, series);
-            var isVisible = series.Visible;
+            var isVisible = series.IsVisible;
             var capturedIndex = si;
 
             builder.OpenElement(310, "span");
@@ -780,8 +782,9 @@
     {
         if (seriesIndex >= 0 && seriesIndex < _series.Count)
         {
-            // Toggle visibility
-            _series[seriesIndex].Visible = !_series[seriesIndex].Visible;
+            // Toggle visibility via runtime override
+            var series = _series[seriesIndex];
+            series.RuntimeVisible = !(series.RuntimeVisible ?? series.Visible);
 
             if (OnLegendItemClick.HasDelegate)
             {

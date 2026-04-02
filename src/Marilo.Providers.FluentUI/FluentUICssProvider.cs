@@ -384,6 +384,10 @@ public class FluentUICssProvider : IMariloCssProvider
 
     public string CardActionsClass() => "mar-card-actions";
 
+    public string CardFooterClass() => "mar-card-footer";
+
+    public string CardImageClass() => "mar-card-image";
+
     public string ListClass() => "mar-list";
 
     public string ListItemClass() => "mar-list-item";

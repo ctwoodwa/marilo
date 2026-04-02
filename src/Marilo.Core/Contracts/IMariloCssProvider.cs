@@ -111,6 +111,8 @@ public interface IMariloCssProvider
     string CardHeaderClass();
     string CardBodyClass();
     string CardActionsClass();
+    string CardFooterClass();
+    string CardImageClass();
     string ListClass();
     string ListItemClass();
     string TableClass();

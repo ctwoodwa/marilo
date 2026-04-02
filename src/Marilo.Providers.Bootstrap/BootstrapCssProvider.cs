@@ -478,6 +478,10 @@ public class BootstrapCssProvider : IMariloCssProvider
 
     public string CardActionsClass() => "card-footer d-flex gap-2";
 
+    public string CardFooterClass() => "card-footer";
+
+    public string CardImageClass() => "card-img-top";
+
     public string ListClass() => "list-group";
 
     public string ListItemClass() => "list-group-item";

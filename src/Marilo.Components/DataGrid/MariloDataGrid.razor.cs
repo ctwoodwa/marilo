@@ -340,7 +340,7 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
         ColumnStates = _visibleColumns.Select((c, i) => new GridColumnState
         {
             Field = c.Field,
-            Width = c.Width,
+            Width = c.EffectiveWidth,
             Order = i,
             Visible = c.Visible
         }).ToList()
