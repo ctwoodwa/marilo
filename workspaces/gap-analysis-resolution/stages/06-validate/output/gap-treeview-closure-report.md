@@ -216,6 +216,21 @@
 
 ---
 
+## Supplemental Test Evidence — Tri-State, Lazy Load, Keyboard Nav
+
+Added 13 bUnit tests to TreeViewTests.cs (4 existing → 17 total).
+All 17 passing.
+
+| Test group         | Tests added | Criteria covered                              |
+|--------------------|-------------|-----------------------------------------------|
+| Tri-state checkbox | 6           | Parent/child cascade, indeterminate, CheckedItems binding, AllowCheckChildren |
+| Lazy loading       | 3           | First-expand callback, load-once, async render |
+| Keyboard nav       | 4           | ArrowDown, ArrowRight, ArrowLeft, Enter/Space  |
+
+See: `tests/Marilo.Tests.Unit/P2Enhancements/TreeViewTests.cs`
+
+---
+
 ## Enforcement Guardrails
 
 ### Code Review Checks
