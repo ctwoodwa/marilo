@@ -10,7 +10,6 @@ This document defines the resolution strategy for all 87 Marilo Blazor component
 
 | Factor | Weight | Description |
 |--------|--------|-------------|
-|--------|--------|-------------|
 | Severity of gaps | High | Blocking gaps (High-severity) that prevent basic use take precedence |
 | Number of dependents | High | Components that unblock other components are resolved first |
 | Complexity | Medium | Multi-pass components need more planning; simple components batch efficiently |
@@ -18,8 +17,8 @@ This document defines the resolution strategy for all 87 Marilo Blazor component
 
 ### Priority Tiers
 
-| Component | Gap Count | Complexity | Needs External Research | Priority Tier |
-|-----------|-----------|------------|------------------------|---------------|
+| Component | Gap Count | Complexity | Needs External Research | Priority Tier | Status |
+|-----------|-----------|------------|------------------------|---------------|--------|
 | MariloThemeProvider | 8 | multi-pass | Yes (CSS variables, dark mode) | **T1 - Critical** | ✅ IMPLEMENTED |
 | MariloForm | 33 | multi-pass | Yes (model binding, auto-generation) | **T1 - Critical** | ✅ IMPLEMENTED (22/28 gaps, 6 deferred) |
 | MariloValidation | 15 | multi-pass | Yes (EditContext, 3 sub-components) | **T1 - Critical** | ✅ IMPLEMENTED (12/12 gaps + 3 new components) |
