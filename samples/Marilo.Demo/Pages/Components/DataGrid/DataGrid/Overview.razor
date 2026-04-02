@@ -11,10 +11,16 @@
             <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right" />
         </MariloDataGrid>
     </DemoSection>
+
+    <DemoSection Title="Auto-Generated Columns"
+                 Description="Set AutoGenerateColumns to true to generate columns from the model's public properties."
+                 Code="@_autoGenCode">
+        <MariloDataGrid TItem="Employee" Data="@_employees" AutoGenerateColumns="true" />
+    </DemoSection>
 </PageSection>
 
-<PageSection Title="Features">
-    <DemoSection Title="Paging" Description="Enable paging with the Pageable parameter." Code="@_pagingCode">
+<PageSection Title="Paging">
+    <DemoSection Title="Basic Paging" Description="Enable paging with the Pageable parameter." Code="@_pagingCode">
         <MariloDataGrid TItem="Employee" Data="@_employees" Pageable="true" PageSize="3">
             <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name" />
             <MariloGridColumn TItem="Employee" Field="Department" />
@@ -23,7 +29,19 @@
         </MariloDataGrid>
     </DemoSection>
 
-    <DemoSection Title="Sorting" Description="Click column headers to sort. Sorting is enabled by default." Code="@_sortingCode">
+    <DemoSection Title="Page Size Selector" Description="Add a page size dropdown with the PageSizes parameter." Code="@_pageSizesCode">
+        <MariloDataGrid TItem="Employee" Data="@_employees" Pageable="true" PageSize="3" PageSizes="@(new[] { 3, 5, 10 })">
+            <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name" />
+            <MariloGridColumn TItem="Employee" Field="Department" />
+            <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right" />
+        </MariloDataGrid>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Sorting">
+    <DemoSection Title="Single-Column Sorting"
+                 Description="Click column headers to sort. Sorting is enabled by default. Click again to reverse, click a third time to clear."
+                 Code="@_sortingCode">
         <MariloDataGrid TItem="Employee" Data="@_employees" Sortable="true" Striped="true">
             <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name" />
             <MariloGridColumn TItem="Employee" Field="Department" />
@@ -31,7 +49,32 @@
         </MariloDataGrid>
     </DemoSection>
 
-    <DemoSection Title="Filtering" Description="Show a filter row below the header." Code="@_filteringCode">
+    <DemoSection Title="Multi-Column Sorting"
+                 Description="Hold Ctrl/Cmd and click additional column headers to sort by multiple columns."
+                 Code="@_multiSortCode">
+        <MariloDataGrid TItem="Employee" Data="@_employees" Sortable="true">
+            <MariloGridColumn TItem="Employee" Field="Department" />
+            <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name" />
+            <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right" />
+            <MariloGridColumn TItem="Employee" Field="HireDate" Title="Hire Date" Format="yyyy-MM-dd" />
+        </MariloDataGrid>
+    </DemoSection>
+
+    <DemoSection Title="Disable Sorting Per Column"
+                 Description="Set Sortable=false on individual columns to prevent sorting."
+                 Code="@_disableSortCode">
+        <MariloDataGrid TItem="Employee" Data="@_employees" Sortable="true">
+            <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name" />
+            <MariloGridColumn TItem="Employee" Field="Department" Sortable="false" />
+            <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right" />
+        </MariloDataGrid>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Filtering">
+    <DemoSection Title="Filter Row"
+                 Description="Show a filter row below the header with FilterMode.FilterRow."
+                 Code="@_filterRowCode">
         <MariloDataGrid TItem="Employee" Data="@_employees" FilterMode="GridFilterMode.FilterRow">
             <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name" />
             <MariloGridColumn TItem="Employee" Field="Department" />
@@ -39,7 +82,32 @@
         </MariloDataGrid>
     </DemoSection>
 
-    <DemoSection Title="Selection" Description="Enable row selection with the SelectionMode parameter." Code="@_selectionCode">
+    <DemoSection Title="Filter Menu"
+                 Description="Use FilterMode.FilterMenu to show a popup filter with operator selection."
+                 Code="@_filterMenuCode">
+        <MariloDataGrid TItem="Employee" Data="@_employees" FilterMode="GridFilterMode.FilterMenu">
+            <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name" />
+            <MariloGridColumn TItem="Employee" Field="Department" />
+            <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right" />
+        </MariloDataGrid>
+    </DemoSection>
+
+    <DemoSection Title="Search Box"
+                 Description="Enable the built-in search box to filter across all visible columns."
+                 Code="@_searchBoxCode">
+        <MariloDataGrid TItem="Employee" Data="@_employees" ShowSearchBox="true" SearchBoxPlaceholder="Search employees...">
+            <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name" />
+            <MariloGridColumn TItem="Employee" Field="Department" />
+            <MariloGridColumn TItem="Employee" Field="HireDate" Title="Hire Date" Format="yyyy-MM-dd" />
+            <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right" />
+        </MariloDataGrid>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Selection">
+    <DemoSection Title="Single Selection"
+                 Description="Enable row selection with the SelectionMode parameter. Click a row to select it."
+                 Code="@_selectionCode">
         <MariloDataGrid TItem="Employee"
                         Data="@_employees"
                         SelectionMode="GridSelectionMode.Single"
@@ -51,9 +119,313 @@
         </MariloDataGrid>
         <p>Selected: @string.Join(", ", _selected.Select(e => e.Name))</p>
     </DemoSection>
+
+    <DemoSection Title="Multiple Selection with Checkboxes"
+                 Description="Use SelectionMode.Multiple with ShowCheckboxColumn for multi-select with a Select All header."
+                 Code="@_multiSelectCode">
+        <MariloDataGrid TItem="Employee"
+                        Data="@_employees"
+                        SelectionMode="GridSelectionMode.Multiple"
+                        ShowCheckboxColumn="true"
+                        SelectedItems="@_multiSelected"
+                        SelectedItemsChanged="@OnMultiSelectionChanged">
+            <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name" />
+            <MariloGridColumn TItem="Employee" Field="Department" />
+            <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right" />
+        </MariloDataGrid>
+        <p>Selected (@_multiSelected.Count): @string.Join(", ", _multiSelected.Select(e => e.Name))</p>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Grouping">
+    <DemoSection Title="Basic Grouping"
+                 Description="Enable Groupable and use the GroupBy API to group data by a field. Click the group header to expand or collapse."
+                 Code="@_groupingCode">
+        <MariloDataGrid @ref="_groupGrid" TItem="Employee" Data="@_employees" Groupable="true">
+            <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name" />
+            <MariloGridColumn TItem="Employee" Field="Department" />
+            <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right" />
+        </MariloDataGrid>
+        <button @onclick="GroupByDepartment">Group by Department</button>
+        <button @onclick="ClearGroups">Clear Groups</button>
+    </DemoSection>
+
+    <DemoSection Title="Custom Group Header & Footer"
+                 Description="Use GroupHeaderTemplate and GroupFooterTemplate to customize group rendering."
+                 Code="@_groupTemplateCode">
+        <MariloDataGrid @ref="_groupTemplateGrid" TItem="Employee" Data="@_employees" Groupable="true">
+            <GroupHeaderTemplate>
+                <strong>@context.Field</strong>: @context.Value
+                <em>(@context.Count employees)</em>
+            </GroupHeaderTemplate>
+            <GroupFooterTemplate>
+                <span>Total in @context.Value: @(ComputeGroupTotal(context))</span>
+            </GroupFooterTemplate>
+            <ChildContent>
+                <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name" />
+                <MariloGridColumn TItem="Employee" Field="Department" />
+                <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right" />
+            </ChildContent>
+        </MariloDataGrid>
+        <button @onclick="GroupTemplateByDept">Group by Department</button>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Editing">
+    <DemoSection Title="Inline Editing"
+                 Description="Edit an entire row at once. Click Edit to enter edit mode, then Save or Cancel."
+                 Code="@_inlineEditCode">
+        <MariloDataGrid TItem="Employee"
+                        Data="@_inlineEmployees"
+                        EditMode="GridEditMode.Inline"
+                        OnUpdate="@OnInlineUpdate"
+                        OnDelete="@OnInlineDelete"
+                        OnCreate="@OnInlineCreate"
+                        OnModelInit="@OnInlineModelInit">
+            <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name">
+                <EditorTemplate>
+                    <input type="text" value="@context.Name" @onchange="@(e => SetName(context, e))" />
+                </EditorTemplate>
+            </MariloGridColumn>
+            <MariloGridColumn TItem="Employee" Field="Department">
+                <EditorTemplate>
+                    <input type="text" value="@context.Department" @onchange="@(e => SetDepartment(context, e))" />
+                </EditorTemplate>
+            </MariloGridColumn>
+            <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right">
+                <EditorTemplate>
+                    <input type="number" value="@context.Salary" @onchange="@(e => SetSalary(context, e))" />
+                </EditorTemplate>
+            </MariloGridColumn>
+        </MariloDataGrid>
+    </DemoSection>
+
+    <DemoSection Title="Popup Editing"
+                 Description="Edit items in a popup dialog. Click Edit to open the form, make changes, and Save."
+                 Code="@_popupEditCode">
+        <MariloDataGrid TItem="Employee"
+                        Data="@_popupEmployees"
+                        EditMode="GridEditMode.Popup"
+                        OnUpdate="@OnPopupUpdate"
+                        OnDelete="@OnPopupDelete"
+                        OnCreate="@OnPopupCreate"
+                        OnModelInit="@OnPopupModelInit">
+            <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name">
+                <EditorTemplate>
+                    <input type="text" value="@context.Name" @onchange="@(e => SetName(context, e))" />
+                </EditorTemplate>
+            </MariloGridColumn>
+            <MariloGridColumn TItem="Employee" Field="Department">
+                <EditorTemplate>
+                    <input type="text" value="@context.Department" @onchange="@(e => SetDepartment(context, e))" />
+                </EditorTemplate>
+            </MariloGridColumn>
+            <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right">
+                <EditorTemplate>
+                    <input type="number" value="@context.Salary" @onchange="@(e => SetSalary(context, e))" />
+                </EditorTemplate>
+            </MariloGridColumn>
+        </MariloDataGrid>
+    </DemoSection>
+
+    <DemoSection Title="InCell Editing"
+                 Description="Double-click a cell to edit it in place. Changes are saved per-cell."
+                 Code="@_inCellEditCode">
+        <MariloDataGrid TItem="Employee"
+                        Data="@_inCellEmployees"
+                        EditMode="GridEditMode.InCell"
+                        OnUpdate="@OnInCellUpdate">
+            <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name">
+                <EditorTemplate>
+                    <input type="text" value="@context.Name" @onchange="@(e => SetName(context, e))" />
+                </EditorTemplate>
+            </MariloGridColumn>
+            <MariloGridColumn TItem="Employee" Field="Department">
+                <EditorTemplate>
+                    <input type="text" value="@context.Department" @onchange="@(e => SetDepartment(context, e))" />
+                </EditorTemplate>
+            </MariloGridColumn>
+            <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right">
+                <EditorTemplate>
+                    <input type="number" value="@context.Salary" @onchange="@(e => SetSalary(context, e))" />
+                </EditorTemplate>
+            </MariloGridColumn>
+        </MariloDataGrid>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Templates">
+    <DemoSection Title="Column Templates"
+                 Description="Use the Template parameter to customize cell rendering with arbitrary markup."
+                 Code="@_columnTemplateCode">
+        <MariloDataGrid TItem="Employee" Data="@_employees">
+            <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name">
+                <Template>
+                    <strong>@context.Name</strong>
+                </Template>
+            </MariloGridColumn>
+            <MariloGridColumn TItem="Employee" Field="Department">
+                <Template>
+                    <span style="padding:2px 8px;border-radius:12px;font-size:0.85em;background:@GetDeptColor(context.Department);color:#fff;">
+                        @context.Department
+                    </span>
+                </Template>
+            </MariloGridColumn>
+            <MariloGridColumn TItem="Employee" Field="HireDate" Title="Hire Date">
+                <Template>
+                    @context.HireDate.ToString("MMMM d, yyyy")
+                </Template>
+            </MariloGridColumn>
+            <MariloGridColumn TItem="Employee" Field="Salary" TextAlign="right">
+                <Template>
+                    <span style="font-weight:600;color:@(context.Salary >= 90000 ? "green" : "inherit");">
+                        @context.Salary.ToString("C0")
+                    </span>
+                </Template>
+            </MariloGridColumn>
+        </MariloDataGrid>
+    </DemoSection>
+
+    <DemoSection Title="Header & Footer Templates"
+                 Description="Customize column headers and add footer aggregates."
+                 Code="@_headerFooterCode">
+        <MariloDataGrid TItem="Employee" Data="@_employees">
+            <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name">
+                <HeaderTemplate>
+                    <span style="font-weight:bold;text-transform:uppercase;">Employee</span>
+                </HeaderTemplate>
+            </MariloGridColumn>
+            <MariloGridColumn TItem="Employee" Field="Department" />
+            <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right">
+                <HeaderTemplate>
+                    <span>Salary (USD)</span>
+                </HeaderTemplate>
+                <FooterTemplate>
+                    <strong>Avg: @_employees.Average(e => e.Salary).ToString("C0")</strong>
+                </FooterTemplate>
+            </MariloGridColumn>
+        </MariloDataGrid>
+    </DemoSection>
+
+    <DemoSection Title="Detail Template (Master-Detail)"
+                 Description="Use DetailTemplate to show expandable detail rows. Click the arrow to expand."
+                 Code="@_detailTemplateCode">
+        <MariloDataGrid TItem="Employee" Data="@_employees">
+            <DetailTemplate>
+                <div style="padding:12px 24px;">
+                    <p><strong>@context.Name</strong> — @context.Department</p>
+                    <p>Hired: @context.HireDate.ToString("MMMM d, yyyy")</p>
+                    <p>Annual Salary: @context.Salary.ToString("C2")</p>
+                    <p>Monthly: @((context.Salary / 12).ToString("C2"))</p>
+                </div>
+            </DetailTemplate>
+            <ChildContent>
+                <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name" />
+                <MariloGridColumn TItem="Employee" Field="Department" />
+                <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right" />
+            </ChildContent>
+        </MariloDataGrid>
+    </DemoSection>
+
+    <DemoSection Title="No Data Template"
+                 Description="Provide a custom template for the empty state when the grid has no data."
+                 Code="@_noDataCode">
+        <MariloDataGrid TItem="Employee" Data="@(new List<Employee>())">
+            <NoDataTemplate>
+                <div style="text-align:center;padding:24px;color:#888;">
+                    <p style="font-size:1.5em;">No employees found</p>
+                    <p>Try adjusting your filters or adding new records.</p>
+                </div>
+            </NoDataTemplate>
+            <ChildContent>
+                <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name" />
+                <MariloGridColumn TItem="Employee" Field="Department" />
+            </ChildContent>
+        </MariloDataGrid>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Toolbar & Export">
+    <DemoSection Title="Toolbar with Command Buttons"
+                 Description="Use ToolbarTemplate to add command buttons above the grid."
+                 Code="@_toolbarCode">
+        <MariloDataGrid @ref="_toolbarGrid"
+                        TItem="Employee"
+                        Data="@_toolbarEmployees"
+                        EditMode="GridEditMode.Inline"
+                        OnCreate="@OnToolbarCreate"
+                        OnUpdate="@OnToolbarUpdate"
+                        OnDelete="@OnToolbarDelete"
+                        OnModelInit="@OnToolbarModelInit">
+            <ToolbarTemplate>
+                <MariloGridToolbar TItem="Employee">
+                    <MariloGridCommandButton TItem="Employee" Command="Add" Text="Add Employee" />
+                </MariloGridToolbar>
+            </ToolbarTemplate>
+            <ChildContent>
+                <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name">
+                    <EditorTemplate>
+                        <input type="text" value="@context.Name" @onchange="@(e => SetName(context, e))" />
+                    </EditorTemplate>
+                </MariloGridColumn>
+                <MariloGridColumn TItem="Employee" Field="Department">
+                    <EditorTemplate>
+                        <input type="text" value="@context.Department" @onchange="@(e => SetDepartment(context, e))" />
+                    </EditorTemplate>
+                </MariloGridColumn>
+                <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right">
+                    <EditorTemplate>
+                        <input type="number" value="@context.Salary" @onchange="@(e => SetSalary(context, e))" />
+                    </EditorTemplate>
+                </MariloGridColumn>
+            </ChildContent>
+        </MariloDataGrid>
+    </DemoSection>
+
+    <DemoSection Title="CSV Export"
+                 Description="Use the ExportToCsv method to export grid data. The export respects current filtering and sorting."
+                 Code="@_csvExportCode">
+        <MariloDataGrid @ref="_exportGrid" TItem="Employee" Data="@_employees" Sortable="true" FilterMode="GridFilterMode.FilterRow">
+            <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name" />
+            <MariloGridColumn TItem="Employee" Field="Department" />
+            <MariloGridColumn TItem="Employee" Field="HireDate" Title="Hire Date" Format="yyyy-MM-dd" />
+            <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right" />
+        </MariloDataGrid>
+        <button @onclick="ExportCsv">Export to CSV</button>
+        @if (!string.IsNullOrEmpty(_csvOutput))
+        {
+            <pre style="max-height:200px;overflow:auto;margin-top:8px;padding:8px;background:#f5f5f5;font-size:0.85em;">@_csvOutput</pre>
+        }
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Virtualization">
+    <DemoSection Title="Virtual Scrolling"
+                 Description="Enable virtualization for large datasets. Only visible rows are rendered in the DOM."
+                 Code="@_virtualizationCode">
+        <MariloDataGrid TItem="Employee" Data="@_largeDataSet" EnableVirtualization="true" Height="300px">
+            <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name" />
+            <MariloGridColumn TItem="Employee" Field="Department" />
+            <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right" />
+        </MariloDataGrid>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Loading State">
+    <DemoSection Title="Loading Overlay"
+                 Description="Set IsLoading to true to display a loading overlay while data is being fetched."
+                 Code="@_loadingCode">
+        <MariloDataGrid TItem="Employee" Data="@_employees" IsLoading="@_isLoading">
+            <MariloGridColumn TItem="Employee" Field="Name" Title="Full Name" />
+            <MariloGridColumn TItem="Employee" Field="Department" />
+            <MariloGridColumn TItem="Employee" Field="Salary" Format="C2" TextAlign="right" />
+        </MariloDataGrid>
+        <button @onclick="ToggleLoading">Toggle Loading</button>
+    </DemoSection>
 </PageSection>
 
 @code {
+    // ── Shared Data ────────────────────────────────────────────────────
     private List<Employee> _employees =
     [
         new("Alice Johnson", "Engineering", new DateTime(2019, 3, 15), 95000m),
@@ -65,15 +437,164 @@
         new("Grace Lee", "Sales", new DateTime(2023, 2, 28), 65000m),
     ];
 
-    private List<Employee> _selected = [];
-
-    private void OnSelectionChanged(IEnumerable<Employee> items)
+    public class Employee
     {
-        _selected = items.ToList();
+        public string Name { get; set; } = "";
+        public string Department { get; set; } = "";
+        public DateTime HireDate { get; set; }
+        public decimal Salary { get; set; }
+
+        public Employee() { }
+        public Employee(string name, string department, DateTime hireDate, decimal salary)
+        {
+            Name = name;
+            Department = department;
+            HireDate = hireDate;
+            Salary = salary;
+        }
     }
 
-    public record Employee(string Name, string Department, DateTime HireDate, decimal Salary);
+    // ── Selection ──────────────────────────────────────────────────────
+    private List<Employee> _selected = [];
+    private List<Employee> _multiSelected = [];
 
+    private void OnSelectionChanged(IEnumerable<Employee> items) => _selected = items.ToList();
+    private void OnMultiSelectionChanged(IEnumerable<Employee> items) => _multiSelected = items.ToList();
+
+    // ── Grouping ───────────────────────────────────────────────────────
+    private MariloDataGrid<Employee>? _groupGrid;
+    private MariloDataGrid<Employee>? _groupTemplateGrid;
+
+    private async Task GroupByDepartment()
+    {
+        if (_groupGrid != null) await _groupGrid.GroupBy("Department");
+    }
+
+    private async Task ClearGroups()
+    {
+        if (_groupGrid != null) await _groupGrid.UngroupAll();
+    }
+
+    private async Task GroupTemplateByDept()
+    {
+        if (_groupTemplateGrid != null) await _groupTemplateGrid.GroupBy("Department");
+    }
+
+    // ── Editing (Inline) ───────────────────────────────────────────────
+    private List<Employee> _inlineEmployees = null!;
+
+    private void OnInlineCreate(GridEditEventArgs<Employee> args)
+    {
+        _inlineEmployees.Add(args.Item);
+    }
+
+    private void OnInlineUpdate(GridEditEventArgs<Employee> args)
+    {
+        var index = _inlineEmployees.FindIndex(e => e.Name == args.Item.Name);
+        if (index >= 0) _inlineEmployees[index] = args.Item;
+    }
+
+    private void OnInlineDelete(GridEditEventArgs<Employee> args)
+    {
+        _inlineEmployees.Remove(args.Item);
+    }
+
+    private void OnInlineModelInit(GridModelInitEventArgs<Employee> args)
+    {
+        args.Item = new Employee("", "", DateTime.Today, 0m);
+    }
+
+    // ── Editing (Popup) ────────────────────────────────────────────────
+    private List<Employee> _popupEmployees = null!;
+
+    private void OnPopupCreate(GridEditEventArgs<Employee> args) => _popupEmployees.Add(args.Item);
+    private void OnPopupUpdate(GridEditEventArgs<Employee> args)
+    {
+        var index = _popupEmployees.FindIndex(e => e.Name == args.Item.Name);
+        if (index >= 0) _popupEmployees[index] = args.Item;
+    }
+    private void OnPopupDelete(GridEditEventArgs<Employee> args) => _popupEmployees.Remove(args.Item);
+    private void OnPopupModelInit(GridModelInitEventArgs<Employee> args) =>
+        args.Item = new Employee("", "", DateTime.Today, 0m);
+
+    // ── Editing (InCell) ───────────────────────────────────────────────
+    private List<Employee> _inCellEmployees = null!;
+    private void OnInCellUpdate(GridEditEventArgs<Employee> args) { /* item mutated in place */ }
+
+    // ── Editor Helpers ─────────────────────────────────────────────────
+    private static void SetName(Employee e, ChangeEventArgs args) => e.Name = args.Value?.ToString() ?? "";
+    private static void SetDepartment(Employee e, ChangeEventArgs args) => e.Department = args.Value?.ToString() ?? "";
+    private static void SetSalary(Employee e, ChangeEventArgs args)
+    {
+        if (decimal.TryParse(args.Value?.ToString(), out var val)) e.Salary = val;
+    }
+
+    // ── Toolbar ────────────────────────────────────────────────────────
+    private MariloDataGrid<Employee>? _toolbarGrid;
+    private List<Employee> _toolbarEmployees = null!;
+
+    private void OnToolbarCreate(GridEditEventArgs<Employee> args) => _toolbarEmployees.Add(args.Item);
+    private void OnToolbarUpdate(GridEditEventArgs<Employee> args)
+    {
+        var idx = _toolbarEmployees.FindIndex(e => e.Name == args.Item.Name);
+        if (idx >= 0) _toolbarEmployees[idx] = args.Item;
+    }
+    private void OnToolbarDelete(GridEditEventArgs<Employee> args) => _toolbarEmployees.Remove(args.Item);
+    private void OnToolbarModelInit(GridModelInitEventArgs<Employee> args) =>
+        args.Item = new Employee("", "", DateTime.Today, 0m);
+
+    // ── CSV Export ─────────────────────────────────────────────────────
+    private MariloDataGrid<Employee>? _exportGrid;
+    private string _csvOutput = "";
+
+    private void ExportCsv()
+    {
+        if (_exportGrid != null)
+            _csvOutput = _exportGrid.ExportToCsv();
+    }
+
+    // ── Virtualization ─────────────────────────────────────────────────
+    private List<Employee> _largeDataSet = null!;
+
+    // ── Loading ────────────────────────────────────────────────────────
+    private bool _isLoading;
+    private void ToggleLoading() => _isLoading = !_isLoading;
+
+    // ── Template Helpers ───────────────────────────────────────────────
+    private string ComputeGroupTotal(GridGroupHeaderContext<Employee> context)
+    {
+        var total = context.Items.Sum(e => e.Salary);
+        return total.ToString("C2");
+    }
+
+    private static string GetDeptColor(string dept) => dept switch
+    {
+        "Engineering" => "#2196f3",
+        "Marketing" => "#e91e63",
+        "Sales" => "#4caf50",
+        _ => "#757575"
+    };
+
+    // ── Lifecycle ──────────────────────────────────────────────────────
+    protected override void OnInitialized()
+    {
+        // Create independent copies for editing demos
+        _inlineEmployees = _employees.Select(e => new Employee(e.Name, e.Department, e.HireDate, e.Salary)).ToList();
+        _popupEmployees = _employees.Select(e => new Employee(e.Name, e.Department, e.HireDate, e.Salary)).ToList();
+        _inCellEmployees = _employees.Select(e => new Employee(e.Name, e.Department, e.HireDate, e.Salary)).ToList();
+        _toolbarEmployees = _employees.Select(e => new Employee(e.Name, e.Department, e.HireDate, e.Salary)).ToList();
+
+        // Generate large dataset for virtualization
+        var depts = new[] { "Engineering", "Marketing", "Sales", "HR", "Finance" };
+        _largeDataSet = Enumerable.Range(1, 1000).Select(i => new Employee(
+            $"Employee {i}",
+            depts[i % depts.Length],
+            DateTime.Today.AddDays(-Random.Shared.Next(365, 2500)),
+            50000m + Random.Shared.Next(0, 60000)
+        )).ToList();
+    }
+
+    // ── Code Samples ───────────────────────────────────────────────────
     private const string _basicCode =
         "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\">\n" +
         "    <MariloGridColumn TItem=\"Employee\" Field=\"Name\" Title=\"Full Name\" />\n" +
@@ -82,11 +603,21 @@
         "    <MariloGridColumn TItem=\"Employee\" Field=\"Salary\" Format=\"C2\" TextAlign=\"right\" />\n" +
         "</MariloDataGrid>";
 
+    private const string _autoGenCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\" AutoGenerateColumns=\"true\" />";
+
     private const string _pagingCode =
         "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\" Pageable=\"true\" PageSize=\"3\">\n" +
         "    <MariloGridColumn TItem=\"Employee\" Field=\"Name\" Title=\"Full Name\" />\n" +
         "    <MariloGridColumn TItem=\"Employee\" Field=\"Department\" />\n" +
         "    <MariloGridColumn TItem=\"Employee\" Field=\"Salary\" Format=\"C2\" TextAlign=\"right\" />\n" +
+        "</MariloDataGrid>";
+
+    private const string _pageSizesCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\"\n" +
+        "                Pageable=\"true\" PageSize=\"3\"\n" +
+        "                PageSizes=\"@(new[] { 3, 5, 10 })\">\n" +
+        "    ...\n" +
         "</MariloDataGrid>";
 
     private const string _sortingCode =
@@ -96,11 +627,40 @@
         "    <MariloGridColumn TItem=\"Employee\" Field=\"Salary\" Format=\"C2\" TextAlign=\"right\" />\n" +
         "</MariloDataGrid>";
 
-    private const string _filteringCode =
+    private const string _multiSortCode =
+        "@* Hold Ctrl/Cmd and click additional headers for multi-column sort *@\n" +
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\" Sortable=\"true\">\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Department\" />\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Name\" Title=\"Full Name\" />\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Salary\" Format=\"C2\" TextAlign=\"right\" />\n" +
+        "</MariloDataGrid>";
+
+    private const string _disableSortCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\" Sortable=\"true\">\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Name\" />\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Department\" Sortable=\"false\" />\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Salary\" Format=\"C2\" />\n" +
+        "</MariloDataGrid>";
+
+    private const string _filterRowCode =
         "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\" FilterMode=\"GridFilterMode.FilterRow\">\n" +
         "    <MariloGridColumn TItem=\"Employee\" Field=\"Name\" Title=\"Full Name\" />\n" +
         "    <MariloGridColumn TItem=\"Employee\" Field=\"Department\" />\n" +
         "    <MariloGridColumn TItem=\"Employee\" Field=\"Salary\" Format=\"C2\" Filterable=\"false\" />\n" +
+        "</MariloDataGrid>";
+
+    private const string _filterMenuCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\" FilterMode=\"GridFilterMode.FilterMenu\">\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Name\" Title=\"Full Name\" />\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Department\" />\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Salary\" Format=\"C2\" />\n" +
+        "</MariloDataGrid>";
+
+    private const string _searchBoxCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\"\n" +
+        "                ShowSearchBox=\"true\"\n" +
+        "                SearchBoxPlaceholder=\"Search employees...\">\n" +
+        "    ...\n" +
         "</MariloDataGrid>";
 
     private const string _selectionCode =
@@ -111,4 +671,167 @@
         "    <MariloGridColumn TItem=\"Employee\" Field=\"Name\" Title=\"Full Name\" />\n" +
         "    <MariloGridColumn TItem=\"Employee\" Field=\"Department\" />\n" +
         "</MariloDataGrid>";
+
+    private const string _multiSelectCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\"\n" +
+        "                SelectionMode=\"GridSelectionMode.Multiple\"\n" +
+        "                ShowCheckboxColumn=\"true\"\n" +
+        "                SelectedItems=\"@_multiSelected\"\n" +
+        "                SelectedItemsChanged=\"@OnMultiSelectionChanged\">\n" +
+        "    ...\n" +
+        "</MariloDataGrid>";
+
+    private const string _groupingCode =
+        "<MariloDataGrid @ref=\"_groupGrid\" TItem=\"Employee\" Data=\"@_employees\" Groupable=\"true\">\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Name\" />\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Department\" />\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Salary\" Format=\"C2\" />\n" +
+        "</MariloDataGrid>\n" +
+        "<button @onclick=\"GroupByDepartment\">Group by Department</button>\n" +
+        "<button @onclick=\"ClearGroups\">Clear Groups</button>\n\n" +
+        "@code {\n" +
+        "    private async Task GroupByDepartment() => await _groupGrid.GroupBy(\"Department\");\n" +
+        "    private async Task ClearGroups() => await _groupGrid.UngroupAll();\n" +
+        "}";
+
+    private const string _groupTemplateCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\" Groupable=\"true\">\n" +
+        "    <GroupHeaderTemplate>\n" +
+        "        <strong>@context.Field</strong>: @context.Value\n" +
+        "        <em>(@context.Count employees)</em>\n" +
+        "    </GroupHeaderTemplate>\n" +
+        "    <GroupFooterTemplate>\n" +
+        "        Total: @context.Items.Cast<Employee>().Sum(e => e.Salary).ToString(\"C2\")\n" +
+        "    </GroupFooterTemplate>\n" +
+        "    <ChildContent>...</ChildContent>\n" +
+        "</MariloDataGrid>";
+
+    private const string _inlineEditCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\"\n" +
+        "                EditMode=\"GridEditMode.Inline\"\n" +
+        "                OnUpdate=\"@OnUpdate\" OnDelete=\"@OnDelete\"\n" +
+        "                OnCreate=\"@OnCreate\" OnModelInit=\"@OnModelInit\">\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Name\">\n" +
+        "        <EditorTemplate>\n" +
+        "            <input type=\"text\" value=\"@context.Name\"\n" +
+        "                   @onchange=\"@(e => context.Name = e.Value?.ToString())\" />\n" +
+        "        </EditorTemplate>\n" +
+        "    </MariloGridColumn>\n" +
+        "    ...\n" +
+        "</MariloDataGrid>";
+
+    private const string _popupEditCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\"\n" +
+        "                EditMode=\"GridEditMode.Popup\"\n" +
+        "                OnUpdate=\"@OnUpdate\" OnDelete=\"@OnDelete\"\n" +
+        "                OnCreate=\"@OnCreate\" OnModelInit=\"@OnModelInit\">\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Name\">\n" +
+        "        <EditorTemplate>\n" +
+        "            <input type=\"text\" value=\"@context.Name\" ... />\n" +
+        "        </EditorTemplate>\n" +
+        "    </MariloGridColumn>\n" +
+        "    ...\n" +
+        "</MariloDataGrid>";
+
+    private const string _inCellEditCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\"\n" +
+        "                EditMode=\"GridEditMode.InCell\"\n" +
+        "                OnUpdate=\"@OnUpdate\">\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Name\">\n" +
+        "        <EditorTemplate>\n" +
+        "            <input type=\"text\" value=\"@context.Name\" ... />\n" +
+        "        </EditorTemplate>\n" +
+        "    </MariloGridColumn>\n" +
+        "    ...\n" +
+        "</MariloDataGrid>";
+
+    private const string _columnTemplateCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\">\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Name\">\n" +
+        "        <Template>\n" +
+        "            <strong>@context.Name</strong>\n" +
+        "        </Template>\n" +
+        "    </MariloGridColumn>\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Department\">\n" +
+        "        <Template>\n" +
+        "            <span class=\"badge\">@context.Department</span>\n" +
+        "        </Template>\n" +
+        "    </MariloGridColumn>\n" +
+        "</MariloDataGrid>";
+
+    private const string _headerFooterCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\">\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Name\">\n" +
+        "        <HeaderTemplate>\n" +
+        "            <span style=\"font-weight:bold;\">EMPLOYEE</span>\n" +
+        "        </HeaderTemplate>\n" +
+        "    </MariloGridColumn>\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Salary\" TextAlign=\"right\">\n" +
+        "        <FooterTemplate>\n" +
+        "            <strong>Avg: @_employees.Average(e => e.Salary).ToString(\"C0\")</strong>\n" +
+        "        </FooterTemplate>\n" +
+        "    </MariloGridColumn>\n" +
+        "</MariloDataGrid>";
+
+    private const string _detailTemplateCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\">\n" +
+        "    <DetailTemplate>\n" +
+        "        <p><strong>@context.Name</strong> — @context.Department</p>\n" +
+        "        <p>Hired: @context.HireDate.ToString(\"MMMM d, yyyy\")</p>\n" +
+        "        <p>Salary: @context.Salary.ToString(\"C2\")</p>\n" +
+        "    </DetailTemplate>\n" +
+        "    <ChildContent>\n" +
+        "        <MariloGridColumn TItem=\"Employee\" Field=\"Name\" />\n" +
+        "        <MariloGridColumn TItem=\"Employee\" Field=\"Department\" />\n" +
+        "        <MariloGridColumn TItem=\"Employee\" Field=\"Salary\" Format=\"C2\" />\n" +
+        "    </ChildContent>\n" +
+        "</MariloDataGrid>";
+
+    private const string _noDataCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@(new List<Employee>())\">\n" +
+        "    <NoDataTemplate>\n" +
+        "        <div style=\"text-align:center;padding:24px;\">\n" +
+        "            <p>No employees found</p>\n" +
+        "        </div>\n" +
+        "    </NoDataTemplate>\n" +
+        "    <ChildContent>...</ChildContent>\n" +
+        "</MariloDataGrid>";
+
+    private const string _toolbarCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\"\n" +
+        "                EditMode=\"GridEditMode.Inline\" ...>\n" +
+        "    <ToolbarTemplate>\n" +
+        "        <MariloGridToolbar TItem=\"Employee\">\n" +
+        "            <MariloGridCommandButton TItem=\"Employee\"\n" +
+        "                Command=\"Add\" Text=\"Add Employee\" />\n" +
+        "        </MariloGridToolbar>\n" +
+        "    </ToolbarTemplate>\n" +
+        "    <ChildContent>...</ChildContent>\n" +
+        "</MariloDataGrid>";
+
+    private const string _csvExportCode =
+        "<MariloDataGrid @ref=\"_exportGrid\" TItem=\"Employee\" Data=\"@_employees\">\n" +
+        "    ...\n" +
+        "</MariloDataGrid>\n" +
+        "<button @onclick=\"ExportCsv\">Export to CSV</button>\n\n" +
+        "@code {\n" +
+        "    private void ExportCsv()\n" +
+        "    {\n" +
+        "        _csvOutput = _exportGrid.ExportToCsv();\n" +
+        "    }\n" +
+        "}";
+
+    private const string _virtualizationCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_largeDataSet\"\n" +
+        "                EnableVirtualization=\"true\" Height=\"300px\">\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Name\" />\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Department\" />\n" +
+        "    <MariloGridColumn TItem=\"Employee\" Field=\"Salary\" Format=\"C2\" />\n" +
+        "</MariloDataGrid>";
+
+    private const string _loadingCode =
+        "<MariloDataGrid TItem=\"Employee\" Data=\"@_employees\" IsLoading=\"@_isLoading\">\n" +
+        "    ...\n" +
+        "</MariloDataGrid>\n" +
+        "<button @onclick=\"ToggleLoading\">Toggle Loading</button>";
 }
