@@ -2,127 +2,279 @@
 @typeparam TItem
 @typeparam TValue
 
-<div class="@CombineClasses(CssProvider.MultiSelectClass(_isOpen, Disabled, IsInvalid))"
-     style="@CombineStyles()"
-     @onclick="ToggleDropdown"
-     @onclick:stopPropagation="true"
+<div class="@CombineClasses(CssProvider.MultiSelectClass(_isOpen, !IsEnabled, IsInvalid))"
+     style="@CombineStyles(_widthStyle)"
+     @attributes="AdditionalAttributes"
      @onkeydown="OnKeyDown"
-     tabindex="0"
-     role="listbox"
-     aria-multiselectable="true"
+     @onclick:stopPropagation="true"
+     tabindex="@(IsEnabled ? (TabIndex ?? 0) : -1)"
+     id="@Id"
+     role="combobox"
+     aria-haspopup="listbox"
      aria-expanded="@_isOpen.ToString().ToLowerInvariant()"
-     aria-disabled="@Disabled.ToString().ToLowerInvariant()"
-     @attributes="AdditionalAttributes">
+     aria-disabled="@(!IsEnabled).ToString().ToLowerInvariant()"
+     aria-multiselectable="true"
+     aria-owns="@_listboxId"
+     aria-activedescendant="@(_highlightedIndex >= 0 ? $"{_listboxId}-opt-{_highlightedIndex}" : null)">
 
-    <div class="mar-multiselect__input-area">
+    @* Input area: tags + filter input *@
+    <div class="mar-multiselect__input-area" @onclick="OnInputAreaClick" @onclick:stopPropagation="true">
+
+        @* Selected tags *@
         @if (_selectedItems.Count > 0)
         {
             @if (TagMode == MultiSelectTagMode.Single)
             {
-                <span class="@CssProvider.MultiSelectTagClass()">
+                <span class="@CssProvider.MultiSelectTagClass() mar-multiselect-tag--summary">
                     @_selectedItems.Count item@(_selectedItems.Count != 1 ? "s" : "") selected
                 </span>
             }
             else
             {
-                @foreach (var item in _selectedItems)
+                var visibleCount = MaxVisibleTags ?? _selectedItems.Count;
+                var overflow = _selectedItems.Count - visibleCount;
+
+                @for (int ti = 0; ti < Math.Min(visibleCount, _selectedItems.Count); ti++)
                 {
-                    var currentItem = item;
+                    var tagItem = _selectedItems[ti];
                     <span class="@CssProvider.MultiSelectTagClass()">
-                        @GetText(currentItem)
-                        <button type="button"
-                                class="mar-multiselect-tag__remove"
-                                tabindex="-1"
-                                @onclick="() => RemoveItem(currentItem)"
-                                @onclick:stopPropagation="true">
-                            &times;
-                        </button>
+                        @GetText(tagItem)
+                        @if (IsEnabled && !ReadOnly)
+                        {
+                            <button type="button"
+                                    class="mar-multiselect-tag__remove"
+                                    tabindex="-1"
+                                    aria-label="@($"Remove {GetText(tagItem)}")"
+                                    @onclick="() => RemoveItem(tagItem)"
+                                    @onclick:stopPropagation="true">
+                                &times;
+                            </button>
+                        }
+                    </span>
+                }
+
+                @if (overflow > 0)
+                {
+                    <span class="@CssProvider.MultiSelectTagClass() mar-multiselect-tag--overflow">
+                        +@overflow more
                     </span>
                 }
             }
-
-            @if (ShowClearButton)
-            {
-                <button type="button"
-                        class="mar-multiselect__clear-btn"
-                        tabindex="-1"
-                        @onclick="ClearAll"
-                        @onclick:stopPropagation="true">
-                    &times;
-                </button>
-            }
         }
-        else
+
+        @* Filter / search input *@
+        <input type="text"
+               class="mar-multiselect__filter-input"
+               value="@_filterText"
+               @oninput="OnFilterInput"
+               placeholder="@(_selectedItems.Count == 0 ? Placeholder : null)"
+               disabled="@(!IsEnabled)"
+               readonly="@ReadOnly"
+               aria-autocomplete="list"
+               aria-controls="@_listboxId"
+               tabindex="-1" />
+
+        @* Clear button *@
+        @if (ShowClearButton && IsEnabled && !ReadOnly && _selectedItems.Count > 0)
         {
-            <span class="mar-multiselect__placeholder">@Placeholder</span>
+            <button type="button"
+                    class="mar-multiselect__clear-btn"
+                    tabindex="-1"
+                    aria-label="Clear all"
+                    @onclick="ClearAll"
+                    @onclick:stopPropagation="true">
+                &times;
+            </button>
+        }
+
+        @* Arrow toggle *@
+        @if (ShowArrowButton)
+        {
+            <button type="button"
+                    class="mar-multiselect__arrow"
+                    tabindex="-1"
+                    aria-label="@(_isOpen ? "Close list" : "Open list")"
+                    @onclick="ToggleDropdown"
+                    @onclick:stopPropagation="true">
+                &#9660;
+            </button>
         }
     </div>
 
-    <DropdownPopup IsOpen="@_isOpen">
-        <div class="@CssProvider.MultiSelectPopupClass()">
-            <ul role="listbox">
-                @for (var i = 0; i < _allItems.Count; i++)
-                {
-                    var index = i;
-                    var item = _allItems[i];
-                    var isHighlighted = index == _highlightedIndex;
-                    var itemValue = GetValue(item);
-                    var isSelected = itemValue is not null && _selectedValues.Contains(itemValue);
-                    <li id="ms-option-@index"
-                        class="@CssProvider.MultiSelectItemClass(isHighlighted, isSelected)"
-                        role="option"
-                        aria-selected="@isSelected.ToString().ToLowerInvariant()"
-                        @onclick="() => ToggleItem(item)"
-                        @onclick:stopPropagation="true"
-                        @onmouseover="() => _highlightedIndex = index">
-                        <input type="checkbox" checked="@isSelected" tabindex="-1" @onclick:stopPropagation="true" @onclick:preventDefault="true" />
-                        @if (ItemTemplate is not null)
-                        {
-                            @ItemTemplate(item)
+    @* Dropdown popup *@
+    @if (_isOpen)
+    {
+        <div class="@CssProvider.MultiSelectPopupClass() @PopupClass"
+             id="@_listboxId"
+             role="listbox"
+             aria-multiselectable="true"
+             aria-label="@(Placeholder ?? "Options")"
+             @onclick:stopPropagation="true">
+
+            @if (EnableVirtualization)
+            {
+                <div class="mar-multiselect__virtual-container" style="height:@(PopupHeight ?? "200px"); overflow-y:auto;">
+                    <Microsoft.AspNetCore.Components.Web.Virtualization.Virtualize Items="@_filteredItems"
+                                                                                    Context="item"
+                                                                                    ItemSize="32">
+                        @{
+                            var idx = _filteredItems.IndexOf(item);
+                            var isHighlighted = idx == _highlightedIndex;
+                            var itemValue = GetValue(item);
+                            var isSelected = itemValue is not null && _selectedValues.Contains(itemValue);
                         }
-                        else
-                        {
-                            @GetText(item)
-                        }
-                    </li>
-                }
-            </ul>
+                        <div id="@(_listboxId)-opt-@idx"
+                             class="@CssProvider.MultiSelectItemClass(isHighlighted, isSelected)"
+                             role="option"
+                             aria-selected="@isSelected.ToString().ToLowerInvariant()"
+                             @onclick="() => ToggleItem(item)"
+                             @onclick:stopPropagation="true"
+                             @onmouseover="() => _highlightedIndex = idx">
+                            <input type="checkbox"
+                                   checked="@isSelected"
+                                   tabindex="-1"
+                                   aria-hidden="true"
+                                   @onclick:stopPropagation="true"
+                                   @onclick:preventDefault="true" />
+                            @if (ItemTemplate is not null)
+                            {
+                                @ItemTemplate(item)
+                            }
+                            else
+                            {
+                                <span>@GetText(item)</span>
+                            }
+                        </div>
+                    </Microsoft.AspNetCore.Components.Web.Virtualization.Virtualize>
+                </div>
+            }
+            else
+            {
+                <div class="mar-multiselect__list-container" style="@(_popupMaxHeightStyle)">
+                    @for (int i = 0; i < _filteredItems.Count; i++)
+                    {
+                        var index = i;
+                        var item = _filteredItems[i];
+                        var isHighlighted = index == _highlightedIndex;
+                        var itemValue = GetValue(item);
+                        var isSelected = itemValue is not null && _selectedValues.Contains(itemValue);
+
+                        <div id="@(_listboxId)-opt-@index"
+                             class="@CssProvider.MultiSelectItemClass(isHighlighted, isSelected)"
+                             role="option"
+                             aria-selected="@isSelected.ToString().ToLowerInvariant()"
+                             @onclick="() => ToggleItem(item)"
+                             @onclick:stopPropagation="true"
+                             @onmouseover="() => _highlightedIndex = index">
+                            <input type="checkbox"
+                                   checked="@isSelected"
+                                   tabindex="-1"
+                                   aria-hidden="true"
+                                   @onclick:stopPropagation="true"
+                                   @onclick:preventDefault="true" />
+                            @if (ItemTemplate is not null)
+                            {
+                                @ItemTemplate(item)
+                            }
+                            else
+                            {
+                                <span>@GetText(item)</span>
+                            }
+                        </div>
+                    }
+
+                    @if (_filteredItems.Count == 0)
+                    {
+                        <div class="mar-multiselect__no-data">No items found</div>
+                    }
+                </div>
+            }
         </div>
-    </DropdownPopup>
+
+        @* Click-away overlay *@
+        <div class="mar-multiselect__overlay" @onclick="CloseDropdown"></div>
+    }
 </div>
 
 @code {
+    // ── Type parameters ──────────────────────────────────────────────────────
+
+    // TItem = data model type, TValue = value field type
+
+    // ── Parameters ──────────────────────────────────────────────────────────
     [Parameter] public IEnumerable<TItem> Data { get; set; } = Enumerable.Empty<TItem>();
     [Parameter] public string? TextField { get; set; }
     [Parameter] public string? ValueField { get; set; }
-    [Parameter] public IEnumerable<TValue> Values { get; set; } = Enumerable.Empty<TValue>();
-    [Parameter] public EventCallback<IEnumerable<TValue>> ValuesChanged { get; set; }
+
+    /// <summary>Selected values — use @bind-Value for two-way binding.</summary>
+    [Parameter] public List<TValue> Value { get; set; } = new();
+    [Parameter] public EventCallback<List<TValue>> ValueChanged { get; set; }
+
     [Parameter] public string? Placeholder { get; set; }
-    [Parameter] public bool Disabled { get; set; }
     [Parameter] public bool Enabled { get; set; } = true;
+    [Parameter] public bool Disabled { get; set; }
+    [Parameter] public bool ReadOnly { get; set; }
     [Parameter] public bool IsInvalid { get; set; }
-    [Parameter] public MultiSelectTagMode TagMode { get; set; } = MultiSelectTagMode.Multiple;
+
+    // Filtering
     [Parameter] public bool Filterable { get; set; }
-    [Parameter] public bool EnableVirtualization { get; set; }
+    [Parameter] public ComboBoxFilterMode FilterOperator { get; set; } = ComboBoxFilterMode.StartsWith;
+    [Parameter] public int MinLength { get; set; } = 1;
+    [Parameter] public bool PersistFilterOnSelect { get; set; }
+    [Parameter] public int DebounceDelay { get; set; } = 150;
+
+    // Behavior
+    [Parameter] public bool AutoClose { get; set; } = true;
+    [Parameter] public MultiSelectTagMode TagMode { get; set; } = MultiSelectTagMode.Multiple;
     [Parameter] public int? MaxVisibleTags { get; set; }
-    [Parameter] public EventCallback<string> OnFilter { get; set; }
     [Parameter] public bool ShowClearButton { get; set; }
-    [Parameter] public bool AutoClose { get; set; }
+    [Parameter] public bool ShowArrowButton { get; set; } = true;
+
+    // Virtualization
+    [Parameter] public bool EnableVirtualization { get; set; }
+    [Parameter] public string? PopupHeight { get; set; }
+    [Parameter] public string? PopupMaxHeight { get; set; }
+
+    // Appearance
+    [Parameter] public string? Width { get; set; }
+    [Parameter] public string? Id { get; set; }
+    [Parameter] public int? TabIndex { get; set; }
+    [Parameter] public string? PopupClass { get; set; }
+
+    // Templates
     [Parameter] public RenderFragment<TItem>? ItemTemplate { get; set; }
 
+    // Events
+    [Parameter] public EventCallback<string> OnFilter { get; set; }
+
+    // ── Private state ────────────────────────────────────────────────────────
     private bool _isOpen;
     private int _highlightedIndex = -1;
+    private string _filterText = string.Empty;
     private List<TItem> _allItems = new();
+    private List<TItem> _filteredItems = new();
     private List<TItem> _selectedItems = new();
     private HashSet<TValue> _selectedValues = new();
+    private CancellationTokenSource? _filterDebounce;
 
+    private readonly string _listboxId = $"ms-{Guid.NewGuid():N}";
+    private string _widthStyle => Width is not null ? $"width:{Width}" : string.Empty;
+    private string _popupMaxHeightStyle => (PopupMaxHeight ?? PopupHeight) is string mh ? $"max-height:{mh};overflow-y:auto;" : string.Empty;
+
+    private bool IsEnabled => Enabled && !Disabled;
+
+    // ── Lifecycle ────────────────────────────────────────────────────────────
     protected override void OnParametersSet()
     {
-        _allItems = Data.ToList();
-        _selectedValues = new HashSet<TValue>(Values ?? Enumerable.Empty<TValue>());
-        _selectedItems = _allItems.Where(item => _selectedValues.Contains(GetValue(item)!)).ToList();
+        _allItems = Data?.ToList() ?? new List<TItem>();
+        _selectedValues = new HashSet<TValue>(Value ?? Enumerable.Empty<TValue>());
+        _selectedItems = _allItems
+            .Where(item => { var v = GetValue(item); return v is not null && _selectedValues.Contains(v); })
+            .ToList();
+        ApplyFilter();
     }
 
+    // ── Helpers ──────────────────────────────────────────────────────────────
     private string? GetText(TItem item)
     {
         if (item is null) return null;
@@ -139,15 +291,63 @@
         return (TValue?)Convert.ChangeType(propValue, typeof(TValue));
     }
 
-    private void ToggleDropdown()
+    private void ApplyFilter()
     {
-        if (Disabled) return;
-        _isOpen = !_isOpen;
-        if (_isOpen) _highlightedIndex = -1;
+        if (!Filterable || string.IsNullOrEmpty(_filterText) || _filterText.Length < MinLength)
+        {
+            _filteredItems = _allItems.ToList();
+            return;
+        }
+
+        _filteredItems = _allItems
+            .Where(item =>
+            {
+                var text = GetText(item);
+                if (text is null) return false;
+                return FilterOperator switch
+                {
+                    ComboBoxFilterMode.StartsWith => text.StartsWith(_filterText, StringComparison.OrdinalIgnoreCase),
+                    ComboBoxFilterMode.EndsWith => text.EndsWith(_filterText, StringComparison.OrdinalIgnoreCase),
+                    _ => text.Contains(_filterText, StringComparison.OrdinalIgnoreCase)
+                };
+            })
+            .ToList();
     }
 
+    // ── Dropdown control ─────────────────────────────────────────────────────
+    private void OnInputAreaClick()
+    {
+        if (!IsEnabled || ReadOnly) return;
+        if (!_isOpen) OpenDropdown();
+    }
+
+    private void ToggleDropdown()
+    {
+        if (!IsEnabled || ReadOnly) return;
+        if (_isOpen) CloseDropdown();
+        else OpenDropdown();
+    }
+
+    private void OpenDropdown()
+    {
+        _filterText = string.Empty;
+        ApplyFilter();
+        _highlightedIndex = -1;
+        _isOpen = true;
+    }
+
+    private void CloseDropdown()
+    {
+        _filterText = string.Empty;
+        ApplyFilter();
+        _isOpen = false;
+    }
+
+    // ── Item selection ───────────────────────────────────────────────────────
     private async Task ToggleItem(TItem item)
     {
+        if (!IsEnabled || ReadOnly) return;
+
         var value = GetValue(item);
         if (value is null) return;
 
@@ -162,65 +362,156 @@
             _selectedItems.Add(item);
         }
 
-        if (AutoClose) _isOpen = false;
+        if (AutoClose)
+        {
+            CloseDropdown();
+        }
+        else if (!PersistFilterOnSelect)
+        {
+            _filterText = string.Empty;
+            ApplyFilter();
+        }
 
-        await ValuesChanged.InvokeAsync(_selectedValues.ToList());
+        await EmitValueChanged();
     }
 
     private async Task RemoveItem(TItem item)
     {
+        if (!IsEnabled || ReadOnly) return;
+
         var value = GetValue(item);
         if (value is null) return;
 
         _selectedValues.Remove(value);
         _selectedItems.RemoveAll(i => Equals(GetValue(i), value));
-        await ValuesChanged.InvokeAsync(_selectedValues.ToList());
+        await EmitValueChanged();
     }
 
     private async Task ClearAll()
     {
         _selectedValues.Clear();
         _selectedItems.Clear();
-        await ValuesChanged.InvokeAsync(new List<TValue>());
+        await EmitValueChanged();
     }
 
+    private async Task EmitValueChanged()
+    {
+        var list = _selectedValues.ToList();
+        Value = list;
+        await ValueChanged.InvokeAsync(list);
+    }
+
+    // ── Filtering ────────────────────────────────────────────────────────────
+    private async Task OnFilterInput(ChangeEventArgs e)
+    {
+        if (!Filterable) return;
+
+        _filterText = e.Value?.ToString() ?? string.Empty;
+
+        // Debounce
+        _filterDebounce?.Cancel();
+        _filterDebounce = new CancellationTokenSource();
+        var token = _filterDebounce.Token;
+
+        try
+        {
+            await Task.Delay(DebounceDelay, token);
+        }
+        catch (TaskCanceledException)
+        {
+            return;
+        }
+
+        ApplyFilter();
+        _highlightedIndex = _filteredItems.Count > 0 ? 0 : -1;
+
+        if (OnFilter.HasDelegate)
+            await OnFilter.InvokeAsync(_filterText);
+
+        if (!_isOpen && _filteredItems.Count > 0)
+            _isOpen = true;
+    }
+
+    // ── Keyboard navigation ───────────────────────────────────────────────────
     private async Task OnKeyDown(KeyboardEventArgs e)
     {
-        if (Disabled) return;
+        if (!IsEnabled) return;
 
         switch (e.Key)
         {
             case "ArrowDown":
                 if (!_isOpen)
                 {
-                    _isOpen = true;
+                    OpenDropdown();
                     _highlightedIndex = 0;
                 }
-                else if (_allItems.Count > 0)
+                else if (_filteredItems.Count > 0)
                 {
-                    _highlightedIndex = (_highlightedIndex + 1) % _allItems.Count;
+                    _highlightedIndex = (_highlightedIndex + 1) % _filteredItems.Count;
                 }
                 break;
 
             case "ArrowUp":
-                if (_isOpen && _allItems.Count > 0)
+                if (_isOpen && _filteredItems.Count > 0)
                 {
                     _highlightedIndex = _highlightedIndex <= 0
-                        ? _allItems.Count - 1
+                        ? _filteredItems.Count - 1
                         : _highlightedIndex - 1;
                 }
                 break;
 
             case "Enter":
-                if (_isOpen && _highlightedIndex >= 0 && _highlightedIndex < _allItems.Count)
+            case " " when _isOpen:
+                if (_isOpen && _highlightedIndex >= 0 && _highlightedIndex < _filteredItems.Count)
                 {
-                    await ToggleItem(_allItems[_highlightedIndex]);
+                    await ToggleItem(_filteredItems[_highlightedIndex]);
+                }
+                else if (!_isOpen)
+                {
+                    OpenDropdown();
                 }
                 break;
 
             case "Escape":
-                _isOpen = false;
+                CloseDropdown();
+                break;
+
+            case "Backspace":
+                if (string.IsNullOrEmpty(_filterText) && _selectedItems.Count > 0)
+                {
+                    await RemoveItem(_selectedItems[^1]);
+                }
+                break;
+
+            case "a" when e.CtrlKey:
+                // Ctrl+A: select all visible
+                foreach (var item in _filteredItems)
+                {
+                    var v = GetValue(item);
+                    if (v is not null && !_selectedValues.Contains(v))
+                    {
+                        _selectedValues.Add(v);
+                        _selectedItems.Add(item);
+                    }
+                }
+                await EmitValueChanged();
                 break;
         }
+    }
+
+    // ── Public methods ───────────────────────────────────────────────────────
+    public void Open() => OpenDropdown();
+    public void Close() => CloseDropdown();
+    public void Refresh()
+    {
+        _allItems = Data?.ToList() ?? new List<TItem>();
+        ApplyFilter();
+        StateHasChanged();
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing) _filterDebounce?.Dispose();
+        base.Dispose(disposing);
     }
 }

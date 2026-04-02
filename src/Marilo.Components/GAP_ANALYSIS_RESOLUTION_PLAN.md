@@ -94,14 +94,14 @@ This document defines the resolution strategy for all 87 Marilo Blazor component
 | MariloStep | 5 | single-pass | No | **T3 - Medium** | ✅ RESOLVED (in T2) |
 | MariloBreadcrumb | 7 | multi-pass | Yes (data binding, collapse) | **T3 - Medium** | ✅ RESOLVED |
 | MariloToolbar | 5 | multi-pass | Yes (overflow, adaptive) | **T3 - Medium** | ✅ RESOLVED |
-| MariloColorPicker | 8 | multi-pass | Yes (HSV canvas, palette) | **T4 - Low** | ✅ API SURFACE (Custom canvas) |
-| MariloDateRangePicker | 10 | multi-pass | Yes (dual-calendar popup) | **T4 - Low** | ✅ API SURFACE (Floating UI) |
-| MariloDateTimePicker | 8 | multi-pass | Yes (calendar + time tumblers) | **T4 - Low** | ✅ API SURFACE (Floating UI) |
-| MariloTimePicker | 5 | multi-pass | Yes (tumbler UI) | **T4 - Low** | ✅ API SURFACE (Custom tumbler) |
-| MariloFileUpload | 4 | multi-pass | Yes (async/chunk upload) | **T4 - Low** | ✅ API SURFACE (tus protocol) |
-| MariloUpload | 5 | multi-pass | Yes (chunk upload, drop zone) | **T4 - Low** | ✅ API SURFACE (tus protocol) |
+| MariloColorPicker | 8 | multi-pass | Yes (HSV canvas, palette) | **T4 - Low** | ⚠️ PARTIALLY IMPLEMENTED (core picker done; FlatColorPicker, ColorGradient, ColorPalette standalone components missing; AdaptiveMode absent) |
+| MariloDateRangePicker | 10 | multi-pass | Yes (dual-calendar popup) | **T4 - Low** | ⚠️ PARTIALLY IMPLEMENTED (dual-calendar, range preview, AllowReverse done; multi-view calendar, OnOpen/OnClose/OnChange events, AdaptiveMode, Size/Rounded/FillMode, FocusAsync, HeaderTemplate missing) |
+| MariloDateTimePicker | 8 | multi-pass | Yes (calendar + time tumblers) | **T4 - Low** | ⚠️ PARTIALLY IMPLEMENTED (~60% API surface; calendar+tumbler UX solid; OnChange/OnOpen/OnClose/OnBlur/OnCalendarCellRender events, ValidateOn, AdaptiveMode, DateTimePickerSteps missing) |
+| MariloTimePicker | 5 | multi-pass | Yes (tumbler UI) | **T4 - Low** | ⚠️ PARTIALLY IMPLEMENTED (tumbler UX, step params, keyboard done; OnOpen/OnClose not cancellable, ValidateOn, AdaptiveMode, InputMode missing; PopupClass declared but never applied) |
+| MariloFileUpload | 4 | multi-pass | Yes (async/chunk upload) | **T4 - Low** | ⚠️ PARTIALLY IMPLEMENTED (client-side file select, validation, drag-drop done; DropZoneId inert, FileTemplate/FileInfoTemplate context type mismatch vs spec) |
+| MariloUpload | 5 | multi-pass | Yes (chunk upload, drop zone) | **T4 - Low** | ⚠️ PARTIALLY IMPLEMENTED (HTTP upload, chunked upload, 10 events, pause/resume done; templates missing, WithCredentials inert, DropZoneId inert, chunk resume restarts from byte 0, UploadChunkSettings API absent) |
 | MariloMaskedInput | 7 | single-pass | Yes (mask enforcement) | **T4 - Low** | ✅ RESOLVED |
-| MariloMultiSelect | 5 | multi-pass | Yes (filtering, virtualization) | **T4 - Low** | ✅ API SURFACE (TanStack Virtual) |
+| MariloMultiSelect | 5 | multi-pass | Yes (filtering, virtualization) | **T4 - Low** | ⚠️ PARTIALLY IMPLEMENTED (filtering, tags, keyboard, virtualization done; OnChange/OnRead/OnOpen/OnClose/OnBlur events, AllowCustom, GroupField, 5 template slots, ValueMapper missing; actual gaps ~12-15 not 5) |
 | MariloRangeSlider | 6 | single-pass | No | **T4 - Low** | ✅ RESOLVED |
 | MariloRating | 5 | single-pass | No | **T4 - Low** | ✅ RESOLVED |
 | MariloSearchBox | 3 | single-pass | Yes (debounce, suggestions) | **T4 - Low** | ✅ RESOLVED |
@@ -799,3 +799,125 @@ All external code and library evaluation follows these rules:
 3. **Copied/adapted code:** When code is copied or adapted from an external source (not just used as a package dependency), the source file must include a comment citing the origin, and the license text must be included in the project's `THIRD_PARTY_LICENSES` file.
 4. **Review gate:** Before any external dependency or adapted code is merged, the `RESEARCH_LOG.md` entry must have `approved: true` in the component's `RESOLUTION_STATUS.md` external-resources section.
 5. **Periodic audit:** Licenses of all external dependencies are audited at each phase boundary to ensure ongoing compliance.
+
+---
+
+## 7. T4 Component Audit — Detailed Findings (2026-04-02)
+
+This section records the results of a source-code audit of all T4 "IMPLEMENTED" components, comparing actual implementation against the API specifications in `/docs/component-specs/`. The audit found that while core UX functionality is solid across all components, the plan's status markers were overly optimistic. All T4 components are **PARTIALLY IMPLEMENTED**, not fully implemented.
+
+### Common Cross-Component Gaps
+
+The following gaps are systemic across most/all T4 components:
+
+| Gap | Affected Components | Severity |
+|-----|-------------------|----------|
+| `AdaptiveMode` parameter missing | All T4 pickers, MultiSelect | Low |
+| `ValidateOn` / EditContext integration missing | DateTimePicker, TimePicker | Medium |
+| Cancellable `OnOpen`/`OnClose` event args missing | DateRangePicker, DateTimePicker, MultiSelect | Medium |
+| `role=combobox` on input elements missing | DateRangePicker, DateTimePicker, TimePicker | Low |
+| `aria-controls`/`aria-activedescendant` missing | DateRangePicker, DateTimePicker, TimePicker | Low |
+| CSS provider methods not component-specific | DateRangePicker reuses `DatePickerClass()`, DateTimePicker reuses `DatePickerClass()` | Low |
+
+### Per-Component Audit Results
+
+#### MariloColorPicker (Plan: 8 gaps, ✅ IMPLEMENTED → Actual: ⚠️ PARTIALLY IMPLEMENTED)
+
+**What works:** HSV canvas with JS interop, hue/opacity sliders, palette view, popup trigger, `ValueFormat`, `ShowButtons`/`ShowPreview`/`ShowClearButton`, `Size`/`Rounded`/`FillMode` appearance params, cancellable `OnOpen`/`OnClose`, `Open()`/`Close()`/`FocusAsync()`, keyboard nav, WAI-ARIA (`role=combobox`, `aria-haspopup`), `ColorPickerClass()`/`ColorPickerPopupClass()` in CSS providers.
+
+**Remaining gaps:**
+- `MariloFlatColorPicker` standalone component — entirely absent (spec documents a separate inline variant)
+- `MariloColorGradient` standalone component — entirely absent (only embedded inside ColorPicker)
+- `MariloColorPalette` standalone component — entirely absent (only embedded inside ColorPicker)
+- `ColorPickerViews` child-tag syntax is a stub — `ColorPickerGradientView`/`ColorPickerPaletteView` components don't exist as types; child tags can't configure gradient `Format`/`Formats`/`ShowOpacityEditor` or palette `Columns`/`Colors`/`TileWidth`/`TileHeight`
+- `AdaptiveMode` parameter absent
+- Bootstrap/FluentUI CSS coverage minimal (only root class styled; no popup, canvas, slider, preview, palette tile styles)
+
+#### MariloDateRangePicker (Plan: 10 gaps, ✅ IMPLEMENTED → Actual: ⚠️ PARTIALLY IMPLEMENTED)
+
+**What works:** `StartValue`/`EndValue` two-way binding, `Min`/`Max`/`DisabledDates`, `AllowReverse`, `Format`, `ShowClearButton`, `ShowOtherMonthDays`, `Orientation`, dual-calendar popup with independent navigation, hover-range preview, `Open()`/`Close()`/`NavigateTo()`/`Refresh()`, Escape-to-close, ARIA on popup/inputs/day buttons.
+
+**Remaining gaps:**
+- Multi-view calendar navigation (Year/Decade views) absent — blocks `BottomView`, `View`, `ViewChanged`, `OnCalendarCellRender`
+- `OnChange` (with `DateRangePickerChangeEventArgs`), `OnOpen` (cancellable), `OnClose` (cancellable) events missing
+- `AdaptiveMode`, `DebounceDelay`, `Title`, `Size`, `Rounded`, `FillMode` parameters missing
+- `FocusStartAsync()`/`FocusEndAsync()` methods missing (require JS interop)
+- `HeaderTemplate` missing
+- `ShowWeekNumbers` declared but never rendered
+- `PopupClass` wrapper-div bug (both ternary branches emit empty string)
+- No dedicated `DateRangePickerClass()` in CSS provider (reuses `DatePickerClass()`)
+
+#### MariloDateTimePicker (Plan: 8 gaps, ✅ IMPLEMENTED → Actual: ⚠️ PARTIALLY IMPLEMENTED ~60%)
+
+**What works:** `Value` two-way binding, `Min`/`Max`, `DisabledDates`, `Format`, `ShowClearButton`, `ShowOtherMonthDays`, `ShowSeconds`, calendar popup with month nav, hour/minute/second tumblers, Now/Set/Cancel buttons, pending-date staging, Escape-to-close, `Open()`/`Close()`, ARIA on tumblers/input/popup.
+
+**Remaining gaps:**
+- All spec events missing: `OnChange`, `OnOpen` (cancellable), `OnClose` (cancellable), `OnBlur`, `OnCalendarCellRender`
+- Only bespoke `OnConfirm` event exists (not in spec)
+- `ValidateOn`, `AdaptiveMode`, `DebounceDelay` parameters missing
+- `<DateTimePickerSteps>` child component not implemented (tumblers always increment by 1)
+- Input is `readonly="true"` (no typed input support, contradicts spec)
+- No dedicated `DateTimePickerClass()` in CSS provider
+
+#### MariloTimePicker (Plan: 5 gaps, ✅ IMPLEMENTED → Actual: ⚠️ PARTIALLY IMPLEMENTED, ~8-10 gaps)
+
+**What works:** Generic `TValue` support, tumbler dropdown (hour/minute/second/AM-PM), `HourStep`/`MinuteStep`/`SecondStep`, `Format`-driven column visibility, `Min`/`Max`, `ShowClearButton`, `DebounceDelay` (150ms default), `OnChange`/`OnOpen`/`OnClose`/`OnBlur` events (basic form), mouse-wheel scroll on tumblers, Now/Set/Cancel, keyboard (Enter/Escape/Tab), `Open()`/`Close()`.
+
+**Remaining gaps:**
+- `OnOpen`/`OnClose` not cancellable (no `IsCancelled` args)
+- `AdaptiveMode`, `InputMode`, `ValidateOn` parameters missing
+- `PopupClass` declared but **never applied** to popup div (bug)
+- `<TimePickerSteps>` child component not implemented (flat params instead)
+- `role=combobox` missing on input; tumbler `role=option` lacks parent `role=listbox`
+- `OnChange` doesn't fire on blur (spec requires it)
+- `TimePickerClass()` exists in providers but component ignores it (uses hardcoded BEM classes)
+
+#### MariloFileUpload (Plan: 4 gaps, ✅ IMPLEMENTED → Actual: ⚠️ PARTIALLY IMPLEMENTED)
+
+**What works:** `Accept`, `AllowedExtensions`, `MaxFileSize`/`MinFileSize`, `Capture`, `Multiple`, `Enabled`, `Files` (initial), drag-and-drop with visual state, client-side validation (extension/size), file list with remove, `OnSelect`/`OnRemove` events (cancellable), `ClearFiles()`/`RemoveFileAsync()`/`OpenSelectFilesDialog()`, three templates (`SelectFilesButtonTemplate`/`FileTemplate`/`FileInfoTemplate`), CSS provider integration.
+
+**Remaining gaps:**
+- `DropZoneId` parameter declared but inert (no JS interop to wire external drop zone)
+- `FileTemplate`/`FileInfoTemplate` context type mismatch vs spec (passes raw `FileSelectFileInfo` instead of `FileTemplateContext` wrapper)
+- Drop-zone CSS not delegated to CSS provider (hardcoded inline)
+
+#### MariloUpload (Plan: 5 gaps, ✅ IMPLEMENTED → Actual: ⚠️ PARTIALLY IMPLEMENTED)
+
+**What works:** `SaveUrl`/`RemoveUrl`/`SaveField`/`RemoveField`, `AutoUpload`, `ChunkSize` with chunked upload loop, `Multiple`, `Accept`, `AllowedExtensions`, `MaxFileSize`/`MinFileSize`, `Enabled`/`Capture`, `WithCredentials` (declared), pause/resume/cancel/retry per file, progress bars and status badges, all 10 events (`OnSelect`/`OnUpload`/`OnSuccess`/`OnError`/`OnProgress`/`OnRemove`/`OnCancel`/`OnClear`/`OnPause`/`OnResume`), `ClearFiles()`/`UploadFiles()`/`CancelFile()`/`PauseFile()`/`ResumeFile()`/`RetryFile()`/`RemoveFile()`/`OpenSelectFilesDialog()`, CSS provider integration (4 methods).
+
+**Remaining gaps:**
+- `SelectFilesButtonTemplate`, `FileTemplate`, `FileInfoTemplate` all missing (only `ChildContent` exists)
+- `WithCredentials` declared but never applied to `HttpClient` requests
+- `DropZoneId` declared but inert
+- Chunk resume restarts from byte 0 (doesn't track paused chunk offset)
+- `UploadChunkSettings` nested tag API absent (only flat `ChunkSize` param; `AutoRetryAfter`/`MaxAutoRetries`/`MetadataField`/`Resumable` missing)
+
+#### MariloMultiSelect (Plan: 5 gaps, ✅ IMPLEMENTED → Actual: ⚠️ PARTIALLY IMPLEMENTED, ~12-15 gaps)
+
+**What works:** Two-way `Value` binding (`List<TValue>`), `Data`/`TextField`/`ValueField`, `Filterable`/`FilterOperator`/`MinLength`/`DebounceDelay`/`PersistFilterOnSelect`, `OnFilter` event, `TagMode` (Single/Multiple), `MaxVisibleTags`, `ShowClearButton`/`ShowArrowButton`, `AutoClose`, keyboard nav (arrows/enter/space/escape/backspace/ctrl+A), `EnableVirtualization` + `<Virtualize>`, `ItemTemplate`, full WAI-ARIA, `Open()`/`Close()`/`Refresh()`, CSS provider (4 methods).
+
+**Remaining gaps:**
+- Events: `OnChange`, `OnRead`, `OnOpen` (cancellable), `OnClose` (cancellable), `OnItemRender`, `OnBlur` — all missing
+- `AllowCustom` (freeform values) missing
+- `GroupField` (sticky group headers) missing
+- Templates: `SummaryTagTemplate`, `TagTemplate`, `HeaderTemplate`, `FooterTemplate`, `NoDataTemplate` — all missing
+- `<MultiSelectSettings>`/`<MultiSelectPopupSettings>` child component API missing
+- `AdaptiveMode`, `InputMode`, `LoaderShowDelay` parameters missing
+- `Rebind()` method (triggers `OnRead`) missing
+- `ValueMapper` (remote virtualization pre-selection) missing
+- `ScrollMode`/`ItemHeight`/`PageSize` virtual scroll params missing
+- `MaxVisibleTags` vs spec's `MaxAllowedTags` naming mismatch
+
+### Summary: T4 Actual Status
+
+| Component | Plan Status | Actual Status | Core UX | Spec API Coverage |
+|-----------|------------|---------------|---------|-------------------|
+| MariloColorPicker | ✅ IMPLEMENTED | ⚠️ PARTIAL | Solid | ~70% (standalone sub-components missing) |
+| MariloDateRangePicker | ✅ IMPLEMENTED | ⚠️ PARTIAL | Solid | ~55% (events, multi-view, appearance missing) |
+| MariloDateTimePicker | ✅ IMPLEMENTED | ⚠️ PARTIAL | Solid | ~60% (all spec events missing) |
+| MariloTimePicker | ✅ IMPLEMENTED | ⚠️ PARTIAL | Solid | ~70% (event args, PopupClass bug) |
+| MariloFileUpload | ✅ IMPLEMENTED | ⚠️ PARTIAL | Solid | ~80% (DropZoneId inert, template context types) |
+| MariloUpload | ✅ IMPLEMENTED | ⚠️ PARTIAL | Solid | ~75% (templates, chunk resume, WithCredentials) |
+| MariloMultiSelect | ✅ IMPLEMENTED | ⚠️ PARTIAL | Solid | ~50% (many events/templates/params missing) |
+
+**Key takeaway:** All T4 components deliver functional core UX (the hard parts — canvases, tumblers, dual calendars, chunked uploads, filtering). The remaining work is primarily: (1) spec-aligned event signatures with cancellable args, (2) missing template slots, (3) `AdaptiveMode`/`ValidateOn` cross-cutting params, and (4) WAI-ARIA completeness.

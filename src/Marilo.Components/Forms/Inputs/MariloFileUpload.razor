@@ -1,121 +1,103 @@
 @inherits MariloComponentBase
+@using Microsoft.AspNetCore.Components.Forms
 
 <div class="@CombineClasses(CssProvider.FileUploadClass())"
      style="@CombineStyles()"
+     role="region"
+     aria-label="File selection"
      @attributes="AdditionalAttributes">
-    <label class="mar-file-upload__zone">
-        <span class="mar-file-upload__icon">
-            @IconProvider.GetIcon("upload", IconSize.Medium)
-        </span>
-        <span class="mar-file-upload__text">
-            @if (_selectedFiles.Any())
+
+    @* ── Drop zone / select button ─────────────────────────────────────── *@
+    <label class="@DropZoneCssClass()"
+           for="@InputId"
+           @ondragenter="HandleDragEnter"
+           @ondragover="HandleDragOver"
+           @ondragleave="HandleDragLeave"
+           @ondrop="HandleDrop"
+           @ondragenter:preventDefault
+           @ondragover:preventDefault
+           @ondrop:preventDefault>
+
+        @if (SelectFilesButtonTemplate != null)
+        {
+            @SelectFilesButtonTemplate
+        }
+        else
+        {
+            <span class="mar-file-upload__icon" aria-hidden="true">
+                @IconProvider.GetIcon("upload", Marilo.Core.Enums.IconSize.Medium)
+            </span>
+            <span class="mar-file-upload__text">
+                Drag and drop file@(Multiple ? "s" : "") here, or
+                <span class="mar-file-upload__browse-link">browse</span>
+            </span>
+
+            @if (AllowedExtensions?.Any() == true)
             {
-                @string.Join(", ", _selectedFiles.Select(f => f.Name))
+                <span class="mar-file-upload__hint">
+                    Allowed: @string.Join(", ", AllowedExtensions)
+                </span>
             }
-            else
-            {
-                <text>Choose file@(Multiple ? "s" : "") or drag and drop</text>
-            }
-        </span>
-        <InputFile OnChange="HandleFileSelected"
+        }
+
+        <InputFile id="@InputId"
+                   OnChange="HandleFileSelected"
                    multiple="@Multiple"
                    accept="@Accept"
-                   disabled="@Disabled"
-                   class="mar-file-upload__input" />
+                   capture="@Capture"
+                   disabled="@(!Enabled)"
+                   class="mar-file-upload__input"
+                   aria-hidden="true"
+                   tabindex="-1" />
     </label>
 
-    @if (!string.IsNullOrEmpty(_errorMessage))
+    @* ── File list ─────────────────────────────────────────────────────── *@
+    @if (_files.Count > 0)
     {
-        <div class="mar-file-upload__error" role="alert">@_errorMessage</div>
-    }
+        <ul class="@CssProvider.FileUploadFileListClass()"
+            role="list"
+            aria-label="Selected files">
+            @foreach (var file in _files)
+            {
+                <li class="mar-file-upload__file-item @(file.IsInvalid ? "mar-file-upload__file-item--invalid" : "")"
+                    role="listitem">
+                    @if (FileTemplate != null)
+                    {
+                        @FileTemplate(file)
+                    }
+                    else
+                    {
+                        <span class="mar-file-upload__file-icon" aria-hidden="true">
+                            @IconProvider.GetIcon("file", Marilo.Core.Enums.IconSize.Small)
+                        </span>
 
-    @if (_initialFileEntries.Any() || _selectedFiles.Any())
-    {
-        <ul class="@CssProvider.FileUploadFileListClass()">
-            @foreach (var entry in _initialFileEntries)
-            {
-                <li class="mar-file-upload__file-item">
-                    <span class="mar-file-upload__file-name">@entry.Name</span>
-                    <span class="mar-file-upload__file-size">@FormatFileSize(entry.Size)</span>
-                    <button type="button"
-                            class="mar-file-upload__file-remove"
-                            aria-label="Remove @entry.Name"
-                            @onclick="() => RemoveInitialFile(entry)">&#x2715;</button>
-                </li>
-            }
-            @foreach (var file in _selectedFiles)
-            {
-                <li class="mar-file-upload__file-item">
-                    <span class="mar-file-upload__file-name">@file.Name</span>
-                    <span class="mar-file-upload__file-size">@FormatFileSize(file.Size)</span>
-                    <button type="button"
-                            class="mar-file-upload__file-remove"
-                            aria-label="Remove @file.Name"
-                            @onclick="() => RemoveFile(file)">&#x2715;</button>
+                        <span class="mar-file-upload__file-info">
+                            @if (FileInfoTemplate != null)
+                            {
+                                @FileInfoTemplate(file)
+                            }
+                            else
+                            {
+                                <span class="mar-file-upload__file-name" title="@file.Name">@file.Name</span>
+                                <span class="mar-file-upload__file-size">@FormatFileSize(file.Size)</span>
+                                @if (file.IsInvalid)
+                                {
+                                    <span class="mar-file-upload__file-error" role="alert">
+                                        @ValidationSummary(file)
+                                    </span>
+                                }
+                            }
+                        </span>
+
+                        <button type="button"
+                                class="mar-file-upload__file-remove"
+                                aria-label="Remove @file.Name"
+                                @onclick="() => RemoveFileInternalAsync(file)">
+                            <span aria-hidden="true">&#x2715;</span>
+                        </button>
+                    }
                 </li>
             }
         </ul>
     }
 </div>
-
-@code {
-    [Parameter] public EventCallback<IReadOnlyList<IBrowserFile>> OnFilesSelected { get; set; }
-    [Parameter] public bool Multiple { get; set; }
-    [Parameter] public string? Accept { get; set; }
-    [Parameter] public long MaxFileSize { get; set; } = 10 * 1024 * 1024;
-    [Parameter] public long MinFileSize { get; set; }
-    [Parameter] public bool Disabled { get; set; }
-    [Parameter] public bool Enabled { get; set; } = true;
-    [Parameter] public IEnumerable<string>? AllowedExtensions { get; set; }
-    [Parameter] public IEnumerable<FileUploadInfo>? InitialFiles { get; set; }
-
-    private List<IBrowserFile> _selectedFiles = new();
-    private List<FileUploadInfo> _initialFileEntries = new();
-    private string? _errorMessage;
-    private bool _initialFilesLoaded;
-
-    protected override void OnParametersSet()
-    {
-        if (!_initialFilesLoaded && InitialFiles != null)
-        {
-            _initialFileEntries = InitialFiles.ToList();
-            _initialFilesLoaded = true;
-        }
-    }
-
-    private void RemoveInitialFile(FileUploadInfo entry)
-    {
-        _initialFileEntries.Remove(entry);
-    }
-
-    private async Task HandleFileSelected(InputFileChangeEventArgs e)
-    {
-        _errorMessage = null;
-        var files = Multiple ? e.GetMultipleFiles().ToList() : new List<IBrowserFile> { e.File };
-
-        var oversized = files.Where(f => f.Size > MaxFileSize).ToList();
-        if (oversized.Any())
-        {
-            var names = string.Join(", ", oversized.Select(f => f.Name));
-            _errorMessage = $"File(s) exceed maximum size of {FormatFileSize(MaxFileSize)}: {names}";
-            files = files.Except(oversized).ToList();
-        }
-
-        _selectedFiles = files;
-        await OnFilesSelected.InvokeAsync(files);
-    }
-
-    private async Task RemoveFile(IBrowserFile file)
-    {
-        _selectedFiles.Remove(file);
-        _errorMessage = null;
-        await OnFilesSelected.InvokeAsync(_selectedFiles);
-    }
-
-    private static string FormatFileSize(long bytes)
-    {
-        if (bytes < 1024) return $"{bytes} B";
-        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
-        return $"{bytes / (1024.0 * 1024.0):F1} MB";
-    }
-}

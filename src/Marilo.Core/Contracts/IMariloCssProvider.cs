@@ -80,6 +80,7 @@ public interface IMariloCssProvider
     string SliderClass(SliderOrientation orientation);
     string RatingClass();
     string ColorPickerClass();
+    string ColorPickerPopupClass();
     string DatePickerClass();
     string TimePickerClass();
     string FileUploadClass();

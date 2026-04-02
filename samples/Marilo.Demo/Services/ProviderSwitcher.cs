@@ -130,6 +130,7 @@ public class ProviderSwitcher : IMariloCssProvider, IMariloIconProvider, IMarilo
     public string SliderClass(SliderOrientation orientation) => Css.SliderClass(orientation);
     public string RatingClass() => Css.RatingClass();
     public string ColorPickerClass() => Css.ColorPickerClass();
+    public string ColorPickerPopupClass() => Css.ColorPickerPopupClass();
     public string DatePickerClass() => Css.DatePickerClass();
     public string TimePickerClass() => Css.TimePickerClass();
     public string FileUploadClass() => Css.FileUploadClass();

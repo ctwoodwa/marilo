@@ -13500,6 +13500,202 @@ textarea.form-control-lg {
   opacity: 0.8;
 }
 
+/* TimePicker tumbler UI */
+.mar-bs-timepicker,
+.mar-timepicker {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+}
+.mar-timepicker__input-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: var(--bs-border-radius, 0.375rem);
+  background: var(--bs-body-bg, #fff);
+  padding: 0.25rem 0.5rem;
+  min-height: 36px;
+}
+.mar-timepicker__input-row:focus-within {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+.mar-timepicker__icon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--bs-secondary-color, #6c757d);
+  flex-shrink: 0;
+}
+.mar-timepicker__text-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  flex: 1;
+  min-width: 80px;
+  font-size: inherit;
+}
+.mar-timepicker__clear,
+.mar-timepicker__toggle {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--bs-secondary-color, #6c757d);
+  padding: 0 2px;
+  line-height: 1;
+}
+.mar-timepicker__popup {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1050;
+  margin-top: 4px;
+  background: var(--bs-body-bg, #fff);
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: var(--bs-border-radius, 0.375rem);
+  box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+  padding: 0.75rem;
+  min-width: 200px;
+  user-select: none;
+}
+.mar-timepicker__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1049;
+}
+.mar-timepicker__tumblers {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.25rem;
+  justify-content: center;
+}
+.mar-timepicker__column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.mar-timepicker__column--ampm {
+  justify-content: center;
+  padding-top: 28px;
+}
+.mar-timepicker__separator {
+  font-size: 1.25rem;
+  font-weight: 600;
+  align-self: center;
+  color: var(--bs-secondary-color, #6c757d);
+  padding: 0 2px;
+  padding-top: 28px;
+}
+.mar-timepicker__arrow {
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  color: var(--bs-secondary-color, #6c757d);
+  padding: 2px 8px;
+  border-radius: 0.25rem;
+  font-size: 0.7rem;
+  line-height: 1;
+}
+.mar-timepicker__arrow:hover {
+  background: var(--bs-tertiary-bg, #f8f9fa);
+}
+.mar-timepicker__scroll-container {
+  display: flex;
+  flex-direction: column;
+  max-height: 120px;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  scrollbar-width: none;
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 0.25rem;
+}
+.mar-timepicker__scroll-container::-webkit-scrollbar { display: none; }
+.mar-timepicker__cell {
+  scroll-snap-align: start;
+  padding: 4px 12px;
+  cursor: pointer;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  border-radius: 0.2rem;
+  transition: background 0.1s;
+  min-width: 36px;
+}
+.mar-timepicker__cell:hover { background: var(--bs-tertiary-bg, #f8f9fa); }
+.mar-timepicker__cell--selected {
+  background: var(--bs-primary, #0d6efd);
+  color: #fff;
+  font-weight: 600;
+}
+.mar-timepicker__actions {
+  display: flex;
+  gap: 0.375rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--bs-border-color, #dee2e6);
+}
+.mar-timepicker__btn {
+  border-radius: 0.25rem;
+  padding: 3px 12px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-family: inherit;
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  background: transparent;
+}
+.mar-timepicker__btn--set {
+  background: var(--bs-primary, #0d6efd);
+  border-color: var(--bs-primary, #0d6efd);
+  color: #fff;
+  font-weight: 600;
+}
+.mar-timepicker__btn--set:hover { opacity: 0.9; }
+
+/* MultiSelect: filter input and list container */
+.mar-multiselect__input-area {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  flex: 1;
+  cursor: text;
+}
+.mar-multiselect__filter-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  min-width: 60px;
+  flex: 1;
+  font-size: inherit;
+  font-family: inherit;
+}
+.mar-multiselect__clear-btn,
+.mar-multiselect__arrow {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--bs-secondary-color, #6c757d);
+  padding: 0 2px;
+  line-height: 1;
+}
+.mar-multiselect__list-container {
+  overflow-y: auto;
+}
+.mar-multiselect__virtual-container {
+  overflow-y: auto;
+}
+.mar-multiselect__no-data {
+  padding: 0.5rem 1rem;
+  color: var(--bs-secondary-color, #6c757d);
+  font-style: italic;
+}
+.mar-multiselect__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1049;
+}
+
 .mar-bs-item--highlighted {
   background-color: var(--marilo-color-surface);
 }

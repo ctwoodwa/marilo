@@ -483,3 +483,33 @@ public enum AutoCompleteAdaptiveMode
     /// </summary>
     Auto
 }
+
+/// <summary>
+/// Specifies the layout orientation of the two calendars in a DateRangePicker popup.
+/// </summary>
+public enum CalendarOrientation
+{
+    /// <summary>The two calendars are placed side by side (left and right).</summary>
+    Horizontal,
+
+    /// <summary>The two calendars are stacked vertically (top and bottom).</summary>
+    Vertical
+}
+
+/// <summary>
+/// Specifies the calendar view level shown in a date picker popup.
+/// </summary>
+public enum CalendarView
+{
+    /// <summary>Month view — individual days are shown (default).</summary>
+    Month,
+
+    /// <summary>Year view — months of a year are shown.</summary>
+    Year,
+
+    /// <summary>Decade view — years within a decade are shown.</summary>
+    Decade,
+
+    /// <summary>Century view — decades within a century are shown.</summary>
+    Century
+}

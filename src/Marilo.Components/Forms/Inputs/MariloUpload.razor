@@ -1,12 +1,14 @@
 @inherits MariloComponentBase
-@inject HttpClient Http
+@using Microsoft.AspNetCore.Components.Forms
 
 <div class="@CombineClasses(CssProvider.UploadClass())"
      style="@CombineStyles()"
+     role="region"
+     aria-label="File upload"
      @attributes="AdditionalAttributes">
 
-    @* Drop zone *@
-    <div class="@CssProvider.UploadDropZoneClass(_isDragOver)"
+    @* ── Drop zone ─────────────────────────────────────────────────────── *@
+    <div class="@DropZoneCssClass()"
          @ondragenter="HandleDragEnter"
          @ondragover="HandleDragOver"
          @ondragleave="HandleDragLeave"
@@ -14,270 +16,169 @@
          @ondragenter:preventDefault
          @ondragover:preventDefault
          @ondrop:preventDefault>
+
         @if (ChildContent != null)
         {
             @ChildContent
         }
         else
         {
-            <span class="mar-upload__icon">
-                @IconProvider.GetIcon("upload", IconSize.Medium)
+            <span class="mar-upload__icon" aria-hidden="true">
+                @IconProvider.GetIcon("upload", Marilo.Core.Enums.IconSize.Medium)
             </span>
             <span class="mar-upload__text">
-                Drag and drop file@(Multiple ? "s" : "") here or
+                Drag and drop file@(Multiple ? "s" : "") here, or
             </span>
         }
-        <label class="mar-upload__browse-btn">
-            <span>Browse</span>
-            <InputFile OnChange="HandleFileSelected"
+
+        <label class="mar-upload__browse-btn" for="@InputId">
+            <span>Browse files</span>
+            <InputFile id="@InputId"
+                       OnChange="HandleFileSelected"
                        multiple="@Multiple"
                        accept="@Accept"
-                       class="mar-upload__input" />
+                       capture="@Capture"
+                       disabled="@(!Enabled)"
+                       class="mar-upload__input"
+                       aria-hidden="true"
+                       tabindex="-1" />
         </label>
+
+        @if (AllowedExtensions?.Any() == true)
+        {
+            <span class="mar-upload__hint">
+                Allowed: @string.Join(", ", AllowedExtensions)
+            </span>
+        }
     </div>
 
-    @* File list *@
+    @* ── File list ─────────────────────────────────────────────────────── *@
     @if (_files.Count > 0)
     {
-        <ul class="@CssProvider.UploadFileListClass()">
+        <ul class="@CssProvider.UploadFileListClass()"
+            role="list"
+            aria-label="Upload queue">
+
             @foreach (var file in _files)
             {
-                <li class="@CssProvider.UploadFileItemClass()">
-                    <span class="mar-upload__file-name">@file.Name</span>
-                    <span class="mar-upload__file-size">@FormatSize(file.Size)</span>
-                    <span class="mar-upload__file-status mar-upload__file-status--@file.Status.ToString().ToLower()">
-                        @file.Status
+                <li class="@CssProvider.UploadFileItemClass() @(file.IsInvalid ? "mar-upload__file-item--invalid" : "")"
+                    role="listitem">
+
+                    @* File icon *@
+                    <span class="mar-upload__file-icon" aria-hidden="true">
+                        @IconProvider.GetIcon("file", Marilo.Core.Enums.IconSize.Small)
                     </span>
+
+                    @* File info *@
+                    <span class="mar-upload__file-info">
+                        <span class="mar-upload__file-name" title="@file.Name">@file.Name</span>
+                        <span class="mar-upload__file-size">@FormatSize(file.Size)</span>
+
+                        @if (file.IsInvalid)
+                        {
+                            <span class="mar-upload__file-error" role="alert">
+                                @(file.InvalidExtension ? "Invalid file type. " : "")@(file.InvalidMaxFileSize ? "File too large. " : "")@(file.InvalidMinFileSize ? "File too small." : "")
+                            </span>
+                        }
+                    </span>
+
+                    @* Status badge *@
+                    <span class="mar-upload__file-status mar-upload__file-status--@file.Status.ToString().ToLower()"
+                          aria-live="polite">
+                        @StatusLabel(file.Status)
+                    </span>
+
+                    @* Progress bar *@
                     @if (file.Status == UploadFileStatus.Uploading)
                     {
-                        <div class="mar-upload__progress">
+                        <div class="mar-upload__progress" role="progressbar"
+                             aria-valuenow="@file.Progress"
+                             aria-valuemin="0"
+                             aria-valuemax="100"
+                             aria-label="Uploading @file.Name: @(file.Progress)%">
                             <div class="mar-upload__progress-bar" style="width:@(file.Progress)%"></div>
                         </div>
                     }
-                    @if (file.Status == UploadFileStatus.Uploaded && !string.IsNullOrEmpty(RemoveUrl))
-                    {
-                        <button type="button"
-                                class="mar-upload__remove-btn"
-                                @onclick="() => RemoveFile(file)">
-                            &#x2715;
-                        </button>
-                    }
+
+                    @* Actions *@
+                    <span class="mar-upload__file-actions">
+                        @if (file.Status == UploadFileStatus.Uploading)
+                        {
+                            <button type="button"
+                                    class="mar-upload__cancel-btn"
+                                    aria-label="Cancel upload of @file.Name"
+                                    @onclick="() => CancelFile(file.Id)">
+                                <span aria-hidden="true">&#x23F8;</span>
+                            </button>
+                        }
+                        else if (file.Status == UploadFileStatus.Paused)
+                        {
+                            <button type="button"
+                                    class="mar-upload__resume-btn"
+                                    aria-label="Resume upload of @file.Name"
+                                    @onclick="() => ResumeFile(file.Id)">
+                                <span aria-hidden="true">&#x25B6;</span>
+                            </button>
+                            <button type="button"
+                                    class="mar-upload__remove-btn"
+                                    aria-label="Remove @file.Name"
+                                    @onclick="() => RemoveFileInternalAsync(file)">
+                                <span aria-hidden="true">&#x2715;</span>
+                            </button>
+                        }
+                        else if (file.Status == UploadFileStatus.Failed)
+                        {
+                            <button type="button"
+                                    class="mar-upload__retry-btn"
+                                    aria-label="Retry upload of @file.Name"
+                                    @onclick="() => RetryFile(file.Id)">
+                                <span aria-hidden="true">&#x21BA;</span>
+                            </button>
+                            <button type="button"
+                                    class="mar-upload__remove-btn"
+                                    aria-label="Remove @file.Name"
+                                    @onclick="() => RemoveFileInternalAsync(file)">
+                                <span aria-hidden="true">&#x2715;</span>
+                            </button>
+                        }
+                        else if (file.Status != UploadFileStatus.Uploaded || !string.IsNullOrEmpty(RemoveUrl))
+                        {
+                            @* Show remove button for selected files or uploaded files when RemoveUrl is set *@
+                            <button type="button"
+                                    class="mar-upload__remove-btn"
+                                    aria-label="Remove @file.Name"
+                                    @onclick="() => RemoveFileInternalAsync(file)">
+                                <span aria-hidden="true">&#x2715;</span>
+                            </button>
+                        }
+                    </span>
                 </li>
             }
         </ul>
+
+        @* ── Manual upload / clear toolbar (AutoUpload=false) ──────────── *@
+        @if (!AutoUpload)
+        {
+            <div class="mar-upload__actions" role="toolbar" aria-label="Upload actions">
+                @if (CanUploadManually)
+                {
+                    <button type="button"
+                            class="mar-upload__upload-btn"
+                            aria-label="Upload all files"
+                            @onclick="UploadFiles">
+                        Upload
+                    </button>
+                }
+                @if (CanClear)
+                {
+                    <button type="button"
+                            class="mar-upload__clear-btn"
+                            aria-label="Clear file list"
+                            @onclick="ClearFiles">
+                        Clear
+                    </button>
+                }
+            </div>
+        }
     }
 </div>
-
-@code {
-    [Parameter] public string SaveUrl { get; set; } = string.Empty;
-    [Parameter] public string? RemoveUrl { get; set; }
-    [Parameter] public bool Multiple { get; set; } = true;
-    [Parameter] public string? Accept { get; set; }
-    [Parameter] public long MaxFileSize { get; set; }
-    [Parameter] public IEnumerable<string>? AllowedExtensions { get; set; }
-    [Parameter] public bool AutoUpload { get; set; } = true;
-    [Parameter] public bool WithCredentials { get; set; }
-    [Parameter] public bool Enabled { get; set; } = true;
-
-    /// <summary>Upload strategy: Simple (multipart), Chunked, or TusResumable.</summary>
-    [Parameter] public string UploadStrategy { get; set; } = "Simple";
-
-    /// <summary>Chunk size in bytes for chunked/tus upload. Default 1MB.</summary>
-    [Parameter] public long ChunkSize { get; set; } = 1_048_576;
-
-    /// <summary>Minimum file size in bytes. Files smaller than this are rejected.</summary>
-    [Parameter] public long MinFileSize { get; set; }
-    [Parameter] public EventCallback<UploadEventArgs> OnUpload { get; set; }
-    [Parameter] public EventCallback<UploadEventArgs> OnRemove { get; set; }
-    [Parameter] public EventCallback<UploadErrorEventArgs> OnError { get; set; }
-    [Parameter] public EventCallback<UploadSelectEventArgs> OnSelect { get; set; }
-    [Parameter] public RenderFragment? ChildContent { get; set; }
-
-    private readonly List<UploadFileInfo> _files = [];
-    private bool _isDragOver;
-
-    private async Task HandleFileSelected(InputFileChangeEventArgs e)
-    {
-        var browserFiles = Multiple ? e.GetMultipleFiles().ToList() : new List<IBrowserFile> { e.File };
-        var fileInfos = new List<UploadFileInfo>();
-
-        foreach (var bf in browserFiles)
-        {
-            var info = new UploadFileInfo
-            {
-                Name = bf.Name,
-                Size = bf.Size,
-                Status = UploadFileStatus.Selected
-            };
-
-            var error = ValidateFile(info);
-            if (error != null)
-            {
-                info.Status = UploadFileStatus.Failed;
-                _files.Add(info);
-                await OnError.InvokeAsync(new UploadErrorEventArgs { File = info, ErrorMessage = error });
-                continue;
-            }
-
-            _files.Add(info);
-            fileInfos.Add(info);
-        }
-
-        await OnSelect.InvokeAsync(new UploadSelectEventArgs { Files = fileInfos });
-
-        if (AutoUpload)
-        {
-            foreach (var (info, bf) in fileInfos.Zip(browserFiles))
-            {
-                await UploadFile(info, bf);
-            }
-        }
-    }
-
-    private string? ValidateFile(UploadFileInfo file)
-    {
-        if (MaxFileSize > 0 && file.Size > MaxFileSize)
-        {
-            return $"File size {FormatSize(file.Size)} exceeds the maximum allowed size of {FormatSize(MaxFileSize)}.";
-        }
-
-        if (AllowedExtensions?.Any() == true)
-        {
-            var ext = Path.GetExtension(file.Name)?.ToLowerInvariant();
-            if (ext == null || !AllowedExtensions.Select(e => e.ToLowerInvariant()).Contains(ext))
-            {
-                return $"File type '{ext}' is not allowed. Allowed types: {string.Join(", ", AllowedExtensions)}.";
-            }
-        }
-
-        return null;
-    }
-
-    private async Task UploadFile(UploadFileInfo info, IBrowserFile browserFile)
-    {
-        try
-        {
-            info.Status = UploadFileStatus.Uploading;
-            info.Progress = 0;
-            StateHasChanged();
-
-            var maxSize = MaxFileSize > 0 ? MaxFileSize : 10L * 1024 * 1024 * 1024;
-
-            if (ChunkSize > 0 && browserFile.Size > ChunkSize)
-            {
-                await UploadFileChunked(info, browserFile, maxSize);
-            }
-            else
-            {
-                await UploadFileWhole(info, browserFile, maxSize);
-            }
-        }
-        catch (Exception ex)
-        {
-            info.Status = UploadFileStatus.Failed;
-            await OnError.InvokeAsync(new UploadErrorEventArgs { File = info, ErrorMessage = ex.Message });
-        }
-
-        StateHasChanged();
-    }
-
-    private async Task UploadFileWhole(UploadFileInfo info, IBrowserFile browserFile, long maxSize)
-    {
-        using var content = new MultipartFormDataContent();
-        var streamContent = new StreamContent(browserFile.OpenReadStream(maxSize));
-        content.Add(streamContent, "file", info.Name);
-
-        var response = await Http.PostAsync(SaveUrl, content);
-
-        if (response.IsSuccessStatusCode)
-        {
-            info.Status = UploadFileStatus.Uploaded;
-            info.Progress = 100;
-            await OnUpload.InvokeAsync(new UploadEventArgs { File = info });
-        }
-        else
-        {
-            info.Status = UploadFileStatus.Failed;
-            var errorMsg = $"Upload failed with status {response.StatusCode}.";
-            await OnError.InvokeAsync(new UploadErrorEventArgs { File = info, ErrorMessage = errorMsg });
-        }
-    }
-
-    private async Task UploadFileChunked(UploadFileInfo info, IBrowserFile browserFile, long maxSize)
-    {
-        var totalChunks = (int)Math.Ceiling((double)browserFile.Size / ChunkSize);
-        var buffer = new byte[ChunkSize];
-
-        await using var stream = browserFile.OpenReadStream(maxSize);
-
-        for (var chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++)
-        {
-            var bytesRead = await stream.ReadAsync(buffer.AsMemory(0, (int)Math.Min(ChunkSize, browserFile.Size - chunkIndex * ChunkSize)));
-
-            using var chunkContent = new ByteArrayContent(buffer, 0, bytesRead);
-            using var request = new HttpRequestMessage(HttpMethod.Post, SaveUrl);
-            request.Content = chunkContent;
-            request.Headers.Add("X-File-Name", info.Name);
-            request.Headers.Add("X-Chunk-Index", chunkIndex.ToString());
-            request.Headers.Add("X-Total-Chunks", totalChunks.ToString());
-
-            var response = await Http.SendAsync(request);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                info.Status = UploadFileStatus.Failed;
-                var errorMsg = $"Chunk {chunkIndex + 1}/{totalChunks} failed with status {response.StatusCode}.";
-                await OnError.InvokeAsync(new UploadErrorEventArgs { File = info, ErrorMessage = errorMsg });
-                return;
-            }
-
-            info.Progress = (int)((chunkIndex + 1) * 100.0 / totalChunks);
-            StateHasChanged();
-        }
-
-        info.Status = UploadFileStatus.Uploaded;
-        info.Progress = 100;
-        await OnUpload.InvokeAsync(new UploadEventArgs { File = info });
-    }
-
-    private async Task RemoveFile(UploadFileInfo file)
-    {
-        if (!string.IsNullOrEmpty(RemoveUrl))
-        {
-            try
-            {
-                var response = await Http.PostAsJsonAsync(RemoveUrl, new { file.Name });
-                if (response.IsSuccessStatusCode)
-                {
-                    _files.Remove(file);
-                    await OnRemove.InvokeAsync(new UploadEventArgs { File = file });
-                }
-            }
-            catch (Exception ex)
-            {
-                await OnError.InvokeAsync(new UploadErrorEventArgs { File = file, ErrorMessage = ex.Message });
-            }
-        }
-        else
-        {
-            _files.Remove(file);
-            await OnRemove.InvokeAsync(new UploadEventArgs { File = file });
-        }
-    }
-
-    private void HandleDragEnter(DragEventArgs e) => _isDragOver = true;
-
-    private void HandleDragOver(DragEventArgs e) { /* prevent default handled in markup */ }
-
-    private void HandleDragLeave(DragEventArgs e) => _isDragOver = false;
-
-    private void HandleDrop(DragEventArgs e) => _isDragOver = false;
-
-    private static string FormatSize(long bytes)
-    {
-        if (bytes < 1024) return $"{bytes} B";
-        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
-        if (bytes < 1024 * 1024 * 1024) return $"{bytes / (1024.0 * 1024):F1} MB";
-        return $"{bytes / (1024.0 * 1024 * 1024):F1} GB";
-    }
-}

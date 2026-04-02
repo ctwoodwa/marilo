@@ -1,52 +1,383 @@
 @inherits MariloComponentBase
 
-<div class="@CombineClasses(CssProvider.DatePickerClass())"
-     style="@CombineStyles()"
-     @attributes="AdditionalAttributes">
-    <span class="mar-datetime-picker__icon">
-        @IconProvider.GetIcon("calendar", IconSize.Small)
-    </span>
-    <input type="datetime-local"
-           class="@CssProvider.TextBoxClass(false, !Enabled)"
-           value="@FormatValue()"
-           min="@FormatDateTime(Min)"
-           max="@FormatDateTime(Max)"
-           placeholder="@Placeholder"
-           disabled="@(!Enabled)"
-           readonly="@ReadOnly"
-           @onchange="OnDateTimeChanged" />
-    @if (ShowClearButton && Enabled && !ReadOnly && Value.HasValue)
+<div class="@CombineClasses(CssProvider.DatePickerClass()) mar-datetime-picker @(_isPopupOpen ? "mar-datetime-picker--open" : "")"
+     style="@CombineStyles(Width is not null ? $"width:{Width}" : null)"
+     @attributes="AdditionalAttributes"
+     @onkeydown="OnKeyDown">
+
+    @* ── Text Input ── *@
+    <div class="mar-datepicker__input-wrapper">
+        <span class="mar-datetime-picker__icon" aria-hidden="true">
+            @IconProvider.GetIcon("calendar", IconSize.Small)
+        </span>
+        <input id="@Id"
+               type="text"
+               class="@CssProvider.TextBoxClass(false, !Enabled)"
+               value="@FormatValue()"
+               placeholder="@Placeholder"
+               disabled="@(!Enabled)"
+               readonly="true"
+               tabindex="@TabIndex"
+               inputmode="@InputMode"
+               autocomplete="@AutoComplete"
+               aria-label="Date and time"
+               aria-haspopup="dialog"
+               aria-expanded="@_isPopupOpen.ToString().ToLowerInvariant()"
+               @onfocus="OpenPopup"
+               @onclick="OpenPopup" />
+        @if (ShowClearButton && Enabled && !ReadOnly && Value.HasValue)
+        {
+            <button type="button"
+                    class="mar-datepicker__clear"
+                    aria-label="Clear"
+                    @onclick="ClearValue"
+                    @onclick:stopPropagation="true">
+                &times;
+            </button>
+        }
+    </div>
+
+    @* ── Popup ── *@
+    @if (_isPopupOpen && Enabled && !ReadOnly)
     {
-        <button type="button" class="mar-datepicker__clear" aria-label="Clear" @onclick="ClearValue">&times;</button>
+        <div class="mar-datepicker__overlay" @onclick="ClosePopup"></div>
+        <div class="@CssProvider.CalendarClass() mar-datetime-picker__popup @PopupClass"
+             role="dialog"
+             aria-label="Select date and time"
+             aria-modal="true"
+             @onclick:stopPropagation="true">
+
+            @* ── Date calendar section ── *@
+            <div class="mar-datetime-picker__date-section">
+                <div class="mar-calendar__header">
+                    <button type="button"
+                            class="mar-calendar__nav-btn"
+                            aria-label="Previous month"
+                            @onclick="PreviousMonth">
+                        &#9664;
+                    </button>
+                    <span class="mar-calendar__title">@_displayMonth.ToString("MMMM yyyy")</span>
+                    <button type="button"
+                            class="mar-calendar__nav-btn"
+                            aria-label="Next month"
+                            @onclick="NextMonth">
+                        &#9654;
+                    </button>
+                </div>
+                <div class="mar-calendar__grid">
+                    <div class="mar-calendar__weekdays">
+                        @foreach (var dayName in _dayHeaders)
+                        {
+                            <span class="mar-calendar__weekday">@dayName</span>
+                        }
+                    </div>
+                    <div class="mar-calendar__days">
+                        @foreach (var day in GetCalendarDays())
+                        {
+                            var isDisabled = IsDayDisabled(day.Date);
+                            var isToday = day.Date == DateOnly.FromDateTime(DateTime.Today);
+                            var isSelected = Value.HasValue && day.Date == DateOnly.FromDateTime(Value.Value);
+                            var isOutsideMonth = day.Date.Month != _displayMonth.Month || day.Date.Year != _displayMonth.Year;
+
+                            if (isOutsideMonth && !ShowOtherMonthDays)
+                            {
+                                <span class="mar-calendar__day mar-calendar__day--outside mar-calendar__day--placeholder"></span>
+                            }
+                            else
+                            {
+                                <button type="button"
+                                        class="mar-calendar__day @(isToday ? "mar-calendar__day--today" : "") @(isSelected ? "mar-calendar__day--selected" : "") @(isDisabled ? "mar-calendar__day--disabled" : "") @(isOutsideMonth ? "mar-calendar__day--outside" : "")"
+                                        disabled="@isDisabled"
+                                        aria-label="@day.Date.ToString("MMMM d, yyyy")"
+                                        aria-selected="@isSelected.ToString().ToLowerInvariant()"
+                                        @onclick="() => SelectDay(day.Date, isDisabled)">
+                                    @day.Date.Day
+                                </button>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+
+            @* ── Divider ── *@
+            <div class="mar-datetime-picker__divider" aria-hidden="true"></div>
+
+            @* ── Time section ── *@
+            <div class="mar-datetime-picker__time-section" role="group" aria-label="Time">
+                <div class="mar-datetime-picker__time-label">Time</div>
+                <div class="mar-datetime-picker__tumblers">
+                    @* Hour tumbler *@
+                    <div class="mar-datetime-picker__tumbler" role="spinbutton" aria-label="Hour" aria-valuenow="@_hour" aria-valuemin="0" aria-valuemax="23">
+                        <button type="button" class="mar-datetime-picker__tumbler-btn" aria-label="Increase hour" @onclick="IncrementHour">&#9650;</button>
+                        <span class="mar-datetime-picker__tumbler-value">@_hour.ToString("D2")</span>
+                        <button type="button" class="mar-datetime-picker__tumbler-btn" aria-label="Decrease hour" @onclick="DecrementHour">&#9660;</button>
+                    </div>
+                    <span class="mar-datetime-picker__tumbler-sep" aria-hidden="true">:</span>
+                    @* Minute tumbler *@
+                    <div class="mar-datetime-picker__tumbler" role="spinbutton" aria-label="Minute" aria-valuenow="@_minute" aria-valuemin="0" aria-valuemax="59">
+                        <button type="button" class="mar-datetime-picker__tumbler-btn" aria-label="Increase minute" @onclick="IncrementMinute">&#9650;</button>
+                        <span class="mar-datetime-picker__tumbler-value">@_minute.ToString("D2")</span>
+                        <button type="button" class="mar-datetime-picker__tumbler-btn" aria-label="Decrease minute" @onclick="DecrementMinute">&#9660;</button>
+                    </div>
+                    @if (ShowSeconds)
+                    {
+                        <span class="mar-datetime-picker__tumbler-sep" aria-hidden="true">:</span>
+                        @* Second tumbler *@
+                        <div class="mar-datetime-picker__tumbler" role="spinbutton" aria-label="Second" aria-valuenow="@_second" aria-valuemin="0" aria-valuemax="59">
+                            <button type="button" class="mar-datetime-picker__tumbler-btn" aria-label="Increase second" @onclick="IncrementSecond">&#9650;</button>
+                            <span class="mar-datetime-picker__tumbler-value">@_second.ToString("D2")</span>
+                            <button type="button" class="mar-datetime-picker__tumbler-btn" aria-label="Decrease second" @onclick="DecrementSecond">&#9660;</button>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @* ── Action buttons ── *@
+            <div class="mar-datetime-picker__actions">
+                <button type="button" class="mar-btn mar-btn--secondary mar-btn--sm" @onclick="SetNow">Now</button>
+                <button type="button" class="mar-btn mar-btn--ghost mar-btn--sm" @onclick="ClosePopup">Cancel</button>
+                <button type="button" class="mar-btn mar-btn--primary mar-btn--sm" @onclick="CommitValue">Set</button>
+            </div>
+        </div>
     }
 </div>
 
 @code {
+    // ─── Parameters ───────────────────────────────────────────────────────────
+
+    /// <summary>The selected date and time value. Supports two-way binding.</summary>
     [Parameter] public DateTime? Value { get; set; }
     [Parameter] public EventCallback<DateTime?> ValueChanged { get; set; }
-    [Parameter] public string? Placeholder { get; set; }
+
+    /// <summary>The earliest selectable date and time.</summary>
+    [Parameter] public DateTime Min { get; set; } = new DateTime(1900, 1, 1, 0, 0, 0);
+
+    /// <summary>The latest selectable date and time.</summary>
+    [Parameter] public DateTime Max { get; set; } = new DateTime(2099, 12, 31, 23, 59, 59);
+
+    /// <summary>Dates that cannot be selected.</summary>
+    [Parameter] public IEnumerable<DateOnly>? DisabledDates { get; set; }
+
+    /// <summary>Whether the component allows input.</summary>
     [Parameter] public bool Enabled { get; set; } = true;
+
+    /// <summary>When true, the component is read-only.</summary>
     [Parameter] public bool ReadOnly { get; set; }
-    [Parameter] public DateTime? Min { get; set; }
-    [Parameter] public DateTime? Max { get; set; }
-    [Parameter] public string? Format { get; set; }
+
+    /// <summary>The display format for the text input.</summary>
+    [Parameter] public string Format { get; set; } = "M/d/yyyy h:mm tt";
+
+    /// <summary>Placeholder text shown in the input when no value is selected.</summary>
+    [Parameter] public string? Placeholder { get; set; }
+
+    /// <summary>Whether to show a clear (×) button.</summary>
     [Parameter] public bool ShowClearButton { get; set; }
 
-    /// <summary>Fires when the value is confirmed.</summary>
+    /// <summary>Whether the calendar shows ISO-8601 week numbers.</summary>
+    [Parameter] public bool ShowWeekNumbers { get; set; }
+
+    /// <summary>Whether leading/trailing days from adjacent months are shown.</summary>
+    [Parameter] public bool ShowOtherMonthDays { get; set; } = true;
+
+    /// <summary>Whether to show a seconds tumbler in addition to hour and minute.</summary>
+    [Parameter] public bool ShowSeconds { get; set; }
+
+    /// <summary>The id attribute for the input element.</summary>
+    [Parameter] public string? Id { get; set; }
+
+    /// <summary>The inputmode attribute for the input element.</summary>
+    [Parameter] public string? InputMode { get; set; }
+
+    /// <summary>The tabindex for the input element.</summary>
+    [Parameter] public int? TabIndex { get; set; }
+
+    /// <summary>The autocomplete attribute for the input element.</summary>
+    [Parameter] public string AutoComplete { get; set; } = "off";
+
+    /// <summary>The width CSS value for the component root element.</summary>
+    [Parameter] public string? Width { get; set; }
+
+    /// <summary>Additional CSS class applied to the popup panel.</summary>
+    [Parameter] public string? PopupClass { get; set; }
+
+    /// <summary>Fires when the value is confirmed via the Set button.</summary>
     [Parameter] public EventCallback<DateTime?> OnConfirm { get; set; }
 
-    private string? FormatValue() => Value?.ToString("yyyy-MM-ddTHH:mm");
-    private string? FormatDateTime(DateTime? dt) => dt?.ToString("yyyy-MM-ddTHH:mm");
+    // ─── Private State ────────────────────────────────────────────────────────
 
-    private async Task OnDateTimeChanged(ChangeEventArgs e)
+    private bool _isPopupOpen;
+    private DateTime _displayMonth;
+
+    // Time tumbler state
+    private int _hour;
+    private int _minute;
+    private int _second;
+
+    private static readonly string[] _dayHeaders = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+
+    // ─── Lifecycle ────────────────────────────────────────────────────────────
+
+    protected override void OnInitialized()
     {
-        Value = DateTime.TryParse(e.Value?.ToString(), out var dt) ? dt : null;
+        var reference = Value ?? DateTime.Today;
+        _displayMonth = new DateTime(reference.Year, reference.Month, 1);
+        InitTimeFromValue();
+    }
+
+    private void InitTimeFromValue()
+    {
+        if (Value.HasValue)
+        {
+            _hour = Value.Value.Hour;
+            _minute = Value.Value.Minute;
+            _second = Value.Value.Second;
+        }
+        else
+        {
+            var now = DateTime.Now;
+            _hour = now.Hour;
+            _minute = now.Minute;
+            _second = 0;
+        }
+    }
+
+    // ─── Public Methods ───────────────────────────────────────────────────────
+
+    /// <summary>Opens the calendar popup.</summary>
+    public void Open() => OpenPopup();
+
+    /// <summary>Closes the calendar popup.</summary>
+    public void Close() => ClosePopup();
+
+    // ─── Popup Handling ───────────────────────────────────────────────────────
+
+    private void OpenPopup()
+    {
+        if (!Enabled || ReadOnly) return;
+        var reference = Value ?? DateTime.Today;
+        _displayMonth = new DateTime(reference.Year, reference.Month, 1);
+        InitTimeFromValue();
+        _isPopupOpen = true;
+    }
+
+    private void ClosePopup()
+    {
+        _isPopupOpen = false;
+    }
+
+    // ─── Navigation ───────────────────────────────────────────────────────────
+
+    private void PreviousMonth()
+    {
+        _displayMonth = _displayMonth.AddMonths(-1);
+    }
+
+    private void NextMonth()
+    {
+        _displayMonth = _displayMonth.AddMonths(1);
+    }
+
+    // ─── Day Selection ────────────────────────────────────────────────────────
+
+    private void SelectDay(DateOnly date, bool isDisabled)
+    {
+        if (isDisabled) return;
+        // Update the working date but do NOT commit yet — user must click Set
+        var tentative = date.ToDateTime(new TimeOnly(_hour, _minute, _second));
+        // Keep the time tumblers in sync but leave Value uncommitted
+        // We store the chosen date in a pending field
+        _pendingDate = date;
+    }
+
+    private DateOnly? _pendingDate;
+
+    private async Task CommitValue()
+    {
+        var chosenDate = _pendingDate ?? (Value.HasValue ? DateOnly.FromDateTime(Value.Value) : DateOnly.FromDateTime(DateTime.Today));
+        var dt = chosenDate.ToDateTime(new TimeOnly(_hour, _minute, _second));
+
+        // Clamp to Min/Max
+        if (dt < Min) dt = Min;
+        if (dt > Max) dt = Max;
+
+        Value = dt;
         await ValueChanged.InvokeAsync(Value);
+        await OnConfirm.InvokeAsync(Value);
+        ClosePopup();
+    }
+
+    private async Task SetNow()
+    {
+        var now = DateTime.Now;
+        _pendingDate = DateOnly.FromDateTime(now);
+        _hour = now.Hour;
+        _minute = now.Minute;
+        _second = now.Second;
+        _displayMonth = new DateTime(now.Year, now.Month, 1);
+
+        Value = now;
+        await ValueChanged.InvokeAsync(Value);
+        await OnConfirm.InvokeAsync(Value);
+        ClosePopup();
     }
 
     private async Task ClearValue()
     {
         Value = null;
+        _pendingDate = null;
         await ValueChanged.InvokeAsync(null);
+    }
+
+    // ─── Time Tumblers ────────────────────────────────────────────────────────
+
+    private void IncrementHour() => _hour = (_hour + 1) % 24;
+    private void DecrementHour() => _hour = (_hour - 1 + 24) % 24;
+    private void IncrementMinute() => _minute = (_minute + 1) % 60;
+    private void DecrementMinute() => _minute = (_minute - 1 + 60) % 60;
+    private void IncrementSecond() => _second = (_second + 1) % 60;
+    private void DecrementSecond() => _second = (_second - 1 + 60) % 60;
+
+    // ─── Helper Predicates ────────────────────────────────────────────────────
+
+    private bool IsDayDisabled(DateOnly date)
+    {
+        var minDate = DateOnly.FromDateTime(Min);
+        var maxDate = DateOnly.FromDateTime(Max);
+        if (date < minDate || date > maxDate) return true;
+        if (DisabledDates != null && DisabledDates.Contains(date)) return true;
+        return false;
+    }
+
+    private string? FormatValue() => Value?.ToString(Format);
+
+    // ─── Calendar Grid ────────────────────────────────────────────────────────
+
+    private record struct CalendarDay(DateOnly Date);
+
+    private List<CalendarDay> GetCalendarDays()
+    {
+        var days = new List<CalendarDay>(42);
+        var firstOfMonth = new DateOnly(_displayMonth.Year, _displayMonth.Month, 1);
+        var daysInMonth = DateTime.DaysInMonth(_displayMonth.Year, _displayMonth.Month);
+        var startOffset = (int)firstOfMonth.DayOfWeek;
+
+        for (var i = startOffset - 1; i >= 0; i--)
+            days.Add(new CalendarDay(firstOfMonth.AddDays(-(i + 1))));
+
+        for (var d = 1; d <= daysInMonth; d++)
+            days.Add(new CalendarDay(new DateOnly(_displayMonth.Year, _displayMonth.Month, d)));
+
+        while (days.Count % 7 != 0)
+            days.Add(new CalendarDay(days[^1].Date.AddDays(1)));
+
+        return days;
+    }
+
+    // ─── Keyboard Handling ────────────────────────────────────────────────────
+
+    private void OnKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape" && _isPopupOpen)
+            ClosePopup();
     }
 }

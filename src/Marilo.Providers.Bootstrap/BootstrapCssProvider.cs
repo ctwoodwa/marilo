@@ -374,6 +374,7 @@ public class BootstrapCssProvider : IMariloCssProvider
     public string RatingClass() => "mar-bs-rating d-inline-flex";
 
     public string ColorPickerClass() => "form-control form-control-color mar-bs-color-picker";
+    public string ColorPickerPopupClass() => "dropdown-menu mar-bs-color-picker__popup p-2";
 
     public string DatePickerClass() => "form-control mar-bs-datepicker";
 
