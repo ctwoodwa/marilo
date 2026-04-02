@@ -211,6 +211,7 @@ public class ProviderSwitcher : IMariloCssProvider, IMariloIconProvider, IMarilo
     public string WindowContentClass() => Css.WindowContentClass();
     public string WindowActionsClass() => Css.WindowActionsClass();
     public string WindowOverlayClass() => Css.WindowOverlayClass();
+    public string WindowFooterClass() => Css.WindowFooterClass();
 
     // ── Editor ──
     public string EditorClass() => Css.EditorClass();

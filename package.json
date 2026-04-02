@@ -5,10 +5,10 @@
   "description": "Marilo - Provider-first Blazor component library",
   "scripts": {
     "scss:build:fluentui": "sass src/Marilo.Providers.FluentUI/Styles/marilo-fluentui.scss:src/Marilo.Providers.FluentUI/wwwroot/css/marilo-fluentui.css --style=expanded --no-source-map",
-    "scss:build:bootstrap": "sass src/Marilo.Providers.Bootstrap/Styles/marilo-bootstrap.scss:src/Marilo.Providers.Bootstrap/wwwroot/css/marilo-bootstrap.css --style=expanded --no-source-map --load-path=node_modules",
+    "scss:build:bootstrap": "sass src/Marilo.Providers.Bootstrap/Styles/marilo-bootstrap.scss:src/Marilo.Providers.Bootstrap/wwwroot/css/marilo-bootstrap.css --style=expanded --no-source-map --load-path=node_modules --silence-deprecation=color-functions --silence-deprecation=import --silence-deprecation=global-builtin --silence-deprecation=if-function",
     "scss:build": "run-p scss:build:fluentui scss:build:bootstrap",
     "scss:watch:fluentui": "sass src/Marilo.Providers.FluentUI/Styles/marilo-fluentui.scss:src/Marilo.Providers.FluentUI/wwwroot/css/marilo-fluentui.css --style=expanded --no-source-map --watch",
-    "scss:watch:bootstrap": "sass src/Marilo.Providers.Bootstrap/Styles/marilo-bootstrap.scss:src/Marilo.Providers.Bootstrap/wwwroot/css/marilo-bootstrap.css --style=expanded --no-source-map --load-path=node_modules --watch",
+    "scss:watch:bootstrap": "sass src/Marilo.Providers.Bootstrap/Styles/marilo-bootstrap.scss:src/Marilo.Providers.Bootstrap/wwwroot/css/marilo-bootstrap.css --style=expanded --no-source-map --load-path=node_modules --silence-deprecation=color-functions --silence-deprecation=import --silence-deprecation=global-builtin --watch",
     "scss:watch": "run-p scss:watch:fluentui scss:watch:bootstrap",
     "icons:generate": "node scripts/generate-icons-json.js",
     "build": "npm run icons:generate && npm run scss:build",

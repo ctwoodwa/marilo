@@ -739,7 +739,7 @@
 
     private async Task HandleDataPointClick(int seriesIndex, int pointIndex, ChartDataPoint pt, string color)
     {
-        var args = new ChartSeriesClickEventArgs
+        var args = new ChartClickEventArgs
         {
             SeriesIndex = seriesIndex,
             CategoryIndex = pointIndex,
@@ -758,7 +758,7 @@
 
     private async Task HandlePieClick(int seriesIndex, int pointIndex, ChartDataPoint pt, string color, double percentage)
     {
-        var args = new ChartSeriesClickEventArgs
+        var args = new ChartClickEventArgs
         {
             SeriesIndex = seriesIndex,
             CategoryIndex = pointIndex,
