@@ -19,8 +19,22 @@
 </PageSection>
 
 <PageSection Title="Appearance">
-    <DemoSection Title="Multiple Expand" Description="Allow multiple accordion items to be expanded simultaneously." Code="@_multipleCode">
-        <MariloAccordion Multiple="true">
+    <DemoSection Title="Single Expand Mode" Description="ExpandMode.Single restricts the accordion so only one item can be open at a time." Code="@_singleCode">
+        <MariloAccordion ExpandMode="AccordionExpandMode.Single">
+            <MariloAccordionItem Title="Section A">
+                <p>Expanding this item will collapse any other open item.</p>
+            </MariloAccordionItem>
+            <MariloAccordionItem Title="Section B">
+                <p>Content for section B.</p>
+            </MariloAccordionItem>
+            <MariloAccordionItem Title="Section C">
+                <p>Content for section C.</p>
+            </MariloAccordionItem>
+        </MariloAccordion>
+    </DemoSection>
+
+    <DemoSection Title="Multiple Expand Mode" Description="ExpandMode.Multiple (default) allows any number of items to be open simultaneously." Code="@_multipleCode">
+        <MariloAccordion ExpandMode="AccordionExpandMode.Multiple">
             <MariloAccordionItem Title="Section A">
                 <p>Content for section A.</p>
             </MariloAccordionItem>
@@ -33,7 +47,7 @@
         </MariloAccordion>
     </DemoSection>
 
-    <DemoSection Title="Default Expanded" Description="Set items to be expanded by default." Code="@_expandedCode">
+    <DemoSection Title="Default Expanded" Description="Set IsExpanded on an item to expand it on initial render." Code="@_expandedCode">
         <MariloAccordion>
             <MariloAccordionItem Title="Expanded by default" IsExpanded="true">
                 <p>This item starts expanded.</p>
@@ -43,16 +57,69 @@
             </MariloAccordionItem>
         </MariloAccordion>
     </DemoSection>
+
+    <DemoSection Title="Disabled Item" Description="Set Disabled on a MariloAccordionItem to prevent it from being expanded or collapsed." Code="@_disabledCode">
+        <MariloAccordion>
+            <MariloAccordionItem Title="Active item">
+                <p>This item can be expanded and collapsed normally.</p>
+            </MariloAccordionItem>
+            <MariloAccordionItem Title="Disabled item" Disabled="true" IsExpanded="true">
+                <p>This item is disabled — it stays in its current state and ignores user interaction.</p>
+            </MariloAccordionItem>
+            <MariloAccordionItem Title="Another active item">
+                <p>This item is also interactive.</p>
+            </MariloAccordionItem>
+        </MariloAccordion>
+    </DemoSection>
+
+    <DemoSection Title="Item with Icon" Description="Provide an Icon on MariloAccordionItem to show a visual indicator in the header." Code="@_iconCode">
+        <MariloAccordion>
+            <MariloAccordionItem Title="Home" Icon="🏠">
+                <p>Home section content.</p>
+            </MariloAccordionItem>
+            <MariloAccordionItem Title="Reports" Icon="📊">
+                <p>Reports section content.</p>
+            </MariloAccordionItem>
+            <MariloAccordionItem Title="Settings" Icon="⚙️">
+                <p>Settings section content.</p>
+            </MariloAccordionItem>
+        </MariloAccordion>
+    </DemoSection>
+
+    <DemoSection Title="Data Binding" Description="Provide a Data collection and use TextField/IconField to render accordion items from a list." Code="@_dataCode">
+        <MariloAccordion Data="@_faqItems" TextField="Question" IconField="Icon">
+            <ContentTemplate Context="item">
+                @{
+                    var faq = (FaqItem)item;
+                }
+                <p>@faq.Answer</p>
+            </ContentTemplate>
+        </MariloAccordion>
+    </DemoSection>
 </PageSection>
 
 <PageSection Title="Events">
-    <DemoSection Title="IsExpandedChanged" Description="Handle expand and collapse events for each accordion item." Code="@_eventCode">
+    <DemoSection Title="IsExpandedChanged" Description="Handle expand and collapse events on individual accordion items." Code="@_eventCode">
         <MariloAccordion>
             <MariloAccordionItem Title="Click to expand" IsExpanded="@_isExpanded" IsExpandedChanged="@OnExpandedChanged">
-                <p>This item tracks its expanded state.</p>
+                <p>This item tracks its expanded state via IsExpandedChanged.</p>
             </MariloAccordionItem>
         </MariloAccordion>
-        <p>Expanded: @_isExpanded</p>
+        <p>Expanded: <strong>@_isExpanded</strong></p>
+    </DemoSection>
+
+    <DemoSection Title="ExpandedItems Binding" Description="Track all currently expanded items using two-way binding on ExpandedItems." Code="@_expandedItemsCode">
+        <MariloAccordion ExpandMode="AccordionExpandMode.Multiple"
+                         Data="@_faqItems" TextField="Question"
+                         @bind-ExpandedItems="_expandedFaqs">
+            <ContentTemplate Context="item">
+                @{
+                    var faq = (FaqItem)item;
+                }
+                <p>@faq.Answer</p>
+            </ContentTemplate>
+        </MariloAccordion>
+        <p style="margin-top:8px;">@_expandedFaqs?.Count() open item(s)</p>
     </DemoSection>
 </PageSection>
 
@@ -64,7 +131,23 @@
 </PageSection>
 
 @code {
-    // Overview
+    private record FaqItem(string Question, string Answer, string Icon);
+
+    private FaqItem[] _faqItems =
+    [
+        new("What is Blazor?", "Blazor is a framework for building interactive web UIs using C# instead of JavaScript.", "💡"),
+        new("What is Marilo?", "Marilo is a provider-first Blazor component library.", "🧩"),
+        new("Is Marilo open source?", "Yes, Marilo is open source and available on GitHub.", "🔓"),
+    ];
+
+    private bool _isExpanded;
+    private IEnumerable<object>? _expandedFaqs;
+
+    private void OnExpandedChanged(bool expanded)
+    {
+        _isExpanded = expanded;
+    }
+
     private const string _basicCode =
         "<MariloAccordion>\n" +
         "    <MariloAccordionItem Title=\"What is Marilo?\">\n" +
@@ -73,23 +156,18 @@
         "    <MariloAccordionItem Title=\"How do providers work?\">\n" +
         "        <p>Providers implement the CSS mapping interface...</p>\n" +
         "    </MariloAccordionItem>\n" +
-        "    <MariloAccordionItem Title=\"Which providers are available?\">\n" +
-        "        <p>Marilo currently ships with a Fluent UI provider...</p>\n" +
-        "    </MariloAccordionItem>\n" +
         "</MariloAccordion>";
 
-    // Appearance
+    private const string _singleCode =
+        "<MariloAccordion ExpandMode=\"AccordionExpandMode.Single\">\n" +
+        "    <MariloAccordionItem Title=\"Section A\"><p>...</p></MariloAccordionItem>\n" +
+        "    <MariloAccordionItem Title=\"Section B\"><p>...</p></MariloAccordionItem>\n" +
+        "</MariloAccordion>";
+
     private const string _multipleCode =
-        "<MariloAccordion Multiple=\"true\">\n" +
-        "    <MariloAccordionItem Title=\"Section A\">\n" +
-        "        <p>Content for section A.</p>\n" +
-        "    </MariloAccordionItem>\n" +
-        "    <MariloAccordionItem Title=\"Section B\">\n" +
-        "        <p>Content for section B.</p>\n" +
-        "    </MariloAccordionItem>\n" +
-        "    <MariloAccordionItem Title=\"Section C\">\n" +
-        "        <p>Content for section C.</p>\n" +
-        "    </MariloAccordionItem>\n" +
+        "<MariloAccordion ExpandMode=\"AccordionExpandMode.Multiple\">\n" +
+        "    <MariloAccordionItem Title=\"Section A\"><p>...</p></MariloAccordionItem>\n" +
+        "    <MariloAccordionItem Title=\"Section B\"><p>...</p></MariloAccordionItem>\n" +
         "</MariloAccordion>";
 
     private const string _expandedCode =
@@ -97,32 +175,45 @@
         "    <MariloAccordionItem Title=\"Expanded by default\" IsExpanded=\"true\">\n" +
         "        <p>This item starts expanded.</p>\n" +
         "    </MariloAccordionItem>\n" +
-        "    <MariloAccordionItem Title=\"Collapsed by default\">\n" +
-        "        <p>This item starts collapsed.</p>\n" +
-        "    </MariloAccordionItem>\n" +
         "</MariloAccordion>";
 
-    // Events
-    private bool _isExpanded;
+    private const string _disabledCode =
+        "<MariloAccordionItem Title=\"Disabled\" Disabled=\"true\" IsExpanded=\"true\">\n" +
+        "    <p>Ignores user interaction.</p>\n" +
+        "</MariloAccordionItem>";
 
-    private void OnExpandedChanged(bool expanded)
-    {
-        _isExpanded = expanded;
-    }
+    private const string _iconCode =
+        "<MariloAccordionItem Title=\"Home\" Icon=\"🏠\"><p>...</p></MariloAccordionItem>\n" +
+        "<MariloAccordionItem Title=\"Reports\" Icon=\"📊\"><p>...</p></MariloAccordionItem>";
+
+    private const string _dataCode =
+        "<MariloAccordion Data=\"@_faqItems\" TextField=\"Question\" IconField=\"Icon\">\n" +
+        "    <ContentTemplate Context=\"item\">\n" +
+        "        @{ var faq = (FaqItem)item; }\n" +
+        "        <p>@faq.Answer</p>\n" +
+        "    </ContentTemplate>\n" +
+        "</MariloAccordion>";
 
     private const string _eventCode =
-        "<MariloAccordion>\n" +
-        "    <MariloAccordionItem Title=\"Click to expand\" IsExpanded=\"@_isExpanded\" IsExpandedChanged=\"@OnExpandedChanged\">\n" +
-        "        <p>This item tracks its expanded state.</p>\n" +
-        "    </MariloAccordionItem>\n" +
-        "</MariloAccordion>\n" +
+        "<MariloAccordionItem Title=\"Click to expand\"\n" +
+        "    IsExpanded=\"@_isExpanded\" IsExpandedChanged=\"@OnExpandedChanged\">\n" +
+        "    <p>Tracks expanded state.</p>\n" +
+        "</MariloAccordionItem>\n" +
         "<p>Expanded: @_isExpanded</p>\n\n" +
         "@code {\n" +
         "    private bool _isExpanded;\n" +
-        "    private void OnExpandedChanged(bool expanded) => _isExpanded = expanded;\n" +
+        "    private void OnExpandedChanged(bool v) => _isExpanded = v;\n" +
         "}";
 
-    // Accessibility
+    private const string _expandedItemsCode =
+        "<MariloAccordion Data=\"@_items\" TextField=\"Question\"\n" +
+        "                 @bind-ExpandedItems=\"_expandedItems\">\n" +
+        "    <ContentTemplate Context=\"item\">\n" +
+        "        <p>@((FaqItem)item).Answer</p>\n" +
+        "    </ContentTemplate>\n" +
+        "</MariloAccordion>\n" +
+        "<p>@_expandedItems?.Count() open item(s)</p>";
+
     private static readonly (string Key, string Action)[] _keyboard =
     [
         ("Enter / Space", "Expands or collapses the focused accordion item"),
@@ -140,6 +231,7 @@
         ("aria-controls", "Links the header to its corresponding content panel"),
         ("role=\"region\"", "Applied to the content panel of each accordion item"),
         ("aria-labelledby", "Links the content panel back to its controlling header"),
+        ("aria-disabled=\"true\"", "Applied to accordion items with Disabled=\"true\""),
     ];
 
     private static readonly string[] _screenReader =
@@ -147,5 +239,6 @@
         "Accordion headers are announced with their title and expanded or collapsed state.",
         "When an item is expanded, the content panel is announced as a region labeled by the header.",
         "Screen readers announce the position of each header (e.g., \"1 of 3\").",
+        "Disabled items are announced as \"dimmed\" or \"unavailable\".",
     ];
 }

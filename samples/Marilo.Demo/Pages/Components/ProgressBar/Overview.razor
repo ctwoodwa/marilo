@@ -29,6 +29,29 @@
             <MariloProgressBar Value="100" />
         </div>
     </DemoSection>
+
+    <DemoSection Title="Custom Max" Description="Set Max to a value other than 100 when your progress is measured in custom units." Code="@_maxCode">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+            <div>
+                <p style="font-size:0.875em;">Steps (Max=10): @_stepProgress / 10</p>
+                <MariloProgressBar Value="@_stepProgress" Max="10" />
+            </div>
+            <div>
+                <p style="font-size:0.875em;">Files (Max=250): @_fileProgress / 250</p>
+                <MariloProgressBar Value="@_fileProgress" Max="250" />
+            </div>
+        </div>
+        <div class="demo-row" style="margin-top:8px;">
+            <MariloButton Size="ButtonSize.Small" OnClick="@(() => _stepProgress = Math.Min(10, _stepProgress + 1))">+1 Step</MariloButton>
+            <MariloButton Size="ButtonSize.Small" OnClick="@(() => _fileProgress = Math.Min(250, _fileProgress + 25))">+25 Files</MariloButton>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Label" Description="Provide a Label to describe what the progress bar represents." Code="@_labelCode">
+        <MariloProgressBar Value="65" Label="Uploading files..." ShowLabel="true" />
+        <MariloProgressBar Value="30" Label="Processing data..." ShowLabel="true" />
+        <MariloProgressBar IsIndeterminate="true" Label="Connecting to server..." ShowLabel="true" />
+    </DemoSection>
 </PageSection>
 
 <PageSection Title="Accessibility">
@@ -40,6 +63,8 @@
 
 @code {
     private double _progress = 45;
+    private double _stepProgress = 3;
+    private double _fileProgress = 75;
 
     private const string _determinateCode =
         "<MariloProgressBar Value=\"@_progress\" />\n\n" +
@@ -57,6 +82,14 @@
         "<MariloProgressBar Value=\"75\" />\n" +
         "<MariloProgressBar Value=\"100\" />";
 
+    private const string _maxCode =
+        "<MariloProgressBar Value=\"@_stepProgress\" Max=\"10\" />\n" +
+        "<MariloProgressBar Value=\"@_fileProgress\" Max=\"250\" />";
+
+    private const string _labelCode =
+        "<MariloProgressBar Value=\"65\" Label=\"Uploading files...\" ShowLabel=\"true\" />\n" +
+        "<MariloProgressBar IsIndeterminate=\"true\" Label=\"Connecting to server...\" ShowLabel=\"true\" />";
+
     private static readonly (string Key, string Action)[] _keyboard =
     [
         ("Tab", "Progress bars are not interactive and do not receive keyboard focus"),
@@ -67,8 +100,8 @@
         ("role=\"progressbar\"", "Applied to indicate the element displays progress information"),
         ("aria-valuenow", "Indicates the current progress value"),
         ("aria-valuemin", "Indicates the minimum value (typically 0)"),
-        ("aria-valuemax", "Indicates the maximum value (typically 100)"),
-        ("aria-label", "Provides an accessible name describing what the progress represents"),
+        ("aria-valuemax", "Indicates the maximum value set by the Max parameter"),
+        ("aria-label", "Set via the Label parameter to describe what the progress represents"),
     ];
 
     private static readonly string[] _screenReader =

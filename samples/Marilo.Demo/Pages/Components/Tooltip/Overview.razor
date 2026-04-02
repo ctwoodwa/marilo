@@ -10,18 +10,104 @@
             </MariloTooltip>
         </div>
     </DemoSection>
+
+    <DemoSection Title="Custom Template" Description="Use TooltipTemplate to render rich content instead of plain text." Code="@_templateCode">
+        <div class="demo-row">
+            <MariloTooltip>
+                <ChildContent>
+                    <MariloButton Variant="ButtonVariant.Secondary">Hover for rich tip</MariloButton>
+                </ChildContent>
+                <TooltipTemplate>
+                    <div style="text-align:center;">
+                        <strong>Rich Tooltip</strong><br />
+                        <span>Supports <em>any</em> HTML content.</span>
+                    </div>
+                </TooltipTemplate>
+            </MariloTooltip>
+        </div>
+    </DemoSection>
 </PageSection>
 
 <PageSection Title="Appearance">
-    <DemoSection Title="Positions" Description="Tooltips can be positioned at the top or bottom of their target element." Code="@_positionsCode">
+    <DemoSection Title="All Positions" Description="Tooltips can be positioned at the top, bottom, left, or right of the trigger element." Code="@_positionsCode">
         <div class="demo-row">
-            <MariloTooltip Text="This is a top tooltip" Position="TooltipPosition.Top">
-                <MariloButton Variant="ButtonVariant.Secondary">Hover me (Top)</MariloButton>
+            <MariloTooltip Text="Top tooltip" Position="TooltipPosition.Top">
+                <MariloButton Variant="ButtonVariant.Secondary">Top</MariloButton>
             </MariloTooltip>
-            <MariloTooltip Text="This is a bottom tooltip" Position="TooltipPosition.Bottom">
-                <MariloButton Variant="ButtonVariant.Secondary">Hover me (Bottom)</MariloButton>
+            <MariloTooltip Text="Bottom tooltip" Position="TooltipPosition.Bottom">
+                <MariloButton Variant="ButtonVariant.Secondary">Bottom</MariloButton>
+            </MariloTooltip>
+            <MariloTooltip Text="Left tooltip" Position="TooltipPosition.Left">
+                <MariloButton Variant="ButtonVariant.Secondary">Left</MariloButton>
+            </MariloTooltip>
+            <MariloTooltip Text="Right tooltip" Position="TooltipPosition.Right">
+                <MariloButton Variant="ButtonVariant.Secondary">Right</MariloButton>
             </MariloTooltip>
         </div>
+    </DemoSection>
+
+    <DemoSection Title="Callout Arrow" Description="Set ShowCallout to render a small arrow pointing from the tooltip to its trigger." Code="@_calloutCode">
+        <div class="demo-row">
+            <MariloTooltip Text="With callout arrow" ShowCallout="true" Position="TooltipPosition.Top">
+                <MariloButton Variant="ButtonVariant.Secondary">With Arrow</MariloButton>
+            </MariloTooltip>
+            <MariloTooltip Text="Without callout arrow" ShowCallout="false" Position="TooltipPosition.Top">
+                <MariloButton Variant="ButtonVariant.Secondary">No Arrow</MariloButton>
+            </MariloTooltip>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Custom Width" Description="Control the tooltip width with the Width parameter." Code="@_widthCode">
+        <div class="demo-row">
+            <MariloTooltip Text="This tooltip has a fixed 200px width so the text wraps nicely." Width="200px" Position="TooltipPosition.Top">
+                <MariloButton Variant="ButtonVariant.Secondary">Fixed Width (200px)</MariloButton>
+            </MariloTooltip>
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Trigger Behavior">
+    <DemoSection Title="ShowOn Hover (default)" Description="The tooltip appears when the user hovers over the trigger element." Code="@_hoverCode">
+        <div class="demo-row">
+            <MariloTooltip Text="Shown on hover" ShowOn="TooltipShowOn.Hover">
+                <MariloButton Variant="ButtonVariant.Secondary">Hover me</MariloButton>
+            </MariloTooltip>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="ShowOn Focus" Description="The tooltip appears when the trigger element receives keyboard or programmatic focus." Code="@_focusCode">
+        <div class="demo-row">
+            <MariloTooltip Text="Shown on focus — try tabbing here" ShowOn="TooltipShowOn.Focus">
+                <MariloButton Variant="ButtonVariant.Secondary">Tab to me</MariloButton>
+            </MariloTooltip>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="ShowOn Click" Description="The tooltip appears and stays visible when the trigger is clicked." Code="@_clickCode">
+        <div class="demo-row">
+            <MariloTooltip Text="Click outside to dismiss" ShowOn="TooltipShowOn.Click">
+                <MariloButton Variant="ButtonVariant.Secondary">Click me</MariloButton>
+            </MariloTooltip>
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Events">
+    <DemoSection Title="OnShow and OnHide" Description="React to tooltip visibility changes with OnShow and OnHide callbacks." Code="@_eventsCode">
+        <div class="demo-row">
+            <MariloTooltip Text="Watch the log below" OnShow="@OnTooltipShow" OnHide="@OnTooltipHide">
+                <MariloButton Variant="ButtonVariant.Secondary">Hover me</MariloButton>
+            </MariloTooltip>
+        </div>
+        @if (_tooltipLog.Count > 0)
+        {
+            <ul style="margin-top:8px;list-style:none;padding:0;">
+                @foreach (var entry in _tooltipLog)
+                {
+                    <li><small>@entry</small></li>
+                }
+            </ul>
+        }
     </DemoSection>
 </PageSection>
 
@@ -33,18 +119,66 @@
 </PageSection>
 
 @code {
+    private List<string> _tooltipLog = new();
+
+    private void OnTooltipShow() => _tooltipLog.Insert(0, $"Shown at {DateTime.Now:HH:mm:ss}");
+    private void OnTooltipHide() => _tooltipLog.Insert(0, $"Hidden at {DateTime.Now:HH:mm:ss}");
+
     private const string _basicCode =
         "<MariloTooltip Text=\"This is a tooltip\">\n" +
         "    <MariloButton Variant=\"ButtonVariant.Secondary\">Hover me</MariloButton>\n" +
         "</MariloTooltip>";
 
-    private const string _positionsCode =
-        "<MariloTooltip Text=\"This is a top tooltip\" Position=\"TooltipPosition.Top\">\n" +
-        "    <MariloButton Variant=\"ButtonVariant.Secondary\">Hover me (Top)</MariloButton>\n" +
-        "</MariloTooltip>\n\n" +
-        "<MariloTooltip Text=\"This is a bottom tooltip\" Position=\"TooltipPosition.Bottom\">\n" +
-        "    <MariloButton Variant=\"ButtonVariant.Secondary\">Hover me (Bottom)</MariloButton>\n" +
+    private const string _templateCode =
+        "<MariloTooltip>\n" +
+        "    <ChildContent>\n" +
+        "        <MariloButton>Hover me</MariloButton>\n" +
+        "    </ChildContent>\n" +
+        "    <TooltipTemplate>\n" +
+        "        <strong>Rich Tooltip</strong><br />\n" +
+        "        Supports <em>any</em> HTML content.\n" +
+        "    </TooltipTemplate>\n" +
         "</MariloTooltip>";
+
+    private const string _positionsCode =
+        "<MariloTooltip Text=\"Top\" Position=\"TooltipPosition.Top\"><MariloButton>Top</MariloButton></MariloTooltip>\n" +
+        "<MariloTooltip Text=\"Bottom\" Position=\"TooltipPosition.Bottom\"><MariloButton>Bottom</MariloButton></MariloTooltip>\n" +
+        "<MariloTooltip Text=\"Left\" Position=\"TooltipPosition.Left\"><MariloButton>Left</MariloButton></MariloTooltip>\n" +
+        "<MariloTooltip Text=\"Right\" Position=\"TooltipPosition.Right\"><MariloButton>Right</MariloButton></MariloTooltip>";
+
+    private const string _calloutCode =
+        "<MariloTooltip Text=\"With callout arrow\" ShowCallout=\"true\" Position=\"TooltipPosition.Top\">\n" +
+        "    <MariloButton>With Arrow</MariloButton>\n" +
+        "</MariloTooltip>";
+
+    private const string _widthCode =
+        "<MariloTooltip Text=\"This tooltip has a fixed width so the text wraps.\" Width=\"200px\">\n" +
+        "    <MariloButton>Fixed Width</MariloButton>\n" +
+        "</MariloTooltip>";
+
+    private const string _hoverCode =
+        "<MariloTooltip Text=\"Shown on hover\" ShowOn=\"TooltipShowOn.Hover\">\n" +
+        "    <MariloButton>Hover me</MariloButton>\n" +
+        "</MariloTooltip>";
+
+    private const string _focusCode =
+        "<MariloTooltip Text=\"Shown on focus\" ShowOn=\"TooltipShowOn.Focus\">\n" +
+        "    <MariloButton>Tab to me</MariloButton>\n" +
+        "</MariloTooltip>";
+
+    private const string _clickCode =
+        "<MariloTooltip Text=\"Click outside to dismiss\" ShowOn=\"TooltipShowOn.Click\">\n" +
+        "    <MariloButton>Click me</MariloButton>\n" +
+        "</MariloTooltip>";
+
+    private const string _eventsCode =
+        "<MariloTooltip Text=\"Watch the log\" OnShow=\"@OnTooltipShow\" OnHide=\"@OnTooltipHide\">\n" +
+        "    <MariloButton>Hover me</MariloButton>\n" +
+        "</MariloTooltip>\n\n" +
+        "@code {\n" +
+        "    private void OnTooltipShow() { /* fires when shown */ }\n" +
+        "    private void OnTooltipHide() { /* fires when hidden */ }\n" +
+        "}";
 
     private static readonly (string Key, string Action)[] _keyboard =
     [

@@ -10,17 +10,105 @@
             <MariloButton Variant="ButtonVariant.Primary" OnClick="@(() => _dialogOpen = false)">Close</MariloButton>
         </MariloDialog>
     </DemoSection>
+
+    <DemoSection Title="DialogContent and DialogActions" Description="Use the DialogContent and DialogActions render fragments to separate body and footer concerns." Code="@_contentActionsCode">
+        <MariloButton OnClick="@(() => _structuredOpen = true)">Open Structured Dialog</MariloButton>
+        <MariloDialog @bind-Visible="_structuredOpen" Title="Confirm Delete" Width="400px">
+            <DialogContent>
+                <p>Are you sure you want to delete this item? This action cannot be undone.</p>
+            </DialogContent>
+            <DialogActions>
+                <MariloButton Variant="ButtonVariant.Secondary" OnClick="@(() => _structuredOpen = false)">Cancel</MariloButton>
+                <MariloButton Variant="ButtonVariant.Danger" OnClick="@(() => _structuredOpen = false)">Delete</MariloButton>
+            </DialogActions>
+        </MariloDialog>
+    </DemoSection>
 </PageSection>
 
 <PageSection Title="Appearance">
-    <DemoSection Title="Dialog with Rich Content" Description="Dialogs can contain any content including forms and multiple actions." Code="@_richCode">
-        <MariloButton OnClick="@(() => _richDialogOpen = true)">Open Rich Dialog</MariloButton>
-        <MariloDialog @bind-Visible="_richDialogOpen" Title="Rich Content Dialog">
-            <p>This dialog demonstrates richer content with multiple action buttons.</p>
-            <div class="demo-row">
-                <MariloButton Variant="ButtonVariant.Primary" OnClick="@(() => _richDialogOpen = false)">Confirm</MariloButton>
-                <MariloButton Variant="ButtonVariant.Secondary" OnClick="@(() => _richDialogOpen = false)">Cancel</MariloButton>
-            </div>
+    <DemoSection Title="Predefined Button Sets" Description="Use the Buttons parameter for common dialog patterns without custom DialogActions." Code="@_buttonsCode">
+        <div class="demo-row" style="flex-wrap:wrap;">
+            <MariloButton OnClick="@(() => _okOpen = true)">Ok</MariloButton>
+            <MariloDialog @bind-Visible="_okOpen" Title="Information" Buttons="DialogButtons.Ok" OnButtonClick="@(r => OnButtonResult("Ok", r))">
+                <DialogContent><p>Your changes have been saved.</p></DialogContent>
+            </MariloDialog>
+
+            <MariloButton OnClick="@(() => _okCancelOpen = true)">OkCancel</MariloButton>
+            <MariloDialog @bind-Visible="_okCancelOpen" Title="Confirm" Buttons="DialogButtons.OkCancel" OnButtonClick="@(r => OnButtonResult("OkCancel", r))">
+                <DialogContent><p>Do you want to continue?</p></DialogContent>
+            </MariloDialog>
+
+            <MariloButton OnClick="@(() => _yesNoOpen = true)">YesNo</MariloButton>
+            <MariloDialog @bind-Visible="_yesNoOpen" Title="Question" Buttons="DialogButtons.YesNo" OnButtonClick="@(r => OnButtonResult("YesNo", r))">
+                <DialogContent><p>Would you like to save before closing?</p></DialogContent>
+            </MariloDialog>
+
+            <MariloButton OnClick="@(() => _yesNoCancelOpen = true)">YesNoCancel</MariloButton>
+            <MariloDialog @bind-Visible="_yesNoCancelOpen" Title="Save Changes" Buttons="DialogButtons.YesNoCancel" OnButtonClick="@(r => OnButtonResult("YesNoCancel", r))">
+                <DialogContent><p>There are unsaved changes. Save before closing?</p></DialogContent>
+            </MariloDialog>
+
+            <MariloButton OnClick="@(() => _retryCancelOpen = true)">RetryCancel</MariloButton>
+            <MariloDialog @bind-Visible="_retryCancelOpen" Title="Connection Failed" Buttons="DialogButtons.RetryCancel" OnButtonClick="@(r => OnButtonResult("RetryCancel", r))">
+                <DialogContent><p>Could not connect to the server. Retry?</p></DialogContent>
+            </MariloDialog>
+        </div>
+        @if (!string.IsNullOrEmpty(_buttonResult))
+        {
+            <p style="margin-top:8px;">Result: <strong>@_buttonResult</strong></p>
+        }
+    </DemoSection>
+
+    <DemoSection Title="Width and Height" Description="Control dialog dimensions with the Width and Height parameters." Code="@_dimensionsCode">
+        <div class="demo-row">
+            <MariloButton OnClick="@(() => _narrowOpen = true)">Narrow (320px)</MariloButton>
+            <MariloDialog @bind-Visible="_narrowOpen" Title="Narrow Dialog" Width="320px">
+                <p>This dialog has a fixed 320px width.</p>
+                <MariloButton Variant="ButtonVariant.Primary" OnClick="@(() => _narrowOpen = false)">Close</MariloButton>
+            </MariloDialog>
+
+            <MariloButton OnClick="@(() => _wideOpen = true)">Wide (640px)</MariloButton>
+            <MariloDialog @bind-Visible="_wideOpen" Title="Wide Dialog" Width="640px">
+                <p>This dialog has a fixed 640px width, useful for forms or rich content.</p>
+                <MariloButton Variant="ButtonVariant.Primary" OnClick="@(() => _wideOpen = false)">Close</MariloButton>
+            </MariloDialog>
+
+            <MariloButton OnClick="@(() => _tallerOpen = true)">Fixed Height</MariloButton>
+            <MariloDialog @bind-Visible="_tallerOpen" Title="Fixed Height Dialog" Width="400px" Height="300px">
+                <p>This dialog has Width=400px and Height=300px.</p>
+                <MariloButton Variant="ButtonVariant.Primary" OnClick="@(() => _tallerOpen = false)">Close</MariloButton>
+            </MariloDialog>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Draggable" Description="Set Draggable to allow users to reposition the dialog." Code="@_draggableCode">
+        <MariloButton OnClick="@(() => _draggableOpen = true)">Open Draggable Dialog</MariloButton>
+        <MariloDialog @bind-Visible="_draggableOpen" Title="Draggable Dialog" Draggable="true" Width="360px">
+            <p>Drag this dialog by its title bar to reposition it on the screen.</p>
+            <MariloButton Variant="ButtonVariant.Primary" OnClick="@(() => _draggableOpen = false)">Close</MariloButton>
+        </MariloDialog>
+    </DemoSection>
+
+    <DemoSection Title="Non-Modal" Description="Set Modal to false to allow interaction with the page while the dialog is open." Code="@_nonModalCode">
+        <MariloButton OnClick="@(() => _nonModalOpen = true)">Open Non-Modal Dialog</MariloButton>
+        <MariloDialog @bind-Visible="_nonModalOpen" Title="Non-Modal Dialog" Modal="false" Width="340px">
+            <p>This dialog does not block the rest of the page.</p>
+            <MariloButton Variant="ButtonVariant.Primary" OnClick="@(() => _nonModalOpen = false)">Close</MariloButton>
+        </MariloDialog>
+    </DemoSection>
+
+    <DemoSection Title="Hide Close Button" Description="Set ShowCloseButton to false to remove the built-in close button from the title bar." Code="@_noCloseCode">
+        <MariloButton OnClick="@(() => _noCloseOpen = true)">Open Dialog (No Close Button)</MariloButton>
+        <MariloDialog @bind-Visible="_noCloseOpen" Title="No Close Button" ShowCloseButton="false" Buttons="DialogButtons.OkCancel" OnButtonClick="@(r => _noCloseOpen = false)">
+            <DialogContent><p>This dialog has no &times; button. Use the action buttons to dismiss it.</p></DialogContent>
+        </MariloDialog>
+    </DemoSection>
+
+    <DemoSection Title="Prevent Overlay Close" Description="Set CloseOnOverlayClick to false to prevent dismissing the dialog by clicking the backdrop." Code="@_noOverlayCode">
+        <MariloButton OnClick="@(() => _noOverlayOpen = true)">Open (Click Overlay to Test)</MariloButton>
+        <MariloDialog @bind-Visible="_noOverlayOpen" Title="Overlay Locked" CloseOnOverlayClick="false" Width="360px">
+            <p>Clicking the backdrop overlay will not close this dialog. Use the button below.</p>
+            <MariloButton Variant="ButtonVariant.Primary" OnClick="@(() => _noOverlayOpen = false)">Close</MariloButton>
         </MariloDialog>
     </DemoSection>
 </PageSection>
@@ -28,13 +116,28 @@
 <PageSection Title="Events">
     <DemoSection Title="OnClose" Description="Handle the dialog close event with the OnClose callback." Code="@_closeCode">
         <MariloButton OnClick="@(() => _evDialogOpen = true)">Open Dialog</MariloButton>
-        <MariloDialog @bind-Visible="_evDialogOpen" Title="Close Event Demo">
-            <p>Close this dialog to see the event callback in action.</p>
+        <MariloDialog @bind-Visible="_evDialogOpen" Title="Close Event Demo" OnClose="@OnDialogClose">
+            <p>Close this dialog to see the OnClose callback fire.</p>
             <MariloButton Variant="ButtonVariant.Primary" OnClick="@(() => _evDialogOpen = false)">Close</MariloButton>
         </MariloDialog>
         @if (!string.IsNullOrEmpty(_closeMessage))
         {
             <p style="margin-top: 8px;">@_closeMessage</p>
+        }
+    </DemoSection>
+
+    <DemoSection Title="OnButtonClick" Description="Receive the DialogResult from predefined button sets via the OnButtonClick callback." Code="@_onButtonClickCode">
+        <MariloButton OnClick="@(() => _resultDialogOpen = true)">Open Dialog</MariloButton>
+        <MariloDialog @bind-Visible="_resultDialogOpen" Title="Result Demo"
+                      Buttons="DialogButtons.YesNoCancel"
+                      OnButtonClick="@OnDialogButtonClick">
+            <DialogContent>
+                <p>Click a button to see the <code>DialogResult</code> value returned.</p>
+            </DialogContent>
+        </MariloDialog>
+        @if (!string.IsNullOrEmpty(_dialogResultMessage))
+        {
+            <p style="margin-top:8px;">@_dialogResultMessage</p>
         }
     </DemoSection>
 </PageSection>
@@ -47,10 +150,37 @@
 </PageSection>
 
 @code {
+    // Overview
     private bool _dialogOpen;
-    private bool _richDialogOpen;
+    private bool _structuredOpen;
+
+    // Appearance
+    private bool _okOpen;
+    private bool _okCancelOpen;
+    private bool _yesNoOpen;
+    private bool _yesNoCancelOpen;
+    private bool _retryCancelOpen;
+    private string? _buttonResult;
+
+    private bool _narrowOpen;
+    private bool _wideOpen;
+    private bool _tallerOpen;
+    private bool _draggableOpen;
+    private bool _nonModalOpen;
+    private bool _noCloseOpen;
+    private bool _noOverlayOpen;
+
+    // Events
     private bool _evDialogOpen;
     private string? _closeMessage;
+
+    private bool _resultDialogOpen;
+    private string? _dialogResultMessage;
+
+    private void OnButtonResult(string set, DialogResult result)
+    {
+        _buttonResult = $"{set}: {result}";
+    }
 
     private void OnDialogClose()
     {
@@ -58,6 +188,12 @@
         _closeMessage = $"Dialog closed at {DateTime.Now:HH:mm:ss}";
     }
 
+    private void OnDialogButtonClick(DialogResult result)
+    {
+        _dialogResultMessage = $"Button clicked — DialogResult: {result} at {DateTime.Now:HH:mm:ss}";
+    }
+
+    // Code snippets
     private const string _basicCode =
         "<MariloButton OnClick=\"@(() => _dialogOpen = true)\">Open Dialog</MariloButton>\n" +
         "<MariloDialog @bind-Visible=\"_dialogOpen\" Title=\"Example Dialog\">\n" +
@@ -66,24 +202,79 @@
         "</MariloDialog>\n\n" +
         "@code { private bool _dialogOpen; }";
 
-    private const string _richCode =
-        "<MariloButton OnClick=\"@(() => _richDialogOpen = true)\">Open Rich Dialog</MariloButton>\n" +
-        "<MariloDialog @bind-Visible=\"_richDialogOpen\" Title=\"Rich Content Dialog\">\n" +
-        "    <p>Dialog with multiple action buttons.</p>\n" +
-        "    <MariloButton Variant=\"ButtonVariant.Primary\" OnClick=\"@(() => _richDialogOpen = false)\">Confirm</MariloButton>\n" +
-        "    <MariloButton Variant=\"ButtonVariant.Secondary\" OnClick=\"@(() => _richDialogOpen = false)\">Cancel</MariloButton>\n" +
+    private const string _contentActionsCode =
+        "<MariloDialog @bind-Visible=\"_open\" Title=\"Confirm Delete\" Width=\"400px\">\n" +
+        "    <DialogContent>\n" +
+        "        <p>Are you sure you want to delete this item?</p>\n" +
+        "    </DialogContent>\n" +
+        "    <DialogActions>\n" +
+        "        <MariloButton Variant=\"ButtonVariant.Secondary\" OnClick=\"@(() => _open = false)\">Cancel</MariloButton>\n" +
+        "        <MariloButton Variant=\"ButtonVariant.Danger\" OnClick=\"@(() => _open = false)\">Delete</MariloButton>\n" +
+        "    </DialogActions>\n" +
+        "</MariloDialog>";
+
+    private const string _buttonsCode =
+        "<MariloDialog @bind-Visible=\"_open\" Title=\"Confirm\"\n" +
+        "              Buttons=\"DialogButtons.YesNoCancel\"\n" +
+        "              OnButtonClick=\"@OnButtonClick\">\n" +
+        "    <DialogContent><p>Save changes before closing?</p></DialogContent>\n" +
         "</MariloDialog>\n\n" +
-        "@code { private bool _richDialogOpen; }";
+        "@code {\n" +
+        "    void OnButtonClick(DialogResult result) { /* Ok, Yes, No, Cancel, Retry */ }\n" +
+        "}";
+
+    private const string _dimensionsCode =
+        "<MariloDialog @bind-Visible=\"_open\" Title=\"Wide\" Width=\"640px\">\n" +
+        "    ...\n" +
+        "</MariloDialog>\n\n" +
+        "<MariloDialog @bind-Visible=\"_open\" Title=\"Fixed\" Width=\"400px\" Height=\"300px\">\n" +
+        "    ...\n" +
+        "</MariloDialog>";
+
+    private const string _draggableCode =
+        "<MariloDialog @bind-Visible=\"_open\" Title=\"Draggable\" Draggable=\"true\">\n" +
+        "    <p>Drag by the title bar to reposition.</p>\n" +
+        "</MariloDialog>";
+
+    private const string _nonModalCode =
+        "<MariloDialog @bind-Visible=\"_open\" Title=\"Non-Modal\" Modal=\"false\">\n" +
+        "    <p>Does not block the rest of the page.</p>\n" +
+        "</MariloDialog>";
+
+    private const string _noCloseCode =
+        "<MariloDialog @bind-Visible=\"_open\" Title=\"No Close Button\"\n" +
+        "              ShowCloseButton=\"false\"\n" +
+        "              Buttons=\"DialogButtons.OkCancel\">\n" +
+        "    <DialogContent><p>No &times; button in the header.</p></DialogContent>\n" +
+        "</MariloDialog>";
+
+    private const string _noOverlayCode =
+        "<MariloDialog @bind-Visible=\"_open\" Title=\"Overlay Locked\"\n" +
+        "              CloseOnOverlayClick=\"false\">\n" +
+        "    <p>Clicking the backdrop does not close this dialog.</p>\n" +
+        "</MariloDialog>";
 
     private const string _closeCode =
-        "<MariloButton OnClick=\"@(() => _dialogOpen = true)\">Open Dialog</MariloButton>\n" +
         "<MariloDialog @bind-Visible=\"_dialogOpen\" Title=\"Close Event Demo\" OnClose=\"@OnDialogClose\">\n" +
-        "    <p>Close this dialog to see the event callback in action.</p>\n" +
-        "    <MariloButton Variant=\"ButtonVariant.Primary\" OnClick=\"@(() => _dialogOpen = false)\">Close</MariloButton>\n" +
+        "    <p>Close this dialog to see the OnClose callback fire.</p>\n" +
+        "    <MariloButton OnClick=\"@(() => _dialogOpen = false)\">Close</MariloButton>\n" +
         "</MariloDialog>\n\n" +
         "@code {\n" +
         "    private bool _dialogOpen;\n" +
-        "    private void OnDialogClose() { }\n" +
+        "    private void OnDialogClose() { /* fires on close */ }\n" +
+        "}";
+
+    private const string _onButtonClickCode =
+        "<MariloDialog @bind-Visible=\"_open\" Title=\"Result Demo\"\n" +
+        "              Buttons=\"DialogButtons.YesNoCancel\"\n" +
+        "              OnButtonClick=\"@OnDialogButtonClick\">\n" +
+        "    <DialogContent><p>Click a button to see the DialogResult.</p></DialogContent>\n" +
+        "</MariloDialog>\n\n" +
+        "@code {\n" +
+        "    private void OnDialogButtonClick(DialogResult result)\n" +
+        "    {\n" +
+        "        // result is Yes, No, Ok, Cancel, or Retry\n" +
+        "    }\n" +
         "}";
 
     private static readonly (string Key, string Action)[] _keyboard =

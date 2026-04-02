@@ -10,6 +10,10 @@
             <MariloBreadcrumbItem IsActive="true">Breadcrumb</MariloBreadcrumbItem>
         </MariloBreadcrumb>
     </DemoSection>
+
+    <DemoSection Title="Data Binding" Description="Provide a Data collection and use TextField/UrlField/IconField to generate breadcrumb items automatically." Code="@_dataCode">
+        <MariloBreadcrumb Data="@_breadcrumbData" TextField="Label" UrlField="Url" IconField="Icon" />
+    </DemoSection>
 </PageSection>
 
 <PageSection Title="Appearance">
@@ -28,6 +32,30 @@
             <MariloBreadcrumbItem IsActive="true" Icon="navigation">Breadcrumb</MariloBreadcrumbItem>
         </MariloBreadcrumb>
     </DemoSection>
+
+    <DemoSection Title="Item Template" Description="Use ItemTemplate to customise how each data-bound breadcrumb item renders." Code="@_itemTemplateCode">
+        <MariloBreadcrumb Data="@_breadcrumbData">
+            <ItemTemplate Context="item">
+                @{
+                    var crumb = (BreadcrumbItem)item;
+                }
+                @if (!string.IsNullOrEmpty(crumb.Url))
+                {
+                    <a href="@crumb.Url" style="display:inline-flex;align-items:center;gap:4px;">
+                        @if (!string.IsNullOrEmpty(crumb.Icon))
+                        {
+                            <span>@crumb.Icon</span>
+                        }
+                        @crumb.Label
+                    </a>
+                }
+                else
+                {
+                    <span style="font-weight:600;">@crumb.Label</span>
+                }
+            </ItemTemplate>
+        </MariloBreadcrumb>
+    </DemoSection>
 </PageSection>
 
 <PageSection Title="Accessibility">
@@ -38,7 +66,15 @@
 </PageSection>
 
 @code {
-    // Overview
+    private record BreadcrumbItem(string Label, string Url, string Icon);
+
+    private BreadcrumbItem[] _breadcrumbData =
+    [
+        new("Home", "/", "🏠"),
+        new("Components", "/components", "🧩"),
+        new("Breadcrumb", "", ""),
+    ];
+
     private const string _basicCode =
         "<MariloBreadcrumb>\n" +
         "    <MariloBreadcrumbItem Href=\"/\">Home</MariloBreadcrumbItem>\n" +
@@ -46,7 +82,10 @@
         "    <MariloBreadcrumbItem IsActive=\"true\">Breadcrumb</MariloBreadcrumbItem>\n" +
         "</MariloBreadcrumb>";
 
-    // Appearance
+    private const string _dataCode =
+        "@* BreadcrumbItem record: Label, Url, Icon *@\n" +
+        "<MariloBreadcrumb Data=\"@_crumbs\" TextField=\"Label\" UrlField=\"Url\" IconField=\"Icon\" />";
+
     private const string _separatorCode =
         "<MariloBreadcrumb Separator=\"/\">\n" +
         "    <MariloBreadcrumbItem Href=\"/\">Home</MariloBreadcrumbItem>\n" +
@@ -61,7 +100,21 @@
         "    <MariloBreadcrumbItem IsActive=\"true\" Icon=\"navigation\">Breadcrumb</MariloBreadcrumbItem>\n" +
         "</MariloBreadcrumb>";
 
-    // Accessibility
+    private const string _itemTemplateCode =
+        "<MariloBreadcrumb Data=\"@_crumbs\">\n" +
+        "    <ItemTemplate Context=\"item\">\n" +
+        "        @{ var crumb = (BreadcrumbItem)item; }\n" +
+        "        @if (!string.IsNullOrEmpty(crumb.Url))\n" +
+        "        {\n" +
+        "            <a href=\"@crumb.Url\">@crumb.Icon @crumb.Label</a>\n" +
+        "        }\n" +
+        "        else\n" +
+        "        {\n" +
+        "            <span>@crumb.Label</span>\n" +
+        "        }\n" +
+        "    </ItemTemplate>\n" +
+        "</MariloBreadcrumb>";
+
     private static readonly (string Key, string Action)[] _keyboard =
     [
         ("Tab", "Moves focus to the next breadcrumb link"),

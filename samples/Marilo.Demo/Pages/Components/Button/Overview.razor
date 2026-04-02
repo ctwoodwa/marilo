@@ -11,8 +11,8 @@
 
     <DemoSection Title="Disabled" Code="@_disabledCode">
         <div class="demo-row">
-            <MariloButton Disabled="true">Disabled</MariloButton>
-            <MariloButton Variant="ButtonVariant.Danger" Disabled="true">Disabled Danger</MariloButton>
+            <MariloButton Enabled="false">Disabled</MariloButton>
+            <MariloButton Variant="ButtonVariant.Danger" Enabled="false">Disabled Danger</MariloButton>
         </div>
     </DemoSection>
 </PageSection>
@@ -37,12 +37,59 @@
         </div>
     </DemoSection>
 
-    <DemoSection Title="Outline" Code="@_outlineCode">
+    <DemoSection Title="Fill Modes" Description="FillMode controls the visual weight of the button — from solid to outline, flat, link-style, or invisible." Code="@_fillModeCode">
         <div class="demo-row">
-            <MariloButton Variant="ButtonVariant.Primary" IsOutline="true">Outline Primary</MariloButton>
-            <MariloButton Variant="ButtonVariant.Danger" IsOutline="true">Outline Danger</MariloButton>
-            <MariloButton Variant="ButtonVariant.Success" IsOutline="true">Outline Success</MariloButton>
+            <MariloButton Variant="ButtonVariant.Primary" FillMode="FillMode.Solid">Solid</MariloButton>
+            <MariloButton Variant="ButtonVariant.Primary" FillMode="FillMode.Outline">Outline</MariloButton>
+            <MariloButton Variant="ButtonVariant.Primary" FillMode="FillMode.Flat">Flat</MariloButton>
+            <MariloButton Variant="ButtonVariant.Primary" FillMode="FillMode.Link">Link</MariloButton>
+            <MariloButton Variant="ButtonVariant.Primary" FillMode="FillMode.Clear">Clear</MariloButton>
         </div>
+    </DemoSection>
+
+    <DemoSection Title="Rounded" Description="Control the border-radius of the button with the Rounded parameter." Code="@_roundedCode">
+        <div class="demo-row">
+            <MariloButton Rounded="RoundedMode.None">None</MariloButton>
+            <MariloButton Rounded="RoundedMode.Small">Small</MariloButton>
+            <MariloButton Rounded="RoundedMode.Medium">Medium</MariloButton>
+            <MariloButton Rounded="RoundedMode.Large">Large</MariloButton>
+            <MariloButton Rounded="RoundedMode.Full">Full</MariloButton>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="With Icon" Description="Use the Icon render fragment slot to place an icon inside the button." Code="@_iconCode">
+        <div class="demo-row">
+            <MariloButton Variant="ButtonVariant.Primary">
+                <Icon>★</Icon>
+                <ChildContent>Star</ChildContent>
+            </MariloButton>
+            <MariloButton Variant="ButtonVariant.Success">
+                <Icon>✓</Icon>
+                <ChildContent>Confirm</ChildContent>
+            </MariloButton>
+            <MariloButton Variant="ButtonVariant.Danger" FillMode="FillMode.Outline">
+                <Icon>✕</Icon>
+                <ChildContent>Delete</ChildContent>
+            </MariloButton>
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Button Type">
+    <DemoSection Title="Submit and Reset" Description="Use ButtonType to integrate with HTML forms." Code="@_typeCode">
+        <EditForm Model="@_formModel" OnValidSubmit="@OnFormSubmit">
+            <div style="display:flex;flex-direction:column;gap:8px;max-width:300px;">
+                <input class="mar-input" @bind="_formModel.Name" placeholder="Enter your name" />
+                <div class="demo-row">
+                    <MariloButton ButtonType="ButtonType.Submit" Variant="ButtonVariant.Primary">Submit</MariloButton>
+                    <MariloButton ButtonType="ButtonType.Reset" Variant="ButtonVariant.Secondary">Reset</MariloButton>
+                </div>
+            </div>
+        </EditForm>
+        @if (!string.IsNullOrEmpty(_submittedName))
+        {
+            <p style="margin-top:8px;">Submitted: <strong>@_submittedName</strong></p>
+        }
     </DemoSection>
 </PageSection>
 
@@ -68,8 +115,8 @@
         "<MariloButton Variant=\"ButtonVariant.Primary\">Click me</MariloButton>";
 
     private const string _disabledCode =
-        "<MariloButton Disabled=\"true\">Disabled</MariloButton>\n" +
-        "<MariloButton Variant=\"ButtonVariant.Danger\" Disabled=\"true\">Disabled Danger</MariloButton>";
+        "<MariloButton Enabled=\"false\">Disabled</MariloButton>\n" +
+        "<MariloButton Variant=\"ButtonVariant.Danger\" Enabled=\"false\">Disabled Danger</MariloButton>";
 
     // Appearance
     private const string _variantsCode =
@@ -85,10 +132,46 @@
         "<MariloButton Size=\"ButtonSize.Medium\">Medium</MariloButton>\n" +
         "<MariloButton Size=\"ButtonSize.Large\">Large</MariloButton>";
 
-    private const string _outlineCode =
-        "<MariloButton Variant=\"ButtonVariant.Primary\" IsOutline=\"true\">Outline Primary</MariloButton>\n" +
-        "<MariloButton Variant=\"ButtonVariant.Danger\" IsOutline=\"true\">Outline Danger</MariloButton>\n" +
-        "<MariloButton Variant=\"ButtonVariant.Success\" IsOutline=\"true\">Outline Success</MariloButton>";
+    private const string _fillModeCode =
+        "<MariloButton Variant=\"ButtonVariant.Primary\" FillMode=\"FillMode.Solid\">Solid</MariloButton>\n" +
+        "<MariloButton Variant=\"ButtonVariant.Primary\" FillMode=\"FillMode.Outline\">Outline</MariloButton>\n" +
+        "<MariloButton Variant=\"ButtonVariant.Primary\" FillMode=\"FillMode.Flat\">Flat</MariloButton>\n" +
+        "<MariloButton Variant=\"ButtonVariant.Primary\" FillMode=\"FillMode.Link\">Link</MariloButton>\n" +
+        "<MariloButton Variant=\"ButtonVariant.Primary\" FillMode=\"FillMode.Clear\">Clear</MariloButton>";
+
+    private const string _roundedCode =
+        "<MariloButton Rounded=\"RoundedMode.None\">None</MariloButton>\n" +
+        "<MariloButton Rounded=\"RoundedMode.Small\">Small</MariloButton>\n" +
+        "<MariloButton Rounded=\"RoundedMode.Medium\">Medium</MariloButton>\n" +
+        "<MariloButton Rounded=\"RoundedMode.Large\">Large</MariloButton>\n" +
+        "<MariloButton Rounded=\"RoundedMode.Full\">Full</MariloButton>";
+
+    private const string _iconCode =
+        "<MariloButton Variant=\"ButtonVariant.Primary\">\n" +
+        "    <Icon>★</Icon>\n" +
+        "    Star\n" +
+        "</MariloButton>\n" +
+        "<MariloButton Variant=\"ButtonVariant.Success\">\n" +
+        "    <Icon>✓</Icon>\n" +
+        "    Confirm\n" +
+        "</MariloButton>";
+
+    // Button Type
+    private class FormModel { public string Name { get; set; } = ""; }
+    private FormModel _formModel = new();
+    private string _submittedName = "";
+
+    private void OnFormSubmit()
+    {
+        _submittedName = _formModel.Name;
+    }
+
+    private const string _typeCode =
+        "<EditForm Model=\"@_model\" OnValidSubmit=\"@OnFormSubmit\">\n" +
+        "    <input @bind=\"_model.Name\" placeholder=\"Enter your name\" />\n" +
+        "    <MariloButton ButtonType=\"ButtonType.Submit\" Variant=\"ButtonVariant.Primary\">Submit</MariloButton>\n" +
+        "    <MariloButton ButtonType=\"ButtonType.Reset\" Variant=\"ButtonVariant.Secondary\">Reset</MariloButton>\n" +
+        "</EditForm>";
 
     // Events
     private int _clickCount;
@@ -116,7 +199,7 @@
     private static readonly (string Attribute, string Description)[] _aria =
     [
         ("role=\"button\"", "Implicitly set by the <button> element"),
-        ("aria-disabled=\"true\"", "Applied when the Disabled parameter is set"),
+        ("aria-disabled=\"true\"", "Applied when the Enabled parameter is false"),
         ("aria-label", "Can be set for icon-only buttons that have no visible text"),
     ];
 

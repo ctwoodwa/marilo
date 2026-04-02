@@ -4,23 +4,45 @@
 
 <PageSection Title="Overview">
     <DemoSection Title="Basic Usage" Code="@_basicCode">
-        <MariloRating Value="@_rating" ValueChanged="@(v => _rating = v)" Max="5" />
+        <MariloRating @bind-Value="_rating" Max="5" />
         <p><strong>@_rating of 5 stars</strong></p>
+    </DemoSection>
+
+    <DemoSection Title="With Label" Description="Provide a Label to describe the rating to users and assistive technology." Code="@_labelCode">
+        <MariloRating @bind-Value="_labelRating" Max="5" Label="Product quality" />
+        <p><strong>Rating:</strong> @_labelRating / 5</p>
     </DemoSection>
 </PageSection>
 
 <PageSection Title="Appearance">
-    <DemoSection Title="Read Only" Description="A read-only rating displays a value without allowing user interaction." Code="@_readOnlyCode">
-        <MariloRating Value="4" Max="5" ReadOnly="true" />
+    <DemoSection Title="Custom Max Stars" Description="Change the number of stars with the Max parameter." Code="@_maxCode">
+        <div style="display:flex;flex-direction:column;gap:8px;">
+            <div>
+                <span style="display:inline-block;width:80px;font-size:0.875em;">3 stars:</span>
+                <MariloRating @bind-Value="_rating3" Max="3" />
+            </div>
+            <div>
+                <span style="display:inline-block;width:80px;font-size:0.875em;">7 stars:</span>
+                <MariloRating @bind-Value="_rating7" Max="7" />
+            </div>
+            <div>
+                <span style="display:inline-block;width:80px;font-size:0.875em;">10 stars:</span>
+                <MariloRating @bind-Value="_rating10" Max="10" />
+            </div>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Read Only" Description="IsReadOnly displays a value without allowing user interaction." Code="@_readOnlyCode">
+        <MariloRating Value="4" Max="5" IsReadOnly="true" />
     </DemoSection>
 
     <DemoSection Title="Disabled" Description="A disabled rating prevents user interaction." Code="@_disabledCode">
-        <MariloRating Value="3" Max="5" Disabled="true" />
+        <MariloRating Value="3" Max="5" Enabled="false" />
     </DemoSection>
 </PageSection>
 
 <PageSection Title="Events">
-    <DemoSection Title="ValueChanged" Description="Handle rating changes with the ValueChanged callback." Code="@_interactiveCode">
+    <DemoSection Title="ValueChanged" Description="Handle rating changes with the ValueChanged callback or use two-way binding." Code="@_interactiveCode">
         <MariloRating Value="@_evRating" ValueChanged="@(v => _evRating = v)" Max="5" />
         <p><strong>Rating:</strong> @_evRating of 5 stars</p>
     </DemoSection>
@@ -35,20 +57,29 @@
 
 @code {
     private int _rating = 3;
+    private int _labelRating = 4;
+    private int _rating3 = 2;
+    private int _rating7 = 5;
+    private int _rating10 = 7;
     private int _evRating = 3;
 
     private const string _basicCode =
-        "<MariloRating Value=\"@_rating\" ValueChanged=\"@(v => _rating = v)\" Max=\"5\" />\n" +
-        "<p><strong>@_rating of 5 stars</strong></p>\n\n" +
-        "@code {\n" +
-        "    private int _rating = 3;\n" +
-        "}";
+        "<MariloRating @bind-Value=\"_rating\" Max=\"5\" />\n\n" +
+        "@code { private int _rating = 3; }";
+
+    private const string _labelCode =
+        "<MariloRating @bind-Value=\"_rating\" Max=\"5\" Label=\"Product quality\" />";
+
+    private const string _maxCode =
+        "<MariloRating @bind-Value=\"_rating3\" Max=\"3\" />\n" +
+        "<MariloRating @bind-Value=\"_rating7\" Max=\"7\" />\n" +
+        "<MariloRating @bind-Value=\"_rating10\" Max=\"10\" />";
 
     private const string _readOnlyCode =
-        "<MariloRating Value=\"4\" Max=\"5\" ReadOnly=\"true\" />";
+        "<MariloRating Value=\"4\" Max=\"5\" IsReadOnly=\"true\" />";
 
     private const string _disabledCode =
-        "<MariloRating Value=\"3\" Max=\"5\" Disabled=\"true\" />";
+        "<MariloRating Value=\"3\" Max=\"5\" Enabled=\"false\" />";
 
     private const string _interactiveCode =
         "<MariloRating Value=\"@_rating\" ValueChanged=\"@(v => _rating = v)\" Max=\"5\" />\n" +
@@ -68,11 +99,11 @@
     private static readonly (string Attribute, string Description)[] _aria =
     [
         ("role=\"radiogroup\"", "Groups the individual star elements as a rating control"),
-        ("aria-label", "Provides an accessible name for the rating group"),
+        ("aria-label", "Provided by the Label parameter"),
         ("aria-valuenow", "Reflects the current rating value"),
         ("aria-valuemin", "Reflects the minimum rating value"),
-        ("aria-valuemax", "Reflects the maximum rating value set by the Max parameter"),
-        ("aria-disabled=\"true\"", "Applied when the Disabled parameter is set"),
+        ("aria-valuemax", "Reflects the maximum rating value set by Max"),
+        ("aria-disabled=\"true\"", "Applied when Enabled is false"),
     ];
 
     private static readonly string[] _screenReader =

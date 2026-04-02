@@ -5,24 +5,48 @@
 <PageSection Title="Overview">
     <DemoSection Title="Basic Usage" Code="@_basicCode">
         <MariloField>
-            <MariloCheckbox Checked="@_checked" CheckedChanged="@(v => _checked = v)" Label="Accept terms and conditions" />
+            <MariloCheckbox @bind-Checked="_checked" Label="Accept terms and conditions" />
         </MariloField>
+        <p><strong>Checked:</strong> @_checked</p>
+    </DemoSection>
+
+    <DemoSection Title="Indeterminate" Description="The indeterminate state represents a partially checked state, commonly used for parent checkboxes in a tree." Code="@_indeterminateCode">
+        <MariloField>
+            <MariloCheckbox Indeterminate="true" Label="Select all (indeterminate)" />
+        </MariloField>
+        <div style="margin-left:16px;display:flex;flex-direction:column;gap:4px;">
+            <MariloField>
+                <MariloCheckbox @bind-Checked="_childA" Label="Option A" />
+            </MariloField>
+            <MariloField>
+                <MariloCheckbox @bind-Checked="_childB" Label="Option B" />
+            </MariloField>
+        </div>
     </DemoSection>
 </PageSection>
 
 <PageSection Title="Appearance">
-    <DemoSection Title="Disabled" Description="A disabled checkbox prevents user interaction." Code="@_disabledCode">
+    <DemoSection Title="Label Position" Description="Control whether the label appears before or after the checkbox with LabelPosition." Code="@_labelPositionCode">
         <MariloField>
-            <MariloCheckbox Checked="true" Disabled="true" Label="Checked and disabled" />
+            <MariloCheckbox @bind-Checked="_labelAfter" Label="Label after (default)" LabelPosition="after" />
         </MariloField>
         <MariloField>
-            <MariloCheckbox Checked="false" Disabled="true" Label="Unchecked and disabled" />
+            <MariloCheckbox @bind-Checked="_labelBefore" Label="Label before" LabelPosition="before" />
+        </MariloField>
+    </DemoSection>
+
+    <DemoSection Title="Disabled" Description="A disabled checkbox prevents user interaction." Code="@_disabledCode">
+        <MariloField>
+            <MariloCheckbox Checked="true" Enabled="false" Label="Checked and disabled" />
+        </MariloField>
+        <MariloField>
+            <MariloCheckbox Checked="false" Enabled="false" Label="Unchecked and disabled" />
         </MariloField>
     </DemoSection>
 </PageSection>
 
 <PageSection Title="Events">
-    <DemoSection Title="CheckedChanged" Description="Handle checkbox toggle with the CheckedChanged callback." Code="@_interactiveCode">
+    <DemoSection Title="CheckedChanged" Description="Handle checkbox toggle with the CheckedChanged callback, or use two-way binding." Code="@_interactiveCode">
         <MariloField>
             <MariloCheckbox Checked="@_evChecked" CheckedChanged="@(v => _evChecked = v)" Label="Toggle me" />
         </MariloField>
@@ -40,17 +64,32 @@
 @code {
     // Overview
     private bool _checked;
-
-    private const string _basicCode =
-        "<MariloCheckbox Checked=\"@_checked\" CheckedChanged=\"@(v => _checked = v)\" Label=\"Accept terms and conditions\" />";
+    private bool _childA;
+    private bool _childB;
 
     // Appearance
-    private const string _disabledCode =
-        "<MariloCheckbox Checked=\"true\" Disabled=\"true\" Label=\"Checked and disabled\" />\n" +
-        "<MariloCheckbox Checked=\"false\" Disabled=\"true\" Label=\"Unchecked and disabled\" />";
+    private bool _labelAfter = true;
+    private bool _labelBefore;
 
     // Events
     private bool _evChecked;
+
+    private const string _basicCode =
+        "<MariloCheckbox @bind-Checked=\"_checked\" Label=\"Accept terms and conditions\" />\n\n" +
+        "@code { private bool _checked; }";
+
+    private const string _indeterminateCode =
+        "<MariloCheckbox Indeterminate=\"true\" Label=\"Select all (indeterminate)\" />\n" +
+        "<MariloCheckbox @bind-Checked=\"_childA\" Label=\"Option A\" />\n" +
+        "<MariloCheckbox @bind-Checked=\"_childB\" Label=\"Option B\" />";
+
+    private const string _labelPositionCode =
+        "<MariloCheckbox @bind-Checked=\"_val\" Label=\"Label after (default)\" LabelPosition=\"after\" />\n" +
+        "<MariloCheckbox @bind-Checked=\"_val\" Label=\"Label before\" LabelPosition=\"before\" />";
+
+    private const string _disabledCode =
+        "<MariloCheckbox Checked=\"true\" Enabled=\"false\" Label=\"Checked and disabled\" />\n" +
+        "<MariloCheckbox Checked=\"false\" Enabled=\"false\" Label=\"Unchecked and disabled\" />";
 
     private const string _interactiveCode =
         "<MariloCheckbox Checked=\"@_checked\" CheckedChanged=\"@(v => _checked = v)\" Label=\"Toggle me\" />\n" +
@@ -59,7 +98,6 @@
         "    private bool _checked;\n" +
         "}";
 
-    // Accessibility
     private static readonly (string Key, string Action)[] _keyboard =
     [
         ("Tab", "Moves focus to the checkbox"),
@@ -70,8 +108,8 @@
     private static readonly (string Attribute, string Description)[] _aria =
     [
         ("role=\"checkbox\"", "Implicitly set by the <input type=\"checkbox\"> element"),
-        ("aria-checked", "Reflects the current checked state of the checkbox"),
-        ("aria-disabled=\"true\"", "Applied when the Disabled parameter is set"),
+        ("aria-checked", "Reflects the current checked state; \"mixed\" for indeterminate"),
+        ("aria-disabled=\"true\"", "Applied when Enabled is false"),
         ("aria-label", "Provided by the Label parameter"),
     ];
 
@@ -79,6 +117,7 @@
     [
         "Checkboxes are announced with their label, checked state, and the \"checkbox\" role.",
         "Toggling the checkbox announces the new state (\"checked\" or \"not checked\").",
+        "Indeterminate checkboxes are announced as \"mixed\" by screen readers.",
         "Disabled checkboxes are announced as \"dimmed\" or \"unavailable\" depending on the screen reader.",
     ];
 }

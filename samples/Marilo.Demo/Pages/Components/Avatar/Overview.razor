@@ -10,6 +10,22 @@
             <MariloAvatar Initials="EF" />
         </div>
     </DemoSection>
+
+    <DemoSection Title="Image Avatar" Description="Provide a Src URL to show a photo. Use Alt for accessible text." Code="@_imageCode">
+        <div class="demo-row">
+            <MariloAvatar Src="https://i.pravatar.cc/80?img=1" Alt="Alice Johnson" />
+            <MariloAvatar Src="https://i.pravatar.cc/80?img=5" Alt="Bob Smith" />
+            <MariloAvatar Src="https://i.pravatar.cc/80?img=12" Alt="Carol White" />
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Custom Content" Description="Use ChildContent for icons or custom markup inside the avatar." Code="@_childCode">
+        <div class="demo-row">
+            <MariloAvatar>👤</MariloAvatar>
+            <MariloAvatar>🤖</MariloAvatar>
+            <MariloAvatar>★</MariloAvatar>
+        </div>
+    </DemoSection>
 </PageSection>
 
 <PageSection Title="Appearance">
@@ -20,6 +36,40 @@
             <MariloAvatar Size="AvatarSize.Medium" Initials="MD" />
             <MariloAvatar Size="AvatarSize.Large" Initials="LG" />
             <MariloAvatar Size="AvatarSize.ExtraLarge" Initials="XL" />
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Bordered" Description="Add a visible border around the avatar with Bordered." Code="@_borderedCode">
+        <div class="demo-row">
+            <MariloAvatar Initials="AB" Bordered="true" />
+            <MariloAvatar Src="https://i.pravatar.cc/80?img=3" Alt="User" Bordered="true" />
+            <MariloAvatar Initials="CD" Bordered="true" Size="AvatarSize.Large" />
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Square vs Round" Description="Set Rounded to false for a square avatar." Code="@_roundedCode">
+        <div class="demo-row">
+            <MariloAvatar Initials="RD" Rounded="true" />
+            <MariloAvatar Initials="SQ" Rounded="false" />
+            <MariloAvatar Src="https://i.pravatar.cc/80?img=8" Alt="Round" Rounded="true" />
+            <MariloAvatar Src="https://i.pravatar.cc/80?img=8" Alt="Square" Rounded="false" />
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Custom Size" Description="Set explicit pixel dimensions with Width and Height." Code="@_customSizeCode">
+        <div class="demo-row">
+            <MariloAvatar Initials="64" Width="64px" Height="64px" />
+            <MariloAvatar Initials="32" Width="32px" Height="32px" />
+            <MariloAvatar Src="https://i.pravatar.cc/96?img=15" Alt="Custom" Width="96px" Height="96px" />
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Avatar Group" Description="Stack multiple avatars together for a compact group display." Code="@_groupCode">
+        <div style="display:flex;flex-direction:row;">
+            <div style="margin-right:-8px;"><MariloAvatar Src="https://i.pravatar.cc/40?img=1" Alt="User 1" Size="AvatarSize.Small" Bordered="true" /></div>
+            <div style="margin-right:-8px;"><MariloAvatar Src="https://i.pravatar.cc/40?img=2" Alt="User 2" Size="AvatarSize.Small" Bordered="true" /></div>
+            <div style="margin-right:-8px;"><MariloAvatar Src="https://i.pravatar.cc/40?img=3" Alt="User 3" Size="AvatarSize.Small" Bordered="true" /></div>
+            <MariloAvatar Initials="+5" Size="AvatarSize.Small" Bordered="true" />
         </div>
     </DemoSection>
 </PageSection>
@@ -38,6 +88,14 @@
         "<MariloAvatar Initials=\"CD\" />\n" +
         "<MariloAvatar Initials=\"EF\" />";
 
+    private const string _imageCode =
+        "<MariloAvatar Src=\"https://i.pravatar.cc/80?img=1\" Alt=\"Alice Johnson\" />\n" +
+        "<MariloAvatar Src=\"https://i.pravatar.cc/80?img=5\" Alt=\"Bob Smith\" />";
+
+    private const string _childCode =
+        "<MariloAvatar>👤</MariloAvatar>\n" +
+        "<MariloAvatar>🤖</MariloAvatar>";
+
     // Appearance
     private const string _sizesCode =
         "<MariloAvatar Size=\"AvatarSize.ExtraSmall\" Initials=\"XS\" />\n" +
@@ -45,6 +103,27 @@
         "<MariloAvatar Size=\"AvatarSize.Medium\" Initials=\"MD\" />\n" +
         "<MariloAvatar Size=\"AvatarSize.Large\" Initials=\"LG\" />\n" +
         "<MariloAvatar Size=\"AvatarSize.ExtraLarge\" Initials=\"XL\" />";
+
+    private const string _borderedCode =
+        "<MariloAvatar Initials=\"AB\" Bordered=\"true\" />\n" +
+        "<MariloAvatar Src=\"...\" Alt=\"User\" Bordered=\"true\" />";
+
+    private const string _roundedCode =
+        "<MariloAvatar Initials=\"RD\" Rounded=\"true\" />\n" +
+        "<MariloAvatar Initials=\"SQ\" Rounded=\"false\" />";
+
+    private const string _customSizeCode =
+        "<MariloAvatar Initials=\"64\" Width=\"64px\" Height=\"64px\" />\n" +
+        "<MariloAvatar Initials=\"32\" Width=\"32px\" Height=\"32px\" />\n" +
+        "<MariloAvatar Src=\"...\" Alt=\"Custom\" Width=\"96px\" Height=\"96px\" />";
+
+    private const string _groupCode =
+        "@* Overlap avatars with negative margins *@\n" +
+        "<div style=\"display:flex;\">\n" +
+        "    <div style=\"margin-right:-8px;\"><MariloAvatar Src=\"...\" Size=\"AvatarSize.Small\" Bordered=\"true\" /></div>\n" +
+        "    <div style=\"margin-right:-8px;\"><MariloAvatar Src=\"...\" Size=\"AvatarSize.Small\" Bordered=\"true\" /></div>\n" +
+        "    <MariloAvatar Initials=\"+5\" Size=\"AvatarSize.Small\" Bordered=\"true\" />\n" +
+        "</div>";
 
     // Accessibility
     private static readonly (string Key, string Action)[] _keyboard =

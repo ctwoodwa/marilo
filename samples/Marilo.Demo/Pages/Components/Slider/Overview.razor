@@ -5,23 +5,61 @@
 <PageSection Title="Overview">
     <DemoSection Title="Basic Usage" Code="@_basicCode">
         <MariloField>
-            <MariloLabel>Volume</MariloLabel>
-            <MariloSlider Value="@_sliderValue" ValueChanged="@(v => _sliderValue = v)" Min="0" Max="100" Step="5" />
+            <MariloLabel>Volume: @_sliderValue</MariloLabel>
+            <MariloSlider @bind-Value="_sliderValue" Min="0" Max="100" Step="5" />
         </MariloField>
     </DemoSection>
 </PageSection>
 
 <PageSection Title="Appearance">
+    <DemoSection Title="Vertical Orientation" Description="Set Orientation to Vertical to render the slider along the vertical axis." Code="@_verticalCode">
+        <div style="display:flex;gap:32px;align-items:flex-end;height:200px;">
+            <MariloSlider @bind-Value="_verticalA" Min="0" Max="100" Step="10"
+                          Orientation="SliderOrientation.Vertical" />
+            <MariloSlider @bind-Value="_verticalB" Min="0" Max="100" Step="10"
+                          Orientation="SliderOrientation.Vertical" />
+            <MariloSlider @bind-Value="_verticalC" Min="0" Max="100" Step="10"
+                          Orientation="SliderOrientation.Vertical" />
+        </div>
+        <p style="margin-top:8px;">Values: @_verticalA, @_verticalB, @_verticalC</p>
+    </DemoSection>
+
+    <DemoSection Title="Step Buttons" Description="Set ShowButtons to display increment/decrement buttons on either side of the slider." Code="@_buttonsCode">
+        <MariloField>
+            <MariloLabel>Quantity: @_quantityValue</MariloLabel>
+            <MariloSlider @bind-Value="_quantityValue" Min="0" Max="20" Step="1" ShowButtons="true" />
+        </MariloField>
+    </DemoSection>
+
+    <DemoSection Title="Large Step" Description="LargeStep controls how many units the slider jumps when Page Up / Page Down is pressed." Code="@_largeStepCode">
+        <MariloField>
+            <MariloLabel>Year: @((int)_yearValue)</MariloLabel>
+            <MariloSlider @bind-Value="_yearValue" Min="2000" Max="2030" Step="1" LargeStep="5" />
+        </MariloField>
+        <p style="font-size:0.875em;">Press Page Up / Page Down to jump 5 years at a time.</p>
+    </DemoSection>
+
+    <DemoSection Title="Label Template" Description="LabelTemplate customises how tick labels are rendered along the slider track." Code="@_labelTemplateCode">
+        <MariloField>
+            <MariloSlider @bind-Value="_priceValue" Min="0" Max="500" Step="100">
+                <LabelTemplate Context="val">
+                    $@((int)val)
+                </LabelTemplate>
+            </MariloSlider>
+        </MariloField>
+        <p><strong>Price:</strong> $@((int)_priceValue)</p>
+    </DemoSection>
+
     <DemoSection Title="Disabled" Description="A disabled slider prevents user interaction." Code="@_disabledCode">
         <MariloField>
             <MariloLabel>Volume</MariloLabel>
-            <MariloSlider Value="50" Disabled="true" Min="0" Max="100" Step="5" />
+            <MariloSlider Value="50" Enabled="false" Min="0" Max="100" Step="5" />
         </MariloField>
     </DemoSection>
 </PageSection>
 
 <PageSection Title="Events">
-    <DemoSection Title="ValueChanged" Description="Handle slider changes with the ValueChanged callback." Code="@_interactiveCode">
+    <DemoSection Title="ValueChanged" Description="Handle slider changes with the ValueChanged callback or use two-way binding." Code="@_interactiveCode">
         <MariloField>
             <MariloLabel>Value: @_evSliderValue</MariloLabel>
             <MariloSlider Value="@_evSliderValue" ValueChanged="@(v => _evSliderValue = v)" Min="0" Max="100" Step="5" />
@@ -39,20 +77,43 @@
 
 @code {
     private double _sliderValue = 50;
+    private double _verticalA = 60;
+    private double _verticalB = 40;
+    private double _verticalC = 80;
+    private double _quantityValue = 5;
+    private double _yearValue = 2024;
+    private double _priceValue = 200;
     private double _evSliderValue = 50;
 
     private const string _basicCode =
-        "<MariloSlider Value=\"@_sliderValue\" ValueChanged=\"@(v => _sliderValue = v)\" Min=\"0\" Max=\"100\" Step=\"5\" />";
+        "<MariloSlider @bind-Value=\"_value\" Min=\"0\" Max=\"100\" Step=\"5\" />\n\n" +
+        "@code { private double _value = 50; }";
+
+    private const string _verticalCode =
+        "<MariloSlider @bind-Value=\"_value\" Min=\"0\" Max=\"100\" Step=\"10\"\n" +
+        "              Orientation=\"SliderOrientation.Vertical\" />";
+
+    private const string _buttonsCode =
+        "<MariloSlider @bind-Value=\"_quantity\" Min=\"0\" Max=\"20\" Step=\"1\" ShowButtons=\"true\" />";
+
+    private const string _largeStepCode =
+        "<MariloSlider @bind-Value=\"_year\" Min=\"2000\" Max=\"2030\" Step=\"1\" LargeStep=\"5\" />";
+
+    private const string _labelTemplateCode =
+        "<MariloSlider @bind-Value=\"_price\" Min=\"0\" Max=\"500\" Step=\"100\">\n" +
+        "    <LabelTemplate Context=\"val\">\n" +
+        "        $@((int)val)\n" +
+        "    </LabelTemplate>\n" +
+        "</MariloSlider>";
 
     private const string _disabledCode =
-        "<MariloSlider Value=\"50\" Disabled=\"true\" Min=\"0\" Max=\"100\" Step=\"5\" />";
+        "<MariloSlider Value=\"50\" Enabled=\"false\" Min=\"0\" Max=\"100\" Step=\"5\" />";
 
     private const string _interactiveCode =
-        "<MariloLabel>Value: @_sliderValue</MariloLabel>\n" +
-        "<MariloSlider Value=\"@_sliderValue\" ValueChanged=\"@(v => _sliderValue = v)\" Min=\"0\" Max=\"100\" Step=\"5\" />\n" +
-        "<p><strong>Slider value:</strong> @_sliderValue</p>\n\n" +
+        "<MariloSlider Value=\"@_value\" ValueChanged=\"@(v => _value = v)\" Min=\"0\" Max=\"100\" Step=\"5\" />\n" +
+        "<p><strong>Slider value:</strong> @_value</p>\n\n" +
         "@code {\n" +
-        "    private double _sliderValue = 50;\n" +
+        "    private double _value = 50;\n" +
         "}";
 
     private static readonly (string Key, string Action)[] _keyboard =
@@ -61,6 +122,8 @@
         ("Shift + Tab", "Moves focus to the previous focusable element"),
         ("Arrow Right / Arrow Up", "Increases the slider value by one step"),
         ("Arrow Left / Arrow Down", "Decreases the slider value by one step"),
+        ("Page Up", "Increases the slider value by LargeStep"),
+        ("Page Down", "Decreases the slider value by LargeStep"),
         ("Home", "Sets the slider to its minimum value"),
         ("End", "Sets the slider to its maximum value"),
     ];
@@ -71,8 +134,9 @@
         ("aria-valuenow", "Reflects the current value of the slider"),
         ("aria-valuemin", "Reflects the minimum value of the slider"),
         ("aria-valuemax", "Reflects the maximum value of the slider"),
-        ("aria-disabled=\"true\"", "Applied when the Disabled parameter is set"),
+        ("aria-disabled=\"true\"", "Applied when Enabled is false"),
         ("aria-label", "Can be set to provide an accessible name when no visible label is present"),
+        ("aria-orientation", "Set to \"vertical\" when Orientation is SliderOrientation.Vertical"),
     ];
 
     private static readonly string[] _screenReader =

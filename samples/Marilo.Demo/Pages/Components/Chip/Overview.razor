@@ -3,30 +3,91 @@
 @layout ComponentDemoLayout
 
 <PageSection Title="Overview">
-    <DemoSection Title="Selected State" Code="@_selectedCode">
+    <DemoSection Title="Basic Usage" Description="Chips are compact elements that represent an input, attribute, or action." Code="@_basicCode">
         <div class="demo-row">
-            <MariloChip Variant="ChipVariant.Primary" Label="Selected" IsSelected="true" />
-            <MariloChip Variant="ChipVariant.Primary" Label="Unselected" IsSelected="false" />
+            <MariloChip Label="Default chip" />
+            <MariloChip Variant="ChipVariant.Primary" Label="Primary chip" />
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="With Icon" Description="Use the Icon render fragment to prepend an icon to the chip." Code="@_iconCode">
+        <div class="demo-row">
+            <MariloChip Variant="ChipVariant.Primary">
+                <Icon>★</Icon>
+                <ChildContent>Featured</ChildContent>
+            </MariloChip>
+            <MariloChip Variant="ChipVariant.Success">
+                <Icon>✓</Icon>
+                <ChildContent>Verified</ChildContent>
+            </MariloChip>
+            <MariloChip Variant="ChipVariant.Danger">
+                <Icon>⚠</Icon>
+                <ChildContent>Error</ChildContent>
+            </MariloChip>
         </div>
     </DemoSection>
 </PageSection>
 
 <PageSection Title="Appearance">
-    <DemoSection Title="Variants" Description="Chips come in several variants to convey different meanings." Code="@_variantsCode">
-        <div class="demo-row">
+    <DemoSection Title="All Variants" Description="Chips support all standard color variants." Code="@_variantsCode">
+        <div class="demo-row" style="flex-wrap:wrap;">
             <MariloChip Label="Default" />
             <MariloChip Variant="ChipVariant.Primary" Label="Primary" />
+            <MariloChip Variant="ChipVariant.Secondary" Label="Secondary" />
             <MariloChip Variant="ChipVariant.Danger" Label="Danger" />
-            <MariloChip Variant="ChipVariant.Success" Label="Selected" IsSelected="true" />
+            <MariloChip Variant="ChipVariant.Warning" Label="Warning" />
+            <MariloChip Variant="ChipVariant.Info" Label="Info" />
+            <MariloChip Variant="ChipVariant.Success" Label="Success" />
         </div>
+    </DemoSection>
+
+    <DemoSection Title="Selected State" Description="Use IsSelected to highlight a chip as active or chosen." Code="@_selectedCode">
+        <div class="demo-row">
+            <MariloChip Variant="ChipVariant.Primary" Label="Selected" IsSelected="true" />
+            <MariloChip Variant="ChipVariant.Primary" Label="Unselected" IsSelected="false" />
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Selectable" Description="Set Selectable to allow users to toggle the chip's selection state." Code="@_selectableCode">
+        <div class="demo-row">
+            @foreach (var tag in _tags)
+            {
+                <MariloChip Variant="ChipVariant.Primary"
+                            Label="@tag.Label"
+                            Selectable="true"
+                            IsSelected="@tag.Selected"
+                            SelectedChanged="@(v => tag.Selected = v)" />
+            }
+        </div>
+        <p style="margin-top:8px;">Selected: <strong>@string.Join(", ", _tags.Where(t => t.Selected).Select(t => t.Label))</strong></p>
+    </DemoSection>
+
+    <DemoSection Title="Removable" Description="Set Removable to show a remove button. Handle OnRemove to react when it is clicked." Code="@_removableCode">
+        <div class="demo-row" style="flex-wrap:wrap;">
+            @foreach (var chip in _removableChips)
+            {
+                <MariloChip Variant="ChipVariant.Secondary"
+                            Label="@chip"
+                            Removable="true"
+                            OnRemove="@(() => _removableChips.Remove(chip))" />
+            }
+        </div>
+        @if (_removableChips.Count == 0)
+        {
+            <p style="margin-top:8px;font-style:italic;">All chips removed.</p>
+        }
     </DemoSection>
 </PageSection>
 
 <PageSection Title="Events">
     <DemoSection Title="OnClick" Description="Handle chip click events to toggle selection or trigger actions." Code="@_clickCode">
         <div class="demo-row">
-            <MariloChip Variant="ChipVariant.Primary" Label="@(_isSelected ? "Selected" : "Click me")" IsSelected="@_isSelected" OnClick="@(() => _isSelected = !_isSelected)" />
+            <MariloChip Variant="ChipVariant.Primary"
+                        Label="@(_isSelected ? "Selected" : "Click me")"
+                        IsSelected="@_isSelected"
+                        OnClick="@(() => _isSelected = !_isSelected)" />
         </div>
+        <p style="margin-top:8px;"><strong>Selected:</strong> @_isSelected</p>
     </DemoSection>
 </PageSection>
 
@@ -38,37 +99,73 @@
 </PageSection>
 
 @code {
-    // Overview
+    private class Tag
+    {
+        public string Label { get; set; } = "";
+        public bool Selected { get; set; }
+    }
+
+    private List<Tag> _tags =
+    [
+        new Tag { Label = "Blazor" },
+        new Tag { Label = "C#" },
+        new Tag { Label = ".NET" },
+        new Tag { Label = "UI" },
+    ];
+
+    private List<string> _removableChips = ["TypeScript", "React", "CSS", "HTML"];
+
+    private bool _isSelected;
+
+    private const string _basicCode =
+        "<MariloChip Label=\"Default chip\" />\n" +
+        "<MariloChip Variant=\"ChipVariant.Primary\" Label=\"Primary chip\" />";
+
+    private const string _iconCode =
+        "<MariloChip Variant=\"ChipVariant.Primary\">\n" +
+        "    <Icon>★</Icon>\n" +
+        "    <ChildContent>Featured</ChildContent>\n" +
+        "</MariloChip>";
+
+    private const string _variantsCode =
+        "<MariloChip Label=\"Default\" />\n" +
+        "<MariloChip Variant=\"ChipVariant.Primary\" Label=\"Primary\" />\n" +
+        "<MariloChip Variant=\"ChipVariant.Secondary\" Label=\"Secondary\" />\n" +
+        "<MariloChip Variant=\"ChipVariant.Danger\" Label=\"Danger\" />\n" +
+        "<MariloChip Variant=\"ChipVariant.Warning\" Label=\"Warning\" />\n" +
+        "<MariloChip Variant=\"ChipVariant.Info\" Label=\"Info\" />\n" +
+        "<MariloChip Variant=\"ChipVariant.Success\" Label=\"Success\" />";
+
     private const string _selectedCode =
         "<MariloChip Variant=\"ChipVariant.Primary\" Label=\"Selected\" IsSelected=\"true\" />\n" +
         "<MariloChip Variant=\"ChipVariant.Primary\" Label=\"Unselected\" IsSelected=\"false\" />";
 
-    // Appearance
-    private const string _variantsCode =
-        "<MariloChip Label=\"Default\" />\n" +
-        "<MariloChip Variant=\"ChipVariant.Primary\" Label=\"Primary\" />\n" +
-        "<MariloChip Variant=\"ChipVariant.Danger\" Label=\"Danger\" />\n" +
-        "<MariloChip Variant=\"ChipVariant.Success\" Label=\"Selected\" IsSelected=\"true\" />";
+    private const string _selectableCode =
+        "<MariloChip Variant=\"ChipVariant.Primary\" Label=\"Blazor\"\n" +
+        "    Selectable=\"true\" IsSelected=\"@_blazor\" SelectedChanged=\"@(v => _blazor = v)\" />";
 
-    // Events
-    private bool _isSelected;
+    private const string _removableCode =
+        "@foreach (var chip in _chips)\n" +
+        "{\n" +
+        "    <MariloChip Variant=\"ChipVariant.Secondary\" Label=\"@chip\"\n" +
+        "        Removable=\"true\" OnRemove=\"@(() => _chips.Remove(chip))\" />\n" +
+        "}";
 
     private const string _clickCode =
         "<MariloChip Variant=\"ChipVariant.Primary\"\n" +
-        "    Label=\"@(_isSelected ? \"Selected\" : \"Click me\")\"\n" +
+        "    Label=\"@(_isSelected ? \\\"Selected\\\" : \\\"Click me\\\")\"\n" +
         "    IsSelected=\"@_isSelected\"\n" +
         "    OnClick=\"@(() => _isSelected = !_isSelected)\" />\n\n" +
         "@code {\n" +
         "    private bool _isSelected;\n" +
         "}";
 
-    // Accessibility
     private static readonly (string Key, string Action)[] _keyboard =
     [
         ("Enter", "Selects or deselects the chip"),
         ("Space", "Selects or deselects the chip"),
-        ("Delete", "Removes the chip if deletable"),
-        ("Backspace", "Removes the chip if deletable"),
+        ("Delete", "Removes the chip if Removable is true"),
+        ("Backspace", "Removes the chip if Removable is true"),
         ("Tab", "Moves focus to the next focusable element"),
     ];
 
@@ -83,7 +180,7 @@
     private static readonly string[] _screenReader =
     [
         "Chips are announced with their label text and current selection state.",
-        "Deletable chips announce the availability of the delete action.",
+        "Removable chips announce the availability of the delete action.",
         "Selected chips are announced as \"selected\" by screen readers.",
     ];
 }
