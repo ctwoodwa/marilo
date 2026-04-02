@@ -7,6 +7,7 @@ using Marilo.Core.Services;
 using Marilo.Providers.FluentUI;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.JSInterop;
 
 namespace Marilo.Tests.Unit;
 
@@ -22,6 +23,11 @@ public abstract class MariloTestBase : BunitContext
         Services.AddSingleton<IMariloThemeService, TestThemeService>();
         Services.AddSingleton<IMariloIconProvider, TestIconProvider>();
         Services.AddSingleton<IMariloNotificationService, MariloNotificationService>();
+
+        // Components use JS.InvokeAsync<IJSObjectReference>("eval", ...) to
+        // create inline JS modules. Use loose mode so unhandled JS calls
+        // return default values instead of throwing.
+        JSInterop.Mode = JSRuntimeMode.Loose;
     }
 
     private class TestThemeService : IMariloThemeService

@@ -27,11 +27,11 @@ public class MultiSelectTests : MariloTestBase
             .Add(p => p.Value, new List<int>())
             .Add(p => p.ValueChanged, v => selectedValue = v));
 
-        // Open dropdown
-        cut.Find("div[role='listbox']").Click();
+        // Open dropdown by clicking the input area
+        cut.Find(".mar-multiselect__input-area").Click();
 
         // Select first item
-        var items = cut.FindAll("li[role='option']");
+        var items = cut.FindAll("[role='option']");
         items[0].Click();
 
         Assert.NotNull(selectedValue);
@@ -91,11 +91,11 @@ public class MultiSelectTests : MariloTestBase
             .Add(p => p.Value, new List<int> { 1, 2 })
             .Add(p => p.ValueChanged, v => selectedValue = v));
 
-        // Open dropdown
-        cut.Find("div[role='listbox']").Click();
+        // Open dropdown by clicking the input area
+        cut.Find(".mar-multiselect__input-area").Click();
 
         // Click on first item (already selected) to deselect
-        var items = cut.FindAll("li[role='option']");
+        var items = cut.FindAll("[role='option']");
         items[0].Click();
 
         Assert.NotNull(selectedValue);
