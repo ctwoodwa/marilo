@@ -267,6 +267,26 @@ See: `tests/Marilo.Tests.Unit/P2Enhancements/TreeViewTests.cs`
 **TreeView gap resolution is COMPLETE for implementation purposes.** 21 of 22 gaps are resolved in code. Gap 18 (Virtualization) is intentionally deferred with documented rationale and revisit conditions.
 
 **Follow-up actions needed:**
-1. **Test coverage expansion** (NEW-GAP-001) — implement bUnit tests from TEST_PLAN.md
+1. **Test coverage expansion** (NEW-GAP-001) — ✅ RESOLVED: 45 bUnit tests now exist (17 Phase 1 + 28 Phase 2), all passing
 2. **Demo page enhancement** (NEW-GAP-002) — add sections for advanced features
 3. **Build fix** — resolve unrelated MultiSelect compilation errors to restore clean build
+
+---
+
+## Phase 2 Closure Reports
+
+Per-gap closure reports for Phase 2 enhanced features are at:
+- `stages/06-validate/output/gap-expand-onclick-closure-report.md`
+- `stages/06-validate/output/gap-single-expand-closure-report.md`
+- `stages/06-validate/output/gap-auto-expand-closure-report.md`
+- `stages/06-validate/output/gap-batch-expand-closure-report.md`
+- `stages/06-validate/output/gap-filter-closure-report.md`
+- `stages/06-validate/output/gap-disabled-closure-report.md`
+
+## Phase 3 Closure Reports
+
+Per-gap closure reports for Phase 3 advanced features are at:
+- `stages/06-validate/output/gap-programmatic-nav-closure-report.md`
+- `stages/06-validate/output/gap-item-context-menu-closure-report.md`
+- `stages/06-validate/output/gap-checkbox-template-closure-report.md`
+- `stages/06-validate/output/gap-node-editing-closure-report.md`

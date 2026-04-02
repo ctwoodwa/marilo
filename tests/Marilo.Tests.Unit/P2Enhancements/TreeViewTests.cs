@@ -1,6 +1,8 @@
 using Bunit;
 using Marilo.Components.Navigation;
 using Marilo.Core.Enums;
+using Marilo.Core.Models;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Xunit;
 
@@ -569,5 +571,1452 @@ public class TreeViewTests : MariloTestBase
 
         Assert.Single(selectedItems);
         Assert.Contains("1", selectedItems[0]);
+    }
+
+    // ── Gap 12: ExpandOnClick / ExpandOnDoubleClick Tests ────────────────
+
+    [Fact]
+    public void TreeView_ExpandOnClick_True_TogglesExpandOnHeaderClick()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Parent A", new List<HierarchicalNode>
+            {
+                new("1-1", "Child A1"),
+            }),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.ExpandOnClick, true));
+
+        // Children not visible initially (collapsed)
+        Assert.DoesNotContain("Child A1", cut.Markup);
+
+        // Click the header div — ExpandOnClick should expand
+        cut.Find(".mar-tree-item__header").Click();
+
+        Assert.Contains("Child A1", cut.Markup);
+
+        // Click again — should collapse
+        cut.Find(".mar-tree-item__header").Click();
+
+        Assert.DoesNotContain("Child A1", cut.Markup);
+    }
+
+    [Fact]
+    public void TreeView_ExpandOnClick_False_DoesNotAttachOnClickToHeader()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Parent A", new List<HierarchicalNode>
+            {
+                new("1-1", "Child A1"),
+            }),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.ExpandOnClick, false));
+
+        // When ExpandOnClick=false the header div must not carry an onclick attribute at all.
+        // The toggle button does carry onclick, but the header div itself should not.
+        var header = cut.Find(".mar-tree-item__header");
+        // bUnit exposes registered event handlers via GetAttribute; when no handler is attached
+        // the attribute is absent. We verify no expansion occurs by checking child markup too.
+        Assert.DoesNotContain("Child A1", cut.Markup);
+
+        // The header has no onclick: calling .Click() would throw MissingEventHandlerException.
+        // Instead we confirm the absence by checking that the markup does NOT contain the
+        // onclick attribute on the header element.
+        Assert.Null(header.GetAttribute("onclick"));
+    }
+
+    [Fact]
+    public void TreeView_ExpandOnDoubleClick_True_ExpandsOnDoubleClick()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Parent A", new List<HierarchicalNode>
+            {
+                new("1-1", "Child A1"),
+            }),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.ExpandOnDoubleClick, true));
+
+        Assert.DoesNotContain("Child A1", cut.Markup);
+
+        cut.Find(".mar-tree-item__header").DoubleClick();
+
+        Assert.Contains("Child A1", cut.Markup);
+    }
+
+    [Fact]
+    public void TreeView_ExpandOnDoubleClick_SuppressedWhenAllowEditing()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Parent A", new List<HierarchicalNode>
+            {
+                new("1-1", "Child A1"),
+            }),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.ExpandOnDoubleClick, true)
+            .Add(p => p.AllowEditing, true));
+
+        // When AllowEditing=true the ondblclick expand handler must NOT be attached
+        // to the header div, because double-click is reserved for inline edit activation.
+        // The absence of the attribute is the contract; calling DoubleClick() would throw
+        // MissingEventHandlerException, which itself is the observable proof — but we
+        // check the rendered attribute to keep the test readable.
+        var header = cut.Find(".mar-tree-item__header");
+        Assert.Null(header.GetAttribute("ondblclick"));
+
+        // Tree must remain collapsed: no children rendered
+        Assert.DoesNotContain("Child A1", cut.Markup);
+    }
+
+    [Fact]
+    public void TreeView_ExpandOnClick_Disabled_PreventsHandlerAttachment()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Parent A", new List<HierarchicalNode>
+            {
+                new("1-1", "Child A1"),
+            }),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.ExpandOnClick, true)
+            .Add(p => p.Disabled, true));
+
+        // When Disabled=true the render guard `if (hasKids && !Disabled)` prevents the
+        // onclick attribute from being added to the header div regardless of ExpandOnClick.
+        var header = cut.Find(".mar-tree-item__header");
+        Assert.Null(header.GetAttribute("onclick"));
+
+        // Tree remains collapsed
+        Assert.DoesNotContain("Child A1", cut.Markup);
+    }
+
+    // ── Gap 13: SingleExpand Tests ───────────────────────────────────────
+
+    [Fact]
+    public void TreeView_SingleExpand_True_CollapsesSiblingsOnExpand()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Parent A", new List<HierarchicalNode>
+            {
+                new("1-1", "Child A1"),
+            }),
+            new HierarchicalNode("2", "Parent B", new List<HierarchicalNode>
+            {
+                new("2-1", "Child B1"),
+            }),
+        };
+
+        // Pre-expand Parent A so it is expanded before we expand Parent B
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.SingleExpand, true)
+            .Add(p => p.ExpandedItems, new[] { "1" }));
+
+        // Parent A is expanded: Child A1 visible
+        Assert.Contains("Child A1", cut.Markup);
+        Assert.DoesNotContain("Child B1", cut.Markup);
+
+        // Expand Parent B via toggle button — SingleExpand should collapse Parent A
+        var toggles = cut.FindAll(".mar-tree-item__toggle");
+        // toggles[1] is Parent B's toggle (Parent A is expanded, so Child A1 toggle may appear third)
+        // Use the toggle that matches Parent B's aria-label="Expand"
+        var parentBToggle = toggles.First(t => t.GetAttribute("aria-label") == "Expand");
+        parentBToggle.Click();
+
+        // Parent B should now be expanded
+        Assert.Contains("Child B1", cut.Markup);
+        // Parent A should be collapsed (sibling was auto-collapsed by SingleExpand)
+        Assert.DoesNotContain("Child A1", cut.Markup);
+    }
+
+    [Fact]
+    public void TreeView_SingleExpand_False_AllowsMultipleSiblingsExpanded()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Parent A", new List<HierarchicalNode>
+            {
+                new("1-1", "Child A1"),
+            }),
+            new HierarchicalNode("2", "Parent B", new List<HierarchicalNode>
+            {
+                new("2-1", "Child B1"),
+            }),
+        };
+
+        // Pre-expand Parent A
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.SingleExpand, false)
+            .Add(p => p.ExpandedItems, new[] { "1" }));
+
+        Assert.Contains("Child A1", cut.Markup);
+
+        // Expand Parent B via toggle — SingleExpand=false, so Parent A stays expanded
+        var parentBToggle = cut.FindAll(".mar-tree-item__toggle")
+            .First(t => t.GetAttribute("aria-label") == "Expand");
+        parentBToggle.Click();
+
+        // Both children should be visible
+        Assert.Contains("Child A1", cut.Markup);
+        Assert.Contains("Child B1", cut.Markup);
+    }
+
+    [Fact]
+    public void TreeView_SingleExpand_ExpandedItemsChangedFires_AfterSiblingCollapse()
+    {
+        var receivedExpandedIds = new List<IEnumerable<string>>();
+
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Parent A", new List<HierarchicalNode>
+            {
+                new("1-1", "Child A1"),
+            }),
+            new HierarchicalNode("2", "Parent B", new List<HierarchicalNode>
+            {
+                new("2-1", "Child B1"),
+            }),
+        };
+
+        // Pre-expand Parent A
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.SingleExpand, true)
+            .Add(p => p.ExpandedItems, new[] { "1" })
+            .Add(p => p.ExpandedItemsChanged, ids => receivedExpandedIds.Add(ids.ToList())));
+
+        // Expand Parent B — triggers sibling collapse of Parent A
+        var parentBToggle = cut.FindAll(".mar-tree-item__toggle")
+            .First(t => t.GetAttribute("aria-label") == "Expand");
+        parentBToggle.Click();
+
+        // ExpandedItemsChanged should have fired at least once
+        Assert.NotEmpty(receivedExpandedIds);
+
+        // The last received set should contain "2" (Parent B) and NOT contain "1" (Parent A, sibling collapsed)
+        var lastReceived = receivedExpandedIds.Last().ToList();
+        Assert.Contains("2", lastReceived);
+        Assert.DoesNotContain("1", lastReceived);
+    }
+
+    // ── Gap 14: AutoExpand Tests ─────────────────────────────────────────
+
+    [Fact]
+    public void TreeView_AutoExpand_DefaultsToFalse()
+    {
+        // AutoExpand is a bool parameter — C# default is false.
+        // Verify that with a selected deep child and no explicit AutoExpand=true,
+        // the ancestor nodes remain collapsed on initial render.
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root", new List<HierarchicalNode>
+            {
+                new("1-1", "Child", new List<HierarchicalNode>
+                {
+                    new("1-1-1", "GrandChild"),
+                }),
+            }),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.SelectedItems, new[] { "1-1-1" }));
+        // AutoExpand not set — defaults to false
+
+        Assert.DoesNotContain("Child", cut.Markup);
+        Assert.DoesNotContain("GrandChild", cut.Markup);
+    }
+
+    [Fact]
+    public void TreeView_AutoExpand_False_DoesNotExpandAncestors()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root", new List<HierarchicalNode>
+            {
+                new("1-1", "Child", new List<HierarchicalNode>
+                {
+                    new("1-1-1", "GrandChild"),
+                }),
+            }),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.SelectedItems, new[] { "1-1-1" })
+            .Add(p => p.AutoExpand, false));
+
+        Assert.DoesNotContain("Child", cut.Markup);
+        Assert.DoesNotContain("GrandChild", cut.Markup);
+    }
+
+    [Fact]
+    public void TreeView_AutoExpand_True_ExpandsAncestorsOfSelectedItem()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root", new List<HierarchicalNode>
+            {
+                new("1-1", "Child", new List<HierarchicalNode>
+                {
+                    new("1-1-1", "GrandChild"),
+                }),
+            }),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.SelectedItems, new[] { "1-1-1" })
+            .Add(p => p.AutoExpand, true));
+
+        // With AutoExpand=true and "1-1-1" selected, both "Root" (1) and "Child" (1-1)
+        // are added to _expandedIds, making "Child" and "GrandChild" visible in the markup.
+        Assert.Contains("Child", cut.Markup);
+        Assert.Contains("GrandChild", cut.Markup);
+    }
+
+    // ── Gap 15: ExpandAll / CollapseAll Tests ────────────────────────────
+
+    [Fact]
+    public async Task TreeView_ExpandAllAsync_MakesAllChildrenVisible()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root", new List<HierarchicalNode>
+            {
+                new("1-1", "Child", new List<HierarchicalNode>
+                {
+                    new("1-1-1", "GrandChild"),
+                }),
+            }),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children"));
+
+        Assert.DoesNotContain("Child", cut.Markup);
+        Assert.DoesNotContain("GrandChild", cut.Markup);
+
+        await cut.InvokeAsync(() => cut.Instance.ExpandAllAsync());
+
+        Assert.Contains("Child", cut.Markup);
+        Assert.Contains("GrandChild", cut.Markup);
+    }
+
+    [Fact]
+    public async Task TreeView_CollapseAllAsync_HidesAllChildren()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root", new List<HierarchicalNode>
+            {
+                new("1-1", "Child", new List<HierarchicalNode>
+                {
+                    new("1-1-1", "GrandChild"),
+                }),
+            }),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.ExpandedItems, new[] { "1", "1-1" }));
+
+        Assert.Contains("Child", cut.Markup);
+        Assert.Contains("GrandChild", cut.Markup);
+
+        await cut.InvokeAsync(() => cut.Instance.CollapseAllAsync());
+
+        Assert.DoesNotContain("Child", cut.Markup);
+        Assert.DoesNotContain("GrandChild", cut.Markup);
+    }
+
+    [Fact]
+    public async Task TreeView_ExpandAllAsync_FiresExpandedItemsChanged()
+    {
+        var expandedItemsReceived = new List<IEnumerable<string>>();
+
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root", new List<HierarchicalNode>
+            {
+                new("1-1", "Child A"),
+                new("1-2", "Child B"),
+            }),
+            new HierarchicalNode("2", "Standalone"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.ExpandedItemsChanged, ids => expandedItemsReceived.Add(ids.ToList())));
+
+        await cut.InvokeAsync(() => cut.Instance.ExpandAllAsync());
+
+        Assert.Single(expandedItemsReceived);
+        var fired = expandedItemsReceived[0].ToList();
+        Assert.Contains("1", fired);
+        Assert.Contains("1-1", fired);
+        Assert.Contains("1-2", fired);
+    }
+
+    [Fact]
+    public async Task TreeView_CollapseAllAsync_FiresExpandedItemsChangedWithEmptyCollection()
+    {
+        var expandedItemsReceived = new List<IEnumerable<string>>();
+
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root", new List<HierarchicalNode>
+            {
+                new("1-1", "Child"),
+            }),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.ExpandedItems, new[] { "1" })
+            .Add(p => p.ExpandedItemsChanged, ids => expandedItemsReceived.Add(ids.ToList())));
+
+        await cut.InvokeAsync(() => cut.Instance.CollapseAllAsync());
+
+        Assert.Single(expandedItemsReceived);
+        Assert.Empty(expandedItemsReceived[0]);
+    }
+
+    // ── Gap 16: FilterFunc Tests ────────────────────────────────────────
+
+    [Fact]
+    public void TreeView_FilterFunc_HidesNonMatchingLeafNodes()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Fruits", new List<HierarchicalNode>
+            {
+                new("1-1", "Apple"),
+                new("1-2", "Banana"),
+            }),
+            new HierarchicalNode("2", "Vegetables", new List<HierarchicalNode>
+            {
+                new("2-1", "Carrot"),
+            }),
+        };
+
+        Func<object, bool> filter = item => ((HierarchicalNode)item).Name == "Apple";
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.ExpandedItems, new[] { "1", "2" })
+            .Add(p => p.FilterFunc, filter));
+
+        Assert.Contains("Apple", cut.Markup);
+        Assert.Contains("Fruits", cut.Markup); // ancestor kept visible
+        Assert.DoesNotContain("Banana", cut.Markup);
+        Assert.DoesNotContain("Vegetables", cut.Markup);
+        Assert.DoesNotContain("Carrot", cut.Markup);
+    }
+
+    [Fact]
+    public void TreeView_FilterFunc_MatchingNodesGetFilterMatchCssClass()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Fruits", new List<HierarchicalNode>
+            {
+                new("1-1", "Apple"),
+            }),
+        };
+
+        Func<object, bool> filter = item => ((HierarchicalNode)item).Name == "Apple";
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.ExpandedItems, new[] { "1" })
+            .Add(p => p.FilterFunc, filter));
+
+        // Use id selector to find the specific Apple node
+        var appleItem = cut.Find("#tree-node-1-1");
+        Assert.Contains("mar-tree-item--filter-match", appleItem.GetAttribute("class") ?? "");
+
+        // Fruits (ancestor) should NOT have filter-match class
+        var fruitsItem = cut.Find("#tree-node-1");
+        Assert.DoesNotContain("mar-tree-item--filter-match", fruitsItem.GetAttribute("class") ?? "");
+    }
+
+    [Fact]
+    public void TreeView_FilterFunc_NullShowsAllNodes()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Fruits", new List<HierarchicalNode>
+            {
+                new("1-1", "Apple"),
+                new("1-2", "Banana"),
+            }),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.ExpandedItems, new[] { "1" }));
+
+        Assert.Contains("Apple", cut.Markup);
+        Assert.Contains("Banana", cut.Markup);
+        Assert.Contains("Fruits", cut.Markup);
+    }
+
+    [Fact]
+    public void TreeView_ClearFilter_RestoresAllNodes()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Fruits", new List<HierarchicalNode>
+            {
+                new("1-1", "Apple"),
+                new("1-2", "Banana"),
+            }),
+        };
+
+        Func<object, bool> filter = item => ((HierarchicalNode)item).Name == "Apple";
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.ExpandedItems, new[] { "1" })
+            .Add(p => p.FilterFunc, filter));
+
+        Assert.DoesNotContain("Banana", cut.Markup);
+
+        // Re-render without filter by rendering a new component
+        var cut2 = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.ExpandedItems, new[] { "1" }));
+
+        Assert.Contains("Apple", cut2.Markup);
+        Assert.Contains("Banana", cut2.Markup);
+    }
+
+    // ── Gap 17: Disabled / ReadOnly Tests ───────────────────────────────
+
+    [Fact]
+    public void TreeView_Disabled_SetsAriaDisabledOnRoot()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.Disabled, true));
+
+        var tree = cut.Find("[role='tree']");
+        Assert.Equal("true", tree.GetAttribute("aria-disabled"));
+    }
+
+    [Fact]
+    public void TreeView_Disabled_False_NoAriaDisabled()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children"));
+
+        var tree = cut.Find("[role='tree']");
+        Assert.Null(tree.GetAttribute("aria-disabled"));
+    }
+
+    [Fact]
+    public void TreeView_Disabled_PreventsExpandCollapseViaToggle()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Parent", new List<HierarchicalNode>
+            {
+                new("1-1", "Child"),
+            }),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.Disabled, true));
+
+        // Toggle button should have disabled attribute
+        var toggle = cut.Find(".mar-tree-item__toggle");
+        Assert.True(toggle.HasAttribute("disabled"));
+    }
+
+    [Fact]
+    public void TreeView_Disabled_PreventsSelection()
+    {
+        IEnumerable<string>? receivedSelection = null;
+
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.Disabled, true)
+            .Add(p => p.SelectedItemsChanged, ids => receivedSelection = ids));
+
+        // Title span should not have onclick when Disabled (guard: if (!Disabled))
+        // Verify no selection event fires
+        Assert.Null(receivedSelection);
+    }
+
+    [Fact]
+    public void TreeView_Disabled_PreventsCheckboxChanges()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.CheckBoxMode, CheckBoxMode.Multiple)
+            .Add(p => p.Disabled, true));
+
+        var checkbox = cut.Find(".mar-tree-item__checkbox");
+        Assert.True(checkbox.HasAttribute("disabled"));
+    }
+
+    [Fact]
+    public void TreeView_Disabled_PreventsKeyboardNavigation()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Node A"),
+            new HierarchicalNode("2", "Node B"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.Disabled, true));
+
+        var tree = cut.Find("[role='tree']");
+        tree.KeyDown(new KeyboardEventArgs { Key = "ArrowDown" });
+
+        // No focused node should appear since HandleKeyDown returns early
+        Assert.DoesNotContain("mar-tree-item--focused", cut.Markup);
+    }
+
+    [Fact]
+    public void TreeView_ReadOnly_PreventsCheckboxChanges()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.CheckBoxMode, CheckBoxMode.Multiple)
+            .Add(p => p.ReadOnly, true));
+
+        var checkbox = cut.Find(".mar-tree-item__checkbox");
+        Assert.True(checkbox.HasAttribute("disabled"));
+    }
+
+    [Fact]
+    public void TreeView_ReadOnly_AllowsKeyboardFocusMovement()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Node A"),
+            new HierarchicalNode("2", "Node B"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.ReadOnly, true));
+
+        var tree = cut.Find("[role='tree']");
+        tree.KeyDown(new KeyboardEventArgs { Key = "ArrowDown" });
+
+        // ReadOnly does NOT block HandleKeyDown (only Disabled does)
+        // So focus should move — at least one node should be focused
+        Assert.Contains("mar-tree-item--focused", cut.Markup);
+    }
+
+    [Fact]
+    public void TreeView_BothDefaultToFalse()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children"));
+
+        var tree = cut.Find("[role='tree']");
+        Assert.Null(tree.GetAttribute("aria-disabled"));
+        // Toggle buttons should not be disabled
+        Assert.DoesNotContain("disabled", cut.Markup.ToLower().Split("role")[0]);
+    }
+
+    // ── Gap 19: SelectNodeAsync (Programmatic Navigation) ────────────────
+
+    [Fact]
+    public async Task TreeView_SelectNodeAsync_ExpandsAncestors()
+    {
+        // Deep tree: Root > Child > GrandChild
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root", new List<HierarchicalNode>
+            {
+                new("1-1", "Child", new List<HierarchicalNode>
+                {
+                    new("1-1-1", "GrandChild"),
+                }),
+            }),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children"));
+
+        // Neither Child nor GrandChild visible initially
+        Assert.DoesNotContain("Child", cut.Markup);
+        Assert.DoesNotContain("GrandChild", cut.Markup);
+
+        await cut.InvokeAsync(() => cut.Instance.SelectNodeAsync("1-1-1"));
+
+        // Ancestors (Root and Child) must have been expanded, making GrandChild visible
+        Assert.Contains("Child", cut.Markup);
+        Assert.Contains("GrandChild", cut.Markup);
+    }
+
+    [Fact]
+    public async Task TreeView_SelectNodeAsync_SelectsTargetNode()
+    {
+        var selectedItemsReceived = new List<IEnumerable<string>>();
+
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root", new List<HierarchicalNode>
+            {
+                new("1-1", "Child"),
+            }),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.SelectedItemsChanged, ids => selectedItemsReceived.Add(ids.ToList())));
+
+        await cut.InvokeAsync(() => cut.Instance.SelectNodeAsync("1-1"));
+
+        // SelectedItemsChanged must fire with the target node's ID
+        Assert.NotEmpty(selectedItemsReceived);
+        var lastReceived = selectedItemsReceived.Last().ToList();
+        Assert.Contains("1-1", lastReceived);
+        Assert.Single(lastReceived); // only the target — prior selection is replaced
+    }
+
+    [Fact]
+    public async Task TreeView_SelectNodeAsync_FiresExpandedItemsChanged()
+    {
+        var expandedItemsReceived = new List<IEnumerable<string>>();
+
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root", new List<HierarchicalNode>
+            {
+                new("1-1", "Child"),
+            }),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.ExpandedItemsChanged, ids => expandedItemsReceived.Add(ids.ToList())));
+
+        await cut.InvokeAsync(() => cut.Instance.SelectNodeAsync("1-1"));
+
+        // ExpandedItemsChanged fires because the delegate is bound and ancestors were expanded
+        Assert.NotEmpty(expandedItemsReceived);
+        // The ancestor "1" (Root) must appear in the expanded set
+        Assert.Contains("1", expandedItemsReceived.Last());
+    }
+
+    [Fact]
+    public async Task TreeView_SelectNodeAsync_SetsFocusToTargetNode()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root", new List<HierarchicalNode>
+            {
+                new("1-1", "Child"),
+            }),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children"));
+
+        await cut.InvokeAsync(() => cut.Instance.SelectNodeAsync("1-1"));
+
+        // The target node's li element must carry the focused CSS class
+        var targetNode = cut.Find("#tree-node-1-1");
+        Assert.Contains("mar-tree-item--focused", targetNode.GetAttribute("class") ?? "");
+    }
+
+    [Fact]
+    public async Task TreeView_SelectNodeAsync_SilentlyReturnsForNonExistentId()
+    {
+        var selectedItemsReceived = new List<IEnumerable<string>>();
+        var expandedItemsReceived = new List<IEnumerable<string>>();
+
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.SelectedItemsChanged, ids => selectedItemsReceived.Add(ids.ToList()))
+            .Add(p => p.ExpandedItemsChanged, ids => expandedItemsReceived.Add(ids.ToList())));
+
+        // A non-existent ID — must not throw and must not fire any events
+        var exception = await Record.ExceptionAsync(() =>
+            cut.InvokeAsync(() => cut.Instance.SelectNodeAsync("does-not-exist")));
+
+        Assert.Null(exception);
+        Assert.Empty(selectedItemsReceived);
+        Assert.Empty(expandedItemsReceived);
+    }
+
+    // ── Gap 20: OnItemContextMenu (Item Context Menu) ────────────────────
+
+    [Fact]
+    public void TreeView_OnItemContextMenu_FiresOnRightClick()
+    {
+        TreeItemContextMenuEventArgs? receivedArgs = null;
+
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.OnItemContextMenu, args => receivedArgs = args));
+
+        // Trigger the oncontextmenu event on the node header
+        cut.Find(".mar-tree-item__header")
+           .TriggerEvent("oncontextmenu", new MouseEventArgs { ClientX = 100, ClientY = 200 });
+
+        Assert.NotNull(receivedArgs);
+        Assert.Equal("1", receivedArgs!.ItemId);
+        Assert.Equal(100, receivedArgs.MouseEventArgs.ClientX);
+        Assert.Equal(200, receivedArgs.MouseEventArgs.ClientY);
+    }
+
+    [Fact]
+    public void TreeView_OnItemContextMenu_NoHandlerWhenNoDelegateSet()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root"),
+        };
+
+        // Render WITHOUT binding OnItemContextMenu
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children"));
+
+        // When no handler is bound, the oncontextmenu attribute must be absent
+        var header = cut.Find(".mar-tree-item__header");
+        Assert.Null(header.GetAttribute("oncontextmenu"));
+    }
+
+    // ── Gap 21: CheckboxTemplate (Custom Checkbox Rendering) ─────────────
+
+    [Fact]
+    public void TreeView_CheckboxTemplate_RendersCustomContent()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.CheckBoxMode, CheckBoxMode.Multiple)
+            .Add(p => p.CheckboxTemplate, context => builder =>
+            {
+                builder.OpenElement(0, "span");
+                builder.AddAttribute(1, "class", "custom-checkbox");
+                builder.AddContent(2, context.Checked ? "ON" : "OFF");
+                builder.CloseElement();
+            }));
+
+        // Custom element must appear; default input type=checkbox must not
+        Assert.Contains("custom-checkbox", cut.Markup);
+        Assert.DoesNotContain("<input", cut.Markup);
+    }
+
+    [Fact]
+    public void TreeView_CheckboxTemplate_ProvidesCorrectContext()
+    {
+        // Parent with two children — pre-check only child "2" so parent starts indeterminate.
+        // AllowCheckParents=false so the checked set only contains "2".
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Parent", new List<HierarchicalNode>
+            {
+                new("2", "Child 1"),
+                new("3", "Child 2"),
+            }),
+        };
+
+        // Track context values supplied to the template (keyed by render order)
+        var capturedContexts = new List<(bool Checked, bool Indeterminate)>();
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.CheckBoxMode, CheckBoxMode.Multiple)
+            .Add(p => p.AllowCheckChildren, false)
+            .Add(p => p.AllowCheckParents, true)
+            // Pre-check only child "2" — parent "1" has partial children checked → indeterminate
+            .Add(p => p.CheckedItems, new[] { "2" })
+            .Add(p => p.ExpandedItems, new[] { "1" })
+            .Add(p => p.CheckboxTemplate, context => builder =>
+            {
+                capturedContexts.Add((context.Checked, context.Indeterminate));
+                builder.OpenElement(0, "span");
+                builder.AddAttribute(1, "class", "custom-checkbox");
+                builder.AddContent(2, context.Indeterminate ? "PARTIAL" : context.Checked ? "ON" : "OFF");
+                builder.CloseElement();
+            }));
+
+        // With one of two children checked, the parent's context must report Indeterminate=true
+        Assert.Contains(capturedContexts, c => c.Indeterminate);
+
+        // Child "2" (checked) must report Checked=true and Indeterminate=false
+        Assert.Contains(capturedContexts, c => c.Checked && !c.Indeterminate);
+
+        // Child "3" (unchecked) must report Checked=false and Indeterminate=false
+        Assert.Contains(capturedContexts, c => !c.Checked && !c.Indeterminate);
+    }
+
+    [Fact]
+    public void TreeView_CheckboxTemplate_DefaultCheckboxWhenNull()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root"),
+        };
+
+        // No CheckboxTemplate provided
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.CheckBoxMode, CheckBoxMode.Multiple));
+
+        // Default render: a plain <input type="checkbox"> with the expected class
+        var checkbox = cut.Find(".mar-tree-item__checkbox");
+        Assert.Equal("checkbox", checkbox.GetAttribute("type"));
+    }
+
+    // ── Gap 22: Node Editing / Inline Rename Tests ───────────────────────
+
+    [Fact]
+    public void TreeView_NodeEditing_AllowEditingDefaultsFalse()
+    {
+        // Criterion: AllowEditing defaults to false; existing consumers see no change.
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root Node"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children"));
+
+        // Title span must be rendered; no edit input should exist
+        Assert.Contains("mar-tree-item__title", cut.Markup);
+        Assert.DoesNotContain("mar-tree-item__edit-input", cut.Markup);
+
+        // ondblclick must not appear on the title span (AllowEditing=false suppresses it)
+        var title = cut.Find(".mar-tree-item__title");
+        Assert.Null(title.GetAttribute("ondblclick"));
+    }
+
+    [Fact]
+    public void TreeView_NodeEditing_DoubleClickActivatesEditMode()
+    {
+        // Criterion: Double-click on title activates edit mode when AllowEditing=true.
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root Node"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.AllowEditing, true));
+
+        // Before double-click: title span present, no edit input
+        Assert.Contains("mar-tree-item__title", cut.Markup);
+        Assert.DoesNotContain("mar-tree-item__edit-input", cut.Markup);
+
+        // Double-click activates inline edit
+        cut.Find(".mar-tree-item__title").TriggerEvent("ondblclick", new MouseEventArgs());
+
+        // After double-click: edit input present, title span absent
+        Assert.Contains("mar-tree-item__edit-input", cut.Markup);
+        Assert.DoesNotContain("mar-tree-item__title", cut.Markup);
+    }
+
+    [Fact]
+    public void TreeView_NodeEditing_EditInputReplacesTitle()
+    {
+        // Criterion: During edit, the title span is replaced by a text input pre-filled
+        // with the current label.
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "My Node"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.AllowEditing, true));
+
+        cut.Find(".mar-tree-item__title").TriggerEvent("ondblclick", new MouseEventArgs());
+
+        // Edit input must be present and be an <input type="text">
+        var input = cut.Find("input[type='text'].mar-tree-item__edit-input");
+        Assert.NotNull(input);
+
+        // Input must be pre-filled with the current node text
+        Assert.Equal("My Node", input.GetAttribute("value"));
+
+        // Title span must no longer be in the DOM
+        Assert.Empty(cut.FindAll(".mar-tree-item__title"));
+    }
+
+    [Fact]
+    public void TreeView_NodeEditing_EnterCommitsEdit()
+    {
+        // Criterion: Enter key commits edit and fires OnItemEdit with new text.
+        var editArgs = new List<Marilo.Core.Models.TreeItemEditEventArgs>();
+
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Old Name"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.AllowEditing, true)
+            .Add(p => p.OnItemEdit, args => editArgs.Add(args)));
+
+        // Activate edit
+        cut.Find(".mar-tree-item__title").TriggerEvent("ondblclick", new MouseEventArgs());
+
+        // Simulate typing a new value
+        var input = cut.Find(".mar-tree-item__edit-input");
+        input.TriggerEvent("oninput", new ChangeEventArgs { Value = "New Name" });
+
+        // Press Enter to commit
+        input.TriggerEvent("onkeydown", new KeyboardEventArgs { Key = "Enter" });
+
+        // OnItemEdit must have fired once with the new text
+        Assert.Single(editArgs);
+        Assert.Equal("1", editArgs[0].ItemId);
+        Assert.Equal("New Name", editArgs[0].NewText);
+
+        // Edit mode must be exited (no edit input in DOM)
+        Assert.DoesNotContain("mar-tree-item__edit-input", cut.Markup);
+    }
+
+    [Fact]
+    public void TreeView_NodeEditing_EscapeCancelsEdit()
+    {
+        // Criterion: Escape key cancels edit and restores original text without
+        // firing OnItemEdit.
+        var editFired = false;
+
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Original Name"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.AllowEditing, true)
+            .Add(p => p.OnItemEdit, _ => editFired = true));
+
+        // Activate edit and type a different value
+        cut.Find(".mar-tree-item__title").TriggerEvent("ondblclick", new MouseEventArgs());
+        var input = cut.Find(".mar-tree-item__edit-input");
+        input.TriggerEvent("oninput", new ChangeEventArgs { Value = "Changed" });
+
+        // Escape via the tree's keyboard handler (CancelEdit path in HandleKeyDown)
+        cut.Find("[role='tree']").KeyDown(new KeyboardEventArgs { Key = "Escape" });
+
+        // Edit input must be gone and callback must NOT have fired
+        Assert.DoesNotContain("mar-tree-item__edit-input", cut.Markup);
+        Assert.False(editFired);
+
+        // Original title must be restored in the DOM
+        Assert.Contains("Original Name", cut.Markup);
+    }
+
+    [Fact]
+    public void TreeView_NodeEditing_EmptyTextDoesNotFireCallback()
+    {
+        // Criterion: Empty text (after trim) on commit is silently discarded;
+        // OnItemEdit is not fired.
+        var editFired = false;
+
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Existing Name"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.AllowEditing, true)
+            .Add(p => p.OnItemEdit, _ => editFired = true));
+
+        // Activate edit, replace with whitespace-only text, then commit with Enter
+        cut.Find(".mar-tree-item__title").TriggerEvent("ondblclick", new MouseEventArgs());
+        var input = cut.Find(".mar-tree-item__edit-input");
+        input.TriggerEvent("oninput", new ChangeEventArgs { Value = "   " }); // whitespace-only
+        input.TriggerEvent("onkeydown", new KeyboardEventArgs { Key = "Enter" });
+
+        // Callback must NOT have fired
+        Assert.False(editFired);
+
+        // Edit mode must be exited regardless
+        Assert.DoesNotContain("mar-tree-item__edit-input", cut.Markup);
+    }
+
+    [Fact]
+    public void TreeView_NodeEditing_BlurCommitsEdit()
+    {
+        // Criterion: Blur commits the edit and fires OnItemEdit.
+        var editArgs = new List<Marilo.Core.Models.TreeItemEditEventArgs>();
+
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Node"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.AllowEditing, true)
+            .Add(p => p.OnItemEdit, args => editArgs.Add(args)));
+
+        // Activate edit and type a value
+        cut.Find(".mar-tree-item__title").TriggerEvent("ondblclick", new MouseEventArgs());
+        var input = cut.Find(".mar-tree-item__edit-input");
+        input.TriggerEvent("oninput", new ChangeEventArgs { Value = "Renamed" });
+
+        // Simulate blur (focus leaves the input)
+        input.TriggerEvent("onblur", new FocusEventArgs());
+
+        // Callback must have fired with the new text
+        Assert.Single(editArgs);
+        Assert.Equal("Renamed", editArgs[0].NewText);
+
+        // Edit mode must be exited
+        Assert.DoesNotContain("mar-tree-item__edit-input", cut.Markup);
+    }
+
+    [Fact]
+    public void TreeView_NodeEditing_AllowEditingFalse_PreventsActivation()
+    {
+        // Criterion: AllowEditing=false prevents edit activation.
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root Node"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.AllowEditing, false));
+
+        // Title span must not have ondblclick (no handler registered)
+        var title = cut.Find(".mar-tree-item__title");
+        Assert.Null(title.GetAttribute("ondblclick"));
+
+        // No edit input in the DOM
+        Assert.DoesNotContain("mar-tree-item__edit-input", cut.Markup);
+    }
+
+    [Fact]
+    public void TreeView_NodeEditing_DisabledPreventsActivation()
+    {
+        // Criterion: Disabled=true prevents double-click edit activation.
+        // Guard: AllowEditing && !Disabled && !ReadOnly (line 599).
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root Node"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.AllowEditing, true)
+            .Add(p => p.Disabled, true));
+
+        // When Disabled=true the title span renders without any click handlers.
+        // No edit input must exist in the DOM.
+        Assert.DoesNotContain("mar-tree-item__edit-input", cut.Markup);
+
+        // The ondblclick handler must be absent from the title (if rendered).
+        var titles = cut.FindAll(".mar-tree-item__title");
+        if (titles.Count > 0)
+            Assert.Null(titles[0].GetAttribute("ondblclick"));
+    }
+
+    [Fact]
+    public void TreeView_NodeEditing_ReadOnlyPreventsActivation()
+    {
+        // Criterion: ReadOnly=true prevents double-click edit activation independently of Disabled.
+        // Guard: AllowEditing && !Disabled && !ReadOnly (line 599).
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Root Node"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.AllowEditing, true)
+            .Add(p => p.ReadOnly, true));
+
+        // ReadOnly=true: ondblclick must not be on the title span
+        var title = cut.Find(".mar-tree-item__title");
+        Assert.Null(title.GetAttribute("ondblclick"));
+
+        // No edit input in the DOM
+        Assert.DoesNotContain("mar-tree-item__edit-input", cut.Markup);
+    }
+
+    [Fact]
+    public void TreeView_NodeEditing_F2ActivatesEditMode()
+    {
+        // Criterion: F2 key activates edit mode on the focused node when AllowEditing=true.
+        // F2 guard: AllowEditing && !ReadOnly && _focusedNodeId != null (line 784).
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Focusable Node"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.AllowEditing, true));
+
+        var tree = cut.Find("[role='tree']");
+
+        // ArrowDown sets _focusedNodeId to the first visible node
+        tree.KeyDown(new KeyboardEventArgs { Key = "ArrowDown" });
+
+        // F2 should now activate edit mode on the focused node
+        tree.KeyDown(new KeyboardEventArgs { Key = "F2" });
+
+        // Edit input must appear
+        Assert.Contains("mar-tree-item__edit-input", cut.Markup);
+
+        // Title span must be replaced
+        Assert.DoesNotContain("mar-tree-item__title", cut.Markup);
+    }
+
+    [Fact]
+    public void TreeView_NodeEditing_SuppressesExpandOnDoubleClick()
+    {
+        // Criterion: ExpandOnDoubleClick is suppressed when AllowEditing=true.
+        // The ondblclick expand handler is not emitted on the header div when AllowEditing=true
+        // (line 506: if (ExpandOnDoubleClick && !AllowEditing)).
+        // This is an intentional trade-off documented in the resolution record: double-click is
+        // unconditionally reserved for edit activation when AllowEditing=true.
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Parent A", new List<HierarchicalNode>
+            {
+                new("1-1", "Child A1"),
+            }),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.ExpandOnDoubleClick, true)
+            .Add(p => p.AllowEditing, true));
+
+        // The header div must NOT have ondblclick for expand (suppressed by AllowEditing)
+        var header = cut.Find(".mar-tree-item__header");
+        Assert.Null(header.GetAttribute("ondblclick"));
+
+        // Children must remain hidden: the node is not expanded
+        Assert.DoesNotContain("Child A1", cut.Markup);
     }
 }

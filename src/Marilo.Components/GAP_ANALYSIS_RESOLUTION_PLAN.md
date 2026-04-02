@@ -923,6 +923,35 @@ The following gaps are systemic across most/all T4 components:
 
 ---
 
+## Phase 2.5 — Post-Reconstruction Fixes
+
+Gaps discovered during Phase 2 pipeline reconstruction. Intake complete; resolution pending.
+
+| Gap ID | Title | Severity | Scope | Status |
+|--------|-------|----------|-------|--------|
+| GAP-readonly-guards | ReadOnly parameter missing from ExpandOnClick and DragDrop interaction guards | Medium | single | 📋 Intake complete |
+| GAP-expandall-lazyload | ExpandAllAsync does not trigger LoadChildrenAsync for unloaded nodes | High | single | 📋 Intake complete |
+
+### GAP-readonly-guards
+
+`HandleDrop()` and the DragDrop render guard (line 480) do not check `ReadOnly`. A `ReadOnly=true` tree with `EnableDragDrop=true` fires `OnItemDrop` callbacks — the only true state-mutation leak. Three additional cosmetic inconsistencies (ExpandOnClick handler attached, toggle button appears enabled, title click handler attached when ReadOnly). `HandleKeyDown` omission of ReadOnly is intentional (accessibility).
+
+**Must fix:** Add `ReadOnly` guard to `HandleDrop()` and DragDrop handler attachment.
+**Should fix:** Add `ReadOnly` to ExpandOnClick guard, toggle button `disabled` attr, title click guard.
+
+**Intake record:** [`stages/01-intake/output/gap-readonly-guards-inventory.md`](../workspaces/gap-analysis-resolution/stages/01-intake/output/gap-readonly-guards-inventory.md)
+
+### GAP-expandall-lazyload
+
+`ExpandAllAsync()` calls `CollectAllIds(GetTree(), _expandedIds)` which only walks already-loaded nodes. For trees using `LoadChildrenAsync`, nodes with `HasChildren=true` but no fetched children produce `TreeNode(..., Children=[], HasChildren=true)`. `CollectAllIds` adds the parent ID but finds zero child IDs. No `LoadChildrenAsync` call is made. The tree renders with expanded parents showing no children and no loading indicator — **silent data loss**.
+
+**Must fix:** `ExpandAllAsync` must detect and fetch unloaded lazy nodes before collecting IDs. Recommended: sequential `LoadChildrenAsync` calls with per-node loading indicators.
+**Effort:** Medium — requires iterating unloaded nodes, calling async fetch, invalidating cache between levels.
+
+**Intake record:** [`stages/01-intake/output/gap-expandall-lazyload-inventory.md`](../workspaces/gap-analysis-resolution/stages/01-intake/output/gap-expandall-lazyload-inventory.md)
+
+---
+
 ## Pre-existing Regressions
 
 13 pre-existing test failures exist in the suite (173 passing / 13 failing). None were introduced by the gap-analysis-resolution work. Full triage: [`stages/05-implement/output/gap-regression-triage.md`](../workspaces/gap-analysis-resolution/stages/05-implement/output/gap-regression-triage.md).
@@ -946,7 +975,17 @@ Tracks test coverage for each gap slug that has a Stage 03 resolution record in 
 | GAP-stack | Spacing, Width/Height, two-axis alignment, orientation | ✅ | ✅ | 11 tests in `Foundation/StackTests.cs`, all passing; Stage 06 Resolved (test-coverage-pass) |
 | GAP-grid | CSS Grid Layout with child components, spacing, alignment | ✅ | ✅ | 10 tests in `Foundation/GridLayoutTests.cs`, all passing; Stage 06 Resolved (test-coverage-pass) |
 | GAP-form | Form EditContext, validation components, Field/Label enhancements | ✅ | ✅ | 20 tests in `Foundation/FormTests.cs`, all passing; Stage 06 Resolved with deferred gaps (test-coverage-pass) |
-| GAP-treeview | TreeView/TreeItem — 22 gaps (tri-state, checked binding, multi-select, lazy load, keyboard, Phase 2+3) | ✅ (17 tests) | ✅ | 4 existing + 13 new in `P2Enhancements/TreeViewTests.cs` (tri-state ×6, lazy load ×3, keyboard ×4); all passing (test-coverage-pass) |
+| GAP-treeview | TreeView/TreeItem — 22 gaps (tri-state, checked binding, multi-select, lazy load, keyboard, Phase 2+3) | ✅ (67 tests) | ✅ | Phase 1: 17 + Phase 2: 28 + Phase 3: 22 in `P2Enhancements/TreeViewTests.cs`; all passing (test-coverage-pass) |
+| GAP-expand-onclick | ExpandOnClick / ExpandOnDoubleClick | ✅ (5 tests) | ✅ | Phase 2; Stage 06 Resolved (reconstructed pipeline) |
+| GAP-single-expand | SingleExpand (accordion mode) | ✅ (3 tests) | ✅ | Phase 2; Stage 06 Resolved (reconstructed pipeline) |
+| GAP-auto-expand | AutoExpand ancestors of selected items | ✅ (3 tests) | ✅ | Phase 2; Stage 06 Resolved (reconstructed pipeline) |
+| GAP-batch-expand | ExpandAllAsync / CollapseAllAsync | ✅ (4 tests) | ✅ | Phase 2; Stage 06 Resolved (reconstructed pipeline) |
+| GAP-filter | FilterFunc / Search with ancestor preservation | ✅ (4 tests) | ✅ | Phase 2; Stage 06 Resolved (reconstructed pipeline) |
+| GAP-disabled | Disabled / ReadOnly state guards | ✅ (9 tests) | ✅ | Phase 2; Stage 06 Resolved; ReadOnly/ExpandOnClick interaction flagged for future review |
+| GAP-programmatic-nav | SelectNodeAsync — expand ancestors, select, focus | ✅ (5 tests) | ✅ | Phase 3; Stage 06 Resolved (reconstructed pipeline) |
+| GAP-item-context-menu | OnItemContextMenu event on right-click | ✅ (2 tests) | ✅ | Phase 3; Stage 06 Resolved; preventDefault ⚠️ code inspection only |
+| GAP-checkbox-template | CheckboxTemplate RenderFragment<CheckboxContext> | ✅ (3 tests) | ✅ | Phase 3; Stage 06 Resolved; Disabled/OnChange ⚠️ code inspection only |
+| GAP-node-editing | AllowEditing — inline rename via double-click/F2 | ✅ (12 tests) | ✅ | Phase 3; Stage 06 Resolved; ExpandOnDoubleClick suppression documented |
 
 ### Deferred / Partial Coverage
 
@@ -958,3 +997,4 @@ Tracks test coverage for each gap slug that has a Stage 03 resolution record in 
 - GAP-form GAP-FORM-022/026 (FormItemsTemplate/AutoGeneratedItems) → Phase 4 — advanced template system
 - GAP-form GAP-FIELD-005/006, GAP-LABEL-005 → Phase 4 — nice-to-have enhancements
 - GAP-treeview Gap 18 (Virtualization) → Future iteration — requires flatten-and-virtualize architecture change
+- GAP-disabled ReadOnly interaction with ExpandOnClick and EnableDragDrop → Future review — ReadOnly does not block these paths (only Disabled does); intentional or oversight TBD

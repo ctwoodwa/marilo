@@ -41,12 +41,13 @@ All implementations are independent (no Telerik dependency), use MIT/Apache-2.0-
 | Field | Value |
 |-------|-------|
 | Area/module | Navigation/TreeView |
-| Total gaps identified | 22 (6 original + 16 from source review) |
+| Total gaps identified | 24 (6 original + 16 from source review + 2 post-reconstruction) |
 | Original (implemented) | 6 |
 | Phase 1 — Core | 5 (tri-state, checked binding, multi-select, lazy load, keyboard) |
 | Phase 2 — Enhanced | 6 (expand-on-click, single-expand, auto-expand, batch expand, filter, disabled) |
+| Phase 2.5 — Fix | 2 (GAP-readonly-guards: ReadOnly missing from guards; GAP-expandall-lazyload: ExpandAll skips lazy nodes) |
 | Phase 3 — Advanced | 5 (virtualization, programmatic nav, context menu, checkbox template, inline edit) |
-| Stage routing | 03 > 05 > 06 (batch — all stages complete) |
+| Stage routing | 03 > 05 > 06 (batch — all stages complete for Phases 1-3; Phase 2.5 at intake; Gap 18 deferred) |
 
 ## Resolution Tracking
 
