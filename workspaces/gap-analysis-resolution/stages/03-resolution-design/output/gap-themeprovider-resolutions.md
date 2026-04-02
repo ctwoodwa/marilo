@@ -68,11 +68,13 @@ MariloThemeProvider renders a wrapper `<div>` that:
 
 #### Success Criteria
 
-- [ ] Wrapper div renders with `class="marilo-theme-provider"`
-- [ ] CSS custom properties for colors, typography, and shape are emitted as inline styles
-- [ ] `data-marilo-theme="dark"` is set when `ThemeService.IsDarkMode` is true
-- [ ] `dir="rtl"` is set when `Theme.IsRtl` is true
-- [ ] `Class`, `Style`, and `AdditionalAttributes` pass through to the wrapper div
+- [ ] Wrapper div renders with `class="marilo-theme-provider"` (unit test)
+- [ ] CSS custom properties for colors, typography, and shape are emitted as inline styles (unit test)
+- [ ] `data-marilo-theme="dark"` is set when `ThemeService.IsDarkMode` is true (unit test)
+- [ ] `dir="rtl"` is set when `Theme.IsRtl` is true (unit test)
+- [ ] `Class`, `Style`, and `AdditionalAttributes` pass through to the wrapper div (unit test)
+
+<!-- Updated by test-coverage-pass: criteria made testable -->
 
 ---
 
@@ -136,9 +138,11 @@ private async void OnThemeServiceChanged(object? sender, ThemeChangedEventArgs e
 
 #### Success Criteria
 
-- [ ] `InitializeAsync()` is called on first render
-- [ ] Dark mode state persisted in localStorage is restored on page load
-- [ ] No unobserved task exceptions on component disposal
+- [ ] `InitializeAsync()` is called on first render (unit test)
+- [ ] Dark mode state persisted in localStorage is restored on page load (integration test)
+- [ ] No unobserved task exceptions on component disposal (unit test)
+
+<!-- Updated by test-coverage-pass: criteria made testable -->
 
 ---
 
@@ -157,5 +161,7 @@ No code change needed. The parameter exists and works correctly. Flag for docume
 
 #### Success Criteria
 
-- [ ] `ThemeChanged` parameter remains in the component
-- [ ] Flagged in resolution notes for documentation update
+- [ ] `ThemeChanged` parameter remains in the component (unit test)
+- [ ] Flagged in resolution notes for documentation update (unit test)
+
+<!-- Updated by test-coverage-pass: criteria made testable -->

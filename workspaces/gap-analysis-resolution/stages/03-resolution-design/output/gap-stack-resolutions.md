@@ -66,10 +66,12 @@ Component renders a `<div>` with:
 
 #### Success Criteria
 
-- [x] `Spacing` parameter sets CSS `gap` property
-- [x] `Width`/`Height` parameters set inline styles
-- [x] `HorizontalAlign`/`VerticalAlign` correctly map to `justify-content`/`align-items` based on orientation
-- [x] Default orientation is `Horizontal`
-- [x] Parameter named `Orientation` (not `Direction`)
-- [x] Solution builds with zero errors and no new warnings
-- [x] Sample pages updated and compile
+- [x] `Spacing` parameter sets CSS `gap` property (unit test)
+- [x] `Width`/`Height` parameters set inline styles (unit test)
+- [x] `HorizontalAlign`/`VerticalAlign` correctly map to `justify-content`/`align-items` based on orientation (unit test)
+- [x] Default orientation is `Horizontal` (unit test)
+- [x] Parameter named `Orientation` (not `Direction`) (unit test)
+- [x] Solution builds with zero errors and no new warnings (integration test)
+- [x] Sample pages updated and compile (integration test)
+
+<!-- Updated by test-coverage-pass: criteria made testable -->

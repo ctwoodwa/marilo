@@ -102,12 +102,14 @@ Backward-compatible flex mode:
 
 #### Success Criteria
 
-- [x] MariloGrid renders as CSS Grid when Columns/Rows parameters are set
-- [x] MariloGridLayoutColumn registers width with parent grid
-- [x] MariloGridLayoutRow registers height with parent grid
-- [x] MariloGridLayoutItem positions content with Row/Column/RowSpan/ColumnSpan
-- [x] ColumnSpacing/RowSpacing set CSS gap properties
-- [x] Width parameter sets container width
-- [x] HorizontalAlign/VerticalAlign set justify-items/align-items
-- [x] Existing flex container mode (MariloRow/MariloColumn) continues to work
-- [x] Full solution builds with zero errors
+- [x] MariloGrid renders as CSS Grid when Columns/Rows parameters are set (unit test)
+- [x] MariloGridLayoutColumn registers width with parent grid (unit test)
+- [x] MariloGridLayoutRow registers height with parent grid (unit test)
+- [x] MariloGridLayoutItem positions content with Row/Column/RowSpan/ColumnSpan (unit test)
+- [x] ColumnSpacing/RowSpacing set CSS gap properties (unit test)
+- [x] Width parameter sets container width (unit test)
+- [x] HorizontalAlign/VerticalAlign set justify-items/align-items (unit test)
+- [x] Existing flex container mode (MariloRow/MariloColumn) continues to work (integration test)
+- [x] Full solution builds with zero errors (integration test)
+
+<!-- Updated by test-coverage-pass: criteria made testable -->

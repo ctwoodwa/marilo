@@ -496,6 +496,16 @@ public enum CalendarOrientation
     Vertical
 }
 
+/// <summary>Determines how the menu is triggered.</summary>
+public enum MenuShowOn
+{
+    /// <summary>Menu opens on click (default).</summary>
+    Click,
+
+    /// <summary>Menu opens on mouse hover.</summary>
+    MouseEnter
+}
+
 /// <summary>
 /// Specifies the calendar view level shown in a date picker popup.
 /// </summary>

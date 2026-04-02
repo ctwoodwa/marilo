@@ -114,19 +114,21 @@ The existing `MariloValidation` component is retained as a low-level static vali
 
 ## Success Criteria
 
-- [x] `MariloForm` creates EditContext from Model parameter
-- [x] `MariloForm` accepts existing EditContext parameter
-- [x] Mutual exclusion enforced (Model XOR EditContext)
-- [x] `OnSubmit`, `OnValidSubmit`, `OnInvalidSubmit` events fire correctly
-- [x] `OnUpdate` fires on field changes
-- [x] `EditContext` cascaded to child components
-- [x] `MariloValidationMessage<T>` displays per-field errors from EditContext
-- [x] `MariloValidationSummary` displays all errors from EditContext
-- [x] `MariloValidationTooltip<T>` displays per-field errors with positioning
-- [x] All validation components support Template render fragment
-- [x] `MariloField` renders label when Text is set
-- [x] `MariloField` adds invalid CSS class from EditContext state
-- [x] `MariloLabel` supports Text parameter
-- [x] `MariloLabel` adds invalid CSS class from EditContext state
-- [x] Existing `MariloValidation` component retained (backward compatible)
-- [x] Full solution builds with zero errors
+- [x] `MariloForm` creates EditContext from Model parameter (integration test)
+- [x] `MariloForm` accepts existing EditContext parameter (integration test)
+- [x] Mutual exclusion enforced (Model XOR EditContext) (unit test)
+- [x] `OnSubmit`, `OnValidSubmit`, `OnInvalidSubmit` events fire correctly (integration test)
+- [x] `OnUpdate` fires on field changes (integration test)
+- [x] `EditContext` cascaded to child components (integration test)
+- [x] `MariloValidationMessage<T>` displays per-field errors from EditContext (integration test)
+- [x] `MariloValidationSummary` displays all errors from EditContext (integration test)
+- [x] `MariloValidationTooltip<T>` displays per-field errors with positioning (integration test)
+- [x] All validation components support Template render fragment (integration test)
+- [x] `MariloField` renders label when Text is set (unit test)
+- [x] `MariloField` adds invalid CSS class from EditContext state (integration test)
+- [x] `MariloLabel` supports Text parameter (unit test)
+- [x] `MariloLabel` adds invalid CSS class from EditContext state (integration test)
+- [x] Existing `MariloValidation` component retained (backward compatible) (unit test)
+- [x] Full solution builds with zero errors (unit test)
+
+<!-- Updated by test-coverage-pass: criteria made testable -->

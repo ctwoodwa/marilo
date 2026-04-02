@@ -43,8 +43,9 @@ Documentation updates only:
 
 #### Success Criteria
 
-- [ ] Flagged for documentation update in resolution status
-- [ ] No code modifications required
+- [ ] Flagged for documentation update in resolution status (documentation review)
+- [ ] No code modifications required (documentation review)
+<!-- Updated by test-coverage-pass: criteria made testable -->
 
 ---
 
@@ -96,6 +97,7 @@ The documentation should be corrected: `IconThemeColor.Error` → `IconThemeColo
 
 #### Success Criteria
 
-- [ ] Flagged for documentation correction in resolution status
-- [ ] No code modifications required
-- [ ] Enum remains `Danger` consistent with `MariloColorPalette.Danger`
+- [ ] Flagged for documentation correction in resolution status (documentation review)
+- [ ] No code modifications required (documentation review)
+- [ ] Enum remains `Danger` consistent with `MariloColorPalette.Danger` (unit test)
+<!-- Updated by test-coverage-pass: criteria made testable -->

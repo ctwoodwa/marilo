@@ -43,9 +43,9 @@ This document defines the resolution strategy for all 87 Marilo Blazor component
 | MariloPopover | 10 | multi-pass | Yes (anchor positioning) | **T2 - High** | ✅ IMPLEMENTED (animation, keyboard, a11y) |
 | MariloDrawer | 10 | multi-pass | Yes (Mode, MiniMode, data binding) | **T2 - High** | ✅ IMPLEMENTED (all 10 gaps resolved) |
 | MariloList | 13 | multi-pass | Yes (data binding, selection, drag-drop) | **T2 - High** | ✅ IMPLEMENTED (toolbar, keyboard nav, size, reorder) |
-| MariloTreeView | 6+16 | multi-pass | Yes (expanded/selected binding, drag-drop) | **T2 - High** | ✅ IMPLEMENTED (21/22 gaps resolved; 1 deferred: virtualization. Partial file refactor, tri-state checkboxes, multi-select, lazy load, keyboard nav, context menu, inline edit) |
-| MariloMenu | 7 | multi-pass | Yes (hierarchy rendering) | **T2 - High** | ✅ IMPLEMENTED (4/5 gaps; ShowOn/collision deferred) |
-| MariloContextMenu | 8 | multi-pass | Yes (selector pattern, data binding) | **T2 - High** | ✅ IMPLEMENTED (hierarchy, templates, keyboard, data binding) |
+| MariloTreeView | 6+16 | multi-pass | Yes (expanded/selected binding, drag-drop) | **T2 - High** | ✅ VALIDATED (21/22 gaps resolved; 1 deferred: virtualization. Stage 06 closure report complete. Follow-up: expand bUnit tests + demo page) |
+| MariloMenu | 7 | multi-pass | Yes (hierarchy rendering) | **T2 - High** | ✅ IMPLEMENTED (5/7 gaps; partial file refactor, ItemTemplate, ShowOn, keyboard nav; collision/generic deferred) |
+| MariloContextMenu | 8 | multi-pass | Yes (selector pattern, data binding) | **T2 - High** | ✅ IMPLEMENTED (6/8 gaps; partial file refactor, full keyboard nav, OnShow/OnHide events; Selector JS interop/collision deferred) |
 | MariloAccordion | 9 | multi-pass | Yes (data binding, hierarchy) | **T2 - High** | ✅ IMPLEMENTED (all 9 gaps resolved: data binding, expandmode, templates) |
 | MariloSplitter | 8 | multi-pass | Yes (interactive resize, state) | **T2 - High** | ✅ IMPLEMENTED (drag resize, keyboard resize, state, aria, collapse) |
 | MariloPanel | 7 | multi-pass | Yes (data binding, expand/collapse) | **T2 - High** | ✅ IMPLEMENTED (single-panel design; templates, expand/collapse) |
@@ -920,3 +920,22 @@ The following gaps are systemic across most/all T4 components:
 | MariloMultiSelect | ✅ IMPLEMENTED | ⚠️ PARTIAL | Solid | ~50% (many events/templates/params missing) |
 
 **Key takeaway:** All T4 components deliver functional core UX (the hard parts — canvases, tumblers, dual calendars, chunked uploads, filtering). The remaining work is primarily: (1) spec-aligned event signatures with cancellable args, (2) missing template slots, (3) `AdaptiveMode`/`ValidateOn` cross-cutting params, and (4) WAI-ARIA completeness.
+
+---
+
+## Test Coverage Status
+
+Tracks test coverage for each gap slug that has a Stage 03 resolution record in the gap pipeline. A row is ✅ only when a `## Tests` section exists in the corresponding Stage 05 implementation log with confirmed passing tests.
+
+| Gap ID | Title | Tests Written | Tests Passing | Notes |
+|--------|-------|:-------------:|:-------------:|-------|
+| GAP-themeprovider | Wrapper element, CSS variables, dark mode, RTL, async handler, doc | ❌ | ❌ | Stage 05 not started |
+| GAP-icon | Document IconFlip.Both, IconSize.ExtraLarge, IconThemeColor.Danger | ❌ | ❌ | Doc-only resolution; Stage 05 not started |
+| GAP-stack | Spacing, Width/Height, two-axis alignment, orientation | ❌ | ❌ | Stage 05 not started; criteria marked implemented in Stage 03 |
+| GAP-grid | CSS Grid Layout with child components, spacing, alignment | ❌ | ❌ | Stage 05 not started; criteria marked implemented in Stage 03 |
+| GAP-form | Form EditContext, validation components, Field/Label enhancements | ❌ | ❌ | Stage 05 not started; criteria marked implemented in Stage 03 |
+| GAP-treeview | TreeView/TreeItem — 22 gaps (tri-state, checked binding, multi-select, lazy load, keyboard, Phase 2+3) | ⏳ | ⏳ | Stage 06 closure complete (21/22 resolved); TreeViewTests.cs exists but no formal Stage 05 `## Tests` section; test plan defined in Navigation/resolution/TEST_PLAN.md |
+
+### Deferred / Partial Coverage
+
+<!-- Add entries here when a Success Criteria item is deferred to a later phase -->

@@ -11,8 +11,8 @@
                                Data="@_countries"
                                TextField="Name"
                                ValueField="Id"
-                               Values="@_selectedValues"
-                               ValuesChanged="@(v => _selectedValues = v.ToList())"
+                               Value="@_selectedValues"
+                               ValueChanged="@((List<int> v) => _selectedValues = v)"
                                Placeholder="Select countries..." />
         </MariloField>
         <p><strong>Selected IDs:</strong> @string.Join(", ", _selectedValues)</p>
@@ -26,8 +26,8 @@
                            Data="@_countries"
                            TextField="Name"
                            ValueField="Id"
-                           Values="@_singleTagValues"
-                           ValuesChanged="@(v => _singleTagValues = v.ToList())"
+                           Value="@_singleTagValues"
+                           ValueChanged="@((List<int> v) => _singleTagValues = v)"
                            TagMode="MultiSelectTagMode.Single"
                            Placeholder="Select countries..." />
     </DemoSection>
@@ -38,8 +38,8 @@
                            Data="@_countries"
                            TextField="Name"
                            ValueField="Id"
-                           Values="@_autoCloseValues"
-                           ValuesChanged="@(v => _autoCloseValues = v.ToList())"
+                           Value="@_autoCloseValues"
+                           ValueChanged="@((List<int> v) => _autoCloseValues = v)"
                            AutoClose="true"
                            ShowClearButton="true"
                            Placeholder="Pick one at a time..." />

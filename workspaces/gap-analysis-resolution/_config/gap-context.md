@@ -46,7 +46,7 @@ All implementations are independent (no Telerik dependency), use MIT/Apache-2.0-
 | Phase 1 — Core | 5 (tri-state, checked binding, multi-select, lazy load, keyboard) |
 | Phase 2 — Enhanced | 6 (expand-on-click, single-expand, auto-expand, batch expand, filter, disabled) |
 | Phase 3 — Advanced | 5 (virtualization, programmatic nav, context menu, checkbox template, inline edit) |
-| Stage routing | 03 > 05 > 06 (batch — resolution design complete via source review) |
+| Stage routing | 03 > 05 > 06 (batch — all stages complete) |
 
 ## Resolution Tracking
 
@@ -56,8 +56,8 @@ All implementations are independent (no Telerik dependency), use MIT/Apache-2.0-
 | 02-prioritize | complete | Phased in `Navigation/resolution/RESOLUTION_STATUS.md` |
 | 03-resolution-design | complete | `Navigation/resolution/IMPLEMENTATION_NOTES.md` (patterns from source review) |
 | 04-remediation-plan | skipped | (batch scope) |
-| 05-implement | in-progress | Refactor to partial files + Phase 1 gaps |
-| 06-validate | pending | `Navigation/resolution/TEST_PLAN.md` (test cases defined) |
+| 05-implement | complete | Refactor to partial files + 21/22 gaps implemented (Gap 18 virtualization deferred) |
+| 06-validate | complete | `stages/06-validate/output/gap-treeview-closure-report.md` |
 
 ## Constraints and Notes
 

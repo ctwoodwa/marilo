@@ -1,11 +1,11 @@
 ---
 component: MariloBreadcrumb, MariloBreadcrumbItem, MariloContextMenu, MariloEnvironmentBadge, MariloMenu, MariloMenuItem, MariloPagination, MariloTimeRangeSelector, MariloToolbar, MariloToolbarButton, MariloToolbarGroup, MariloToolbarSeparator, MariloToolbarToggleButton, MariloTreeItem, MariloTreeView
 phase: 2
-status: in-progress
+status: validated
 complexity: mixed
 priority: high
 owner: ""
-last-updated: 2026-04-01
+last-updated: 2026-04-02
 depends-on: [MariloThemeProvider]
 external-resources:
   - name: "Radzen Tree, MudBlazor TreeView, BlazorVirtualTreeView, Fancytree, excubo-ag, jsTree"
@@ -27,12 +27,14 @@ TreeView has 6 gaps (no expanded/selected binding), Menu has 7 gaps (hierarchy n
 ### Completed
 - [x] **MariloPagination** — IMPLEMENTED (6/6 gaps resolved): Added `Total`+`PageSize` model (auto-computes pages), renamed `CurrentPage`→`Page`, `MaxVisiblePages`→`ButtonCount`, added `PageSizes` dropdown, `PageSizeChanged` event, `ShowInfo` page info text. Updated all sample pages.
 
+### Validated
+- [x] **MariloTreeView** — 21/22 gaps RESOLVED, 1 DEFERRED (Gap 18 virtualization). Stage 06 validated 2026-04-02. Closure report: `stages/06-validate/output/gap-treeview-closure-report.md`. Follow-up: expand bUnit test coverage (4 tests → 50+ per TEST_PLAN.md), enhance demo page with advanced feature sections.
+
 ### In Progress
-- [ ] **MariloTreeView** — 6 original gaps + 15/16 source-review gaps IMPLEMENTED (Gap 18 virtualization deferred); refactored to partial files
+- [x] **MariloMenu** — IMPLEMENTED (5/7 gaps resolved): Refactored to partial files (.razor + .razor.cs), added `ItemTemplate` parameter, `ShowOn` parameter (MenuShowOn enum), full keyboard navigation (ArrowUp/Down, Enter/Space, Home/End, Escape). Deferred: popup collision settings, generic typing.
+- [x] **MariloContextMenu** — IMPLEMENTED (6/8 gaps resolved): Refactored to partial files (.razor + .razor.cs), enhanced keyboard navigation (ArrowUp/Down/Left/Right, Enter/Space, Home/End), added `OnShow`/`OnHide` event callbacks. Deferred: Selector JS interop, popup collision, generic typing.
 
 ### Not Started
-- [ ] MariloMenu — 7 gaps
-- [ ] MariloContextMenu — 8 gaps
 - [ ] MariloBreadcrumb — 7 gaps
 - [ ] MariloToolbar — 5 gaps
 - [ ] Minor components (BreadcrumbItem, EnvironmentBadge, MenuItem, ToolbarButton, etc.)
