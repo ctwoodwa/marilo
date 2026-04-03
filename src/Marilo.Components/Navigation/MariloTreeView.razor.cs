@@ -172,14 +172,71 @@ public partial class MariloTreeView : MariloComponentBase
         StateHasChanged();
     }
 
-    /// <summary>Expands all nodes in the tree.</summary>
-    public async Task ExpandAllAsync()
+    /// <summary>
+    /// Expands all nodes in the tree.
+    /// When <paramref name="includeUnloaded"/> is true, triggers LoadChildrenAsync for
+    /// lazy-loaded nodes that haven't been fetched yet, up to <paramref name="maxDepth"/> levels deep.
+    /// </summary>
+    public async Task ExpandAllAsync(
+        bool includeUnloaded = false,
+        int maxDepth = int.MaxValue,
+        CancellationToken cancellationToken = default)
     {
-        var tree = GetTree();
-        CollectAllIds(tree, _expandedIds);
+        if (includeUnloaded && LoadChildrenAsync != null)
+        {
+            var tree = GetTree();
+            await LoadUnloadedNodesAsync(tree, 0, maxDepth, cancellationToken);
+        }
+
+        var fullTree = GetTree();
+        CollectAllIds(fullTree, _expandedIds);
         if (ExpandedItemsChanged.HasDelegate)
             await ExpandedItemsChanged.InvokeAsync(_expandedIds.ToList());
         StateHasChanged();
+    }
+
+    private async Task LoadUnloadedNodesAsync(
+        List<TreeNode> nodes, int currentDepth, int maxDepth,
+        CancellationToken cancellationToken)
+    {
+        foreach (var node in nodes)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            if (node.HasChildren && !node.Children.Any()
+                && !_loadedNodeIds.Contains(node.Id)
+                && LoadChildrenAsync != null
+                && currentDepth < maxDepth)
+            {
+                _loadingIds.Add(node.Id);
+                StateHasChanged();
+                try
+                {
+                    var children = await LoadChildrenAsync(node.Item);
+                    if (children != null)
+                        _cachedTree = null;
+                }
+                finally
+                {
+                    _loadingIds.Remove(node.Id);
+                    _loadedNodeIds.Add(node.Id);
+                }
+
+                // Rebuild tree to pick up new children, then recurse into them
+                var updatedTree = GetTree();
+                var updatedNode = FindNode(updatedTree, node.Id);
+                if (updatedNode != null && updatedNode.Children.Any())
+                {
+                    await LoadUnloadedNodesAsync(
+                        updatedNode.Children, currentDepth + 1, maxDepth, cancellationToken);
+                }
+            }
+            else if (node.Children.Any())
+            {
+                await LoadUnloadedNodesAsync(
+                    node.Children, currentDepth + 1, maxDepth, cancellationToken);
+            }
+        }
     }
 
     /// <summary>Collapses all nodes in the tree.</summary>
@@ -477,7 +534,7 @@ public partial class MariloTreeView : MariloComponentBase
                 (EnableDragDrop && _dragOverNodeId == node.Id ? " mar-tree-item__header--dragover" : "");
             builder.AddAttribute(11, "class", headerClass);
 
-            if (EnableDragDrop && !Disabled)
+            if (EnableDragDrop && !Disabled && !ReadOnly)
             {
                 var dragNodeId = node.Id;
                 builder.AddAttribute(12, "draggable", "true");
@@ -498,7 +555,7 @@ public partial class MariloTreeView : MariloComponentBase
             }
 
             // ExpandOnClick / ExpandOnDoubleClick on header
-            if (hasKids && !Disabled)
+            if (hasKids && !Disabled && !ReadOnly)
             {
                 var clickNodeId = node.Id;
                 if (ExpandOnClick)
@@ -516,7 +573,7 @@ public partial class MariloTreeView : MariloComponentBase
                 builder.AddAttribute(22, "class", "mar-tree-item__toggle");
                 builder.AddAttribute(23, "aria-label", isExpanded ? "Collapse" : "Expand");
                 builder.AddAttribute(24, "tabindex", "-1");
-                builder.AddAttribute(25, "disabled", Disabled);
+                builder.AddAttribute(25, "disabled", Disabled || ReadOnly);
                 builder.AddAttribute(26, "onclick", EventCallback.Factory.Create(this, () => ToggleNodeAsync(nodeId)));
                 builder.AddContent(27, isExpanded ? "\u25BC" : "\u25B6");
                 builder.CloseElement();
@@ -594,7 +651,7 @@ public partial class MariloTreeView : MariloComponentBase
                 var clickNode = node;
                 builder.OpenElement(50, "span");
                 builder.AddAttribute(51, "class", "mar-tree-item__title");
-                if (!Disabled)
+                if (!Disabled && !ReadOnly)
                     builder.AddAttribute(52, "onclick", EventCallback.Factory.Create(this, () => SelectItem(clickNode.Id, clickNode.Item)));
                 if (AllowEditing && !Disabled && !ReadOnly)
                     builder.AddAttribute(53, "ondblclick", EventCallback.Factory.Create<MouseEventArgs>(this, () => StartEdit(clickNode.Id, clickNode.Text)));
@@ -691,6 +748,7 @@ public partial class MariloTreeView : MariloComponentBase
 
     private async Task HandleDrop(string targetId)
     {
+        if (ReadOnly) return;
         if (_draggedNodeId != null && _draggedNodeId != targetId && OnItemDrop.HasDelegate)
             await OnItemDrop.InvokeAsync((_draggedNodeId, targetId));
         _draggedNodeId = null;

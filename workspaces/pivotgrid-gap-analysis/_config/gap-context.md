@@ -5,8 +5,8 @@
 | Field | Value |
 |-------|-------|
 | Component | MariloPivotGrid |
-| Active phase | None |
-| Total gaps identified | 0 |
+| Active phase | 01-intake (complete) |
+| Total gaps identified | ~39 |
 | Total gaps resolved | 0 |
 | Test coverage status | Not started |
 | Delivery workspace | ../pivotgrid-delivery/ |

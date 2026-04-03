@@ -5,8 +5,8 @@
 | Field | Value |
 |-------|-------|
 | Component | MariloMap |
-| Active phase | None |
-| Total gaps identified | 0 |
+| Active phase | 01-intake (complete) |
+| Total gaps identified | ~35 |
 | Total gaps resolved | 0 |
 | Test coverage status | Not started |
 | Delivery workspace | ../map-delivery/ |

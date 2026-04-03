@@ -24,8 +24,8 @@
 | Field | Value |
 |-------|-------|
 | Spec version | unversioned |
-| Last spec audit | not yet run |
-| Open spec gaps | not yet run |
+| Last spec audit | 2026-04-03 |
+| Open spec gaps | 34 (14 undocumented, 13 spec-ahead, 7 mismatch) |
 
 ## Example UX State
 

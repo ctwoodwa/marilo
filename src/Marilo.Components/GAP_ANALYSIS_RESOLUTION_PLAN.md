@@ -921,34 +921,38 @@ The following gaps are systemic across most/all T4 components:
 
 **Key takeaway:** All T4 components deliver functional core UX (the hard parts — canvases, tumblers, dual calendars, chunked uploads, filtering). The remaining work is primarily: (1) spec-aligned event signatures with cancellable args, (2) missing template slots, (3) `AdaptiveMode`/`ValidateOn` cross-cutting params, and (4) WAI-ARIA completeness.
 
+### T4 Pickers — Next Work (Prioritized 2026-04-03)
+
+**Prioritization record:** `stages/01-intake/output/gap-t4-pickers-prioritization.md`
+
+| Batch | Focus | Gaps | Components | Priority |
+|-------|-------|------|-----------|----------|
+| **Batch 1** | Events & Core API | 10 | MultiSelect, DateTimePicker, DateRangePicker, TimePicker (bug), Upload (bug) | **Start here** |
+| **Batch 2** | Templates & API Completeness | 12 | MultiSelect, Upload, DateTimePicker, ColorPicker | After Batch 1 |
+| **Batch 3** | Cross-Cutting & Polish | 16+ | All pickers (AdaptiveMode, ARIA, CSS) | After Batch 2 |
+
 ---
 
 ## Phase 2.5 — Post-Reconstruction Fixes
 
-Gaps discovered during Phase 2 pipeline reconstruction. Intake complete; resolution pending.
+Gaps discovered during Phase 2 pipeline reconstruction. **Both resolved 2026-04-03.**
 
 | Gap ID | Title | Severity | Scope | Status |
 |--------|-------|----------|-------|--------|
-| GAP-readonly-guards | ReadOnly parameter missing from ExpandOnClick and DragDrop interaction guards | Medium | single | 📋 Intake complete |
-| GAP-expandall-lazyload | ExpandAllAsync does not trigger LoadChildrenAsync for unloaded nodes | High | single | 📋 Intake complete |
+| GAP-readonly-guards | ReadOnly parameter missing from ExpandOnClick and DragDrop interaction guards | Medium | single | ✅ Stage 06 closed (2026-04-03) |
+| GAP-expandall-lazyload | ExpandAllAsync does not trigger LoadChildrenAsync for unloaded nodes | High | single | ✅ Stage 06 closed (2026-04-03) |
 
-### GAP-readonly-guards
+### GAP-readonly-guards — RESOLVED
 
-`HandleDrop()` and the DragDrop render guard (line 480) do not check `ReadOnly`. A `ReadOnly=true` tree with `EnableDragDrop=true` fires `OnItemDrop` callbacks — the only true state-mutation leak. Three additional cosmetic inconsistencies (ExpandOnClick handler attached, toggle button appears enabled, title click handler attached when ReadOnly). `HandleKeyDown` omission of ReadOnly is intentional (accessibility).
+Added `ReadOnly` guard to `HandleDrop()`, DragDrop handler attachment, ExpandOnClick guard, toggle button `disabled` attr, title click guard, and MariloTreeItem toggle disabled attr. 6 new bUnit tests added.
 
-**Must fix:** Add `ReadOnly` guard to `HandleDrop()` and DragDrop handler attachment.
-**Should fix:** Add `ReadOnly` to ExpandOnClick guard, toggle button `disabled` attr, title click guard.
+**Records:** [Intake](../workspaces/gap-analysis-resolution/stages/01-intake/output/gap-readonly-guards-inventory.md) | [Resolution](../workspaces/gap-analysis-resolution/stages/03-resolution-design/output/gap-readonly-guards-resolutions.md) | [Implementation](../workspaces/gap-analysis-resolution/stages/05-implement/output/gap-readonly-guards-implementation-log.md) | [Closure](../workspaces/gap-analysis-resolution/stages/06-validate/output/gap-readonly-guards-closure-report.md)
 
-**Intake record:** [`stages/01-intake/output/gap-readonly-guards-inventory.md`](../workspaces/gap-analysis-resolution/stages/01-intake/output/gap-readonly-guards-inventory.md)
+### GAP-expandall-lazyload — RESOLVED
 
-### GAP-expandall-lazyload
+Extended `ExpandAllAsync` with opt-in `includeUnloaded`, `maxDepth`, and `CancellationToken` parameters. Default behavior preserved (backward compatible). Added `LoadUnloadedNodesAsync` helper for depth-first lazy loading. 6 new bUnit tests added.
 
-`ExpandAllAsync()` calls `CollectAllIds(GetTree(), _expandedIds)` which only walks already-loaded nodes. For trees using `LoadChildrenAsync`, nodes with `HasChildren=true` but no fetched children produce `TreeNode(..., Children=[], HasChildren=true)`. `CollectAllIds` adds the parent ID but finds zero child IDs. No `LoadChildrenAsync` call is made. The tree renders with expanded parents showing no children and no loading indicator — **silent data loss**.
-
-**Must fix:** `ExpandAllAsync` must detect and fetch unloaded lazy nodes before collecting IDs. Recommended: sequential `LoadChildrenAsync` calls with per-node loading indicators.
-**Effort:** Medium — requires iterating unloaded nodes, calling async fetch, invalidating cache between levels.
-
-**Intake record:** [`stages/01-intake/output/gap-expandall-lazyload-inventory.md`](../workspaces/gap-analysis-resolution/stages/01-intake/output/gap-expandall-lazyload-inventory.md)
+**Records:** [Intake](../workspaces/gap-analysis-resolution/stages/01-intake/output/gap-expandall-lazyload-inventory.md) | [Resolution](../workspaces/gap-analysis-resolution/stages/03-resolution-design/output/gap-expandall-lazyload-resolutions.md) | [Implementation](../workspaces/gap-analysis-resolution/stages/05-implement/output/gap-expandall-lazyload-implementation-log.md) | [Closure](../workspaces/gap-analysis-resolution/stages/06-validate/output/gap-expandall-lazyload-closure-report.md)
 
 ---
 
@@ -997,4 +1001,25 @@ Tracks test coverage for each gap slug that has a Stage 03 resolution record in 
 - GAP-form GAP-FORM-022/026 (FormItemsTemplate/AutoGeneratedItems) → Phase 4 — advanced template system
 - GAP-form GAP-FIELD-005/006, GAP-LABEL-005 → Phase 4 — nice-to-have enhancements
 - GAP-treeview Gap 18 (Virtualization) → Future iteration — requires flatten-and-virtualize architecture change
-- GAP-disabled ReadOnly interaction with ExpandOnClick and EnableDragDrop → Future review — ReadOnly does not block these paths (only Disabled does); intentional or oversight TBD
+- GAP-disabled ReadOnly interaction with ExpandOnClick and EnableDragDrop → ✅ RESOLVED (2026-04-03) via GAP-readonly-guards Phase 2.5
+
+### Batch 12 Complex Components — Intake (2026-04-03)
+
+Initial gap analysis intake completed for 12 complex components (excluding DataGrid and DataSheet which have dedicated delivery flows).
+
+| Component | Source? | Spec Files | Est. Gaps | Analysis Mode | Priority Tier | Notes |
+|-----------|---------|-----------|-----------|---------------|--------------|-------|
+| MariloSplitter | Yes | 7 | 8-15 | Reconstructed | T1 (near-complete) | Mostly done |
+| MariloWizard | Yes | 9 | 10-20 | Reconstructed | T1 | Moderate complexity |
+| MariloChart | Yes | 37 | 20-30 | Reconstructed | T2 (spec alignment) | Advanced types deferred |
+| MariloEditor | Yes | 18 | 15-25 | Reconstructed | T2 | JS interop test fixes needed |
+| MariloFileManager | Yes | 15 | 20-30 | Reconstructed | T2 | Complex file browser UX |
+| MariloScheduler | Yes | 25 | 25-40 | Reconstructed | T3 (needs CDW) | Recommend dedicated workspace |
+| MariloGantt | Yes | 44 | 30-50 | Reconstructed | T3 | Recommend dedicated workspace |
+| MariloTreeList | Yes | 55 | 35-55 | Reconstructed | T3 | Recommend dedicated workspace |
+| MariloDiagram | **No** | 6 | 15-25 | Standard | T4 (no source) | Architecture decision needed |
+| MariloDockManager | **No** | 6 | 15-25 | Standard | T4 | Architecture decision needed |
+| MariloMap | **No** | 7 | 15-25 | Standard | T4 | Architecture decision needed |
+| MariloPivotGrid | **No** | 5 | 15-25 | Standard | T4 | Architecture decision needed |
+
+**Intake record:** `stages/01-intake/output/gap-batch12-component-intake.md`

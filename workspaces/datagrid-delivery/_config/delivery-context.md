@@ -24,8 +24,8 @@
 | Field | Value |
 |-------|-------|
 | Spec version | unversioned |
-| Last spec audit | PENDING |
-| Open spec gaps | PENDING |
+| Last spec audit | 2026-04-03 (overview-level) |
+| Open spec gaps | ~35-50 estimated (on top of 44 already resolved) |
 
 ## Example UX State
 

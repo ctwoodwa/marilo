@@ -13,7 +13,7 @@
                     class="mar-tree-item__toggle"
                     aria-label="@(IsExpanded ? "Collapse" : "Expand")"
                     tabindex="-1"
-                    disabled="@(TreeView?.Disabled == true)"
+                    disabled="@(TreeView?.Disabled == true || TreeView?.ReadOnly == true)"
                     @onclick="ToggleExpanded">
                 @(IsExpanded ? "\u25BC" : "\u25B6")
             </button>
