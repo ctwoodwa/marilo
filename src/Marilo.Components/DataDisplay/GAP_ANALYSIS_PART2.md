@@ -1,5 +1,7 @@
 # DataDisplay Components - Gap Analysis (Part 2)
 
+> **Note (2026-04-03):** `MariloTable` has been removed as an obsolete component. It was superseded by `MariloDataGrid`. Historical references to `MariloTable` in this document are retained for audit accuracy.
+
 Base class (`MariloComponentBase`) provides: `Class`, `Style`, `AdditionalAttributes`.
 
 ---

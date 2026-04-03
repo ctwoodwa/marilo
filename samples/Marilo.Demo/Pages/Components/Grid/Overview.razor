@@ -4,7 +4,7 @@
 
 <PageSection Title="Overview">
     <DemoSection Title="Basic Usage" Code="@_basicCode">
-        <MariloGrid>
+        <MariloGridLayout>
             <MariloRow>
                 <MariloColumn Span="4"><div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">Col 4</div></MariloColumn>
                 <MariloColumn Span="4"><div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">Col 4</div></MariloColumn>
@@ -19,13 +19,13 @@
                 <MariloColumn Span="6"><div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">Col 6</div></MariloColumn>
                 <MariloColumn Span="3"><div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">Col 3</div></MariloColumn>
             </MariloRow>
-        </MariloGrid>
+        </MariloGridLayout>
     </DemoSection>
 </PageSection>
 
 <PageSection Title="Appearance">
     <DemoSection Title="Column Offsets" Description="Use Offset to push columns to the right." Code="@_offsetCode">
-        <MariloGrid>
+        <MariloGridLayout>
             <MariloRow>
                 <MariloColumn Span="4" Offset="4"><div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">Offset 4, Span 4</div></MariloColumn>
             </MariloRow>
@@ -33,25 +33,25 @@
                 <MariloColumn Span="3" Offset="3"><div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">Offset 3, Span 3</div></MariloColumn>
                 <MariloColumn Span="3" Offset="3"><div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">Offset 3, Span 3</div></MariloColumn>
             </MariloRow>
-        </MariloGrid>
+        </MariloGridLayout>
     </DemoSection>
 
     <DemoSection Title="Nested Grids" Description="Grids can be nested inside columns for complex layouts." Code="@_nestedCode">
-        <MariloGrid>
+        <MariloGridLayout>
             <MariloRow>
                 <MariloColumn Span="8">
                     <div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">
-                        <MariloGrid>
+                        <MariloGridLayout>
                             <MariloRow>
                                 <MariloColumn Span="6"><div style="background:var(--marilo-color-secondary-light);padding:8px;border-radius:4px;">Nested 6</div></MariloColumn>
                                 <MariloColumn Span="6"><div style="background:var(--marilo-color-secondary-light);padding:8px;border-radius:4px;">Nested 6</div></MariloColumn>
                             </MariloRow>
-                        </MariloGrid>
+                        </MariloGridLayout>
                     </div>
                 </MariloColumn>
                 <MariloColumn Span="4"><div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">Col 4</div></MariloColumn>
             </MariloRow>
-        </MariloGrid>
+        </MariloGridLayout>
     </DemoSection>
 </PageSection>
 
@@ -64,7 +64,7 @@
 
 @code {
     private const string _basicCode =
-        "<MariloGrid>\n" +
+        "<MariloGridLayout>\n" +
         "    <MariloRow>\n" +
         "        <MariloColumn Span=\"4\">Col 4</MariloColumn>\n" +
         "        <MariloColumn Span=\"4\">Col 4</MariloColumn>\n" +
@@ -79,10 +79,10 @@
         "        <MariloColumn Span=\"6\">Col 6</MariloColumn>\n" +
         "        <MariloColumn Span=\"3\">Col 3</MariloColumn>\n" +
         "    </MariloRow>\n" +
-        "</MariloGrid>";
+        "</MariloGridLayout>";
 
     private const string _offsetCode =
-        "<MariloGrid>\n" +
+        "<MariloGridLayout>\n" +
         "    <MariloRow>\n" +
         "        <MariloColumn Span=\"4\" Offset=\"4\">Offset 4, Span 4</MariloColumn>\n" +
         "    </MariloRow>\n" +
@@ -90,22 +90,22 @@
         "        <MariloColumn Span=\"3\" Offset=\"3\">Offset 3, Span 3</MariloColumn>\n" +
         "        <MariloColumn Span=\"3\" Offset=\"3\">Offset 3, Span 3</MariloColumn>\n" +
         "    </MariloRow>\n" +
-        "</MariloGrid>";
+        "</MariloGridLayout>";
 
     private const string _nestedCode =
-        "<MariloGrid>\n" +
+        "<MariloGridLayout>\n" +
         "    <MariloRow>\n" +
         "        <MariloColumn Span=\"8\">\n" +
-        "            <MariloGrid>\n" +
+        "            <MariloGridLayout>\n" +
         "                <MariloRow>\n" +
         "                    <MariloColumn Span=\"6\">Nested 6</MariloColumn>\n" +
         "                    <MariloColumn Span=\"6\">Nested 6</MariloColumn>\n" +
         "                </MariloRow>\n" +
-        "            </MariloGrid>\n" +
+        "            </MariloGridLayout>\n" +
         "        </MariloColumn>\n" +
         "        <MariloColumn Span=\"4\">Col 4</MariloColumn>\n" +
         "    </MariloRow>\n" +
-        "</MariloGrid>";
+        "</MariloGridLayout>";
 
     private static readonly (string Key, string Action)[] _keyboard =
     [

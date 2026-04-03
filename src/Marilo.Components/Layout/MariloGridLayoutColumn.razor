@@ -6,7 +6,7 @@
     /// </summary>
     [Parameter] public string Width { get; set; } = "1fr";
 
-    [CascadingParameter] private MariloGrid? ParentGrid { get; set; }
+    [CascadingParameter] private MariloGridLayout? ParentGrid { get; set; }
 
     protected override void OnInitialized()
     {

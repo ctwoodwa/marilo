@@ -1,9 +1,0 @@
-@inherits MariloComponentBase
-
-<table class="@CombineClasses(CssProvider.TableClass())" style="@CombineStyles()" @attributes="AdditionalAttributes">
-    @ChildContent
-</table>
-
-@code {
-    [Parameter] public RenderFragment? ChildContent { get; set; }
-}

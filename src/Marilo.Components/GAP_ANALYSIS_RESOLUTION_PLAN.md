@@ -123,7 +123,7 @@ This document defines the resolution strategy for all 87 Marilo Blazor component
 | MariloCardBody | 0 | n/a | No | **Complete** |
 | MariloHighlighter | 0 | n/a | No | **Complete** |
 | MariloImage | 0 | n/a | No | **Complete** |
-| MariloTable | 0 | n/a | No | **Complete** |
+| MariloTable | 0 | n/a | No | **Complete** | **OBSOLETE** — removed 2026-04-03; superseded by MariloDataGrid |
 | MariloTimeline | 0 | n/a | No | **Complete** |
 | MariloTimelineItem | 0 | n/a | No | **Complete** |
 | MariloTypography | 0 | n/a | No | **Complete** |

@@ -3,9 +3,108 @@
 @layout ComponentDemoLayout
 
 <PageSection Title="Grid Layout">
-    <div class="demo-coming-soon">
-        <MariloAlert Severity="AlertSeverity.Info">
-            <strong>Grid Layout</strong> — Coming soon. CSS grid-based layout with configurable rows and columns.
-        </MariloAlert>
-    </div>
+    <DemoSection Title="Basic CSS Grid" Code="@_basicCode">
+        <MariloGridLayout Columns="200px 1fr 200px" Rows="auto 1fr auto" ColumnSpacing="16px" RowSpacing="8px">
+            <MariloGridLayoutItem Row="1" Column="1" ColumnSpan="3">
+                <div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">Header (spans 3 columns)</div>
+            </MariloGridLayoutItem>
+            <MariloGridLayoutItem Row="2" Column="1">
+                <div style="background:var(--marilo-color-info-light);padding:12px;border-radius:4px;">Sidebar</div>
+            </MariloGridLayoutItem>
+            <MariloGridLayoutItem Row="2" Column="2">
+                <div style="background:var(--marilo-color-success-light);padding:12px;border-radius:4px;">Content</div>
+            </MariloGridLayoutItem>
+            <MariloGridLayoutItem Row="2" Column="3">
+                <div style="background:var(--marilo-color-info-light);padding:12px;border-radius:4px;">Aside</div>
+            </MariloGridLayoutItem>
+            <MariloGridLayoutItem Row="3" Column="1" ColumnSpan="3">
+                <div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">Footer (spans 3 columns)</div>
+            </MariloGridLayoutItem>
+        </MariloGridLayout>
+    </DemoSection>
+
+    <DemoSection Title="Declarative Column/Row Definitions" Code="@_declarativeCode">
+        <MariloGridLayout ColumnSpacing="12px" RowSpacing="12px">
+            <ColumnDefinitions>
+                <MariloGridLayoutColumn Width="1fr" />
+                <MariloGridLayoutColumn Width="2fr" />
+                <MariloGridLayoutColumn Width="1fr" />
+            </ColumnDefinitions>
+            <RowDefinitions>
+                <MariloGridLayoutRow Height="auto" />
+                <MariloGridLayoutRow Height="auto" />
+            </RowDefinitions>
+            <ChildContent>
+                <MariloGridLayoutItem Row="1" Column="1" ColumnSpan="3">
+                    <div style="background:var(--marilo-color-primary-light);padding:12px;border-radius:4px;">Full width header</div>
+                </MariloGridLayoutItem>
+                <MariloGridLayoutItem Row="2" Column="1">
+                    <div style="background:var(--marilo-color-secondary-light);padding:12px;border-radius:4px;">Left</div>
+                </MariloGridLayoutItem>
+                <MariloGridLayoutItem Row="2" Column="2">
+                    <div style="background:var(--marilo-color-secondary-light);padding:12px;border-radius:4px;">Center (2fr)</div>
+                </MariloGridLayoutItem>
+                <MariloGridLayoutItem Row="2" Column="3">
+                    <div style="background:var(--marilo-color-secondary-light);padding:12px;border-radius:4px;">Right</div>
+                </MariloGridLayoutItem>
+            </ChildContent>
+        </MariloGridLayout>
+    </DemoSection>
 </PageSection>
+
+<PageSection Title="Accessibility">
+    <AccessibilityInfo
+        KeyboardInteractions="@_keyboard"
+        AriaAttributes="@_aria"
+        ScreenReaderNotes="@_screenReader" />
+</PageSection>
+
+@code {
+    private const string _basicCode =
+        "<MariloGridLayout Columns=\"200px 1fr 200px\" Rows=\"auto 1fr auto\"\n" +
+        "                  ColumnSpacing=\"16px\" RowSpacing=\"8px\">\n" +
+        "    <MariloGridLayoutItem Row=\"1\" Column=\"1\" ColumnSpan=\"3\">\n" +
+        "        Header\n" +
+        "    </MariloGridLayoutItem>\n" +
+        "    <MariloGridLayoutItem Row=\"2\" Column=\"1\">Sidebar</MariloGridLayoutItem>\n" +
+        "    <MariloGridLayoutItem Row=\"2\" Column=\"2\">Content</MariloGridLayoutItem>\n" +
+        "    <MariloGridLayoutItem Row=\"2\" Column=\"3\">Aside</MariloGridLayoutItem>\n" +
+        "    <MariloGridLayoutItem Row=\"3\" Column=\"1\" ColumnSpan=\"3\">\n" +
+        "        Footer\n" +
+        "    </MariloGridLayoutItem>\n" +
+        "</MariloGridLayout>";
+
+    private const string _declarativeCode =
+        "<MariloGridLayout>\n" +
+        "    <ColumnDefinitions>\n" +
+        "        <MariloGridLayoutColumn Width=\"1fr\" />\n" +
+        "        <MariloGridLayoutColumn Width=\"2fr\" />\n" +
+        "        <MariloGridLayoutColumn Width=\"1fr\" />\n" +
+        "    </ColumnDefinitions>\n" +
+        "    <RowDefinitions>\n" +
+        "        <MariloGridLayoutRow Height=\"auto\" />\n" +
+        "    </RowDefinitions>\n" +
+        "    <ChildContent>\n" +
+        "        <MariloGridLayoutItem Row=\"1\" Column=\"1\" ColumnSpan=\"3\">Header</MariloGridLayoutItem>\n" +
+        "        <MariloGridLayoutItem Row=\"2\" Column=\"1\">Left</MariloGridLayoutItem>\n" +
+        "        <MariloGridLayoutItem Row=\"2\" Column=\"2\">Center</MariloGridLayoutItem>\n" +
+        "        <MariloGridLayoutItem Row=\"2\" Column=\"3\">Right</MariloGridLayoutItem>\n" +
+        "    </ChildContent>\n" +
+        "</MariloGridLayout>";
+
+    private static readonly (string Key, string Action)[] _keyboard =
+    [
+        ("Tab", "Moves focus through interactive content within grid layout items"),
+    ];
+
+    private static readonly (string Attribute, string Description)[] _aria =
+    [
+        ("role", "Not required; the grid layout uses CSS Grid for visual arrangement only"),
+    ];
+
+    private static readonly string[] _screenReader =
+    [
+        "The grid layout uses CSS Grid for positioning. Content is read in document order.",
+        "Ensure content within grid layout items has proper heading hierarchy for screen reader navigation.",
+    ];
+}
