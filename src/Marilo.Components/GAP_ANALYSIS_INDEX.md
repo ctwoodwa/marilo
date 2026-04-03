@@ -47,7 +47,7 @@ This document tracks the gap analysis status for each Marilo Blazor component ag
 | MariloListItem | [x] | `docs/component-specs/listbox/` (sub-component) | `DataDisplay/GAP_ANALYSIS_PART2.md` |
 | MariloListView | [x] | `docs/component-specs/listview/` | `DataDisplay/GAP_ANALYSIS_PART2.md` |
 | MariloPopover | [x] | `docs/component-specs/popover/` | `DataDisplay/GAP_ANALYSIS_PART2.md` |
-| MariloTable | [x] | *(no direct spec — see grid)* | `DataDisplay/GAP_ANALYSIS_PART2.md` |
+| MariloTable | [x] | *(no direct spec — see grid)* | `DataDisplay/GAP_ANALYSIS_PART2.md` | **OBSOLETE** — removed; superseded by MariloDataGrid |
 | MariloTimeline | [x] | *(no direct spec found)* | `DataDisplay/GAP_ANALYSIS_PART2.md` |
 | MariloTimelineItem | [x] | *(no direct spec found — sub-component of Timeline)* | `DataDisplay/GAP_ANALYSIS_PART2.md` |
 | MariloTooltip | [x] | `docs/component-specs/tooltip/`, `docfx/articles/components/tooltip/` | `DataDisplay/GAP_ANALYSIS_PART2.md` |

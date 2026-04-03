@@ -60,6 +60,19 @@ All implementations are independent (no Telerik dependency), use MIT/Apache-2.0-
 | 05-implement | complete | Refactor to partial files + 21/22 gaps implemented (Gap 18 virtualization deferred) |
 | 06-validate | complete | `stages/06-validate/output/gap-treeview-closure-report.md` |
 
+## Test Coverage Rollup
+
+| Batch | Tests written | Tests passing | Coverage notes |
+| ----- | ------------- | ------------- | -------------- |
+| treeview | 45 bUnit (17 Ph1 + 28 Ph2) | 45/45 | Gap 18 (virtualization) deferred; no test coverage for deferred gap |
+| form | 0 | 0 | Awaiting implementation (Stage 05) |
+| t4-pickers | 0 | 0 | Awaiting resolution design (Stage 03) |
+| readonly-guards | 0 | 0 | Awaiting resolution design (Stage 03) |
+| expandall-lazyload | 0 | 0 | Awaiting resolution design (Stage 03) |
+
+Canonical test evidence: `stages/06-validate/output/gap-*-closure-report.md`
+Ownership model: `shared/test-coverage-ownership.md`
+
 ## Constraints and Notes
 
 - This is an open-source Blazor component library. All implementations must be independent — no Telerik UI for Blazor code or dependencies.

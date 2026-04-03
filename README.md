@@ -123,9 +123,9 @@ Explore all components with live demos and API reference in the [documentation â
 | **Buttons** | `MariloButton`, `MariloButtonGroup`, `MariloToggleButton`, `MariloFAB` |
 | **Forms** | `MariloTextField`, `MariloTextArea`, `MariloCheckbox`, `MariloSwitch`, `MariloSelect`, `MariloSlider`, `MariloDatePicker`, `MariloColorPicker`, `MariloSearchBox`, `MariloRating` |
 | **Navigation** | `MariloMenu`, `MariloTabs`, `MariloBreadcrumb`, `MariloTreeView`, `MariloStepper`, `MariloSegmentedControl`, `MariloPagination`, `MariloToolbar` |
-| **Layout** | `MariloContainer`, `MariloStack`, `MariloGrid`, `MariloPanel`, `MariloCard`, `MariloDivider` |
+| **Layout** | `MariloContainer`, `MariloStack`, `MariloGridLayout`, `MariloPanel`, `MariloCard`, `MariloDivider` |
 | **Feedback** | `MariloAlert`, `MariloDialog`, `MariloConfirmDialog`, `MariloDrawer`, `MariloTooltip`, `MariloChip`, `MariloProgressBar`, `MariloSpinner`, `MariloSkeleton` |
-| **Display** | `MariloAvatar`, `MariloBadge`, `MariloTable`, `MariloList` |
+| **Display** | `MariloAvatar`, `MariloBadge`, `MariloDataGrid`, `MariloList` |
 | **Icons** | `MariloIcon`, `MariloIconSprite` |
 
 ---

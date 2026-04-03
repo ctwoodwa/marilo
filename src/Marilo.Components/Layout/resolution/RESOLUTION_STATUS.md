@@ -1,5 +1,6 @@
 ---
-component: MariloAccordion, MariloAccordionItem, MariloAppBar, MariloColumn, MariloContainer, MariloDivider, MariloDrawer, MariloGrid, MariloPanel, MariloRow, MariloSplitter, MariloStack, MariloStep, MariloStepper, MariloTabStrip, TabStripTab
+component: MariloAccordion, MariloAccordionItem, MariloAppBar, MariloColumn, MariloContainer, MariloDivider, MariloDrawer, MariloGridLayout, MariloPanel, MariloRow, MariloSplitter, MariloStack, MariloStep, MariloStepper, MariloTabStrip, TabStripTab
+note: "MariloGrid renamed to MariloGridLayout (2026-04-03). Historical references to MariloGrid in this file refer to the layout component now named MariloGridLayout."
 phase: 1
 status: in-progress
 complexity: multi-pass

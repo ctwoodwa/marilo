@@ -23,6 +23,7 @@ Structured lifecycle for resolving documented gaps: import, prioritize, design, 
 | Resolution record format | `shared/resolution-record-format.md` | Standard shape for resolution decisions |
 | Validation checklist | `shared/validation-checklist.md` | Closure criteria and enforcement checks |
 | Canonical defaults | `references/layer-3-defaults-index.md` | Pointers to enterprise defaults (read-only) |
+| Workspace routing | `../shared/workspace-routing.md` | Graduation criteria and workspace taxonomy |
 
 ## Rules
 

@@ -107,7 +107,7 @@ surface described in its corresponding spec directory.
 |---|---|---|
 | [avatar](avatar/overview.md) | MariloAvatar | Implemented |
 | [badge](badge/overview.md) | MariloBadge | Implemented |
-| [grid](grid/overview.md) | MariloTable | Partial |
+| [grid](grid/overview.md) | MariloDataGrid | Implemented |
 | [listview](listview/overview.md) | MariloList / MariloListItem | Implemented |
 | [pivotgrid](pivotgrid/overview.md) | — | Planned |
 | [spreadsheet](spreadsheet/overview.md) | — | Planned |

@@ -1,4 +1,6 @@
-# Resolution Records: MariloGrid (Layout)
+# Resolution Records: MariloGridLayout (Layout)
+
+> **Note (2026-04-03):** `MariloGrid` was renamed to `MariloGridLayout`. Historical references to `MariloGrid` in this document refer to the layout component now at `Layout/MariloGridLayout.razor`.
 
 ## Summary
 

@@ -12,9 +12,9 @@ public class GridLayoutTests : MariloTestBase
     // ── 1. CSS Grid mode activated by Columns parameter ────────────────
 
     [Fact]
-    public void MariloGrid_RendersAsCssGrid_WhenColumnsIsSet()
+    public void MariloGridLayout_RendersAsCssGrid_WhenColumnsIsSet()
     {
-        var cut = Render<MariloGrid>(p => p
+        var cut = Render<MariloGridLayout>(p => p
             .Add(g => g.Columns, "200px 1fr 200px")
             .Add(g => g.ChildContent, (RenderFragment)(b => b.AddContent(0, "Content")))
         );
@@ -27,9 +27,9 @@ public class GridLayoutTests : MariloTestBase
     // ── 2. CSS Grid mode activated by Rows parameter ───────────────────
 
     [Fact]
-    public void MariloGrid_RendersAsCssGrid_WhenRowsIsSet()
+    public void MariloGridLayout_RendersAsCssGrid_WhenRowsIsSet()
     {
-        var cut = Render<MariloGrid>(p => p
+        var cut = Render<MariloGridLayout>(p => p
             .Add(g => g.Rows, "auto 1fr auto")
             .Add(g => g.ChildContent, (RenderFragment)(b => b.AddContent(0, "Content")))
         );
@@ -44,7 +44,7 @@ public class GridLayoutTests : MariloTestBase
     [Fact]
     public void MariloGridLayoutColumn_RegistersWidth_WithParentGrid()
     {
-        var cut = Render<MariloGrid>(p => p
+        var cut = Render<MariloGridLayout>(p => p
             .Add(g => g.ColumnDefinitions, (RenderFragment)(builder =>
             {
                 builder.OpenComponent<MariloGridLayoutColumn>(0);
@@ -67,7 +67,7 @@ public class GridLayoutTests : MariloTestBase
     [Fact]
     public void MariloGridLayoutRow_RegistersHeight_WithParentGrid()
     {
-        var cut = Render<MariloGrid>(p => p
+        var cut = Render<MariloGridLayout>(p => p
             .Add(g => g.RowDefinitions, (RenderFragment)(builder =>
             {
                 builder.OpenComponent<MariloGridLayoutRow>(0);
@@ -90,7 +90,7 @@ public class GridLayoutTests : MariloTestBase
     [Fact]
     public void MariloGridLayoutItem_SetsGridPosition_WithRowAndColumn()
     {
-        var cut = Render<MariloGrid>(p => p
+        var cut = Render<MariloGridLayout>(p => p
             .Add(g => g.Columns, "1fr 1fr")
             .Add(g => g.Rows, "auto auto")
             .Add(g => g.ChildContent, (RenderFragment)(b =>
@@ -112,7 +112,7 @@ public class GridLayoutTests : MariloTestBase
     [Fact]
     public void MariloGridLayoutItem_SetsGridSpan_WithRowSpanAndColumnSpan()
     {
-        var cut = Render<MariloGrid>(p => p
+        var cut = Render<MariloGridLayout>(p => p
             .Add(g => g.Columns, "1fr 1fr 1fr")
             .Add(g => g.Rows, "auto auto auto")
             .Add(g => g.ChildContent, (RenderFragment)(b =>
@@ -136,9 +136,9 @@ public class GridLayoutTests : MariloTestBase
     // ── 6. ColumnSpacing/RowSpacing set CSS gap properties ─────────────
 
     [Fact]
-    public void MariloGrid_SetsGapProperties_WhenSpacingIsSet()
+    public void MariloGridLayout_SetsGapProperties_WhenSpacingIsSet()
     {
-        var cut = Render<MariloGrid>(p => p
+        var cut = Render<MariloGridLayout>(p => p
             .Add(g => g.Columns, "1fr 1fr")
             .Add(g => g.ColumnSpacing, "16px")
             .Add(g => g.RowSpacing, "8px")
@@ -153,9 +153,9 @@ public class GridLayoutTests : MariloTestBase
     // ── 7. Width parameter sets container width ────────────────────────
 
     [Fact]
-    public void MariloGrid_SetsWidth_WhenWidthParameterIsSet()
+    public void MariloGridLayout_SetsWidth_WhenWidthParameterIsSet()
     {
-        var cut = Render<MariloGrid>(p => p
+        var cut = Render<MariloGridLayout>(p => p
             .Add(g => g.Columns, "1fr")
             .Add(g => g.Width, "800px")
             .Add(g => g.ChildContent, (RenderFragment)(b => b.AddContent(0, "Content")))
@@ -168,9 +168,9 @@ public class GridLayoutTests : MariloTestBase
     // ── 8. HorizontalAlign/VerticalAlign set justify-items/align-items ─
 
     [Fact]
-    public void MariloGrid_SetsAlignmentStyles_WhenAlignmentParametersAreSet()
+    public void MariloGridLayout_SetsAlignmentStyles_WhenAlignmentParametersAreSet()
     {
-        var cut = Render<MariloGrid>(p => p
+        var cut = Render<MariloGridLayout>(p => p
             .Add(g => g.Columns, "1fr 1fr")
             .Add(g => g.HorizontalAlign, StackAlignment.Center)
             .Add(g => g.VerticalAlign, StackAlignment.Start)
@@ -185,9 +185,9 @@ public class GridLayoutTests : MariloTestBase
     // ── 9. Flex container mode (no Columns/Rows) ───────────────────────
 
     [Fact]
-    public void MariloGrid_RendersInFlexMode_WhenNoColumnsOrRowsAreSet()
+    public void MariloGridLayout_RendersInFlexMode_WhenNoColumnsOrRowsAreSet()
     {
-        var cut = Render<MariloGrid>(p => p
+        var cut = Render<MariloGridLayout>(p => p
             .Add(g => g.ChildContent, (RenderFragment)(b => b.AddContent(0, "Flex content")))
         );
 

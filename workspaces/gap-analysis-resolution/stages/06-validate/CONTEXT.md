@@ -42,7 +42,7 @@ Verify that each gap is truly resolved, add enforcement guardrails, and close th
 | Check | Pass Condition |
 |-------|---------------|
 | All gaps have a closure status | No gap left without a status assignment |
-| Evidence provided | Each "Resolved" gap cites specific code/test evidence |
+| Evidence provided | Each "Resolved" gap cites specific code/test evidence; test evidence MUST include a specific test file:method mapping, or document why the gap is covered by manual verification only |
 | Guardrails defined | Each "Resolved" gap has at least one enforcement mechanism |
 | No regression | All existing tests still pass after changes |
 | Index updated | Gap analysis index reflects current resolution state |

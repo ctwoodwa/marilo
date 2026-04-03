@@ -50,7 +50,7 @@
     </DemoSection>
 
     <DemoSection Title="Table" Code="@_tableCode">
-        <MariloTable>
+        <table class="mar-table">
             <thead>
                 <tr><th>Name</th><th>Role</th><th>Status</th></tr>
             </thead>
@@ -59,7 +59,7 @@
                 <tr><td>Bob</td><td>User</td><td><MariloBadge Variant="BadgeVariant.Warning">Pending</MariloBadge></td></tr>
                 <tr><td>Charlie</td><td>Editor</td><td><MariloBadge Variant="BadgeVariant.Danger">Inactive</MariloBadge></td></tr>
             </tbody>
-        </MariloTable>
+        </table>
     </DemoSection>
 
     <DemoSection Title="Tooltip" Code="@_tooltipCode">
@@ -101,7 +101,7 @@
     <MariloListItem>Third item</MariloListItem>
 </MariloList>";
 
-    private const string _tableCode = @"<MariloTable>
+    private const string _tableCode = @"<table class=""mar-table"">
     <thead><tr><th>Name</th><th>Role</th><th>Status</th></tr></thead>
     <tbody>
         <tr>
@@ -109,7 +109,7 @@
             <td><MariloBadge Variant=""BadgeVariant.Success"">Active</MariloBadge></td>
         </tr>
     </tbody>
-</MariloTable>";
+</table>";
 
     private const string _tooltipCode = @"<MariloTooltip Text=""Tooltip text"" Position=""TooltipPosition.Top"">
     <MariloButton Variant=""ButtonVariant.Secondary"">Hover me</MariloButton>

@@ -11,6 +11,8 @@ treeview-delivery/
 ├── CONTEXT.md                         (start here for task routing)
 ├── _config/
 │   └── delivery-context.md            (component paths, state tracking, gate status)
+├── _status/
+│   └── workspace-status.md            (Layer 0 orientation snapshot)
 ├── stages/
 │   ├── 01-spec-review/                (audit API spec vs. implementation)
 │   │   └── output/                    (spec gap list)
@@ -23,6 +25,11 @@ treeview-delivery/
 └── shared/
     └── spec-coverage-format.md        (gap record format for spec audits)
 ```
+
+## Cold Start
+
+Load `_status/workspace-status.md` first for pipeline orientation (Layer 0 snapshot -- not authoritative).
+Then load `_config/delivery-context.md` for full component paths and gate status.
 
 ## Triggers
 
@@ -54,7 +61,7 @@ Pipeline Status: treeview-delivery
 | Audit and update the Example UX | stages/02-example-ux/CONTEXT.md |
 | Confirm all three artifacts are in sync | stages/03-sync-check/CONTEXT.md |
 | Read delivery configuration | _config/delivery-context.md |
-| Read gap-analysis workspace for this component | /home/user/marilo/workspaces/gap-analysis-resolution/CLAUDE.md |
+| Read gap-analysis workspace for this component | /workspaces/Marilo/workspaces/gap-analysis-resolution/CLAUDE.md |
 
 ## What to Load
 
@@ -71,5 +78,9 @@ Each stage writes its output to its own `output/` folder. The next stage reads f
 
 <!-- CDW owns: spec accuracy, Example UX completeness.
      CDW delegates: source changes and test writing to
-     /home/user/marilo/workspaces/gap-analysis-resolution.
+     /workspaces/Marilo/workspaces/gap-analysis-resolution.
      Never modify component source files directly from this workspace. -->
+
+## Workspace Routing
+
+This CDW was graduated from `gap-analysis-resolution` per the criteria in `../shared/workspace-routing.md`. Gap intake, resolution design, implementation, and validation remain in the gap workspace. Only delivery coordination (spec, demo, sync) lives here.

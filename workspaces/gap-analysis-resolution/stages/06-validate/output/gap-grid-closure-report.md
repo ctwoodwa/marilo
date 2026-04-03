@@ -1,4 +1,6 @@
-# Closure Report: GAP-grid — MariloGrid CSS Grid Layout Support
+# Closure Report: GAP-grid — MariloGridLayout CSS Grid Layout Support
+
+> **Note (2026-04-03):** `MariloGrid` was renamed to `MariloGridLayout`. Historical references to `MariloGrid` in this document refer to the layout component now at `Layout/MariloGridLayout.razor`.
 
 **Closure Status:** Resolved
 **Validated:** 2026-04-02
