@@ -31,6 +31,13 @@ Gap analyses vary in maturity. The workspace supports two entry paths:
 | **Existing analysis** | Gap analysis files already exist (e.g., GAP_ANALYSIS.md, GAP_ANALYSIS_INDEX.md) | Stage 01 (import mode) | 01 through 06 |
 | **Fresh analysis** | No gap analysis yet; start from target state definition | Stage 01 (assess mode) | 01 through 06 |
 
+## Cold Start
+
+Load `_status/workspace-status.md` first for pipeline orientation (Layer 0 snapshot -- not authoritative).
+Then load `_config/coverage-summary.md` for batch-level detail.
+Then load `_config/gap-context.md` for full configuration and resolution tracking.
+This avoids scanning individual closure reports just to understand current status.
+
 ## Gap Scope Routing
 
 After intake, the scope of the gap set determines which stages run:
@@ -83,3 +90,7 @@ Each stage writes its output to its own `output/` folder. The next stage reads f
 - Read affected code before designing a resolution. Patterns found in the codebase take precedence over assumptions.
 - Gap records are append-only during resolution. Never delete or modify the original gap description. Add resolution status alongside it.
 - One gap record = one decision. If a gap has multiple valid resolutions, split into separate records.
+
+## Workspace Routing
+
+When a component's delivery coordination (spec accuracy, demo completeness, release readiness) outgrows this shared workspace, graduate it to a dedicated Component Delivery Workspace. See `../shared/workspace-routing.md` for graduation criteria and the workspace taxonomy.

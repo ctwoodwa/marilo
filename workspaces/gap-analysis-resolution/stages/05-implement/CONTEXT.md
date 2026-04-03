@@ -52,3 +52,5 @@ Note: For `single` or `batch` scope (no Stage 04), read directly from Stage 03 r
 |----------|----------|--------|
 | Implementation log | `output/gap-[slug]-implementation-log.md` | Per-task log: what changed, files modified, deviations |
 | Reference example | `output/gap-[slug]-reference-example.md` | Pilot implementation as a pattern reference |
+
+Each implementation log SHOULD include a `### Tests Written` subsection mapping gap IDs to the test file and method that covers the gap (format: `gap-[slug] → path/to/File.test.tsx :: "test description"`). If tests are deferred, the log MUST state why and include a follow-up entry. See `../../shared/test-coverage-ownership.md` for the full ownership model.

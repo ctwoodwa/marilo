@@ -21,4 +21,4 @@ Coordinates spec, Example UX, and source+tests for TreeView.
 | Spec coverage format | shared/spec-coverage-format.md | Full file |
 | Demo scenario format | stages/02-example-ux/shared/demo-scenario-format.md | Full file |
 | Delivery checklist | stages/03-sync-check/shared/delivery-checklist.md | Full file |
-| Gap workspace | /home/user/marilo/workspaces/gap-analysis-resolution/CLAUDE.md | Routing table only |
+| Gap workspace | /workspaces/Marilo/workspaces/gap-analysis-resolution/CLAUDE.md | Routing table only |

@@ -13,11 +13,11 @@
 
 | Field | Value |
 |-------|-------|
-| API spec | /home/user/marilo/docs/component-specs/treeview/ |
-| Example UX | /home/user/marilo/samples/Marilo.Demo/Pages/Components/TreeView/ |
-| Component source | /home/user/marilo/src/Marilo.Components/Navigation/ |
-| Test files | /home/user/marilo/tests/Marilo.Tests.Unit/P2Enhancements/TreeViewTests.cs |
-| Gap workspace | /home/user/marilo/workspaces/gap-analysis-resolution |
+| API spec | /workspaces/Marilo/docs/component-specs/treeview/ |
+| Example UX | /workspaces/Marilo/samples/Marilo.Demo/Pages/Components/TreeView/ |
+| Component source | /workspaces/Marilo/src/Marilo.Components/Navigation/ |
+| Test files | /workspaces/Marilo/tests/Marilo.Tests.Unit/P2Enhancements/TreeViewTests.cs |
+| Gap workspace | /workspaces/Marilo/workspaces/gap-analysis-resolution |
 
 ## Spec State
 
@@ -47,5 +47,5 @@
 
 | Field | Value |
 |-------|-------|
-| Latest closure reports | /home/user/marilo/workspaces/gap-analysis-resolution/stages/06-validate/output/ |
-| Coverage summary | /home/user/marilo/workspaces/gap-analysis-resolution/_config/coverage-summary.md |
+| Latest closure reports | /workspaces/Marilo/workspaces/gap-analysis-resolution/stages/06-validate/output/ |
+| Coverage summary | /workspaces/Marilo/workspaces/gap-analysis-resolution/_config/coverage-summary.md |

@@ -49,3 +49,5 @@ For each prioritized gap (or batch of related gaps), define the target pattern, 
 |----------|----------|--------|
 | Resolution records | `output/gap-[slug]-resolutions.md` | One resolution record per gap or batch, following shared format |
 | ADRs (if any) | `output/gap-[slug]-adr-[NNN].md` | ADR format from canonical defaults |
+
+Each resolution record SHOULD include a `### Success Criteria` subsection listing testable conditions that confirm the gap is closed. These criteria are the contract for Stage 05 test writing and Stage 06 validation. See `../../shared/test-coverage-ownership.md` for the full ownership model.
