@@ -83,6 +83,38 @@ public class DropDownListTests : MariloTestBase
     }
 
     [Fact]
+    public void RendersItemsWithNullableValueType()
+    {
+        var cut = Render<MariloDropDownList<Country, int?>>(parameters => parameters
+            .Add(p => p.Data, Countries)
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ValueField, "Id"));
+
+        // Click to open — should not throw InvalidCastException
+        cut.Find("div[role='listbox']").Click();
+
+        var items = cut.FindAll("li[role='option']");
+        Assert.Equal(3, items.Count);
+    }
+
+    [Fact]
+    public void ValueSelectionWorksWithNullableValueType()
+    {
+        int? selectedValue = null;
+
+        var cut = Render<MariloDropDownList<Country, int?>>(parameters => parameters
+            .Add(p => p.Data, Countries)
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ValueField, "Id")
+            .Add(p => p.ValueChanged, v => selectedValue = v));
+
+        cut.Find("div[role='listbox']").Click();
+        cut.FindAll("li[role='option']")[1].Click();
+
+        Assert.Equal(2, selectedValue);
+    }
+
+    [Fact]
     public void EscapeClosesDropdown()
     {
         var cut = Render<MariloDropDownList<Country, int>>(parameters => parameters

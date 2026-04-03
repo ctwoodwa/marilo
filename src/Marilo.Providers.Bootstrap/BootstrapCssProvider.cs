@@ -698,6 +698,53 @@ public class BootstrapCssProvider : IMariloCssProvider
     public string DataGridGroupHeaderClass() => "table-secondary fw-bold mar-bs-datagrid-group-header";
 
     // ───────────────────────────────────────────────
+    // DataSheet
+    // ───────────────────────────────────────────────
+
+    public string DataSheetClass(bool isLoading) =>
+        new CssClassBuilder()
+            .AddClass("table-responsive mar-bs-datasheet")
+            .AddClass("mar-bs-datasheet--loading", isLoading)
+            .Build();
+
+    public string DataSheetCellClass(CellState state, bool isActive, bool isEditable) =>
+        new CssClassBuilder()
+            .AddClass("mar-bs-datasheet__cell")
+            .AddClass("table-primary", isActive)
+            .AddClass("mar-bs-datasheet__cell--readonly", !isEditable)
+            .AddClass("table-warning", state == CellState.Dirty)
+            .AddClass("table-danger", state == CellState.Invalid)
+            .Build();
+
+    public string DataSheetHeaderCellClass(bool isSortable) =>
+        new CssClassBuilder()
+            .AddClass("mar-bs-datasheet__header-cell")
+            .AddClass("mar-bs-datasheet__header-cell--sortable", isSortable)
+            .Build();
+
+    public string DataSheetRowClass(bool isDirty, bool isSelected, bool isDeleted) =>
+        new CssClassBuilder()
+            .AddClass("mar-bs-datasheet__row")
+            .AddClass("table-warning", isDirty)
+            .AddClass("table-active", isSelected)
+            .AddClass("text-decoration-line-through", isDeleted)
+            .Build();
+
+    public string DataSheetToolbarClass() => "d-flex gap-2 mb-2 mar-bs-datasheet__toolbar";
+
+    public string DataSheetBulkBarClass(bool isVisible) =>
+        new CssClassBuilder()
+            .AddClass("d-flex gap-2 mar-bs-datasheet__bulk-bar")
+            .AddClass("d-none", !isVisible)
+            .Build();
+
+    public string DataSheetSaveFooterClass(int dirtyCount) =>
+        new CssClassBuilder()
+            .AddClass("d-flex justify-content-between align-items-center p-2 mar-bs-datasheet__save-footer")
+            .AddClass("mar-bs-datasheet__save-footer--has-changes", dirtyCount > 0)
+            .Build();
+
+    // ───────────────────────────────────────────────
     // ListView
     // ───────────────────────────────────────────────
 

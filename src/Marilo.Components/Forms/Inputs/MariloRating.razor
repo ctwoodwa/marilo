@@ -1,9 +1,9 @@
 @inherits MariloComponentBase
 
-<div class="@CombineClasses(CssProvider.RatingClass())"
+<div class="@CombineClasses(RatingCss)"
      style="@CombineStyles()"
      role="radiogroup"
-     aria-label="Rating"
+     aria-label="@(Label ?? "Rating")"
      @attributes="AdditionalAttributes">
     @for (var i = 1; i <= Max; i++)
     {
@@ -11,15 +11,18 @@
         var isFilled = starIndex <= Value;
         var iconName = isFilled ? "star-filled" : "star";
 
-        if (IsReadOnly)
+        if (IsReadOnly || !Enabled)
         {
-            <span aria-label="@starIndex of @Max stars">
+            <span class="mar-rating__star @(isFilled ? "mar-rating__star--filled" : "")"
+                  aria-label="@starIndex of @Max stars">
                 @IconProvider.GetIcon(iconName, IconSize.Medium)
             </span>
         }
         else
         {
-            <button aria-label="@starIndex of @Max stars"
+            <button class="mar-rating__star @(isFilled ? "mar-rating__star--filled" : "")"
+                    type="button"
+                    aria-label="@starIndex of @Max stars"
                     @onclick="() => SetRating(starIndex)">
                 @IconProvider.GetIcon(iconName, IconSize.Medium)
             </button>
@@ -34,6 +37,17 @@
     [Parameter] public bool IsReadOnly { get; set; }
     [Parameter] public bool Enabled { get; set; } = true;
     [Parameter] public string? Label { get; set; }
+
+    private string RatingCss
+    {
+        get
+        {
+            var cls = CssProvider.RatingClass();
+            if (IsReadOnly) cls += " mar-rating--readonly";
+            if (!Enabled) cls += " mar-rating--disabled";
+            return cls;
+        }
+    }
 
     private async Task SetRating(int rating)
     {

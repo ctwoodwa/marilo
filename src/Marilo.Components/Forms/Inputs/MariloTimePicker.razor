@@ -243,6 +243,8 @@
             if (Value is null) return false;
             if (Value is DateTime dt) return dt != default;
             if (Value is DateTimeOffset dto) return dto != default;
+            if (Value is TimeOnly to) return to != default;
+            if (Value is TimeSpan span) return span != default;
             return false;
         }
     }
@@ -473,7 +475,8 @@
         if (value is null) return null;
         if (value is DateTime dt && dt != default) return dt.TimeOfDay;
         if (value is DateTimeOffset dto && dto != default) return dto.TimeOfDay;
-        // nullable wrappers are handled by null check above
+        if (value is TimeOnly to) return to.ToTimeSpan();
+        if (value is TimeSpan span) return span;
         return null;
     }
 
@@ -482,16 +485,16 @@
         var type = typeof(TValue);
         var underlying = Nullable.GetUnderlyingType(type) ?? type;
 
-        DateTime baseDate = new DateTime(1900, 1, 1);
-        DateTime result = baseDate.Add(ts);
-
+        if (underlying == typeof(TimeOnly))
+            return (TValue)(object)TimeOnly.FromTimeSpan(ts);
+        if (underlying == typeof(TimeSpan))
+            return (TValue)(object)ts;
         if (underlying == typeof(DateTime))
-            return (TValue)(object)result;
+            return (TValue)(object)new DateTime(1900, 1, 1).Add(ts);
         if (underlying == typeof(DateTimeOffset))
-            return (TValue)(object)(DateTimeOffset)result;
+            return (TValue)(object)(DateTimeOffset)new DateTime(1900, 1, 1).Add(ts);
 
-        // Nullable types — box the value
-        return (TValue)(object)result;
+        return default;
     }
 
     private bool TryParseInput(string text, out TimeSpan ts)

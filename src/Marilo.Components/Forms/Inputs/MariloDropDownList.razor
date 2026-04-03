@@ -157,7 +157,8 @@
         if (string.IsNullOrEmpty(ValueField)) return (TValue?)(object?)item;
         var propValue = typeof(TItem).GetProperty(ValueField)?.GetValue(item);
         if (propValue is null) return default;
-        return (TValue?)Convert.ChangeType(propValue, typeof(TValue));
+        var targetType = Nullable.GetUnderlyingType(typeof(TValue)) ?? typeof(TValue);
+        return (TValue?)Convert.ChangeType(propValue, targetType);
     }
 
     private string? GetGroup(TItem item)

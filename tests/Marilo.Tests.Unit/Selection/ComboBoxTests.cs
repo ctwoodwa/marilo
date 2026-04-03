@@ -58,6 +58,41 @@ public class ComboBoxTests : MariloTestBase
     }
 
     [Fact]
+    public void RendersItemsWithNullableValueType()
+    {
+        var cut = Render<MariloComboBox<Country, int?>>(parameters => parameters
+            .Add(p => p.Data, Countries)
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ValueField, "Id"));
+
+        var input = cut.Find("input[role='combobox']");
+        input.Focus();
+
+        // Should not throw InvalidCastException
+        var items = cut.FindAll("li[role='option']");
+        Assert.Equal(4, items.Count);
+    }
+
+    [Fact]
+    public void SelectionWorksWithNullableValueType()
+    {
+        int? selectedValue = null;
+
+        var cut = Render<MariloComboBox<Country, int?>>(parameters => parameters
+            .Add(p => p.Data, Countries)
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ValueField, "Id")
+            .Add(p => p.ValueChanged, v => selectedValue = v));
+
+        var input = cut.Find("input[role='combobox']");
+        input.Focus();
+
+        cut.FindAll("li[role='option']")[1].MouseDown();
+
+        Assert.Equal(2, selectedValue);
+    }
+
+    [Fact]
     public void StartsWithFilterModeWorks()
     {
         var cut = Render<MariloComboBox<Country, int>>(parameters => parameters

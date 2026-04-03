@@ -1,13 +1,17 @@
 @inherits MariloComponentBase
 
-<label class="@CombineClasses(CssProvider.RadioClass(IsSelected))" style="@CombineStyles()" @attributes="AdditionalAttributes">
+<label class="@CombineClasses(CssProvider.RadioClass(IsChecked))" style="@CombineStyles()" @attributes="AdditionalAttributes">
     <input type="radio"
-           name="@Name"
+           name="@ResolvedName"
            value="@Value"
-           checked="@IsSelected"
-           disabled="@(!Enabled)"
+           checked="@IsChecked"
+           disabled="@(!ResolvedEnabled)"
            @onchange="OnSelectionChanged" />
-    @if (!string.IsNullOrEmpty(Label))
+    @if (ChildContent is not null)
+    {
+        <span>@ChildContent</span>
+    }
+    else if (!string.IsNullOrEmpty(Label))
     {
         <span>@Label</span>
     }
@@ -18,11 +22,27 @@
     [Parameter] public string Name { get; set; } = string.Empty;
     [Parameter] public bool IsSelected { get; set; }
     [Parameter] public string? Label { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
     [Parameter] public EventCallback<string> ValueChanged { get; set; }
     [Parameter] public bool Enabled { get; set; } = true;
 
+    [CascadingParameter] public MariloRadioGroup? RadioGroup { get; set; }
+
+    private string ResolvedName => RadioGroup?.Name ?? Name;
+    private bool ResolvedEnabled => RadioGroup?.Enabled ?? Enabled;
+    private bool IsChecked => RadioGroup is not null
+        ? string.Equals(RadioGroup.Value, Value, StringComparison.Ordinal)
+        : IsSelected;
+
     private async Task OnSelectionChanged(ChangeEventArgs e)
     {
-        await ValueChanged.InvokeAsync(Value);
+        if (RadioGroup is not null)
+        {
+            await RadioGroup.SelectValue(Value);
+        }
+        else
+        {
+            await ValueChanged.InvokeAsync(Value);
+        }
     }
 }

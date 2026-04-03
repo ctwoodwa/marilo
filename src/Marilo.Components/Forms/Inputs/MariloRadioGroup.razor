@@ -27,7 +27,9 @@
     }
     else
     {
-        @ChildContent
+        <CascadingValue Value="this" IsFixed="false">
+            @ChildContent
+        </CascadingValue>
     }
 </div>
 
@@ -71,7 +73,7 @@
         }
     }
 
-    private async Task SelectValue(string value)
+    internal async Task SelectValue(string value)
     {
         if (!Enabled) return;
         Value = value;

@@ -522,6 +522,52 @@ public class FluentUICssProvider : IMariloCssProvider
 
     public string DataGridGroupHeaderClass() => "mar-datagrid-group-header";
 
+    // DataSheet
+    public string DataSheetClass(bool isLoading) =>
+        new CssClassBuilder()
+            .AddClass("mar-datasheet")
+            .AddClass("mar-datasheet--loading", isLoading)
+            .Build();
+
+    public string DataSheetCellClass(CellState state, bool isActive, bool isEditable) =>
+        new CssClassBuilder()
+            .AddClass("mar-datasheet__cell")
+            .AddClass("mar-datasheet__cell--active", isActive)
+            .AddClass("mar-datasheet__cell--readonly", !isEditable)
+            .AddClass("mar-datasheet__cell--dirty", state == CellState.Dirty)
+            .AddClass("mar-datasheet__cell--invalid", state == CellState.Invalid)
+            .AddClass("mar-datasheet__cell--saving", state == CellState.Saving)
+            .AddClass("mar-datasheet__cell--saved", state == CellState.Saved)
+            .Build();
+
+    public string DataSheetHeaderCellClass(bool isSortable) =>
+        new CssClassBuilder()
+            .AddClass("mar-datasheet__header-cell")
+            .AddClass("mar-datasheet__header-cell--sortable", isSortable)
+            .Build();
+
+    public string DataSheetRowClass(bool isDirty, bool isSelected, bool isDeleted) =>
+        new CssClassBuilder()
+            .AddClass("mar-datasheet__row")
+            .AddClass("mar-datasheet__row--dirty", isDirty)
+            .AddClass("mar-datasheet__row--selected", isSelected)
+            .AddClass("mar-datasheet__row--deleted", isDeleted)
+            .Build();
+
+    public string DataSheetToolbarClass() => "mar-datasheet__toolbar";
+
+    public string DataSheetBulkBarClass(bool isVisible) =>
+        new CssClassBuilder()
+            .AddClass("mar-datasheet__bulk-bar")
+            .AddClass("mar-datasheet__bulk-bar--visible", isVisible)
+            .Build();
+
+    public string DataSheetSaveFooterClass(int dirtyCount) =>
+        new CssClassBuilder()
+            .AddClass("mar-datasheet__save-footer")
+            .AddClass("mar-datasheet__save-footer--has-changes", dirtyCount > 0)
+            .Build();
+
     // ListView
     public string ListViewClass() => "mar-listview";
 
