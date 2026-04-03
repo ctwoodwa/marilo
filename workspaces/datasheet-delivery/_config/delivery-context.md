@@ -24,8 +24,8 @@
 | Field | Value |
 |-------|-------|
 | Spec version | unversioned |
-| Last spec audit | PENDING |
-| Open spec gaps | PENDING |
+| Last spec audit | 2026-04-03 |
+| Open spec gaps | ~38 (1 blocking architecture mismatch) |
 
 ## Example UX State
 
