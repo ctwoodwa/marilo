@@ -33,21 +33,33 @@ public class FavoritesService : IAsyncDisposable
         if (_initialized) return;
         _initialized = true;
 
-        _module = await _js.InvokeAsync<IJSObjectReference>(
-            "import", "./js/favorites.js");
-
-        var json = await _module.InvokeAsync<string?>("getFavorites", StorageKey);
-        if (!string.IsNullOrEmpty(json))
+        try
         {
-            try
+            _module = await _js.InvokeAsync<IJSObjectReference>(
+                "import", "./js/favorites.js");
+
+            var json = await _module.InvokeAsync<string?>("getFavorites", StorageKey);
+            if (!string.IsNullOrEmpty(json))
             {
-                _favorites = System.Text.Json.JsonSerializer.Deserialize<List<FavoriteItem>>(json)
-                    ?? new List<FavoriteItem>();
+                try
+                {
+                    _favorites = System.Text.Json.JsonSerializer.Deserialize<List<FavoriteItem>>(json)
+                        ?? new List<FavoriteItem>();
+                }
+                catch
+                {
+                    _favorites = new List<FavoriteItem>();
+                }
             }
-            catch
-            {
-                _favorites = new List<FavoriteItem>();
-            }
+        }
+        catch (TaskCanceledException)
+        {
+            // JS interop was canceled (circuit disconnected or prerendering) — reset so next call retries
+            _initialized = false;
+        }
+        catch (JSDisconnectedException)
+        {
+            _initialized = false;
         }
     }
 
