@@ -14,6 +14,7 @@ public partial class MariloTreeView : MariloComponentBase
     private HashSet<string> _selectedIds = new();
     private readonly HashSet<string> _loadingIds = new();
     private readonly HashSet<string> _loadedNodeIds = new();
+    private readonly Dictionary<string, List<object>> _lazyLoadedChildren = new();
     private string? _draggedNodeId;
     private string? _dragOverNodeId;
     private string? _focusedNodeId;
@@ -214,7 +215,10 @@ public partial class MariloTreeView : MariloComponentBase
                 {
                     var children = await LoadChildrenAsync(node.Item);
                     if (children != null)
+                    {
+                        _lazyLoadedChildren[node.Id] = children.ToList();
                         _cachedTree = null;
+                    }
                 }
                 finally
                 {
@@ -440,6 +444,10 @@ public partial class MariloTreeView : MariloComponentBase
                     children = BuildHierarchical(childList, depth + 1);
             }
 
+            // Include lazy-loaded children for this node
+            if (!children.Any() && _lazyLoadedChildren.TryGetValue(id, out var lazyChildren) && lazyChildren.Any())
+                children = BuildHierarchical(lazyChildren, depth + 1);
+
             var hasChildren = children.Any();
             if (!string.IsNullOrEmpty(HasChildrenField))
             {
@@ -454,7 +462,17 @@ public partial class MariloTreeView : MariloComponentBase
 
     private List<TreeNode> BuildFlat(IEnumerable<object> items)
     {
+        // Include lazy-loaded children alongside the original data
         var allItems = items.ToList();
+        foreach (var kvp in _lazyLoadedChildren)
+        {
+            foreach (var child in kvp.Value)
+            {
+                var childId = GetPropertyString(child, IdField) ?? "";
+                if (!string.IsNullOrEmpty(childId) && !allItems.Any(i => GetPropertyString(i, IdField) == childId))
+                    allItems.Add(child);
+            }
+        }
         var lookup = new Dictionary<string, TreeNode>();
         var roots = new List<TreeNode>();
 
@@ -725,7 +743,7 @@ public partial class MariloTreeView : MariloComponentBase
                         var children = await LoadChildrenAsync(node.Item);
                         if (children != null)
                         {
-                            // Rebuild tree to incorporate new children
+                            _lazyLoadedChildren[id] = children.ToList();
                             _cachedTree = null;
                         }
                     }

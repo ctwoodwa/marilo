@@ -14,7 +14,7 @@ public class TreeViewTests : MariloTestBase
     public record HierarchicalNode(string Id, string Name, List<HierarchicalNode>? Children = null);
     public record LazyNode(string Id, string? ParentId, string Name, bool HasChildren = false);
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_RendersItemsFromFlatData()
     {
         var data = new List<object>
@@ -41,7 +41,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Contains("Root B", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_RendersItemsFromHierarchicalData()
     {
         var data = new List<object>
@@ -64,7 +64,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Contains("Standalone", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_RendersChildContentWhenNoData()
     {
         var cut = Render<MariloTreeView>(parameters => parameters
@@ -78,7 +78,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Contains("Manual Item", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ExpandCollapseNodes()
     {
         var data = new List<object>
@@ -114,7 +114,7 @@ public class TreeViewTests : MariloTestBase
 
     // ── Tri-State Checkbox Tests ─────────────────────────────────────────
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_CheckParent_WithAllowCheckChildren_CascadesToDescendants()
     {
         var data = new List<object>
@@ -150,7 +150,7 @@ public class TreeViewTests : MariloTestBase
             Assert.Equal("true", cb.GetAttribute("aria-checked"));
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_UncheckParent_UnchecksAllDescendants()
     {
         var checkedIds = new List<string> { "1", "2", "3" };
@@ -189,7 +189,7 @@ public class TreeViewTests : MariloTestBase
             Assert.Equal("false", cb.GetAttribute("aria-checked"));
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_CheckAllChildren_WithAllowCheckParents_AutoChecksParent()
     {
         var data = new List<object>
@@ -226,7 +226,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Equal("true", parentCheckbox.GetAttribute("aria-checked"));
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_CheckSomeChildren_RendersParentAsIndeterminate()
     {
         var data = new List<object>
@@ -263,7 +263,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Contains("mar-tree-item__checkbox--indeterminate", parentCheckbox.GetAttribute("class") ?? "");
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_AllowCheckChildren_False_PreventsChildCascade()
     {
         var data = new List<object>
@@ -305,7 +305,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Equal("mixed", updated[0].GetAttribute("aria-checked"));
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_CheckedItems_UpdatesOnCheckUncheck()
     {
         var checkedItemsReceived = new List<IEnumerable<string>>();
@@ -340,7 +340,7 @@ public class TreeViewTests : MariloTestBase
 
     // ── Lazy Loading Tests ───────────────────────────────────────────────
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_LoadChildrenAsync_InvokesOnFirstExpand()
     {
         var loadCallCount = 0;
@@ -376,7 +376,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Equal("1", ((LazyNode)loadedItem!).Id);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_LoadChildrenAsync_DoesNotReinvokeOnSubsequentExpand()
     {
         var loadCallCount = 0;
@@ -410,7 +410,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Equal(1, loadCallCount);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_LoadChildrenAsync_ChildrenRenderAfterComplete()
     {
         // Verifies the loading indicator appears while the async callback is pending
@@ -447,7 +447,7 @@ public class TreeViewTests : MariloTestBase
 
     // ── Keyboard Navigation Tests ────────────────────────────────────────
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ArrowDown_MovesFocusToNextNode()
     {
         var data = new List<object>
@@ -482,7 +482,7 @@ public class TreeViewTests : MariloTestBase
         Assert.NotEqual(firstFocused[0].GetAttribute("id"), secondFocused[0].GetAttribute("id"));
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ArrowRight_ExpandsCollapsedNode()
     {
         var data = new List<object>
@@ -513,7 +513,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Contains("Child 1", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ArrowLeft_CollapsesExpandedNode()
     {
         var data = new List<object>
@@ -544,7 +544,7 @@ public class TreeViewTests : MariloTestBase
         Assert.DoesNotContain("Child 1", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_EnterSpace_SelectsFocusedNode()
     {
         var selectedItems = new List<IEnumerable<string>>();
@@ -575,7 +575,7 @@ public class TreeViewTests : MariloTestBase
 
     // ── Gap 12: ExpandOnClick / ExpandOnDoubleClick Tests ────────────────
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ExpandOnClick_True_TogglesExpandOnHeaderClick()
     {
         var data = new List<object>
@@ -607,7 +607,7 @@ public class TreeViewTests : MariloTestBase
         Assert.DoesNotContain("Child A1", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ExpandOnClick_False_DoesNotAttachOnClickToHeader()
     {
         var data = new List<object>
@@ -638,7 +638,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Null(header.GetAttribute("onclick"));
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ExpandOnDoubleClick_True_ExpandsOnDoubleClick()
     {
         var data = new List<object>
@@ -663,7 +663,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Contains("Child A1", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ExpandOnDoubleClick_SuppressedWhenAllowEditing()
     {
         var data = new List<object>
@@ -694,7 +694,7 @@ public class TreeViewTests : MariloTestBase
         Assert.DoesNotContain("Child A1", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ExpandOnClick_Disabled_PreventsHandlerAttachment()
     {
         var data = new List<object>
@@ -724,7 +724,7 @@ public class TreeViewTests : MariloTestBase
 
     // ── Gap 13: SingleExpand Tests ───────────────────────────────────────
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_SingleExpand_True_CollapsesSiblingsOnExpand()
     {
         var data = new List<object>
@@ -765,7 +765,7 @@ public class TreeViewTests : MariloTestBase
         Assert.DoesNotContain("Child A1", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_SingleExpand_False_AllowsMultipleSiblingsExpanded()
     {
         var data = new List<object>
@@ -801,7 +801,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Contains("Child B1", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_SingleExpand_ExpandedItemsChangedFires_AfterSiblingCollapse()
     {
         var receivedExpandedIds = new List<IEnumerable<string>>();
@@ -844,7 +844,7 @@ public class TreeViewTests : MariloTestBase
 
     // ── Gap 14: AutoExpand Tests ─────────────────────────────────────────
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_AutoExpand_DefaultsToFalse()
     {
         // AutoExpand is a bool parameter — C# default is false.
@@ -873,7 +873,7 @@ public class TreeViewTests : MariloTestBase
         Assert.DoesNotContain("GrandChild", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_AutoExpand_False_DoesNotExpandAncestors()
     {
         var data = new List<object>
@@ -899,7 +899,7 @@ public class TreeViewTests : MariloTestBase
         Assert.DoesNotContain("GrandChild", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_AutoExpand_True_ExpandsAncestorsOfSelectedItem()
     {
         var data = new List<object>
@@ -929,7 +929,7 @@ public class TreeViewTests : MariloTestBase
 
     // ── Gap 15: ExpandAll / CollapseAll Tests ────────────────────────────
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public async Task TreeView_ExpandAllAsync_MakesAllChildrenVisible()
     {
         var data = new List<object>
@@ -958,7 +958,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Contains("GrandChild", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public async Task TreeView_CollapseAllAsync_HidesAllChildren()
     {
         var data = new List<object>
@@ -988,7 +988,7 @@ public class TreeViewTests : MariloTestBase
         Assert.DoesNotContain("GrandChild", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public async Task TreeView_ExpandAllAsync_FiresExpandedItemsChanged()
     {
         var expandedItemsReceived = new List<IEnumerable<string>>();
@@ -1019,7 +1019,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Contains("1-2", fired);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public async Task TreeView_CollapseAllAsync_FiresExpandedItemsChangedWithEmptyCollection()
     {
         var expandedItemsReceived = new List<IEnumerable<string>>();
@@ -1048,7 +1048,7 @@ public class TreeViewTests : MariloTestBase
 
     // ── Gap 16: FilterFunc Tests ────────────────────────────────────────
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_FilterFunc_HidesNonMatchingLeafNodes()
     {
         var data = new List<object>
@@ -1081,7 +1081,7 @@ public class TreeViewTests : MariloTestBase
         Assert.DoesNotContain("Carrot", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_FilterFunc_MatchingNodesGetFilterMatchCssClass()
     {
         var data = new List<object>
@@ -1111,7 +1111,7 @@ public class TreeViewTests : MariloTestBase
         Assert.DoesNotContain("mar-tree-item--filter-match", fruitsItem.GetAttribute("class") ?? "");
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_FilterFunc_NullShowsAllNodes()
     {
         var data = new List<object>
@@ -1135,7 +1135,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Contains("Fruits", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ClearFilter_RestoresAllNodes()
     {
         var data = new List<object>
@@ -1173,7 +1173,7 @@ public class TreeViewTests : MariloTestBase
 
     // ── Gap 17: Disabled / ReadOnly Tests ───────────────────────────────
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_Disabled_SetsAriaDisabledOnRoot()
     {
         var data = new List<object>
@@ -1192,7 +1192,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Equal("true", tree.GetAttribute("aria-disabled"));
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_Disabled_False_NoAriaDisabled()
     {
         var data = new List<object>
@@ -1210,7 +1210,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Null(tree.GetAttribute("aria-disabled"));
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_Disabled_PreventsExpandCollapseViaToggle()
     {
         var data = new List<object>
@@ -1233,7 +1233,7 @@ public class TreeViewTests : MariloTestBase
         Assert.True(toggle.HasAttribute("disabled"));
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_Disabled_PreventsSelection()
     {
         IEnumerable<string>? receivedSelection = null;
@@ -1256,7 +1256,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Null(receivedSelection);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_Disabled_PreventsCheckboxChanges()
     {
         var data = new List<object>
@@ -1276,7 +1276,7 @@ public class TreeViewTests : MariloTestBase
         Assert.True(checkbox.HasAttribute("disabled"));
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_Disabled_PreventsKeyboardNavigation()
     {
         var data = new List<object>
@@ -1299,7 +1299,7 @@ public class TreeViewTests : MariloTestBase
         Assert.DoesNotContain("mar-tree-item--focused", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ReadOnly_PreventsCheckboxChanges()
     {
         var data = new List<object>
@@ -1319,7 +1319,7 @@ public class TreeViewTests : MariloTestBase
         Assert.True(checkbox.HasAttribute("disabled"));
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ReadOnly_AllowsKeyboardFocusMovement()
     {
         var data = new List<object>
@@ -1343,7 +1343,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Contains("mar-tree-item--focused", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_BothDefaultToFalse()
     {
         var data = new List<object>
@@ -1365,7 +1365,7 @@ public class TreeViewTests : MariloTestBase
 
     // ── Gap 19: SelectNodeAsync (Programmatic Navigation) ────────────────
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public async Task TreeView_SelectNodeAsync_ExpandsAncestors()
     {
         // Deep tree: Root > Child > GrandChild
@@ -1397,7 +1397,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Contains("GrandChild", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public async Task TreeView_SelectNodeAsync_SelectsTargetNode()
     {
         var selectedItemsReceived = new List<IEnumerable<string>>();
@@ -1426,7 +1426,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Single(lastReceived); // only the target — prior selection is replaced
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public async Task TreeView_SelectNodeAsync_FiresExpandedItemsChanged()
     {
         var expandedItemsReceived = new List<IEnumerable<string>>();
@@ -1454,7 +1454,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Contains("1", expandedItemsReceived.Last());
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public async Task TreeView_SelectNodeAsync_SetsFocusToTargetNode()
     {
         var data = new List<object>
@@ -1478,7 +1478,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Contains("mar-tree-item--focused", targetNode.GetAttribute("class") ?? "");
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public async Task TreeView_SelectNodeAsync_SilentlyReturnsForNonExistentId()
     {
         var selectedItemsReceived = new List<IEnumerable<string>>();
@@ -1508,7 +1508,7 @@ public class TreeViewTests : MariloTestBase
 
     // ── Gap 20: OnItemContextMenu (Item Context Menu) ────────────────────
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_OnItemContextMenu_FiresOnRightClick()
     {
         TreeItemContextMenuEventArgs? receivedArgs = null;
@@ -1535,7 +1535,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Equal(200, receivedArgs.MouseEventArgs.ClientY);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_OnItemContextMenu_NoHandlerWhenNoDelegateSet()
     {
         var data = new List<object>
@@ -1557,7 +1557,7 @@ public class TreeViewTests : MariloTestBase
 
     // ── Gap 21: CheckboxTemplate (Custom Checkbox Rendering) ─────────────
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_CheckboxTemplate_RendersCustomContent()
     {
         var data = new List<object>
@@ -1584,7 +1584,7 @@ public class TreeViewTests : MariloTestBase
         Assert.DoesNotContain("<input", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_CheckboxTemplate_ProvidesCorrectContext()
     {
         // Parent with two children — pre-check only child "2" so parent starts indeterminate.
@@ -1631,7 +1631,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Contains(capturedContexts, c => !c.Checked && !c.Indeterminate);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_CheckboxTemplate_DefaultCheckboxWhenNull()
     {
         var data = new List<object>
@@ -1654,7 +1654,7 @@ public class TreeViewTests : MariloTestBase
 
     // ── Gap 22: Node Editing / Inline Rename Tests ───────────────────────
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_NodeEditing_AllowEditingDefaultsFalse()
     {
         // Criterion: AllowEditing defaults to false; existing consumers see no change.
@@ -1678,7 +1678,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Null(title.GetAttribute("ondblclick"));
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_NodeEditing_DoubleClickActivatesEditMode()
     {
         // Criterion: Double-click on title activates edit mode when AllowEditing=true.
@@ -1706,7 +1706,7 @@ public class TreeViewTests : MariloTestBase
         Assert.DoesNotContain("mar-tree-item__title", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_NodeEditing_EditInputReplacesTitle()
     {
         // Criterion: During edit, the title span is replaced by a text input pre-filled
@@ -1736,7 +1736,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Empty(cut.FindAll(".mar-tree-item__title"));
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_NodeEditing_EnterCommitsEdit()
     {
         // Criterion: Enter key commits edit and fires OnItemEdit with new text.
@@ -1774,7 +1774,7 @@ public class TreeViewTests : MariloTestBase
         Assert.DoesNotContain("mar-tree-item__edit-input", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_NodeEditing_EscapeCancelsEdit()
     {
         // Criterion: Escape key cancels edit and restores original text without
@@ -1810,7 +1810,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Contains("Original Name", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_NodeEditing_EmptyTextDoesNotFireCallback()
     {
         // Criterion: Empty text (after trim) on commit is silently discarded;
@@ -1843,7 +1843,7 @@ public class TreeViewTests : MariloTestBase
         Assert.DoesNotContain("mar-tree-item__edit-input", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_NodeEditing_BlurCommitsEdit()
     {
         // Criterion: Blur commits the edit and fires OnItemEdit.
@@ -1878,7 +1878,7 @@ public class TreeViewTests : MariloTestBase
         Assert.DoesNotContain("mar-tree-item__edit-input", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_NodeEditing_AllowEditingFalse_PreventsActivation()
     {
         // Criterion: AllowEditing=false prevents edit activation.
@@ -1902,7 +1902,7 @@ public class TreeViewTests : MariloTestBase
         Assert.DoesNotContain("mar-tree-item__edit-input", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_NodeEditing_DisabledPreventsActivation()
     {
         // Criterion: Disabled=true prevents double-click edit activation.
@@ -1930,7 +1930,7 @@ public class TreeViewTests : MariloTestBase
             Assert.Null(titles[0].GetAttribute("ondblclick"));
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_NodeEditing_ReadOnlyPreventsActivation()
     {
         // Criterion: ReadOnly=true prevents double-click edit activation independently of Disabled.
@@ -1956,7 +1956,7 @@ public class TreeViewTests : MariloTestBase
         Assert.DoesNotContain("mar-tree-item__edit-input", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_NodeEditing_F2ActivatesEditMode()
     {
         // Criterion: F2 key activates edit mode on the focused node when AllowEditing=true.
@@ -1988,7 +1988,7 @@ public class TreeViewTests : MariloTestBase
         Assert.DoesNotContain("mar-tree-item__title", cut.Markup);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_NodeEditing_SuppressesExpandOnDoubleClick()
     {
         // Criterion: ExpandOnDoubleClick is suppressed when AllowEditing=true.
@@ -2024,7 +2024,7 @@ public class TreeViewTests : MariloTestBase
     // Phase 2.5 — GAP-expandall-lazyload Tests
     // ══════════════════════════════════════════════════════════════════════
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ExpandAllAsync_DefaultDoesNotLoadLazyNodes()
     {
         // SC-1: ExpandAllAsync() with no arguments does NOT call LoadChildrenAsync
@@ -2051,7 +2051,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Equal(0, loadCallCount);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ExpandAllAsync_IncludeUnloadedTriggersLazyLoad()
     {
         // SC-2: ExpandAllAsync(includeUnloaded: true) triggers LoadChildrenAsync
@@ -2084,7 +2084,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Equal(1, loadCallCount);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ExpandAllAsync_IncludeUnloaded_AllNodesExpanded()
     {
         // SC-3: After includeUnloaded=true, all nodes including previously unloaded are expanded
@@ -2119,7 +2119,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Contains("2", expandedItems);
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ExpandAllAsync_MaxDepthLimitsTraversal()
     {
         // SC-4: maxDepth limits how many levels deep lazy loading traverses
@@ -2161,7 +2161,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Equal(1, loadCallCount); // Only root's children loaded
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public async Task TreeView_ExpandAllAsync_CancellationStopsLoading()
     {
         // SC-5: CancellationToken cancellation stops loading
@@ -2192,7 +2192,7 @@ public class TreeViewTests : MariloTestBase
                 includeUnloaded: true, cancellationToken: cts.Token)));
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ExpandAllAsync_BackwardCompatible_NoArgs()
     {
         // SC-7: Existing callers calling ExpandAllAsync() without arguments still work
@@ -2223,7 +2223,7 @@ public class TreeViewTests : MariloTestBase
     // Phase 2.5 — GAP-readonly-guards Tests
     // ══════════════════════════════════════════════════════════════════════
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ReadOnly_DragDropHandlersNotAttached()
     {
         // SC-2: ReadOnly + EnableDragDrop — no draggable="true" in DOM
@@ -2251,7 +2251,7 @@ public class TreeViewTests : MariloTestBase
         }
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ReadOnly_DragDropEnabled_NoReadOnly_HasDraggable()
     {
         // Confirm draggable IS present when ReadOnly=false (control test)
@@ -2275,7 +2275,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Contains(headers, h => h.GetAttribute("draggable") == "true");
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ReadOnly_ExpandOnClick_DoesNotAttachHandler()
     {
         // SC-3: ReadOnly + ExpandOnClick — no onclick on header
@@ -2300,7 +2300,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Null(header.GetAttribute("onclick"));
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ReadOnly_ToggleButtonShowsDisabled()
     {
         // SC-4: ReadOnly tree renders toggle button with disabled attribute
@@ -2323,7 +2323,7 @@ public class TreeViewTests : MariloTestBase
         Assert.True(toggleButton.HasAttribute("disabled"));
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ReadOnly_TitleClickDoesNotAttachHandler()
     {
         // SC-5: ReadOnly — title span does not have onclick
@@ -2343,7 +2343,7 @@ public class TreeViewTests : MariloTestBase
         Assert.Null(title.GetAttribute("onclick"));
     }
 
-    [Fact(Skip = "Pre-existing failure under investigation")]
+    [Fact]
     public void TreeView_ReadOnly_KeyboardNavigationStillWorks()
     {
         // SC-6: ReadOnly allows keyboard navigation (pre-existing test, included for completeness)
