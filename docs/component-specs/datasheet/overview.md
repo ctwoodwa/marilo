@@ -1,164 +1,280 @@
-Here is a revised version that sharpens the **DataSheet vs DataGrid vs Spreadsheet** boundaries while preserving your existing API surface.
+---
+title: Overview
+page_title: DataSheet Overview
+description: A typed, schema-driven data sheet for bulk editing rows of strongly typed records with validation and Save All commit.
+slug: datasheet-overview
+tags: marilo,blazor,datasheet,overview,bulk-edit
+published: True
+position: 0
+components: ["datasheet"]
+---
 
-***
+# MariloDataSheet Overview
 
-# MariloDataSheet
+The MariloDataSheet component is a **typed, schema-driven data sheet** for bulk editing application data. It renders rows of strongly typed `TItem` records in an editable grid layout, with per-cell editors defined by column schema, local dirty tracking, validation, and a bulk Save All commit flow.
 
-A **typed, schema‑driven data sheet** for bulk editing application data, built on a grid but scoped to rows of strongly typed records rather than workbook worksheets or formula cells.
+MariloDataSheet is designed for **line-of-business workflows** where each row is a domain entity (order line, invoice row, configuration item) and users need to edit many rows before persisting changes in a single batch.
 
-MariloDataSheet is:
+>caption In this article:
 
-- Closer to a **data grid specialized for editing** than to an Excel‑style spreadsheet.
-- Focused on **typed fields, validation, and bulk commit** of changes via Save All.
-- Designed for **line‑of‑business workflows** where each row is a domain entity (order line, invoice row, configuration item).
+* [DataSheet vs DataGrid vs Spreadsheet](#datasheet-vs-datagrid-vs-spreadsheet)
+* [Basic Usage](#basic-usage)
+* [Parameters](#parameters)
+* [Column Parameters](#column-parameters)
+* [Events](#events)
+* [Enums](#enums)
+* [CSS Provider Methods](#css-provider-methods)
+* [Public Methods](#public-methods)
+* [Feature Areas](#feature-areas)
 
-It is **not** a general‑purpose spreadsheet engine: it does not manage workbooks, worksheets, or arbitrary cell formulas like `=SUM(A1:A10)`. For Excel‑style scenarios, use the Spreadsheet component instead.
+## DataSheet vs DataGrid vs Spreadsheet
+
+MariloDataSheet sits between MariloDataGrid and a full Spreadsheet component. The following table clarifies the boundaries:
+
+| Capability | MariloDataSheet | MariloDataGrid | Spreadsheet |
+| --- | --- | --- | --- |
+| Data model | Typed `TItem` rows | Typed `TItem` rows | Arbitrary cell arrays / worksheets |
+| Primary purpose | Bulk edit and commit | Display, CRUD, sorting, filtering | Workbook with formulas |
+| Editing pattern | All cells editable in-place; Save All commits batch | Row or cell editing with per-row save | Direct cell editing with formula engine |
+| Dirty tracking | Built-in per-cell and per-row | Not built-in | Sheet-level undo history |
+| Validation | Per-cell, per-row, and pre-save | DataAnnotations or custom per-row | Cell-level formula errors |
+| Column schema | `MariloDataSheetColumn` with typed editors | `GridColumn` with display and edit templates | Column/row headers (A, B, C / 1, 2, 3) |
+| Clipboard | TSV copy/paste mapped to typed columns | Not built-in | Full Excel-style clipboard |
+| Formulas | Not supported | Not applicable | `=SUM(A1:A10)` and similar |
+| Grouping / sorting / filtering | Not supported | Full support | Limited |
+
+MariloDataSheet is **not** a general-purpose spreadsheet engine. It does not manage workbooks, worksheets, or arbitrary cell formulas like `=SUM(A1:A10)`. For Excel-style scenarios, use the Spreadsheet component instead.
 
 ## Basic Usage
 
-```razor
-<MariloDataSheet TItem="MyRow" Data="@_rows" KeyField="Id"
-                 OnSaveAll="@HandleSaveAll">
-    <MariloDataSheetColumn TItem="MyRow" Field="Name" Title="Name"
+1. Use the `MariloDataSheet` tag with a `TItem` type parameter.
+2. Bind the `Data` parameter to an `IEnumerable<TItem>` property.
+3. Set `KeyField` to the property that uniquely identifies each row.
+4. Add `MariloDataSheetColumn` instances as child content, each mapping a `Field` to a typed editor via `ColumnType`.
+5. Handle `OnSaveAll` to persist dirty and deleted rows.
+
+>caption Get started with MariloDataSheet
+
+````RAZOR
+<MariloDataSheet TItem="OrderLine" Data="@_lines" KeyField="Id"
+                 OnSaveAll="@HandleSaveAll"
+                 AllowAddRow="true"
+                 AllowDeleteRow="true"
+                 Height="500px">
+    <MariloDataSheetColumn TItem="OrderLine" Field="ProductName" Title="Product"
         ColumnType="DataSheetColumnType.Text" Editable="true" Required="true" />
-    <MariloDataSheetColumn TItem="MyRow" Field="Amount" Title="Amount"
+    <MariloDataSheetColumn TItem="OrderLine" Field="Quantity" Title="Qty"
         ColumnType="DataSheetColumnType.Number" Editable="true" />
-    <MariloDataSheetColumn TItem="MyRow" Field="Total" Title="Total"
+    <MariloDataSheetColumn TItem="OrderLine" Field="UnitPrice" Title="Price"
+        ColumnType="DataSheetColumnType.Number" Editable="true"
+        Format="@(r => r.UnitPrice.ToString("C2"))" />
+    <MariloDataSheetColumn TItem="OrderLine" Field="ShipDate" Title="Ship Date"
+        ColumnType="DataSheetColumnType.Date" Editable="true" />
+    <MariloDataSheetColumn TItem="OrderLine" Field="Status" Title="Status"
+        ColumnType="DataSheetColumnType.Select" Options="@_statusOptions" />
+    <MariloDataSheetColumn TItem="OrderLine" Field="IsActive" Title="Active"
+        ColumnType="DataSheetColumnType.Checkbox" />
+    <MariloDataSheetColumn TItem="OrderLine" Field="LineTotal" Title="Total"
         ColumnType="DataSheetColumnType.Computed" Editable="false"
-        Format="@(r => r.Total.ToString("C2"))" />
+        Format="@(r => (r.Quantity * r.UnitPrice).ToString("C2"))" />
 </MariloDataSheet>
-```
+
+@code {
+    List<OrderLine> _lines = new();
+
+    List<DataSheetSelectOption> _statusOptions = new()
+    {
+        new() { Value = "Pending", Label = "Pending" },
+        new() { Value = "Shipped", Label = "Shipped" },
+        new() { Value = "Delivered", Label = "Delivered" }
+    };
+
+    async Task HandleSaveAll(DataSheetSaveArgs<OrderLine> args)
+    {
+        await OrderService.BulkUpdateAsync(args.DirtyRows);
+        await OrderService.BulkDeleteAsync(args.DeletedRows);
+    }
+}
+````
 
 ## Parameters
 
-| Name | Type | Default | Description |
-|---|---|---|---|
-| `Data` | `IEnumerable<TItem>?` | `null` | Strongly typed row dataset (required). Each row is a domain entity, not an arbitrary cell array. |
-| `KeyField` | `string` | `"Id"` | Property name used as row key for dirty tracking and scroll APIs. |
-| `OnSaveAll` | `EventCallback<DataSheetSaveArgs<TItem>>` | — | Fires with dirty and deleted rows when the user invokes Save All. Use this to persist changes in bulk. |
-| `OnRowChanged` | `EventCallback<DataSheetRowChangedArgs<TItem>>` | — | Fires after each cell commit so callers can react per‑row if needed. |
-| `OnValidate` | `EventCallback<DataSheetValidateArgs<TItem>>` | — | Fires before Save All; handler can append validation errors across dirty rows. |
-| `IsSaving` | `bool` | `false` | Shows a saving indicator and disables Save All while persistence is in progress. |
-| `AllowAddRow` | `bool` | `false` | Shows a “+ Add Row” action in the sheet toolbar. |
-| `AllowDeleteRow` | `bool` | `false` | Enables per‑row delete and bulk delete actions. |
-| `AllowBulkPaste` | `bool` | `true` | Enables Ctrl+V TSV paste into a typed cell range for fast data entry. |
-| `EmptyStateMessage` | `string` | `"No data."` | Message when `Data` is null or empty. |
-| `Height` | `string?` | `null` | Fixed container height (enables scroll with sticky header and bulk bar). |
-| `IsLoading` | `bool` | `false` | Shows skeleton rows while data is loading. |
-| `EnableVirtualization` | `bool` | `true` | Uses Blazor `Virtualize` for rows in large datasets. |
-| `AriaLabel` | `string` | `"Editable data grid"` | Accessible label for the sheet’s grid region. |
-| `ChildContent` | `RenderFragment?` | — | Column definitions via `MariloDataSheetColumn`. |
-| `ToolbarTemplate` | `RenderFragment?` | — | Additional toolbar content (filters, per‑view actions, etc.). |
+The following table lists all MariloDataSheet component-level parameters.
 
-## Column Parameters (MariloDataSheetColumn)
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `Data` | `IEnumerable<TItem>?` | `null` | Strongly typed row dataset. Each row is a domain entity, not an arbitrary cell array. |
+| `KeyField` | `string` | `"Id"` | Property name used as the unique row key for dirty tracking, scroll, and focus APIs. |
+| `OnSaveAll` | `EventCallback<DataSheetSaveArgs<TItem>>` | — | Fires with dirty and deleted rows when Save All is invoked. Use this to persist changes in bulk. |
+| `OnRowChanged` | `EventCallback<DataSheetRowChangedArgs<TItem>>` | — | Fires after each individual cell commit, providing the row, field, old value, and new value. |
+| `OnValidate` | `EventCallback<DataSheetValidateArgs<TItem>>` | — | Fires before Save All. The handler can append cross-row or cross-field validation errors. |
+| `IsSaving` | `bool` | `false` | When `true`, displays a saving indicator and disables the Save All button. Set this while persistence is in progress. |
+| `AllowAddRow` | `bool` | `false` | When `true`, shows a "+ Add Row" button in the toolbar. |
+| `AllowDeleteRow` | `bool` | `false` | When `true`, enables per-row delete buttons and bulk delete in the bulk action bar. |
+| `AllowBulkPaste` | `bool` | `true` | When `true`, enables Ctrl+V TSV paste into a typed cell range. |
+| `EmptyStateMessage` | `string` | `"No data."` | Message displayed when `Data` is null or contains no items. |
+| `Height` | `string?` | `null` | Fixed container height (CSS value). Enables vertical scrolling with a sticky header and bulk bar. |
+| `IsLoading` | `bool` | `false` | When `true`, shows skeleton placeholder rows while data is loading. |
+| `EnableVirtualization` | `bool` | `true` | When `true`, uses Blazor `Virtualize` for row rendering to improve performance with large datasets. |
+| `AriaLabel` | `string` | `"Editable data grid"` | Accessible label applied to the `role="grid"` root element. |
+| `ChildContent` | `RenderFragment?` | — | Column definitions via `MariloDataSheetColumn` child components. |
+| `ToolbarTemplate` | `RenderFragment?` | — | Additional toolbar content rendered alongside built-in toolbar actions (filters, custom buttons, etc.). |
+| `Class` | `string?` | `null` | Additional CSS class names appended to the root element. |
+| `Style` | `string?` | `null` | Inline style string appended to the root element. |
 
-Each column represents a **typed field** on `TItem`. DataSheet focuses on mapping those fields to in‑cell editors with validation and formatting.
+## Column Parameters
 
-| Name | Type | Default | Description |
-|---|---|---|---|
-| `Field` | `string` | required | Bound property name on `TItem`. |
-| `Title` | `string` | Field value | Header label shown in the sheet. |
-| `ColumnType` | `DataSheetColumnType` | `Text` | Editor type for the field (text, number, date, select, etc.). |
-| `Editable` | `bool` | `true` | Whether users can edit the field in‑place. |
-| `Required` | `bool` | `false` | If true, blocks Save All if the field is empty. |
-| `MinWidth` | `int?` | `null` | Minimum column width in px. |
-| `Width` | `string?` | `null` | Column width (CSS value, e.g. `"120px"` or `"10rem"`). |
-| `Format` | `Func<TItem, string?>?` | `null` | Display formatter for read mode and computed columns. |
-| `Validate` | `Func<TItem, string?>?` | `null` | Per‑row validator; return `null` for valid, error message for invalid. |
-| `Options` | `IEnumerable<DataSheetSelectOption>?` | `null` | Option list for `Select` columns. |
-| `CellTemplate` | `RenderFragment<DataSheetCellContext<TItem>>?` | `null` | Custom cell rendering/editing for advanced cases. |
+Each `MariloDataSheetColumn` maps a property on `TItem` to a typed in-cell editor with validation and formatting. See [Columns and Schema](slug:datasheet-columns-and-schema) for detailed behavior per column type.
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `Field` | `string` | required | Bound property name on `TItem`. Case-sensitive. |
+| `Title` | `string?` | Field value | Header label displayed in the column header. Falls back to `Field` if not set. |
+| `ColumnType` | `DataSheetColumnType` | `Text` | Editor type for the column. Determines the in-cell editing widget and value parsing. |
+| `Editable` | `bool` | `true` | Whether users can edit cells in this column. Set to `false` for display-only columns. |
+| `Required` | `bool` | `false` | When `true`, Save All is blocked if any cell in this column is empty or null. |
+| `MinWidth` | `int?` | `null` | Minimum column width in pixels. |
+| `Width` | `string?` | `null` | Column width as a CSS value (e.g., `"120px"`, `"10rem"`). |
+| `Format` | `Func<TItem, string?>?` | `null` | Display formatter for read mode and computed columns. Receives the row and returns a display string. |
+| `Validate` | `Func<TItem, string?>?` | `null` | Per-cell validator. Return `null` for valid; return an error message string for invalid. |
+| `Options` | `IEnumerable<DataSheetSelectOption>?` | `null` | Value/label pairs for `Select` type columns. |
+| `CellTemplate` | `RenderFragment<DataSheetCellContext<TItem>>?` | `null` | Custom cell rendering for advanced scenarios. Receives a `DataSheetCellContext<TItem>` with the item, field, value, editing state, and validation error. |
 
 ## Events
 
 ### DataSheetSaveArgs\<TItem\>
 
+Provided to the `OnSaveAll` handler when the user invokes Save All.
+
 | Property | Type | Description |
-|---|---|---|
-| `DirtyRows` | `IReadOnlyList<TItem>` | Rows with pending changes that will be persisted. |
+| --- | --- | --- |
+| `DirtyRows` | `IReadOnlyList<TItem>` | Rows with at least one modified field, ready to be persisted. |
 | `DeletedRows` | `IReadOnlyList<TItem>` | Rows the user has marked for deletion. |
 
 ### DataSheetRowChangedArgs\<TItem\>
 
+Provided to the `OnRowChanged` handler after each individual cell commit.
+
 | Property | Type | Description |
-|---|---|---|
-| `Row` | `TItem` | Row containing the edited cell. |
-| `Field` | `string` | Name of the field that changed. |
-| `OldValue` | `object?` | Previous value. |
-| `NewValue` | `object?` | New value after commit. |
+| --- | --- | --- |
+| `Row` | `TItem` | The row containing the edited cell. |
+| `Field` | `string` | Property name of the field that changed. |
+| `OldValue` | `object?` | The value before the edit was committed. |
+| `NewValue` | `object?` | The new value after the edit was committed. |
 
 ### DataSheetValidateArgs\<TItem\>
 
+Provided to the `OnValidate` handler before Save All proceeds. The handler appends errors to block the save.
+
 | Property | Type | Description |
-|---|---|---|
-| `DirtyRows` | `IReadOnlyList<TItem>` | Rows to validate before Save All. |
-| `Errors` | `List<DataSheetValidationError<TItem>>` | Handler appends row/field errors here. |
+| --- | --- | --- |
+| `DirtyRows` | `IReadOnlyList<TItem>` | The rows with pending changes that are about to be saved. |
+| `Errors` | `List<DataSheetValidationError<TItem>>` | The handler adds row/field errors here. If any errors exist after the handler returns, Save All is blocked. |
+
+### DataSheetValidationError\<TItem\>
+
+Represents a single validation error for a specific cell.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `Row` | `TItem` | The row that failed validation. |
+| `Field` | `string` | The property name of the field that failed. |
+| `Message` | `string` | A human-readable error message displayed to the user. |
+
+### DataSheetCellContext\<TItem\>
+
+Provided to `CellTemplate` render fragments for custom cell rendering.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `Item` | `TItem` | The row item. |
+| `Field` | `string` | The field name of this cell's column. |
+| `Value` | `object?` | The current cell value. |
+| `IsEditing` | `bool` | Whether the cell is currently in edit mode. |
+| `IsDirty` | `bool` | Whether the cell value has been modified since the last save or reset. |
+| `ValidationError` | `string?` | The validation error message, if any. `null` when valid. |
+
+### DataSheetSelectOption
+
+Value/label pair used for `Select` type columns.
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `Value` | `string` | The stored value written to the `TItem` property. |
+| `Label` | `string` | The display label shown in the dropdown editor. |
 
 ## Enums
 
 ### DataSheetColumnType
 
-`Text` | `Number` | `Date` | `Select` | `Checkbox` | `Computed`  
+Determines the in-cell editor rendered for a column. Each value maps to a specific input widget and parsing behavior.
 
-Represents **typed field editors**, not arbitrary spreadsheet formula cell types.
+| Value | Description |
+| --- | --- |
+| `Text` | Free-text input. |
+| `Number` | Numeric input with step support. Parses to the target property's numeric type. |
+| `Date` | Date picker input. Parses to `DateTime` or `DateOnly`. |
+| `Select` | Dropdown select from the column's `Options` list. |
+| `Checkbox` | Boolean checkbox toggle. |
+| `Computed` | Display-only computed value. Never enters edit mode. Not included in Save All payloads unless explicitly dirty via another mechanism. |
 
 ### CellState
 
-`Pristine` | `Dirty` | `Invalid` | `Saving` | `Saved`  
+Tracks the per-cell lifecycle for UX feedback and CSS styling.
 
-Tracks per‑cell lifecycle for UX and CSS.
+| Value | Description |
+| --- | --- |
+| `Pristine` | Cell value has not been modified since the last save or reset. |
+| `Dirty` | Cell value has been changed but not yet saved. |
+| `Invalid` | Cell has a validation error (column-level or from `OnValidate`). |
+| `Saving` | Cell is part of a Save All operation currently in progress. |
+| `Saved` | Cell was recently saved successfully. Transitions back to `Pristine` after a brief visual indicator. |
 
 ## CSS Provider Methods
 
+The CSS provider interface exposes methods for styling each region of the DataSheet. See [Theming and CSS Provider](slug:datasheet-theming-and-css-provider) for full details.
+
 | Method | Description |
-|---|---|
-| `DataSheetClass(bool isLoading)` | Root sheet container (grid + toolbar + bulk bar). |
-| `DataSheetCellClass(CellState, bool isActive, bool isEditable)` | Data cell styling based on state and focus. |
-| `DataSheetHeaderCellClass(bool isSortable)` | Header cell styling. |
-| `DataSheetRowClass(bool isDirty, bool isSelected, bool isDeleted)` | Row styling for dirty, selection, and delete states. |
-| `DataSheetToolbarClass()` | Toolbar region styling. |
-| `DataSheetBulkBarClass(bool isVisible)` | Bulk action bar (Save All, bulk delete, etc.). |
-| `DataSheetSaveFooterClass(int dirtyCount)` | Save footer styling based on dirty row count. |
+| --- | --- |
+| `DataSheetClass(bool isLoading)` | Root container (grid + toolbar + bulk bar). |
+| `DataSheetCellClass(CellState state, bool isActive, bool isEditable)` | Individual data cell based on state, focus, and editability. |
+| `DataSheetHeaderCellClass(bool isSortable)` | Column header cell. |
+| `DataSheetRowClass(bool isDirty, bool isSelected, bool isDeleted)` | Row styling for dirty, selection, and deletion states. |
+| `DataSheetToolbarClass()` | Toolbar region. |
+| `DataSheetBulkBarClass(bool isVisible)` | Bulk action bar (Save All, bulk delete). |
+| `DataSheetSaveFooterClass(int dirtyCount)` | Save footer with dirty row count indicator. |
 
-## Public Methods (via @ref)
+## Public Methods
 
-These APIs operate on the **typed row set** and validation state, not on arbitrary cells or worksheets.
+Obtain a reference to the MariloDataSheet instance via `@ref` to call these methods programmatically.
 
 | Method | Returns | Description |
-|---|---|---|
-| `ResetAsync()` | `Task` | Discard all dirty state and revert the sheet to the last committed dataset. |
-| `ValidateAllAsync()` | `Task<bool>` | Run full validation across dirty rows; returns true if there are no errors. |
-| `GetDirtyRows()` | `IReadOnlyList<TItem>` | Snapshot of all dirty rows. |
-| `SetDataAsync(IEnumerable<TItem>)` | `Task` | Replace the underlying dataset and reset state. |
-| `ScrollToRowAsync(object key)` | `Task` | Scroll the row identified by `KeyField` into view. |
+| --- | --- | --- |
+| `ResetAsync()` | `Task` | Discards all dirty state and reverts every row to its last committed value. |
+| `ValidateAllAsync()` | `Task<bool>` | Runs full validation across all dirty rows. Returns `true` if no errors exist. |
+| `GetDirtyRows()` | `IReadOnlyList<TItem>` | Returns a snapshot of all rows with at least one dirty field. |
+| `SetDataAsync(IEnumerable<TItem>)` | `Task` | Replaces the entire dataset and resets all dirty and validation state. |
+| `ScrollToRowAsync(object key)` | `Task` | Scrolls the row identified by `KeyField` value into view. |
+| `CommitCellEdit(TItem, string, object?)` | `Task` | Programmatically commits a cell value change and updates dirty state. |
+| `EnterEditMode(TItem, string)` | `void` | Programmatically enters edit mode on a specific cell. |
+| `IsCellEditing(TItem, string)` | `bool` | Returns whether a specific cell is currently in edit mode. |
+| `SaveAllAsync()` | `Task` | Programmatically triggers the Save All flow (validate then fire `OnSaveAll`). |
 
-## Keyboard Shortcuts
+>note The component also exposes `HandleKeyDown` and `PasteFromClipboard` as `[JSInvokable]` methods for JavaScript interop. These are internal to the component's keyboard and clipboard system and are not intended for direct consumer use. See [Keyboard and Accessibility](slug:datasheet-keyboard-and-accessibility) and [Bulk Paste and Clipboard](slug:datasheet-bulk-paste-and-clipboard) for details.
 
-DataSheet uses spreadsheet‑style shortcuts, but they operate in the context of **typed fields and rows**, not workbook formulas.
+## Feature Areas
 
-| Key | Behavior |
-|---|---|
-| Tab / Shift+Tab | Move focus right/left (wraps to next row). |
-| Enter | Commit cell and move focus down. |
-| Escape | Cancel edit and restore original value. |
-| F2 | Enter edit mode on the focused cell. |
-| Arrow keys | Navigate non‑editing cells. |
-| Ctrl+S | Invoke Save All. |
-| Ctrl+Z | Undo last cell change. |
-| Ctrl+C | Copy selected cell(s) as TSV. |
-| Ctrl+V | Paste TSV from clipboard into the active range (honoring column types where possible). |
-| Delete | Clear selected cell(s). |
-| Ctrl+D | Fill selected range down from the active cell. |
+The following articles describe each feature area of MariloDataSheet in detail:
 
-## Accessibility
+* [Columns and Schema](slug:datasheet-columns-and-schema) — column types, editors, computed columns, and schema definition.
+* [Editing and Validation](slug:datasheet-editing-and-validation) — editing lifecycle, per-cell and per-row validation, dirty tracking.
+* [Selection and Ranges](slug:datasheet-selection-and-ranges) — cell and row selection model, range creation and usage.
+* [Bulk Paste and Clipboard](slug:datasheet-bulk-paste-and-clipboard) — TSV copy/paste, type coercion, and error handling.
+* [Bulk Operations and Save All](slug:datasheet-bulk-operations-and-saveall) — Save All contract, undo, reset, and retry guidance.
+* [Virtualization and Performance](slug:datasheet-virtualization-and-performance) — row virtualization, thresholds, and limitations.
+* [Keyboard and Accessibility](slug:datasheet-keyboard-and-accessibility) — keyboard shortcuts, focus model, ARIA roles.
+* [Theming and CSS Provider](slug:datasheet-theming-and-css-provider) — CSS provider methods, state-based styling, class naming.
 
-MariloDataSheet exposes a grid‑like accessibility model tuned for bulk editable data:
+## See Also
 
-- Root element: `role="grid"` with `aria-label`.
-- Rows: `role="row"`.
-- Cells: `role="gridcell"`, with:
-  - `aria-readonly="true"` on computed/non‑editable cells.
-  - `aria-invalid="true"` on cells with validation errors.
-- Save/validation feedback announced via an `aria-live="polite"` region.
-- Full keyboard navigation with a visible focus ring for all interactive cells.
-
-***
+* [MariloDataGrid Overview](slug:grid-overview)
