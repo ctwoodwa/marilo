@@ -29,3 +29,23 @@ Instantiate this template when:
 
 - **Simple / single-phase component:** use global gap-analysis-resolution only.
 - **Complex / multi-phase component:** instantiate this CDW + a component-specific gap workspace (copy gap-analysis-resolution template).
+
+## Instantiated CDW Workspaces
+
+| Component | CDW Workspace | Gap Workspace | Status |
+|---|---|---|---|
+| MariloTreeView | treeview-delivery/ | gap-analysis-resolution/ | Active |
+| MariloDataGrid | datagrid-delivery/ | datagrid-gap-analysis/ | Stage 01 ready |
+| MariloDataSheet | datasheet-delivery/ | datasheet-gap-analysis/ | Stage 01 ready |
+| MariloScheduler | scheduler-delivery/ | scheduler-gap-analysis/ | Stage 01 ready |
+| MariloGantt | gantt-delivery/ | gantt-gap-analysis/ | Stage 01 ready |
+| MariloChart | chart-delivery/ | chart-gap-analysis/ | Stage 01 ready |
+| MariloDiagram | diagram-delivery/ | diagram-gap-analysis/ | Stage 01 ready |
+| MariloDockManager | dockmanager-delivery/ | dockmanager-gap-analysis/ | Stage 01 ready |
+| MariloEditor | editor-delivery/ | editor-gap-analysis/ | Stage 01 ready |
+| MariloFileManager | filemanager-delivery/ | filemanager-gap-analysis/ | Stage 01 ready |
+| MariloPivotGrid | pivotgrid-delivery/ | pivotgrid-gap-analysis/ | Stage 01 ready |
+| MariloTreeList | treelist-delivery/ | treelist-gap-analysis/ | Stage 01 ready |
+| MariloMap | map-delivery/ | map-gap-analysis/ | Stage 01 ready |
+| MariloWizard | wizard-delivery/ | wizard-gap-analysis/ | Stage 01 ready |
+| MariloSplitter | splitter-delivery/ | splitter-gap-analysis/ | Stage 01 ready |

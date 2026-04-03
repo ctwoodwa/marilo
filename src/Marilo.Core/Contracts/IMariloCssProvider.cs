@@ -154,6 +154,15 @@ public interface IMariloCssProvider
     string DataGridFilterCellClass();
     string DataGridGroupHeaderClass();
 
+    // ── DataSheet ───────────────────────────────────────────────
+    string DataSheetClass(bool isLoading);
+    string DataSheetCellClass(CellState state, bool isActive, bool isEditable);
+    string DataSheetHeaderCellClass(bool isSortable);
+    string DataSheetRowClass(bool isDirty, bool isSelected, bool isDeleted);
+    string DataSheetToolbarClass();
+    string DataSheetBulkBarClass(bool isVisible);
+    string DataSheetSaveFooterClass(int dirtyCount);
+
     // ── ListView ────────────────────────────────────────────────────────
     string ListViewClass();
     string ListViewItemClass(bool isSelected);

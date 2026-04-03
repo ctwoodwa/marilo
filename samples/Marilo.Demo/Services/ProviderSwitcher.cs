@@ -204,6 +204,15 @@ public class ProviderSwitcher : IMariloCssProvider, IMariloIconProvider, IMarilo
     public string DataGridFilterCellClass() => Css.DataGridFilterCellClass();
     public string DataGridGroupHeaderClass() => Css.DataGridGroupHeaderClass();
 
+    // ── DataSheet ──
+    public string DataSheetClass(bool isLoading) => Css.DataSheetClass(isLoading);
+    public string DataSheetCellClass(CellState state, bool isActive, bool isEditable) => Css.DataSheetCellClass(state, isActive, isEditable);
+    public string DataSheetHeaderCellClass(bool isSortable) => Css.DataSheetHeaderCellClass(isSortable);
+    public string DataSheetRowClass(bool isDirty, bool isSelected, bool isDeleted) => Css.DataSheetRowClass(isDirty, isSelected, isDeleted);
+    public string DataSheetToolbarClass() => Css.DataSheetToolbarClass();
+    public string DataSheetBulkBarClass(bool isVisible) => Css.DataSheetBulkBarClass(isVisible);
+    public string DataSheetSaveFooterClass(int dirtyCount) => Css.DataSheetSaveFooterClass(dirtyCount);
+
     // ── ListView ──
     public string ListViewClass() => Css.ListViewClass();
     public string ListViewItemClass(bool isSelected) => Css.ListViewItemClass(isSelected);

@@ -86,4 +86,10 @@
     <path d="M2 17l10 5 10-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
     <path d="M2 12l10 5 10-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
   </symbol>
+  <symbol id="star" viewBox="0 0 20 20">
+    <path fill="currentColor" d="M9.104 2.9a1 1 0 0 1 1.794 0l1.93 3.91 4.317.628a1 1 0 0 1 .554 1.706l-3.124 3.044.737 4.3a1 1 0 0 1-1.451 1.054L10 15.51l-3.861 2.03a1 1 0 0 1-1.451-1.054l.737-4.3L2.3 9.144a1 1 0 0 1 .554-1.706l4.317-.627L9.104 2.9zM10 4.428 8.326 7.82a1 1 0 0 1-.752.547l-3.748.545 2.712 2.643a1 1 0 0 1 .288.885l-.64 3.731 3.353-1.762a1 1 0 0 1 .93 0l3.354 1.762-.64-3.73a1 1 0 0 1 .287-.886l2.712-2.643-3.748-.545a1 1 0 0 1-.752-.547L10 4.428z"/>
+  </symbol>
+  <symbol id="star-filled" viewBox="0 0 20 20">
+    <path fill="currentColor" d="M9.104 2.9a1 1 0 0 1 1.794 0l1.93 3.91 4.317.628a1 1 0 0 1 .554 1.706l-3.124 3.044.737 4.3a1 1 0 0 1-1.451 1.054L10 15.51l-3.861 2.03a1 1 0 0 1-1.451-1.054l.737-4.3L2.3 9.144a1 1 0 0 1 .554-1.706l4.317-.627L9.104 2.9z"/>
+  </symbol>
 </svg>
