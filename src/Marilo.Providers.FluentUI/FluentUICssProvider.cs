@@ -89,7 +89,7 @@ public class FluentUICssProvider : IMariloCssProvider
             .AddClass($"mar-step--{status.ToString().ToLower()}")
             .Build();
 
-    public string SplitterClass(StackDirection orientation) =>
+    public string SplitterClass(SplitterOrientation orientation) =>
         new CssClassBuilder()
             .AddClass("mar-splitter")
             .AddClass($"mar-splitter--{orientation.ToString().ToLower()}")

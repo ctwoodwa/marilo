@@ -76,7 +76,7 @@ public class ProviderSwitcher : IMariloCssProvider, IMariloIconProvider, IMarilo
     public string TabPanelClass(bool isActive, bool persistContent) => Css.TabPanelClass(isActive, persistContent);
     public string StepperClass() => Css.StepperClass();
     public string StepClass(StepStatus status) => Css.StepClass(status);
-    public string SplitterClass(StackDirection orientation) => Css.SplitterClass(orientation);
+    public string SplitterClass(SplitterOrientation orientation) => Css.SplitterClass(orientation);
     public string DrawerOverlayClass() => Css.DrawerOverlayClass();
     public string ContextMenuClass() => Css.ContextMenuClass();
 

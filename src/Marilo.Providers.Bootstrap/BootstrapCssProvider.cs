@@ -116,11 +116,11 @@ public class BootstrapCssProvider : IMariloCssProvider
             .AddClass("text-body-secondary", status == StepStatus.Pending)
             .Build();
 
-    public string SplitterClass(StackDirection orientation) =>
+    public string SplitterClass(SplitterOrientation orientation) =>
         new CssClassBuilder()
             .AddClass("mar-bs-splitter d-flex")
-            .AddClass("flex-row", orientation == StackDirection.Horizontal)
-            .AddClass("flex-column", orientation == StackDirection.Vertical)
+            .AddClass("flex-row", orientation == SplitterOrientation.Horizontal)
+            .AddClass("flex-column", orientation == SplitterOrientation.Vertical)
             .Build();
 
     public string DrawerOverlayClass() => "offcanvas-backdrop fade show";

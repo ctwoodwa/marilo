@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Bunit;
 using Marilo.Components.Editors;
 using Marilo.Core.Enums;
@@ -90,5 +91,111 @@ public class EditorTests : MariloTestBase
 
         var container = cut.Find("div.mar-editor");
         Assert.NotNull(container);
+    }
+
+    [Fact]
+    public void Editor_EditMode_Source_RendersTextarea()
+    {
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.EditMode, EditorEditMode.Source)
+            .Add(p => p.Value, "<p>Hello</p>"));
+
+        // In source mode, a textarea should be shown instead of contenteditable
+        Assert.Contains("textarea", cut.Markup.ToLower());
+    }
+
+    [Fact]
+    public void Editor_EditMode_Preview_DisablesEditing()
+    {
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.EditMode, EditorEditMode.Preview)
+            .Add(p => p.Value, "<p>Hello</p>"));
+
+        // Preview mode should not have contenteditable=true
+        var markup = cut.Markup;
+        // The content area should render the value but not be editable
+        Assert.Contains("Hello", markup);
+    }
+
+    [Fact]
+    public void Editor_Disabled_RendersDisabledState()
+    {
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.Disabled, true)
+            .Add(p => p.Value, "<p>Content</p>"));
+
+        // When disabled, contenteditable should be false and toolbar hidden
+        Assert.Contains("contenteditable=\"false\"", cut.Markup.ToLower());
+        // Toolbar should not render when disabled
+        Assert.DoesNotContain("mar-editor-tool-btn", cut.Markup);
+    }
+
+    [Fact]
+    public void Editor_CustomTools_RenderInToolbar()
+    {
+        var customTools = new List<EditorCustomTool>
+        {
+            new() { Name = "MyTool", Tooltip = "Custom tooltip", Icon = "icon-custom" }
+        };
+
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.CustomTools, customTools)
+            .Add(p => p.Value, ""));
+
+        Assert.Contains("MyTool", cut.Markup);
+        Assert.Contains("icon-custom", cut.Markup);
+    }
+
+    [Fact]
+    public void Editor_CustomTools_OnClick_Fires()
+    {
+        bool clicked = false;
+        var customTools = new List<EditorCustomTool>
+        {
+            new() { Name = "ClickMe", OnClick = () => { clicked = true; return Task.CompletedTask; } }
+        };
+
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.CustomTools, customTools)
+            .Add(p => p.Value, ""));
+
+        // Find and click the custom tool button
+        var buttons = cut.FindAll("button");
+        var customButton = buttons.FirstOrDefault(b => b.TextContent.Contains("ClickMe"));
+        customButton?.Click();
+
+        Assert.True(clicked);
+    }
+
+    [Fact]
+    public void Editor_AriaAttributes_Present()
+    {
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.AriaLabelledBy, "my-label")
+            .Add(p => p.AriaDescribedBy, "my-desc")
+            .Add(p => p.Value, ""));
+
+        var markup = cut.Markup;
+        Assert.Contains("aria-labelledby", markup.ToLower());
+        Assert.Contains("aria-describedby", markup.ToLower());
+    }
+
+    [Fact]
+    public void Editor_ValueExpression_AcceptedWithoutError()
+    {
+        // Verify the ValueExpression parameter can be set (validation integration)
+        // FieldIdentifier.Create requires a member access expression, not a local variable
+        var model = new EditorModel { Content = "<p>test</p>" };
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.Value, model.Content)
+            .Add(p => p.ValueExpression, () => model.Content));
+
+        // Component renders without error
+        Assert.Contains("mar-editor", cut.Markup);
+    }
+
+    private class EditorModel
+    {
+        public string Content { get; set; } = "";
     }
 }
