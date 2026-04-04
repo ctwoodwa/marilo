@@ -2,14 +2,14 @@
   "version": 1,
   "created_at": "2026-04-03T23:11:52.979Z",
   "lifetime": {
-    "total_tokens_estimated": 135115,
-    "total_reads": 70,
-    "total_writes": 71,
+    "total_tokens_estimated": 174281,
+    "total_reads": 89,
+    "total_writes": 77,
     "total_sessions": 4,
-    "anatomy_hits": 12,
-    "anatomy_misses": 56,
-    "repeated_reads_blocked": 51,
-    "estimated_savings_vs_bare_cli": 502010
+    "anatomy_hits": 17,
+    "anatomy_misses": 69,
+    "repeated_reads_blocked": 61,
+    "estimated_savings_vs_bare_cli": 680848
   },
   "sessions": [
     {
@@ -664,6 +664,167 @@
       "id": "session-2026-04-04-0225",
       "started": "2026-04-04T02:25:30.186Z",
       "ended": "2026-04-04T02:39:57.704Z",
+      "reads": [
+        {
+          "file": "/workspaces/Marilo/workspaces/gap-analysis-resolution/CLAUDE.md",
+          "tokens_estimated": 57,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/workspaces/Marilo/workspaces/gap-analysis-resolution/CONTEXT.md",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/workspaces/Marilo/workspaces/gap-analysis-resolution/config/gap-context.md",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/workspaces/Marilo/src/Marilo.Components/GAPANALYSISRESOLUTIONPLAN.md",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/workspaces/Marilo/executive-report-2026-04-03.md",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/workspaces/Marilo/workspaces/executive-report-2026-04-03.md",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/workspaces/Marilo/workspaces/gap-analysis-resolution/_config/gap-context.md",
+          "tokens_estimated": 1285,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/workspaces/Marilo/src/Marilo.Components/GAP_ANALYSIS_RESOLUTION_PLAN.md",
+          "tokens_estimated": 19617,
+          "was_repeated": true,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/workspaces/Marilo/workspaces/gap-analysis-resolution/_config/coverage-summary.md",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/workspaces/Marilo/workspaces/gap-analysis-resolution/stages/02-prioritize/output/gap-splitter-priorities.md",
+          "tokens_estimated": 521,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/workspaces/Marilo/workspaces/gap-analysis-resolution/stages/02-prioritize/output/gap-wizard-priorities.md",
+          "tokens_estimated": 989,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/workspaces/Marilo/workspaces/gap-analysis-resolution/stages/03-resolution-design/CONTEXT.md",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/workspaces/Marilo/workspaces/gap-analysis-resolution/stages/01-intake/output/gap-splitter-inventory.md",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/workspaces/Marilo/workspaces/gap-analysis-resolution/stages/01-intake/output/gap-wizard-inventory.md",
+          "tokens_estimated": 4032,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/workspaces/Marilo/workspaces/gap-analysis-resolution/shared/resolution-record-format.md",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/workspaces/Marilo/src/Marilo.Components/Layout/MariloSplitter.razor",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/workspaces/Marilo/src/Marilo.Components/Layout/MariloSplitterPane.razor",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/workspaces/Marilo/src/Marilo.Components/Layout/MariloWizard.razor",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        },
+        {
+          "file": "/workspaces/Marilo/src/Marilo.Components/Layout/WizardStep.razor",
+          "tokens_estimated": 0,
+          "was_repeated": false,
+          "anatomy_had_description": false
+        }
+      ],
+      "writes": [
+        {
+          "file": "/workspaces/Marilo/workspaces/gap-analysis-resolution/stages/03-resolution-design/output/gap-splitter-resolutions.md",
+          "tokens_estimated": 2992,
+          "action": "create"
+        },
+        {
+          "file": "/workspaces/Marilo/workspaces/gap-analysis-resolution/stages/03-resolution-design/output/gap-wizard-resolutions.md",
+          "tokens_estimated": 6626,
+          "action": "create"
+        },
+        {
+          "file": "/workspaces/Marilo/src/Marilo.Components/GAP_ANALYSIS_RESOLUTION_PLAN.md",
+          "tokens_estimated": 563,
+          "action": "edit"
+        },
+        {
+          "file": "/workspaces/Marilo/workspaces/gap-analysis-resolution/_config/coverage-summary.md",
+          "tokens_estimated": 860,
+          "action": "create"
+        },
+        {
+          "file": "/workspaces/Marilo/workspaces/gap-analysis-resolution/logs/engineering-run-2026-04-04T120000Z.md",
+          "tokens_estimated": 1555,
+          "action": "create"
+        },
+        {
+          "file": "/workspaces/Marilo/workspaces/gap-analysis-resolution/_config/gap-context.md",
+          "tokens_estimated": 69,
+          "action": "edit"
+        }
+      ],
+      "totals": {
+        "input_tokens_estimated": 26501,
+        "output_tokens_estimated": 12665,
+        "reads_count": 19,
+        "writes_count": 6,
+        "repeated_reads_blocked": 10,
+        "anatomy_lookups": 5
+      }
+    },
+    {
+      "id": "session-2026-04-04-0225",
+      "started": "2026-04-04T02:25:30.186Z",
+      "ended": "2026-04-04T11:56:58.881Z",
       "reads": [
         {
           "file": "/workspaces/Marilo/workspaces/gap-analysis-resolution/CLAUDE.md",
