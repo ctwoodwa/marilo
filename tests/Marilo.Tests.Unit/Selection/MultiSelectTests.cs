@@ -239,6 +239,9 @@ public class MultiSelectTests : MariloTestBase
         // Simulate typing a value that does not match any existing item
         cut.Find(".mar-multiselect__filter-input").Input("NewEntry");
 
+        // Wait for async debounce + filter to complete
+        cut.WaitForState(() => cut.Markup.Contains("Create: NewEntry"), TimeSpan.FromSeconds(1));
+
         Assert.Contains("Create: NewEntry", cut.Markup);
         Assert.Contains("mar-multiselect__item--custom", cut.Markup);
     }

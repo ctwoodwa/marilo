@@ -160,12 +160,12 @@ public class ChartTests : MariloTestBase
                 }));
                 builder.CloseComponent();
 
-                builder.OpenComponent<MariloChartSeries>(1);
-                builder.AddAttribute(2, nameof(MariloChartSeries.Name), "Revenue");
-                builder.AddAttribute(3, nameof(MariloChartSeries.Data), (IEnumerable<object>)_sampleData.Cast<object>().ToList());
-                builder.AddAttribute(4, nameof(MariloChartSeries.Field), "Value");
-                builder.AddAttribute(5, nameof(MariloChartSeries.CategoryField), "Month");
-                builder.AddAttribute(6, nameof(MariloChartSeries.Type), ChartSeriesType.Column);
+                builder.OpenComponent<MariloChartSeries>(10);
+                builder.AddAttribute(11, nameof(MariloChartSeries.Name), "Revenue");
+                builder.AddAttribute(12, nameof(MariloChartSeries.Data), (IEnumerable<object>)_sampleData.Cast<object>().ToList());
+                builder.AddAttribute(13, nameof(MariloChartSeries.Field), "Value");
+                builder.AddAttribute(14, nameof(MariloChartSeries.CategoryField), "Month");
+                builder.AddAttribute(15, nameof(MariloChartSeries.Type), ChartSeriesType.Column);
                 builder.CloseComponent();
             }));
 
@@ -189,12 +189,12 @@ public class ChartTests : MariloTestBase
                 }));
                 builder.CloseComponent();
 
-                builder.OpenComponent<MariloChartSeries>(1);
-                builder.AddAttribute(2, nameof(MariloChartSeries.Name), "Sales");
-                builder.AddAttribute(3, nameof(MariloChartSeries.Data), (IEnumerable<object>)_sampleData.Cast<object>().ToList());
-                builder.AddAttribute(4, nameof(MariloChartSeries.Field), "Value");
-                builder.AddAttribute(5, nameof(MariloChartSeries.CategoryField), "Month");
-                builder.AddAttribute(6, nameof(MariloChartSeries.Type), ChartSeriesType.Line);
+                builder.OpenComponent<MariloChartSeries>(10);
+                builder.AddAttribute(11, nameof(MariloChartSeries.Name), "Sales");
+                builder.AddAttribute(12, nameof(MariloChartSeries.Data), (IEnumerable<object>)_sampleData.Cast<object>().ToList());
+                builder.AddAttribute(13, nameof(MariloChartSeries.Field), "Value");
+                builder.AddAttribute(14, nameof(MariloChartSeries.CategoryField), "Month");
+                builder.AddAttribute(15, nameof(MariloChartSeries.Type), ChartSeriesType.Line);
                 builder.CloseComponent();
             }));
 
@@ -289,12 +289,12 @@ public class ChartTests : MariloTestBase
                 builder.AddAttribute(2, nameof(ChartTitle.Description), "Monthly sales data for 2026");
                 builder.CloseComponent();
 
-                builder.OpenComponent<MariloChartSeries>(1);
-                builder.AddAttribute(2, nameof(MariloChartSeries.Name), "Sales");
-                builder.AddAttribute(3, nameof(MariloChartSeries.Data), (IEnumerable<object>)_sampleData.Cast<object>().ToList());
-                builder.AddAttribute(4, nameof(MariloChartSeries.Field), "Value");
-                builder.AddAttribute(5, nameof(MariloChartSeries.CategoryField), "Month");
-                builder.AddAttribute(6, nameof(MariloChartSeries.Type), ChartSeriesType.Line);
+                builder.OpenComponent<MariloChartSeries>(10);
+                builder.AddAttribute(11, nameof(MariloChartSeries.Name), "Sales");
+                builder.AddAttribute(12, nameof(MariloChartSeries.Data), (IEnumerable<object>)_sampleData.Cast<object>().ToList());
+                builder.AddAttribute(13, nameof(MariloChartSeries.Field), "Value");
+                builder.AddAttribute(14, nameof(MariloChartSeries.CategoryField), "Month");
+                builder.AddAttribute(15, nameof(MariloChartSeries.Type), ChartSeriesType.Line);
                 builder.CloseComponent();
             }));
 
