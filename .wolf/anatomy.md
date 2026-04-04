@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-04-04T00:23:47.876Z
-> Files: 543 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-04-04T02:39:47.515Z
+> Files: 547 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -755,7 +755,7 @@
 
 ## src/Marilo.Components/
 
-- `GAP_ANALYSIS_RESOLUTION_PLAN.md` — Gap Analysis Resolution Plan (~19617 tok)
+- `GAP_ANALYSIS_RESOLUTION_PLAN.md` — Gap Analysis Resolution Plan (~19966 tok)
 
 ## src/Marilo.Components/Forms/Inputs/
 
@@ -777,7 +777,12 @@
 
 ## workspaces/gap-analysis-resolution/_config/
 
-- `gap-context.md` — Gap Resolution Context (~1285 tok)
+- `coverage-summary.md` — Coverage Summary (~753 tok)
+- `gap-context.md` — Gap Resolution Context (~1299 tok)
+
+## workspaces/gap-analysis-resolution/logs/
+
+- `engineering-run-2026-04-04T120000Z.md` — Engineering Run — 2026-04-04T12:00:00Z (~1361 tok)
 
 ## workspaces/gap-analysis-resolution/stages/01-intake/output/
 
@@ -791,7 +796,9 @@
 
 ## workspaces/gap-analysis-resolution/stages/03-resolution-design/output/
 
+- `gap-splitter-resolutions.md` — Resolution Design: MariloSplitter (~2618 tok)
 - `gap-t4-picker-batch1-resolutions.md` — T4 Picker Batch 1 — Resolution Records (~9139 tok)
+- `gap-wizard-resolutions.md` — Resolution Design: MariloWizard (~5797 tok)
 
 ## workspaces/gap-analysis-resolution/stages/05-implement/output/
 
