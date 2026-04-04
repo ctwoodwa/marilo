@@ -12,7 +12,7 @@
 |-------|-------|
 | Workspace | gap-analysis-resolution |
 | Last updated | 2026-04-04 |
-| Current phase | Stage 06 complete (splitter + wizard validated) |
+| Current phase | Stage 06 complete (splitter + wizard + T4 Batch 2 validated) |
 
 ## Pipeline Status
 
@@ -44,14 +44,15 @@
 - [x] 05-implement (completed 2026-04-04)
 - [x] **06-validate** (closure report 2026-04-04; 27 tests written, runtime pending)
 
-**t4-pickers / readonly-guards / expandall-lazyload** -- BATCH 1 CLOSED
-- [x] 01-intake through 06-validate (Batch 1 complete)
+**t4-pickers / readonly-guards / expandall-lazyload** -- BATCH 1+2 CLOSED
+- [x] 01-intake through 06-validate (Batch 1 complete: 7 resolved, 3 partial; 17 tests)
+- [x] 01-intake through 06-validate (Batch 2 complete: 4 resolved; 9 tests)
 
 ## Next Actions
 
-1. Run `dotnet test` to verify Splitter (17) and Wizard (27) tests pass.
-2. Begin form batch implementation (Stage 05).
-3. Start T4 pickers Batch 2 resolution design.
+1. Run `dotnet test` to verify all new tests pass (Splitter 17 + Wizard 27 + T4 B2 9 = 53 tests).
+2. T4 Pickers Batch 3: Cross-cutting polish (AdaptiveMode, ARIA, CSS provider alignment).
+3. Begin next priority component area (Chart, Editor, FileManager intake).
 
 ## Blockers
 

@@ -67,6 +67,7 @@ All implementations are independent (no Telerik dependency), use MIT/Apache-2.0-
 | treeview | 45 bUnit (17 Ph1 + 28 Ph2) | 45/45 | Gap 18 (virtualization) deferred; no test coverage for deferred gap |
 | form | 0 | 0 | Awaiting implementation (Stage 05) |
 | t4-pickers-batch1 | 17 | 17 | Stage 06 closed (2026-04-03); 7 resolved, 3 partially resolved |
+| t4-pickers-batch2 | 9 | pending | Stage 06 closed (2026-04-04); 4/4 resolved; runtime test pending |
 | readonly-guards | 6 | 6 | Stage 06 closed (2026-04-03) |
 | expandall-lazyload | 6 | 6 | Stage 06 closed (2026-04-03) |
 
