@@ -57,7 +57,8 @@ ehthumbs.db
 
 ## AI / Agent tooling
 /.wolf/
-/.claude/
+/.claude/*
+!/.claude/skills/
 
 ## Claude Code
 .claude/memory/
