@@ -1,0 +1,182 @@
+{
+  "version": 1,
+  "bugs": [
+    {
+      "id": "bug-001",
+      "timestamp": "2026-04-04T00:07:58.026Z",
+      "error_message": "Missing guard clause",
+      "file": "src/Marilo.Components/Forms/Inputs/MariloTimePicker.razor",
+      "root_cause": "No early return/throw for edge case: args.IsCancelled",
+      "fix": "Added guard clause: if (args.IsCancelled)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "razor"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-04-04T00:08:09.117Z"
+    },
+    {
+      "id": "bug-002",
+      "timestamp": "2026-04-04T00:08:33.159Z",
+      "error_message": "Missing await",
+      "file": "src/Marilo.Components/Forms/Inputs/MariloTimePicker.razor",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call | Also: if (!_isOpen) await OpenDropdown(); | Also: private async Task ToggleDropdown(); if (_isOpen) await Cancel();",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "razor"
+      ],
+      "related_bugs": [],
+      "occurrences": 3,
+      "last_seen": "2026-04-04T00:08:47.727Z"
+    },
+    {
+      "id": "bug-003",
+      "timestamp": "2026-04-04T00:09:20.722Z",
+      "error_message": "Missing guard clause",
+      "file": "src/Marilo.Components/Forms/Inputs/MariloMultiSelect.razor",
+      "root_cause": "No early return/throw for edge case: args.IsCancelled",
+      "fix": "Added guard clause: if (args.IsCancelled)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "razor"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-04T00:09:20.722Z"
+    },
+    {
+      "id": "bug-004",
+      "timestamp": "2026-04-04T00:09:27.034Z",
+      "error_message": "Missing await",
+      "file": "src/Marilo.Components/Forms/Inputs/MariloMultiSelect.razor",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call | Also: await CloseDropdown(); | Also: await OpenDropdown(); | Also: await OpenDropdown();; await CloseDropdown(); | Also: // ── Blur handling ────────────────────────────────────────; private async Task HandleBlur(FocusEventArgs e)",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "razor"
+      ],
+      "related_bugs": [],
+      "occurrences": 6,
+      "last_seen": "2026-04-04T00:10:11.139Z"
+    },
+    {
+      "id": "bug-005",
+      "timestamp": "2026-04-04T00:09:35.825Z",
+      "error_message": "Missing await",
+      "file": "src/Marilo.Components/Forms/Inputs/MariloDateRangePicker.razor",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call | Also: private async Task OpenPopup(); var args = new PopupEventArgs(); | Also: await ClosePopup(); | Also: private async Task OnKeyDown(KeyboardEventArgs e); await ClosePopup();",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "razor"
+      ],
+      "related_bugs": [],
+      "occurrences": 4,
+      "last_seen": "2026-04-04T00:10:03.527Z"
+    },
+    {
+      "id": "bug-006",
+      "timestamp": "2026-04-04T00:09:45.350Z",
+      "error_message": "Missing await",
+      "file": "src/Marilo.Components/Forms/Inputs/MariloDateTimePicker.razor",
+      "root_cause": "Async call without await — returned Promise instead of value",
+      "fix": "Added await to async call | Also: private async Task OpenPopup(); if (OnOpen.HasDelegate) | Also: private async Task OnKeyDown(KeyboardEventArgs e); await ClosePopup(); | Also: private async Task HandleBlur(); { | Also: await RebuildCellRenderCache(); | Also: private async Task PreviousMonth(); await RebuildCellRenderCache();",
+      "tags": [
+        "auto-detected",
+        "async-fix",
+        "razor"
+      ],
+      "related_bugs": [],
+      "occurrences": 6,
+      "last_seen": "2026-04-04T00:10:57.265Z"
+    },
+    {
+      "id": "bug-007",
+      "timestamp": "2026-04-04T00:09:57.291Z",
+      "error_message": "Missing guard clause",
+      "file": "src/Marilo.Components/Forms/Inputs/MariloDateTimePicker.razor",
+      "root_cause": "No early return/throw for edge case: OnClose.HasDelegate",
+      "fix": "Added guard clause: if (OnClose.HasDelegate)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "razor"
+      ],
+      "related_bugs": [],
+      "occurrences": 2,
+      "last_seen": "2026-04-04T00:10:46.560Z"
+    },
+    {
+      "id": "bug-008",
+      "timestamp": "2026-04-04T00:09:58.876Z",
+      "error_message": "Wrong reference: ClosePopup should be await",
+      "file": "src/Marilo.Components/Forms/Inputs/MariloDateRangePicker.razor",
+      "root_cause": "Used \"ClosePopup\" instead of \"await\"",
+      "fix": "Changed ClosePopup → await",
+      "tags": [
+        "auto-detected",
+        "wrong-reference",
+        "razor"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-04T00:09:58.876Z"
+    },
+    {
+      "id": "bug-009",
+      "timestamp": "2026-04-04T00:10:02.397Z",
+      "error_message": "Missing guard clause",
+      "file": "src/Marilo.Components/Forms/Inputs/MariloUpload.razor.cs",
+      "root_cause": "No early return/throw for edge case: info.UploadedBytes > 0 && startChunk > 0",
+      "fix": "Added guard clause: if (info.UploadedBytes > 0 && startChunk > 0)",
+      "tags": [
+        "auto-detected",
+        "guard-clause",
+        "cs"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-04T00:10:02.397Z"
+    },
+    {
+      "id": "bug-010",
+      "timestamp": "2026-04-03T00:00:00.000Z",
+      "error_message": "Chunked upload resume restarts from byte 0 instead of continuing from last uploaded offset",
+      "file": "src/Marilo.Components/Forms/Inputs/MariloUpload.razor.cs",
+      "root_cause": "UploadChunkedAsync always started from chunkIndex=0 and UploadFileAsync reset progress to 0 on every call including resume. No UploadedBytes tracking existed on UploadFileInfo.",
+      "fix": "Added UploadedBytes property to UploadFileInfo. UploadChunkedAsync now calculates startChunk from UploadedBytes, skips already-read bytes in the stream, and updates UploadedBytes after each successful chunk. UploadFileAsync skips progress reset when resuming. RetryFile resets UploadedBytes to 0.",
+      "tags": [
+        "chunk-upload",
+        "resume",
+        "pause",
+        "data-integrity"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-03T00:00:00.000Z"
+    },
+    {
+      "id": "bug-011",
+      "timestamp": "2026-04-04T00:11:11.419Z",
+      "error_message": "Null/undefined access in ",
+      "file": "src/Marilo.Components/Forms/Inputs/MariloDateTimePicker.razor",
+      "root_cause": "Property access on potentially null/undefined value",
+      "fix": "Added null safety (optional chaining or null check)",
+      "tags": [
+        "auto-detected",
+        "null-safety",
+        "razor"
+      ],
+      "related_bugs": [],
+      "occurrences": 1,
+      "last_seen": "2026-04-04T00:11:11.419Z"
+    }
+  ]
+}

@@ -1023,3 +1023,91 @@ Initial gap analysis intake completed for 12 complex components (excluding DataG
 | MariloPivotGrid | **No** | 5 | 15-25 | Standard | T4 | Architecture decision needed |
 
 **Intake record:** `stages/01-intake/output/gap-batch12-component-intake.md`
+
+---
+
+## 8. Post–Step 07 Routing from Executive Report (2026‑04‑03)
+
+This section routes the "Recommended Next Actions" from the executive report into concrete tasks, with status tracking and workspace assignments.
+
+### Routing Table
+
+| Area | Next Action | Blocked? | Owning Workspace | Status |
+|------|------------|----------|-----------------|--------|
+| TreeView Delivery | Stage 02 demo scope approval (24 gaps: 6 P1, 12 P2, 6 P3) | **Yes** — human decision | `treeview-delivery` | Awaiting approval |
+| DataSheet | Architecture decision: MariloSpreadsheet vs MariloDataSheet\<TItem\> vs both | **Yes** — human decision | `gap-analysis-resolution` + future CDW | Awaiting decision |
+| T4 Pickers Batch 1 | Implement + test 10 high-severity core API gaps across 5 components | No | `gap-analysis-resolution` Stage 03→05→06 | **Complete** (7 resolved, 3 partial; 17 tests) |
+| T1 Splitter | Gap analysis intake → prioritize → resolution design | No | `gap-analysis-resolution` Stage 01→02→03 | **Intake + prioritize complete** (10 gaps) |
+| T1 Wizard | Gap analysis intake → prioritize → resolution design | No | `gap-analysis-resolution` Stage 01→02→03 | **Intake + prioritize complete** (18 gaps) |
+| DataGrid Delivery | Per-feature spec/demo audits for 24 feature areas (~35-50 gaps) | No | `datagrid-delivery` CDW | **Checklist ready for CDW** (71 items) |
+| No-source Components (T4) | Architecture strategy for Diagram, DockManager, Map, PivotGrid | **Yes** — human decision | Planning / enterprise-ICM | Awaiting decision |
+
+### Blocked Decisions — Human Input Required
+
+#### Decision 1: TreeView Demo Scope Approval
+
+- **Context:** TreeView delivery pipeline Stage 02 (Example UX audit) identified 24 demo gaps
+- **Breakdown:** 6 P1 (must-have), 12 P2 (should-have), 6 P3 (nice-to-have)
+- **Impact:** Blocks Stage 02 completion and Stage 03 sync check
+- **Action needed:** Approve P1/P2/P3 priority assignments and confirm demo scope
+- **Workspace:** `workspaces/treeview-delivery/`
+
+#### Decision 2: DataSheet Architecture Direction
+
+- **Context:** Spec documents `MariloSpreadsheet` (XLSX Excel clone). Implementation is `MariloDataSheet<TItem>` (typed editable grid). Fundamentally different component models.
+- **Options:**
+  - **A.** Keep `MariloDataSheet<TItem>` only — typed grid, no XLSX
+  - **B.** Build `MariloSpreadsheet` only — XLSX clone, remove typed grid
+  - **C.** Support both — maintain DataSheet + build Spreadsheet separately
+- **Impact:** Determines resolution of ~38 gaps. High-severity blocker.
+- **Workspace:** `workspaces/datasheet-delivery/` (blocked)
+
+#### Decision 3: No-Source Component Strategy (T4)
+
+- **Components:** Diagram, DockManager, Map, PivotGrid
+- **Context:** Specs exist but no implementation source code is present in the repository
+- **Options:**
+  - **A.** Build from scratch (high effort, 50-70 total estimated gaps)
+  - **B.** Integrate 3rd-party OSS libraries (license compatibility required: MIT/Apache-2.0/BSD)
+  - **C.** Formally defer — mark as out-of-scope for current release
+- **Impact:** Determines whether ~50-70 gaps are actionable or deferred
+- **Workspace:** Enterprise-level planning decision
+
+### T4 Picker Batch 1 — Implementation Tracking
+
+**Scope:** 10 high-severity gaps across 5 components (MariloMultiSelect, MariloDateTimePicker, MariloDateRangePicker, MariloTimePicker, MariloUpload)
+
+| Gap Slug | Component | Description | Stage | Status |
+|----------|-----------|-------------|-------|--------|
+| GAP-MSEL-001 | MariloMultiSelect | Core events (OnOpen, OnClose, OnBlur added) | 03→05→06 | **Partially resolved** (OnChange/OnRead/OnItemRender deferred to Batch 2) |
+| GAP-MSEL-002 | MariloMultiSelect | AllowCustom parameter | 03 | **Deferred** to Batch 2 |
+| GAP-MSEL-004 | MariloMultiSelect | Template slots (5 missing) | 03 | **Deferred** to Batch 2 |
+| GAP-DTP-001 | MariloDateTimePicker | All spec events (OnOpen, OnClose, OnBlur, OnCalendarCellRender) | 03→05→06 | **Resolved** ✅ |
+| GAP-DRP-001 | MariloDateRangePicker | Multi-view calendar navigation | 03 | **Partially resolved** (events done, calendar views deferred) |
+| GAP-DRP-002 | MariloDateRangePicker | OnOpen/OnClose events | 03→05→06 | **Resolved** ✅ |
+| GAP-TP-003 | MariloTimePicker | PopupClass bug fix | 03→05→06 | **Resolved** ✅ |
+| GAP-TP-001 | MariloTimePicker | OnOpen/OnClose cancellable event args | 03→05→06 | **Resolved** ✅ |
+| GAP-UPL-004 | MariloUpload | Chunk resume fix (offset tracking) | 03→05→06 | **Resolved** ✅ |
+| GAP-UPL-001 | MariloUpload | Template slots (3 missing) | 03 | **Partially resolved** (designed, implementation deferred) |
+
+**Resolution records:** `stages/03-resolution-design/output/gap-t4-picker-batch1-resolutions.md`
+**Implementation log:** `stages/05-implement/output/gap-t4-picker-batch1-implementation-log.md`
+**Closure report:** `stages/06-validate/output/gap-t4-picker-batch1-closure-report.md`
+
+### T1 Splitter/Wizard — Analysis Tracking
+
+| Component | Intake (Stage 01) | Prioritize (Stage 02) | Resolution Design (Stage 03) | Implement (Stage 05) |
+|-----------|-------------------|----------------------|------------------------------|---------------------|
+| MariloSplitter | **Complete** (10 gaps) | **Complete** (2 batches) | Pending | Next run |
+| MariloWizard | **Complete** (18 gaps) | **Complete** (3 batches) | Pending | Next run |
+
+**Splitter inventory:** `stages/01-intake/output/gap-splitter-inventory.md`
+**Wizard inventory:** `stages/01-intake/output/gap-wizard-inventory.md`
+
+### DataGrid Delivery Handoff
+
+- **Source:** DataGrid spec review complete (49 params, 18 events, 24 feature areas, ~35-50 remaining gaps)
+- **Gap analysis output:** `stages/01-intake/output/gap-datagrid-per-feature-checklist.md`
+- **CDW target:** `workspaces/datagrid-delivery/`
+- **Ready for:** CDW Stage 01 spec review (using per-feature gap checklist as input)
+- **Format:** One entry per feature area × parameter/event, typed as: undocumented / spec-ahead / mismatch / implemented

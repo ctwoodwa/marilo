@@ -6,6 +6,7 @@
      style="@CombineStyles(_widthStyle)"
      @attributes="AdditionalAttributes"
      @onkeydown="OnKeyDown"
+     @onfocusout="HandleBlur"
      @onclick:stopPropagation="true"
      tabindex="@(IsEnabled ? (TabIndex ?? 0) : -1)"
      id="@Id"
@@ -246,6 +247,9 @@
 
     // Events
     [Parameter] public EventCallback<string> OnFilter { get; set; }
+    [Parameter] public EventCallback<PopupEventArgs> OnOpen { get; set; }
+    [Parameter] public EventCallback<PopupEventArgs> OnClose { get; set; }
+    [Parameter] public EventCallback OnBlur { get; set; }
 
     // ── Private state ────────────────────────────────────────────────────────
     private bool _isOpen;
@@ -315,29 +319,37 @@
     }
 
     // ── Dropdown control ─────────────────────────────────────────────────────
-    private void OnInputAreaClick()
+    private async Task OnInputAreaClick()
     {
         if (!IsEnabled || ReadOnly) return;
-        if (!_isOpen) OpenDropdown();
+        if (!_isOpen) await OpenDropdown();
     }
 
-    private void ToggleDropdown()
+    private async Task ToggleDropdown()
     {
         if (!IsEnabled || ReadOnly) return;
-        if (_isOpen) CloseDropdown();
-        else OpenDropdown();
+        if (_isOpen) await CloseDropdown();
+        else await OpenDropdown();
     }
 
-    private void OpenDropdown()
+    private async Task OpenDropdown()
     {
+        var args = new PopupEventArgs();
+        await OnOpen.InvokeAsync(args);
+        if (args.IsCancelled) return;
+
         _filterText = string.Empty;
         ApplyFilter();
         _highlightedIndex = -1;
         _isOpen = true;
     }
 
-    private void CloseDropdown()
+    private async Task CloseDropdown()
     {
+        var args = new PopupEventArgs();
+        await OnClose.InvokeAsync(args);
+        if (args.IsCancelled) return;
+
         _filterText = string.Empty;
         ApplyFilter();
         _isOpen = false;
@@ -364,7 +376,7 @@
 
         if (AutoClose)
         {
-            CloseDropdown();
+            await CloseDropdown();
         }
         else if (!PersistFilterOnSelect)
         {
@@ -429,7 +441,7 @@
             await OnFilter.InvokeAsync(_filterText);
 
         if (!_isOpen && _filteredItems.Count > 0)
-            _isOpen = true;
+            await OpenDropdown();
     }
 
     // ── Keyboard navigation ───────────────────────────────────────────────────
@@ -442,7 +454,7 @@
             case "ArrowDown":
                 if (!_isOpen)
                 {
-                    OpenDropdown();
+                    await OpenDropdown();
                     _highlightedIndex = 0;
                 }
                 else if (_filteredItems.Count > 0)
@@ -468,12 +480,12 @@
                 }
                 else if (!_isOpen)
                 {
-                    OpenDropdown();
+                    await OpenDropdown();
                 }
                 break;
 
             case "Escape":
-                CloseDropdown();
+                await CloseDropdown();
                 break;
 
             case "Backspace":
@@ -499,9 +511,15 @@
         }
     }
 
+    // ── Blur handling ────────────────────────────────────────────────────────
+    private async Task HandleBlur(FocusEventArgs e)
+    {
+        await OnBlur.InvokeAsync();
+    }
+
     // ── Public methods ───────────────────────────────────────────────────────
-    public void Open() => OpenDropdown();
-    public void Close() => CloseDropdown();
+    public Task Open() => OpenDropdown();
+    public Task Close() => CloseDropdown();
     public void Refresh()
     {
         _allItems = Data?.ToList() ?? new List<TItem>();

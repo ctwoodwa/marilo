@@ -240,6 +240,7 @@ public partial class MariloUpload : MariloComponentBase
 
         file.CancellationTokenSource = new System.Threading.CancellationTokenSource();
         file.Status = UploadFileStatus.Selected;
+        file.UploadedBytes = 0;
         await UploadFileAsync(file, [], []);
     }
 
@@ -330,9 +331,11 @@ public partial class MariloUpload : MariloComponentBase
     {
         if (info.BrowserFile == null || string.IsNullOrEmpty(SaveUrl)) return;
 
+        var isResume = info.UploadedBytes > 0;
         info.CancellationTokenSource = new System.Threading.CancellationTokenSource();
         info.Status = UploadFileStatus.Uploading;
-        info.Progress = 0;
+        if (!isResume)
+            info.Progress = 0;
         StateHasChanged();
 
         try
@@ -431,10 +434,25 @@ public partial class MariloUpload : MariloComponentBase
     {
         var totalChunks = (int)Math.Ceiling((double)info.BrowserFile!.Size / ChunkSize);
         var buffer = new byte[ChunkSize];
+        var startChunk = (int)(info.UploadedBytes / ChunkSize);
 
         await using var stream = info.BrowserFile.OpenReadStream(maxReadSize);
 
-        for (var chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++)
+        // Skip past already-uploaded bytes when resuming
+        if (info.UploadedBytes > 0 && startChunk > 0)
+        {
+            var bytesToSkip = info.UploadedBytes;
+            var skipBuffer = new byte[Math.Min(81920, bytesToSkip)];
+            while (bytesToSkip > 0)
+            {
+                var toRead = (int)Math.Min(skipBuffer.Length, bytesToSkip);
+                var read = await stream.ReadAsync(skipBuffer.AsMemory(0, toRead), info.CancellationTokenSource!.Token);
+                if (read == 0) break;
+                bytesToSkip -= read;
+            }
+        }
+
+        for (var chunkIndex = startChunk; chunkIndex < totalChunks; chunkIndex++)
         {
             // Check for cancellation/pause between chunks
             info.CancellationTokenSource!.Token.ThrowIfCancellationRequested();
@@ -478,6 +496,10 @@ public partial class MariloUpload : MariloComponentBase
                 });
                 return;
             }
+
+            info.UploadedBytes = (long)(chunkIndex + 1) * ChunkSize;
+            if (info.UploadedBytes > info.BrowserFile.Size)
+                info.UploadedBytes = info.BrowserFile.Size;
 
             var newProgress = (int)((chunkIndex + 1) * 100.0 / totalChunks);
             info.Progress = newProgress;
