@@ -90,7 +90,7 @@ public partial class MariloDataGrid<TItem>
     {
         if (ConfirmDelete)
         {
-            var confirmed = await JS.InvokeAsync<bool>("confirm", ConfirmDeleteText);
+            var confirmed = await JS.InvokeAsync<bool>("confirm", new object[] { ConfirmDeleteText });
             if (!confirmed) return;
         }
         var args = new GridEditEventArgs<TItem> { Item = item };
