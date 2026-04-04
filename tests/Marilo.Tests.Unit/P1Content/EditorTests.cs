@@ -124,8 +124,10 @@ public class EditorTests : MariloTestBase
             .Add(p => p.Disabled, true)
             .Add(p => p.Value, "<p>Content</p>"));
 
-        // Toolbar buttons should be disabled
-        Assert.Contains("disabled", cut.Markup.ToLower());
+        // When disabled, contenteditable should be false and toolbar hidden
+        Assert.Contains("contenteditable=\"false\"", cut.Markup.ToLower());
+        // Toolbar should not render when disabled
+        Assert.DoesNotContain("mar-editor-tool-btn", cut.Markup);
     }
 
     [Fact]
@@ -182,12 +184,18 @@ public class EditorTests : MariloTestBase
     public void Editor_ValueExpression_AcceptedWithoutError()
     {
         // Verify the ValueExpression parameter can be set (validation integration)
-        string myValue = "<p>test</p>";
+        // FieldIdentifier.Create requires a member access expression, not a local variable
+        var model = new EditorModel { Content = "<p>test</p>" };
         var cut = Render<MariloEditor>(parameters => parameters
-            .Add(p => p.Value, myValue)
-            .Add(p => p.ValueExpression, () => myValue));
+            .Add(p => p.Value, model.Content)
+            .Add(p => p.ValueExpression, () => model.Content));
 
         // Component renders without error
         Assert.Contains("mar-editor", cut.Markup);
+    }
+
+    private class EditorModel
+    {
+        public string Content { get; set; } = "";
     }
 }
