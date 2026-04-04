@@ -38,7 +38,14 @@ launchSettings.json
 .idea/
 
 ## VS Code
-.vscode/*.log
+# Ignore the entire .vscode folder by default
+.vscode/*
+
+# But allow these specific shared files
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 
 ## Node (if using for tooling/docs)
 node_modules/
@@ -68,3 +75,4 @@ TestResults/
 coverage/
 *.coverage
 *.coveragexml
+

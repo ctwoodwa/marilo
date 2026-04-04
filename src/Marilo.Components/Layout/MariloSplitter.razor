@@ -257,7 +257,7 @@
             _panes[i].SetSize(state.PaneSizes[i]);
         for (int i = 0; i < Math.Min(_panes.Count, state.CollapsedPanes.Count); i++)
             _panes[i].SetCollapsed(state.CollapsedPanes[i]);
-        StateHasChanged();
+        _ = InvokeAsync(StateHasChanged);
     }
 
     internal void RegisterPane(MariloSplitterPane pane)
