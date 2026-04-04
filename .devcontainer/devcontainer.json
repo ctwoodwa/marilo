@@ -7,11 +7,14 @@
 		},
 		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
 		"ghcr.io/devcontainers/features/github-cli:1": {},
-		"ghcr.io/devcontainers/features/chromium:1": {}
+		"ghcr.io/devcontainers-contrib/features/chromium:1": {}
 	},
+	"runArgs": [
+		"--userns=keep-id",
+		"--cap-add=SYS_ADMIN"
+	],
 	"mounts": [
-		"source=C:/Projects/blazor-docs,target=/blazor-docs,type=bind,consistency=cached",
-		"source=${localEnv:USERPROFILE}/.claude,target=/home/vscode/.claude,type=bind"
+		"source=${localEnv:USERPROFILE}\\.claude,target=/home/vscode/.claude,type=bind,consistency=cached"
 	],
 	"customizations": {
 		"vscode": {
@@ -55,7 +58,8 @@
 		"GAP_PLAN_FILE": "/workspaces/Marilo/src/Marilo.Components/GAP_ANALYSIS_RESOLUTION_PLAN.md",
 		"GAP_WORKSPACE": "/workspaces/Marilo/workspaces/gap-analysis-resolution",
 		"OPENWOLF_DAEMON_PORT": "18790",
-		"OPENWOLF_DASHBOARD_PORT": "18791"
+		"OPENWOLF_DASHBOARD_PORT": "18791",
+		"BLAZOR_DOCS_PATH": "/blazor-docs"
 	},
 	"forwardPorts": [5000, 5001, 8080, 18790, 18791],
 	"portsAttributes": {
