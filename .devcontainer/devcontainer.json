@@ -5,7 +5,9 @@
 		"ghcr.io/devcontainers/features/node:1": {
 			"version": "lts"
 		},
-		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {}
+		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
+		"ghcr.io/devcontainers/features/github-cli:1": {},
+		"ghcr.io/devcontainers/features/chromium:1": {}
 	},
 	"mounts": [
 		"source=C:/Projects/blazor-docs,target=/blazor-docs,type=bind,consistency=cached",
@@ -17,17 +19,50 @@
 				"anthropic.claude-code",
 				"ms-dotnettools.csdevkit",
 				"syler.sass-indented",
-				"shd101wyy.markdown-preview-enhanced"
-			]
+				"shd101wyy.markdown-preview-enhanced",
+				"breaking-brake.cc-wf-studio"
+			],
+			"settings": {
+				"claude.mcpServers": {
+					"project-management": {
+						"command": "npx",
+						"args": ["@mcpmarket/project-management-task-orchestrator"],
+						"env": {
+							"PLAN_FILE": "/workspaces/Marilo/src/Marilo.Components/GAP_ANALYSIS_RESOLUTION_PLAN.md",
+							"WORKSPACE_ROOT": "/workspaces/Marilo/workspaces/gap-analysis-resolution",
+							"STATUS_FIELDS": "not started,in progress,completed,blocked"
+						}
+					},
+					"memory": {
+						"command": "claude-mem-mcp",
+						"args": ["--store", "/workspaces/Marilo/.claude-mem"],
+						"env": {
+							"NAMESPACE": "marilo-gap-analysis",
+							"AUTO_SAVE_KEYS": "gap_context,routing_state,last_completed_stage"
+						}
+					},
+					"lsp-csharp": {
+						"command": "npx",
+						"args": ["@claude-code/lsp-csharp", "--solution", "/workspaces/Marilo/Marilo.slnx"]
+					}
+				}
+			}
 		}
 	},
 	"containerEnv": {
-		"CLAUDE_CONFIG_DIR": "/home/vscode/.claude"
+		"CLAUDE_CONFIG_DIR": "/home/vscode/.claude",
+		"CLAUDE_MEM_STORE": "/workspaces/Marilo/.claude-mem",
+		"GAP_PLAN_FILE": "/workspaces/Marilo/src/Marilo.Components/GAP_ANALYSIS_RESOLUTION_PLAN.md",
+		"GAP_WORKSPACE": "/workspaces/Marilo/workspaces/gap-analysis-resolution",
+		"OPENWOLF_DAEMON_PORT": "18790",
+		"OPENWOLF_DASHBOARD_PORT": "18791"
 	},
-	"forwardPorts": [5000, 5001, 8080],
+	"forwardPorts": [5000, 5001, 8080, 18790, 18791],
 	"portsAttributes": {
 		"5001": { "protocol": "https" },
-		"8080": { "label": "DocFX" }
+		"8080": { "label": "DocFX" },
+		"18790": { "label": "OpenWolf Daemon", "onAutoForward": "silent" },
+		"18791": { "label": "OpenWolf Dashboard", "onAutoForward": "notify" }
 	},
-	"postCreateCommand": "dotnet restore && npm install"
+	"postCreateCommand": "dotnet restore && npm install && npm --prefix .wolf/hooks install && bash .devcontainer/setup-claude-stack.sh"
 }
