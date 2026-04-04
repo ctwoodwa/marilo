@@ -16,4 +16,8 @@
     <ProjectReference Include="..\Marilo.Core\Marilo.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Marilo.Tests.Unit" />
+  </ItemGroup>
+
 </Project>
