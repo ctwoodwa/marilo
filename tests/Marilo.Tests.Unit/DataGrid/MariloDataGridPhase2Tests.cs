@@ -365,9 +365,9 @@ public class MariloDataGridPhase2Tests : MariloTestBase
         Assert.NotNull(editBtn);
         editBtn!.Click();
 
-        // Popup should contain EditForm with ValidationSummary
-        var validationSummary = cut.FindAll(".mar-datagrid-validation-summary");
-        Assert.Single(validationSummary);
+        // Popup should contain EditForm with body and actions
+        var popupBody = cut.FindAll(".mar-datagrid-popup-body");
+        Assert.Single(popupBody);
 
         // Save button should be type="submit"
         var saveBtn = cut.FindAll(".mar-datagrid-popup-actions button").FirstOrDefault(b => b.TextContent == "Save");

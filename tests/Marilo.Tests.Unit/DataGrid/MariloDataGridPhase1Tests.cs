@@ -59,16 +59,15 @@ public class MariloDataGridPhase1Tests : MariloTestBase
                 .Add(c => c.Field, "Department")
                 .Add(c => c.Sortable, true)));
 
-        var headers = cut.FindAll("th");
-
         // Sort by Name
-        headers[0].Click();
+        cut.FindAll("th")[0].Click();
         var state1 = cut.Instance.GetState();
         Assert.Single(state1.SortDescriptors);
         Assert.Equal("Name", state1.SortDescriptors[0].Field);
 
         // Sort by Department — should clear Name sort in Single mode
-        headers[1].Click();
+        // Re-find headers after re-render to avoid stale event handler IDs
+        cut.FindAll("th")[1].Click();
         var state2 = cut.Instance.GetState();
         Assert.Single(state2.SortDescriptors);
         Assert.Equal("Department", state2.SortDescriptors[0].Field);
