@@ -29,7 +29,7 @@
                 <div class="mar-splitter__handle @(_activeSeparator == idx ? "mar-splitter__handle--active" : "")"
                      role="separator"
                      tabindex="0"
-                     aria-orientation="@(Orientation == StackDirection.Horizontal ? "vertical" : "horizontal")"
+                     aria-orientation="@(Orientation == SplitterOrientation.Horizontal ? "vertical" : "horizontal")"
                      aria-label="@(AriaLabel ?? $"Resize pane {idx + 1} and {idx + 2}")"
                      aria-valuenow="@GetPaneSizePercent(idx)"
                      aria-valuemin="0"
@@ -58,7 +58,7 @@
         </div>
         <div class="mar-splitter__handle"
              role="separator"
-             aria-orientation="@(Orientation == StackDirection.Horizontal ? "vertical" : "horizontal")">
+             aria-orientation="@(Orientation == SplitterOrientation.Horizontal ? "vertical" : "horizontal")">
         </div>
         <div class="mar-splitter__pane mar-splitter__pane--second mar-splitter__pane--fill">
             @SecondPane
@@ -72,7 +72,7 @@
     @if (_isDragging)
     {
         <div class="mar-splitter__drag-overlay"
-             style="position:fixed;inset:0;z-index:9999;cursor:@(Orientation == StackDirection.Horizontal ? "col-resize" : "row-resize")"
+             style="position:fixed;inset:0;z-index:9999;cursor:@(Orientation == SplitterOrientation.Horizontal ? "col-resize" : "row-resize")"
              @onmousemove="HandleMouseMove"
              @onmouseup="HandleMouseUp">
         </div>
@@ -92,7 +92,7 @@
     private IJSObjectReference? _jsModule;
     private DotNetObjectReference<MariloSplitter>? _dotNetRef;
 
-    [Parameter] public StackDirection Orientation { get; set; } = StackDirection.Horizontal;
+    [Parameter] public SplitterOrientation Orientation { get; set; } = SplitterOrientation.Horizontal;
     [Parameter] public string? Width { get; set; }
     [Parameter] public string? Height { get; set; }
     [Parameter] public bool Collapsible { get; set; }
@@ -203,7 +203,7 @@
     private async Task<double> GetContainerSizePx()
     {
         if (_jsModule is null) return 1000; // fallback
-        var orient = Orientation == StackDirection.Horizontal ? "horizontal" : "vertical";
+        var orient = Orientation == SplitterOrientation.Horizontal ? "horizontal" : "vertical";
         return await _jsModule.InvokeAsync<double>("getContainerSize", orient);
     }
 
@@ -215,7 +215,7 @@
             return "flex:0 0 0;overflow:hidden;min-width:0;min-height:0;";
 
         var parts = new List<string>();
-        var dim = Orientation == StackDirection.Horizontal ? "width" : "height";
+        var dim = Orientation == SplitterOrientation.Horizontal ? "width" : "height";
 
         if (isLast)
         {
@@ -283,7 +283,7 @@
 
         _activeSeparator = separatorIndex;
         _isDragging = true;
-        _dragStartPos = Orientation == StackDirection.Horizontal ? e.ClientX : e.ClientY;
+        _dragStartPos = Orientation == SplitterOrientation.Horizontal ? e.ClientX : e.ClientY;
 
         // Measure container for accurate percent conversion
         _containerSizePx = await GetContainerSizePx();
@@ -298,7 +298,7 @@
     private async Task HandleMouseMove(MouseEventArgs e)
     {
         if (!_isDragging || _activeSeparator < 0) return;
-        await ApplyDrag(Orientation == StackDirection.Horizontal ? e.ClientX : e.ClientY);
+        await ApplyDrag(Orientation == SplitterOrientation.Horizontal ? e.ClientX : e.ClientY);
     }
 
     private async Task HandleMouseUp(MouseEventArgs e)
@@ -364,7 +364,7 @@
     {
         if (!_panes[index].Resizable) return;
 
-        var isHorizontal = Orientation == StackDirection.Horizontal;
+        var isHorizontal = Orientation == SplitterOrientation.Horizontal;
         var growKey = isHorizontal ? "ArrowRight" : "ArrowDown";
         var shrinkKey = isHorizontal ? "ArrowLeft" : "ArrowUp";
 
@@ -475,7 +475,7 @@
 
     private string GetCollapseArrow(bool isCollapsed)
     {
-        if (Orientation == StackDirection.Horizontal)
+        if (Orientation == SplitterOrientation.Horizontal)
             return isCollapsed ? "\u25B6" : "\u25C0"; // ▶ / ◀
         else
             return isCollapsed ? "\u25BC" : "\u25B2"; // ▼ / ▲

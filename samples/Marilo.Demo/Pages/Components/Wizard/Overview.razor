@@ -5,14 +5,14 @@
 <PageSection Title="Overview">
     <DemoSection Title="Basic Usage" Description="Wizard guides users through a multi-step process with back/next navigation." Code="@_basicCode">
         <div class="demo-row">
-            <MariloWizard>
-                <WizardStep Title="Step 1">
+            <MariloWizard @bind-Value="_activeStep">
+                <WizardStep Label="Step 1">
                     <p>Enter your details.</p>
                 </WizardStep>
-                <WizardStep Title="Step 2">
+                <WizardStep Label="Step 2">
                     <p>Review and confirm.</p>
                 </WizardStep>
-                <WizardStep Title="Step 3">
+                <WizardStep Label="Step 3">
                     <p>Done!</p>
                 </WizardStep>
             </MariloWizard>
@@ -21,10 +21,12 @@
 </PageSection>
 
 @code {
+    private int _activeStep = 0;
+
     private const string _basicCode =
-        "<MariloWizard>\n" +
-        "    <WizardStep Title=\"Step 1\"><p>Enter your details.</p></WizardStep>\n" +
-        "    <WizardStep Title=\"Step 2\"><p>Review and confirm.</p></WizardStep>\n" +
-        "    <WizardStep Title=\"Step 3\"><p>Done!</p></WizardStep>\n" +
+        "<MariloWizard @bind-Value=\"_activeStep\">\n" +
+        "    <WizardStep Label=\"Step 1\"><p>Enter your details.</p></WizardStep>\n" +
+        "    <WizardStep Label=\"Step 2\"><p>Review and confirm.</p></WizardStep>\n" +
+        "    <WizardStep Label=\"Step 3\"><p>Done!</p></WizardStep>\n" +
         "</MariloWizard>";
 }

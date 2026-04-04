@@ -47,7 +47,7 @@ This document defines the resolution strategy for all 87 Marilo Blazor component
 | MariloMenu | 7 | multi-pass | Yes (hierarchy rendering) | **T2 - High** | ✅ IMPLEMENTED (5/7 gaps; partial file refactor, ItemTemplate, ShowOn, keyboard nav; collision/generic deferred) |
 | MariloContextMenu | 8 | multi-pass | Yes (selector pattern, data binding) | **T2 - High** | ✅ IMPLEMENTED (6/8 gaps; partial file refactor, full keyboard nav, OnShow/OnHide events; Selector JS interop/collision deferred) |
 | MariloAccordion | 9 | multi-pass | Yes (data binding, hierarchy) | **T2 - High** | ✅ IMPLEMENTED (all 9 gaps resolved: data binding, expandmode, templates) |
-| MariloSplitter | 8 | multi-pass | Yes (interactive resize, state) | **T2 - High** | ✅ IMPLEMENTED (drag resize, keyboard resize, state, aria, collapse) |
+| MariloSplitter | 8 | multi-pass | Yes (interactive resize, state) | **T2 - High** | ✅ IMPLEMENTED (drag resize, keyboard resize, state, aria, collapse, SplitterOrientation enum, SplitterPanes wrapper; 17 bUnit tests) |
 | MariloPanel | 7 | multi-pass | Yes (data binding, expand/collapse) | **T2 - High** | ✅ IMPLEMENTED (single-panel design; templates, expand/collapse) |
 | MariloStepper | 6 | multi-pass | Yes (orientation, linear flow) | **T2 - High** | ✅ IMPLEMENTED (4/7 gaps; orientation, linear, clickable nav) |
 | MariloPagination | 6 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED |
@@ -991,6 +991,9 @@ Tracks test coverage for each gap slug that has a Stage 03 resolution record in 
 | GAP-checkbox-template | CheckboxTemplate RenderFragment<CheckboxContext> | ✅ (3 tests) | ✅ | Phase 3; Stage 06 Resolved; Disabled/OnChange ⚠️ code inspection only |
 | GAP-node-editing | AllowEditing — inline rename via double-click/F2 | ✅ (12 tests) | ✅ | Phase 3; Stage 06 Resolved; ExpandOnDoubleClick suppression documented |
 
+| GAP-splitter | SplitterOrientation enum, SplitterPanes wrapper, nested splitter, tests | ✅ (17 tests) | pending | Stage 05 complete (2026-04-04); awaiting test run validation |
+| GAP-wizard | CascadingValue fix, Value rename, all 14 resolutions, tests | ✅ (30 tests) | pending | Stage 05 complete (2026-04-04); awaiting test run validation |
+
 ### Deferred / Partial Coverage
 
 - GAP-form GAP-FIELD-002 (floating label animation) → Phase 2 — requires JS interop for focus tracking
@@ -1098,8 +1101,8 @@ This section routes the "Recommended Next Actions" from the executive report int
 
 | Component | Intake (Stage 01) | Prioritize (Stage 02) | Resolution Design (Stage 03) | Implement (Stage 05) |
 |-----------|-------------------|----------------------|------------------------------|---------------------|
-| MariloSplitter | **Complete** (10 gaps) | **Complete** (2 batches) | **Complete** (5 resolutions + 4 pre-resolved) | Next run |
-| MariloWizard | **Complete** (18 gaps) | **Complete** (3 batches) | **Complete** (14 resolutions) | Next run |
+| MariloSplitter | **Complete** (10 gaps) | **Complete** (2 batches) | **Complete** (5 resolutions + 4 pre-resolved) | **Complete** (2026-04-04): SplitterOrientation enum, SplitterPanes wrapper, 17 bUnit tests |
+| MariloWizard | **Complete** (18 gaps) | **Complete** (3 batches) | **Complete** (14 resolutions) | **Complete** (2026-04-04): CascadingValue fix, Value rename, all 14 resolutions, 30 bUnit tests |
 
 **Splitter inventory:** `stages/01-intake/output/gap-splitter-inventory.md`
 **Wizard inventory:** `stages/01-intake/output/gap-wizard-inventory.md`

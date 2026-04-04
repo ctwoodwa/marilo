@@ -11,8 +11,8 @@
 | Field | Value |
 |-------|-------|
 | Workspace | gap-analysis-resolution |
-| Last updated | 2026-04-03 |
-| Current phase | Stage 03 (form batch active) |
+| Last updated | 2026-04-04 |
+| Current phase | Stage 05 (splitter + wizard implementation active) |
 
 ## Pipeline Status
 
@@ -26,19 +26,34 @@
 **Form batch (60 gaps)** -- IN PROGRESS
 - [x] 01-intake
 - [x] 02-prioritize
-- [ ] **03-resolution-design** (in progress)
+- [x] 03-resolution-design (complete)
 - [ ] 05-implement
 - [ ] 06-validate
 
-**t4-pickers / readonly-guards / expandall-lazyload** -- AT INTAKE
-- [x] 01-intake (complete, awaiting next steps)
+**Splitter batch (10 gaps: 4 pre-resolved, 5 implemented, 1 demo deferred)** -- STAGE 05 COMPLETE
+- [x] 01-intake
+- [x] 02-prioritize
+- [x] 03-resolution-design
+- [x] **05-implement** (completed 2026-04-04)
+- [ ] 06-validate
+
+**Wizard batch (18 gaps: 14 resolutions all implemented)** -- STAGE 05 COMPLETE
+- [x] 01-intake
+- [x] 02-prioritize
+- [x] 03-resolution-design
+- [x] **05-implement** (completed 2026-04-04)
+- [ ] 06-validate
+
+**t4-pickers / readonly-guards / expandall-lazyload** -- BATCH 1 CLOSED
+- [x] 01-intake through 06-validate (Batch 1 complete)
 
 ## Next Actions
 
-1. Complete form batch resolution design (Stage 03).
-2. Start resolution design for t4-pickers, readonly-guards, expandall-lazyload batches.
-3. Begin form batch implementation (Stage 05) after resolution design.
+1. Validate Splitter and Wizard implementations (Stage 06).
+2. Begin form batch implementation (Stage 05).
+3. Start T4 pickers Batch 2 resolution design.
 
 ## Blockers
 
 - Form batch needs full implementation pass (60 gaps).
+- .NET SDK not available in current environment; tests not runnable.

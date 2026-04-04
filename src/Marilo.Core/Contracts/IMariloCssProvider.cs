@@ -26,7 +26,7 @@ public interface IMariloCssProvider
     string TabPanelClass(bool isActive, bool persistContent);
     string StepperClass();
     string StepClass(StepStatus status);
-    string SplitterClass(StackDirection orientation);
+    string SplitterClass(SplitterOrientation orientation);
     string DrawerOverlayClass();
     string ContextMenuClass();
 

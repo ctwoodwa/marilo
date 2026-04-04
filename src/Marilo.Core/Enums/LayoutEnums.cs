@@ -196,6 +196,18 @@ public enum TabStripScrollButtonsVisibility
 }
 
 /// <summary>
+/// Specifies the orientation of a splitter.
+/// </summary>
+public enum SplitterOrientation
+{
+    /// <summary>Panes are arranged horizontally (side by side).</summary>
+    Horizontal,
+
+    /// <summary>Panes are arranged vertically (stacked).</summary>
+    Vertical
+}
+
+/// <summary>
 /// Specifies the layout orientation of a stepper control.
 /// </summary>
 public enum StepperOrientation
