@@ -47,3 +47,15 @@ public enum GridFilterMode
     /// <summary>A filter menu is available via each column header.</summary>
     FilterMenu
 }
+
+/// <summary>
+/// Specifies whether the grid allows single or multiple column sorting.
+/// </summary>
+public enum GridSortMode
+{
+    /// <summary>Only one column can be sorted at a time.</summary>
+    Single,
+
+    /// <summary>Multiple columns can be sorted simultaneously (Ctrl+Click).</summary>
+    Multiple
+}

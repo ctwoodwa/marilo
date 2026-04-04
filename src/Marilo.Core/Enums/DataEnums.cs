@@ -68,3 +68,15 @@ public enum SortDirection
     /// <summary>Sort from highest to lowest (Z-A, 9-0).</summary>
     Descending
 }
+
+/// <summary>
+/// Specifies the logical operator for combining multiple filter conditions.
+/// </summary>
+public enum FilterCompositionOperator
+{
+    /// <summary>All filter conditions must match.</summary>
+    And,
+
+    /// <summary>Any filter condition must match.</summary>
+    Or
+}

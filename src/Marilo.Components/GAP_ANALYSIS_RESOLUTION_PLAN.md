@@ -1043,6 +1043,9 @@ This section routes the "Recommended Next Actions" from the executive report int
 | T4 Pickers Batch 2 | Template slots + API completeness for MultiSelect, Upload | No | `gap-analysis-resolution` Stage 03→05→06 | **Complete** (4/4 resolved; 9 tests) |
 | T2 Splitter | Full pipeline: intake through validation | No | `gap-analysis-resolution` Stage 01→06 | **Complete** (8/10 resolved, 1 demo deferred; 17 tests) |
 | T2 Wizard | Full pipeline: intake through validation | No | `gap-analysis-resolution` Stage 01→06 | **Complete** (18/18 resolved; 27 tests) |
+| DataGrid Phase 1 | Pure C# gap resolutions (SortMode, Editable, ConfirmDelete, SetStateAsync, filters, pager, DisplayFormat, Groupable, ExpandedItems) | No | `gap-analysis-resolution` Stage 02→03→05 | **Complete** (9 resolved, 18 tests) |
+| DataGrid Phase 2 | Validation, composite filters, auto-gen attrs, aggregates, export lifecycle, CancellationToken | No | `gap-analysis-resolution` Stage 03→05 | **Complete** (6 resolved, 15 tests) |
+| DataGrid Phase 3+ | Frozen columns, cell selection, row drag-drop, checkbox filter | No | `gap-analysis-resolution` Stage 03 | **Pending** (~20 remaining gaps, JS interop needed) |
 | DataGrid Delivery | Per-feature spec/demo audits for 24 feature areas (~35-50 gaps) | No | `datagrid-delivery` CDW | **Checklist ready for CDW** (71 items) |
 | No-source Components (T4) | Architecture strategy for Diagram, DockManager, Map, PivotGrid | **Yes** — human decision | Planning / enterprise-ICM | Awaiting decision |
 

@@ -17,11 +17,6 @@
 ## Pipeline Status
 
 **Treeview batch (24 gaps: 21 resolved, 1 deferred)** -- COMPLETE
-- [x] 01-intake
-- [x] 02-prioritize
-- [x] 03-resolution-design
-- [x] 05-implement (04 skipped for batch scope)
-- [x] 06-validate
 
 **Form batch (60 gaps: 35+ resolved, 11 deferred)** -- COMPLETE
 - [x] 01-intake
@@ -54,12 +49,20 @@
 **Editor batch (12 gaps: 6 resolved B1, 6 remaining)** -- BATCH 1 CLOSED
 - [x] 01-intake through 06-validate (Batch 1: validation, custom tools, docs, 14 tests)
 
+**DataGrid Phase 1 (9 pure C# gaps)** -- IMPLEMENTED
+- [x] 01-intake → 02-prioritize → 03-resolution-design → 05-implement
+
+**DataGrid Phase 2 (6 important gaps)** -- IMPLEMENTED
+- [x] 03-resolution-design → 05-implement
+- Validation, composite filters, auto-gen attributes, aggregates, export, CancellationToken
+
 ## Next Actions
 
-1. Run `dotnet test` to verify all new tests pass (total ~83 new tests this session).
-2. Chart Batch 2: Drilldown, tooltip API, data binding alignment, events.
-3. Editor Batch 2: Adaptive toolbar, table/image resize, import/export.
-4. T4 Pickers Batch 3: Cross-cutting polish (AdaptiveMode, ARIA, CSS provider).
+1. Validate DataGrid Phase 1+2 in Stage 06 (closure reports).
+2. Run `dotnet test` to verify all new tests pass (total ~83 new tests this session).
+3. Chart Batch 2: Drilldown, tooltip API, data binding alignment, events.
+4. Editor Batch 2: Adaptive toolbar, table/image resize, import/export.
+5. T4 Pickers Batch 3: Cross-cutting polish (AdaptiveMode, ARIA, CSS provider).
 
 ## Blockers
 

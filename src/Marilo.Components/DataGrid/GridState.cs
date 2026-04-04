@@ -21,6 +21,9 @@ public class GridState
     /// <summary>Active filter descriptors.</summary>
     public List<FilterDescriptor> FilterDescriptors { get; set; } = [];
 
+    /// <summary>Composite filter groups (AND/OR combinations).</summary>
+    public List<CompositeFilterDescriptor> CompositeFilterDescriptors { get; set; } = [];
+
     /// <summary>Active group descriptors.</summary>
     public List<GroupDescriptor> GroupDescriptors { get; set; } = [];
 
