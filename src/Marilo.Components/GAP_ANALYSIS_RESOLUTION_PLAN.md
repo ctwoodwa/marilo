@@ -34,8 +34,8 @@ This document defines the resolution strategy for all 87 Marilo Blazor component
 | MariloDataGrid | 44 | multi-pass | Yes (virtual scroll, grouping, CRUD, export) | **T2 - High** | ✅ IMPLEMENTED (Pass 3: grouping, auto-columns, resize/reorder, keyboard nav, search, CSV export, templates, GridState enrichment) |
 | MariloGridColumn | 8 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED (all 4 gaps resolved Pass 1 + footer rendering) |
 | MariloGridToolbar | 2 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED (ARIA + GridCommandButton) |
-| MariloEditor | 54 | multi-pass | Yes (ProseMirror / rich-text engine) | **T2 - High** | ✅ IMPLEMENTED (WYSIWYG contenteditable, execCommand, paste cleanup, XSS fix; 16 deferred) |
-| MariloChart | 27 | multi-pass | Yes (charting engine decision) | **T2 - High** | ✅ IMPLEMENTED (tooltips, events, legend, axis config, a11y, bar fix; advanced types deferred) |
+| MariloEditor | 54 | multi-pass | Yes (ProseMirror / rich-text engine) | **T2 - High** | ✅ IMPLEMENTED (WYSIWYG contenteditable, execCommand, paste cleanup, XSS fix; Batch 1: validation, custom tools, 14 tests; ProseMirror/advanced deferred) |
+| MariloChart | 27 | multi-pass | Yes (charting engine decision) | **T2 - High** | ✅ IMPLEMENTED (tooltips, events, legend, axis config, a11y, bar fix; Batch 1: wrappers, subtitle, CSS vars, 16 tests; advanced types deferred) |
 | MariloChartSeries | 17 | multi-pass | Yes (scatter/bubble data models) | **T2 - High** | ✅ IMPLEMENTED (XField/YField, primitive data, Visible, ScatterLine/Bubble types) |
 | MariloWindow | 32 | multi-pass | Yes (JS interop for drag/resize) | **T2 - High** | ✅ IMPLEMENTED (drag, resize, child components, state, keyboard, a11y; 4 deferred) |
 | MariloDialog | 9 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED |
@@ -47,7 +47,7 @@ This document defines the resolution strategy for all 87 Marilo Blazor component
 | MariloMenu | 7 | multi-pass | Yes (hierarchy rendering) | **T2 - High** | ✅ IMPLEMENTED (5/7 gaps; partial file refactor, ItemTemplate, ShowOn, keyboard nav; collision/generic deferred) |
 | MariloContextMenu | 8 | multi-pass | Yes (selector pattern, data binding) | **T2 - High** | ✅ IMPLEMENTED (6/8 gaps; partial file refactor, full keyboard nav, OnShow/OnHide events; Selector JS interop/collision deferred) |
 | MariloAccordion | 9 | multi-pass | Yes (data binding, hierarchy) | **T2 - High** | ✅ IMPLEMENTED (all 9 gaps resolved: data binding, expandmode, templates) |
-| MariloSplitter | 8 | multi-pass | Yes (interactive resize, state) | **T2 - High** | ✅ IMPLEMENTED (drag resize, keyboard resize, state, aria, collapse) |
+| MariloSplitter | 8 | multi-pass | Yes (interactive resize, state) | **T2 - High** | ✅ IMPLEMENTED (drag resize, keyboard resize, state, aria, collapse, SplitterOrientation enum, SplitterPanes wrapper; 17 bUnit tests) |
 | MariloPanel | 7 | multi-pass | Yes (data binding, expand/collapse) | **T2 - High** | ✅ IMPLEMENTED (single-panel design; templates, expand/collapse) |
 | MariloStepper | 6 | multi-pass | Yes (orientation, linear flow) | **T2 - High** | ✅ IMPLEMENTED (4/7 gaps; orientation, linear, clickable nav) |
 | MariloPagination | 6 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED |
@@ -928,7 +928,7 @@ The following gaps are systemic across most/all T4 components:
 | Batch | Focus | Gaps | Components | Priority |
 |-------|-------|------|-----------|----------|
 | **Batch 1** | Events & Core API | 10 | MultiSelect, DateTimePicker, DateRangePicker, TimePicker (bug), Upload (bug) | **Start here** |
-| **Batch 2** | Templates & API Completeness | 12 | MultiSelect, Upload, DateTimePicker, ColorPicker | After Batch 1 |
+| **Batch 2** | Templates & API Completeness | 4 resolved | MultiSelect, Upload | **Complete** (4/4 resolved; 9 tests) |
 | **Batch 3** | Cross-Cutting & Polish | 16+ | All pickers (AdaptiveMode, ARIA, CSS) | After Batch 2 |
 
 ---
@@ -991,6 +991,9 @@ Tracks test coverage for each gap slug that has a Stage 03 resolution record in 
 | GAP-checkbox-template | CheckboxTemplate RenderFragment<CheckboxContext> | ✅ (3 tests) | ✅ | Phase 3; Stage 06 Resolved; Disabled/OnChange ⚠️ code inspection only |
 | GAP-node-editing | AllowEditing — inline rename via double-click/F2 | ✅ (12 tests) | ✅ | Phase 3; Stage 06 Resolved; ExpandOnDoubleClick suppression documented |
 
+| GAP-splitter | SplitterOrientation enum, SplitterPanes wrapper, nested splitter, tests | ✅ (17 tests) | pending | Stage 06 closed (2026-04-04); 8/10 resolved, 1 demo deferred; runtime test pending |
+| GAP-wizard | CascadingValue fix, Value rename, all 14 resolutions, tests | ✅ (27 tests) | pending | Stage 06 closed (2026-04-04); 18/18 resolved; runtime test pending |
+
 ### Deferred / Partial Coverage
 
 - GAP-form GAP-FIELD-002 (floating label animation) → Phase 2 — requires JS interop for focus tracking
@@ -1037,8 +1040,12 @@ This section routes the "Recommended Next Actions" from the executive report int
 | TreeView Delivery | Stage 02 demo scope approval (24 gaps: 6 P1, 12 P2, 6 P3) | **Yes** — human decision | `treeview-delivery` | Awaiting approval |
 | DataSheet | Architecture decision: MariloSpreadsheet vs MariloDataSheet\<TItem\> vs both | **Yes** — human decision | `gap-analysis-resolution` + future CDW | Awaiting decision |
 | T4 Pickers Batch 1 | Implement + test 10 high-severity core API gaps across 5 components | No | `gap-analysis-resolution` Stage 03→05→06 | **Complete** (7 resolved, 3 partial; 17 tests) |
-| T1 Splitter | Gap analysis intake → prioritize → resolution design | No | `gap-analysis-resolution` Stage 01→02→03 | **Intake + prioritize complete** (10 gaps) |
-| T1 Wizard | Gap analysis intake → prioritize → resolution design | No | `gap-analysis-resolution` Stage 01→02→03 | **Intake + prioritize complete** (18 gaps) |
+| T4 Pickers Batch 2 | Template slots + API completeness for MultiSelect, Upload | No | `gap-analysis-resolution` Stage 03→05→06 | **Complete** (4/4 resolved; 9 tests) |
+| T2 Splitter | Full pipeline: intake through validation | No | `gap-analysis-resolution` Stage 01→06 | **Complete** (8/10 resolved, 1 demo deferred; 17 tests) |
+| T2 Wizard | Full pipeline: intake through validation | No | `gap-analysis-resolution` Stage 01→06 | **Complete** (18/18 resolved; 27 tests) |
+| DataGrid Phase 1 | Pure C# gap resolutions (SortMode, Editable, ConfirmDelete, SetStateAsync, filters, pager, DisplayFormat, Groupable, ExpandedItems) | No | `gap-analysis-resolution` Stage 02→03→05 | **Complete** (9 resolved, 18 tests) |
+| DataGrid Phase 2 | Validation, composite filters, auto-gen attrs, aggregates, export lifecycle, CancellationToken | No | `gap-analysis-resolution` Stage 03→05 | **Complete** (6 resolved, 15 tests) |
+| DataGrid Phase 3+ | Frozen columns, cell selection, row drag-drop, checkbox filter | No | `gap-analysis-resolution` Stage 03 | **Pending** (~20 remaining gaps, JS interop needed) |
 | DataGrid Delivery | Per-feature spec/demo audits for 24 feature areas (~35-50 gaps) | No | `datagrid-delivery` CDW | **Checklist ready for CDW** (71 items) |
 | No-source Components (T4) | Architecture strategy for Diagram, DockManager, Map, PivotGrid | **Yes** — human decision | Planning / enterprise-ICM | Awaiting decision |
 
@@ -1080,26 +1087,43 @@ This section routes the "Recommended Next Actions" from the executive report int
 | Gap Slug | Component | Description | Stage | Status |
 |----------|-----------|-------------|-------|--------|
 | GAP-MSEL-001 | MariloMultiSelect | Core events (OnOpen, OnClose, OnBlur added) | 03→05→06 | **Partially resolved** (OnChange/OnRead/OnItemRender deferred to Batch 2) |
-| GAP-MSEL-002 | MariloMultiSelect | AllowCustom parameter | 03 | **Deferred** to Batch 2 |
-| GAP-MSEL-004 | MariloMultiSelect | Template slots (5 missing) | 03 | **Deferred** to Batch 2 |
+| GAP-MSEL-002 | MariloMultiSelect | AllowCustom parameter | 03→05→06 | **Resolved** ✅ (Batch 2) |
+| GAP-MSEL-004 | MariloMultiSelect | Template slots (5 missing) | 03→05→06 | **Resolved** ✅ (Batch 2) |
 | GAP-DTP-001 | MariloDateTimePicker | All spec events (OnOpen, OnClose, OnBlur, OnCalendarCellRender) | 03→05→06 | **Resolved** ✅ |
 | GAP-DRP-001 | MariloDateRangePicker | Multi-view calendar navigation | 03 | **Partially resolved** (events done, calendar views deferred) |
 | GAP-DRP-002 | MariloDateRangePicker | OnOpen/OnClose events | 03→05→06 | **Resolved** ✅ |
 | GAP-TP-003 | MariloTimePicker | PopupClass bug fix | 03→05→06 | **Resolved** ✅ |
 | GAP-TP-001 | MariloTimePicker | OnOpen/OnClose cancellable event args | 03→05→06 | **Resolved** ✅ |
 | GAP-UPL-004 | MariloUpload | Chunk resume fix (offset tracking) | 03→05→06 | **Resolved** ✅ |
-| GAP-UPL-001 | MariloUpload | Template slots (3 missing) | 03 | **Partially resolved** (designed, implementation deferred) |
+| GAP-UPL-001 | MariloUpload | Template slots (3 missing) | 03→05→06 | **Resolved** ✅ (Batch 2) |
+| GAP-UPL-002 | MariloUpload | WithCredentials fix | 03→05→06 | **Resolved** ✅ (Batch 2) |
+
+### T4 Picker Batch 2 — Implementation Tracking
+
+**Scope:** 4 gaps across 2 components (MariloMultiSelect, MariloUpload)
+**Records:** [Resolution Design](../workspaces/gap-analysis-resolution/stages/03-resolution-design/output/gap-t4-picker-batch2-resolutions.md) | [Implementation](../workspaces/gap-analysis-resolution/stages/05-implement/output/gap-t4-picker-batch2-implementation-log.md) | [Closure](../workspaces/gap-analysis-resolution/stages/06-validate/output/gap-t4-picker-batch2-closure-report.md)
+
+| Gap Slug | Component | Description | Stage | Status |
+|----------|-----------|-------------|-------|--------|
+| GAP-MSEL-004 | MariloMultiSelect | 5 template slots (Tag, SummaryTag, Header, Footer, NoData) | 03→05→06 | **Resolved** ✅ |
+| GAP-MSEL-002 | MariloMultiSelect | AllowCustom parameter | 03→05→06 | **Resolved** ✅ |
+| GAP-UPL-001 | MariloUpload | 3 template slots (SelectFilesButton, File, FileInfo) | 03→05→06 | **Resolved** ✅ |
+| GAP-UPL-002 | MariloUpload | WithCredentials fix (SetBrowserRequestCredentials) | 03→05→06 | **Resolved** ✅ |
 
 **Resolution records:** `stages/03-resolution-design/output/gap-t4-picker-batch1-resolutions.md`
 **Implementation log:** `stages/05-implement/output/gap-t4-picker-batch1-implementation-log.md`
 **Closure report:** `stages/06-validate/output/gap-t4-picker-batch1-closure-report.md`
 
-### T1 Splitter/Wizard — Analysis Tracking
+### T1 Splitter/Wizard — Full Pipeline Tracking
 
-| Component | Intake (Stage 01) | Prioritize (Stage 02) | Resolution Design (Stage 03) | Implement (Stage 05) |
-|-----------|-------------------|----------------------|------------------------------|---------------------|
-| MariloSplitter | **Complete** (10 gaps) | **Complete** (2 batches) | **Complete** (5 resolutions + 4 pre-resolved) | Next run |
-| MariloWizard | **Complete** (18 gaps) | **Complete** (3 batches) | **Complete** (14 resolutions) | Next run |
+| Component | Intake (Stage 01) | Prioritize (Stage 02) | Resolution Design (Stage 03) | Implement (Stage 05) | Validate (Stage 06) |
+|-----------|-------------------|----------------------|------------------------------|---------------------|---------------------|
+| MariloSplitter | **Complete** (10 gaps) | **Complete** (2 batches) | **Complete** (5 resolutions + 4 pre-resolved) | **Complete** (2026-04-04): 17 bUnit tests | **Complete** (2026-04-04): 8 resolved, 1 demo deferred |
+| MariloWizard | **Complete** (18 gaps) | **Complete** (3 batches) | **Complete** (14 resolutions) | **Complete** (2026-04-04): 27 bUnit tests | **Complete** (2026-04-04): 18/18 resolved |
+
+**Closure reports:**
+- Splitter: `stages/06-validate/output/gap-splitter-closure-report.md`
+- Wizard: `stages/06-validate/output/gap-wizard-closure-report.md`
 
 **Splitter inventory:** `stages/01-intake/output/gap-splitter-inventory.md`
 **Wizard inventory:** `stages/01-intake/output/gap-wizard-inventory.md`

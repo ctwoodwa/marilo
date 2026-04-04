@@ -27,7 +27,14 @@
             @if (TagMode == MultiSelectTagMode.Single)
             {
                 <span class="@CssProvider.MultiSelectTagClass() mar-multiselect-tag--summary">
-                    @_selectedItems.Count item@(_selectedItems.Count != 1 ? "s" : "") selected
+                    @if (SummaryTagTemplate != null)
+                    {
+                        @SummaryTagTemplate(Value)
+                    }
+                    else
+                    {
+                        <span>@Value.Count items selected</span>
+                    }
                 </span>
             }
             else
@@ -39,7 +46,14 @@
                 {
                     var tagItem = _selectedItems[ti];
                     <span class="@CssProvider.MultiSelectTagClass()">
-                        @GetText(tagItem)
+                        @if (TagTemplate != null)
+                        {
+                            @TagTemplate(tagItem)
+                        }
+                        else
+                        {
+                            @GetText(tagItem)
+                        }
                         @if (IsEnabled && !ReadOnly)
                         {
                             <button type="button"
@@ -111,6 +125,11 @@
              aria-multiselectable="true"
              aria-label="@(Placeholder ?? "Options")"
              @onclick:stopPropagation="true">
+
+            @if (HeaderTemplate != null)
+            {
+                <div class="mar-multiselect__header">@HeaderTemplate</div>
+            }
 
             @if (EnableVirtualization)
             {
@@ -184,11 +203,32 @@
                         </div>
                     }
 
-                    @if (_filteredItems.Count == 0)
+                    @if (AllowCustom && !string.IsNullOrEmpty(_filterText) && !_filteredItems.Any(i => GetText(i) == _filterText))
                     {
-                        <div class="mar-multiselect__no-data">No items found</div>
+                        <div class="mar-multiselect__item mar-multiselect__item--custom"
+                             role="option"
+                             @onclick="HandleAddCustom">
+                            <span>Create: @_filterText</span>
+                        </div>
+                    }
+
+                    @if (_filteredItems.Count == 0 && !(AllowCustom && !string.IsNullOrEmpty(_filterText)))
+                    {
+                        @if (NoDataTemplate != null)
+                        {
+                            @NoDataTemplate
+                        }
+                        else
+                        {
+                            <div class="mar-multiselect__no-data">No items found</div>
+                        }
                     }
                 </div>
+            }
+
+            @if (FooterTemplate != null)
+            {
+                <div class="mar-multiselect__footer">@FooterTemplate</div>
             }
         </div>
 
@@ -244,6 +284,14 @@
 
     // Templates
     [Parameter] public RenderFragment<TItem>? ItemTemplate { get; set; }
+    [Parameter] public RenderFragment<TItem>? TagTemplate { get; set; }
+    [Parameter] public RenderFragment<List<TValue>>? SummaryTagTemplate { get; set; }
+    [Parameter] public RenderFragment? HeaderTemplate { get; set; }
+    [Parameter] public RenderFragment? FooterTemplate { get; set; }
+    [Parameter] public RenderFragment? NoDataTemplate { get; set; }
+
+    // Custom entry
+    [Parameter] public bool AllowCustom { get; set; }
 
     // Events
     [Parameter] public EventCallback<string> OnFilter { get; set; }
@@ -411,6 +459,23 @@
         var list = _selectedValues.ToList();
         Value = list;
         await ValueChanged.InvokeAsync(list);
+    }
+
+    // ── Custom entry ─────────────────────────────────────────────────────────
+    private async Task HandleAddCustom()
+    {
+        if (string.IsNullOrEmpty(_filterText)) return;
+        try
+        {
+            var customValue = (TValue)Convert.ChangeType(_filterText, typeof(TValue));
+            var newValue = new List<TValue>(Value) { customValue };
+            Value = newValue;
+            await ValueChanged.InvokeAsync(Value);
+            _filterText = "";
+            if (AutoClose) await Close();
+        }
+        catch (InvalidCastException) { }
+        catch (FormatException) { }
     }
 
     // ── Filtering ────────────────────────────────────────────────────────────

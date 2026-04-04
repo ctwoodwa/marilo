@@ -49,6 +49,15 @@
     /// <summary>Callback for per-cell render customization (CSS classes, styles).</summary>
     [Parameter] public Action<GridCellRenderEventArgs<TItem>>? OnCellRender { get; set; }
 
+    /// <summary>Whether this column is editable in edit mode. Defaults to true.</summary>
+    [Parameter] public bool Editable { get; set; } = true;
+
+    /// <summary>Whether this column can be used for grouping. Defaults to true.</summary>
+    [Parameter] public bool Groupable { get; set; } = true;
+
+    /// <summary>Composite format string for display (e.g. "{0:C2}"). Takes precedence over Format.</summary>
+    [Parameter] public string? DisplayFormat { get; set; }
+
     /// <summary>Gets the display title for the column header.</summary>
     internal string DisplayTitle => Title ?? Field;
 
@@ -64,6 +73,8 @@
     {
         var value = GetValue(item);
         if (value is null) return string.Empty;
+        if (!string.IsNullOrEmpty(DisplayFormat) && value is IFormattable)
+            return string.Format(null, DisplayFormat, value);
         if (!string.IsNullOrEmpty(Format) && value is IFormattable formattable)
             return formattable.ToString(Format, null);
         return value.ToString() ?? string.Empty;

@@ -33,6 +33,9 @@ public class GridReadEventArgs<TItem>
 
     /// <summary>Set this to the total number of items (before paging) so the pager can calculate page count.</summary>
     public int Total { get; set; }
+
+    /// <summary>Cancellation token that is cancelled if a new data request starts before this one completes.</summary>
+    public CancellationToken CancellationToken { get; init; }
 }
 
 /// <summary>
@@ -140,4 +143,40 @@ public class GridGroupHeaderContext<TItem>
 
     /// <summary>Whether this group is collapsed.</summary>
     public bool IsCollapsed { get; init; }
+
+    /// <summary>Computes the sum of a decimal property across items in this group.</summary>
+    public decimal Sum(Func<TItem, decimal> selector) => Items.Sum(selector);
+
+    /// <summary>Computes the average of a decimal property across items in this group.</summary>
+    public decimal Average(Func<TItem, decimal> selector) => Items.Count > 0 ? Items.Average(selector) : 0;
+
+    /// <summary>Computes the sum of an int property across items in this group.</summary>
+    public int Sum(Func<TItem, int> selector) => Items.Sum(selector);
+
+    /// <summary>Computes the average of an int property across items in this group.</summary>
+    public double Average(Func<TItem, int> selector) => Items.Count > 0 ? Items.Average(selector) : 0;
+
+    /// <summary>Gets the minimum value of a property across items in this group.</summary>
+    public TResult Min<TResult>(Func<TItem, TResult> selector) => Items.Min(selector)!;
+
+    /// <summary>Gets the maximum value of a property across items in this group.</summary>
+    public TResult Max<TResult>(Func<TItem, TResult> selector) => Items.Max(selector)!;
+}
+
+/// <summary>
+/// Event arguments for export lifecycle events (OnBeforeExport, OnAfterExport).
+/// </summary>
+public class GridExportEventArgs
+{
+    /// <summary>The export format (e.g. "csv").</summary>
+    public string Format { get; init; } = "csv";
+
+    /// <summary>Set to true to cancel the export.</summary>
+    public bool IsCancelled { get; set; }
+
+    /// <summary>The exported data (populated in OnAfterExport).</summary>
+    public string? Data { get; set; }
+
+    /// <summary>The number of rows exported.</summary>
+    public int RowCount { get; set; }
 }

@@ -34,6 +34,29 @@
                         @GetToolLabel(tool)
                     </button>
                 }
+                @if (CustomTools != null)
+                {
+                    @foreach (var customTool in CustomTools)
+                    {
+                        @if (customTool.Template != null)
+                        {
+                            @customTool.Template
+                        }
+                        else
+                        {
+                            <button type="button"
+                                    class="mar-editor__tool-button"
+                                    title="@customTool.Tooltip"
+                                    @onclick="@(async () => { if (customTool.OnClick != null) await customTool.OnClick(); })">
+                                @if (!string.IsNullOrEmpty(customTool.Icon))
+                                {
+                                    <span class="@customTool.Icon"></span>
+                                }
+                                @customTool.Name
+                            </button>
+                        }
+                    }
+                }
             }
         </div>
     }
@@ -89,6 +112,15 @@
 #pragma warning restore CS0649
     private HashSet<string> _activeFormats = new();
 
+    // ── Validation integration ────────────────────────────────────────
+
+    [CascadingParameter] private EditContext? CascadedEditContext { get; set; }
+
+    /// <summary>Expression identifying the bound value for form validation.</summary>
+    [Parameter] public System.Linq.Expressions.Expression<Func<string>>? ValueExpression { get; set; }
+
+    private FieldIdentifier? _fieldIdentifier;
+
     // ── Parameters ─────────────────────────────────────────────────────
 
     /// <summary>The HTML content of the editor. Supports two-way binding.</summary>
@@ -132,6 +164,9 @@
     /// <summary>Maps to aria-describedby on the content area.</summary>
     [Parameter] public string? AriaDescribedBy { get; set; }
 
+    /// <summary>Custom tools rendered after built-in tools in the toolbar.</summary>
+    [Parameter] public IEnumerable<EditorCustomTool>? CustomTools { get; set; }
+
     // ── Events ─────────────────────────────────────────────────────────
 
     /// <summary>Fires when the content changes (after debounce).</summary>
@@ -167,6 +202,15 @@
     // ── Child component registration ───────────────────────────────────
 
     internal void SetPasteSettings(EditorPasteSettings settings) => _pasteSettings = settings;
+
+    // ── Lifecycle ──────────────────────────────────────────────────────
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        if (ValueExpression != null)
+            _fieldIdentifier = FieldIdentifier.Create(ValueExpression);
+    }
 
     // ── Public API ─────────────────────────────────────────────────────
 
@@ -435,6 +479,8 @@
     {
         Value = html;
         await ValueChanged.InvokeAsync(html);
+        if (_fieldIdentifier.HasValue && CascadedEditContext != null)
+            CascadedEditContext.NotifyFieldChanged(_fieldIdentifier.Value);
         await OnChange.InvokeAsync(html);
         StateHasChanged();
     }
@@ -523,15 +569,25 @@
         var newValue = e.Value?.ToString() ?? "";
         Value = newValue;
         await ValueChanged.InvokeAsync(newValue);
+        if (_fieldIdentifier.HasValue && CascadedEditContext != null)
+            CascadedEditContext.NotifyFieldChanged(_fieldIdentifier.Value);
         await OnChange.InvokeAsync(newValue);
     }
 
     // ── Content security ───────────────────────────────────────────────
 
     /// <summary>
-    /// Sanitizes HTML to prevent XSS attacks. Strips script tags, event handlers,
-    /// javascript: URLs, and data: URLs in sensitive attributes.
+    /// Sanitizes HTML content by stripping script tags, event handlers, and
+    /// potentially dangerous content while preserving safe formatting elements.
     /// </summary>
+    /// <remarks>
+    /// Security: The editor sanitizes pasted and programmatically inserted HTML via
+    /// <see cref="SanitizeHtml"/>. Script tags, on* event handlers, and javascript:
+    /// URLs are stripped. Consumers should apply additional server-side sanitization
+    /// if the content is persisted or rendered outside the editor.
+    /// </remarks>
+    /// <param name="html">Raw HTML to sanitize.</param>
+    /// <returns>Sanitized HTML safe for rendering.</returns>
     private static string SanitizeHtml(string html)
     {
         if (string.IsNullOrEmpty(html)) return "";
@@ -562,6 +618,12 @@
         return html;
     }
 
+    /// <summary>
+    /// Sanitizes an attribute value by encoding HTML-sensitive characters
+    /// (double quotes, angle brackets) to prevent attribute injection attacks.
+    /// </summary>
+    /// <param name="value">The raw attribute value.</param>
+    /// <returns>An HTML-encoded string safe for use in attribute values.</returns>
     private static string SanitizeAttr(string value)
     {
         return value.Replace("\"", "&quot;").Replace("<", "&lt;").Replace(">", "&gt;");

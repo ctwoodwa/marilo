@@ -1,23 +1,23 @@
 # Coverage Summary
 
 ## Snapshot
-- Date: 2026-04-04T12:00:00Z
-- Branch: workInProgress
-- Scope touched this run: Splitter, Wizard
+- Date: 2026-04-04T18:00:00Z
+- Branch: claude/marilo-gap-resolution-LDyRw
+- Scope touched this run: DataGrid Phase 1+2, Splitter, Wizard, T4 Pickers B2, Chart B1, Editor B1
 - Plan source: `src/Marilo.Components/GAP_ANALYSIS_RESOLUTION_PLAN.md`
 
 ## Component Status
-| Area | Open | In Progress | Completed | Blocked | Stage Focus | Tests Passing | Notes |
+| Area | Open | In Progress | Completed | Blocked | Stage Focus | Tests Written | Notes |
 |------|------|-------------|-----------|---------|-------------|---------------|-------|
 | TreeView | 0 | 0 | 21 | 1 (virtualization deferred) | 06-validate | 67/67 | Full closure report complete |
-| DataGrid | ~35-50 | 0 | 0 | 0 | 01-intake | 0 | Per-feature checklist ready for CDW |
+| DataGrid | ~35-50 | 0 | 15 (Ph1+Ph2) | 0 | 05-implement | 37 | Phase 1+2 pure C# gaps resolved (15/71); Phase 3+ pending |
 | DataSheet | 0 | 0 | 0 | 1 (architecture decision) | — | 0 | Blocked: MariloSpreadsheet vs MariloDataSheet |
 | Forms | ~60 | 0 | 22+12+4+4 | 6 deferred | 03-resolution | 20/20 | Resolution design done; awaiting implementation |
-| T4 Pickers | ~28 | 0 | 7 | 3 partially resolved | 06-validate (B1) | 17/17 | Batch 1 closed; Batch 2-3 pending |
-| Splitter | 6 | 0 | 4 (pre-resolved) | 0 | **03-resolution** | 0 | Resolution design complete this run; 4 gaps already in code |
-| Wizard | 18 | 0 | 0 | 0 | **03-resolution** | 0 | Resolution design complete this run; wizard non-functional (GAP-018) |
-| Chart | ~20-30 | 0 | 0 | 0 | 01-intake | 0 | Intake complete; awaiting prioritization |
-| Editor | ~15-25 | 0 | 0 | 0 | 01-intake | 0 | Intake complete; awaiting prioritization |
+| T4 Pickers | ~28 | 0 | 11 | 3 partially resolved | 06-validate (B2) | 26 (17+9) | Batch 1+2 closed; Batch 3 pending |
+| Splitter | 0 | 0 | 8 resolved | 1 demo deferred | **06-validate** | 17 | Stage 06 closure report complete; runtime test pending |
+| Wizard | 0 | 0 | 18 resolved | 0 | **06-validate** | 27 | Stage 06 closure report complete; runtime test pending |
+| Chart | ~8 remaining | 0 | 8 (B1) | 0 | **06-validate (B1)** | 16 | Batch 1 closed; 3 already resolved, 5 implemented |
+| Editor | ~6 remaining | 0 | 6 (B1) | 0 | **06-validate (B1)** | 14 | Batch 1 closed; 2 already resolved, 4 implemented |
 | FileManager | ~20-30 | 0 | 0 | 0 | 01-intake | 0 | Intake complete; awaiting prioritization |
 | Scheduler | ~25-40 | 0 | 0 | 0 | 01-intake | 0 | Recommend dedicated CDW |
 | Gantt | ~30-50 | 0 | 0 | 0 | 01-intake | 0 | Recommend dedicated CDW |
@@ -30,15 +30,26 @@
 ## Stage Output Index
 | Item | Stage 03 Resolution | Stage 05 Implementation | Stage 06 Closure | Last Updated |
 |------|---------------------|-------------------------|------------------|--------------|
-| Splitter | `stages/03-resolution-design/output/gap-splitter-resolutions.md` | — | — | 2026-04-04 |
-| Wizard | `stages/03-resolution-design/output/gap-wizard-resolutions.md` | — | — | 2026-04-04 |
+| DataGrid Ph1 | `stages/03-resolution-design/output/gap-datagrid-phase1-resolutions.md` | `stages/05-implement/output/gap-datagrid-phase1-implementation-log.md` | — | 2026-04-04 |
+| DataGrid Ph2 | `stages/03-resolution-design/output/gap-datagrid-phase2-resolutions.md` | `stages/05-implement/output/gap-datagrid-phase2-implementation-log.md` | — | 2026-04-04 |
+| Splitter | `stages/03-resolution-design/output/gap-splitter-resolutions.md` | `stages/05-implement/output/gap-splitter-implementation-log.md` | `stages/06-validate/output/gap-splitter-closure-report.md` | 2026-04-04 |
+| Wizard | `stages/03-resolution-design/output/gap-wizard-resolutions.md` | `stages/05-implement/output/gap-wizard-implementation-log.md` | `stages/06-validate/output/gap-wizard-closure-report.md` | 2026-04-04 |
+| T4 Pickers B2 | — | `stages/05-implement/output/gap-t4-picker-batch2-implementation-log.md` | `stages/06-validate/output/gap-t4-picker-batch2-closure-report.md` | 2026-04-04 |
+| Chart B1 | — | `stages/05-implement/output/gap-chart-batch1-implementation-log.md` | `stages/06-validate/output/gap-chart-batch1-closure-report.md` | 2026-04-04 |
+| Editor B1 | — | `stages/05-implement/output/gap-editor-batch1-implementation-log.md` | `stages/06-validate/output/gap-editor-batch1-closure-report.md` | 2026-04-04 |
 
 ## Recent Movement
-- Splitter: Stage 03 resolution design completed (5 resolutions + 4 pre-resolved gaps identified via code audit)
-- Wizard: Stage 03 resolution design completed (14 resolutions covering all 18 gaps; critical CascadingValue bug documented)
-- Both components ready for Stage 05 implementation
+- DataGrid Phase 2: 6 important gaps resolved (validation, composite filters, auto-gen attributes, aggregates, export lifecycle, CancellationToken)
+- DataGrid Phase 1: 9 pure C# gaps resolved (SortMode, Editable, ConfirmDelete, SetStateAsync, AddFilter/ClearFilters, pager, DisplayFormat, Groupable, ExpandedItems)
+- DataGrid: 37 total bUnit tests (4 original + 18 Ph1 + 15 Ph2)
+- Chart Batch 1: Stage 06 closure (8/8 resolved — 3 pre-existing, 5 implemented; 16 bUnit tests)
+- Editor Batch 1: Stage 06 closure (6/6 resolved — 2 pre-existing, 4 implemented; 14 bUnit tests)
+- T4 Pickers Batch 2: Stage 06 closure (4/4 resolved; 9 bUnit tests)
+- Splitter: Stage 06 closure (8/10 resolved; 17 bUnit tests)
+- Wizard: Stage 06 closure (18/18 resolved; 27 bUnit tests)
 
 ## Active Blockers
 - TreeView Delivery: Demo scope approval needed (human decision)
 - DataSheet: Architecture decision (MariloSpreadsheet vs MariloDataSheet)
 - No-source components (Diagram, DockManager, Map, PivotGrid): Build/integrate/defer decision needed
+- .NET SDK not available: Cannot run `dotnet test` to verify test pass/fail

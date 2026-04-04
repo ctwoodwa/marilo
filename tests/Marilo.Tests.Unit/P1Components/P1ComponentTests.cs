@@ -164,4 +164,52 @@ public class P1ComponentTests : MariloTestBase
 
         Assert.Contains("Drop files here", cut.Markup);
     }
+
+    [Fact]
+    public void Upload_SelectFilesButtonTemplate_RendersCustomContent()
+    {
+        Services.AddSingleton(new HttpClient());
+
+        var cut = Render<MariloUpload>(parameters => parameters
+            .Add(p => p.SaveUrl, "/api/upload")
+            .Add(p => p.SelectFilesButtonTemplate, (RenderFragment)(b => b.AddContent(0, "Choose your files")))
+        );
+
+        Assert.Contains("Choose your files", cut.Markup);
+        Assert.DoesNotContain("Browse files", cut.Markup);
+    }
+
+    [Fact]
+    public void Upload_FileTemplate_ParameterExists()
+    {
+        Services.AddSingleton(new HttpClient());
+
+        // Verify the FileTemplate parameter can be set without error.
+        // Full render testing requires file selection which is not available in bUnit.
+        var cut = Render<MariloUpload>(parameters => parameters
+            .Add(p => p.SaveUrl, "/api/upload")
+            .Add(p => p.FileTemplate, (RenderFragment<UploadFileInfo>)(file =>
+                (RenderTreeBuilder b) => { b.AddContent(0, $"custom-{file.Name}"); }))
+        );
+
+        // Component renders without error — parameter is wired correctly
+        Assert.Contains("mar-upload", cut.Markup);
+    }
+
+    [Fact]
+    public void Upload_FileInfoTemplate_ParameterExists()
+    {
+        Services.AddSingleton(new HttpClient());
+
+        // Verify the FileInfoTemplate parameter can be set without error.
+        // Full render testing requires file selection which is not available in bUnit.
+        var cut = Render<MariloUpload>(parameters => parameters
+            .Add(p => p.SaveUrl, "/api/upload")
+            .Add(p => p.FileInfoTemplate, (RenderFragment<UploadFileInfo>)(file =>
+                (RenderTreeBuilder b) => { b.AddContent(0, $"info-{file.Name}"); }))
+        );
+
+        // Component renders without error — parameter is wired correctly
+        Assert.Contains("mar-upload", cut.Markup);
+    }
 }
