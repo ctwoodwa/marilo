@@ -70,21 +70,17 @@ public partial class MariloDataGrid<TItem>
             builder.CloseElement(); // td
         }
 
-        // Data cells
         foreach (var column in _visibleColumns)
         {
             var cellRenderArgs = GetCellRenderArgs(column, item);
-            var baseCellStyle = column.TextAlign != null ? $"text-align:{column.TextAlign};" : null;
             var cellClass = CssProvider.DataGridCellClass();
             if (cellRenderArgs?.Class != null) cellClass = $"{cellClass} {cellRenderArgs.Class}";
-            var cellStyle = cellRenderArgs?.Style != null
-                ? (baseCellStyle != null ? $"{baseCellStyle}{cellRenderArgs.Style}" : cellRenderArgs.Style)
-                : baseCellStyle;
+            var finalCellStyle = GetColumnCellStyle(column, cellRenderArgs?.Style);
 
             builder.OpenElement(50, "td");
             builder.AddAttribute(51, "class", cellClass);
             builder.AddAttribute(52, "role", "gridcell");
-            if (cellStyle != null) builder.AddAttribute(53, "style", cellStyle);
+            if (finalCellStyle != null) builder.AddAttribute(53, "style", finalCellStyle);
 
             // InCell: click to edit a specific cell
             if (EditMode == GridEditMode.InCell && !isEditing && column.Editable)
@@ -145,12 +141,10 @@ public partial class MariloDataGrid<TItem>
 
             if (isEditing && EditMode == GridEditMode.Inline)
             {
-                // Inline editing: Save/Cancel in the row
                 builder.OpenElement(82, "button");
                 builder.AddAttribute(83, "type", "button");
                 builder.AddAttribute(84, "class", "mar-datagrid-cmd-btn");
                 builder.AddAttribute(85, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, async (_) => await SaveEdit()));
-                builder.AddEventStopPropagationAttribute(86, "onclick", true);
                 builder.AddContent(87, "Save");
                 builder.CloseElement();
 
@@ -216,13 +210,15 @@ public partial class MariloDataGrid<TItem>
             builder.OpenElement(10, "td");
             builder.AddAttribute(11, "class", CssProvider.DataGridCellClass());
             builder.AddAttribute(12, "role", "gridcell");
+            var editRowCombinedStyle = GetColumnCellStyle(column);
+            if (!string.IsNullOrEmpty(editRowCombinedStyle)) builder.AddAttribute(13, "style", editRowCombinedStyle);
             if (column.EditorTemplate != null)
             {
-                builder.AddContent(13, column.EditorTemplate(item));
+                builder.AddContent(14, column.EditorTemplate(item));
             }
             else
             {
-                builder.AddContent(13, column.GetDisplayValue(item));
+                builder.AddContent(14, column.GetDisplayValue(item));
             }
             builder.CloseElement();
         }

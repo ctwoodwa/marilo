@@ -2,6 +2,7 @@ using System.Reflection;
 using Marilo.Core.Base;
 using Marilo.Core.Data;
 using Marilo.Core.Enums;
+using Marilo.Components.DataGrid.Sizing;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 
@@ -26,6 +27,11 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
     internal TItem? _originalItem;
     internal bool _isCreating;
     internal string? _inCellEditingField;
+
+    // Centralized sizing state for header/body alignment.
+    internal IColumnWidthProvider _widthProvider = new FixedWidthProvider();
+    internal GridLayoutContract _layoutContract = GridLayoutContract.Empty;
+    private readonly Dictionary<MariloGridColumn<TItem>, string> _columnSizingIds = [];
 
     // AutoGenerate state
     internal bool _autoColumnsGenerated;
@@ -135,6 +141,9 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
     /// <summary>Placeholder text for the search box.</summary>
     [Parameter] public string SearchBoxPlaceholder { get; set; } = "Search...";
 
+    /// <summary>Optional custom width provider. Defaults to <see cref="FixedWidthProvider"/>.</summary>
+    [Parameter] public IColumnWidthProvider? ColumnWidthProvider { get; set; }
+
     // ── Parameters: Templates ───────────────────────────────────────────
 
     /// <summary>Column definitions (MariloGridColumn components).</summary>
@@ -231,13 +240,16 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
         if (!_columns.Contains(column))
         {
             _columns.Add(column);
+            ResolveLayoutContract();
             StateHasChanged();
         }
     }
 
     internal void UnregisterColumn(MariloGridColumn<TItem> column)
     {
+        _columnSizingIds.Remove(column);
         _columns.Remove(column);
+        ResolveLayoutContract();
         StateHasChanged();
     }
 
@@ -260,7 +272,7 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
         get
         {
             var parts = new List<string>();
-            if (Width != null) parts.Add($"width:{Width};");
+            parts.Add($"width:{Width ?? "100%"};");
             return parts.Count > 0 ? string.Join("", parts) : null;
         }
     }
@@ -273,6 +285,9 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
             return $"max-height:{Height};overflow:auto;";
         }
     }
+
+    private string ContentContainerStyle
+        => $"width:100%;overflow-x:auto;{ContentStyle}";
 
     // ── Lifecycle ───────────────────────────────────────────────────────
 
@@ -302,7 +317,61 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
             GenerateColumnsFromModel();
         }
 
+        ResolveLayoutContract();
+
         await ProcessDataAsync();
+    }
+
+    internal void ResolveLayoutContract()
+    {
+        _widthProvider = ColumnWidthProvider ?? new FixedWidthProvider();
+
+        var visible = _visibleColumns;
+        var entries = new List<ColumnSizingEntry>(visible.Count);
+
+        for (var i = 0; i < visible.Count; i++)
+        {
+            var column = visible[i];
+            if (!_columnSizingIds.TryGetValue(column, out var id))
+            {
+                id = string.IsNullOrWhiteSpace(column.Field)
+                    ? $"col-{i}"
+                    : $"{column.Field}-{i}";
+                _columnSizingIds[column] = id;
+            }
+
+            entries.Add(new ColumnSizingEntry(
+                id,
+                column.EffectiveWidth,
+                50,
+                null,
+                column.TextAlign));
+        }
+
+        _layoutContract = _widthProvider.Resolve(entries);
+    }
+
+    private string? GetSizingId(MariloGridColumn<TItem> column)
+        => _columnSizingIds.TryGetValue(column, out var id) ? id : null;
+
+    internal string? GetResolvedColumnWidth(MariloGridColumn<TItem> column)
+    {
+        var id = GetSizingId(column);
+        if (id is null) return null;
+        return _layoutContract.WidthById.TryGetValue(id, out var width) ? width : null;
+    }
+
+    internal string? GetColumnWidthStyle(MariloGridColumn<TItem> column)
+    {
+        var width = GetResolvedColumnWidth(column);
+        return width is null ? null : $"width:{width};";
+    }
+
+    internal string? GetColumnCellStyle(MariloGridColumn<TItem> column, string? extraStyle = null)
+    {
+        var widthStyle = GetColumnWidthStyle(column);
+        var textAlignStyle = column.TextAlign != null ? $"text-align:{column.TextAlign};" : null;
+        return string.Join("", new[] { widthStyle, textAlignStyle, extraStyle }.Where(s => !string.IsNullOrEmpty(s)));
     }
 
     private void GenerateColumnsFromModel()
@@ -424,6 +493,19 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
 
         if (state.CollapsedGroups != null)
             _collapsedGroups = new HashSet<string>(state.CollapsedGroups);
+
+        if (state.ColumnStates != null && state.ColumnStates.Count > 0)
+        {
+            foreach (var columnState in state.ColumnStates)
+            {
+                var column = _columns.FirstOrDefault(c => c.Field == columnState.Field);
+                if (column is null) continue;
+
+                column.RuntimeWidth = columnState.Width;
+            }
+        }
+
+        ResolveLayoutContract();
 
         await ProcessDataAsync();
         StateHasChanged();

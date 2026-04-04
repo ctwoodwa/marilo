@@ -5,3 +5,109 @@
 // Base styles (will be refactored into partials: _tokens, _buttons, _forms, etc.)
 @forward 'generated-base';
 @forward 'signalr-status';
+
+// DataGrid uses semantic <table> markup. Ensure legacy flex row rules do not override table layout.
+.mar-datagrid table tr.mar-datagrid-header,
+.mar-datagrid table tr.mar-datagrid-row {
+	display: table-row;
+}
+
+.mar-datagrid .mar-datagrid-header-cell,
+.mar-datagrid .mar-datagrid-header-cell--sortable,
+.mar-datagrid .mar-datagrid-header-cell--sorted {
+	position: relative;
+}
+
+.mar-datagrid .mar-datagrid-filter-menu-btn {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin-left: 0.35rem;
+	border: 1px solid var(--marilo-color-border, #c8c6c4);
+	background: var(--marilo-color-surface, #ffffff);
+	color: var(--marilo-color-text-muted, #605e5c);
+	border-radius: 4px;
+	line-height: 1;
+	min-width: 1.5rem;
+	height: 1.5rem;
+	cursor: pointer;
+	transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mar-datagrid .mar-datagrid-filter-menu-btn:hover {
+	border-color: var(--marilo-color-primary, #0f6cbd);
+	color: var(--marilo-color-primary, #0f6cbd);
+}
+
+.mar-datagrid .mar-datagrid-filter-menu-icon {
+	width: 0.875rem;
+	height: 0.875rem;
+}
+
+.mar-datagrid .mar-datagrid-filter-menu-btn--active {
+	border-color: var(--marilo-color-primary, #0f6cbd);
+	background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 10%, #ffffff);
+	color: var(--marilo-color-primary, #0f6cbd);
+	box-shadow: 0 0 0 1px color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 35%, transparent);
+}
+
+.mar-datagrid .mar-datagrid-filter-menu-btn--active::after {
+	content: "";
+	position: absolute;
+	top: -3px;
+	right: -3px;
+	width: 6px;
+	height: 6px;
+	border-radius: 999px;
+	background: var(--marilo-color-primary, #0f6cbd);
+}
+
+.mar-datagrid .mar-datagrid-filter-popup {
+	position: absolute;
+	top: calc(100% + 0.35rem);
+	right: 0;
+	z-index: 30;
+	min-width: 260px;
+}
+
+.mar-datagrid .mar-datagrid-filter-menu {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	padding: 0.75rem;
+	border: 1px solid var(--marilo-color-border, #d1d1d1);
+	border-radius: 8px;
+	background: var(--marilo-color-surface, #ffffff);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.mar-datagrid .mar-datagrid-filter-menu label {
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--marilo-color-text, #323130);
+}
+
+.mar-datagrid .mar-datagrid-filter-menu-operator,
+.mar-datagrid .mar-datagrid-filter-menu-value {
+	width: 100%;
+	border: 1px solid var(--marilo-color-border, #c8c6c4);
+	border-radius: 4px;
+	padding: 0.4rem 0.55rem;
+	font-size: 0.9rem;
+	background: #fff;
+}
+
+.mar-datagrid .mar-datagrid-filter-menu-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.5rem;
+}
+
+.mar-datagrid .mar-datagrid-filter-menu-actions .mar-datagrid-cmd-btn {
+	border: 1px solid var(--marilo-color-border, #c8c6c4);
+	border-radius: 6px;
+	padding: 0.35rem 0.75rem;
+	background: #fff;
+	cursor: pointer;
+}

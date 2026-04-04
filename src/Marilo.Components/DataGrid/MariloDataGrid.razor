@@ -48,8 +48,27 @@
         </div>
     }
 
-    <div class="mar-datagrid-content" style="@ContentStyle">
-        <table>
+    <div class="mar-datagrid-content" style="@ContentContainerStyle">
+        <table style="width:100%;table-layout:fixed;">
+            <colgroup>
+                @if (DetailTemplate != null)
+                {
+                    <col style="width:40px;" />
+                }
+                @if (ShowCheckboxColumn)
+                {
+                    <col style="width:40px;" />
+                }
+                @foreach (var column in _visibleColumns)
+                {
+                    <col style="@GetColumnWidthStyle(column)" />
+                }
+                @if (EditMode != GridEditMode.None && EditMode != GridEditMode.InCell)
+                {
+                    <col style="width:120px;" />
+                }
+            </colgroup>
+
             @* Header row *@
             <thead>
                 <tr class="@CssProvider.DataGridHeaderClass()" role="row">
@@ -75,9 +94,7 @@
                         var isSorted = _state.SortDescriptors.Any(s => s.Field == column.Field);
                         var sortDir = _state.SortDescriptors.FirstOrDefault(s => s.Field == column.Field);
                         var headerCellClass = CssProvider.DataGridHeaderCellClass(isSortable, isSorted);
-                        var headerStyle = column.EffectiveWidth != null ? $"width:{column.EffectiveWidth};" : null;
-                        var textAlignStyle = column.TextAlign != null ? $"text-align:{column.TextAlign};" : null;
-                        var combinedStyle = string.Join("", new[] { headerStyle, textAlignStyle }.Where(s => s != null));
+                        var combinedStyle = GetColumnCellStyle(column);
 
                         <th class="@headerCellClass"
                             role="columnheader"
@@ -106,13 +123,24 @@
                             @if (FilterMode == GridFilterMode.FilterMenu && column.Filterable)
                             {
                                 var col = column;
+                                var isFilterMenuOpen = _filterMenuField == col.Field;
                                 <button type="button"
                                         class="mar-datagrid-filter-menu-btn @(_state.FilterDescriptors.Any(f => f.Field == col.Field) ? "mar-datagrid-filter-menu-btn--active" : "")"
                                         aria-label="@($"Filter {column.DisplayTitle}")"
+                                        aria-expanded="@(isFilterMenuOpen ? "true" : "false")"
                                         @onclick:stopPropagation="true"
                                         @onclick="() => ToggleFilterMenu(col.Field)">
-                                    &#x25BD;
+                                    <svg class="mar-datagrid-filter-menu-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+                                        <path fill="currentColor" d="M2 3.5A1.5 1.5 0 0 1 3.5 2h9A1.5 1.5 0 0 1 14 3.5a1.5 1.5 0 0 1-.33.94L10 9v3.25c0 .29-.16.56-.42.7l-2 1A.75.75 0 0 1 6.5 13.3V9L2.33 4.44A1.5 1.5 0 0 1 2 3.5Z" />
+                                    </svg>
                                 </button>
+
+                                @if (isFilterMenuOpen)
+                                {
+                                    <div class="mar-datagrid-filter-popup" @onclick:stopPropagation="true">
+                                        @RenderFilterMenu()
+                                    </div>
+                                }
                             }
                         </th>
                     }
@@ -136,7 +164,8 @@
                         }
                         @foreach (var column in _visibleColumns)
                         {
-                            <td class="@CssProvider.DataGridFilterCellClass()" role="gridcell">
+                            var filterCellCombinedStyle = GetColumnCellStyle(column);
+                                <td class="@CssProvider.DataGridFilterCellClass()" role="gridcell" style="@(string.IsNullOrEmpty(filterCellCombinedStyle) ? null : filterCellCombinedStyle)">
                                 @if (column.Filterable)
                                 {
                                     var currentFilter = _state.FilterDescriptors.FirstOrDefault(f => f.Field == column.Field);
@@ -152,16 +181,6 @@
                         {
                             <td class="@CssProvider.DataGridFilterCellClass()" role="gridcell"></td>
                         }
-                    </tr>
-                }
-
-                @* FilterMenu popups *@
-                @if (FilterMode == GridFilterMode.FilterMenu && _filterMenuField != null)
-                {
-                    <tr class="mar-datagrid-filter-menu-row">
-                        <td colspan="@TotalColumnCount">
-                            @RenderFilterMenu()
-                        </td>
                     </tr>
                 }
             </thead>
@@ -240,8 +259,9 @@
                         }
                         @foreach (var column in _visibleColumns)
                         {
-                            <td class="mar-datagrid-footer-cell" role="gridcell"
-                                style="@(column.TextAlign != null ? $"text-align:{column.TextAlign};" : null)">
+                            var footerCombinedStyle = GetColumnCellStyle(column);
+                                <td class="mar-datagrid-footer-cell" role="gridcell"
+                                        style="@(string.IsNullOrEmpty(footerCombinedStyle) ? null : footerCombinedStyle)">
                                 @if (column.FooterTemplate != null)
                                 {
                                     @column.FooterTemplate

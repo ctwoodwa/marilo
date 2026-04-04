@@ -3,7 +3,7 @@ namespace Marilo.Demo.Data;
 public class SiteLinks
 {
     public string DocsBaseUrl { get; set; } = "http://localhost:8081";
-    public string DemoBaseUrl { get; set; } = "https://localhost:5301";
+    public string DemoBaseUrl { get; set; } = "http://localhost:5301";
 
     // Docs site routes
     public string GettingStarted => $"{DocsBaseUrl}/articles/getting-started/overview.html";
