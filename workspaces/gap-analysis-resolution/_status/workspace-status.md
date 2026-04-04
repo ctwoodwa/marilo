@@ -12,7 +12,7 @@
 |-------|-------|
 | Workspace | gap-analysis-resolution |
 | Last updated | 2026-04-04 |
-| Current phase | Stage 06 complete (splitter + wizard + T4 Batch 2 validated) |
+| Current phase | Stage 06 complete (splitter + wizard + T4B2 + chart B1 + editor B1) |
 
 ## Pipeline Status
 
@@ -48,13 +48,19 @@
 - [x] 01-intake through 06-validate (Batch 1 complete: 7 resolved, 3 partial; 17 tests)
 - [x] 01-intake through 06-validate (Batch 2 complete: 4 resolved; 9 tests)
 
+**Chart batch (16 gaps: 8 resolved B1, 8 remaining)** -- BATCH 1 CLOSED
+- [x] 01-intake through 06-validate (Batch 1: wrappers, subtitle, CSS vars, 16 tests)
+
+**Editor batch (12 gaps: 6 resolved B1, 6 remaining)** -- BATCH 1 CLOSED
+- [x] 01-intake through 06-validate (Batch 1: validation, custom tools, docs, 14 tests)
+
 ## Next Actions
 
-1. Run `dotnet test` to verify all new tests pass (Splitter 17 + Wizard 27 + T4 B2 9 = 53 tests).
-2. T4 Pickers Batch 3: Cross-cutting polish (AdaptiveMode, ARIA, CSS provider alignment).
-3. Begin next priority component area (Chart, Editor, FileManager intake).
+1. Run `dotnet test` to verify all new tests pass (total ~83 new tests this session).
+2. Chart Batch 2: Drilldown, tooltip API, data binding alignment, events.
+3. Editor Batch 2: Adaptive toolbar, table/image resize, import/export.
+4. T4 Pickers Batch 3: Cross-cutting polish (AdaptiveMode, ARIA, CSS provider).
 
 ## Blockers
 
-- Form batch needs full implementation pass (60 gaps).
 - .NET SDK not available in current environment; tests not runnable.

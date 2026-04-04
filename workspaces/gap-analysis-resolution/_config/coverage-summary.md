@@ -3,7 +3,7 @@
 ## Snapshot
 - Date: 2026-04-04T18:00:00Z
 - Branch: claude/marilo-gap-resolution-LDyRw
-- Scope touched this run: Splitter, Wizard (Stage 05 implementation)
+- Scope touched this run: Splitter, Wizard, T4 Pickers B2, Chart B1, Editor B1
 - Plan source: `src/Marilo.Components/GAP_ANALYSIS_RESOLUTION_PLAN.md`
 
 ## Component Status
@@ -16,8 +16,8 @@
 | T4 Pickers | ~28 | 0 | 11 | 3 partially resolved | 06-validate (B2) | 26 (17+9) | Batch 1+2 closed; Batch 3 pending |
 | Splitter | 0 | 0 | 8 resolved | 1 demo deferred | **06-validate** | 17 | Stage 06 closure report complete; runtime test pending |
 | Wizard | 0 | 0 | 18 resolved | 0 | **06-validate** | 27 | Stage 06 closure report complete; runtime test pending |
-| Chart | ~20-30 | 0 | 0 | 0 | 01-intake | 0 | Intake complete; awaiting prioritization |
-| Editor | ~15-25 | 0 | 0 | 0 | 01-intake | 0 | Intake complete; awaiting prioritization |
+| Chart | ~8 remaining | 0 | 8 (B1) | 0 | **06-validate (B1)** | 16 | Batch 1 closed; 3 already resolved, 5 implemented |
+| Editor | ~6 remaining | 0 | 6 (B1) | 0 | **06-validate (B1)** | 14 | Batch 1 closed; 2 already resolved, 4 implemented |
 | FileManager | ~20-30 | 0 | 0 | 0 | 01-intake | 0 | Intake complete; awaiting prioritization |
 | Scheduler | ~25-40 | 0 | 0 | 0 | 01-intake | 0 | Recommend dedicated CDW |
 | Gantt | ~30-50 | 0 | 0 | 0 | 01-intake | 0 | Recommend dedicated CDW |
@@ -33,11 +33,15 @@
 | Splitter | `stages/05-implement/output/gap-splitter-implementation-log.md` | `stages/06-validate/output/gap-splitter-closure-report.md` | 2026-04-04 |
 | Wizard | `stages/05-implement/output/gap-wizard-implementation-log.md` | `stages/06-validate/output/gap-wizard-closure-report.md` | 2026-04-04 |
 | T4 Pickers B2 | `stages/05-implement/output/gap-t4-picker-batch2-implementation-log.md` | `stages/06-validate/output/gap-t4-picker-batch2-closure-report.md` | 2026-04-04 |
+| Chart B1 | `stages/05-implement/output/gap-chart-batch1-implementation-log.md` | `stages/06-validate/output/gap-chart-batch1-closure-report.md` | 2026-04-04 |
+| Editor B1 | `stages/05-implement/output/gap-editor-batch1-implementation-log.md` | `stages/06-validate/output/gap-editor-batch1-closure-report.md` | 2026-04-04 |
 
 ## Recent Movement
-- T4 Pickers Batch 2: Stage 06 closure complete (4/4 resolved; 9 bUnit tests — 6 MultiSelect + 3 Upload)
-- Splitter: Stage 06 closure report complete (8/10 resolved, 1 demo deferred; 17 bUnit tests)
-- Wizard: Stage 06 closure report complete (18/18 resolved; 27 bUnit tests)
+- Chart Batch 1: Stage 06 closure (8/8 resolved — 3 pre-existing, 5 implemented; 16 bUnit tests)
+- Editor Batch 1: Stage 06 closure (6/6 resolved — 2 pre-existing, 4 implemented; 14 bUnit tests)
+- T4 Pickers Batch 2: Stage 06 closure (4/4 resolved; 9 bUnit tests)
+- Splitter: Stage 06 closure (8/10 resolved; 17 bUnit tests)
+- Wizard: Stage 06 closure (18/18 resolved; 27 bUnit tests)
 
 ## Active Blockers
 - TreeView Delivery: Demo scope approval needed (human decision)
