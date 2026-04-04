@@ -1039,7 +1039,8 @@ This section routes the "Recommended Next Actions" from the executive report int
 | T4 Pickers Batch 1 | Implement + test 10 high-severity core API gaps across 5 components | No | `gap-analysis-resolution` Stage 03→05→06 | **Complete** (7 resolved, 3 partial; 17 tests) |
 | T1 Splitter | Gap analysis intake → prioritize → resolution design | No | `gap-analysis-resolution` Stage 01→02→03 | **Intake + prioritize complete** (10 gaps) |
 | T1 Wizard | Gap analysis intake → prioritize → resolution design | No | `gap-analysis-resolution` Stage 01→02→03 | **Intake + prioritize complete** (18 gaps) |
-| DataGrid Delivery | Per-feature spec/demo audits for 24 feature areas (~35-50 gaps) | No | `datagrid-delivery` CDW | **Checklist ready for CDW** (71 items) |
+| DataGrid Phase 1 | Pure C# gap resolutions (SortMode, Editable, ConfirmDelete, SetStateAsync, filters, pager, DisplayFormat, Groupable, ExpandedItems) | No | `gap-analysis-resolution` Stage 02→03→05 | **Complete** (9 resolved, 18 tests) |
+| DataGrid Phase 2+ | Validation, grouping aggregates, export, frozen columns, cell selection | No | `gap-analysis-resolution` Stage 03 | **Pending** (~26 remaining important gaps) |
 | No-source Components (T4) | Architecture strategy for Diagram, DockManager, Map, PivotGrid | **Yes** — human decision | Planning / enterprise-ICM | Awaiting decision |
 
 ### Blocked Decisions — Human Input Required

@@ -11,8 +11,8 @@
 | Field | Value |
 |-------|-------|
 | Workspace | gap-analysis-resolution |
-| Last updated | 2026-04-03 |
-| Current phase | Stage 03 (form batch active) |
+| Last updated | 2026-04-04 |
+| Current phase | Stage 05 (datagrid phase 1 complete) |
 
 ## Pipeline Status
 
@@ -23,22 +23,26 @@
 - [x] 05-implement (04 skipped for batch scope)
 - [x] 06-validate
 
+**DataGrid Phase 1 (9 pure C# gaps)** -- IMPLEMENTED
+- [x] 01-intake (per-feature checklist: 71 gaps)
+- [x] 02-prioritize (phased backlog created)
+- [x] 03-resolution-design (9 resolutions)
+- [x] 05-implement (9/9 resolved, 1 deferred)
+- [ ] 06-validate
+
 **Form batch (60 gaps)** -- IN PROGRESS
 - [x] 01-intake
 - [x] 02-prioritize
-- [ ] **03-resolution-design** (in progress)
+- [x] 03-resolution-design
 - [ ] 05-implement
 - [ ] 06-validate
 
-**t4-pickers / readonly-guards / expandall-lazyload** -- AT INTAKE
-- [x] 01-intake (complete, awaiting next steps)
+**Splitter / Wizard** -- STAGE 03 COMPLETE
+- [x] 01-intake through 03-resolution-design
+- [ ] 05-implement
 
 ## Next Actions
 
-1. Complete form batch resolution design (Stage 03).
-2. Start resolution design for t4-pickers, readonly-guards, expandall-lazyload batches.
-3. Begin form batch implementation (Stage 05) after resolution design.
-
-## Blockers
-
-- Form batch needs full implementation pass (60 gaps).
+1. Validate DataGrid Phase 1 (Stage 06 closure report).
+2. Begin DataGrid Phase 2 resolution design (validation, grouping aggregates, export).
+3. Start Splitter or Wizard implementation (Stage 05).

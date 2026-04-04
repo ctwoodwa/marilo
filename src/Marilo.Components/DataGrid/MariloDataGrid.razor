@@ -270,7 +270,7 @@
                     {
                         <div class="mar-datagrid-popup-field">
                             <label>@column.DisplayTitle</label>
-                            @if (column.EditorTemplate != null)
+                            @if (column.Editable && column.EditorTemplate != null)
                             {
                                 @column.EditorTemplate(_editingItem)
                             }
@@ -296,17 +296,59 @@
 
         <div class="@CssProvider.DataGridPagerClass()" role="navigation" aria-label="Pagination">
             <button type="button"
+                    class="mar-datagrid-pager-btn mar-datagrid-pager-btn--prev"
                     disabled="@(_state.CurrentPage <= 1)"
                     aria-label="Previous page"
                     @onclick="GoToPreviousPage">
                 &laquo; Previous
             </button>
 
+            @{
+                var halfButtons = PagerButtonCount / 2;
+                var startPage = Math.Max(1, _state.CurrentPage - halfButtons);
+                var endPage = Math.Min(totalPages, startPage + PagerButtonCount - 1);
+                if (endPage - startPage + 1 < PagerButtonCount)
+                    startPage = Math.Max(1, endPage - PagerButtonCount + 1);
+            }
+
+            @if (startPage > 1)
+            {
+                <button type="button" class="mar-datagrid-pager-btn" @onclick="() => GoToPage(1)" aria-label="Page 1">1</button>
+                @if (startPage > 2)
+                {
+                    <span class="mar-datagrid-pager-ellipsis" aria-hidden="true">…</span>
+                }
+            }
+
+            @for (var p = startPage; p <= endPage; p++)
+            {
+                var pageNum = p;
+                var isCurrent = pageNum == _state.CurrentPage;
+                <button type="button"
+                        class="mar-datagrid-pager-btn @(isCurrent ? "mar-datagrid-pager-btn--active" : "")"
+                        disabled="@isCurrent"
+                        aria-label="@($"Page {pageNum}")"
+                        aria-current="@(isCurrent ? "page" : null)"
+                        @onclick="() => GoToPage(pageNum)">
+                    @pageNum
+                </button>
+            }
+
+            @if (endPage < totalPages)
+            {
+                @if (endPage < totalPages - 1)
+                {
+                    <span class="mar-datagrid-pager-ellipsis" aria-hidden="true">…</span>
+                }
+                <button type="button" class="mar-datagrid-pager-btn" @onclick="() => GoToPage(totalPages)" aria-label="@($"Page {totalPages}")">@totalPages</button>
+            }
+
             <span class="mar-datagrid-pager-info">
                 Page @_state.CurrentPage of @totalPages
             </span>
 
             <button type="button"
+                    class="mar-datagrid-pager-btn mar-datagrid-pager-btn--next"
                     disabled="@(_state.CurrentPage >= totalPages)"
                     aria-label="Next page"
                     @onclick="GoToNextPage">

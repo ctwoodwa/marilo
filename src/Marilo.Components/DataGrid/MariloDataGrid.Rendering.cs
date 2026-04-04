@@ -87,7 +87,7 @@ public partial class MariloDataGrid<TItem>
             if (cellStyle != null) builder.AddAttribute(53, "style", cellStyle);
 
             // InCell: click to edit a specific cell
-            if (EditMode == GridEditMode.InCell && !isEditing)
+            if (EditMode == GridEditMode.InCell && !isEditing && column.Editable)
             {
                 var cellCol = column;
                 var cellItem = item;
@@ -96,7 +96,7 @@ public partial class MariloDataGrid<TItem>
             }
 
             // Determine what to render in the cell
-            if (EditMode == GridEditMode.InCell && IsCellEditing(item, column.Field) && column.EditorTemplate != null)
+            if (EditMode == GridEditMode.InCell && IsCellEditing(item, column.Field) && column.Editable && column.EditorTemplate != null)
             {
                 // InCell: only the focused cell shows editor
                 builder.AddContent(60, column.EditorTemplate(item));
@@ -119,7 +119,7 @@ public partial class MariloDataGrid<TItem>
                 builder.CloseElement();
                 builder.CloseElement(); // div
             }
-            else if (isEditing && EditMode == GridEditMode.Inline && column.EditorTemplate != null)
+            else if (isEditing && EditMode == GridEditMode.Inline && column.Editable && column.EditorTemplate != null)
             {
                 // Inline: all cells in row show editors
                 builder.AddContent(60, column.EditorTemplate(item));

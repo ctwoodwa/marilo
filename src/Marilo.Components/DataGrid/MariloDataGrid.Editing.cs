@@ -88,6 +88,11 @@ public partial class MariloDataGrid<TItem>
     /// <summary>Deletes the specified item.</summary>
     public async Task DeleteItem(TItem item)
     {
+        if (ConfirmDelete)
+        {
+            var confirmed = await JS.InvokeAsync<bool>("confirm", ConfirmDeleteText);
+            if (!confirmed) return;
+        }
         var args = new GridEditEventArgs<TItem> { Item = item };
         if (OnDelete.HasDelegate) await OnDelete.InvokeAsync(args);
         if (!args.IsCancelled)
@@ -128,5 +133,6 @@ public partial class MariloDataGrid<TItem>
             if (OnRowExpand.HasDelegate)
                 await OnRowExpand.InvokeAsync(item);
         }
+        await NotifyStateChanged("DetailExpand");
     }
 }

@@ -1,16 +1,16 @@
 # Coverage Summary
 
 ## Snapshot
-- Date: 2026-04-04T12:00:00Z
-- Branch: workInProgress
-- Scope touched this run: Splitter, Wizard
+- Date: 2026-04-04T18:00:00Z
+- Branch: claude/marilo-gap-resolution-7PG0Q
+- Scope touched this run: DataGrid Phase 1
 - Plan source: `src/Marilo.Components/GAP_ANALYSIS_RESOLUTION_PLAN.md`
 
 ## Component Status
 | Area | Open | In Progress | Completed | Blocked | Stage Focus | Tests Passing | Notes |
 |------|------|-------------|-----------|---------|-------------|---------------|-------|
 | TreeView | 0 | 0 | 21 | 1 (virtualization deferred) | 06-validate | 67/67 | Full closure report complete |
-| DataGrid | ~35-50 | 0 | 0 | 0 | 01-intake | 0 | Per-feature checklist ready for CDW |
+| DataGrid | ~35-50 | 0 | 9 (Phase 1) | 0 | 05-implement | 18+4=22 | Phase 1 pure C# gaps resolved; Phase 2+ pending |
 | DataSheet | 0 | 0 | 0 | 1 (architecture decision) | — | 0 | Blocked: MariloSpreadsheet vs MariloDataSheet |
 | Forms | ~60 | 0 | 22+12+4+4 | 6 deferred | 03-resolution | 20/20 | Resolution design done; awaiting implementation |
 | T4 Pickers | ~28 | 0 | 7 | 3 partially resolved | 06-validate (B1) | 17/17 | Batch 1 closed; Batch 2-3 pending |
@@ -32,11 +32,13 @@
 |------|---------------------|-------------------------|------------------|--------------|
 | Splitter | `stages/03-resolution-design/output/gap-splitter-resolutions.md` | — | — | 2026-04-04 |
 | Wizard | `stages/03-resolution-design/output/gap-wizard-resolutions.md` | — | — | 2026-04-04 |
+| DataGrid Ph1 | `stages/03-resolution-design/output/gap-datagrid-phase1-resolutions.md` | `stages/05-implement/output/gap-datagrid-phase1-implementation-log.md` | — | 2026-04-04 |
 
 ## Recent Movement
+- DataGrid Phase 1: 9 pure C# gaps resolved (SortMode, Editable, ConfirmDelete, SetStateAsync, AddFilter/ClearFilters, pager, DisplayFormat, Groupable, ExpandedItems)
+- DataGrid: 18 new bUnit tests (22 total)
 - Splitter: Stage 03 resolution design completed (5 resolutions + 4 pre-resolved gaps identified via code audit)
 - Wizard: Stage 03 resolution design completed (14 resolutions covering all 18 gaps; critical CascadingValue bug documented)
-- Both components ready for Stage 05 implementation
 
 ## Active Blockers
 - TreeView Delivery: Demo scope approval needed (human decision)

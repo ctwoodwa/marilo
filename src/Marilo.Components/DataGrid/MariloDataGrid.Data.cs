@@ -170,6 +170,9 @@ public partial class MariloDataGrid<TItem>
     public async Task GroupBy(string field, SortDirection direction = SortDirection.Ascending)
     {
         if (!Groupable) return;
+        // Respect per-column Groupable setting
+        var column = _visibleColumns.FirstOrDefault(c => c.Field == field);
+        if (column != null && !column.Groupable) return;
         if (_state.GroupDescriptors.Any(g => g.Field == field)) return;
 
         _state.GroupDescriptors.Add(new GroupDescriptor { Field = field, Direction = direction });
@@ -394,7 +397,7 @@ public partial class MariloDataGrid<TItem>
     {
         if (!isSortable) return;
 
-        var isMultiSort = e?.CtrlKey == true || e?.MetaKey == true;
+        var isMultiSort = SortMode == GridSortMode.Multiple && (e?.CtrlKey == true || e?.MetaKey == true);
         var existing = _state.SortDescriptors.FirstOrDefault(s => s.Field == column.Field);
 
         if (existing is null)
@@ -527,6 +530,31 @@ public partial class MariloDataGrid<TItem>
         await NotifyStateChanged("Filter");
     }
 
+    /// <summary>Programmatically adds or replaces a filter on the specified field.</summary>
+    public async Task AddFilter(FilterDescriptor filter)
+    {
+        var existing = _state.FilterDescriptors.FirstOrDefault(f => f.Field == filter.Field);
+        if (existing != null)
+            _state.FilterDescriptors.Remove(existing);
+        _state.FilterDescriptors.Add(filter);
+        _state.CurrentPage = 1;
+        await ProcessDataAsync();
+        await NotifyPageChanged();
+        await NotifyStateChanged("Filter");
+        StateHasChanged();
+    }
+
+    /// <summary>Removes all active filters and reprocesses data.</summary>
+    public async Task ClearFilters()
+    {
+        _state.FilterDescriptors.Clear();
+        _state.CurrentPage = 1;
+        await ProcessDataAsync();
+        await NotifyPageChanged();
+        await NotifyStateChanged("Filter");
+        StateHasChanged();
+    }
+
     // ── Event Handlers: Selection ───────────────────────────────────────
 
     internal async Task HandleRowClick(TItem item, MouseEventArgs e)
@@ -636,6 +664,15 @@ public partial class MariloDataGrid<TItem>
             await NotifyPageChanged();
             await NotifyStateChanged("Page");
         }
+    }
+
+    internal async Task GoToPage(int page)
+    {
+        if (page < 1 || page > TotalPages || page == _state.CurrentPage) return;
+        _state.CurrentPage = page;
+        await ProcessDataAsync();
+        await NotifyPageChanged();
+        await NotifyStateChanged("Page");
     }
 
     internal async Task OnPageSizeDropdownChanged(ChangeEventArgs e)

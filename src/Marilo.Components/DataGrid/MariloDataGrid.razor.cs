@@ -65,10 +65,16 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
     /// <summary>Fires when the page size changes.</summary>
     [Parameter] public EventCallback<int> PageSizeChanged { get; set; }
 
+    /// <summary>The maximum number of page buttons to show in the pager. Defaults to 5.</summary>
+    [Parameter] public int PagerButtonCount { get; set; } = 5;
+
     // ── Parameters: Sorting, Filtering & Grouping ────────────────────────
 
     /// <summary>Whether sorting is enabled. Defaults to true.</summary>
     [Parameter] public bool Sortable { get; set; } = true;
+
+    /// <summary>Whether sorting allows single or multiple columns. Defaults to Multiple.</summary>
+    [Parameter] public GridSortMode SortMode { get; set; } = GridSortMode.Multiple;
 
     /// <summary>The filter mode for the grid.</summary>
     [Parameter] public GridFilterMode FilterMode { get; set; } = GridFilterMode.None;
@@ -201,6 +207,12 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
 
     /// <summary>Fires when a custom command is executed on a row.</summary>
     [Parameter] public EventCallback<GridCommandEventArgs<TItem>> OnCommand { get; set; }
+
+    /// <summary>Whether to show a confirmation dialog before deleting. Defaults to false.</summary>
+    [Parameter] public bool ConfirmDelete { get; set; }
+
+    /// <summary>The confirmation message shown when ConfirmDelete is true.</summary>
+    [Parameter] public string ConfirmDeleteText { get; set; } = "Are you sure you want to delete this item?";
 
     // ── Column Registry ─────────────────────────────────────────────────
 
@@ -337,6 +349,7 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
         OriginalEditItem = _originalItem,
         InsertedItem = _isCreating ? _editingItem : default,
         CollapsedGroups = new HashSet<string>(_collapsedGroups),
+        ExpandedItems = new HashSet<object>(_expandedDetailItems.Cast<object>()),
         ColumnStates = _visibleColumns.Select((c, i) => new GridColumnState
         {
             Field = c.Field,
@@ -358,6 +371,24 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
     /// <summary>Forces the grid to re-read its data source.</summary>
     public async Task Rebind()
     {
+        await ProcessDataAsync();
+        StateHasChanged();
+    }
+
+    /// <summary>Programmatically sets the grid state and reprocesses data.</summary>
+    public async Task SetStateAsync(GridState state)
+    {
+        if (state.CurrentPage > 0)
+            _state.CurrentPage = state.CurrentPage;
+        _state.PageSize = state.PageSize > 0 ? state.PageSize : _state.PageSize;
+        _state.SortDescriptors = state.SortDescriptors ?? [];
+        _state.FilterDescriptors = state.FilterDescriptors ?? [];
+        _state.GroupDescriptors = state.GroupDescriptors ?? [];
+        _searchText = state.SearchFilter ?? "";
+
+        if (state.CollapsedGroups != null)
+            _collapsedGroups = new HashSet<string>(state.CollapsedGroups);
+
         await ProcessDataAsync();
         StateHasChanged();
     }
