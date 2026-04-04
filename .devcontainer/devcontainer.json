@@ -6,16 +6,8 @@
 			"version": "lts"
 		},
 		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
-		"ghcr.io/devcontainers/features/github-cli:1": {},
-		"ghcr.io/devcontainers-contrib/features/chromium:1": {}
+		"ghcr.io/devcontainers/features/github-cli:1": {}
 	},
-	"runArgs": [
-		"--userns=keep-id",
-		"--cap-add=SYS_ADMIN"
-	],
-	"mounts": [
-		"source=${localEnv:USERPROFILE}\\.claude,target=/home/vscode/.claude,type=bind,consistency=cached"
-	],
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -58,8 +50,7 @@
 		"GAP_PLAN_FILE": "/workspaces/Marilo/src/Marilo.Components/GAP_ANALYSIS_RESOLUTION_PLAN.md",
 		"GAP_WORKSPACE": "/workspaces/Marilo/workspaces/gap-analysis-resolution",
 		"OPENWOLF_DAEMON_PORT": "18790",
-		"OPENWOLF_DASHBOARD_PORT": "18791",
-		"BLAZOR_DOCS_PATH": "/blazor-docs"
+		"OPENWOLF_DASHBOARD_PORT": "18791"
 	},
 	"forwardPorts": [5000, 5001, 8080, 18790, 18791],
 	"portsAttributes": {
@@ -68,5 +59,5 @@
 		"18790": { "label": "OpenWolf Daemon", "onAutoForward": "silent" },
 		"18791": { "label": "OpenWolf Dashboard", "onAutoForward": "notify" }
 	},
-	"postCreateCommand": "dotnet restore && npm install && npm --prefix .wolf/hooks install && bash .devcontainer/setup-claude-stack.sh"
+	"postCreateCommand": "sudo apt-get update && sudo apt-get install -y chromium-browser --no-install-recommends && dotnet restore && npm install && npm --prefix .wolf/hooks install && bash .devcontainer/setup-claude-stack.sh"
 }
