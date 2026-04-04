@@ -13,17 +13,20 @@ CLAUDE_CFG="${CLAUDE_CONFIG_DIR:-/home/vscode/.claude}"
 # ──────────────────────────────────────────────
 echo "==> [0/5] OpenWolf — wiring Chromium path"
 CHROME_BIN="$(command -v chromium-browser 2>/dev/null || command -v chromium 2>/dev/null || command -v google-chrome 2>/dev/null || true)"
-if [ -n "$CHROME_BIN" ]; then
+WOLF_CONFIG="/workspaces/Marilo/.wolf/config.json"
+if [ -n "$CHROME_BIN" ] && [ -f "$WOLF_CONFIG" ]; then
   node -e "
     const fs = require('fs');
-    const p = '/workspaces/Marilo/.wolf/config.json';
+    const p = '$WOLF_CONFIG';
     const cfg = JSON.parse(fs.readFileSync(p, 'utf8'));
     cfg.openwolf.designqc.chrome_path = '$CHROME_BIN';
     fs.writeFileSync(p, JSON.stringify(cfg, null, 2));
     console.log('    chrome_path set to $CHROME_BIN');
   "
-else
+elif [ -z "$CHROME_BIN" ]; then
   echo "    ! Chromium not found — designqc screenshots will be disabled until chrome_path is set manually"
+else
+  echo "    ! .wolf/config.json not found — skipping Chromium path wiring"
 fi
 
 # ──────────────────────────────────────────────
