@@ -84,6 +84,15 @@ public partial class MariloUpload : MariloComponentBase
     /// <summary>Custom template replacing the entire drop zone content.</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
+    /// <summary>Custom template for the file selection button content.</summary>
+    [Parameter] public RenderFragment? SelectFilesButtonTemplate { get; set; }
+
+    /// <summary>Custom template for each file in the file list.</summary>
+    [Parameter] public RenderFragment<UploadFileInfo>? FileTemplate { get; set; }
+
+    /// <summary>Custom template for the file info section (name, size, error) within each file entry.</summary>
+    [Parameter] public RenderFragment<UploadFileInfo>? FileInfoTemplate { get; set; }
+
     // ── Parameters: Events ───────────────────────────────────────────────────
 
     /// <summary>Fires when files are selected. Cancel to prevent listing/uploading.</summary>
@@ -390,6 +399,8 @@ public partial class MariloUpload : MariloComponentBase
             content.Add(new StringContent(kv.Value?.ToString() ?? ""), kv.Key);
 
         using var request = new HttpRequestMessage(HttpMethod.Post, SaveUrl) { Content = content };
+        if (WithCredentials)
+            request.Options.Set(new HttpRequestOptionsKey<bool>("WebAssemblyFetchCredentials"), true);
         foreach (var kv in requestHeaders)
             request.Headers.TryAddWithoutValidation(kv.Key, kv.Value?.ToString());
 
@@ -474,6 +485,8 @@ public partial class MariloUpload : MariloComponentBase
                 chunkContent.Add(new StringContent(kv.Value?.ToString() ?? ""), kv.Key);
 
             using var request = new HttpRequestMessage(HttpMethod.Post, SaveUrl) { Content = chunkContent };
+            if (WithCredentials)
+                request.Options.Set(new HttpRequestOptionsKey<bool>("WebAssemblyFetchCredentials"), true);
             foreach (var kv in requestHeaders)
                 request.Headers.TryAddWithoutValidation(kv.Key, kv.Value?.ToString());
 
@@ -555,6 +568,8 @@ public partial class MariloUpload : MariloComponentBase
                     content.Add(new StringContent(kv.Value?.ToString() ?? ""), kv.Key);
 
                 using var request = new HttpRequestMessage(HttpMethod.Post, RemoveUrl) { Content = content };
+                if (WithCredentials)
+                    request.Options.Set(new HttpRequestOptionsKey<bool>("WebAssemblyFetchCredentials"), true);
                 foreach (var kv in args.RequestHeaders)
                     request.Headers.TryAddWithoutValidation(kv.Key, kv.Value?.ToString());
 

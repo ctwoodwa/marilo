@@ -32,7 +32,14 @@
         }
 
         <label class="mar-upload__browse-btn" for="@InputId">
-            <span>Browse files</span>
+            @if (SelectFilesButtonTemplate != null)
+            {
+                @SelectFilesButtonTemplate
+            }
+            else
+            {
+                <span>Browse files</span>
+            }
             <InputFile id="@InputId"
                        OnChange="HandleFileSelected"
                        multiple="@Multiple"
@@ -64,94 +71,108 @@
                 <li class="@CssProvider.UploadFileItemClass() @(file.IsInvalid ? "mar-upload__file-item--invalid" : "")"
                     role="listitem">
 
-                    @* File icon *@
-                    <span class="mar-upload__file-icon" aria-hidden="true">
-                        @IconProvider.GetIcon("file", Marilo.Core.Enums.IconSize.Small)
-                    </span>
+                    @if (FileTemplate != null)
+                    {
+                        @FileTemplate(file)
+                    }
+                    else
+                    {
+                        @* File icon *@
+                        <span class="mar-upload__file-icon" aria-hidden="true">
+                            @IconProvider.GetIcon("file", Marilo.Core.Enums.IconSize.Small)
+                        </span>
 
-                    @* File info *@
-                    <span class="mar-upload__file-info">
-                        <span class="mar-upload__file-name" title="@file.Name">@file.Name</span>
-                        <span class="mar-upload__file-size">@FormatSize(file.Size)</span>
-
-                        @if (file.IsInvalid)
+                        @* File info *@
+                        @if (FileInfoTemplate != null)
                         {
-                            <span class="mar-upload__file-error" role="alert">
-                                @(file.InvalidExtension ? "Invalid file type. " : "")@(file.InvalidMaxFileSize ? "File too large. " : "")@(file.InvalidMinFileSize ? "File too small." : "")
+                            @FileInfoTemplate(file)
+                        }
+                        else
+                        {
+                            <span class="mar-upload__file-info">
+                                <span class="mar-upload__file-name" title="@file.Name">@file.Name</span>
+                                <span class="mar-upload__file-size">@FormatSize(file.Size)</span>
+
+                                @if (file.IsInvalid)
+                                {
+                                    <span class="mar-upload__file-error" role="alert">
+                                        @(file.InvalidExtension ? "Invalid file type. " : "")@(file.InvalidMaxFileSize ? "File too large. " : "")@(file.InvalidMinFileSize ? "File too small." : "")
+                                    </span>
+                                }
                             </span>
                         }
-                    </span>
 
-                    @* Status badge *@
-                    <span class="mar-upload__file-status mar-upload__file-status--@file.Status.ToString().ToLower()"
-                          aria-live="polite">
-                        @StatusLabel(file.Status)
-                    </span>
+                        @* Status badge *@
+                        <span class="mar-upload__file-status mar-upload__file-status--@file.Status.ToString().ToLower()"
+                              aria-live="polite">
+                            @StatusLabel(file.Status)
+                        </span>
 
-                    @* Progress bar *@
-                    @if (file.Status == UploadFileStatus.Uploading)
-                    {
-                        <div class="mar-upload__progress" role="progressbar"
-                             aria-valuenow="@file.Progress"
-                             aria-valuemin="0"
-                             aria-valuemax="100"
-                             aria-label="Uploading @file.Name: @(file.Progress)%">
-                            <div class="mar-upload__progress-bar" style="width:@(file.Progress)%"></div>
-                        </div>
-                    }
-
-                    @* Actions *@
-                    <span class="mar-upload__file-actions">
+                        @* Progress bar *@
                         @if (file.Status == UploadFileStatus.Uploading)
                         {
-                            <button type="button"
-                                    class="mar-upload__cancel-btn"
-                                    aria-label="Cancel upload of @file.Name"
-                                    @onclick="() => CancelFile(file.Id)">
-                                <span aria-hidden="true">&#x23F8;</span>
-                            </button>
+                            <div class="mar-upload__progress" role="progressbar"
+                                 aria-valuenow="@file.Progress"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100"
+                                 aria-label="Uploading @file.Name: @(file.Progress)%">
+                                <div class="mar-upload__progress-bar" style="width:@(file.Progress)%"></div>
+                            </div>
                         }
-                        else if (file.Status == UploadFileStatus.Paused)
-                        {
-                            <button type="button"
-                                    class="mar-upload__resume-btn"
-                                    aria-label="Resume upload of @file.Name"
-                                    @onclick="() => ResumeFile(file.Id)">
-                                <span aria-hidden="true">&#x25B6;</span>
-                            </button>
-                            <button type="button"
-                                    class="mar-upload__remove-btn"
-                                    aria-label="Remove @file.Name"
-                                    @onclick="() => RemoveFileInternalAsync(file)">
-                                <span aria-hidden="true">&#x2715;</span>
-                            </button>
-                        }
-                        else if (file.Status == UploadFileStatus.Failed)
-                        {
-                            <button type="button"
-                                    class="mar-upload__retry-btn"
-                                    aria-label="Retry upload of @file.Name"
-                                    @onclick="() => RetryFile(file.Id)">
-                                <span aria-hidden="true">&#x21BA;</span>
-                            </button>
-                            <button type="button"
-                                    class="mar-upload__remove-btn"
-                                    aria-label="Remove @file.Name"
-                                    @onclick="() => RemoveFileInternalAsync(file)">
-                                <span aria-hidden="true">&#x2715;</span>
-                            </button>
-                        }
-                        else if (file.Status != UploadFileStatus.Uploaded || !string.IsNullOrEmpty(RemoveUrl))
-                        {
-                            @* Show remove button for selected files or uploaded files when RemoveUrl is set *@
-                            <button type="button"
-                                    class="mar-upload__remove-btn"
-                                    aria-label="Remove @file.Name"
-                                    @onclick="() => RemoveFileInternalAsync(file)">
-                                <span aria-hidden="true">&#x2715;</span>
-                            </button>
-                        }
-                    </span>
+
+                        @* Actions *@
+                        <span class="mar-upload__file-actions">
+                            @if (file.Status == UploadFileStatus.Uploading)
+                            {
+                                <button type="button"
+                                        class="mar-upload__cancel-btn"
+                                        aria-label="Cancel upload of @file.Name"
+                                        @onclick="() => CancelFile(file.Id)">
+                                    <span aria-hidden="true">&#x23F8;</span>
+                                </button>
+                            }
+                            else if (file.Status == UploadFileStatus.Paused)
+                            {
+                                <button type="button"
+                                        class="mar-upload__resume-btn"
+                                        aria-label="Resume upload of @file.Name"
+                                        @onclick="() => ResumeFile(file.Id)">
+                                    <span aria-hidden="true">&#x25B6;</span>
+                                </button>
+                                <button type="button"
+                                        class="mar-upload__remove-btn"
+                                        aria-label="Remove @file.Name"
+                                        @onclick="() => RemoveFileInternalAsync(file)">
+                                    <span aria-hidden="true">&#x2715;</span>
+                                </button>
+                            }
+                            else if (file.Status == UploadFileStatus.Failed)
+                            {
+                                <button type="button"
+                                        class="mar-upload__retry-btn"
+                                        aria-label="Retry upload of @file.Name"
+                                        @onclick="() => RetryFile(file.Id)">
+                                    <span aria-hidden="true">&#x21BA;</span>
+                                </button>
+                                <button type="button"
+                                        class="mar-upload__remove-btn"
+                                        aria-label="Remove @file.Name"
+                                        @onclick="() => RemoveFileInternalAsync(file)">
+                                    <span aria-hidden="true">&#x2715;</span>
+                                </button>
+                            }
+                            else if (file.Status != UploadFileStatus.Uploaded || !string.IsNullOrEmpty(RemoveUrl))
+                            {
+                                @* Show remove button for selected files or uploaded files when RemoveUrl is set *@
+                                <button type="button"
+                                        class="mar-upload__remove-btn"
+                                        aria-label="Remove @file.Name"
+                                        @onclick="() => RemoveFileInternalAsync(file)">
+                                    <span aria-hidden="true">&#x2715;</span>
+                                </button>
+                            }
+                        </span>
+                    }
                 </li>
             }
         </ul>
