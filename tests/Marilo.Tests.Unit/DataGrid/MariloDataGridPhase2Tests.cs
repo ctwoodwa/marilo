@@ -192,17 +192,29 @@ public class MariloDataGridPhase2Tests : MariloTestBase
 
         var cut = Render<MariloDataGrid<AnnotatedProduct>>(p => p
             .Add(x => x.Data, data)
-            .Add(x => x.AutoGenerateColumns, true));
+            .Add(x => x.AutoGenerateColumns, true)
+            .Add(x => x.EditMode, GridEditMode.Popup));
 
-        // Price has [Editable(false)]
-        var priceColumn = cut.Instance._columns.FirstOrDefault(c => c.Field == "Price");
-        Assert.NotNull(priceColumn);
-        Assert.False(priceColumn!.Editable);
+        // Enter edit mode on the first row
+        var editBtn = cut.FindAll("button").FirstOrDefault(b => b.TextContent == "Edit");
+        Assert.NotNull(editBtn);
+        editBtn!.Click();
 
-        // Name has no [Editable] attribute, defaults to true
-        var nameColumn = cut.Instance._columns.FirstOrDefault(c => c.Field == "Name");
-        Assert.NotNull(nameColumn);
-        Assert.True(nameColumn!.Editable);
+        // Price has [Editable(false)] — should render as disabled in popup
+        var popupFields = cut.FindAll(".mar-datagrid-popup-field");
+        Assert.NotEmpty(popupFields);
+
+        // Find the Price field's disabled input
+        var priceField = popupFields.FirstOrDefault(f => f.TextContent.Contains("Price"));
+        Assert.NotNull(priceField);
+        var disabledInput = priceField!.QuerySelector("input[disabled]");
+        Assert.NotNull(disabledInput);
+
+        // Name has no [Editable] attribute, defaults to true — should NOT be disabled
+        var nameField = popupFields.FirstOrDefault(f => f.TextContent.Contains("Product Name"));
+        Assert.NotNull(nameField);
+        var nameDisabled = nameField!.QuerySelector("input[disabled]");
+        Assert.Null(nameDisabled);
     }
 
     // ── Group Aggregate Tests ──────────────────────────────────────────
