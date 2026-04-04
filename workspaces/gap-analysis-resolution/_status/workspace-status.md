@@ -12,7 +12,7 @@
 |-------|-------|
 | Workspace | gap-analysis-resolution |
 | Last updated | 2026-04-04 |
-| Current phase | Stage 05 (splitter + wizard implementation active) |
+| Current phase | Stage 06 complete (splitter + wizard validated) |
 
 ## Pipeline Status
 
@@ -30,26 +30,26 @@
 - [ ] 05-implement
 - [ ] 06-validate
 
-**Splitter batch (10 gaps: 4 pre-resolved, 5 implemented, 1 demo deferred)** -- STAGE 05 COMPLETE
+**Splitter batch (10 gaps: 8 resolved, 1 deferred demo, 1 demo guidance)** -- COMPLETE
 - [x] 01-intake
 - [x] 02-prioritize
 - [x] 03-resolution-design
-- [x] **05-implement** (completed 2026-04-04)
-- [ ] 06-validate
+- [x] 05-implement (completed 2026-04-04)
+- [x] **06-validate** (closure report 2026-04-04; 17 tests written, runtime pending)
 
-**Wizard batch (18 gaps: 14 resolutions all implemented)** -- STAGE 05 COMPLETE
+**Wizard batch (18 gaps: 18 resolved)** -- COMPLETE
 - [x] 01-intake
 - [x] 02-prioritize
 - [x] 03-resolution-design
-- [x] **05-implement** (completed 2026-04-04)
-- [ ] 06-validate
+- [x] 05-implement (completed 2026-04-04)
+- [x] **06-validate** (closure report 2026-04-04; 27 tests written, runtime pending)
 
 **t4-pickers / readonly-guards / expandall-lazyload** -- BATCH 1 CLOSED
 - [x] 01-intake through 06-validate (Batch 1 complete)
 
 ## Next Actions
 
-1. Validate Splitter and Wizard implementations (Stage 06).
+1. Run `dotnet test` to verify Splitter (17) and Wizard (27) tests pass.
 2. Begin form batch implementation (Stage 05).
 3. Start T4 pickers Batch 2 resolution design.
 

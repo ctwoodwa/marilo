@@ -70,8 +70,8 @@ All implementations are independent (no Telerik dependency), use MIT/Apache-2.0-
 | readonly-guards | 6 | 6 | Stage 06 closed (2026-04-03) |
 | expandall-lazyload | 6 | 6 | Stage 06 closed (2026-04-03) |
 
-| splitter | 17 | pending | Stage 05 complete (2026-04-04); 5 resolutions + 4 pre-resolved; 17 bUnit tests written, awaiting validation |
-| wizard | 30 | pending | Stage 05 complete (2026-04-04); 14 resolutions all implemented; 30 bUnit tests written, awaiting validation |
+| splitter | 17 | pending | Stage 06 closed (2026-04-04); 8 resolved, 1 demo deferred; runtime test pending |
+| wizard | 27 | pending | Stage 06 closed (2026-04-04); 18/18 resolved; runtime test pending |
 | datagrid-cdw | 0 | 0 | Per-feature checklist ready for CDW handoff (2026-04-03) |
 
 Canonical test evidence: `stages/06-validate/output/gap-*-closure-report.md`

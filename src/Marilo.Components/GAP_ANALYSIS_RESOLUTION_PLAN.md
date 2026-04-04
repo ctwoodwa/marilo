@@ -991,8 +991,8 @@ Tracks test coverage for each gap slug that has a Stage 03 resolution record in 
 | GAP-checkbox-template | CheckboxTemplate RenderFragment<CheckboxContext> | ✅ (3 tests) | ✅ | Phase 3; Stage 06 Resolved; Disabled/OnChange ⚠️ code inspection only |
 | GAP-node-editing | AllowEditing — inline rename via double-click/F2 | ✅ (12 tests) | ✅ | Phase 3; Stage 06 Resolved; ExpandOnDoubleClick suppression documented |
 
-| GAP-splitter | SplitterOrientation enum, SplitterPanes wrapper, nested splitter, tests | ✅ (17 tests) | pending | Stage 05 complete (2026-04-04); awaiting test run validation |
-| GAP-wizard | CascadingValue fix, Value rename, all 14 resolutions, tests | ✅ (30 tests) | pending | Stage 05 complete (2026-04-04); awaiting test run validation |
+| GAP-splitter | SplitterOrientation enum, SplitterPanes wrapper, nested splitter, tests | ✅ (17 tests) | pending | Stage 06 closed (2026-04-04); 8/10 resolved, 1 demo deferred; runtime test pending |
+| GAP-wizard | CascadingValue fix, Value rename, all 14 resolutions, tests | ✅ (27 tests) | pending | Stage 06 closed (2026-04-04); 18/18 resolved; runtime test pending |
 
 ### Deferred / Partial Coverage
 
@@ -1097,12 +1097,16 @@ This section routes the "Recommended Next Actions" from the executive report int
 **Implementation log:** `stages/05-implement/output/gap-t4-picker-batch1-implementation-log.md`
 **Closure report:** `stages/06-validate/output/gap-t4-picker-batch1-closure-report.md`
 
-### T1 Splitter/Wizard — Analysis Tracking
+### T1 Splitter/Wizard — Full Pipeline Tracking
 
-| Component | Intake (Stage 01) | Prioritize (Stage 02) | Resolution Design (Stage 03) | Implement (Stage 05) |
-|-----------|-------------------|----------------------|------------------------------|---------------------|
-| MariloSplitter | **Complete** (10 gaps) | **Complete** (2 batches) | **Complete** (5 resolutions + 4 pre-resolved) | **Complete** (2026-04-04): SplitterOrientation enum, SplitterPanes wrapper, 17 bUnit tests |
-| MariloWizard | **Complete** (18 gaps) | **Complete** (3 batches) | **Complete** (14 resolutions) | **Complete** (2026-04-04): CascadingValue fix, Value rename, all 14 resolutions, 30 bUnit tests |
+| Component | Intake (Stage 01) | Prioritize (Stage 02) | Resolution Design (Stage 03) | Implement (Stage 05) | Validate (Stage 06) |
+|-----------|-------------------|----------------------|------------------------------|---------------------|---------------------|
+| MariloSplitter | **Complete** (10 gaps) | **Complete** (2 batches) | **Complete** (5 resolutions + 4 pre-resolved) | **Complete** (2026-04-04): 17 bUnit tests | **Complete** (2026-04-04): 8 resolved, 1 demo deferred |
+| MariloWizard | **Complete** (18 gaps) | **Complete** (3 batches) | **Complete** (14 resolutions) | **Complete** (2026-04-04): 27 bUnit tests | **Complete** (2026-04-04): 18/18 resolved |
+
+**Closure reports:**
+- Splitter: `stages/06-validate/output/gap-splitter-closure-report.md`
+- Wizard: `stages/06-validate/output/gap-wizard-closure-report.md`
 
 **Splitter inventory:** `stages/01-intake/output/gap-splitter-inventory.md`
 **Wizard inventory:** `stages/01-intake/output/gap-wizard-inventory.md`
