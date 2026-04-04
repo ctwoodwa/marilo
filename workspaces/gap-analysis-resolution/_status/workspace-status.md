@@ -23,12 +23,12 @@
 - [x] 05-implement (04 skipped for batch scope)
 - [x] 06-validate
 
-**Form batch (60 gaps)** -- IN PROGRESS
+**Form batch (60 gaps: 35+ resolved, 11 deferred)** -- COMPLETE
 - [x] 01-intake
 - [x] 02-prioritize
-- [x] 03-resolution-design (complete)
-- [ ] 05-implement
-- [ ] 06-validate
+- [x] 03-resolution-design
+- [x] 05-implement (20 tests, all passing)
+- [x] 06-validate (closure report 2026-04-02)
 
 **Splitter batch (10 gaps: 8 resolved, 1 deferred demo, 1 demo guidance)** -- COMPLETE
 - [x] 01-intake
