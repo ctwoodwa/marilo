@@ -20,7 +20,11 @@
     /// <summary>The subtitle registered by a child ChartSubtitle component.</summary>
     internal ChartSubtitle? Subtitle { get; private set; }
 
-    internal void SetSubtitle(ChartSubtitle subtitle) => Subtitle = subtitle;
+    internal void SetSubtitle(ChartSubtitle subtitle)
+    {
+        Subtitle = subtitle;
+        ParentChart?.NotifyChildChanged();
+    }
 
     protected override void OnInitialized()
     {

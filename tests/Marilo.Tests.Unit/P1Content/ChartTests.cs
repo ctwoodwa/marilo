@@ -331,7 +331,7 @@ public class ChartTests : MariloTestBase
     }
 
     [Fact]
-    public void Chart_Refresh_RerendersSvg()
+    public async Task Chart_Refresh_RerendersSvg()
     {
         var cut = Render<MariloChart>(parameters => parameters
             .Add(p => p.ChildContent, builder =>
@@ -345,9 +345,9 @@ public class ChartTests : MariloTestBase
                 builder.CloseComponent();
             }));
 
-        // Invoke Refresh() — should not throw
+        // Invoke Refresh() via dispatcher — should not throw
         var chart = cut.Instance;
-        chart.Refresh();
+        await cut.InvokeAsync(() => chart.Refresh());
 
         // SVG still present after refresh
         Assert.NotNull(cut.Find("svg"));

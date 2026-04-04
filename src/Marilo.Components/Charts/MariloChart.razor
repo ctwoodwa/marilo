@@ -126,6 +126,7 @@
     // ── Child component registration ───────────────────────────────────
 
     internal void SetChartTitle(ChartTitle title) => _chartTitle = title;
+    internal void NotifyChildChanged() => StateHasChanged();
     internal void SetChartLegend(ChartLegend legend) => _chartLegend = legend;
     internal void SetChartTooltip(ChartTooltip tooltip) => _chartTooltip = tooltip;
     internal void SetCategoryAxis(ChartCategoryAxis axis) => _categoryAxis = axis;
@@ -176,7 +177,13 @@
     private RenderFragment RenderChart() => builder =>
     {
         var visibleSeries = _series.Where(s => s.IsVisible).ToList();
-        if (visibleSeries.Count == 0) return;
+        if (visibleSeries.Count == 0)
+        {
+            // Still render legend so user can toggle hidden series back on
+            if (LegendVisible)
+                RenderLegend(builder);
+            return;
+        }
 
         var hasPieOrDonut = visibleSeries.Any(s => s.Type is ChartSeriesType.Pie or ChartSeriesType.Donut);
 

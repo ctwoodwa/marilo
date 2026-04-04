@@ -167,17 +167,16 @@ public class SplitterTests : MariloTestBase
     // ── 8. SetState restores pane sizes ──────────────────────────────────
 
     [Fact]
-    public void SetState_RestoresPaneSizes()
+    public async Task SetState_RestoresPaneSizes()
     {
         var cut = RenderWithTwoPanes("40%");
         var splitter = cut.Instance;
 
-        splitter.SetState(new SplitterState
+        await cut.InvokeAsync(() => splitter.SetState(new SplitterState
         {
             PaneSizes = ["60%", ""],
             CollapsedPanes = [false, false]
-        });
-        cut.Render();
+        }));
 
         var state = splitter.GetState();
         Assert.Equal("60%", state.PaneSizes[0]);
