@@ -1,3 +1,4 @@
+using System.Reflection;
 using Marilo.Core.Base;
 using Marilo.Core.Data;
 using Marilo.Core.Enums;
@@ -214,6 +215,15 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
     /// <summary>The confirmation message shown when ConfirmDelete is true.</summary>
     [Parameter] public string ConfirmDeleteText { get; set; } = "Are you sure you want to delete this item?";
 
+    /// <summary>Fires before an export operation. Set IsCancelled to true to prevent the export.</summary>
+    [Parameter] public EventCallback<GridExportEventArgs> OnBeforeExport { get; set; }
+
+    /// <summary>Fires after an export operation completes.</summary>
+    [Parameter] public EventCallback<GridExportEventArgs> OnAfterExport { get; set; }
+
+    /// <summary>Whether to export all pages or only the current page. Defaults to true.</summary>
+    [Parameter] public bool ExportAllPages { get; set; } = true;
+
     // ── Column Registry ─────────────────────────────────────────────────
 
     internal void RegisterColumn(MariloGridColumn<TItem> column)
@@ -297,7 +307,9 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
 
     private void GenerateColumnsFromModel()
     {
-        var props = typeof(TItem).GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+        var props = typeof(TItem).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        var columnDefs = new List<(PropertyInfo Prop, int Order, string Title, bool Editable)>();
+
         foreach (var prop in props)
         {
             // Skip indexers and non-readable properties
@@ -307,10 +319,28 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
             var type = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
             if (!IsSimpleType(type)) continue;
 
+            // Check [Display] attribute
+            var displayAttr = prop.GetCustomAttribute<System.ComponentModel.DataAnnotations.DisplayAttribute>();
+            if (displayAttr?.GetAutoGenerateField() == false) continue;
+
+            var title = displayAttr?.GetName() ?? SplitCamelCase(prop.Name);
+            var order = displayAttr?.GetOrder() ?? int.MaxValue;
+
+            // Check [Editable] attribute
+            var editableAttr = prop.GetCustomAttribute<System.ComponentModel.DataAnnotations.EditableAttribute>();
+            var editable = editableAttr?.AllowEdit ?? true;
+
+            columnDefs.Add((prop, order, title, editable));
+        }
+
+        // Sort by Display Order, then by declaration order
+        foreach (var (prop, _, title, editable) in columnDefs.OrderBy(c => c.Order))
+        {
             var col = new MariloGridColumn<TItem>();
-            // Set properties via reflection since Parameters are normally set by Blazor
             typeof(MariloGridColumn<TItem>).GetProperty(nameof(MariloGridColumn<TItem>.Field))!.SetValue(col, prop.Name);
-            typeof(MariloGridColumn<TItem>).GetProperty(nameof(MariloGridColumn<TItem>.Title))!.SetValue(col, SplitCamelCase(prop.Name));
+            typeof(MariloGridColumn<TItem>).GetProperty(nameof(MariloGridColumn<TItem>.Title))!.SetValue(col, title);
+            if (!editable)
+                typeof(MariloGridColumn<TItem>).GetProperty(nameof(MariloGridColumn<TItem>.Editable))!.SetValue(col, false);
             _columns.Add(col);
         }
     }
@@ -342,6 +372,11 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
         PageSize = _state.PageSize,
         SortDescriptors = _state.SortDescriptors.Select(s => new SortDescriptor { Field = s.Field, Direction = s.Direction }).ToList(),
         FilterDescriptors = _state.FilterDescriptors.Select(f => new FilterDescriptor { Field = f.Field, Operator = f.Operator, Value = f.Value }).ToList(),
+        CompositeFilterDescriptors = _state.CompositeFilterDescriptors.Select(c => new CompositeFilterDescriptor
+        {
+            LogicalOperator = c.LogicalOperator,
+            Filters = c.Filters.Select(f => new FilterDescriptor { Field = f.Field, Operator = f.Operator, Value = f.Value }).ToList()
+        }).ToList(),
         GroupDescriptors = _state.GroupDescriptors.Select(g => new GroupDescriptor { Field = g.Field, Direction = g.Direction }).ToList(),
         TotalCount = _state.TotalCount,
         SearchFilter = _searchText,
@@ -383,6 +418,7 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
         _state.PageSize = state.PageSize > 0 ? state.PageSize : _state.PageSize;
         _state.SortDescriptors = state.SortDescriptors ?? [];
         _state.FilterDescriptors = state.FilterDescriptors ?? [];
+        _state.CompositeFilterDescriptors = state.CompositeFilterDescriptors ?? [];
         _state.GroupDescriptors = state.GroupDescriptors ?? [];
         _searchText = state.SearchFilter ?? "";
 

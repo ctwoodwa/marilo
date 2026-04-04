@@ -1040,7 +1040,8 @@ This section routes the "Recommended Next Actions" from the executive report int
 | T1 Splitter | Gap analysis intake → prioritize → resolution design | No | `gap-analysis-resolution` Stage 01→02→03 | **Intake + prioritize complete** (10 gaps) |
 | T1 Wizard | Gap analysis intake → prioritize → resolution design | No | `gap-analysis-resolution` Stage 01→02→03 | **Intake + prioritize complete** (18 gaps) |
 | DataGrid Phase 1 | Pure C# gap resolutions (SortMode, Editable, ConfirmDelete, SetStateAsync, filters, pager, DisplayFormat, Groupable, ExpandedItems) | No | `gap-analysis-resolution` Stage 02→03→05 | **Complete** (9 resolved, 18 tests) |
-| DataGrid Phase 2+ | Validation, grouping aggregates, export, frozen columns, cell selection | No | `gap-analysis-resolution` Stage 03 | **Pending** (~26 remaining important gaps) |
+| DataGrid Phase 2 | Validation, composite filters, auto-gen attrs, aggregates, export lifecycle, CancellationToken | No | `gap-analysis-resolution` Stage 03→05 | **Complete** (6 resolved, 15 tests) |
+| DataGrid Phase 3+ | Frozen columns, cell selection, row drag-drop, checkbox filter | No | `gap-analysis-resolution` Stage 03 | **Pending** (~20 remaining gaps, JS interop needed) |
 | No-source Components (T4) | Architecture strategy for Diagram, DockManager, Map, PivotGrid | **Yes** — human decision | Planning / enterprise-ICM | Awaiting decision |
 
 ### Blocked Decisions — Human Input Required

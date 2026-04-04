@@ -12,12 +12,20 @@ public partial class MariloDataGrid<TItem>
 {
     // ── Data Processing ─────────────────────────────────────────────────
 
+    private CancellationTokenSource? _currentCts;
+
     internal async Task ProcessDataAsync()
     {
+        // Cancel previous request
+        _currentCts?.Cancel();
+        _currentCts = new CancellationTokenSource();
+        var token = _currentCts.Token;
+
         if (OnRead.HasDelegate)
         {
-            var args = new GridReadEventArgs<TItem> { Request = GetState() };
+            var args = new GridReadEventArgs<TItem> { Request = GetState(), CancellationToken = token };
             await OnRead.InvokeAsync(args);
+            if (token.IsCancellationRequested) return;
             _displayedItems = args.Data.ToList();
             _state.TotalCount = args.Total;
         }
@@ -49,6 +57,12 @@ public partial class MariloDataGrid<TItem>
         foreach (var filter in _state.FilterDescriptors)
         {
             items = ApplyFilter(items, filter);
+        }
+
+        // Apply composite filters
+        foreach (var composite in _state.CompositeFilterDescriptors)
+        {
+            items = ApplyCompositeFilter(items, composite);
         }
 
         // Apply sorting
@@ -237,8 +251,70 @@ public partial class MariloDataGrid<TItem>
     // ── CSV Export ──────────────────────────────────────────────────────
 
     /// <summary>
-    /// Generates CSV content from the current data (after filtering/sorting, before paging).
-    /// Returns the CSV as a string. Use with JS interop to trigger download.
+    /// Generates CSV content from grid data. When ExportAllPages is true (default),
+    /// exports all filtered/sorted data. When false, exports only the current page.
+    /// Fires OnBeforeExport and OnAfterExport lifecycle events.
+    /// </summary>
+    public async Task<string> ExportToCsvAsync(bool includeHeaders = true, string separator = ",")
+    {
+        // Fire OnBeforeExport
+        var beforeArgs = new GridExportEventArgs { Format = "csv" };
+        if (OnBeforeExport.HasDelegate)
+        {
+            await OnBeforeExport.InvokeAsync(beforeArgs);
+            if (beforeArgs.IsCancelled) return string.Empty;
+        }
+
+        var sb = new System.Text.StringBuilder();
+        var columns = _visibleColumns;
+
+        if (includeHeaders)
+        {
+            sb.AppendLine(string.Join(separator, columns.Select(c => EscapeCsv(c.DisplayTitle, separator))));
+        }
+
+        IEnumerable<TItem> items;
+        if (ExportAllPages && Data is not null)
+        {
+            items = Data;
+            if (!string.IsNullOrWhiteSpace(_searchText))
+                items = ApplySearch(items, _searchText);
+            foreach (var filter in _state.FilterDescriptors)
+                items = ApplyFilter(items, filter);
+            items = ApplySort(items);
+        }
+        else
+        {
+            items = _displayedItems;
+        }
+
+        var itemList = items.ToList();
+        foreach (var item in itemList)
+        {
+            var values = columns.Select(c => EscapeCsv(c.GetDisplayValue(item), separator));
+            sb.AppendLine(string.Join(separator, values));
+        }
+
+        var result = sb.ToString();
+
+        // Fire OnAfterExport
+        if (OnAfterExport.HasDelegate)
+        {
+            var afterArgs = new GridExportEventArgs
+            {
+                Format = "csv",
+                Data = result,
+                RowCount = itemList.Count
+            };
+            await OnAfterExport.InvokeAsync(afterArgs);
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Synchronous CSV export (backward compatibility). Does not fire lifecycle events.
+    /// Use ExportToCsvAsync for full lifecycle support.
     /// </summary>
     public string ExportToCsv(bool includeHeaders = true, string separator = ",")
     {
@@ -250,9 +326,8 @@ public partial class MariloDataGrid<TItem>
             sb.AppendLine(string.Join(separator, columns.Select(c => EscapeCsv(c.DisplayTitle, separator))));
         }
 
-        // Use all filtered/sorted data, not just current page
         IEnumerable<TItem> items;
-        if (Data is not null)
+        if (ExportAllPages && Data is not null)
         {
             items = Data;
             if (!string.IsNullOrWhiteSpace(_searchText))
@@ -360,6 +435,41 @@ public partial class MariloDataGrid<TItem>
 
             return false;
         });
+    }
+
+    private static IEnumerable<TItem> ApplyCompositeFilter(IEnumerable<TItem> items, CompositeFilterDescriptor composite)
+    {
+        if (composite.Filters.Count == 0) return items;
+
+        return composite.LogicalOperator == FilterCompositionOperator.And
+            ? items.Where(item => composite.Filters.All(f => MatchesFilter(item, f)))
+            : items.Where(item => composite.Filters.Any(f => MatchesFilter(item, f)));
+    }
+
+    private static bool MatchesFilter(TItem item, FilterDescriptor filter)
+    {
+        if (string.IsNullOrEmpty(filter.Field)) return true;
+        var prop = typeof(TItem).GetProperty(filter.Field);
+        if (prop is null) return true;
+
+        if (filter.Operator == FilterOperator.IsNull)
+            return prop.GetValue(item) is null;
+        if (filter.Operator == FilterOperator.IsNotNull)
+            return prop.GetValue(item) is not null;
+        if (filter.Value is null) return true;
+
+        var filterValue = filter.Value.ToString()?.ToLowerInvariant() ?? "";
+        var propValue = prop.GetValue(item);
+
+        return filter.Operator switch
+        {
+            FilterOperator.Contains => propValue?.ToString()?.Contains(filterValue, StringComparison.OrdinalIgnoreCase) == true,
+            FilterOperator.Equals => string.Equals(propValue?.ToString(), filterValue, StringComparison.OrdinalIgnoreCase),
+            FilterOperator.NotEquals => !string.Equals(propValue?.ToString(), filterValue, StringComparison.OrdinalIgnoreCase),
+            FilterOperator.StartsWith => propValue?.ToString()?.StartsWith(filterValue, StringComparison.OrdinalIgnoreCase) == true,
+            FilterOperator.EndsWith => propValue?.ToString()?.EndsWith(filterValue, StringComparison.OrdinalIgnoreCase) == true,
+            _ => true
+        };
     }
 
     // ── Sorting ─────────────────────────────────────────────────────────
@@ -548,6 +658,28 @@ public partial class MariloDataGrid<TItem>
     public async Task ClearFilters()
     {
         _state.FilterDescriptors.Clear();
+        _state.CurrentPage = 1;
+        await ProcessDataAsync();
+        await NotifyPageChanged();
+        await NotifyStateChanged("Filter");
+        StateHasChanged();
+    }
+
+    /// <summary>Programmatically adds a composite filter group.</summary>
+    public async Task AddCompositeFilter(CompositeFilterDescriptor composite)
+    {
+        _state.CompositeFilterDescriptors.Add(composite);
+        _state.CurrentPage = 1;
+        await ProcessDataAsync();
+        await NotifyPageChanged();
+        await NotifyStateChanged("Filter");
+        StateHasChanged();
+    }
+
+    /// <summary>Removes all composite filter groups.</summary>
+    public async Task ClearCompositeFilters()
+    {
+        _state.CompositeFilterDescriptors.Clear();
         _state.CurrentPage = 1;
         await ProcessDataAsync();
         await NotifyPageChanged();

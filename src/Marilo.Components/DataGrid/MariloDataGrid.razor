@@ -1,4 +1,5 @@
 @using Marilo.Core.Data
+@using Microsoft.AspNetCore.Components.Forms
 @typeparam TItem
 @inherits MariloComponentBase
 
@@ -265,26 +266,30 @@
                 <div class="mar-datagrid-popup-header">
                     <h3>@(_isCreating ? "Add New Item" : "Edit Item")</h3>
                 </div>
-                <div class="mar-datagrid-popup-body">
-                    @foreach (var column in _visibleColumns)
-                    {
-                        <div class="mar-datagrid-popup-field">
-                            <label>@column.DisplayTitle</label>
-                            @if (column.Editable && column.EditorTemplate != null)
-                            {
-                                @column.EditorTemplate(_editingItem)
-                            }
-                            else
-                            {
-                                <input type="text" value="@column.GetDisplayValue(_editingItem)" disabled />
-                            }
-                        </div>
-                    }
-                </div>
-                <div class="mar-datagrid-popup-actions">
-                    <button type="button" class="mar-datagrid-cmd-btn" @onclick="SaveEdit">Save</button>
-                    <button type="button" class="mar-datagrid-cmd-btn" @onclick="CancelEdit">Cancel</button>
-                </div>
+                <EditForm Model="_editingItem" OnValidSubmit="SaveEdit">
+                    <DataAnnotationsValidator />
+                    <div class="mar-datagrid-popup-body">
+                        <ValidationSummary class="mar-datagrid-validation-summary" />
+                        @foreach (var column in _visibleColumns)
+                        {
+                            <div class="mar-datagrid-popup-field">
+                                <label>@column.DisplayTitle</label>
+                                @if (column.Editable && column.EditorTemplate != null)
+                                {
+                                    @column.EditorTemplate(_editingItem)
+                                }
+                                else
+                                {
+                                    <input type="text" value="@column.GetDisplayValue(_editingItem)" disabled />
+                                }
+                            </div>
+                        }
+                    </div>
+                    <div class="mar-datagrid-popup-actions">
+                        <button type="submit" class="mar-datagrid-cmd-btn">Save</button>
+                        <button type="button" class="mar-datagrid-cmd-btn" @onclick="CancelEdit">Cancel</button>
+                    </div>
+                </EditForm>
             </div>
         </div>
     }

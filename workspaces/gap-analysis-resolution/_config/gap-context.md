@@ -72,7 +72,8 @@ All implementations are independent (no Telerik dependency), use MIT/Apache-2.0-
 
 | splitter | 0 | 0 | Stage 03 resolution design complete (2026-04-04); 5 resolutions + 4 pre-resolved; awaiting implementation |
 | wizard | 0 | 0 | Stage 03 resolution design complete (2026-04-04); 14 resolutions; awaiting implementation |
-| datagrid-phase1 | 18 | 18 | Stage 05 complete (2026-04-04); 9 gaps resolved (SortMode, Editable, ConfirmDelete, SetStateAsync, AddFilter/ClearFilters, pager, DisplayFormat, Groupable, ExpandedItems) |
+| datagrid-phase1 | 18 | 18 | Stage 05 complete (2026-04-04); 9 gaps resolved |
+| datagrid-phase2 | 15 | 15 | Stage 05 complete (2026-04-04); 6 gaps resolved (validation, composite filters, auto-gen attrs, aggregates, export, CancellationToken) |
 
 Canonical test evidence: `stages/06-validate/output/gap-*-closure-report.md`
 Ownership model: `shared/test-coverage-ownership.md`

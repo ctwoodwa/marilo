@@ -12,37 +12,34 @@
 |-------|-------|
 | Workspace | gap-analysis-resolution |
 | Last updated | 2026-04-04 |
-| Current phase | Stage 05 (datagrid phase 1 complete) |
+| Current phase | Stage 05 (datagrid phase 1+2 complete) |
 
 ## Pipeline Status
 
 **Treeview batch (24 gaps: 21 resolved, 1 deferred)** -- COMPLETE
-- [x] 01-intake
-- [x] 02-prioritize
-- [x] 03-resolution-design
-- [x] 05-implement (04 skipped for batch scope)
-- [x] 06-validate
 
 **DataGrid Phase 1 (9 pure C# gaps)** -- IMPLEMENTED
-- [x] 01-intake (per-feature checklist: 71 gaps)
-- [x] 02-prioritize (phased backlog created)
-- [x] 03-resolution-design (9 resolutions)
-- [x] 05-implement (9/9 resolved, 1 deferred)
-- [ ] 06-validate
+- [x] 01-intake → 02-prioritize → 03-resolution-design → 05-implement
 
-**Form batch (60 gaps)** -- IN PROGRESS
-- [x] 01-intake
-- [x] 02-prioritize
-- [x] 03-resolution-design
-- [ ] 05-implement
-- [ ] 06-validate
+**DataGrid Phase 2 (6 important gaps)** -- IMPLEMENTED
+- [x] 03-resolution-design → 05-implement
+- Validation, composite filters, auto-gen attributes, aggregates, export, CancellationToken
+
+**Form batch (60 gaps)** -- STAGE 03 COMPLETE
+- [x] 01-intake → 02-prioritize → 03-resolution-design
+- [ ] 05-implement / 06-validate
 
 **Splitter / Wizard** -- STAGE 03 COMPLETE
-- [x] 01-intake through 03-resolution-design
 - [ ] 05-implement
+
+## Test Coverage
+
+| Component | Tests |
+|-----------|-------|
+| DataGrid | 37 bUnit (4 original + 18 Ph1 + 15 Ph2) |
 
 ## Next Actions
 
-1. Validate DataGrid Phase 1 (Stage 06 closure report).
-2. Begin DataGrid Phase 2 resolution design (validation, grouping aggregates, export).
-3. Start Splitter or Wizard implementation (Stage 05).
+1. Validate DataGrid Phase 1+2 (Stage 06 closure report).
+2. Begin Splitter or Wizard implementation (Stage 05).
+3. DataGrid Phase 3 (frozen columns, cell selection) when JS interop items are ready.
