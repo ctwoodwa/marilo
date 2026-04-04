@@ -1098,11 +1098,32 @@ This section routes the "Recommended Next Actions" from the executive report int
 
 | Component | Intake (Stage 01) | Prioritize (Stage 02) | Resolution Design (Stage 03) | Implement (Stage 05) |
 |-----------|-------------------|----------------------|------------------------------|---------------------|
-| MariloSplitter | **Complete** (10 gaps) | **Complete** (2 batches) | Pending | Next run |
-| MariloWizard | **Complete** (18 gaps) | **Complete** (3 batches) | Pending | Next run |
+| MariloSplitter | **Complete** (10 gaps) | **Complete** (2 batches) | **Complete** (5 resolutions + 4 pre-resolved) | Next run |
+| MariloWizard | **Complete** (18 gaps) | **Complete** (3 batches) | **Complete** (14 resolutions) | Next run |
 
 **Splitter inventory:** `stages/01-intake/output/gap-splitter-inventory.md`
 **Wizard inventory:** `stages/01-intake/output/gap-wizard-inventory.md`
+**Splitter resolutions:** `stages/03-resolution-design/output/gap-splitter-resolutions.md`
+**Wizard resolutions:** `stages/03-resolution-design/output/gap-wizard-resolutions.md`
+
+#### Splitter Resolution Summary (2026-04-04)
+
+Code audit found 4 of 10 gaps already resolved in the implementation:
+- GAP-002 (GetState/SetState), GAP-003 (Class), GAP-005 (Min/Max), GAP-008 (Resizable) — all present in source.
+
+5 resolutions designed for remaining gaps:
+- RES-SPLITTER-001: MariloSplitterPanes pass-through wrapper (S)
+- RES-SPLITTER-002: SplitterOrientation enum replacing StackDirection (S)
+- RES-SPLITTER-003: bUnit test suite ≥15 tests (L)
+- RES-SPLITTER-004: 4 demo pages + 100%-height layout (M)
+- RES-SPLITTER-005: Nested splitter verification test (S)
+
+#### Wizard Resolution Summary (2026-04-04)
+
+All 18 gaps open. 14 resolutions designed across 3 batches:
+- **Batch 1 (Critical):** CascadingValue fix (wizard is non-functional), Value rename, WizardSteps wrapper, WizardStepChangeEventArgs + OnChange, WizardButtons RenderFragment
+- **Batch 2 (High):** Content/Text/Optional/Valid params, Width/Height/ShowPager, StepperPosition enum, StepTemplate, Linear param (replaces AllowStepClick)
+- **Batch 3 (Medium):** Keyboard nav + ARIA, disabled button adjacency, bUnit test suite ≥20 tests, demo page rewrite
 
 ### DataGrid Delivery Handoff
 
