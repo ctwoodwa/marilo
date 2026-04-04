@@ -1,7 +1,7 @@
 # anatomy.md
 
-> Auto-maintained by OpenWolf. Last scanned: 2026-04-03T23:11:53.168Z
-> Files: 525 tracked | Anatomy hits: 0 | Misses: 0
+> Auto-maintained by OpenWolf. Last scanned: 2026-04-04T00:23:47.876Z
+> Files: 543 tracked | Anatomy hits: 0 | Misses: 0
 
 ## ./
 
@@ -752,3 +752,51 @@
 - `toc.html` (~189 tok)
 - `toc.json` (~31 tok)
 - `wai-aria-support.html` — Wai-Aria Support | Marilo Documentation (~2459 tok)
+
+## src/Marilo.Components/
+
+- `GAP_ANALYSIS_RESOLUTION_PLAN.md` — Gap Analysis Resolution Plan (~19617 tok)
+
+## src/Marilo.Components/Forms/Inputs/
+
+- `MariloDateRangePicker.razor` — Declares applied (~5407 tok)
+- `MariloDateTimePicker.razor` — Declares applied (~5032 tok)
+- `MariloMultiSelect.razor` — Multi-select with tags, filtering, virtualization; events: ValueChanged, OnFilter, OnOpen/OnClose (cancellable), OnBlur (~5600 tok)
+- `MariloTimePicker.razor` (~5572 tok)
+- `MariloUpload.razor.cs` — An upload component that sends files to a remote endpoint asynchronously. Supports auto-upload or de (~6870 tok)
+- `UploadModels.cs` — Represents the status of a file in the upload process. (~2677 tok)
+
+## src/Marilo.Core/Models/
+
+- `CalendarCellRenderEventArgs.cs` — Class: CalendarCellRenderEventArgs (~53 tok)
+- `PopupEventArgs.cs` — Event arguments for popup lifecycle events (OnOpen, OnClose). Set <see cref="IsCancelled"/> to <c>tr (~144 tok)
+
+## tests/Marilo.Tests.Unit/Selection/
+
+- `T4PickerBatch1Tests.cs` — Tests for T4 Picker Batch 1 gap resolutions: - PopupEventArgs cancellation (RES-T4B1-001) - TimePick (~2250 tok)
+
+## workspaces/gap-analysis-resolution/_config/
+
+- `gap-context.md` — Gap Resolution Context (~1285 tok)
+
+## workspaces/gap-analysis-resolution/stages/01-intake/output/
+
+- `gap-datagrid-per-feature-checklist.md` — DataGrid Per-Feature Gap Checklist — CDW Handoff (~5170 tok)
+- `gap-wizard-inventory.md` — Gap Inventory: MariloWizard (~4032 tok)
+
+## workspaces/gap-analysis-resolution/stages/02-prioritize/output/
+
+- `gap-splitter-priorities.md` — Splitter Gap Prioritization (~521 tok)
+- `gap-wizard-priorities.md` — Wizard Gap Prioritization (~989 tok)
+
+## workspaces/gap-analysis-resolution/stages/03-resolution-design/output/
+
+- `gap-t4-picker-batch1-resolutions.md` — T4 Picker Batch 1 — Resolution Records (~9139 tok)
+
+## workspaces/gap-analysis-resolution/stages/05-implement/output/
+
+- `gap-t4-picker-batch1-implementation-log.md` — T4 Picker Batch 1 — Implementation Log (~1320 tok)
+
+## workspaces/gap-analysis-resolution/stages/06-validate/output/
+
+- `gap-t4-picker-batch1-closure-report.md` — T4 Picker Batch 1 — Closure Report (~1491 tok)

@@ -80,6 +80,9 @@ public class UploadFileInfo
 
     /// <summary>Internal: cancellation token source for in-flight uploads.</summary>
     internal System.Threading.CancellationTokenSource? CancellationTokenSource { get; set; }
+
+    /// <summary>Internal: number of bytes successfully uploaded so far (used for chunk resume).</summary>
+    internal long UploadedBytes { get; set; }
 }
 
 // ── FileSelect file info ─────────────────────────────────────────────────────

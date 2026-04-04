@@ -24,7 +24,8 @@
                aria-haspopup="dialog"
                aria-expanded="@_isPopupOpen.ToString().ToLowerInvariant()"
                @onfocus="OpenPopup"
-               @onclick="OpenPopup" />
+               @onclick="OpenPopup"
+               @onblur="HandleBlur" />
         @if (ShowClearButton && Enabled && !ReadOnly && Value.HasValue)
         {
             <button type="button"
@@ -74,10 +75,12 @@
                     <div class="mar-calendar__days">
                         @foreach (var day in GetCalendarDays())
                         {
-                            var isDisabled = IsDayDisabled(day.Date);
+                            var cellArgs = _cellRenderCache.GetValueOrDefault(day.Date);
+                            var isDisabled = IsDayDisabled(day.Date) || (cellArgs?.IsDisabled ?? false);
                             var isToday = day.Date == DateOnly.FromDateTime(DateTime.Today);
                             var isSelected = Value.HasValue && day.Date == DateOnly.FromDateTime(Value.Value);
                             var isOutsideMonth = day.Date.Month != _displayMonth.Month || day.Date.Year != _displayMonth.Year;
+                            var extraCss = cellArgs?.CssClass;
 
                             if (isOutsideMonth && !ShowOtherMonthDays)
                             {
@@ -86,7 +89,7 @@
                             else
                             {
                                 <button type="button"
-                                        class="mar-calendar__day @(isToday ? "mar-calendar__day--today" : "") @(isSelected ? "mar-calendar__day--selected" : "") @(isDisabled ? "mar-calendar__day--disabled" : "") @(isOutsideMonth ? "mar-calendar__day--outside" : "")"
+                                        class="mar-calendar__day @(isToday ? "mar-calendar__day--today" : "") @(isSelected ? "mar-calendar__day--selected" : "") @(isDisabled ? "mar-calendar__day--disabled" : "") @(isOutsideMonth ? "mar-calendar__day--outside" : "") @extraCss"
                                         disabled="@isDisabled"
                                         aria-label="@day.Date.ToString("MMMM d, yyyy")"
                                         aria-selected="@isSelected.ToString().ToLowerInvariant()"
@@ -203,10 +206,23 @@
     /// <summary>Fires when the value is confirmed via the Set button.</summary>
     [Parameter] public EventCallback<DateTime?> OnConfirm { get; set; }
 
+    /// <summary>Fires before the popup opens. Set <c>IsCancelled</c> to prevent opening.</summary>
+    [Parameter] public EventCallback<PopupEventArgs> OnOpen { get; set; }
+
+    /// <summary>Fires before the popup closes. Set <c>IsCancelled</c> to prevent closing.</summary>
+    [Parameter] public EventCallback<PopupEventArgs> OnClose { get; set; }
+
+    /// <summary>Fires when the component loses focus.</summary>
+    [Parameter] public EventCallback OnBlur { get; set; }
+
+    /// <summary>Fires for each calendar cell during render, allowing custom CSS classes or disabling specific dates.</summary>
+    [Parameter] public EventCallback<CalendarCellRenderEventArgs> OnCalendarCellRender { get; set; }
+
     // ─── Private State ────────────────────────────────────────────────────────
 
     private bool _isPopupOpen;
     private DateTime _displayMonth;
+    private Dictionary<DateOnly, CalendarCellRenderEventArgs> _cellRenderCache = new();
 
     // Time tumbler state
     private int _hour;
@@ -244,37 +260,73 @@
     // ─── Public Methods ───────────────────────────────────────────────────────
 
     /// <summary>Opens the calendar popup.</summary>
-    public void Open() => OpenPopup();
+    public async Task Open() => await OpenPopup();
 
     /// <summary>Closes the calendar popup.</summary>
-    public void Close() => ClosePopup();
+    public async Task Close() => await ClosePopup();
 
     // ─── Popup Handling ───────────────────────────────────────────────────────
 
-    private void OpenPopup()
+    private async Task OpenPopup()
     {
         if (!Enabled || ReadOnly) return;
+
+        if (OnOpen.HasDelegate)
+        {
+            var args = new PopupEventArgs();
+            await OnOpen.InvokeAsync(args);
+            if (args.IsCancelled) return;
+        }
+
         var reference = Value ?? DateTime.Today;
         _displayMonth = new DateTime(reference.Year, reference.Month, 1);
         InitTimeFromValue();
         _isPopupOpen = true;
+        await RebuildCellRenderCache();
     }
 
-    private void ClosePopup()
+    private async Task ClosePopup()
     {
+        if (OnClose.HasDelegate)
+        {
+            var args = new PopupEventArgs();
+            await OnClose.InvokeAsync(args);
+            if (args.IsCancelled) return;
+        }
+
         _isPopupOpen = false;
+    }
+
+    private async Task RebuildCellRenderCache()
+    {
+        _cellRenderCache.Clear();
+        if (!OnCalendarCellRender.HasDelegate) return;
+
+        foreach (var day in GetCalendarDays())
+        {
+            var args = new CalendarCellRenderEventArgs { Date = day.Date.ToDateTime(TimeOnly.MinValue) };
+            await OnCalendarCellRender.InvokeAsync(args);
+            _cellRenderCache[day.Date] = args;
+        }
+    }
+
+    private async Task HandleBlur()
+    {
+        await OnBlur.InvokeAsync();
     }
 
     // ─── Navigation ───────────────────────────────────────────────────────────
 
-    private void PreviousMonth()
+    private async Task PreviousMonth()
     {
         _displayMonth = _displayMonth.AddMonths(-1);
+        await RebuildCellRenderCache();
     }
 
-    private void NextMonth()
+    private async Task NextMonth()
     {
         _displayMonth = _displayMonth.AddMonths(1);
+        await RebuildCellRenderCache();
     }
 
     // ─── Day Selection ────────────────────────────────────────────────────────
@@ -303,7 +355,7 @@
         Value = dt;
         await ValueChanged.InvokeAsync(Value);
         await OnConfirm.InvokeAsync(Value);
-        ClosePopup();
+        await ClosePopup();
     }
 
     private async Task SetNow()
@@ -318,7 +370,7 @@
         Value = now;
         await ValueChanged.InvokeAsync(Value);
         await OnConfirm.InvokeAsync(Value);
-        ClosePopup();
+        await ClosePopup();
     }
 
     private async Task ClearValue()
@@ -375,9 +427,9 @@
 
     // ─── Keyboard Handling ────────────────────────────────────────────────────
 
-    private void OnKeyDown(KeyboardEventArgs e)
+    private async Task OnKeyDown(KeyboardEventArgs e)
     {
         if (e.Key == "Escape" && _isPopupOpen)
-            ClosePopup();
+            await ClosePopup();
     }
 }

@@ -55,7 +55,7 @@
     @* Tumbler dropdown *@
     @if (_isOpen)
     {
-        <div class="mar-timepicker__popup"
+        <div class="mar-timepicker__popup @PopupClass"
              role="dialog"
              aria-label="Choose time"
              @onclick:stopPropagation="true">
@@ -194,8 +194,8 @@
     [Parameter] public TValue? Value { get; set; }
     [Parameter] public EventCallback<TValue?> ValueChanged { get; set; }
     [Parameter] public EventCallback<object?> OnChange { get; set; }
-    [Parameter] public EventCallback OnOpen { get; set; }
-    [Parameter] public EventCallback OnClose { get; set; }
+    [Parameter] public EventCallback<PopupEventArgs> OnOpen { get; set; }
+    [Parameter] public EventCallback<PopupEventArgs> OnClose { get; set; }
     [Parameter] public EventCallback OnBlur { get; set; }
 
     [Parameter] public string? Format { get; set; }
@@ -274,20 +274,24 @@
     }
 
     // ── Public methods ────────────────────────────────────────────────────────
-    public void Open()
+    public async Task Open()
     {
         if (!IsEnabled || ReadOnly) return;
-        OpenDropdown();
+        await OpenDropdown();
     }
 
-    public void Close()
+    public async Task Close()
     {
-        Cancel();
+        await Cancel();
     }
 
     // ── Internal helpers ──────────────────────────────────────────────────────
-    private void OpenDropdown()
+    private async Task OpenDropdown()
     {
+        var args = new PopupEventArgs();
+        await OnOpen.InvokeAsync(args);
+        if (args.IsCancelled) return;
+
         // Seed pending values from current value
         var timeVal = ExtractTime(Value);
         if (timeVal.HasValue)
@@ -306,12 +310,14 @@
 
         _isPm = _pendingHour >= 12;
         _isOpen = true;
-
-        _ = OnOpen.InvokeAsync();
     }
 
     private async Task Commit()
     {
+        var closeArgs = new PopupEventArgs();
+        await OnClose.InvokeAsync(closeArgs);
+        if (closeArgs.IsCancelled) return;
+
         var hour = _pendingHour;
         var minute = ClampToStep(_pendingMinute, MinuteStep, 0, 59);
         var second = _showSeconds ? ClampToStep(_pendingSecond, SecondStep, 0, 59) : 0;
@@ -325,16 +331,18 @@
         await OnChange.InvokeAsync(newValue is null ? null : (object)newValue);
 
         _isOpen = false;
-        await OnClose.InvokeAsync();
     }
 
-    private void Cancel()
+    private async Task Cancel()
     {
+        var closeArgs = new PopupEventArgs();
+        await OnClose.InvokeAsync(closeArgs);
+        if (closeArgs.IsCancelled) return;
+
         _isOpen = false;
         // Restore input text from current committed value
         var timeVal = ExtractTime(Value);
         _inputText = timeVal.HasValue ? FormatTimeSpan(timeVal.Value) : string.Empty;
-        _ = OnClose.InvokeAsync();
     }
 
     private async Task SetNow()
@@ -435,7 +443,7 @@
     private async Task OnInputFocus()
     {
         if (!IsEnabled || ReadOnly) return;
-        if (!_isOpen) OpenDropdown();
+        if (!_isOpen) await OpenDropdown();
     }
 
     private async Task OnInputBlur()
@@ -451,10 +459,10 @@
         {
             case "Enter":
                 if (_isOpen) await Commit();
-                else OpenDropdown();
+                else await OpenDropdown();
                 break;
             case "Escape":
-                if (_isOpen) Cancel();
+                if (_isOpen) await Cancel();
                 break;
             case "Tab":
                 if (_isOpen) await Commit();
@@ -462,11 +470,11 @@
         }
     }
 
-    private void ToggleDropdown()
+    private async Task ToggleDropdown()
     {
         if (!IsEnabled || ReadOnly) return;
-        if (_isOpen) Cancel();
-        else OpenDropdown();
+        if (_isOpen) await Cancel();
+        else await OpenDropdown();
     }
 
     // ── Value type helpers ────────────────────────────────────────────────────

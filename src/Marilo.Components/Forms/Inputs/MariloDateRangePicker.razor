@@ -160,6 +160,12 @@
     /// <summary>Fires when the range selection changes.</summary>
     [Parameter] public EventCallback OnRangeChanged { get; set; }
 
+    /// <summary>Fires before the popup opens. Set <see cref="PopupEventArgs.IsCancelled"/> to prevent opening.</summary>
+    [Parameter] public EventCallback<PopupEventArgs> OnOpen { get; set; }
+
+    /// <summary>Fires before the popup closes. Set <see cref="PopupEventArgs.IsCancelled"/> to prevent closing.</summary>
+    [Parameter] public EventCallback<PopupEventArgs> OnClose { get; set; }
+
     // ─── Private State ────────────────────────────────────────────────────────
 
     private bool _isPopupOpen;
@@ -197,10 +203,10 @@
     // ─── Public Methods ───────────────────────────────────────────────────────
 
     /// <summary>Opens the calendar popup.</summary>
-    public void Open() => OpenPopup();
+    public async Task Open() => await OpenPopup();
 
     /// <summary>Closes the calendar popup.</summary>
-    public void Close() => ClosePopup();
+    public async Task Close() => await ClosePopup();
 
     /// <summary>Navigates both calendars to the specified date.</summary>
     public void NavigateTo(DateTime date, CalendarView view = CalendarView.Month)
@@ -215,16 +221,25 @@
 
     // ─── Popup Handling ───────────────────────────────────────────────────────
 
-    private void OpenPopup()
+    private async Task OpenPopup()
     {
         if (!Enabled || ReadOnly) return;
+
+        var args = new PopupEventArgs();
+        await OnOpen.InvokeAsync(args);
+        if (args.IsCancelled) return;
+
         _selectingStart = !StartValue.HasValue || (StartValue.HasValue && EndValue.HasValue);
         _hoverDate = null;
         _isPopupOpen = true;
     }
 
-    private void ClosePopup()
+    private async Task ClosePopup()
     {
+        var args = new PopupEventArgs();
+        await OnClose.InvokeAsync(args);
+        if (args.IsCancelled) return;
+
         _isPopupOpen = false;
         _hoverDate = null;
     }
@@ -276,7 +291,7 @@
             if (AllowReverse)
             {
                 await OnRangeChanged.InvokeAsync();
-                ClosePopup();
+                await ClosePopup();
                 return;
             }
 
@@ -299,7 +314,7 @@
             // Close popup when a valid range is selected
             if (StartValue.HasValue && EndValue.Value >= StartValue.Value)
             {
-                ClosePopup();
+                await ClosePopup();
             }
             else if (!StartValue.HasValue)
             {
@@ -332,7 +347,7 @@
         await StartValueChanged.InvokeAsync(null);
         await EndValueChanged.InvokeAsync(null);
         await OnRangeChanged.InvokeAsync();
-        ClosePopup();
+        await ClosePopup();
     }
 
     // ─── Helper Predicates ────────────────────────────────────────────────────
@@ -478,9 +493,9 @@
 
     // ─── Keyboard Handling ────────────────────────────────────────────────────
 
-    private void OnKeyDown(KeyboardEventArgs e)
+    private async Task OnKeyDown(KeyboardEventArgs e)
     {
         if (e.Key == "Escape" && _isPopupOpen)
-            ClosePopup();
+            await ClosePopup();
     }
 }
