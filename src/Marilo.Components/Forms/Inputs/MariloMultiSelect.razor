@@ -282,6 +282,9 @@
     [Parameter] public int? TabIndex { get; set; }
     [Parameter] public string? PopupClass { get; set; }
 
+    /// <summary>Specifies the adaptive rendering mode for the popup on mobile devices.</summary>
+    [Parameter] public AdaptiveMode AdaptiveMode { get; set; } = AdaptiveMode.None;
+
     // Templates
     [Parameter] public RenderFragment<TItem>? ItemTemplate { get; set; }
     [Parameter] public RenderFragment<TItem>? TagTemplate { get; set; }

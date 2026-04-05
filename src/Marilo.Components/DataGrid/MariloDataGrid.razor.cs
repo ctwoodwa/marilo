@@ -16,6 +16,7 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
     internal List<TItem> _displayedItems = [];
     internal HashSet<TItem> _selectedItems = [];
     internal HashSet<TItem> _expandedDetailItems = [];
+    internal HashSet<(int RowIndex, string Field)> _selectedCellKeys = new();
     private bool _stateInitialized;
 
     // Grouping state
@@ -43,6 +44,11 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
     internal string? _filterMenuField;
     internal FilterOperator _filterMenuOperator = FilterOperator.Contains;
     internal string _filterMenuValue = "";
+
+    // CheckBoxList filter state
+    internal string? _checkBoxFilterField;
+    internal HashSet<string> _checkBoxFilterSelected = new();
+    internal List<string> _checkBoxFilterDistinct = new();
 
     // ── Parameters: Data Binding ────────────────────────────────────────
 
@@ -99,6 +105,15 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
 
     /// <summary>The selection mode for the grid.</summary>
     [Parameter] public GridSelectionMode SelectionMode { get; set; } = GridSelectionMode.None;
+
+    /// <summary>Whether selection operates on rows or cells.</summary>
+    [Parameter] public GridSelectionUnit SelectionUnit { get; set; } = GridSelectionUnit.Row;
+
+    /// <summary>The currently selected cells (when SelectionUnit is Cell).</summary>
+    [Parameter] public IEnumerable<GridCellReference<TItem>>? SelectedCells { get; set; }
+
+    /// <summary>Event fired when the cell selection changes.</summary>
+    [Parameter] public EventCallback<IEnumerable<GridCellReference<TItem>>> SelectedCellsChanged { get; set; }
 
     /// <summary>Whether to show a checkbox column for selection.</summary>
     [Parameter] public bool ShowCheckboxColumn { get; set; }

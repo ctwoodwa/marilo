@@ -10,10 +10,10 @@
 | Area | Open | In Progress | Completed | Blocked | Stage Focus | Tests Written | Notes |
 |------|------|-------------|-----------|---------|-------------|---------------|-------|
 | TreeView | 0 | 0 | 21 | 1 (virtualization deferred) | 06-validate | 67/67 | Full closure report complete |
-| DataGrid | ~35-50 | 0 | 15 (Ph1+Ph2) | 1 (typed expand args deferred) | **06-validate** | 37 | Phase 1+2 closed (15/71); Phase 3+ pending |
+| DataGrid | ~33-48 | 0 | 17 (Ph1+Ph2+Ph3) | 3 (expand args, frozen cols, drag-drop) | **06-validate** | 47 | Phase 1+2+3 closed (17/71); 2 JS deferred |
 | DataSheet | 0 | 0 | 0 | 1 (architecture decision) | — | 0 | Blocked: MariloSpreadsheet vs MariloDataSheet |
 | Forms | ~60 | 0 | 22+12+4+4 | 6 deferred | 03-resolution | 20/20 | Resolution design done; awaiting implementation |
-| T4 Pickers | ~28 | 0 | 11 | 3 partially resolved | 06-validate (B2) | 26 (17+9) | Batch 1+2 closed; Batch 3 pending |
+| T4 Pickers | ~15 | 0 | 23 (B1+B2+B3) | 3 partial + 1 won't fix | **06-validate (B3)** | 43 (17+9+17) | Batch 1+2+3 closed; GroupField+Steps remaining |
 | Splitter | 0 | 0 | 8 resolved | 1 demo deferred | **06-validate** | 17 | Stage 06 closure report complete; runtime test pending |
 | Wizard | 0 | 0 | 18 resolved | 0 | **06-validate** | 27 | Stage 06 closure report complete; runtime test pending |
 | Chart | 2 remaining | 0 | 13 (B1+B2) | 2 deferred | **06-validate (B2)** | 27 | Batch 1+2 closed; 4 pre-existing, 9 implemented; drilldown+demos deferred |

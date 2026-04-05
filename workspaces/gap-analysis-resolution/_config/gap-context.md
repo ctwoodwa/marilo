@@ -68,6 +68,7 @@ All implementations are independent (no Telerik dependency), use MIT/Apache-2.0-
 | form | 0 | 0 | Awaiting implementation (Stage 05) |
 | t4-pickers-batch1 | 17 | 17 | Stage 06 closed (2026-04-03); 7 resolved, 3 partially resolved |
 | t4-pickers-batch2 | 9 | pending | Stage 06 closed (2026-04-04); 4/4 resolved; runtime test pending |
+| t4-pickers-batch3 | 17 | 17 | Stage 06 closed (2026-04-05); 12 resolved, 1 won't fix; 547/547 full suite |
 | readonly-guards | 6 | 6 | Stage 06 closed (2026-04-03) |
 | expandall-lazyload | 6 | 6 | Stage 06 closed (2026-04-03) |
 
@@ -78,6 +79,7 @@ All implementations are independent (no Telerik dependency), use MIT/Apache-2.0-
 | editor-batch1 | 14 | pending | Stage 06 closed (2026-04-04); 6/6 resolved (2 pre-existing); runtime test pending |
 | datagrid-phase1 | 18 | 18 | Stage 06 closed (2026-04-04); 9 resolved, 1 deferred; runtime test pending |
 | datagrid-phase2 | 15 | 15 | Stage 06 closed (2026-04-04); 6 resolved (validation, composite filters, auto-gen attrs, aggregates, export, CancellationToken); runtime test pending |
+| datagrid-phase3 | 10 | 10 | Stage 06 closed (2026-04-05); 2 resolved (CheckBoxList filter, cell selection); 557/557 full suite |
 | datagrid-cdw | 0 | 0 | Per-feature checklist ready for CDW handoff (2026-04-03) |
 
 Canonical test evidence: `stages/06-validate/output/gap-*-closure-report.md`

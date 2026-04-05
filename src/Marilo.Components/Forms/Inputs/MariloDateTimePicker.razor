@@ -20,9 +20,11 @@
                tabindex="@TabIndex"
                inputmode="@InputMode"
                autocomplete="@AutoComplete"
+               role="combobox"
                aria-label="Date and time"
                aria-haspopup="dialog"
                aria-expanded="@_isPopupOpen.ToString().ToLowerInvariant()"
+               aria-controls="@(_isPopupOpen ? _popupId : null)"
                @onfocus="OpenPopup"
                @onclick="OpenPopup"
                @onblur="HandleBlur" />
@@ -42,7 +44,8 @@
     @if (_isPopupOpen && Enabled && !ReadOnly)
     {
         <div class="mar-datepicker__overlay" @onclick="ClosePopup"></div>
-        <div class="@CssProvider.CalendarClass() mar-datetime-picker__popup @PopupClass"
+        <div id="@_popupId"
+             class="@CssProvider.CalendarClass() mar-datetime-picker__popup @PopupClass"
              role="dialog"
              aria-label="Select date and time"
              aria-modal="true"
@@ -218,9 +221,13 @@
     /// <summary>Fires for each calendar cell during render, allowing custom CSS classes or disabling specific dates.</summary>
     [Parameter] public EventCallback<CalendarCellRenderEventArgs> OnCalendarCellRender { get; set; }
 
+    /// <summary>Specifies the adaptive rendering mode for the popup on mobile devices.</summary>
+    [Parameter] public AdaptiveMode AdaptiveMode { get; set; } = AdaptiveMode.None;
+
     // ─── Private State ────────────────────────────────────────────────────────
 
     private bool _isPopupOpen;
+    private readonly string _popupId = $"mar-dtp-{Guid.NewGuid():N}";
     private DateTime _displayMonth;
     private Dictionary<DateOnly, CalendarCellRenderEventArgs> _cellRenderCache = new();
 

@@ -45,7 +45,10 @@ public enum GridFilterMode
     FilterRow,
 
     /// <summary>A filter menu is available via each column header.</summary>
-    FilterMenu
+    FilterMenu,
+
+    /// <summary>A checkbox list of distinct values is available via each column header.</summary>
+    CheckBoxList
 }
 
 /// <summary>
@@ -58,4 +61,16 @@ public enum GridSortMode
 
     /// <summary>Multiple columns can be sorted simultaneously (Ctrl+Click).</summary>
     Multiple
+}
+
+/// <summary>
+/// Specifies the unit of selection in a data grid.
+/// </summary>
+public enum GridSelectionUnit
+{
+    /// <summary>Selection operates on whole rows (default).</summary>
+    Row,
+
+    /// <summary>Selection operates on individual cells.</summary>
+    Cell
 }

@@ -413,7 +413,7 @@
         builder.AddAttribute(77, "fill", "none");
         builder.AddAttribute(78, "stroke", color);
         builder.AddAttribute(79, "stroke-width", "2");
-        if (Transitions) builder.AddAttribute(80, "class", "mar-chart-animate");
+        if (Transitions ?? true) builder.AddAttribute(80, "class", "mar-chart-animate");
         builder.CloseElement();
 
         // Data point circles (interactive)

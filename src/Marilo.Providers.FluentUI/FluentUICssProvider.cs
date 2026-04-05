@@ -300,6 +300,14 @@ public class FluentUICssProvider : IMariloCssProvider
 
     public string TimePickerClass() => "mar-timepicker";
 
+    public string DateRangePickerClass() => "mar-date-range-picker";
+
+    public string DateRangePickerPopupClass() => "mar-date-range-picker__popup";
+
+    public string DateTimePickerClass() => "mar-datetime-picker";
+
+    public string DateTimePickerPopupClass() => "mar-datetime-picker__popup";
+
     public string FileUploadClass() => "mar-file-upload";
 
     public string FileUploadFileListClass() => "mar-file-upload-file-list";

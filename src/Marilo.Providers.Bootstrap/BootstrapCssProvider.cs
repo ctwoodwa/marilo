@@ -380,6 +380,14 @@ public class BootstrapCssProvider : IMariloCssProvider
 
     public string TimePickerClass() => "form-control mar-bs-timepicker";
 
+    public string DateRangePickerClass() => "mar-date-range-picker";
+
+    public string DateRangePickerPopupClass() => "mar-date-range-picker__popup";
+
+    public string DateTimePickerClass() => "mar-datetime-picker";
+
+    public string DateTimePickerPopupClass() => "mar-datetime-picker__popup";
+
     public string FileUploadClass() => "form-control mar-bs-file-upload";
 
     public string FileUploadFileListClass() => "list-group list-group-flush mar-bs-file-upload-list";

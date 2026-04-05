@@ -1,4 +1,5 @@
 using Marilo.Core.Base;
+using Marilo.Core.Enums;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
@@ -124,6 +125,9 @@ public partial class MariloUpload : MariloComponentBase
 
     /// <summary>Fires when chunk upload is resumed.</summary>
     [Parameter] public EventCallback<UploadResumeEventArgs> OnResume { get; set; }
+
+    /// <summary>Specifies the adaptive rendering mode for the popup on mobile devices.</summary>
+    [Parameter] public AdaptiveMode AdaptiveMode { get; set; } = AdaptiveMode.None;
 
     // ── Internal state ────────────────────────────────────────────────────────
 

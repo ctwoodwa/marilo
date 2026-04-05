@@ -83,6 +83,10 @@ public interface IMariloCssProvider
     string ColorPickerPopupClass();
     string DatePickerClass();
     string TimePickerClass();
+    string DateRangePickerClass();
+    string DateRangePickerPopupClass();
+    string DateTimePickerClass();
+    string DateTimePickerPopupClass();
     string FileUploadClass();
     string FileUploadFileListClass();
 
