@@ -38,6 +38,18 @@ The `Allocations` parameter accepts `IEnumerable<AllocationRecord>`. Each record
 | Value | `decimal` | Hours or currency amount |
 | Unit | `AllocationUnit` | Hours or Currency |
 
+### AllocationUnit
+
+The `Unit` property on each `AllocationRecord` uses the `AllocationUnit` enum:
+
+```csharp
+public enum AllocationUnit
+{
+    Hours,    // Time-based allocation
+    Currency  // Cost-based allocation
+}
+```
+
 ## Targets
 
 The optional `Targets` parameter accepts `IEnumerable<AllocationTarget>` for delta analysis.

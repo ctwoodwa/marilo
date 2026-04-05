@@ -197,8 +197,24 @@
 | Priority | Count | Records |
 |----------|-------|---------|
 | P1 (blocking) | 0 | -- |
-| P2 (this phase) | 4 | SPEC-AS-001, SPEC-AS-002, SPEC-AS-003, SPEC-AS-004, SPEC-AS-009 |
-| P3 (next phase) | 4 | SPEC-AS-005, SPEC-AS-006, SPEC-AS-007, SPEC-AS-008 |
+| P2 (this phase) | 0 | -- |
+| P3 (next phase) | 0 | -- |
+
+## Resolution Log
+
+All 9 gaps resolved on 2026-04-05:
+
+| ID | Resolution |
+|----|-----------|
+| SPEC-AS-001 | Added `ResourceRowTemplate` to templates.md |
+| SPEC-AS-002 | Added full `CellEditedArgs` property table (incl. `BucketEnd`) to events.md |
+| SPEC-AS-003 | Added `Return Type` column to methods table in overview.md — all async methods show `Task` |
+| SPEC-AS-004 | Corrected `GetSelectedCells()` return type to `IReadOnlyList<AllocationCellRef>` in overview.md |
+| SPEC-AS-005 | Added `ShowComparisonPanel` and `ShowCriticalPath` to overview.md parameter table |
+| SPEC-AS-006 | Added `DeltaDisplayMode` enum values table to overview.md |
+| SPEC-AS-007 | Added `AllocationUnit` enum values table to data-binding.md |
+| SPEC-AS-008 | Added "Two-Way Binding Callbacks" section to events.md |
+| SPEC-AS-009 | Created `accessibility.md` with ARIA roles, states, keyboard matrix, and screen reader expectations |
 
 ## Spec-Ahead Items (documented but not implemented)
 

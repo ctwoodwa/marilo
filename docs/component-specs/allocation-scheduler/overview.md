@@ -220,6 +220,8 @@ See [Analysis and Targets](slug:allocation-scheduler-analysis-targets) for param
 | `Height` | `string` | — | A `height` style in any supported CSS unit. |
 | `Width` | `string` | — | A `width` style in any supported CSS unit. |
 | `Class` | `string` | — | Custom CSS class for the root element. |
+| `ShowComparisonPanel` | `bool` | `false` | Toggles the scenario comparison panel for side-by-side baseline vs. scenario view. |
+| `ShowCriticalPath` | `bool` | `false` | Highlights the critical allocation path across resources and tasks. |
 | `EnableLoaderContainer` | `bool` | `true` | Shows a loading animation for operations over 600ms. |
 
 
@@ -243,16 +245,16 @@ See [Analysis and Targets](slug:allocation-scheduler-analysis-targets) for param
 
 Obtain a reference with `@ref` to call methods programmatically.
 
-| Method | Description |
-| --- | --- |
-| `Rebind()` | Refreshes the component by re-reading `Resources` and `Allocations`. |
-| `Refresh()` | Re-renders the component without re-reading data. |
-| `NavigateTo(DateTime date)` | Moves the visible range so that `date` is in view. |
-| `NavigateForward()` | Advances the visible range by one `ViewGrain` unit. |
-| `NavigateBack()` | Moves the visible range back by one `ViewGrain` unit. |
-| `NavigateToToday()` | Moves the visible range to center on today. |
-| `GetSelectedCells()` | Returns the current `IEnumerable<AllocationCellRef>` selection. |
-| `ClearSelection()` | Clears the current cell selection. |
+| Method | Return Type | Description |
+| --- | --- | --- |
+| `Rebind()` | `Task` | Refreshes the component by re-reading `Resources` and `Allocations`. |
+| `Refresh()` | `Task` | Re-renders the component without re-reading data. |
+| `NavigateTo(DateTime date)` | `Task` | Moves the visible range so that `date` is in view. |
+| `NavigateForward()` | `Task` | Advances the visible range by one `ViewGrain` unit. |
+| `NavigateBack()` | `Task` | Moves the visible range back by one `ViewGrain` unit. |
+| `NavigateToToday()` | `Task` | Moves the visible range to center on today. |
+| `GetSelectedCells()` | `IReadOnlyList<AllocationCellRef>` | Returns the current cell selection. |
+| `ClearSelection()` | `Task` | Clears the current cell selection. |
 
 
 ## Enumerations
@@ -294,6 +296,17 @@ public enum DistributionMode
 }
 ```
 
+### DeltaDisplayMode
+
+```csharp
+public enum DeltaDisplayMode
+{
+    Value,       // Show variance as an absolute value
+    Percentage,  // Show variance as a percentage of the target
+    StatusIcon   // Show a colour-coded icon (over / under / on-target)
+}
+```
+
 ### AllocationSelectionMode
 
 ```csharp
@@ -326,6 +339,7 @@ The following scenarios represent the primary coverage targets for AllocationSch
 * [Context Menu Commands](slug:allocation-scheduler-context-menu)
 * [Analysis and Targets](slug:allocation-scheduler-analysis-targets)
 * [AllocationScheduler Events](slug:allocation-scheduler-events)
+* [AllocationScheduler Accessibility](slug:allocation-scheduler-accessibility)
 
 
 ## See Also

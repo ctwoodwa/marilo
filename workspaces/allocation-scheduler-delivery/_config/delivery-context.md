@@ -22,6 +22,7 @@
 | Metric | Value |
 |--------|-------|
 | Last spec audit | 2026-04-05 |
-| Open spec gaps | 9 |
+| Last spec gap resolution | 2026-04-05 |
+| Open spec gaps | 0 |
 | Last example UX audit | -- |
 | Last sync check | -- |

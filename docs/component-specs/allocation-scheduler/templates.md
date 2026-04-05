@@ -68,6 +68,23 @@ Shown when no allocations are bound.
 </MariloAllocationScheduler>
 ```
 
+## ResourceRowTemplate
+
+Fallback template for resource metadata cells when no column-level `Template` is set. Receives the `TResource` instance as `context`.
+
+```razor
+<MariloAllocationScheduler TResource="StaffResource" ...>
+    <ResourceRowTemplate>
+        <div class="resource-badge">
+            <strong>@context.Name</strong>
+            <span class="role-tag">@context.Role</span>
+        </div>
+    </ResourceRowTemplate>
+</MariloAllocationScheduler>
+```
+
+> When both `ResourceRowTemplate` and a column-level `Template` are set, the column-level template wins for that column.
+
 ## ToolbarTemplate
 
 Append custom content to the built-in toolbar.

@@ -17,13 +17,23 @@ components: ["allocation-scheduler"]
 
 Fires when a single cell value is committed.
 
+| Property | Type |
+|---|---|
+| ResourceKey | `object` |
+| TaskId | `object` |
+| BucketStart | `DateTime` |
+| BucketEnd | `DateTime` |
+| OldValue | `decimal` |
+| NewValue | `decimal` |
+| Record | `AllocationRecord` |
+
 ```razor
 <MariloAllocationScheduler ... OnCellEdited="@HandleEdit">
 
 @code {
     private async Task HandleEdit(CellEditedArgs args)
     {
-        // args.ResourceKey, args.TaskId, args.BucketStart
+        // args.ResourceKey, args.TaskId, args.BucketStart, args.BucketEnd
         // args.OldValue, args.NewValue, args.Record
         await SaveAsync(args.Record);
     }
@@ -71,6 +81,16 @@ Fires when a built-in or custom context menu command is invoked.
 ### CanExecuteAction
 
 Called before a context menu action is shown to allow enable/disable logic. Set `IsEnabled = false` to grey out the command.
+
+## Two-Way Binding Callbacks
+
+These callbacks support Blazor two-way binding (`@bind-*`) for parameters that can change from within the component. See [Data Binding](slug:allocation-scheduler-data-binding) for usage examples.
+
+| Callback | Type | Bound Parameter |
+|---|---|---|
+| `ViewGrainChanged` | `EventCallback<TimeGranularity>` | `ViewGrain` |
+| `VisibleStartChanged` | `EventCallback<DateTime>` | `VisibleStart` |
+| `ActiveSetIdChanged` | `EventCallback<Guid>` | `ActiveSetId` |
 
 ## Scenario Events
 
