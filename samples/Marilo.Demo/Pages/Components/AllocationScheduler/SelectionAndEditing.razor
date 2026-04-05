@@ -1,85 +1,85 @@
 @page "/components/allocation-scheduler/selection-and-editing"
+@layout ComponentDemoLayout
 @using Marilo.Components.DataDisplay
 @using Marilo.Core.Enums
 @using Marilo.Core.Models
 
-<h1>AllocationScheduler — Selection &amp; Editing</h1>
-<p>Demonstrates selection modes, bulk range editing, and selection events.</p>
+<PageSection Title="Selection Modes">
+    <DemoSection Title="Cell and Range Selection"
+                 Description="Toggle between None, Cell, and Range selection. Click cells to see selection behaviour change."
+                 Code="@_selectionCode">
+        <div style="margin-bottom:1rem">
+            <label>
+                Selection Mode:
+                <select @bind="_selectionMode">
+                    <option value="@AllocationSelectionMode.None">None</option>
+                    <option value="@AllocationSelectionMode.Cell">Cell</option>
+                    <option value="@AllocationSelectionMode.Range">Range</option>
+                </select>
+            </label>
+        </div>
 
-@* ── Scenario 1: Selection Modes ──────────────────────────────────── *@
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_allocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   SelectionMode="@_selectionMode"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="2"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   OnSelectionChanged="@HandleSelectionChanged"
+                                   Height="250px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+                <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
 
-<h2>1. Selection Modes</h2>
-<p>Toggle between <code>None</code>, <code>Cell</code>, and <code>Range</code> selection. Click cells to see selection behaviour change.</p>
+        @if (_selectedCount > 0)
+        {
+            <p><strong>Selected cells:</strong> @_selectedCount</p>
+        }
+    </DemoSection>
+</PageSection>
 
-<div style="margin-bottom:1rem">
-    <label>
-        Selection Mode:
-        <select @bind="_selectionMode">
-            <option value="@AllocationSelectionMode.None">None</option>
-            <option value="@AllocationSelectionMode.Cell">Cell</option>
-            <option value="@AllocationSelectionMode.Range">Range</option>
-        </select>
-    </label>
-</div>
+<PageSection Title="Bulk Range Editing">
+    <DemoSection Title="Drag-Fill and Keyboard Edit"
+                 Description="Enable AllowBulkEdit and SelectionMode=Range. Select a range of cells and apply a value. The OnRangeEdited event fires on commit."
+                 Code="@_bulkEditCode">
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_editableAllocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   SelectionMode="AllocationSelectionMode.Range"
+                                   AllowBulkEdit="true"
+                                   AllowDragFill="true"
+                                   AllowKeyboardEdit="true"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="2"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   OnRangeEdited="@HandleRangeEdited"
+                                   OnCellEdited="@HandleCellEdited"
+                                   Height="250px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+                <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
 
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_allocations"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           SelectionMode="@_selectionMode"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="2"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           OnSelectionChanged="@HandleSelectionChanged"
-                           Height="250px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-        <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
-
-@if (_selectedCount > 0)
-{
-    <p><strong>Selected cells:</strong> @_selectedCount</p>
-}
-
-@* ── Scenario 2: Bulk Range Editing ───────────────────────────────── *@
-
-<h2>2. Bulk Range Editing</h2>
-<p>Enable <code>AllowBulkEdit</code> and <code>SelectionMode=Range</code>. Select a range of cells and apply a value. The <code>OnRangeEdited</code> event fires on commit.</p>
-
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_editableAllocations"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           SelectionMode="AllocationSelectionMode.Range"
-                           AllowBulkEdit="true"
-                           AllowDragFill="true"
-                           AllowKeyboardEdit="true"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="2"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           OnRangeEdited="@HandleRangeEdited"
-                           OnCellEdited="@HandleCellEdited"
-                           Height="250px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-        <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
-
-@if (!string.IsNullOrEmpty(_rangeEditMessage))
-{
-    <p><strong>Range edit:</strong> @_rangeEditMessage</p>
-}
-@if (!string.IsNullOrEmpty(_cellEditMessage))
-{
-    <p><strong>Cell edit:</strong> @_cellEditMessage</p>
-}
+        @if (!string.IsNullOrEmpty(_rangeEditMessage))
+        {
+            <p><strong>Range edit:</strong> @_rangeEditMessage</p>
+        }
+        @if (!string.IsNullOrEmpty(_cellEditMessage))
+        {
+            <p><strong>Cell edit:</strong> @_cellEditMessage</p>
+        }
+    </DemoSection>
+</PageSection>
 
 @code {
     private DateTime _demoStart = new(2026, 4, 6);
@@ -134,4 +134,38 @@
         public string Role       { get; set; } = string.Empty;
         public string Department { get; set; } = string.Empty;
     }
+
+    // ── Code Snippets ───────────────────────────────────────────────────
+
+    private const string _selectionCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           AuthoritativeLevel=\"TimeGranularity.Week\"\n" +
+        "                           SelectionMode=\"@_selectionMode\"\n" +
+        "                           OnSelectionChanged=\"@HandleSelectionChanged\"\n" +
+        "                           Height=\"250px\">\n" +
+        "    <AllocationResourceColumns>\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Name\" Title=\"Resource\" Width=\"180px\" />\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Role\" Title=\"Role\" Width=\"120px\" />\n" +
+        "    </AllocationResourceColumns>\n" +
+        "</MariloAllocationScheduler>";
+
+    private const string _bulkEditCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           AuthoritativeLevel=\"TimeGranularity.Week\"\n" +
+        "                           SelectionMode=\"AllocationSelectionMode.Range\"\n" +
+        "                           AllowBulkEdit=\"true\"\n" +
+        "                           AllowDragFill=\"true\"\n" +
+        "                           AllowKeyboardEdit=\"true\"\n" +
+        "                           OnRangeEdited=\"@HandleRangeEdited\"\n" +
+        "                           OnCellEdited=\"@HandleCellEdited\"\n" +
+        "                           Height=\"250px\">\n" +
+        "    <AllocationResourceColumns>\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Name\" Title=\"Resource\" Width=\"180px\" />\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Role\" Title=\"Role\" Width=\"120px\" />\n" +
+        "    </AllocationResourceColumns>\n" +
+        "</MariloAllocationScheduler>";
 }

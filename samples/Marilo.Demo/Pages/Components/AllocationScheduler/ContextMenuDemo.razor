@@ -1,148 +1,150 @@
 @page "/components/allocation-scheduler/context-menu"
+@layout ComponentDemoLayout
 @using Marilo.Components.DataDisplay
 @using Marilo.Core.Enums
 @using Marilo.Core.Models
 
-<h1>AllocationScheduler — Context Menu</h1>
-<p>Demonstrates the right-click context menu, custom commands, distribution, shift, and move operations.</p>
+<PageSection Title="Built-in Context Menu">
+    <DemoSection Title="Default Menu Commands"
+                 Description="Right-click any cell to access built-in commands (set, clear, shift, distribute). Toggle the menu on/off."
+                 Code="@_builtInMenuCode">
+        <div style="margin-bottom:1rem">
+            <label>
+                <input type="checkbox" @bind="_enableMenu" />
+                Enable Context Menu
+            </label>
+        </div>
 
-@* ── Scenario 1: Built-in Context Menu ────────────────────────────── *@
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_allocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   EnableContextMenu="@_enableMenu"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="2"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   OnContextMenuAction="@HandleContextMenu"
+                                   Height="250px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+                <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
 
-<h2>1. Built-in Context Menu</h2>
-<p>Right-click any cell to access built-in commands (set, clear, shift, distribute). Toggle the menu on/off.</p>
+        @if (!string.IsNullOrEmpty(_menuMessage))
+        {
+            <p><strong>Menu action:</strong> @_menuMessage</p>
+        }
+    </DemoSection>
+</PageSection>
 
-<div style="margin-bottom:1rem">
-    <label>
-        <input type="checkbox" @bind="_enableMenu" />
-        Enable Context Menu
-    </label>
-</div>
+<PageSection Title="Custom Commands">
+    <DemoSection Title="Custom Context Menu Items"
+                 Description="Append custom commands using ContextMenuItems. The OnContextMenuAction event fires for both built-in and custom commands."
+                 Code="@_customMenuCode">
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_allocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   EnableContextMenu="true"
+                                   ContextMenuItems="@_customMenuItems"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="2"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   OnContextMenuAction="@HandleCustomMenuAction"
+                                   Height="250px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
 
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_allocations"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           EnableContextMenu="@_enableMenu"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="2"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           OnContextMenuAction="@HandleContextMenu"
-                           Height="250px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-        <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
+        @if (!string.IsNullOrEmpty(_customMenuMessage))
+        {
+            <p><strong>Custom action:</strong> @_customMenuMessage</p>
+        }
+    </DemoSection>
+</PageSection>
 
-@if (!string.IsNullOrEmpty(_menuMessage))
-{
-    <p><strong>Menu action:</strong> @_menuMessage</p>
-}
+<PageSection Title="Distribution Policy">
+    <DemoSection Title="Distribution Modes"
+                 Description="Set DefaultDistributionMode and intercept with OnDistributeRequested to inspect or override proposed distributions."
+                 Code="@_distributionCode">
+        <div style="margin-bottom:1rem">
+            <label>
+                Distribution Mode:
+                <select @bind="_distributionMode">
+                    <option value="@DistributionMode.EvenSpread">Even Spread</option>
+                    <option value="@DistributionMode.FrontLoaded">Front Loaded</option>
+                    <option value="@DistributionMode.BackLoaded">Back Loaded</option>
+                    <option value="@DistributionMode.WorkingDaysWeighted">Working Days Weighted</option>
+                    <option value="@DistributionMode.ProportionalToExisting">Proportional to Existing</option>
+                </select>
+            </label>
+        </div>
 
-@* ── Scenario 2: Custom Context Menu Commands ─────────────────────── *@
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_allocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Month"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   EnableContextMenu="true"
+                                   DefaultDistributionMode="@_distributionMode"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="3"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   OnDistributeRequested="@HandleDistribute"
+                                   Height="250px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
 
-<h2>2. Custom Context Menu Commands</h2>
-<p>Append custom commands using <code>ContextMenuItems</code>. The <code>OnContextMenuAction</code> event fires for both built-in and custom commands.</p>
+        @if (!string.IsNullOrEmpty(_distributeMessage))
+        {
+            <p><strong>Distribution:</strong> @_distributeMessage</p>
+        }
+    </DemoSection>
+</PageSection>
 
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_allocations"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           EnableContextMenu="true"
-                           ContextMenuItems="@_customMenuItems"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="2"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           OnContextMenuAction="@HandleCustomMenuAction"
-                           Height="250px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
+<PageSection Title="Shift and Move Operations">
+    <DemoSection Title="Shift and Move Values"
+                 Description="Right-click to shift values forward/backward or move values between resources/tasks. Events fire on confirmation."
+                 Code="@_shiftMoveCode">
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_shiftAllocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   EnableContextMenu="true"
+                                   AllowKeyboardEdit="true"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="3"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   OnShiftValues="@HandleShift"
+                                   OnMoveValues="@HandleMove"
+                                   Height="250px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+                <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
 
-@if (!string.IsNullOrEmpty(_customMenuMessage))
-{
-    <p><strong>Custom action:</strong> @_customMenuMessage</p>
-}
-
-@* ── Scenario 3: Distribution Policy ─────────────────────────────── *@
-
-<h2>3. Distribution Policy</h2>
-<p>Set <code>DefaultDistributionMode</code> and intercept with <code>OnDistributeRequested</code> to inspect or override proposed distributions.</p>
-
-<div style="margin-bottom:1rem">
-    <label>
-        Distribution Mode:
-        <select @bind="_distributionMode">
-            <option value="@DistributionMode.EvenSpread">Even Spread</option>
-            <option value="@DistributionMode.FrontLoaded">Front Loaded</option>
-            <option value="@DistributionMode.BackLoaded">Back Loaded</option>
-            <option value="@DistributionMode.WorkingDaysWeighted">Working Days Weighted</option>
-            <option value="@DistributionMode.ProportionalToExisting">Proportional to Existing</option>
-        </select>
-    </label>
-</div>
-
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_allocations"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Month"
-                           ValueMode="AllocationValueMode.Hours"
-                           EnableContextMenu="true"
-                           DefaultDistributionMode="@_distributionMode"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="3"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           OnDistributeRequested="@HandleDistribute"
-                           Height="250px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
-
-@if (!string.IsNullOrEmpty(_distributeMessage))
-{
-    <p><strong>Distribution:</strong> @_distributeMessage</p>
-}
-
-@* ── Scenario 4: Shift & Move Operations ─────────────────────────── *@
-
-<h2>4. Shift &amp; Move Operations</h2>
-<p>Right-click to shift values forward/backward or move values between resources/tasks. Events fire on confirmation.</p>
-
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_shiftAllocations"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           EnableContextMenu="true"
-                           AllowKeyboardEdit="true"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="3"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           OnShiftValues="@HandleShift"
-                           OnMoveValues="@HandleMove"
-                           Height="250px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-        <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
-
-@if (!string.IsNullOrEmpty(_shiftMessage))
-{
-    <p><strong>Shift:</strong> @_shiftMessage</p>
-}
-@if (!string.IsNullOrEmpty(_moveMessage))
-{
-    <p><strong>Move:</strong> @_moveMessage</p>
-}
+        @if (!string.IsNullOrEmpty(_shiftMessage))
+        {
+            <p><strong>Shift:</strong> @_shiftMessage</p>
+        }
+        @if (!string.IsNullOrEmpty(_moveMessage))
+        {
+            <p><strong>Move:</strong> @_moveMessage</p>
+        }
+    </DemoSection>
+</PageSection>
 
 @code {
     private DateTime _demoStart = new(2026, 4, 6);
@@ -219,4 +221,62 @@
         public string Role       { get; set; } = string.Empty;
         public string Department { get; set; } = string.Empty;
     }
+
+    // ── Code Snippets ───────────────────────────────────────────────────
+
+    private const string _builtInMenuCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           AuthoritativeLevel=\"TimeGranularity.Week\"\n" +
+        "                           EnableContextMenu=\"@_enableMenu\"\n" +
+        "                           OnContextMenuAction=\"@HandleContextMenu\"\n" +
+        "                           Height=\"250px\">\n" +
+        "    <AllocationResourceColumns>\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Name\" Title=\"Resource\" Width=\"180px\" />\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Role\" Title=\"Role\" Width=\"120px\" />\n" +
+        "    </AllocationResourceColumns>\n" +
+        "</MariloAllocationScheduler>";
+
+    private const string _customMenuCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           EnableContextMenu=\"true\"\n" +
+        "                           ContextMenuItems=\"@_customMenuItems\"\n" +
+        "                           OnContextMenuAction=\"@HandleCustomMenuAction\"\n" +
+        "                           Height=\"250px\">\n" +
+        "    <AllocationResourceColumns>\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Name\" Title=\"Resource\" Width=\"180px\" />\n" +
+        "    </AllocationResourceColumns>\n" +
+        "</MariloAllocationScheduler>";
+
+    private const string _distributionCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           EnableContextMenu=\"true\"\n" +
+        "                           DefaultDistributionMode=\"@_distributionMode\"\n" +
+        "                           ViewGrain=\"TimeGranularity.Month\"\n" +
+        "                           OnDistributeRequested=\"@HandleDistribute\"\n" +
+        "                           Height=\"250px\">\n" +
+        "    <AllocationResourceColumns>\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Name\" Title=\"Resource\" Width=\"180px\" />\n" +
+        "    </AllocationResourceColumns>\n" +
+        "</MariloAllocationScheduler>";
+
+    private const string _shiftMoveCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           EnableContextMenu=\"true\"\n" +
+        "                           AllowKeyboardEdit=\"true\"\n" +
+        "                           OnShiftValues=\"@HandleShift\"\n" +
+        "                           OnMoveValues=\"@HandleMove\"\n" +
+        "                           Height=\"250px\">\n" +
+        "    <AllocationResourceColumns>\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Name\" Title=\"Resource\" Width=\"180px\" />\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Role\" Title=\"Role\" Width=\"120px\" />\n" +
+        "    </AllocationResourceColumns>\n" +
+        "</MariloAllocationScheduler>";
 }

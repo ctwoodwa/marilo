@@ -1,160 +1,163 @@
 @page "/components/allocation-scheduler"
+@page "/components/allocation-scheduler/overview"
+@layout ComponentDemoLayout
 @using Marilo.Components.DataDisplay
 @using Marilo.Core.Enums
 @using Marilo.Core.Models
 @using Marilo.Core.BusinessLogic.Enums
 
-<h1>MariloAllocationScheduler</h1>
-<p>A resource-centric planning component for assigning task-linked hours or budget across a navigable timeline.</p>
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Resource Grid"
+                 Description="Three resources with pre-populated allocations in read-only mode. Drag-fill and bulk edit are disabled."
+                 Code="@_basicCode">
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_basicResources"
+                                   Allocations="@_basicAllocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="2"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   AllowDragFill="false"
+                                   AllowBulkEdit="false"
+                                   Height="250px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+                <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
+    </DemoSection>
+</PageSection>
 
-@* ── Scenario 1: Basic Resource Grid ──────────────────────────────── *@
+<PageSection Title="Editing">
+    <DemoSection Title="Interactive Allocation"
+                 Description="Drag-fill and keyboard editing enabled. OnCellEdited wired to capture changes."
+                 Code="@_interactiveCode">
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_basicResources"
+                                   Allocations="@_interactiveAllocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="2"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   AllowDragFill="true"
+                                   AllowKeyboardEdit="true"
+                                   OnCellEdited="@HandleCellEdited"
+                                   Height="250px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+                <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
 
-<h2>1. Basic Resource Grid</h2>
-<p>Three resources with pre-populated allocations in read-only mode.</p>
+        @if (!string.IsNullOrEmpty(_lastEditMessage))
+        {
+            <p><strong>Last edit:</strong> @_lastEditMessage</p>
+        }
+    </DemoSection>
+</PageSection>
 
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_basicResources"
-                           Allocations="@_basicAllocations"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="2"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           AllowDragFill="false"
-                           AllowBulkEdit="false"
-                           Height="250px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-        <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
+<PageSection Title="Conflict Detection">
+    <DemoSection Title="Overlapping Allocations"
+                 Description="When two tasks allocate the same resource in the same time bucket, the cell receives conflict styling."
+                 Code="@_conflictCode">
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_conflictResources"
+                                   Allocations="@_conflictAllocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="1"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   Height="200px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
+    </DemoSection>
+</PageSection>
 
-@* ── Scenario 2: Interactive Allocation ───────────────────────────── *@
+<PageSection Title="Resource Columns">
+    <DemoSection Title="Grouped Resources"
+                 Description="Resources grouped by department using multiple resource columns."
+                 Code="@_groupedCode">
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_groupedResources"
+                                   Allocations="@_basicAllocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="1"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   Height="300px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+                <AllocationResourceColumn TResource="StaffResource" Field="Department" Title="Dept" Width="120px" />
+                <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="100px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
+    </DemoSection>
 
-<h2>2. Interactive Allocation</h2>
-<p>Drag-fill and keyboard editing enabled. OnCellEdited wired to capture changes.</p>
+    <DemoSection Title="Custom Column Template"
+                 Description="Use a column-level Template RenderFragment for custom cell rendering with avatars."
+                 Code="@_templateCode">
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_basicResources"
+                                   Allocations="@_basicAllocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="1"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   Height="200px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="200px">
+                    <Template>
+                        <div style="display:flex;align-items:center;gap:0.5rem">
+                            <span style="width:24px;height:24px;border-radius:50%;background:#0f6cbd;color:white;display:flex;align-items:center;justify-content:center;font-size:0.7rem">
+                                @context.Name[0]
+                            </span>
+                            <span>@context.Name</span>
+                        </div>
+                    </Template>
+                </AllocationResourceColumn>
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
+    </DemoSection>
+</PageSection>
 
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_basicResources"
-                           Allocations="@_interactiveAllocations"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="2"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           AllowDragFill="true"
-                           AllowKeyboardEdit="true"
-                           OnCellEdited="@HandleCellEdited"
-                           Height="250px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-        <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
-
-@if (!string.IsNullOrEmpty(_lastEditMessage))
-{
-    <p><strong>Last edit:</strong> @_lastEditMessage</p>
-}
-
-@* ── Scenario 3: Conflict Detection ──────────────────────────────── *@
-
-<h2>3. Conflict Detection</h2>
-<p>Overlapping allocations on the same resource highlighted with conflict styling.</p>
-
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_conflictResources"
-                           Allocations="@_conflictAllocations"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="1"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           Height="200px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
-
-@* ── Scenario 4: Grouping ────────────────────────────────────────── *@
-
-<h2>4. Grouped Resources</h2>
-<p>Resources grouped by department using a custom resource column.</p>
-
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_groupedResources"
-                           Allocations="@_basicAllocations"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="1"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           Height="300px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-        <AllocationResourceColumn TResource="StaffResource" Field="Department" Title="Dept" Width="120px" />
-        <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="100px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
-
-@* ── Scenario 5: Custom Templates ────────────────────────────────── *@
-
-<h2>5. Custom Templates</h2>
-<p>ResourceRowTemplate and CellTemplate RenderFragments for custom rendering.</p>
-
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_basicResources"
-                           Allocations="@_basicAllocations"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="1"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           Height="200px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="200px">
-            <Template>
-                <div style="display:flex;align-items:center;gap:0.5rem">
-                    <span style="width:24px;height:24px;border-radius:50%;background:#0f6cbd;color:white;display:flex;align-items:center;justify-content:center;font-size:0.7rem">
-                        @context.Name[0]
-                    </span>
-                    <span>@context.Name</span>
-                </div>
-            </Template>
-        </AllocationResourceColumn>
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
-
-@* ── Scenario 6: Disabled Slots ──────────────────────────────────── *@
-
-<h2>6. Disabled Slots</h2>
-<p>Weekends and holidays rendered as disabled (non-editable) time slots.</p>
-
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_basicResources"
-                           Allocations="@_basicAllocations"
-                           AuthoritativeLevel="TimeGranularity.Day"
-                           ViewGrain="TimeGranularity.Day"
-                           ValueMode="AllocationValueMode.Hours"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="14"
-                           DefaultRangeUnit="TimeGranularity.Day"
-                           Height="200px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
+<PageSection Title="Day Granularity">
+    <DemoSection Title="Disabled Slots"
+                 Description="Switch to daily granularity. Weekends and holidays render as disabled (non-editable) time slots."
+                 Code="@_disabledCode">
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_basicResources"
+                                   Allocations="@_basicAllocations"
+                                   AuthoritativeLevel="TimeGranularity.Day"
+                                   ViewGrain="TimeGranularity.Day"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="14"
+                                   DefaultRangeUnit="TimeGranularity.Day"
+                                   Height="200px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
+    </DemoSection>
+</PageSection>
 
 @code {
     private DateTime _demoStart = new DateTime(2026, 4, 6);
     private string _lastEditMessage = string.Empty;
 
-    // ── Scenario 1 & 2 Data ────────────────────────────────────────
+    // ── Data ───────────────────────────────────────────────────────────
 
     private List<StaffResource> _basicResources = new()
     {
@@ -176,8 +179,6 @@
         new() { AllocationId = Guid.NewGuid(), ResourceId = 1, TaskId = 101, TaskName = "Backend API", BucketStart = new(2026, 4, 6), BucketEnd = new(2026, 4, 13), Value = 20, Unit = AllocationUnit.Hours }
     };
 
-    // ── Scenario 3 Data ────────────────────────────────────────────
-
     private List<StaffResource> _conflictResources = new()
     {
         new() { Id = 1, Name = "Alice Chen", Role = "Dev", Department = "Engineering" }
@@ -189,8 +190,6 @@
         new() { AllocationId = Guid.NewGuid(), ResourceId = 1, TaskId = 102, TaskName = "Frontend UI",  BucketStart = new(2026, 4, 6), BucketEnd = new(2026, 4, 13), Value = 24, Unit = AllocationUnit.Hours }
     };
 
-    // ── Scenario 4 Data ────────────────────────────────────────────
-
     private List<StaffResource> _groupedResources = new()
     {
         new() { Id = 1, Name = "Alice Chen",   Role = "Dev",     Department = "Engineering" },
@@ -200,7 +199,7 @@
         new() { Id = 5, Name = "Eva Martinez", Role = "Analyst", Department = "Finance" }
     };
 
-    // ── Event Handlers ─────────────────────────────────────────────
+    // ── Event Handlers ─────────────────────────────────────────────────
 
     private async Task HandleCellEdited(CellEditedArgs args)
     {
@@ -208,7 +207,7 @@
         await Task.CompletedTask;
     }
 
-    // ── Models ──────────────────────────────────────────────────────
+    // ── Models ──────────────────────────────────────────────────────────
 
     public class StaffResource
     {
@@ -217,4 +216,87 @@
         public string Role       { get; set; } = string.Empty;
         public string Department { get; set; } = string.Empty;
     }
+
+    // ── Code Snippets ───────────────────────────────────────────────────
+
+    private const string _basicCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           AuthoritativeLevel=\"TimeGranularity.Week\"\n" +
+        "                           ViewGrain=\"TimeGranularity.Week\"\n" +
+        "                           ValueMode=\"AllocationValueMode.Hours\"\n" +
+        "                           VisibleStart=\"@_demoStart\"\n" +
+        "                           DefaultRangeLength=\"2\"\n" +
+        "                           DefaultRangeUnit=\"TimeGranularity.Month\"\n" +
+        "                           AllowDragFill=\"false\"\n" +
+        "                           AllowBulkEdit=\"false\"\n" +
+        "                           Height=\"250px\">\n" +
+        "    <AllocationResourceColumns>\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Name\" Title=\"Resource\" Width=\"180px\" />\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Role\" Title=\"Role\" Width=\"120px\" />\n" +
+        "    </AllocationResourceColumns>\n" +
+        "</MariloAllocationScheduler>";
+
+    private const string _interactiveCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           AuthoritativeLevel=\"TimeGranularity.Week\"\n" +
+        "                           AllowDragFill=\"true\"\n" +
+        "                           AllowKeyboardEdit=\"true\"\n" +
+        "                           OnCellEdited=\"@HandleCellEdited\"\n" +
+        "                           Height=\"250px\">\n" +
+        "    <AllocationResourceColumns>\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Name\" Title=\"Resource\" Width=\"180px\" />\n" +
+        "    </AllocationResourceColumns>\n" +
+        "</MariloAllocationScheduler>";
+
+    private const string _conflictCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_conflictAllocations\"\n" +
+        "                           AuthoritativeLevel=\"TimeGranularity.Week\"\n" +
+        "                           Height=\"200px\">\n" +
+        "    <AllocationResourceColumns>\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Name\" Title=\"Resource\" Width=\"180px\" />\n" +
+        "    </AllocationResourceColumns>\n" +
+        "</MariloAllocationScheduler>";
+
+    private const string _groupedCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_groupedResources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           AuthoritativeLevel=\"TimeGranularity.Week\"\n" +
+        "                           Height=\"300px\">\n" +
+        "    <AllocationResourceColumns>\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Name\" Title=\"Resource\" Width=\"180px\" />\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Department\" Title=\"Dept\" Width=\"120px\" />\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Role\" Title=\"Role\" Width=\"100px\" />\n" +
+        "    </AllocationResourceColumns>\n" +
+        "</MariloAllocationScheduler>";
+
+    private const string _templateCode =
+        "<AllocationResourceColumn TResource=\"StaffResource\" Field=\"Name\" Title=\"Resource\" Width=\"200px\">\n" +
+        "    <Template>\n" +
+        "        <div style=\"display:flex;align-items:center;gap:0.5rem\">\n" +
+        "            <span style=\"...avatar styles...\">@context.Name[0]</span>\n" +
+        "            <span>@context.Name</span>\n" +
+        "        </div>\n" +
+        "    </Template>\n" +
+        "</AllocationResourceColumn>";
+
+    private const string _disabledCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           AuthoritativeLevel=\"TimeGranularity.Day\"\n" +
+        "                           ViewGrain=\"TimeGranularity.Day\"\n" +
+        "                           DefaultRangeLength=\"14\"\n" +
+        "                           DefaultRangeUnit=\"TimeGranularity.Day\"\n" +
+        "                           Height=\"200px\">\n" +
+        "    <AllocationResourceColumns>\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Name\" Title=\"Resource\" Width=\"180px\" />\n" +
+        "    </AllocationResourceColumns>\n" +
+        "</MariloAllocationScheduler>";
 }

@@ -1,108 +1,109 @@
 @page "/components/allocation-scheduler/navigation-and-zoom"
+@layout ComponentDemoLayout
 @using Marilo.Components.DataDisplay
 @using Marilo.Core.Enums
 @using Marilo.Core.Models
 
-<h1>AllocationScheduler — Navigation &amp; Zoom</h1>
-<p>Demonstrates zoom-level switching, read-only rollup behaviour, and navigation events.</p>
+<PageSection Title="Read-Only Rollup">
+    <DemoSection Title="Read-Only Rollup"
+                 Description="Set AuthoritativeLevel=Week and view at Month granularity. Month cells are read-only aggregate sums."
+                 Code="@_rollupCode">
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_allocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Month"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="3"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   Height="250px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+                <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
+    </DemoSection>
+</PageSection>
 
-@* ── Scenario 1: Read-Only Rollup ─────────────────────────────────── *@
+<PageSection Title="Zoom Level Switching">
+    <DemoSection Title="Zoom Level Switching"
+                 Description="Use two-way binding on ViewGrain to switch between Day, Week, and Month at runtime."
+                 Code="@_zoomCode">
+        <div style="margin-bottom:1rem;display:flex;gap:1.5rem;align-items:center">
+            <label>
+                View Grain:
+                <select @bind="_viewGrain">
+                    <option value="@TimeGranularity.Day">Day</option>
+                    <option value="@TimeGranularity.Week">Week</option>
+                    <option value="@TimeGranularity.Month">Month</option>
+                    <option value="@TimeGranularity.Quarter">Quarter</option>
+                </select>
+            </label>
+            <span>Current: <strong>@_viewGrain</strong></span>
+        </div>
 
-<h2>1. Read-Only Rollup</h2>
-<p>Set <code>AuthoritativeLevel=Week</code> and view at <code>Month</code> granularity. Month cells are read-only aggregate sums; editing is disabled at coarser levels.</p>
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_allocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="@_viewGrain"
+                                   ViewGrainChanged="@(g => _viewGrain = g)"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="3"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   OnVisibleRangeChanged="@HandleRangeChanged"
+                                   Height="250px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+                <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
 
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_allocations"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Month"
-                           ValueMode="AllocationValueMode.Hours"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="3"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           Height="250px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-        <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
+        @if (!string.IsNullOrEmpty(_rangeMessage))
+        {
+            <p><strong>Visible range:</strong> @_rangeMessage</p>
+        }
+    </DemoSection>
+</PageSection>
 
-@* ── Scenario 2: Zoom Level Switching ─────────────────────────────── *@
+<PageSection Title="Editing at Coarser Zoom Levels">
+    <DemoSection Title="AllowZoomEdit"
+                 Description="Enable AllowZoomEdit to permit direct editing at zoom levels above AuthoritativeLevel. Values are distributed to sub-buckets."
+                 Code="@_zoomEditCode">
+        <div style="margin-bottom:1rem">
+            <label>
+                <input type="checkbox" @bind="_allowZoomEdit" />
+                Allow Zoom Edit (Month cells editable)
+            </label>
+        </div>
 
-<h2>2. Zoom Level Switching</h2>
-<p>Use two-way binding on <code>ViewGrain</code> to switch between Day, Week, and Month at runtime. <code>OnVisibleRangeChanged</code> fires on each navigation.</p>
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_allocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Month"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   AllowZoomEdit="@_allowZoomEdit"
+                                   DefaultDistributionMode="DistributionMode.EvenSpread"
+                                   AllowKeyboardEdit="true"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="3"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   OnCellEdited="@HandleCellEdited"
+                                   Height="250px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
 
-<div style="margin-bottom:1rem;display:flex;gap:1.5rem;align-items:center">
-    <label>
-        View Grain:
-        <select @bind="_viewGrain">
-            <option value="@TimeGranularity.Day">Day</option>
-            <option value="@TimeGranularity.Week">Week</option>
-            <option value="@TimeGranularity.Month">Month</option>
-            <option value="@TimeGranularity.Quarter">Quarter</option>
-        </select>
-    </label>
-    <span>Current: <strong>@_viewGrain</strong></span>
-</div>
-
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_allocations"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="@_viewGrain"
-                           ViewGrainChanged="@(g => _viewGrain = g)"
-                           ValueMode="AllocationValueMode.Hours"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="3"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           OnVisibleRangeChanged="@HandleRangeChanged"
-                           Height="250px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-        <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
-
-@if (!string.IsNullOrEmpty(_rangeMessage))
-{
-    <p><strong>Visible range:</strong> @_rangeMessage</p>
-}
-
-@* ── Scenario 3: AllowZoomEdit ────────────────────────────────────── *@
-
-<h2>3. Editing at Coarser Zoom Levels</h2>
-<p>Enable <code>AllowZoomEdit</code> to permit direct editing at zoom levels above <code>AuthoritativeLevel</code>. Values are distributed to sub-buckets using the <code>DefaultDistributionMode</code> policy. <em>Not recommended for most use cases.</em></p>
-
-<div style="margin-bottom:1rem">
-    <label>
-        <input type="checkbox" @bind="_allowZoomEdit" />
-        Allow Zoom Edit (Month cells editable)
-    </label>
-</div>
-
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_allocations"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Month"
-                           ValueMode="AllocationValueMode.Hours"
-                           AllowZoomEdit="@_allowZoomEdit"
-                           DefaultDistributionMode="DistributionMode.EvenSpread"
-                           AllowKeyboardEdit="true"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="3"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           OnCellEdited="@HandleCellEdited"
-                           Height="250px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
-
-@if (!string.IsNullOrEmpty(_editMessage))
-{
-    <p><strong>Zoom edit:</strong> @_editMessage</p>
-}
+        @if (!string.IsNullOrEmpty(_editMessage))
+        {
+            <p><strong>Zoom edit:</strong> @_editMessage</p>
+        }
+    </DemoSection>
+</PageSection>
 
 @code {
     private DateTime _demoStart = new(2026, 4, 6);
@@ -148,4 +149,32 @@
         public string Role       { get; set; } = string.Empty;
         public string Department { get; set; } = string.Empty;
     }
+
+    private const string _rollupCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           AuthoritativeLevel=\"TimeGranularity.Week\"\n" +
+        "                           ViewGrain=\"TimeGranularity.Month\"\n" +
+        "                           Height=\"250px\" />";
+
+    private const string _zoomCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           ViewGrain=\"@_viewGrain\"\n" +
+        "                           ViewGrainChanged=\"@(g => _viewGrain = g)\"\n" +
+        "                           OnVisibleRangeChanged=\"@HandleRangeChanged\"\n" +
+        "                           Height=\"250px\" />";
+
+    private const string _zoomEditCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           AuthoritativeLevel=\"TimeGranularity.Week\"\n" +
+        "                           ViewGrain=\"TimeGranularity.Month\"\n" +
+        "                           AllowZoomEdit=\"@_allowZoomEdit\"\n" +
+        "                           DefaultDistributionMode=\"DistributionMode.EvenSpread\"\n" +
+        "                           OnCellEdited=\"@HandleCellEdited\"\n" +
+        "                           Height=\"250px\" />";
 }

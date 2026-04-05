@@ -85,8 +85,8 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         var rows = cut.FindAll("[role='row']");
-        // 1 header row + 3 resource rows
-        Assert.Equal(4, rows.Count);
+        // Split-panel: (1 header + 3 resource) x 2 panels = 8
+        Assert.Equal(8, rows.Count);
     }
 
     [Fact]
@@ -363,7 +363,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         var rows = cut.FindAll(".mar-allocation-scheduler__row");
-        Assert.Equal(3, rows.Count); // 3 resources
+        Assert.Equal(6, rows.Count); // 3 resources x 2 panels
     }
 
     // ── Toolbar Tests ───────────────────────────────────────────────

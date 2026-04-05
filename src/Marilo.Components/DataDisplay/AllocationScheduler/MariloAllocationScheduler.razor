@@ -3,10 +3,12 @@
 @inherits Marilo.Core.Base.MariloComponentBase
 
 <CascadingValue Value="this" IsFixed="true">
-    <div class="@CombineClasses(CssProvider.AllocationSchedulerClass())"
+    <div @ref="_gridRef"
+         class="@CombineClasses(CssProvider.AllocationSchedulerClass())"
          style="@CombineStyles(SizeStyle)"
          role="grid"
          aria-label="Allocation Scheduler"
+         @onclick="HandleGridClick"
          @attributes="AdditionalAttributes">
 
         @* Scenario Strip *@
@@ -53,118 +55,189 @@
         }
         else
         {
-            @* Grid surface *@
-            <div class="mar-allocation-scheduler__grid" role="presentation">
-                @* Header row *@
-                <div class="mar-allocation-scheduler__header-row" role="row">
-                    @* Resource column headers *@
-                    @foreach (var col in _columns.Where(c => c.Visible))
-                    {
-                        <div class="@CssProvider.AllocationSchedulerResourceColumnClass(col.Pinned)"
-                             role="columnheader"
-                             style="width: @col.Width">
-                            @if (col.HeaderTemplate is not null)
-                            {
-                                @col.HeaderTemplate
-                            }
-                            else
-                            {
-                                @col.Title
-                            }
-                        </div>
-                    }
-                    @* Time bucket headers *@
-                    @foreach (var bucket in _visibleBuckets)
-                    {
-                        <div class="@CssProvider.AllocationSchedulerTimeHeaderClass(_currentViewGrain)"
-                             role="columnheader"
-                             aria-label="@FormatBucketHeader(bucket)">
-                            @FormatBucketHeader(bucket)
-                        </div>
-                    }
-                </div>
-
-                @* Resource rows *@
-                @if (Resources is not null)
-                {
-                    @foreach (var resource in Resources)
-                    {
-                        var resourceKey = GetResourceKey(resource);
-                        var isOverAllocated = IsResourceOverAllocated(resourceKey);
-                        var isRowSelected = IsResourceRowSelected(resourceKey);
-
-                        <div class="@CssProvider.AllocationSchedulerRowClass(isRowSelected, isOverAllocated)"
-                             role="row"
-                             aria-label="@GetResourceLabel(resource)">
-                            @* Resource metadata cells *@
+            @* Split-panel layout: fixed resource panel (left) + scrollable timeline panel (right) *@
+            <div class="mar-allocation-scheduler__grid" role="grid">
+                @* ── Left panel: resource columns ─────────────────────── *@
+                <div class="mar-allocation-scheduler__resource-panel">
+                    <table class="mar-allocation-scheduler__table" style="table-layout:fixed">
+                        <colgroup>
                             @foreach (var col in _columns.Where(c => c.Visible))
                             {
-                                <div class="@CssProvider.AllocationSchedulerResourceColumnClass(col.Pinned)"
-                                     role="gridcell">
-                                    @if (col.Template is not null)
-                                    {
-                                        @col.Template(resource)
-                                    }
-                                    else if (ResourceRowTemplate is not null)
-                                    {
-                                        @ResourceRowTemplate(resource)
-                                    }
-                                    else
-                                    {
-                                        @GetFieldValue(resource, col.Field)
-                                    }
-                                </div>
+                                <col style="@GetColumnWidthStyle(col)" />
                             }
-                            @* Allocation cells *@
+                        </colgroup>
+                        <thead>
+                            <tr class="mar-allocation-scheduler__header-row" role="row">
+                                @foreach (var col in _columns.Where(c => c.Visible))
+                                {
+                                    <th class="@CssProvider.AllocationSchedulerResourceColumnClass(col.Pinned)"
+                                        role="columnheader">
+                                        @if (col.HeaderTemplate is not null)
+                                        {
+                                            @col.HeaderTemplate
+                                        }
+                                        else
+                                        {
+                                            @col.Title
+                                        }
+                                    </th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Resources is not null)
+                            {
+                                @foreach (var resource in Resources)
+                                {
+                                    var resourceKey = GetResourceKey(resource);
+                                    var isOverAllocated = IsResourceOverAllocated(resourceKey);
+                                    var isRowSelected = IsResourceRowSelected(resourceKey);
+
+                                    <tr class="@CssProvider.AllocationSchedulerRowClass(isRowSelected, isOverAllocated)"
+                                        role="row"
+                                        aria-label="@GetResourceLabel(resource)">
+                                        @foreach (var col in _columns.Where(c => c.Visible))
+                                        {
+                                            <td class="@CssProvider.AllocationSchedulerResourceColumnClass(col.Pinned)"
+                                                role="gridcell">
+                                                @if (col.Template is not null)
+                                                {
+                                                    @col.Template(resource)
+                                                }
+                                                else if (ResourceRowTemplate is not null)
+                                                {
+                                                    @ResourceRowTemplate(resource)
+                                                }
+                                                else
+                                                {
+                                                    @GetFieldValue(resource, col.Field)
+                                                }
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @* ── Resize handle ────────────────────────────────────── *@
+                <div class="mar-allocation-scheduler__splitter" role="separator" aria-orientation="vertical"></div>
+
+                @* ── Right panel: timeline buckets (horizontally scrollable) *@
+                <div class="mar-allocation-scheduler__timeline-panel">
+                    <table class="mar-allocation-scheduler__table" style="table-layout:fixed">
+                        <colgroup>
+                            @{ var bucketIdx = 0; }
                             @foreach (var bucket in _visibleBuckets)
                             {
-                                var record = GetRecord(resourceKey, bucket);
-                                var isEditable = IsCellEditable(bucket);
-                                var isSelected = IsCellSelected(resourceKey, bucket);
-                                var isConflict = IsCellConflict(resourceKey, bucket);
-                                var isDisabled = IsCellDisabled(bucket);
-
-                                <div class="@CssProvider.AllocationSchedulerCellClass(isEditable, isSelected, isConflict, isDisabled, false)"
-                                     role="gridcell"
-                                     tabindex="@(isEditable ? 0 : -1)"
-                                     aria-selected="@(isSelected ? "true" : "false")"
-                                     aria-disabled="@(isDisabled ? "true" : "false")"
-                                     aria-readonly="@(!isEditable ? "true" : "false")"
-                                     aria-label="@GetCellAriaLabel(resource, bucket, record)"
-                                     @onclick="() => HandleCellClick(resourceKey, bucket)"
-                                     @ondblclick="() => HandleCellDoubleClick(resourceKey, bucket)">
-                                    @if (CellTemplate is not null)
-                                    {
-                                        @CellTemplate(new AllocationCellContext
-                                        {
-                                            Record = record,
-                                            ResourceKey = resourceKey,
-                                            BucketStart = bucket.Start,
-                                            BucketEnd = bucket.End,
-                                            IsEditable = isEditable,
-                                            IsSelected = isSelected,
-                                            IsConflict = isConflict
-                                        })
-                                    }
-                                    else if (record is not null)
-                                    {
-                                        @if (ShowBaselineDiff && _baselineRecord(resourceKey, bucket) is { } baseline)
-                                        {
-                                            <span class="@CssProvider.AllocationSchedulerGhostBarClass()">@baseline.Value</span>
-                                        }
-                                        <span class="@CssProvider.AllocationSchedulerCellValueClass(ValueMode)">
-                                            @FormatValue(record.Value)
-                                        </span>
-                                        @if (ShowDeltas && GetDelta(resourceKey, bucket) is { } delta)
-                                        {
-                                            <span class="@CssProvider.AllocationSchedulerDeltaClass(DeltaDisplayMode, delta > 0, delta < 0)">
-                                                @FormatDelta(delta)
-                                            </span>
-                                        }
-                                    }
-                                </div>
+                                <col style="@GetBucketWidthStyle(bucketIdx)" />
+                                bucketIdx++;
                             }
-                        </div>
+                        </colgroup>
+                        <thead>
+                            <tr class="mar-allocation-scheduler__header-row" role="row">
+                                @foreach (var bucket in _visibleBuckets)
+                                {
+                                    <th class="@CssProvider.AllocationSchedulerTimeHeaderClass(_currentViewGrain)"
+                                        role="columnheader"
+                                        aria-label="@FormatBucketHeader(bucket)">
+                                        @FormatBucketHeader(bucket)
+                                    </th>
+                                }
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Resources is not null)
+                            {
+                                @foreach (var resource in Resources)
+                                {
+                                    var resourceKey = GetResourceKey(resource);
+                                    var isOverAllocated = IsResourceOverAllocated(resourceKey);
+                                    var isRowSelected = IsResourceRowSelected(resourceKey);
+
+                                    <tr class="@CssProvider.AllocationSchedulerRowClass(isRowSelected, isOverAllocated)"
+                                        role="row">
+                                        @foreach (var bucket in _visibleBuckets)
+                                        {
+                                            var record = GetRecord(resourceKey, bucket);
+                                            var isEditable = IsCellEditable(bucket);
+                                            var isSelected = IsCellSelected(resourceKey, bucket);
+                                            var isConflict = IsCellConflict(resourceKey, bucket);
+                                            var isDisabled = IsCellDisabled(bucket);
+
+                                            <td class="@CssProvider.AllocationSchedulerCellClass(isEditable, isSelected, isConflict, isDisabled, false)"
+                                                role="gridcell"
+                                                tabindex="@(isEditable ? 0 : -1)"
+                                                data-resource-key="@resourceKey"
+                                                data-bucket-start="@bucket.Start.ToString("o")"
+                                                aria-selected="@(isSelected ? "true" : "false")"
+                                                aria-disabled="@(isDisabled ? "true" : "false")"
+                                                aria-readonly="@(!isEditable ? "true" : "false")"
+                                                aria-label="@GetCellAriaLabel(resource, bucket, record)"
+                                                @onclick="() => HandleCellClick(resourceKey, bucket)"
+                                                @ondblclick="() => HandleCellDoubleClick(resourceKey, bucket)"
+                                                @oncontextmenu="(e) => HandleCellContextMenu(e, resourceKey, bucket)"
+                                                @oncontextmenu:preventDefault="EnableContextMenu">
+                                                @if (CellTemplate is not null)
+                                                {
+                                                    @CellTemplate(new AllocationCellContext
+                                                    {
+                                                        Record = record,
+                                                        ResourceKey = resourceKey,
+                                                        BucketStart = bucket.Start,
+                                                        BucketEnd = bucket.End,
+                                                        IsEditable = isEditable,
+                                                        IsSelected = isSelected,
+                                                        IsConflict = isConflict
+                                                    })
+                                                }
+                                                else if (record is not null)
+                                                {
+                                                    @if (ShowBaselineDiff && _baselineRecord(resourceKey, bucket) is { } baseline)
+                                                    {
+                                                        <span class="@CssProvider.AllocationSchedulerGhostBarClass()">@baseline.Value</span>
+                                                    }
+                                                    <span class="@CssProvider.AllocationSchedulerCellValueClass(ValueMode)">
+                                                        @FormatValue(record.Value)
+                                                    </span>
+                                                    @if (ShowDeltas && GetDelta(resourceKey, bucket) is { } delta)
+                                                    {
+                                                        <span class="@CssProvider.AllocationSchedulerDeltaClass(DeltaDisplayMode, delta > 0, delta < 0)">
+                                                            @FormatDelta(delta)
+                                                        </span>
+                                                    }
+                                                }
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+
+        @* Context Menu *@
+        @if (EnableContextMenu && _contextMenuVisible)
+        {
+            <div class="@CssProvider.AllocationSchedulerContextMenuClass()"
+                 style="position:absolute;left:@(_contextMenuX)px;top:@(_contextMenuY)px;z-index:1000"
+                 @onclick:stopPropagation="true">
+                <button @onclick="@(() => HandleContextMenuCommand("set-values"))">Set values</button>
+                <button @onclick="@(() => HandleContextMenuCommand("clear-values"))">Clear values</button>
+                <button @onclick="@(() => HandleContextMenuCommand("shift-forward"))">Shift forward</button>
+                <button @onclick="@(() => HandleContextMenuCommand("shift-backward"))">Shift backward</button>
+                <button @onclick="@(() => HandleContextMenuCommand("distribute"))">Distribute to sub-buckets</button>
+                @if (ContextMenuItems is not null)
+                {
+                    @foreach (var item in ContextMenuItems)
+                    {
+                        <button @onclick="@(() => HandleContextMenuCommand(item.Name))"
+                                disabled="@(!item.IsEnabled)">
+                            @item.Text
+                        </button>
                     }
                 }
             </div>

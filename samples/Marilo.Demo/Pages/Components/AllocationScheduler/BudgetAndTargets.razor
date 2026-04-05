@@ -1,113 +1,114 @@
 @page "/components/allocation-scheduler/budget-and-targets"
+@layout ComponentDemoLayout
 @using Marilo.Components.DataDisplay
 @using Marilo.Core.Enums
 @using Marilo.Core.Models
 
-<h1>AllocationScheduler — Budget Planning &amp; Targets</h1>
-<p>Demonstrates currency-based allocation, target overlays, and variance analysis.</p>
+<PageSection Title="Budget Planning">
+    <DemoSection Title="Currency Mode"
+                 Description="Switch ValueMode to display cost allocations instead of hours. Use the toggle to compare modes."
+                 Code="@_budgetCode">
+        <div style="margin-bottom:1rem">
+            <label>
+                <input type="checkbox" @bind="_useCurrency" />
+                Show as Currency
+            </label>
+        </div>
 
-@* ── Scenario 1: Budget Planning (Currency Mode) ──────────────────── *@
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_budgetAllocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="@(_useCurrency ? AllocationValueMode.Currency : AllocationValueMode.Hours)"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="2"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   Height="250px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+                <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
+    </DemoSection>
+</PageSection>
 
-<h2>1. Budget Planning</h2>
-<p>Switch <code>ValueMode</code> to display cost allocations instead of hours. Use the toggle to compare modes.</p>
+<PageSection Title="Targets Overlay">
+    <DemoSection Title="Target Totals"
+                 Description="Bind Targets and enable ShowTargets to display desired totals alongside actuals."
+                 Code="@_targetsCode">
+        <div style="margin-bottom:1rem">
+            <label>
+                <input type="checkbox" @bind="_showTargets" />
+                Show Targets
+            </label>
+        </div>
 
-<div style="margin-bottom:1rem">
-    <label>
-        <input type="checkbox" @bind="_useCurrency" />
-        Show as Currency
-    </label>
-</div>
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_budgetAllocations"
+                                   Targets="@_targets"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   ShowTargets="@_showTargets"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="2"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   Height="250px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
+    </DemoSection>
+</PageSection>
 
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_budgetAllocations"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="@(_useCurrency ? AllocationValueMode.Currency : AllocationValueMode.Hours)"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="2"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           Height="250px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-        <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
+<PageSection Title="Variance Analysis">
+    <DemoSection Title="Delta Display"
+                 Description="Enable ShowDeltas and toggle DeltaDisplayMode between Value, Percentage, and StatusIcon."
+                 Code="@_varianceCode">
+        <div style="margin-bottom:1rem;display:flex;gap:1.5rem;align-items:center">
+            <label>
+                <input type="checkbox" @bind="_showDeltas" />
+                Show Deltas
+            </label>
+            <label>
+                Delta Mode:
+                <select @bind="_deltaMode">
+                    <option value="@DeltaDisplayMode.Value">Value</option>
+                    <option value="@DeltaDisplayMode.Percentage">Percentage</option>
+                    <option value="@DeltaDisplayMode.StatusIcon">Status Icon</option>
+                </select>
+            </label>
+        </div>
 
-@* ── Scenario 2: Targets Overlay ──────────────────────────────────── *@
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_budgetAllocations"
+                                   Targets="@_targets"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   ShowTargets="true"
+                                   ShowDeltas="@_showDeltas"
+                                   DeltaDisplayMode="@_deltaMode"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="2"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   OnTargetChanged="@HandleTargetChanged"
+                                   Height="280px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+                <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
 
-<h2>2. Targets Overlay</h2>
-<p>Bind <code>Targets</code> and enable <code>ShowTargets</code> to display desired totals alongside actuals.</p>
-
-<div style="margin-bottom:1rem">
-    <label>
-        <input type="checkbox" @bind="_showTargets" />
-        Show Targets
-    </label>
-</div>
-
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_budgetAllocations"
-                           Targets="@_targets"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           ShowTargets="@_showTargets"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="2"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           Height="250px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
-
-@* ── Scenario 3: Variance Analysis (Deltas) ──────────────────────── *@
-
-<h2>3. Variance Analysis</h2>
-<p>Enable <code>ShowDeltas</code> and toggle <code>DeltaDisplayMode</code> between Value, Percentage, and StatusIcon.</p>
-
-<div style="margin-bottom:1rem;display:flex;gap:1.5rem;align-items:center">
-    <label>
-        <input type="checkbox" @bind="_showDeltas" />
-        Show Deltas
-    </label>
-    <label>
-        Delta Mode:
-        <select @bind="_deltaMode">
-            <option value="@DeltaDisplayMode.Value">Value</option>
-            <option value="@DeltaDisplayMode.Percentage">Percentage</option>
-            <option value="@DeltaDisplayMode.StatusIcon">Status Icon</option>
-        </select>
-    </label>
-</div>
-
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_budgetAllocations"
-                           Targets="@_targets"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           ShowTargets="true"
-                           ShowDeltas="@_showDeltas"
-                           DeltaDisplayMode="@_deltaMode"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="2"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           OnTargetChanged="@HandleTargetChanged"
-                           Height="280px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-        <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
-
-@if (!string.IsNullOrEmpty(_targetMessage))
-{
-    <p><strong>Target changed:</strong> @_targetMessage</p>
-}
+        @if (!string.IsNullOrEmpty(_targetMessage))
+        {
+            <p><strong>Target changed:</strong> @_targetMessage</p>
+        }
+    </DemoSection>
+</PageSection>
 
 @code {
     private DateTime _demoStart = new(2026, 4, 6);
@@ -153,4 +154,52 @@
         public string Role       { get; set; } = string.Empty;
         public string Department { get; set; } = string.Empty;
     }
+
+    // ── Code Snippets ───────────────────────────────────────────────────
+
+    private const string _budgetCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_budgetAllocations\"\n" +
+        "                           AuthoritativeLevel=\"TimeGranularity.Week\"\n" +
+        "                           ViewGrain=\"TimeGranularity.Week\"\n" +
+        "                           ValueMode=\"@(_useCurrency ? AllocationValueMode.Currency : AllocationValueMode.Hours)\"\n" +
+        "                           VisibleStart=\"@_demoStart\"\n" +
+        "                           DefaultRangeLength=\"2\"\n" +
+        "                           DefaultRangeUnit=\"TimeGranularity.Month\"\n" +
+        "                           Height=\"250px\">\n" +
+        "    <AllocationResourceColumns>\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Name\" Title=\"Resource\" Width=\"180px\" />\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Role\" Title=\"Role\" Width=\"120px\" />\n" +
+        "    </AllocationResourceColumns>\n" +
+        "</MariloAllocationScheduler>";
+
+    private const string _targetsCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           Targets=\"@_targets\"\n" +
+        "                           ShowTargets=\"@_showTargets\"\n" +
+        "                           AuthoritativeLevel=\"TimeGranularity.Week\"\n" +
+        "                           Height=\"250px\">\n" +
+        "    <AllocationResourceColumns>\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Name\" Title=\"Resource\" Width=\"180px\" />\n" +
+        "    </AllocationResourceColumns>\n" +
+        "</MariloAllocationScheduler>";
+
+    private const string _varianceCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           Targets=\"@_targets\"\n" +
+        "                           ShowTargets=\"true\"\n" +
+        "                           ShowDeltas=\"@_showDeltas\"\n" +
+        "                           DeltaDisplayMode=\"@_deltaMode\"\n" +
+        "                           OnTargetChanged=\"@HandleTargetChanged\"\n" +
+        "                           Height=\"280px\">\n" +
+        "    <AllocationResourceColumns>\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Name\" Title=\"Resource\" Width=\"180px\" />\n" +
+        "        <AllocationResourceColumn TResource=\"StaffResource\" Field=\"Role\" Title=\"Role\" Width=\"120px\" />\n" +
+        "    </AllocationResourceColumns>\n" +
+        "</MariloAllocationScheduler>";
 }

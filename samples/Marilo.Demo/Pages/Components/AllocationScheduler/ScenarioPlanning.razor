@@ -1,125 +1,126 @@
 @page "/components/allocation-scheduler/scenario-planning"
+@layout ComponentDemoLayout
 @using Marilo.Components.DataDisplay
 @using Marilo.Core.Enums
 @using Marilo.Core.Models
 @using Marilo.Core.BusinessLogic.Enums
 
-<h1>AllocationScheduler — Scenario Planning</h1>
-<p>Demonstrates baseline vs. scenario comparison, the scenario strip, and scenario lifecycle events.</p>
+<PageSection Title="Baseline & Scenario Sets">
+    <DemoSection Title="Baseline & Scenario Sets"
+                 Description="Bind AllocationSets and ScenarioOverrides to display the scenario strip. Switch between sets using ActiveSetId."
+                 Code="@_baselineCode">
+        <div style="margin-bottom:1rem">
+            <label>
+                Active Set:
+                <select @bind="_activeSetId">
+                    @foreach (var set in _sets)
+                    {
+                        <option value="@set.SetId">@set.Name</option>
+                    }
+                </select>
+            </label>
+        </div>
 
-@* ── Scenario 1: Baseline & Scenario Sets ─────────────────────────── *@
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_baselineAllocations"
+                                   AllocationSets="@_sets"
+                                   ScenarioOverrides="@_overrides"
+                                   ActiveSetId="@_activeSetId"
+                                   ActiveSetIdChanged="@(id => _activeSetId = id)"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="2"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   OnScenarioChanged="@HandleScenarioChanged"
+                                   Height="280px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+                <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
 
-<h2>1. Baseline &amp; Scenario Sets</h2>
-<p>Bind <code>AllocationSets</code> and <code>ScenarioOverrides</code> to display the scenario strip. Switch between sets using <code>ActiveSetId</code>.</p>
+        @if (!string.IsNullOrEmpty(_scenarioMessage))
+        {
+            <p><strong>Scenario event:</strong> @_scenarioMessage</p>
+        }
+    </DemoSection>
+</PageSection>
 
-<div style="margin-bottom:1rem">
-    <label>
-        Active Set:
-        <select @bind="_activeSetId">
-            @foreach (var set in _sets)
-            {
-                <option value="@set.SetId">@set.Name</option>
-            }
-        </select>
-    </label>
-</div>
+<PageSection Title="Baseline Diff">
+    <DemoSection Title="Baseline Diff"
+                 Description="Enable ShowBaselineDiff to highlight cells that differ from the baseline when viewing a scenario."
+                 Code="@_diffCode">
+        <div style="margin-bottom:1rem">
+            <label>
+                <input type="checkbox" @bind="_showBaselineDiff" />
+                Show Baseline Diff
+            </label>
+        </div>
 
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_baselineAllocations"
-                           AllocationSets="@_sets"
-                           ScenarioOverrides="@_overrides"
-                           ActiveSetId="@_activeSetId"
-                           ActiveSetIdChanged="@(id => _activeSetId = id)"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="2"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           OnScenarioChanged="@HandleScenarioChanged"
-                           Height="280px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-        <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_baselineAllocations"
+                                   AllocationSets="@_sets"
+                                   ScenarioOverrides="@_overrides"
+                                   ActiveSetId="@_scenarioSetId"
+                                   CompareSetId="@_baselineSetId"
+                                   ShowBaselineDiff="@_showBaselineDiff"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="2"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   Height="250px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
+    </DemoSection>
+</PageSection>
 
-@if (!string.IsNullOrEmpty(_scenarioMessage))
-{
-    <p><strong>Scenario event:</strong> @_scenarioMessage</p>
-}
+<PageSection Title="Comparison Panel">
+    <DemoSection Title="Comparison Panel"
+                 Description="Enable ShowComparisonPanel for a side-by-side view of baseline and scenario allocations."
+                 Code="@_comparisonCode">
+        <div style="margin-bottom:1rem">
+            <label>
+                <input type="checkbox" @bind="_showComparisonPanel" />
+                Show Comparison Panel
+            </label>
+        </div>
 
-@* ── Scenario 2: Baseline Diff ────────────────────────────────────── *@
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_baselineAllocations"
+                                   AllocationSets="@_sets"
+                                   ScenarioOverrides="@_overrides"
+                                   ActiveSetId="@_scenarioSetId"
+                                   CompareSetId="@_baselineSetId"
+                                   ShowComparisonPanel="@_showComparisonPanel"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="2"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   OnScenarioCreated="@HandleScenarioCreated"
+                                   Height="350px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+                <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
 
-<h2>2. Baseline Diff</h2>
-<p>Enable <code>ShowBaselineDiff</code> to highlight cells that differ from the baseline when viewing a scenario.</p>
-
-<div style="margin-bottom:1rem">
-    <label>
-        <input type="checkbox" @bind="_showBaselineDiff" />
-        Show Baseline Diff
-    </label>
-</div>
-
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_baselineAllocations"
-                           AllocationSets="@_sets"
-                           ScenarioOverrides="@_overrides"
-                           ActiveSetId="@_scenarioSetId"
-                           CompareSetId="@_baselineSetId"
-                           ShowBaselineDiff="@_showBaselineDiff"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="2"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           Height="250px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
-
-@* ── Scenario 3: Comparison Panel ─────────────────────────────────── *@
-
-<h2>3. Comparison Panel</h2>
-<p>Enable <code>ShowComparisonPanel</code> for a side-by-side view of baseline and scenario allocations.</p>
-
-<div style="margin-bottom:1rem">
-    <label>
-        <input type="checkbox" @bind="_showComparisonPanel" />
-        Show Comparison Panel
-    </label>
-</div>
-
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_baselineAllocations"
-                           AllocationSets="@_sets"
-                           ScenarioOverrides="@_overrides"
-                           ActiveSetId="@_scenarioSetId"
-                           CompareSetId="@_baselineSetId"
-                           ShowComparisonPanel="@_showComparisonPanel"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="2"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           OnScenarioCreated="@HandleScenarioCreated"
-                           Height="350px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-        <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
-
-@if (!string.IsNullOrEmpty(_createdMessage))
-{
-    <p><strong>Scenario created:</strong> @_createdMessage</p>
-}
+        @if (!string.IsNullOrEmpty(_createdMessage))
+        {
+            <p><strong>Scenario created:</strong> @_createdMessage</p>
+        }
+    </DemoSection>
+</PageSection>
 
 @code {
     private DateTime _demoStart = new(2026, 4, 6);
@@ -211,4 +212,36 @@
         public string Role       { get; set; } = string.Empty;
         public string Department { get; set; } = string.Empty;
     }
+
+    private const string _baselineCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           AllocationSets=\"@_sets\"\n" +
+        "                           ScenarioOverrides=\"@_overrides\"\n" +
+        "                           ActiveSetId=\"@_activeSetId\"\n" +
+        "                           ActiveSetIdChanged=\"@(id => _activeSetId = id)\"\n" +
+        "                           OnScenarioChanged=\"@HandleScenarioChanged\"\n" +
+        "                           Height=\"280px\" />";
+
+    private const string _diffCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           AllocationSets=\"@_sets\"\n" +
+        "                           ScenarioOverrides=\"@_overrides\"\n" +
+        "                           ActiveSetId=\"@_scenarioSetId\"\n" +
+        "                           CompareSetId=\"@_baselineSetId\"\n" +
+        "                           ShowBaselineDiff=\"@_showBaselineDiff\"\n" +
+        "                           Height=\"250px\" />";
+
+    private const string _comparisonCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           AllocationSets=\"@_sets\"\n" +
+        "                           ScenarioOverrides=\"@_overrides\"\n" +
+        "                           ShowComparisonPanel=\"@_showComparisonPanel\"\n" +
+        "                           OnScenarioCreated=\"@HandleScenarioCreated\"\n" +
+        "                           Height=\"350px\" />";
 }

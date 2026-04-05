@@ -60,23 +60,63 @@
     }
   }
 
-  // ── Grid Surface ─────────────────────────────────────
+  // ── Split-Panel Grid Surface ──────────────────────────
   &__grid {
-    display: grid;
-    overflow: auto;
+    display: flex;
     flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  &__resource-panel {
+    flex: 0 0 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-right: none;
+    background: var(--marilo-color-surface, #ffffff);
+    z-index: 2;
+
+    // Hide scrollbar — vertical scroll is synced from timeline panel
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+  }
+
+  &__splitter {
+    flex: 0 0 4px;
+    background: var(--marilo-color-border, #d1d1d1);
+    cursor: col-resize;
+    z-index: 3;
+    transition: background-color 0.15s;
+
+    &:hover {
+      background: var(--marilo-color-primary, #0f6cbd);
+    }
+  }
+
+  &__timeline-panel {
+    flex: 1 1 0;
+    overflow: auto;
+  }
+
+  // Table shared between both panels
+  &__table {
+    border-collapse: collapse;
+    border-spacing: 0;
   }
 
   &__header-row {
-    display: flex;
     border-bottom: 2px solid var(--marilo-color-border, #d1d1d1);
     background: var(--marilo-color-subtle-background, #fafafa);
-    position: sticky;
-    top: 0;
-    z-index: 2;
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: var(--marilo-color-subtle-background, #fafafa);
+    }
   }
 
-  // ── Resource Columns ─────────────────────────────────
+  // ── Resource Columns (left panel) ────────────────────
   &__resource-col {
     padding: 0.5rem 0.75rem;
     border-right: 1px solid var(--marilo-color-border, #e1dfdd);
@@ -84,36 +124,32 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-align: left;
 
-    &--pinned {
-      position: sticky;
-      left: 0;
-      z-index: 1;
-      background: var(--marilo-color-surface, #ffffff);
+    &[role="gridcell"] {
+      font-weight: 400;
     }
   }
 
-  // ── Time Headers ─────────────────────────────────────
+  // ── Time Headers (right panel) ───────────────────────
   &__time-header {
     padding: 0.5rem 0.25rem;
     text-align: center;
     font-weight: 600;
     white-space: nowrap;
-    min-width: 80px;
     border-right: 1px solid var(--marilo-color-border, #e1dfdd);
-
-    &--day { min-width: 60px; }
-    &--week { min-width: 80px; }
-    &--month { min-width: 100px; }
-    &--quarter { min-width: 120px; }
-    &--year { min-width: 140px; }
   }
 
-  // ── Resource Rows ────────────────────────────────────
+  // ── Resource Rows (shared by both panels) ────────────
   &__row {
-    display: flex;
     border-bottom: 1px solid var(--marilo-color-border, #e1dfdd);
     transition: background-color 0.1s;
+
+    // Fixed row height to keep both panels in sync
+    td, th {
+      height: 40px;
+      box-sizing: border-box;
+    }
 
     &:hover {
       background: var(--marilo-color-subtle-background, #f5f5f5);
@@ -128,11 +164,10 @@
     }
   }
 
-  // ── Allocation Cells ─────────────────────────────────
+  // ── Allocation Cells (right panel) ───────────────────
   &__cell {
     padding: 0.375rem 0.25rem;
     text-align: center;
-    min-width: 80px;
     border-right: 1px solid var(--marilo-color-border, #e1dfdd);
     cursor: default;
     transition: background-color 0.1s, box-shadow 0.1s;

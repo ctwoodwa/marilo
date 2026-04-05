@@ -1,158 +1,160 @@
 @page "/components/allocation-scheduler/advanced-features"
+@layout ComponentDemoLayout
 @using Marilo.Components.DataDisplay
 @using Marilo.Core.Enums
 @using Marilo.Core.Models
 @using Marilo.Core.BusinessLogic.Enums
 
-<h1>AllocationScheduler — Advanced Features</h1>
-<p>Demonstrates remaining parameters: critical path, loader, sizing, context menu gating, scenario lifecycle, and date range binding.</p>
+<PageSection Title="Critical Path, Loader & Sizing">
+    <DemoSection Title="Critical Path, Loader & Sizing"
+                 Description="Toggle ShowCriticalPath, EnableLoaderContainer, and bind Width/Class for layout control."
+                 Code="@_criticalPathCode">
+        <div style="margin-bottom:1rem;display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center">
+            <label>
+                <input type="checkbox" @bind="_showCriticalPath" />
+                Show Critical Path
+            </label>
+            <label>
+                <input type="checkbox" @bind="_enableLoader" />
+                Enable Loader Container
+            </label>
+            <label>
+                Width:
+                <select @bind="_width">
+                    <option value="">Auto</option>
+                    <option value="600px">600px</option>
+                    <option value="100%">100%</option>
+                </select>
+            </label>
+        </div>
 
-@* ── Scenario 1: Critical Path & Loader ───────────────────────────── *@
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_allocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   ShowCriticalPath="@_showCriticalPath"
+                                   EnableLoaderContainer="@_enableLoader"
+                                   Height="250px"
+                                   Width="@_width"
+                                   Class="demo-custom-class"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="2"
+                                   DefaultRangeUnit="TimeGranularity.Month">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
+    </DemoSection>
+</PageSection>
 
-<h2>1. Critical Path, Loader &amp; Sizing</h2>
-<p>Toggle <code>ShowCriticalPath</code>, <code>EnableLoaderContainer</code>, and bind <code>Width</code> / <code>Class</code>.</p>
+<PageSection Title="Context Menu Gating">
+    <DemoSection Title="CanExecuteAction"
+                 Description="Use CanExecuteAction to conditionally disable context menu commands. Shift commands are disabled for QA resources."
+                 Code="@_canExecuteCode">
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_allocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   EnableContextMenu="true"
+                                   CanExecuteAction="@HandleCanExecute"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="1"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   Height="200px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+                <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
 
-<div style="margin-bottom:1rem;display:flex;gap:1.5rem;flex-wrap:wrap;align-items:center">
-    <label>
-        <input type="checkbox" @bind="_showCriticalPath" />
-        Show Critical Path
-    </label>
-    <label>
-        <input type="checkbox" @bind="_enableLoader" />
-        Enable Loader Container
-    </label>
-    <label>
-        Width:
-        <select @bind="_width">
-            <option value="">Auto</option>
-            <option value="600px">600px</option>
-            <option value="100%">100%</option>
-        </select>
-    </label>
-</div>
+        @if (!string.IsNullOrEmpty(_canExecuteMessage))
+        {
+            <p><strong>CanExecuteAction:</strong> @_canExecuteMessage</p>
+        }
+    </DemoSection>
+</PageSection>
 
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_allocations"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           ShowCriticalPath="@_showCriticalPath"
-                           EnableLoaderContainer="@_enableLoader"
-                           Height="250px"
-                           Width="@_width"
-                           Class="demo-custom-class"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="2"
-                           DefaultRangeUnit="TimeGranularity.Month">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
+<PageSection Title="Scenario Lifecycle Events">
+    <DemoSection Title="Scenario Lifecycle"
+                 Description="Wire OnAllocationOverridden, OnScenarioStatusChanged, and OnScenarioPromoted to observe scenario lifecycle transitions."
+                 Code="@_lifecycleCode">
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_allocations"
+                                   AllocationSets="@_sets"
+                                   ScenarioOverrides="@_overrides"
+                                   ActiveSetId="@_scenarioId"
+                                   CompareSetId="@_baselineId"
+                                   BaselineDateFormat="MMM d, yyyy"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   AllowKeyboardEdit="true"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="2"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   OnAllocationOverridden="@HandleOverridden"
+                                   OnScenarioStatusChanged="@HandleStatusChanged"
+                                   OnScenarioPromoted="@HandlePromoted"
+                                   Height="280px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
 
-@* ── Scenario 2: Context Menu Gating (CanExecuteAction) ───────────── *@
+        @if (!string.IsNullOrEmpty(_overriddenMessage))
+        {
+            <p><strong>Overridden:</strong> @_overriddenMessage</p>
+        }
+        @if (!string.IsNullOrEmpty(_statusMessage))
+        {
+            <p><strong>Status changed:</strong> @_statusMessage</p>
+        }
+        @if (!string.IsNullOrEmpty(_promotedMessage))
+        {
+            <p><strong>Promoted:</strong> @_promotedMessage</p>
+        }
+    </DemoSection>
+</PageSection>
 
-<h2>2. Context Menu Gating</h2>
-<p>Use <code>CanExecuteAction</code> to conditionally disable context menu commands. In this example, &quot;shift&quot; commands are disabled for QA resources.</p>
+<PageSection Title="Explicit Date Range">
+    <DemoSection Title="Explicit Date Range & Two-Way Binding"
+                 Description="Bind VisibleStart and VisibleEnd explicitly. VisibleStartChanged fires when navigation occurs."
+                 Code="@_dateRangeCode">
+        <div style="margin-bottom:1rem;display:flex;gap:1.5rem;align-items:center">
+            <label>
+                Visible Start:
+                <input type="date" @bind="_visibleStart" />
+            </label>
+            <span>Current: <strong>@_visibleStart.ToString("MMM d, yyyy")</strong></span>
+            @if (_visibleEnd.HasValue)
+            {
+                <span>End: <strong>@_visibleEnd.Value.ToString("MMM d, yyyy")</strong></span>
+            }
+        </div>
 
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_allocations"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           EnableContextMenu="true"
-                           CanExecuteAction="@HandleCanExecute"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="1"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           Height="200px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-        <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
-
-@if (!string.IsNullOrEmpty(_canExecuteMessage))
-{
-    <p><strong>CanExecuteAction:</strong> @_canExecuteMessage</p>
-}
-
-@* ── Scenario 3: Scenario Lifecycle Events ────────────────────────── *@
-
-<h2>3. Scenario Lifecycle Events</h2>
-<p>Wire <code>OnAllocationOverridden</code>, <code>OnScenarioStatusChanged</code>, and <code>OnScenarioPromoted</code> to observe scenario lifecycle transitions.</p>
-
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_allocations"
-                           AllocationSets="@_sets"
-                           ScenarioOverrides="@_overrides"
-                           ActiveSetId="@_scenarioId"
-                           CompareSetId="@_baselineId"
-                           BaselineDateFormat="MMM d, yyyy"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           AllowKeyboardEdit="true"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="2"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           OnAllocationOverridden="@HandleOverridden"
-                           OnScenarioStatusChanged="@HandleStatusChanged"
-                           OnScenarioPromoted="@HandlePromoted"
-                           Height="280px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
-
-@if (!string.IsNullOrEmpty(_overriddenMessage))
-{
-    <p><strong>Overridden:</strong> @_overriddenMessage</p>
-}
-@if (!string.IsNullOrEmpty(_statusMessage))
-{
-    <p><strong>Status changed:</strong> @_statusMessage</p>
-}
-@if (!string.IsNullOrEmpty(_promotedMessage))
-{
-    <p><strong>Promoted:</strong> @_promotedMessage</p>
-}
-
-@* ── Scenario 4: Explicit Date Range & Two-Way Binding ────────────── *@
-
-<h2>4. Explicit Date Range &amp; Two-Way Binding</h2>
-<p>Bind <code>VisibleStart</code> and <code>VisibleEnd</code> explicitly. <code>VisibleStartChanged</code> fires when navigation occurs.</p>
-
-<div style="margin-bottom:1rem;display:flex;gap:1.5rem;align-items:center">
-    <label>
-        Visible Start:
-        <input type="date" @bind="_visibleStart" />
-    </label>
-    <span>Current: <strong>@_visibleStart.ToString("MMM d, yyyy")</strong></span>
-    @if (_visibleEnd.HasValue)
-    {
-        <span>End: <strong>@_visibleEnd.Value.ToString("MMM d, yyyy")</strong></span>
-    }
-</div>
-
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_allocations"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           VisibleStart="@_visibleStart"
-                           VisibleStartChanged="@(d => _visibleStart = d)"
-                           VisibleEnd="@_visibleEnd"
-                           DefaultRangeLength="2"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           Height="250px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-    </AllocationResourceColumns>
-</MariloAllocationScheduler>
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_allocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   VisibleStart="@_visibleStart"
+                                   VisibleStartChanged="@(d => _visibleStart = d)"
+                                   VisibleEnd="@_visibleEnd"
+                                   DefaultRangeLength="2"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   Height="250px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
+    </DemoSection>
+</PageSection>
 
 @code {
     private DateTime _demoStart = new(2026, 4, 6);
@@ -213,7 +215,6 @@
 
     private async Task HandleCanExecute(CanExecuteActionArgs args)
     {
-        // Disable shift commands for QA resources
         if (args.CommandName.Contains("shift", StringComparison.OrdinalIgnoreCase))
         {
             args.IsEnabled = false;
@@ -247,4 +248,42 @@
         public string Role       { get; set; } = string.Empty;
         public string Department { get; set; } = string.Empty;
     }
+
+    private const string _criticalPathCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           ShowCriticalPath=\"@_showCriticalPath\"\n" +
+        "                           EnableLoaderContainer=\"@_enableLoader\"\n" +
+        "                           Width=\"@_width\"\n" +
+        "                           Class=\"demo-custom-class\"\n" +
+        "                           Height=\"250px\" />";
+
+    private const string _canExecuteCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           EnableContextMenu=\"true\"\n" +
+        "                           CanExecuteAction=\"@HandleCanExecute\"\n" +
+        "                           Height=\"200px\" />";
+
+    private const string _lifecycleCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           AllocationSets=\"@_sets\"\n" +
+        "                           ScenarioOverrides=\"@_overrides\"\n" +
+        "                           OnAllocationOverridden=\"@HandleOverridden\"\n" +
+        "                           OnScenarioStatusChanged=\"@HandleStatusChanged\"\n" +
+        "                           OnScenarioPromoted=\"@HandlePromoted\"\n" +
+        "                           Height=\"280px\" />";
+
+    private const string _dateRangeCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           VisibleStart=\"@_visibleStart\"\n" +
+        "                           VisibleStartChanged=\"@(d => _visibleStart = d)\"\n" +
+        "                           VisibleEnd=\"@_visibleEnd\"\n" +
+        "                           Height=\"250px\" />";
 }

@@ -1,3 +1,4 @@
+using Marilo.Components.DataGrid.Sizing;
 using Marilo.Core.Base;
 using Marilo.Core.BusinessLogic.Enums;
 using Marilo.Core.Enums;
@@ -7,7 +8,7 @@ using Microsoft.JSInterop;
 
 namespace Marilo.Components.DataDisplay;
 
-public partial class MariloAllocationScheduler<TResource> : MariloComponentBase
+public partial class MariloAllocationScheduler<TResource> : MariloComponentBase, IAsyncDisposable
 {
     [Inject] private IJSRuntime JSRuntime { get; set; } = default!;
 
@@ -27,6 +28,10 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase
     [Parameter] public DateTime? VisibleEnd { get; set; }
     [Parameter] public int DefaultRangeLength { get; set; } = 3;
     [Parameter] public TimeGranularity DefaultRangeUnit { get; set; } = TimeGranularity.Month;
+
+    // ── Sizing ───────────────────────────────────────────────────────────
+
+    [Parameter] public IColumnWidthProvider? ColumnWidthProvider { get; set; }
 
     // ── Display ─────────────────────────────────────────────────────────
 
@@ -96,6 +101,21 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase
     private HashSet<(object ResourceKey, DateTime BucketStart)> _selectedCells = new();
     private TimeGranularity _currentViewGrain;
     private bool _isLoading;
+    private GridLayoutContract _layoutContract = GridLayoutContract.Empty;
+    private IColumnWidthProvider _widthProvider = new FixedWidthProvider();
+    private readonly Dictionary<object, string> _columnSizingIds = new();
+    private ElementReference _gridRef;
+    private IJSObjectReference? _jsModule;
+    private DotNetObjectReference<MariloAllocationScheduler<TResource>>? _dotNetRef;
+    private bool _contextMenuVisible;
+    private double _contextMenuX;
+    private double _contextMenuY;
+    private object? _contextMenuResourceKey;
+    private DateRange? _contextMenuBucket;
+    private bool _editMode;
+    private string _editValue = string.Empty;
+    private object? _editResourceKey;
+    private DateRange? _editBucket;
 
     // ── Lifecycle ────────────────────────────────────────────────────────
 
@@ -111,7 +131,95 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase
         _allocationSets = AllocationSets;
         _effectiveAllocations = ComputeEffectiveAllocations();
         _visibleBuckets = ComputeVisibleBuckets();
+        ResolveLayoutContract();
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _dotNetRef = DotNetObjectReference.Create(this);
+            try
+            {
+                _jsModule = await JSRuntime.InvokeAsync<IJSObjectReference>(
+                    "import", "./_content/Marilo.Components/js/allocation-scheduler.js");
+
+                await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.initScrollSync", _gridRef);
+                if (AllowDragFill)
+                    await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.initDragFill", _gridRef, _dotNetRef);
+                if (AllowKeyboardEdit)
+                    await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.initKeyboardNav", _gridRef, _dotNetRef);
+            }
+            catch (JSException)
+            {
+                // JS interop not available (e.g., prerendering or test context)
+            }
+        }
+    }
+
+    // ── JS Interop Callbacks ────────────────────────────────────────────
+
+    [JSInvokable]
+    public async Task OnDragFillCompleted(string cellKeysJson)
+    {
+        var cells = System.Text.Json.JsonSerializer.Deserialize<List<CellKeyDto>>(cellKeysJson);
+        if (cells is null || cells.Count < 2) return;
+
+        var refs = cells.Select(c => new AllocationCellRef
+        {
+            ResourceKey = c.resourceKey ?? string.Empty,
+            BucketStart = DateTime.TryParse(c.bucketStart, out var dt) ? dt : default
+        }).ToList();
+
+        var records = refs
+            .Select(r => GetRecord(r.ResourceKey, new DateRange { Start = r.BucketStart, End = AdvanceDate(r.BucketStart, _currentViewGrain, 1) }))
+            .Where(r => r is not null)
+            .Cast<AllocationRecord>()
+            .ToList();
+
+        var firstRecord = GetRecord(
+            refs[0].ResourceKey,
+            new DateRange { Start = refs[0].BucketStart, End = AdvanceDate(refs[0].BucketStart, _currentViewGrain, 1) });
+
+        await OnRangeEdited.InvokeAsync(new RangeEditedArgs
+        {
+            AffectedRecords = records,
+            Value = firstRecord?.Value ?? 0
+        });
+    }
+
+    [JSInvokable]
+    public async Task OnCellFocused(string cellKeyJson)
+    {
+        var cell = System.Text.Json.JsonSerializer.Deserialize<CellKeyDto>(cellKeyJson);
+        if (cell?.resourceKey is null) return;
+
+        var bucket = new DateRange
+        {
+            Start = DateTime.TryParse(cell.bucketStart, out var dt) ? dt : default,
+            End = DateTime.TryParse(cell.bucketStart, out var dt2) ? AdvanceDate(dt2, _currentViewGrain, 1) : default
+        };
+
+        await HandleCellClick(cell.resourceKey, bucket);
+    }
+
+    [JSInvokable]
+    public Task OnEscapePressed()
+    {
+        _editMode = false;
+        _contextMenuVisible = false;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    [JSInvokable]
+    public Task OnDeletePressed(string cellKeyJson)
+    {
+        // Clear value for the focused cell — fires OnCellEdited with NewValue = 0
+        return Task.CompletedTask;
+    }
+
+    private record CellKeyDto(string? resourceKey, string? bucketStart);
 
     // ── Public Methods (via @ref) ───────────────────────────────────────
 
@@ -173,12 +281,73 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase
     internal void AddColumn(AllocationResourceColumn<TResource> column)
     {
         if (!_columns.Contains(column))
+        {
             _columns.Add(column);
+            ResolveLayoutContract();
+        }
     }
 
     internal void RemoveColumn(AllocationResourceColumn<TResource> column)
     {
         _columns.Remove(column);
+        ResolveLayoutContract();
+    }
+
+    // ── Width Resolution (shared layout contract) ───────────────────────
+
+    private void ResolveLayoutContract()
+    {
+        _widthProvider = ColumnWidthProvider ?? new FixedWidthProvider();
+
+        var visibleCols = _columns.Where(c => c.Visible).ToList();
+        var entries = new List<ColumnSizingEntry>(visibleCols.Count + _visibleBuckets.Count);
+
+        // Resource columns
+        for (var i = 0; i < visibleCols.Count; i++)
+        {
+            var col = visibleCols[i];
+            var id = $"res-{col.Field}-{i}";
+            _columnSizingIds[col] = id;
+            entries.Add(new ColumnSizingEntry(id, col.Width, 50, null));
+        }
+
+        // Time bucket columns — use grain-specific default widths
+        var bucketWidth = GetBucketDefaultWidth(_currentViewGrain);
+        for (var i = 0; i < _visibleBuckets.Count; i++)
+        {
+            var id = $"bucket-{i}";
+            entries.Add(new ColumnSizingEntry(id, bucketWidth, 50, null));
+        }
+
+        _layoutContract = _widthProvider.Resolve(entries);
+    }
+
+    private static string GetBucketDefaultWidth(TimeGranularity grain) => grain switch
+    {
+        TimeGranularity.Day => "60px",
+        TimeGranularity.Week => "85px",
+        TimeGranularity.Month => "100px",
+        TimeGranularity.Quarter => "120px",
+        TimeGranularity.Year => "140px",
+        _ => "85px"
+    };
+
+    internal string? GetResolvedColumnWidth(AllocationResourceColumn<TResource> column)
+    {
+        if (!_columnSizingIds.TryGetValue(column, out var id)) return null;
+        return _layoutContract.WidthById.TryGetValue(id, out var width) ? width : null;
+    }
+
+    internal string? GetColumnWidthStyle(AllocationResourceColumn<TResource> column)
+    {
+        var width = GetResolvedColumnWidth(column);
+        return width is null ? null : $"width:{width};";
+    }
+
+    internal string? GetBucketWidthStyle(int bucketIndex)
+    {
+        var id = $"bucket-{bucketIndex}";
+        return _layoutContract.WidthById.TryGetValue(id, out var width) ? $"width:{width};" : null;
     }
 
     // ── Event Handlers ──────────────────────────────────────────────────
@@ -227,10 +396,107 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase
         });
     }
 
-    private Task HandleCellDoubleClick(object resourceKey, DateRange bucket)
+    private async Task HandleCellDoubleClick(object resourceKey, DateRange bucket)
     {
-        // Double-click to enter edit mode -- handled via JS interop for inline editing
-        return Task.CompletedTask;
+        if (!IsCellEditable(bucket)) return;
+
+        _editMode = true;
+        _editResourceKey = resourceKey;
+        _editBucket = bucket;
+        var record = GetRecord(resourceKey, bucket);
+        _editValue = record?.Value.ToString("0.#") ?? "0";
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleCellContextMenu(Microsoft.AspNetCore.Components.Web.MouseEventArgs e, object resourceKey, DateRange bucket)
+    {
+        if (!EnableContextMenu) return;
+
+        // Check CanExecuteAction for each command
+        _contextMenuResourceKey = resourceKey;
+        _contextMenuBucket = bucket;
+        _contextMenuX = e.ClientX;
+        _contextMenuY = e.ClientY;
+        _contextMenuVisible = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleContextMenuCommand(string commandName)
+    {
+        _contextMenuVisible = false;
+
+        var targetCells = _selectedCells.Any()
+            ? GetSelectedCells()
+            : _contextMenuResourceKey is not null && _contextMenuBucket is not null
+                ? new List<AllocationCellRef> { new() { ResourceKey = _contextMenuResourceKey, BucketStart = _contextMenuBucket.Start } }
+                : Array.Empty<AllocationCellRef>() as IReadOnlyList<AllocationCellRef>;
+
+        var canExecuteArgs = new CanExecuteActionArgs
+        {
+            CommandName = commandName,
+            TargetCells = targetCells
+        };
+        await CanExecuteAction.InvokeAsync(canExecuteArgs);
+        if (!canExecuteArgs.IsEnabled) return;
+
+        var actionArgs = new ContextMenuActionArgs
+        {
+            CommandName = commandName,
+            TargetCells = targetCells
+        };
+        await OnContextMenuAction.InvokeAsync(actionArgs);
+        if (actionArgs.IsCancelled) return;
+
+        // Handle built-in commands
+        switch (commandName)
+        {
+            case "shift-forward":
+                await HandleShiftCommand(1);
+                break;
+            case "shift-backward":
+                await HandleShiftCommand(-1);
+                break;
+            case "distribute":
+                await HandleDistributeCommand();
+                break;
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleShiftCommand(int direction)
+    {
+        if (_contextMenuResourceKey is null || _contextMenuBucket is null) return;
+
+        var records = (_effectiveAllocations ?? Enumerable.Empty<AllocationRecord>())
+            .Where(a => Equals(a.ResourceId, _contextMenuResourceKey))
+            .ToList();
+
+        await OnShiftValues.InvokeAsync(new ShiftValuesArgs
+        {
+            ResourceKey = _contextMenuResourceKey,
+            TaskId = records.FirstOrDefault()?.TaskId ?? 0,
+            Direction = direction,
+            Periods = 1,
+            AffectedRecords = records
+        });
+    }
+
+    private async Task HandleDistributeCommand()
+    {
+        if (_contextMenuResourceKey is null || _contextMenuBucket is null) return;
+
+        var record = GetRecord(_contextMenuResourceKey, _contextMenuBucket);
+        if (record is null) return;
+
+        await OnDistributeRequested.InvokeAsync(new DistributeArgs
+        {
+            SourcePeriod = _contextMenuBucket,
+            TargetValue = record.Value,
+            TargetGranularity = AuthoritativeLevel,
+            Mode = DefaultDistributionMode,
+            ProposedDistribution = new[] { record }
+        });
     }
 
     // ── Computed Properties ─────────────────────────────────────────────
@@ -474,5 +740,33 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase
             date = date.AddDays(3);
         return System.Globalization.CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(
             date, System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+    }
+
+    private void HandleGridClick()
+    {
+        if (_contextMenuVisible)
+        {
+            _contextMenuVisible = false;
+            StateHasChanged();
+        }
+    }
+
+    // ── IAsyncDisposable ────────────────────────────────────────────────
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_jsModule is not null)
+        {
+            try
+            {
+                await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.dispose", _gridRef);
+                await _jsModule.DisposeAsync();
+            }
+            catch (JSDisconnectedException)
+            {
+                // Circuit already disconnected
+            }
+        }
+        _dotNetRef?.Dispose();
     }
 }

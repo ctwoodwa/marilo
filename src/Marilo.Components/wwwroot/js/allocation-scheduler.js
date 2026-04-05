@@ -148,6 +148,44 @@ export const AllocationSchedulerInterop = {
     },
 
     /**
+     * Synchronize vertical scrolling between resource panel and timeline panel.
+     * @param {HTMLElement} gridElement - The root .mar-allocation-scheduler element
+     */
+    initScrollSync: function (gridElement) {
+        if (!gridElement) return;
+
+        const resourcePanel = gridElement.querySelector('.mar-allocation-scheduler__resource-panel');
+        const timelinePanel = gridElement.querySelector('.mar-allocation-scheduler__timeline-panel');
+        if (!resourcePanel || !timelinePanel) return;
+
+        let isSyncing = false;
+
+        const syncFromTimeline = () => {
+            if (isSyncing) return;
+            isSyncing = true;
+            resourcePanel.scrollTop = timelinePanel.scrollTop;
+            isSyncing = false;
+        };
+
+        const syncFromResource = () => {
+            if (isSyncing) return;
+            isSyncing = true;
+            timelinePanel.scrollTop = resourcePanel.scrollTop;
+            isSyncing = false;
+        };
+
+        timelinePanel.addEventListener('scroll', syncFromTimeline);
+        resourcePanel.addEventListener('scroll', syncFromResource);
+
+        const existingCleanup = gridElement._allocationSchedulerCleanup;
+        gridElement._allocationSchedulerCleanup = () => {
+            existingCleanup?.();
+            timelinePanel.removeEventListener('scroll', syncFromTimeline);
+            resourcePanel.removeEventListener('scroll', syncFromResource);
+        };
+    },
+
+    /**
      * Dispose all event listeners for the scheduler grid.
      * @param {HTMLElement} gridElement - The root .mar-allocation-scheduler element
      */

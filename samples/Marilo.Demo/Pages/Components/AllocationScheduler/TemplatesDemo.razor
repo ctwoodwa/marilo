@@ -1,131 +1,133 @@
 @page "/components/allocation-scheduler/templates"
+@layout ComponentDemoLayout
 @using Marilo.Components.DataDisplay
 @using Marilo.Core.Enums
 @using Marilo.Core.Models
 
-<h1>AllocationScheduler — Templates</h1>
-<p>Demonstrates all four RenderFragment slots and the empty state.</p>
+<PageSection Title="Resource Row Template">
+    <DemoSection Title="ResourceRowTemplate"
+                 Description="Use ResourceRowTemplate as a fallback template for resource metadata cells when no column-level Template is set."
+                 Code="@_resourceRowCode">
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_allocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="1"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   Height="200px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="220px" />
+            </AllocationResourceColumns>
+            <ResourceRowTemplate>
+                <div style="display:flex;align-items:center;gap:0.5rem">
+                    <span style="width:28px;height:28px;border-radius:50%;background:#0f6cbd;color:white;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600">
+                        @context.Name[0]@context.Name.Split(' ').Last()[0]
+                    </span>
+                    <div>
+                        <div style="font-weight:600">@context.Name</div>
+                        <div style="font-size:0.75rem;color:#666">@context.Role — @context.Department</div>
+                    </div>
+                </div>
+            </ResourceRowTemplate>
+        </MariloAllocationScheduler>
+    </DemoSection>
+</PageSection>
 
-@* ── Scenario 1: ResourceRowTemplate ──────────────────────────────── *@
+<PageSection Title="Cell Template">
+    <DemoSection Title="CellTemplate"
+                 Description="Use CellTemplate to customise individual allocation cell rendering. Conflict cells are highlighted."
+                 Code="@_cellCode">
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_allocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="1"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   Height="200px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+            </AllocationResourceColumns>
+            <CellTemplate>
+                @if (context.Record is not null)
+                {
+                    <div style="text-align:center;padding:2px 4px;border-radius:4px;@(context.IsConflict ? "background:#fde7e9;color:#b10e1c" : "background:#e8f5e9;color:#1b5e20")">
+                        @context.Record.Value h
+                    </div>
+                }
+            </CellTemplate>
+        </MariloAllocationScheduler>
+    </DemoSection>
+</PageSection>
 
-<h2>1. ResourceRowTemplate</h2>
-<p>Use <code>ResourceRowTemplate</code> as a fallback template for resource metadata cells when no column-level <code>Template</code> is set.</p>
+<PageSection Title="Toolbar Template">
+    <DemoSection Title="ToolbarTemplate"
+                 Description="Append custom controls to the built-in toolbar using ToolbarTemplate."
+                 Code="@_toolbarCode">
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_allocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="2"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   Height="250px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+            </AllocationResourceColumns>
+            <ToolbarTemplate>
+                <button @onclick="@(() => _exportMessage = $"Exported at {DateTime.Now:HH:mm:ss}")">Export</button>
+                <button @onclick="@(() => _exportMessage = $"Printed at {DateTime.Now:HH:mm:ss}")">Print</button>
+            </ToolbarTemplate>
+        </MariloAllocationScheduler>
 
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_allocations"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="1"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           Height="200px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="220px" />
-    </AllocationResourceColumns>
-    <ResourceRowTemplate>
-        <div style="display:flex;align-items:center;gap:0.5rem">
-            <span style="width:28px;height:28px;border-radius:50%;background:#0f6cbd;color:white;display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:600">
-                @context.Name[0]@context.Name.Split(' ').Last()[0]
-            </span>
-            <div>
-                <div style="font-weight:600">@context.Name</div>
-                <div style="font-size:0.75rem;color:#666">@context.Role — @context.Department</div>
-            </div>
-        </div>
-    </ResourceRowTemplate>
-</MariloAllocationScheduler>
-
-@* ── Scenario 2: CellTemplate ─────────────────────────────────────── *@
-
-<h2>2. CellTemplate</h2>
-<p>Use <code>CellTemplate</code> to customise individual allocation cell rendering. Conflict cells are highlighted.</p>
-
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_allocations"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="1"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           Height="200px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-    </AllocationResourceColumns>
-    <CellTemplate>
-        @if (context.Record is not null)
+        @if (!string.IsNullOrEmpty(_exportMessage))
         {
-            <div style="text-align:center;padding:2px 4px;border-radius:4px;@(context.IsConflict ? "background:#fde7e9;color:#b10e1c" : "background:#e8f5e9;color:#1b5e20")">
-                @context.Record.Value h
-            </div>
+            <p><strong>Action:</strong> @_exportMessage</p>
         }
-    </CellTemplate>
-</MariloAllocationScheduler>
+    </DemoSection>
+</PageSection>
 
-@* ── Scenario 3: ToolbarTemplate ──────────────────────────────────── *@
-
-<h2>3. ToolbarTemplate</h2>
-<p>Append custom controls to the built-in toolbar using <code>ToolbarTemplate</code>.</p>
-
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@_allocations"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="2"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           Height="250px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-    </AllocationResourceColumns>
-    <ToolbarTemplate>
-        <button @onclick="@(() => _exportMessage = $"Exported at {DateTime.Now:HH:mm:ss}")">Export</button>
-        <button @onclick="@(() => _exportMessage = $"Printed at {DateTime.Now:HH:mm:ss}")">Print</button>
-    </ToolbarTemplate>
-</MariloAllocationScheduler>
-
-@if (!string.IsNullOrEmpty(_exportMessage))
-{
-    <p><strong>Action:</strong> @_exportMessage</p>
-}
-
-@* ── Scenario 4: EmptyTemplate ────────────────────────────────────── *@
-
-<h2>4. Empty State</h2>
-<p>When no allocations are bound, the <code>EmptyTemplate</code> renders a placeholder message. Toggle data on/off.</p>
-
-<div style="margin-bottom:1rem">
-    <label>
-        <input type="checkbox" @bind="_hasData" />
-        Has Allocation Data
-    </label>
-</div>
-
-<MariloAllocationScheduler TResource="StaffResource"
-                           Resources="@_resources"
-                           Allocations="@(_hasData ? _allocations : _emptyAllocations)"
-                           AuthoritativeLevel="TimeGranularity.Week"
-                           ViewGrain="TimeGranularity.Week"
-                           ValueMode="AllocationValueMode.Hours"
-                           VisibleStart="@_demoStart"
-                           DefaultRangeLength="1"
-                           DefaultRangeUnit="TimeGranularity.Month"
-                           Height="200px">
-    <AllocationResourceColumns>
-        <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
-    </AllocationResourceColumns>
-    <EmptyTemplate>
-        <div style="text-align:center;padding:2rem;color:#666">
-            <p style="font-size:1.25rem;margin-bottom:0.5rem">No allocations yet</p>
-            <p>Click a cell to start planning, or import data from your project management tool.</p>
+<PageSection Title="Empty State">
+    <DemoSection Title="Empty State"
+                 Description="When no allocations are bound, the EmptyTemplate renders a placeholder message. Toggle data on/off."
+                 Code="@_emptyCode">
+        <div style="margin-bottom:1rem">
+            <label>
+                <input type="checkbox" @bind="_hasData" />
+                Has Allocation Data
+            </label>
         </div>
-    </EmptyTemplate>
-</MariloAllocationScheduler>
+
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@(_hasData ? _allocations : _emptyAllocations)"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="1"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   Height="200px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+            </AllocationResourceColumns>
+            <EmptyTemplate>
+                <div style="text-align:center;padding:2rem;color:#666">
+                    <p style="font-size:1.25rem;margin-bottom:0.5rem">No allocations yet</p>
+                    <p>Click a cell to start planning, or import data from your project management tool.</p>
+                </div>
+            </EmptyTemplate>
+        </MariloAllocationScheduler>
+    </DemoSection>
+</PageSection>
 
 @code {
     private DateTime _demoStart = new(2026, 4, 6);
@@ -155,4 +157,47 @@
         public string Role       { get; set; } = string.Empty;
         public string Department { get; set; } = string.Empty;
     }
+
+    private const string _resourceRowCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           Height=\"200px\">\n" +
+        "    <ResourceRowTemplate>\n" +
+        "        <div>@context.Name — @context.Role</div>\n" +
+        "    </ResourceRowTemplate>\n" +
+        "</MariloAllocationScheduler>";
+
+    private const string _cellCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           Height=\"200px\">\n" +
+        "    <CellTemplate>\n" +
+        "        @if (context.Record is not null)\n" +
+        "        {\n" +
+        "            <div>@context.Record.Value h</div>\n" +
+        "        }\n" +
+        "    </CellTemplate>\n" +
+        "</MariloAllocationScheduler>";
+
+    private const string _toolbarCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           Height=\"250px\">\n" +
+        "    <ToolbarTemplate>\n" +
+        "        <button @onclick=\"Export\">Export</button>\n" +
+        "    </ToolbarTemplate>\n" +
+        "</MariloAllocationScheduler>";
+
+    private const string _emptyCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_emptyAllocations\"\n" +
+        "                           Height=\"200px\">\n" +
+        "    <EmptyTemplate>\n" +
+        "        <div>No allocations yet</div>\n" +
+        "    </EmptyTemplate>\n" +
+        "</MariloAllocationScheduler>";
 }
