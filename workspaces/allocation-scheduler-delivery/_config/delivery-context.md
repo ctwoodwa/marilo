@@ -14,7 +14,7 @@
 | FluentUI SCSS | src/Marilo.Providers.FluentUI/Styles/_allocation-scheduler.scss |
 | Bootstrap SCSS | src/Marilo.Providers.Bootstrap/Styles/_bridge-allocation-scheduler.scss |
 | JS interop | src/Marilo.Components/wwwroot/js/allocation-scheduler.js |
-| Demo page | samples/Marilo.Demo/Pages/Components/AllocationScheduler/AllocationSchedulerDemo.razor |
+| Demo pages | samples/Marilo.Demo/Pages/Components/AllocationScheduler/ (8 pages) |
 | Unit tests | tests/Marilo.Tests.Unit/AllocationScheduler/MariloAllocationSchedulerTests.cs |
 
 ## State Tracking
@@ -24,5 +24,10 @@
 | Last spec audit | 2026-04-05 |
 | Last spec gap resolution | 2026-04-05 |
 | Open spec gaps | 0 |
-| Last example UX audit | -- |
-| Last sync check | -- |
+| Last example UX audit | 2026-04-05 |
+| Open demo gaps | 0 |
+| Last sync check | 2026-04-05 |
+| Last gap-analysis closure | 2026-04-05 |
+| Gate status | CLEAR |
+| Blocking items | 0 |
+| Findings fixed during sync | 2 (CellEditedArgs/RangeEditedArgs type mismatch, stale code sample) |

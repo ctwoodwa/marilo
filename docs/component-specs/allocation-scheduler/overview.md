@@ -76,10 +76,10 @@ The primary scenario is a project manager who adds a set of resources (people, r
         }
     };
 
-    private async Task HandleCellEdit(CellEditedArgs<AllocationRecord> args)
+    private async Task HandleCellEdit(CellEditedArgs args)
     {
         // persist change to your data source
-        await SaveAsync(args.UpdatedRecord);
+        await SaveAsync(args.Record);
     }
 
     public class StaffResource
@@ -229,8 +229,8 @@ See [Analysis and Targets](slug:allocation-scheduler-analysis-targets) for param
 
 | Event | Args Type | Description |
 | --- | --- | --- |
-| `OnCellEdited` | `CellEditedArgs<AllocationRecord>` | Fires when a single cell value is committed. |
-| `OnRangeEdited` | `RangeEditedArgs<AllocationRecord>` | Fires when a bulk range edit is committed. |
+| `OnCellEdited` | `CellEditedArgs` | Fires when a single cell value is committed. |
+| `OnRangeEdited` | `RangeEditedArgs` | Fires when a bulk range edit is committed. |
 | `OnContextMenuAction` | `ContextMenuActionArgs` | Fires when a built-in or custom context menu command is invoked. |
 | `OnDistributeRequested` | `DistributeArgs` | Fires when a distribution command is initiated. Host can intercept and override the proposed distribution. |
 | `OnShiftValues` | `ShiftValuesArgs` | Fires when a shift-forward or shift-backward command is confirmed. |
