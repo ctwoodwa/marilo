@@ -1,27 +1,51 @@
-# Docs & Demos Summary: SignalRConnectionStatus
+# Docs & Demos Summary: MariloAllocationScheduler
 
-## Documentation Created
+## Documentation Files
 
-### Component Spec (`docs/component-specs/signalr-connection-status/`)
-- `overview.md` -- Purpose, basic usage, parameters table, service setup, aggregate state mapping
-- `appearance.md` -- Compact mode, hide counts, popup placement, health badges, critical vs noncritical
-- `accessibility/overview.md` -- Keyboard interactions, ARIA attributes, screen reader support
-- `toc.yml` -- DocFx table of contents
+### Existing (from prior sessions)
 
-All doc files include YAML front matter with title, slug, tags, and position.
+| File | Path | Description |
+|---|---|---|
+| Overview | `docs/component-specs/allocation-scheduler/overview.md` | Comprehensive component overview with parameters, events, enums, domain model |
+| Editing Grain | `docs/component-specs/allocation-scheduler/editing-grain.md` | Design decision: single authoritative level |
+| Scenario Planning | `docs/component-specs/allocation-scheduler/scenario-planning.md` | Baseline/scenario model, diff overlay, lifecycle |
+| Business Objects | `docs/component-specs/allocation-scheduler/allocation-scheduler-business-objects.md` | CSLA-inspired BO design for consumer-side objects |
 
-## Demo Pages
+### Created This Session
 
-Demo page creation deferred -- requires running app context. Structure follows existing Marilo demo pattern:
+| File | Path | Description |
+|---|---|---|
+| Data Binding | `docs/component-specs/allocation-scheduler/data-binding.md` | Resources, Allocations, Targets, two-way binding |
+| Events | `docs/component-specs/allocation-scheduler/events.md` | All EventCallback parameters with payload descriptions |
+| Templates | `docs/component-specs/allocation-scheduler/templates.md` | RenderFragment slots: ResourceColumns, CellTemplate, EmptyTemplate, ToolbarTemplate |
+| Theming | `docs/component-specs/allocation-scheduler/theming.md` | CSS provider methods, BEM classes, FluentUI tokens, Bootstrap mapping |
+| TOC | `docs/component-specs/allocation-scheduler/toc.yml` | Updated table of contents |
 
-```
-samples/Marilo.Demo/Pages/Components/SignalRConnectionStatus/Overview.razor
-```
+## Demo Page
 
-Sections planned:
-- Basic Usage (default configuration)
-- Compact Mode (toolbar density)
-- Aggregate States (simulated healthy/degraded/offline)
-- Popup Content (hub rows with various health states)
-- Custom Title and Placement
-- Accessibility Info (keyboard interactions, ARIA attributes)
+| File | Path | Description |
+|---|---|---|
+| AllocationSchedulerDemo.razor | `samples/Marilo.Demo/Pages/Components/AllocationScheduler/AllocationSchedulerDemo.razor` | Main demo page at `/components/allocation-scheduler` |
+
+### Demo Scenarios
+
+| # | Scenario | Description |
+|---|---|---|
+| 1 | Basic Resource Grid | 3 resources, pre-populated allocations, read-only |
+| 2 | Interactive Allocation | Drag-fill and keyboard editing, OnCellEdited wired |
+| 3 | Conflict Detection | Overlapping allocations highlighted |
+| 4 | Grouped Resources | Resources with department grouping column |
+| 5 | Custom Templates | ResourceColumn Template RenderFragment |
+| 6 | Disabled Slots | Day-level view showing disabled cells |
+
+## Audit Checks
+
+| Check | Status |
+|---|---|
+| Parameter coverage | PASS -- all parameters documented in overview.md |
+| Code examples | PASS -- 6 demo scenarios with live component usage |
+| Accessibility section | PASS -- covered in overview.md (keyboard, ARIA) |
+| Demo completeness | PASS -- basic usage, interaction, conflict, grouping, templates, disabled |
+| Front matter | PASS -- all new docs have valid YAML front matter with slugs and tags |
+| No em dashes | PASS -- all dashes are double hyphens |
+| No MariloScheduler references | PASS -- zero scheduler-delivery references |

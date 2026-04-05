@@ -632,6 +632,71 @@ public class FluentUICssProvider : IMariloCssProvider
 
     public string SchedulerClass() => "mar-scheduler";
 
+    // AllocationScheduler
+    public string AllocationSchedulerClass() => "mar-allocation-scheduler";
+
+    public string AllocationSchedulerToolbarClass() => "mar-allocation-scheduler__toolbar";
+
+    public string AllocationSchedulerResourceColumnClass(bool isPinned) =>
+        new CssClassBuilder()
+            .AddClass("mar-allocation-scheduler__resource-col")
+            .AddClass("mar-allocation-scheduler__resource-col--pinned", isPinned)
+            .Build();
+
+    public string AllocationSchedulerTimeHeaderClass(TimeGranularity grain) =>
+        new CssClassBuilder()
+            .AddClass("mar-allocation-scheduler__time-header")
+            .AddClass($"mar-allocation-scheduler__time-header--{grain.ToString().ToLower()}")
+            .Build();
+
+    public string AllocationSchedulerRowClass(bool isSelected, bool isOverAllocated) =>
+        new CssClassBuilder()
+            .AddClass("mar-allocation-scheduler__row")
+            .AddClass("mar-allocation-scheduler__row--selected", isSelected)
+            .AddClass("mar-allocation-scheduler__row--over-allocated", isOverAllocated)
+            .Build();
+
+    public string AllocationSchedulerCellClass(bool isEditable, bool isSelected, bool isConflict, bool isDisabled, bool isDragTarget) =>
+        new CssClassBuilder()
+            .AddClass("mar-allocation-scheduler__cell")
+            .AddClass("mar-allocation-scheduler__cell--editable", isEditable)
+            .AddClass("mar-allocation-scheduler__cell--selected", isSelected)
+            .AddClass("mar-allocation-scheduler__cell--conflict", isConflict)
+            .AddClass("mar-allocation-scheduler__cell--disabled", isDisabled)
+            .AddClass("mar-allocation-scheduler__cell--drag-target", isDragTarget)
+            .Build();
+
+    public string AllocationSchedulerCellValueClass(AllocationValueMode mode) =>
+        new CssClassBuilder()
+            .AddClass("mar-allocation-scheduler__cell-value")
+            .AddClass($"mar-allocation-scheduler__cell-value--{mode.ToString().ToLower()}")
+            .Build();
+
+    public string AllocationSchedulerDeltaClass(DeltaDisplayMode mode, bool isOver, bool isUnder) =>
+        new CssClassBuilder()
+            .AddClass("mar-allocation-scheduler__delta")
+            .AddClass($"mar-allocation-scheduler__delta--{mode.ToString().ToLower()}")
+            .AddClass("mar-allocation-scheduler__delta--over", isOver)
+            .AddClass("mar-allocation-scheduler__delta--under", isUnder)
+            .Build();
+
+    public string AllocationSchedulerScenarioStripClass() => "mar-allocation-scheduler__scenario-strip";
+
+    public string AllocationSchedulerScenarioChipClass(bool isActive, bool isLocked) =>
+        new CssClassBuilder()
+            .AddClass("mar-allocation-scheduler__scenario-chip")
+            .AddClass("mar-allocation-scheduler__scenario-chip--active", isActive)
+            .AddClass("mar-allocation-scheduler__scenario-chip--locked", isLocked)
+            .Build();
+
+    public string AllocationSchedulerGhostBarClass() => "mar-allocation-scheduler__ghost-bar";
+
+    public string AllocationSchedulerContextMenuClass() => "mar-allocation-scheduler__context-menu";
+
+    public string AllocationSchedulerEmptyClass() => "mar-allocation-scheduler__empty";
+
+    public string AllocationSchedulerLoaderClass() => "mar-allocation-scheduler__loader";
+
     // Overlays
     public string ModalClass(ModalSize size) =>
         new CssClassBuilder()

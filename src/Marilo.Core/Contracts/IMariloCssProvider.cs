@@ -198,6 +198,22 @@ public interface IMariloCssProvider
     string CalendarClass();
     string SchedulerClass();
 
+    // ── AllocationScheduler ─────────────────────────────────────────────
+    string AllocationSchedulerClass();
+    string AllocationSchedulerToolbarClass();
+    string AllocationSchedulerResourceColumnClass(bool isPinned);
+    string AllocationSchedulerTimeHeaderClass(TimeGranularity grain);
+    string AllocationSchedulerRowClass(bool isSelected, bool isOverAllocated);
+    string AllocationSchedulerCellClass(bool isEditable, bool isSelected, bool isConflict, bool isDisabled, bool isDragTarget);
+    string AllocationSchedulerCellValueClass(AllocationValueMode mode);
+    string AllocationSchedulerDeltaClass(DeltaDisplayMode mode, bool isOver, bool isUnder);
+    string AllocationSchedulerScenarioStripClass();
+    string AllocationSchedulerScenarioChipClass(bool isActive, bool isLocked);
+    string AllocationSchedulerGhostBarClass();
+    string AllocationSchedulerContextMenuClass();
+    string AllocationSchedulerEmptyClass();
+    string AllocationSchedulerLoaderClass();
+
     // ── Overlays ────────────────────────────────────────────────────────
     string ModalClass(ModalSize size);
     string ModalOverlayClass();

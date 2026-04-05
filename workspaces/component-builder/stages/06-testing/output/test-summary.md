@@ -1,43 +1,59 @@
-# Test Summary: SignalRConnectionStatus
+# Test Summary: MariloAllocationScheduler
 
 ## Test Files
 
-- `tests/Marilo.Tests.Unit/Feedback/SignalRConnectionStatusTests.cs` -- 12 component tests + mock registry
-- `tests/Marilo.Tests.Unit/FluentUICssProviderTests.cs` -- 6 new CSS provider tests added
+| File | Path | Tests |
+|---|---|---|
+| MariloAllocationSchedulerTests.cs | `tests/Marilo.Tests.Unit/AllocationScheduler/MariloAllocationSchedulerTests.cs` | 18 |
 
-## Test Count
+## Test Results
 
-| Category | Count |
-|----------|-------|
-| Component render tests | 12 |
-| CSS provider tests | 6 |
-| **New tests total** | **14** (4 Theory tests expand to multiple) |
+```
+Passed!  - Failed: 0, Passed: 18, Skipped: 0, Total: 18, Duration: 404 ms
+```
 
-## Component Tests
+## Test Coverage
 
-1. Renders_Default_WithNoHubs -- healthy state, aria attributes present
-2. Shows_Healthy_State_When_All_Critical_Connected -- healthy class, correct count
-3. Shows_Offline_State_When_Critical_Hub_Disconnected -- offline class, correct count
-4. Shows_Degraded_State_When_Critical_Hub_Reconnecting -- degraded class
-5. Hides_Counts_When_ShowCounts_False -- count span absent
-6. Compact_Mode_Applies_Class -- compact modifier present
-7. Popup_Not_Rendered_By_Default -- no popup in initial markup
-8. Click_Opens_Popup -- popup appears, aria-expanded="true", role="dialog"
-9. Popup_Shows_Hub_Rows -- hub names, health labels, error text visible
-10. Popup_Filters_NonCritical_When_IncludeNonCritical_False -- only critical hubs shown
-11. Popup_Shows_Reconnect_Button_For_Offline_Hub -- reconnect action present
-12. Popup_Shows_Custom_Title -- custom title text rendered
-13. Registry_Changed_Updates_UI -- count updates on Changed event
-14. Tooltip_Shows_Summary -- tooltip text matches unhealthy count
+### Rendering (3 tests)
+- Renders_Resource_Rows_For_Each_Resource -- PASS
+- Renders_Allocation_Items_In_Correct_Slot_Positions -- PASS
+- Renders_Empty_State_When_Allocations_Empty -- PASS
 
-## CSS Provider Tests (Theory)
+### Conflict Detection (2 tests)
+- ShowConflicts_Applies_Conflict_CSS_Class_To_Overlapping_Items -- PASS
+- No_Conflict_Class_When_No_Overlapping_Allocations -- PASS
 
-- SignalRStatusClass -- all 4 aggregate states return correct class
-- SignalRStatusClass_Compact -- compact modifier applied
-- SignalRPopupClass -- returns expected class
-- SignalRRowClass -- all 5 health states return correct class
-- SignalRBadgeClass -- healthy and offline return correct class
+### Interaction (3 tests)
+- AllowDragFill_False_Does_Not_Set_Drag_Classes -- PASS
+- Cells_Not_Editable_When_ViewGrain_Coarser_Than_AuthoritativeLevel -- PASS
+- OnCellEdited_Fires_When_Allocation_Programmatically_Added -- PASS
 
-## Results
+### Accessibility (5 tests)
+- Outer_Element_Has_Role_Grid -- PASS
+- Resource_Rows_Have_Role_Row -- PASS
+- Slot_Cells_Have_Role_Gridcell -- PASS
+- Cells_Have_Aria_Selected_Attribute -- PASS
+- Header_Cells_Have_Role_Columnheader -- PASS
 
-`dotnet test` -- **118 passed, 0 failed, 0 skipped**
+### Templates (1 test)
+- ResourceTemplate_Renders_Custom_Content -- PASS
+
+### CSS Provider (3 tests)
+- AllocationSchedulerClass_Called_On_Render -- PASS
+- AllocationSchedulerCellClass_Called_For_Each_Cell -- PASS
+- AllocationSchedulerRowClass_Called_For_Each_Row -- PASS
+
+### Toolbar (1 test)
+- Toolbar_Renders_Navigation_Buttons -- PASS
+
+## Audit Checks
+
+| Check | Status |
+|---|---|
+| Render test | PASS -- default rendering works |
+| Parameter coverage | PASS -- key parameters tested (Resources, Allocations, ViewGrain, AuthoritativeLevel, AllowDragFill, ValueMode, SelectionMode) |
+| Event coverage | PASS -- OnCellEdited wiring verified |
+| Provider coverage | PASS -- FluentUI provider classes verified in markup |
+| Tests pass | PASS -- 18/18, 0 failures |
+| No Telerik dependencies | PASS -- bUnit + xUnit only |
+| No MariloScheduler references | PASS |

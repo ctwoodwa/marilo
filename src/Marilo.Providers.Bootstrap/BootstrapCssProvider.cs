@@ -827,6 +827,70 @@ public class BootstrapCssProvider : IMariloCssProvider
 
     public string SchedulerClass() => "mar-bs-scheduler";
 
+    // AllocationScheduler
+    public string AllocationSchedulerClass() => "table-responsive mar-bs-allocation-scheduler";
+
+    public string AllocationSchedulerToolbarClass() => "d-flex gap-2 mb-2 mar-bs-allocation-scheduler__toolbar";
+
+    public string AllocationSchedulerResourceColumnClass(bool isPinned) =>
+        new CssClassBuilder()
+            .AddClass("mar-bs-allocation-scheduler__resource-col")
+            .AddClass("position-sticky start-0 bg-white", isPinned)
+            .Build();
+
+    public string AllocationSchedulerTimeHeaderClass(TimeGranularity grain) =>
+        new CssClassBuilder()
+            .AddClass("mar-bs-allocation-scheduler__time-header text-center text-nowrap")
+            .AddClass($"mar-bs-allocation-scheduler__time-header--{grain.ToString().ToLower()}")
+            .Build();
+
+    public string AllocationSchedulerRowClass(bool isSelected, bool isOverAllocated) =>
+        new CssClassBuilder()
+            .AddClass("mar-bs-allocation-scheduler__row")
+            .AddClass("table-active", isSelected)
+            .AddClass("table-danger", isOverAllocated)
+            .Build();
+
+    public string AllocationSchedulerCellClass(bool isEditable, bool isSelected, bool isConflict, bool isDisabled, bool isDragTarget) =>
+        new CssClassBuilder()
+            .AddClass("mar-bs-allocation-scheduler__cell text-center")
+            .AddClass("mar-bs-allocation-scheduler__cell--editable", isEditable)
+            .AddClass("table-primary", isSelected)
+            .AddClass("table-danger", isConflict)
+            .AddClass("text-muted bg-light", isDisabled)
+            .AddClass("border-primary", isDragTarget)
+            .Build();
+
+    public string AllocationSchedulerCellValueClass(AllocationValueMode mode) =>
+        new CssClassBuilder()
+            .AddClass("mar-bs-allocation-scheduler__cell-value")
+            .AddClass(mode == AllocationValueMode.Currency ? "text-success" : "")
+            .Build();
+
+    public string AllocationSchedulerDeltaClass(DeltaDisplayMode mode, bool isOver, bool isUnder) =>
+        new CssClassBuilder()
+            .AddClass("mar-bs-allocation-scheduler__delta small")
+            .AddClass("text-danger", isOver)
+            .AddClass("text-warning", isUnder)
+            .Build();
+
+    public string AllocationSchedulerScenarioStripClass() => "d-flex gap-2 mb-2 mar-bs-allocation-scheduler__scenario-strip";
+
+    public string AllocationSchedulerScenarioChipClass(bool isActive, bool isLocked) =>
+        new CssClassBuilder()
+            .AddClass("badge rounded-pill mar-bs-allocation-scheduler__scenario-chip")
+            .AddClass(isActive ? "bg-primary" : "bg-secondary")
+            .AddClass("opacity-75", isLocked)
+            .Build();
+
+    public string AllocationSchedulerGhostBarClass() => "text-muted opacity-50 mar-bs-allocation-scheduler__ghost-bar";
+
+    public string AllocationSchedulerContextMenuClass() => "dropdown-menu mar-bs-allocation-scheduler__context-menu";
+
+    public string AllocationSchedulerEmptyClass() => "text-center text-muted p-4 mar-bs-allocation-scheduler__empty";
+
+    public string AllocationSchedulerLoaderClass() => "d-flex justify-content-center p-4 mar-bs-allocation-scheduler__loader";
+
     // ───────────────────────────────────────────────
     // Overlays
     // ───────────────────────────────────────────────
