@@ -117,8 +117,13 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase
 
     public async Task Rebind()
     {
+        _isLoading = true;
+        await InvokeAsync(StateHasChanged);
+
         _effectiveAllocations = ComputeEffectiveAllocations();
         _visibleBuckets = ComputeVisibleBuckets();
+
+        _isLoading = false;
         await InvokeAsync(StateHasChanged);
     }
 
