@@ -74,9 +74,10 @@ All implementations are independent (no Telerik dependency), use MIT/Apache-2.0-
 | splitter | 17 | pending | Stage 06 closed (2026-04-04); 8 resolved, 1 demo deferred; runtime test pending |
 | wizard | 27 | pending | Stage 06 closed (2026-04-04); 18/18 resolved; runtime test pending |
 | chart-batch1 | 16 | pending | Stage 06 closed (2026-04-04); 8/8 resolved (3 pre-existing); runtime test pending |
+| chart-batch2 | 11 | pending | Stage 06 closed (2026-04-04); 5/5 resolved (1 pre-existing); runtime test pending |
 | editor-batch1 | 14 | pending | Stage 06 closed (2026-04-04); 6/6 resolved (2 pre-existing); runtime test pending |
-| datagrid-phase1 | 18 | 18 | Stage 05 complete (2026-04-04); 9 gaps resolved |
-| datagrid-phase2 | 15 | 15 | Stage 05 complete (2026-04-04); 6 gaps resolved (validation, composite filters, auto-gen attrs, aggregates, export, CancellationToken) |
+| datagrid-phase1 | 18 | 18 | Stage 06 closed (2026-04-04); 9 resolved, 1 deferred; runtime test pending |
+| datagrid-phase2 | 15 | 15 | Stage 06 closed (2026-04-04); 6 resolved (validation, composite filters, auto-gen attrs, aggregates, export, CancellationToken); runtime test pending |
 | datagrid-cdw | 0 | 0 | Per-feature checklist ready for CDW handoff (2026-04-03) |
 
 Canonical test evidence: `stages/06-validate/output/gap-*-closure-report.md`

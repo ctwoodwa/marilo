@@ -49,3 +49,48 @@ public class ChartLegendItemClickEventArgs
 /// Legacy alias for backward compatibility.
 /// </summary>
 public class ChartClickEventArgs : ChartSeriesClickEventArgs { }
+
+/// <summary>
+/// Event args for chart render lifecycle events.
+/// </summary>
+public class ChartRenderEventArgs
+{
+    /// <summary>Chart width (CSS value).</summary>
+    public string Width { get; init; } = "";
+
+    /// <summary>Chart height (CSS value).</summary>
+    public string Height { get; init; } = "";
+
+    /// <summary>Number of visible series.</summary>
+    public int SeriesCount { get; init; }
+
+    /// <summary>Total data points across all visible series.</summary>
+    public int TotalDataPoints { get; init; }
+}
+
+/// <summary>
+/// Context provided to tooltip templates.
+/// </summary>
+public class ChartTooltipContext
+{
+    /// <summary>Name of the series.</summary>
+    public string SeriesName { get; init; } = "";
+
+    /// <summary>Category label of the data point.</summary>
+    public string Category { get; init; } = "";
+
+    /// <summary>Numeric value of the data point.</summary>
+    public double Value { get; init; }
+
+    /// <summary>Formatted value string.</summary>
+    public string FormattedValue { get; init; } = "";
+
+    /// <summary>Color of the series.</summary>
+    public string Color { get; init; } = "";
+
+    /// <summary>Original data item.</summary>
+    public object? DataItem { get; init; }
+
+    /// <summary>For pie/donut charts, the percentage of total.</summary>
+    public double? Percentage { get; init; }
+}

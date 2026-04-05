@@ -50,7 +50,14 @@
         <div class="mar-chart-tooltip" @ref="_tooltipRef"
              style="@TooltipStyle"
              role="tooltip">
-            @_tooltipContent
+            @if (_chartTooltip?.Template != null && _tooltipContext != null)
+            {
+                @_chartTooltip.Template(_tooltipContext)
+            }
+            else
+            {
+                @_tooltipContent
+            }
         </div>
     }
 </div>
@@ -73,6 +80,7 @@
 
     // Tooltip state
     private string? _tooltipContent;
+    private ChartTooltipContext? _tooltipContext;
     private bool _tooltipVisible;
     private double _tooltipX;
     private double _tooltipY;
@@ -86,8 +94,8 @@
     [Parameter] public string? Title { get; set; }
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    /// <summary>Whether chart animations are enabled.</summary>
-    [Parameter] public bool Transitions { get; set; } = true;
+    /// <summary>Whether chart animations are enabled. Null = use theme default (true).</summary>
+    [Parameter] public bool? Transitions { get; set; }
 
     /// <summary>Custom color palette.</summary>
     [Parameter] public string[]? Palette { get; set; }
@@ -108,6 +116,9 @@
 
     /// <summary>Fires when a legend item is clicked.</summary>
     [Parameter] public EventCallback<ChartLegendItemClickEventArgs> OnLegendItemClick { get; set; }
+
+    /// <summary>Fires after the chart has rendered. Provides chart dimensions and data summary.</summary>
+    [Parameter] public EventCallback<ChartRenderEventArgs> OnRender { get; set; }
 
     // ── Computed ───────────────────────────────────────────────────────
 
@@ -350,6 +361,9 @@
                 case ChartSeriesType.Scatter:
                 case ChartSeriesType.ScatterLine:
                     RenderScatterSeries(builder, points, color, plotWidth, plotHeight, marginLeft, marginTop, minY, maxY, categoryCount, series.Type == ChartSeriesType.ScatterLine, seriesGlobalIndex);
+                    break;
+                case ChartSeriesType.Bubble:
+                    RenderBubbleSeries(builder, points, color, plotWidth, plotHeight, marginLeft, marginTop, minY, maxY, categoryCount, seriesGlobalIndex);
                     break;
             }
 
@@ -595,6 +609,58 @@
         }
     }
 
+    private void RenderBubbleSeries(
+        Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder,
+        IReadOnlyList<ChartDataPoint> points, string color,
+        double plotWidth, double plotHeight, double marginLeft, double marginTop,
+        double minY, double maxY, int categoryCount, int globalSeriesIndex)
+    {
+        if (points.Count == 0) return;
+        double yRange = maxY - minY;
+
+        // Calculate max bubble size for scaling
+        double maxBubbleSize = points.Max(p => Math.Abs(p.BubbleSize));
+        if (maxBubbleSize == 0) maxBubbleSize = 1;
+        const double maxRadius = 30;
+        const double minRadius = 4;
+
+        for (int i = 0; i < points.Count; i++)
+        {
+            var pt = points[i];
+            double x = marginLeft + (plotWidth * (i + 0.5) / categoryCount);
+            double y = marginTop + plotHeight - (plotHeight * (pt.Value - minY) / yRange);
+            double radius = minRadius + (maxRadius - minRadius) * (Math.Abs(pt.BubbleSize) / maxBubbleSize);
+
+            builder.OpenElement(170, "circle");
+            builder.AddAttribute(171, "cx", Fmt(x));
+            builder.AddAttribute(172, "cy", Fmt(y));
+            builder.AddAttribute(173, "r", Fmt(radius));
+            builder.AddAttribute(174, "fill", color);
+            builder.AddAttribute(175, "fill-opacity", "0.6");
+            builder.AddAttribute(176, "stroke", color);
+            builder.AddAttribute(177, "stroke-width", "1");
+            builder.AddAttribute(178, "class", "mar-chart-point");
+            builder.AddAttribute(179, "tabindex", "0");
+            builder.AddAttribute(180, "role", "graphics-symbol");
+            builder.AddAttribute(181, "aria-label", $"{pt.Category}: {pt.Value} (size: {pt.BubbleSize})");
+            var capturedIndex = i;
+            var capturedColor = color;
+            builder.AddAttribute(182, "onclick",
+                EventCallback.Factory.Create<Microsoft.AspNetCore.Components.Web.MouseEventArgs>(this,
+                    () => HandleDataPointClick(globalSeriesIndex, capturedIndex, pt, capturedColor)));
+            if (TooltipsEnabled)
+            {
+                builder.AddAttribute(183, "onmouseenter",
+                    EventCallback.Factory.Create<Microsoft.AspNetCore.Components.Web.MouseEventArgs>(this,
+                        _ => ShowTooltip(pt, capturedColor, x, y)));
+                builder.AddAttribute(184, "onmouseleave",
+                    EventCallback.Factory.Create<Microsoft.AspNetCore.Components.Web.MouseEventArgs>(this,
+                        _ => HideTooltip()));
+            }
+            builder.CloseElement();
+        }
+    }
+
     private void RenderPieDonutChart(
         Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder,
         List<MariloChartSeries> visibleSeries)
@@ -827,9 +893,27 @@
     private void ShowTooltip(ChartDataPoint pt, string color, double x, double y)
     {
         var format = _chartTooltip?.Format;
-        _tooltipContent = format != null
+        var formattedValue = format != null
             ? string.Format(format, pt.Value)
+            : pt.Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+        _tooltipContent = format != null
+            ? formattedValue
             : $"{pt.Category}: {pt.Value}";
+
+        // Find the series name for this data point
+        var seriesName = _series.FirstOrDefault(s => s.GetDataPoints().Contains(pt))?.Name ?? "";
+
+        _tooltipContext = new ChartTooltipContext
+        {
+            SeriesName = seriesName,
+            Category = pt.Category,
+            Value = pt.Value,
+            FormattedValue = formattedValue,
+            Color = color,
+            DataItem = pt.DataItem
+        };
+
         _tooltipX = x;
         _tooltipY = y - 30;
         _tooltipVisible = true;
@@ -839,6 +923,17 @@
     private void ShowPieTooltip(ChartDataPoint pt, string color, double percentage, double x, double y)
     {
         _tooltipContent = $"{pt.Category}: {pt.Value} ({percentage:F1}%)";
+
+        _tooltipContext = new ChartTooltipContext
+        {
+            Category = pt.Category,
+            Value = pt.Value,
+            FormattedValue = pt.Value.ToString(System.Globalization.CultureInfo.InvariantCulture),
+            Color = color,
+            DataItem = pt.DataItem,
+            Percentage = percentage
+        };
+
         _tooltipX = x;
         _tooltipY = y - 30;
         _tooltipVisible = true;
@@ -848,7 +943,25 @@
     private void HideTooltip()
     {
         _tooltipVisible = false;
+        _tooltipContext = null;
         StateHasChanged();
+    }
+
+    // ── Lifecycle ─────────────────────────────────────────────────────
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (OnRender.HasDelegate && _series.Count > 0)
+        {
+            var totalPoints = _series.Where(s => s.IsVisible).Sum(s => s.GetDataPoints().Count);
+            await OnRender.InvokeAsync(new ChartRenderEventArgs
+            {
+                Width = Width,
+                Height = Height,
+                SeriesCount = _series.Count(s => s.IsVisible),
+                TotalDataPoints = totalPoints
+            });
+        }
     }
 
     // ── Disposal ──────────────────────────────────────────────────────

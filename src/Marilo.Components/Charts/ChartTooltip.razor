@@ -15,6 +15,12 @@
     /// <summary>Custom format string for the tooltip value.</summary>
     [Parameter] public string? Format { get; set; }
 
+    /// <summary>Custom template for tooltip content. Receives a ChartTooltipContext.</summary>
+    [Parameter] public RenderFragment<ChartTooltipContext>? Template { get; set; }
+
+    /// <summary>Whether to show a shared tooltip with all series values at the hovered category.</summary>
+    [Parameter] public bool Shared { get; set; }
+
     protected override void OnInitialized()
     {
         if (ParentChart is null)
