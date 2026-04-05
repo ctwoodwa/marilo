@@ -138,6 +138,13 @@ The left side renders configurable columns for the resource entity.
 - Optional row hierarchy for grouped or nested resources.
 
 
+### Splitter and Dual-Pane Layout
+
+The AllocationScheduler uses a draggable vertical splitter to divide the component into a left resource-grid pane and a right timeline pane, modelled on the Microsoft Project Gantt Chart interaction. Users drag the splitter to redistribute horizontal space between resource metadata columns and the navigable timeline surface. The splitter supports keyboard operation, full pane collapse and restore, and programmatic control via `SetSplitterPosition`, `CollapseSplitter`, and `RestoreSplitter` methods.
+
+See [Splitter and Dual-Pane Layout](slug:allocation-scheduler-splitter-layout).
+
+
 ### Allocation Layer
 
 Each resource row can show one or more task layers stacked vertically. Each layer corresponds to one task and renders its allocation values across visible buckets.
@@ -220,6 +227,12 @@ See [Analysis and Targets](slug:allocation-scheduler-analysis-targets) for param
 | `Height` | `string` | — | A `height` style in any supported CSS unit. |
 | `Width` | `string` | — | A `width` style in any supported CSS unit. |
 | `Class` | `string` | — | Custom CSS class for the root element. |
+| `SplitterPosition` | `double?` | `null` | Left-pane width in pixels. Two-way bindable. |
+| `DefaultSplitterPosition` | `double` | `320` | Initial left-pane width when `SplitterPosition` is `null`. |
+| `MinLeftPaneWidth` | `double` | `200` | Minimum left-pane width in pixels. |
+| `MinRightPaneWidth` | `double` | `300` | Minimum right (timeline) pane width in pixels. |
+| `AllowSplitterCollapse` | `bool` | `false` | Enables full pane collapse past the minimum widths. |
+| `SplitterCssClass` | `string` | `null` | Custom CSS class for the splitter handle element. |
 | `ShowComparisonPanel` | `bool` | `false` | Toggles the scenario comparison panel for side-by-side baseline vs. scenario view. |
 | `ShowCriticalPath` | `bool` | `false` | Highlights the critical allocation path across resources and tasks. |
 | `EnableLoaderContainer` | `bool` | `true` | Shows a loading animation for operations over 600ms. |
@@ -239,6 +252,9 @@ See [Analysis and Targets](slug:allocation-scheduler-analysis-targets) for param
 | `OnVisibleRangeChanged` | `VisibleRangeChangedArgs` | Fires when the user navigates to a different date range. |
 | `OnSelectionChanged` | `SelectionChangedArgs` | Fires when the user changes the selected cell or range. |
 | `CanExecuteAction` | `CanExecuteActionArgs` | Called before a context menu action is shown to allow enable/disable logic. |
+| `SplitterPositionChanged` | `EventCallback<double>` | Fires when the user finishes dragging the splitter. |
+| `OnSplitterCollapsed` | `EventCallback<SplitterSide>` | Fires when a pane is fully collapsed. |
+| `OnSplitterRestored` | `EventCallback<double>` | Fires when a collapsed pane is restored. |
 
 
 ## AllocationScheduler Reference and Methods
@@ -255,6 +271,9 @@ Obtain a reference with `@ref` to call methods programmatically.
 | `NavigateToToday()` | `Task` | Moves the visible range to center on today. |
 | `GetSelectedCells()` | `IReadOnlyList<AllocationCellRef>` | Returns the current cell selection. |
 | `ClearSelection()` | `Task` | Clears the current cell selection. |
+| `SetSplitterPosition(double widthPx)` | `Task` | Moves the splitter to the given width, clamped to valid range. |
+| `CollapseSplitter(SplitterSide side)` | `Task` | Fully collapses the specified pane (requires `AllowSplitterCollapse` = `true`). |
+| `RestoreSplitter()` | `Task` | Restores the last collapsed pane to its prior or default width. |
 
 
 ## Enumerations
@@ -331,6 +350,7 @@ The following scenarios represent the primary coverage targets for AllocationSch
 6. **Variance review** — Set desired totals, enable `ShowDeltas`, highlight over- and under-allocated states.
 7. **Read-only rollup navigation** — Set `AuthoritativeLevel = Week`, zoom to Month view, confirm month cells are read-only sums.
 8. **Distribution command** — Right-click a month rollup cell, choose Distribute to weeks, confirm stored weekly records match the chosen distribution policy.
+9. **Splitter resize** — Drag the vertical divider to widen the resource grid, then collapse the timeline pane and confirm the restore zone appears.
 
 
 ## Next Steps
@@ -340,6 +360,7 @@ The following scenarios represent the primary coverage targets for AllocationSch
 * [Analysis and Targets](slug:allocation-scheduler-analysis-targets)
 * [AllocationScheduler Events](slug:allocation-scheduler-events)
 * [AllocationScheduler Accessibility](slug:allocation-scheduler-accessibility)
+* [Splitter and Dual-Pane Layout](slug:allocation-scheduler-splitter-layout)
 
 
 ## See Also
