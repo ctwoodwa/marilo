@@ -8,6 +8,9 @@
          style="@CombineStyles(SizeStyle)"
          role="grid"
          aria-label="Allocation Scheduler"
+         data-min-left-pane="@MinLeftPaneWidth"
+         data-min-right-pane="@MinRightPaneWidth"
+         data-allow-collapse="@(AllowSplitterCollapse ? "true" : "false")"
          @onclick="HandleGridClick"
          @attributes="AdditionalAttributes">
 
@@ -55,10 +58,24 @@
         }
         else
         {
-            @* Split-panel layout: fixed resource panel (left) + scrollable timeline panel (right) *@
+            @* Split-panel layout: fixed resource panel (left) + splitter + scrollable timeline panel (right) *@
             <div class="mar-allocation-scheduler__grid" role="grid">
+                @* ── Restore zone (left collapsed) ───────────────────── *@
+                @if (_collapsedSide == SplitterSide.Left)
+                {
+                    <div class="@CssProvider.AllocationSchedulerSplitterRestoreClass(SplitterSide.Left)"
+                         role="button"
+                         tabindex="0"
+                         aria-label="Restore resource columns"
+                         @onclick="HandleRestoreClick"
+                         @onkeydown="HandleSplitterKeyDown">
+                        <span aria-hidden="true">&#x25B6;</span>
+                    </div>
+                }
+
                 @* ── Left panel: resource columns ─────────────────────── *@
-                <div class="mar-allocation-scheduler__resource-panel">
+                <div class="mar-allocation-scheduler__resource-panel @(_collapsedSide == SplitterSide.Left ? "mar-allocation-scheduler__pane--collapsed" : "")"
+                     style="@GetLeftPaneStyle()">
                     <table class="mar-allocation-scheduler__table" style="table-layout:fixed">
                         <colgroup>
                             @foreach (var col in _columns.Where(c => c.Visible))
@@ -121,11 +138,28 @@
                     </table>
                 </div>
 
-                @* ── Resize handle ────────────────────────────────────── *@
-                <div class="mar-allocation-scheduler__splitter" role="separator" aria-orientation="vertical"></div>
+                @* ── Splitter handle ──────────────────────────────────── *@
+                @if (_collapsedSide is null)
+                {
+                    <div class="@($"{CssProvider.AllocationSchedulerSplitterClass(_isDraggingSplitter, _isSplitterFocused)} {SplitterCssClass}{(HasResizableColumn ? "" : " mar-allocation-scheduler__splitter--locked")}".TrimEnd())"
+                         role="separator"
+                         aria-orientation="vertical"
+                         aria-valuenow="@((int)ComputeColumnWidthSum())"
+                         aria-valuemin="@((int)MinLeftPaneWidth)"
+                         aria-valuemax="9999"
+                         aria-label="Resize resource columns"
+                         tabindex="@(HasResizableColumn ? 0 : -1)"
+                         data-locked="@(!HasResizableColumn ? "true" : "false")"
+                         @onfocus="HandleSplitterFocus"
+                         @onblur="HandleSplitterBlur"
+                         @onkeydown="HandleSplitterKeyDown"
+                         @onkeydown:preventDefault="HasResizableColumn">
+                    </div>
+                }
 
                 @* ── Right panel: timeline buckets (horizontally scrollable) *@
-                <div class="mar-allocation-scheduler__timeline-panel">
+                <div class="mar-allocation-scheduler__timeline-panel @(_collapsedSide == SplitterSide.Right ? "mar-allocation-scheduler__pane--collapsed" : "")"
+                     style="@GetRightPaneStyle()">
                     <table class="mar-allocation-scheduler__table" style="table-layout:fixed">
                         <colgroup>
                             @{ var bucketIdx = 0; }
@@ -216,6 +250,19 @@
                         </tbody>
                     </table>
                 </div>
+
+                @* ── Restore zone (right collapsed) ──────────────────── *@
+                @if (_collapsedSide == SplitterSide.Right)
+                {
+                    <div class="@CssProvider.AllocationSchedulerSplitterRestoreClass(SplitterSide.Right)"
+                         role="button"
+                         tabindex="0"
+                         aria-label="Restore timeline"
+                         @onclick="HandleRestoreClick"
+                         @onkeydown="HandleSplitterKeyDown">
+                        <span aria-hidden="true">&#x25C0;</span>
+                    </div>
+                }
             </div>
         }
 

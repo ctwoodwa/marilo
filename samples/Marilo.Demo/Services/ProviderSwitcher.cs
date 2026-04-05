@@ -265,6 +265,8 @@ public class ProviderSwitcher : IMariloCssProvider, IMariloIconProvider, IMarilo
     public string AllocationSchedulerContextMenuClass() => Css.AllocationSchedulerContextMenuClass();
     public string AllocationSchedulerEmptyClass() => Css.AllocationSchedulerEmptyClass();
     public string AllocationSchedulerLoaderClass() => Css.AllocationSchedulerLoaderClass();
+    public string AllocationSchedulerSplitterClass(bool isDragging, bool isFocused) => Css.AllocationSchedulerSplitterClass(isDragging, isFocused);
+    public string AllocationSchedulerSplitterRestoreClass(SplitterSide collapsedSide) => Css.AllocationSchedulerSplitterRestoreClass(collapsedSide);
 
     // ── Overlays ──
     public string ModalClass(ModalSize size) => Css.ModalClass(size);

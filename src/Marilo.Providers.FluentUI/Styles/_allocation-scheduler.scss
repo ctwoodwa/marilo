@@ -82,15 +82,97 @@
   }
 
   &__splitter {
-    flex: 0 0 4px;
-    background: var(--marilo-color-border, #d1d1d1);
-    cursor: col-resize;
+    flex: 0 0 var(--allocation-scheduler-splitter-width, 8px);
+    background: var(--allocation-scheduler-splitter-background, var(--marilo-color-border, #d1d1d1));
+    cursor: var(--allocation-scheduler-splitter-cursor, col-resize);
+    z-index: 3;
+    transition: background-color 0.15s;
+    position: relative;
+
+    // Expanded hit area (24px) for easier targeting
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 24px;
+      cursor: var(--allocation-scheduler-splitter-cursor, col-resize);
+    }
+
+    &:hover {
+      background: var(--allocation-scheduler-splitter-hover-background, var(--marilo-color-primary, #0f6cbd));
+    }
+
+    &--dragging {
+      background: var(--allocation-scheduler-splitter-active-background, var(--marilo-color-primary, #0f6cbd));
+    }
+
+    &--focused {
+      outline: 2px solid var(--marilo-color-primary, #0f6cbd);
+      outline-offset: -1px;
+      background: var(--allocation-scheduler-splitter-hover-background, var(--marilo-color-primary, #0f6cbd));
+    }
+
+    &--locked {
+      cursor: default;
+
+      &::before {
+        cursor: default;
+      }
+
+      &:hover {
+        background: var(--allocation-scheduler-splitter-background, var(--marilo-color-border, #d1d1d1));
+      }
+    }
+
+    &:focus-visible {
+      outline: var(--focus-ring, 2px solid var(--marilo-color-primary, #0f6cbd));
+      outline-offset: -1px;
+    }
+  }
+
+  // ── Splitter Restore Zones ──────────────────────────────────
+  &__splitter-restore {
+    flex: 0 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--allocation-scheduler-splitter-collapse-indicator-background, var(--marilo-color-subtle-background, #fafafa));
+    border: 1px solid var(--marilo-color-border, #d1d1d1);
+    cursor: pointer;
     z-index: 3;
     transition: background-color 0.15s;
 
-    &:hover {
-      background: var(--marilo-color-primary, #0f6cbd);
+    span {
+      color: var(--allocation-scheduler-splitter-collapse-indicator-icon-color, var(--marilo-color-primary, #0f6cbd));
+      font-size: 0.75rem;
     }
+
+    &:hover {
+      background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 8%, #ffffff);
+    }
+
+    &:focus-visible {
+      outline: var(--focus-ring, 2px solid var(--marilo-color-primary, #0f6cbd));
+      outline-offset: -1px;
+    }
+
+    &--left {
+      border-right: none;
+    }
+
+    &--right {
+      border-left: none;
+    }
+  }
+
+  // ── Pane collapse modifier ──────────────────────────────────
+  &__pane--collapsed {
+    width: 0 !important;
+    overflow: hidden !important;
+    border: none !important;
   }
 
   &__timeline-panel {

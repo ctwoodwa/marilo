@@ -38,6 +38,21 @@ public partial class AllocationResourceColumn<TResource> : ComponentBase, IDispo
     /// <summary>Pin column to left edge during horizontal scroll.</summary>
     [Parameter] public bool Pinned { get; set; }
 
+    /// <summary>Allow the user to resize this column via the splitter or column header drag. Defaults to true.</summary>
+    [Parameter] public bool AllowResize { get; set; } = true;
+
+    /// <summary>Minimum width in pixels when resizing. Defaults to 40.</summary>
+    [Parameter] public double MinWidth { get; set; } = 40;
+
+    /// <summary>Maximum width in pixels when resizing. Null means no upper limit.</summary>
+    [Parameter] public double? MaxWidth { get; set; }
+
+    /// <summary>Internal backing field for width, settable by parent scheduler during resize.</summary>
+    internal string RuntimeWidth { get; set; } = string.Empty;
+
+    /// <summary>Effective width: RuntimeWidth if set by resize, otherwise the declared Width parameter.</summary>
+    internal string EffectiveWidth => !string.IsNullOrEmpty(RuntimeWidth) ? RuntimeWidth : Width;
+
     protected override void OnInitialized()
     {
         Parent?.AddColumn(this);

@@ -142,6 +142,8 @@ The left side renders configurable columns for the resource entity.
 
 The AllocationScheduler uses a draggable vertical splitter to divide the component into a left resource-grid pane and a right timeline pane, modelled on the Microsoft Project Gantt Chart interaction. Users drag the splitter to redistribute horizontal space between resource metadata columns and the navigable timeline surface. The splitter supports keyboard operation, full pane collapse and restore, and programmatic control via `SetSplitterPosition`, `CollapseSplitter`, and `RestoreSplitter` methods.
 
+The left pane width always equals the sum of its rendered column widths; there is never blank space between the last column and the splitter handle.
+
 See [Splitter and Dual-Pane Layout](slug:allocation-scheduler-splitter-layout).
 
 
@@ -228,8 +230,8 @@ See [Analysis and Targets](slug:allocation-scheduler-analysis-targets) for param
 | `Width` | `string` | — | A `width` style in any supported CSS unit. |
 | `Class` | `string` | — | Custom CSS class for the root element. |
 | `SplitterPosition` | `double?` | `null` | Left-pane width in pixels. Two-way bindable. |
-| `DefaultSplitterPosition` | `double` | `320` | Initial left-pane width when `SplitterPosition` is `null`. |
-| `MinLeftPaneWidth` | `double` | `200` | Minimum left-pane width in pixels. |
+| `DefaultSplitterPosition` | `double?` | `null` | Initial left-pane width used for state restore. When `null` (default), the pane renders at the natural sum of `AllocationResourceColumn` widths. |
+| `MinLeftPaneWidth` | `double` | derived | Derived from column `MinWidth` values. Read-only; control via column `AllowResize` and `MinWidth` settings. |
 | `MinRightPaneWidth` | `double` | `300` | Minimum right (timeline) pane width in pixels. |
 | `AllowSplitterCollapse` | `bool` | `false` | Enables full pane collapse past the minimum widths. |
 | `SplitterCssClass` | `string` | `null` | Custom CSS class for the splitter handle element. |

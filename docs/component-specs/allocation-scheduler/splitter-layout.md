@@ -22,17 +22,31 @@ The splitter is a first-class interactive element: it is keyboard-operable, ARIA
 
 ## Default Layout
 
-The AllocationScheduler renders with the following default layout dimensions:
+The left pane width is always equal to the sum of the widths of all rendered `AllocationResourceColumns`. There is no independent "pane width" that can exceed or fall short of the column total. Dead space in the left pane — pixels between the last column and the splitter — is a layout error and must never occur.
+
+**Column-boundary rule:** The splitter can only rest at a position that is a valid total of the defined columns. Dragging the splitter left or right adjusts the width of the last resizable `AllocationResourceColumn`. If all columns have `AllowResize="false"`, the splitter is locked.
+
+**Defaults:**
 
 | Dimension | Default | Rationale |
 | --- | --- | --- |
-| Left pane width | `320px` | Accommodates a typical three-column resource grid (Name + Role + Department) without truncation. |
-| Left pane minimum | `200px` | Ensures at least the primary resource name column remains readable. |
-| Right pane minimum | `300px` | Guarantees at least a few time-bucket columns are visible for orientation. |
+| DefaultSplitterPosition | `null` (auto) | The left pane defaults to the sum of the widths declared on all `AllocationResourceColumns`. If no explicit widths are set, columns use their natural fit-content width and the splitter starts at their combined rendered width. |
+| MinLeftPaneWidth | derived | Equal to the sum of `MinWidth` values of all columns that have `AllowResize="false"` or have reached their own `MinWidth` floor. Not a free-standing pixel value. |
+| MinRightPaneWidth | `300px` | The timeline pane must always show at least this many pixels so that at least a few time buckets are visible. |
 | Splitter handle visible width | `8px` | Wide enough to see and target with a mouse, narrow enough to not waste horizontal space. |
 | Splitter handle pointer hit area | `24px` | Extends the clickable zone beyond the visible handle for easier targeting, especially on touch devices. |
 
-On first render, the left-pane width is set to the value of `SplitterPosition` if bound, or `DefaultSplitterPosition` if `SplitterPosition` is `null`. The right pane fills the remaining component width minus the splitter handle width.
+
+## Column Resize Relationship
+
+The splitter and `AllocationResourceColumn` widths are two views of the same state. They must always agree:
+
+- `SplitterPosition` = sum of all `AllocationResourceColumn` rendered widths.
+- Dragging the splitter by Δpx applies Δpx to the last resizable column's `Width`, subject to that column's own `MinWidth` and `MaxWidth` constraints.
+- If the last column is non-resizable, the Δpx is applied to the rightmost resizable column instead.
+- If no column is resizable (all have `AllowResize="false"`), the splitter is rendered as a fixed visual divider with no drag affordance.
+- Columns resized via their own column-header drag handle update `SplitterPosition` accordingly and fire `SplitterPositionChanged`.
+- Any operation that changes column widths (show/hide, reorder, programmatic resize) must recalculate `SplitterPosition` and fire `SplitterPositionChanged` if the value changes.
 
 
 ## Parameters
@@ -40,9 +54,9 @@ On first render, the left-pane width is set to the value of `SplitterPosition` i
 | Parameter | Type | Default | Description |
 | --- | --- | --- | --- |
 | `SplitterPosition` | `double?` | `null` | The left-pane width in pixels. Supports two-way binding. When `null`, `DefaultSplitterPosition` is used on first render. |
-| `DefaultSplitterPosition` | `double` | `320` | The initial left-pane width in pixels used when `SplitterPosition` is `null`. |
+| `DefaultSplitterPosition` | `double?` | `null` | Reserved for persisted state restore. When non-null, the scheduler attempts to restore the last saved splitter position on first render by distributing the stored width across the resizable columns proportionally. If the stored value is less than the derived `MinLeftPaneWidth` or greater than the component width minus `MinRightPaneWidth`, it is clamped silently. When `null` (default), the left pane renders at the natural sum of column widths. |
 | `SplitterPositionChanged` | `EventCallback<double>` | — | Fires when the user finishes dragging the splitter. Carries the new left-pane width in pixels. |
-| `MinLeftPaneWidth` | `double` | `200` | Minimum width of the left resource-grid pane in pixels. |
+| `MinLeftPaneWidth` | `double` | derived | Read-only derived value. Always equals the sum of `MinWidth` for columns that are non-resizable or have reached their minimum. Cannot be set directly by the consumer — control column `MinWidth` values instead. |
 | `MinRightPaneWidth` | `double` | `300` | Minimum width of the right timeline pane in pixels. |
 | `AllowSplitterCollapse` | `bool` | `false` | When `true`, the user can drag the splitter past `MinRightPaneWidth` or `MinLeftPaneWidth` to fully collapse either pane. A restore affordance appears when a pane is collapsed. |
 | `SplitterCssClass` | `string` | `null` | Optional CSS class added to the splitter handle element for custom styling. |
@@ -87,7 +101,7 @@ Obtain a reference with `@ref` to call splitter methods programmatically.
 
 | Method | Return Type | Description |
 | --- | --- | --- |
-| `SetSplitterPosition(double widthPx)` | `Task` | Moves the splitter to the given left-pane pixel width, clamped to `[MinLeftPaneWidth, componentWidth - MinRightPaneWidth]`. Fires `SplitterPositionChanged`. |
+| `SetSplitterPosition(double widthPx)` | `Task` | Attempts to set the total left-pane width to `widthPx` by proportionally resizing all resizable columns. If `widthPx` is less than the derived `MinLeftPaneWidth`, it is clamped to `MinLeftPaneWidth`. If it exceeds the component width minus `MinRightPaneWidth`, it is clamped to that upper bound. Non-resizable columns are never altered. Fires `SplitterPositionChanged`. |
 | `CollapseSplitter(SplitterSide side)` | `Task` | Fully collapses the specified pane. Requires `AllowSplitterCollapse` to be `true`; throws `InvalidOperationException` otherwise. Fires `OnSplitterCollapsed`. |
 | `RestoreSplitter()` | `Task` | Restores the last collapsed pane to its prior non-collapsed position, or to `DefaultSplitterPosition` if no prior position exists. Fires `OnSplitterRestored` and `SplitterPositionChanged`. |
 
@@ -185,8 +199,8 @@ This enum is used by `CollapseSplitter(SplitterSide side)` and `OnSplitterCollap
 
 The following scenarios represent the primary coverage targets for splitter-related examples and tests.
 
-1. **Drag resize** — Start with default widths (`DefaultSplitterPosition = 320`). Drag the splitter to the right to give the resource grid more space for a long Name column. Confirm that `SplitterPositionChanged` fires with the new width and that both panes re-render correctly.
+1. **Drag splitter resizes last column** — Define two columns (Name 180px, Role 120px); confirm left pane renders at exactly 300px with no blank space; drag splitter 60px to the right; confirm Role column grows to 180px and `SplitterPositionChanged` fires with value 360.
 
 2. **Collapse and restore** — Set `AllowSplitterCollapse="true"`. Drag the splitter all the way to the right to collapse the timeline pane. Confirm the restore zone is visible at the right edge. Click the restore zone and confirm the timeline re-opens to the prior width. Verify that `OnSplitterCollapsed` fires on collapse and `OnSplitterRestored` fires on restore.
 
-3. **Programmatic control** — Add a button that calls `SetSplitterPosition(480)`. Click the button and confirm the left pane widens to 480px, revealing additional resource columns. Confirm that `SplitterPositionChanged` fires with `480`.
+3. **Programmatic SetSplitterPosition** — Call `SetSplitterPosition(480)` with Name (180px, MinWidth 80px) and Role (120px, MinWidth 60px) columns; confirm the last resizable column (Role) grows by 180px to 300px while Name remains 180px; confirm no blank space exists in the left pane.

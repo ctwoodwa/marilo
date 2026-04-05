@@ -33,6 +33,17 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
 
     [Parameter] public IColumnWidthProvider? ColumnWidthProvider { get; set; }
 
+    // ── Splitter ────────────────────────────────────────────────────────
+
+    [Parameter] public double? SplitterPosition { get; set; }
+    [Parameter] public EventCallback<double> SplitterPositionChanged { get; set; }
+    [Parameter] public double? DefaultSplitterPosition { get; set; }
+    [Parameter] public double MinRightPaneWidth { get; set; } = 300;
+    [Parameter] public bool AllowSplitterCollapse { get; set; }
+    [Parameter] public string? SplitterCssClass { get; set; }
+    [Parameter] public EventCallback<SplitterSide> OnSplitterCollapsed { get; set; }
+    [Parameter] public EventCallback<double> OnSplitterRestored { get; set; }
+
     // ── Display ─────────────────────────────────────────────────────────
 
     [Parameter] public AllocationValueMode ValueMode { get; set; } = AllocationValueMode.Hours;
@@ -117,6 +128,13 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
     private object? _editResourceKey;
     private DateRange? _editBucket;
 
+    // Splitter state
+    private double _lastNonCollapsedPosition;
+    private bool _isDraggingSplitter;
+    private bool _isSplitterFocused;
+    private SplitterSide? _collapsedSide;
+    private bool _splitterInitialized;
+
     // ── Lifecycle ────────────────────────────────────────────────────────
 
     protected override void OnInitialized()
@@ -132,6 +150,18 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
         _effectiveAllocations = ComputeEffectiveAllocations();
         _visibleBuckets = ComputeVisibleBuckets();
         ResolveLayoutContract();
+
+        // On first render, apply DefaultSplitterPosition restore if provided
+        if (!_splitterInitialized && _columns.Count > 0)
+        {
+            _splitterInitialized = true;
+            var target = SplitterPosition ?? DefaultSplitterPosition;
+            if (target.HasValue)
+            {
+                DistributeWidthToColumns(target.Value);
+            }
+            _lastNonCollapsedPosition = ComputeColumnWidthSum();
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -145,6 +175,7 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
                     "import", "./_content/Marilo.Components/js/allocation-scheduler.js");
 
                 await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.initScrollSync", _gridRef);
+                await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.initSplitter", _gridRef, _dotNetRef);
                 if (AllowDragFill)
                     await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.initDragFill", _gridRef, _dotNetRef);
                 if (AllowKeyboardEdit)
@@ -276,6 +307,257 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
         await InvokeAsync(StateHasChanged);
     }
 
+    // ── Splitter — Column-Derived Width ───────────────────────────────────
+
+    /// <summary>
+    /// Computes the total left-pane width as the sum of all visible column widths.
+    /// This is the single source of truth for splitter position — no independent pane width exists.
+    /// </summary>
+    private double ComputeColumnWidthSum()
+    {
+        return _columns.Where(c => c.Visible).Sum(c => ParseColumnWidth(c.EffectiveWidth));
+    }
+
+    /// <summary>
+    /// Derived MinLeftPaneWidth: sum of MinWidth for all visible columns.
+    /// </summary>
+    public double MinLeftPaneWidth => _columns.Where(c => c.Visible).Sum(c => c.MinWidth);
+
+    /// <summary>
+    /// Whether any visible column is resizable. If none are, the splitter is locked.
+    /// </summary>
+    private bool HasResizableColumn => _columns.Any(c => c.Visible && c.AllowResize);
+
+    /// <summary>
+    /// Finds the rightmost visible resizable column.
+    /// </summary>
+    private AllocationResourceColumn<TResource>? GetLastResizableColumn()
+    {
+        return _columns.Where(c => c.Visible && c.AllowResize).LastOrDefault();
+    }
+
+    private static double ParseColumnWidth(string width)
+    {
+        if (string.IsNullOrWhiteSpace(width) || width == "auto")
+            return 100; // sensible default for auto columns
+
+        // Strip "px" suffix and parse
+        var numeric = width.Replace("px", "").Trim();
+        return double.TryParse(numeric, System.Globalization.NumberStyles.Float,
+            System.Globalization.CultureInfo.InvariantCulture, out var val) ? val : 100;
+    }
+
+    /// <summary>
+    /// Distributes a target total width across resizable columns proportionally.
+    /// Non-resizable columns keep their current width.
+    /// </summary>
+    private void DistributeWidthToColumns(double targetTotal)
+    {
+        var visibleCols = _columns.Where(c => c.Visible).ToList();
+        var fixedSum = visibleCols.Where(c => !c.AllowResize).Sum(c => ParseColumnWidth(c.EffectiveWidth));
+        var resizable = visibleCols.Where(c => c.AllowResize).ToList();
+
+        if (resizable.Count == 0) return; // all locked, nothing to distribute
+
+        var available = targetTotal - fixedSum;
+        if (available < resizable.Sum(c => c.MinWidth))
+            available = resizable.Sum(c => c.MinWidth);
+
+        var currentResizableSum = resizable.Sum(c => ParseColumnWidth(c.EffectiveWidth));
+        if (currentResizableSum <= 0) currentResizableSum = resizable.Count * 100;
+
+        foreach (var col in resizable)
+        {
+            var proportion = ParseColumnWidth(col.EffectiveWidth) / currentResizableSum;
+            var newWidth = available * proportion;
+            newWidth = Math.Max(col.MinWidth, newWidth);
+            if (col.MaxWidth.HasValue) newWidth = Math.Min(col.MaxWidth.Value, newWidth);
+            col.RuntimeWidth = $"{newWidth:F0}px";
+        }
+    }
+
+    /// <summary>
+    /// Applies a pixel delta to the last resizable column's width.
+    /// Returns the actual delta applied (may be less due to min/max constraints).
+    /// </summary>
+    private double ApplyDeltaToLastResizableColumn(double deltaPx)
+    {
+        var col = GetLastResizableColumn();
+        if (col is null) return 0;
+
+        var currentWidth = ParseColumnWidth(col.EffectiveWidth);
+        var newWidth = currentWidth + deltaPx;
+        newWidth = Math.Max(col.MinWidth, newWidth);
+        if (col.MaxWidth.HasValue) newWidth = Math.Min(col.MaxWidth.Value, newWidth);
+
+        var actualDelta = newWidth - currentWidth;
+        col.RuntimeWidth = $"{newWidth:F0}px";
+        return actualDelta;
+    }
+
+    // ── Splitter Public Methods ──────────────────────────────────────────
+
+    public async Task SetSplitterPosition(double widthPx)
+    {
+        var minLeft = MinLeftPaneWidth;
+        var clamped = Math.Max(widthPx, minLeft);
+        DistributeWidthToColumns(clamped);
+        ResolveLayoutContract();
+
+        var newPosition = ComputeColumnWidthSum();
+        _lastNonCollapsedPosition = newPosition;
+        _collapsedSide = null;
+        await SplitterPositionChanged.InvokeAsync(newPosition);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async Task CollapseSplitter(SplitterSide side)
+    {
+        if (!AllowSplitterCollapse)
+            throw new InvalidOperationException("AllowSplitterCollapse must be true to collapse the splitter.");
+
+        _lastNonCollapsedPosition = _collapsedSide is null ? ComputeColumnWidthSum() : _lastNonCollapsedPosition;
+        _collapsedSide = side;
+        await OnSplitterCollapsed.InvokeAsync(side);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public async Task RestoreSplitter()
+    {
+        if (_collapsedSide is null) return;
+
+        var restoreWidth = _lastNonCollapsedPosition > 0 ? _lastNonCollapsedPosition : ComputeColumnWidthSum();
+        DistributeWidthToColumns(restoreWidth);
+        ResolveLayoutContract();
+
+        var newPosition = ComputeColumnWidthSum();
+        _collapsedSide = null;
+        await OnSplitterRestored.InvokeAsync(newPosition);
+        await SplitterPositionChanged.InvokeAsync(newPosition);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    // ── Splitter JS Interop Callbacks ──────────────────────────────────
+
+    [JSInvokable]
+    public async Task OnSplitterDragEnd(double newLeftWidth)
+    {
+        _isDraggingSplitter = false;
+        var currentSum = ComputeColumnWidthSum();
+        var deltaPx = newLeftWidth - currentSum;
+
+        if (AllowSplitterCollapse)
+        {
+            var minLeft = MinLeftPaneWidth;
+            if (newLeftWidth < minLeft * 0.5)
+            {
+                _lastNonCollapsedPosition = currentSum;
+                _collapsedSide = SplitterSide.Left;
+                await OnSplitterCollapsed.InvokeAsync(SplitterSide.Left);
+                await InvokeAsync(StateHasChanged);
+                return;
+            }
+        }
+
+        ApplyDeltaToLastResizableColumn(deltaPx);
+        ResolveLayoutContract();
+
+        var finalPosition = ComputeColumnWidthSum();
+        _lastNonCollapsedPosition = finalPosition;
+        _collapsedSide = null;
+        await SplitterPositionChanged.InvokeAsync(finalPosition);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    [JSInvokable]
+    public async Task OnSplitterCollapseRight()
+    {
+        if (!AllowSplitterCollapse) return;
+        _lastNonCollapsedPosition = ComputeColumnWidthSum();
+        _collapsedSide = SplitterSide.Right;
+        await OnSplitterCollapsed.InvokeAsync(SplitterSide.Right);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    [JSInvokable]
+    public Task OnSplitterDragMove(double newLeftWidth)
+    {
+        _isDraggingSplitter = true;
+        // During drag, apply delta to last column for live preview
+        var currentSum = ComputeColumnWidthSum();
+        var deltaPx = newLeftWidth - currentSum;
+        ApplyDeltaToLastResizableColumn(deltaPx);
+        ResolveLayoutContract();
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    internal bool IsSplitterCollapsed => _collapsedSide.HasValue;
+    internal SplitterSide? CollapsedSide => _collapsedSide;
+    internal double CurrentSplitterPosition => ComputeColumnWidthSum();
+    internal bool IsDraggingSplitter => _isDraggingSplitter;
+
+    private string GetLeftPaneStyle()
+    {
+        if (_collapsedSide == SplitterSide.Left) return "width:0;overflow:hidden;";
+        if (_collapsedSide == SplitterSide.Right) return "flex:1 1 auto;";
+        var sum = ComputeColumnWidthSum();
+        return $"width:{sum}px;";
+    }
+
+    private string GetRightPaneStyle()
+    {
+        if (_collapsedSide == SplitterSide.Right) return "width:0;overflow:hidden;";
+        return string.Empty; // flex:1 1 0 from CSS fills remaining space
+    }
+
+    private async Task HandleRestoreClick()
+    {
+        await RestoreSplitter();
+    }
+
+    private void HandleSplitterFocus() => _isSplitterFocused = true;
+    private void HandleSplitterBlur() => _isSplitterFocused = false;
+
+    private async Task HandleSplitterKeyDown(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs e)
+    {
+        const double smallStep = 16;
+        const double largeStep = 64;
+
+        switch (e.Key)
+        {
+            case "ArrowLeft":
+                var leftDelta = e.ShiftKey ? largeStep : smallStep;
+                await SetSplitterPosition(ComputeColumnWidthSum() - leftDelta);
+                break;
+            case "ArrowRight":
+                var rightDelta = e.ShiftKey ? largeStep : smallStep;
+                await SetSplitterPosition(ComputeColumnWidthSum() + rightDelta);
+                break;
+            case "Home":
+                if (AllowSplitterCollapse)
+                    await CollapseSplitter(SplitterSide.Left);
+                else
+                    await SetSplitterPosition(MinLeftPaneWidth);
+                break;
+            case "End":
+                if (AllowSplitterCollapse)
+                    await CollapseSplitter(SplitterSide.Right);
+                else
+                    await SetSplitterPosition(double.MaxValue); // JS will clamp to container
+                break;
+            case "Enter":
+                if (AllowSplitterCollapse)
+                {
+                    if (_collapsedSide.HasValue)
+                        await RestoreSplitter();
+                    else
+                        await CollapseSplitter(SplitterSide.Right);
+                }
+                break;
+        }
+    }
+
     // ── Column Registration ─────────────────────────────────────────────
 
     internal void AddColumn(AllocationResourceColumn<TResource> column)
@@ -284,6 +566,7 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
         {
             _columns.Add(column);
             ResolveLayoutContract();
+            // SplitterPosition is always derived from column widths — no separate update needed
         }
     }
 
@@ -308,7 +591,7 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
             var col = visibleCols[i];
             var id = $"res-{col.Field}-{i}";
             _columnSizingIds[col] = id;
-            entries.Add(new ColumnSizingEntry(id, col.Width, 50, null));
+            entries.Add(new ColumnSizingEntry(id, col.EffectiveWidth, 50, null));
         }
 
         // Time bucket columns — use grain-specific default widths

@@ -213,6 +213,8 @@ public interface IMariloCssProvider
     string AllocationSchedulerContextMenuClass();
     string AllocationSchedulerEmptyClass();
     string AllocationSchedulerLoaderClass();
+    string AllocationSchedulerSplitterClass(bool isDragging, bool isFocused);
+    string AllocationSchedulerSplitterRestoreClass(SplitterSide collapsedSide);
 
     // ── Overlays ────────────────────────────────────────────────────────
     string ModalClass(ModalSize size);

@@ -891,6 +891,19 @@ public class BootstrapCssProvider : IMariloCssProvider
 
     public string AllocationSchedulerLoaderClass() => "d-flex justify-content-center p-4 mar-bs-allocation-scheduler__loader";
 
+    public string AllocationSchedulerSplitterClass(bool isDragging, bool isFocused) =>
+        new CssClassBuilder()
+            .AddClass("mar-allocation-scheduler__splitter")
+            .AddClass("mar-allocation-scheduler__splitter--dragging", isDragging)
+            .AddClass("mar-allocation-scheduler__splitter--focused", isFocused)
+            .Build();
+
+    public string AllocationSchedulerSplitterRestoreClass(SplitterSide collapsedSide) =>
+        new CssClassBuilder()
+            .AddClass("mar-allocation-scheduler__splitter-restore")
+            .AddClass($"mar-allocation-scheduler__splitter-restore--{collapsedSide.ToString().ToLower()}")
+            .Build();
+
     // ───────────────────────────────────────────────
     // Overlays
     // ───────────────────────────────────────────────
