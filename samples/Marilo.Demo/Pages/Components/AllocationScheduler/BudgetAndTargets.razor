@@ -134,10 +134,10 @@
 
     private List<AllocationTarget> _targets = new()
     {
-        new() { ResourceId = 1, TaskId = 101, BucketStart = new(2026, 4, 6),  BucketEnd = new(2026, 4, 13), TargetValue = 40 },
-        new() { ResourceId = 1, TaskId = 101, BucketStart = new(2026, 4, 13), BucketEnd = new(2026, 4, 20), TargetValue = 40 },
-        new() { ResourceId = 2, TaskId = 102, BucketStart = new(2026, 4, 6),  BucketEnd = new(2026, 4, 13), TargetValue = 32 },
-        new() { ResourceId = 3, TaskId = 103, BucketStart = new(2026, 4, 13), BucketEnd = new(2026, 4, 20), TargetValue = 20 }
+        new() { ResourceId = 1, TaskId = 101, PeriodStart = new(2026, 4, 6),  PeriodEnd = new(2026, 4, 13), TargetValue = 40 },
+        new() { ResourceId = 1, TaskId = 101, PeriodStart = new(2026, 4, 13), PeriodEnd = new(2026, 4, 20), TargetValue = 40 },
+        new() { ResourceId = 2, TaskId = 102, PeriodStart = new(2026, 4, 6),  PeriodEnd = new(2026, 4, 13), TargetValue = 32 },
+        new() { ResourceId = 3, TaskId = 103, PeriodStart = new(2026, 4, 13), PeriodEnd = new(2026, 4, 20), TargetValue = 20 }
     };
 
     private async Task HandleTargetChanged(TargetChangedArgs args)
