@@ -8,7 +8,7 @@ Swap providers to change the entire look-and-feel without touching a single comp
 [![CI](https://github.com/ctwoodwa/marilo/actions/workflows/ci.yml/badge.svg)](https://github.com/ctwoodwa/marilo/actions/workflows/ci.yml)
 [![Docs](https://img.shields.io/badge/docs-GitHub%20Pages-blue?style=flat-square)](https://ctwoodwa.github.io/marilo/)
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/download/dotnet/10.0)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](./LICENSE)
+[![License: Unlicense](https://img.shields.io/badge/License-Unlicense-green.svg?style=flat-square)](./LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](./CONTRIBUTING.md)
 
 [📖 Documentation](https://ctwoodwa.github.io/marilo/) · [🚀 Live Demo](https://codespaces.new/ctwoodwa/marilo?quickstart=1) · [🐛 Report a Bug](https://github.com/ctwoodwa/marilo/issues/new?template=bug_report.md) · [💡 Request a Feature](https://github.com/ctwoodwa/marilo/issues/new?template=feature_request.md)
@@ -23,7 +23,7 @@ Swap providers to change the entire look-and-feel without touching a single comp
 
 Marilo is an enterprise-grade Blazor component library built around a **provider pattern**: components are decoupled from their visual implementation. Register a provider (e.g., Fluent UI) at startup and all components automatically adopt that style system — without any per-component changes. This makes Marilo ideal for design system migrations, white-label products, and teams that need UI consistency across multiple applications.
 
-> 🧩 40+ components · 360+ icons · Provider-swappable styling · .NET 10 · MIT licensed
+> 🧩 40+ components · 360+ icons · Provider-swappable styling · .NET 10 · Unlicense
 
 ---
 
@@ -235,7 +235,7 @@ This project follows [Semantic Versioning](https://semver.org/).
 
 ## License
 
-Licensed under the [MIT License](./LICENSE).
+Licensed under [The Unlicense](./LICENSE).
 
 © 2026 Christopher Wood. All rights reserved.
 

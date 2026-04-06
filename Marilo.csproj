@@ -11,7 +11,7 @@
     <Product>Marilo</Product>
     <Description>Marilo — a Blazor component library with feedback, navigation, and data display components built on Fluent UI. Includes real-time data change banners/toasts, alert strips, confirmation dialogs, environment badges, and time-range selectors.</Description>
     <PackageTags>blazor;components;fluent-ui;razor-class-library;blazor-wasm;signalr</PackageTags>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageLicenseExpression>Unlicense</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/ctwoodwa/command-center</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ctwoodwa/command-center</RepositoryUrl>
     <RepositoryType>git</RepositoryType>

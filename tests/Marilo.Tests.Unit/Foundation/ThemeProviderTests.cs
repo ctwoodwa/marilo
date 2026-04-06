@@ -28,6 +28,7 @@ public class ThemeProviderTests : MariloTestBase
 
         public Task SetThemeAsync(MariloTheme theme) => Task.CompletedTask;
         public Task ToggleDarkModeAsync() => Task.CompletedTask;
+        public Task SetDarkModeAsync(bool dark) => Task.CompletedTask;
         public Task InitializeAsync() => Task.CompletedTask;
     }
 
