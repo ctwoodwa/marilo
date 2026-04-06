@@ -2,6 +2,7 @@
   "name": "marilo",
   "version": "2.0.0",
   "private": true,
+  "license": "Unlicense",
   "description": "Marilo - Provider-first Blazor component library",
   "scripts": {
     "scss:build:fluentui": "sass src/Marilo.Providers.FluentUI/Styles/marilo-fluentui.scss:src/Marilo.Providers.FluentUI/wwwroot/css/marilo-fluentui.css --style=expanded --no-source-map",
