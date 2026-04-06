@@ -13534,6 +13534,97 @@ textarea.form-control-lg {
   padding: 0.25rem 0.5rem;
 }
 
+.mar-bs-datagrid .mar-bs-datagrid-header-cell {
+  position: relative;
+}
+
+.mar-bs-datagrid .mar-datagrid-filter-menu-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.35rem;
+  border: 1px solid var(--marilo-color-border);
+  background: #fff;
+  color: var(--marilo-color-text-secondary);
+  border-radius: 4px;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mar-bs-datagrid .mar-datagrid-filter-menu-btn:hover {
+  border-color: var(--marilo-color-primary);
+  color: var(--marilo-color-primary);
+}
+
+.mar-bs-datagrid .mar-datagrid-filter-menu-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.mar-bs-datagrid .mar-datagrid-filter-menu-btn--active {
+  border-color: var(--marilo-color-primary);
+  background: rgba(var(--bs-primary-rgb), 0.1);
+  color: var(--marilo-color-primary);
+  box-shadow: 0 0 0 1px rgba(var(--bs-primary-rgb), 0.25);
+}
+
+.mar-bs-datagrid .mar-datagrid-filter-menu-btn--active::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--marilo-color-primary);
+}
+
+.mar-bs-datagrid .mar-datagrid-filter-popup {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  z-index: 40;
+  min-width: 260px;
+}
+
+.mar-bs-datagrid .mar-datagrid-filter-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--marilo-color-border);
+  border-radius: 0.5rem;
+  background: #fff;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.mar-bs-datagrid .mar-datagrid-filter-menu-operator,
+.mar-bs-datagrid .mar-datagrid-filter-menu-value {
+  width: 100%;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--marilo-color-border);
+  border-radius: 0.375rem;
+  font-size: var(--marilo-font-size-base);
+}
+
+.mar-bs-datagrid .mar-datagrid-filter-menu-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.mar-bs-datagrid .mar-datagrid-filter-menu-actions .mar-datagrid-cmd-btn {
+  border: 1px solid var(--marilo-color-border);
+  border-radius: 0.375rem;
+  background: #fff;
+  padding: 0.35rem 0.75rem;
+  cursor: pointer;
+}
+
 .mar-bs-datagrid-group-header td {
   padding: var(--marilo-space-sm) var(--marilo-space-md);
 }
@@ -13923,4 +14014,799 @@ textarea.form-control-lg {
   min-width: 4rem;
   text-align: center;
   flex-shrink: 0;
+}
+
+.mar-bs-allocation-scheduler {
+  --mas-header-group-height: 32px;
+  --mas-header-leaf-height: 38px;
+  --bs-scheduler-row-height: 38px;
+  --bs-scheduler-cell-pad-x: 0.4rem;
+  --bs-scheduler-cell-pad-y: 0.3rem;
+  --bs-scheduler-col-pad-x: 0.625rem;
+  --bs-scheduler-toolbar-gap: 0.375rem;
+  --bs-scheduler-disabled-bg: #e9ecef;
+  --bs-scheduler-disabled-color: #6c757d;
+  --bs-scheduler-disabled-pattern: repeating-linear-gradient(
+    135deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.07) 3px,
+    rgba(0, 0, 0, 0.07) 6px
+  );
+  --bs-scheduler-conflict-bg: rgba(var(--bs-danger-rgb), 0.13);
+  --bs-scheduler-conflict-shadow: inset 0 0 0 1px rgba(var(--bs-danger-rgb), 0.45);
+  --marilo-scheduler-border-color: var(--bs-border-color, rgba(0, 0, 0, 0.15));
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  background: var(--bs-body-bg);
+  overflow: hidden;
+  font-size: 0.875rem;
+  font-family: var(--bs-font-sans-serif, system-ui, sans-serif);
+}
+
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--bs-scheduler-toolbar-gap);
+  padding: 0.375rem 0.75rem;
+  border-bottom: 1px solid var(--bs-border-color);
+  background: var(--bs-tertiary-bg, var(--bs-light, #f8f9fa));
+  flex-shrink: 0;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-sm);
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.12s, border-color 0.12s;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__toolbar button:hover {
+  background: rgba(var(--bs-primary-rgb), 0.06);
+  border-color: rgba(var(--bs-primary-rgb), 0.45);
+  color: var(--bs-primary);
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__toolbar button:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 1px;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__scenario-strip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border-bottom: 1px solid var(--bs-border-color);
+  background: var(--bs-tertiary-bg, var(--bs-light, #f8f9fa));
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__scenario-chip {
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.65rem;
+  border-radius: 12px;
+  white-space: nowrap;
+  transition: opacity 0.12s, box-shadow 0.12s;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__scenario-chip:hover {
+  opacity: 0.88;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__scenario-chip:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 1px;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__grain-select {
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-sm);
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  font-size: 0.8125rem;
+  font-family: inherit;
+  cursor: pointer;
+  line-height: 1.4;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__grain-select:hover {
+  border-color: rgba(var(--bs-primary-rgb), 0.45);
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__grain-select:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 1px;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__jump-date-input {
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-sm);
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  font-size: 0.8125rem;
+  font-family: inherit;
+  line-height: 1.4;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__jump-date-input:hover {
+  border-color: rgba(var(--bs-primary-rgb), 0.45);
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__jump-date-input:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 1px;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__jump-date-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.8125rem;
+  font-family: inherit;
+  font-weight: 600;
+  line-height: 1.4;
+  border: 1px solid var(--bs-primary);
+  border-radius: var(--bs-border-radius-sm);
+  background: var(--bs-primary);
+  color: var(--bs-white, #fff);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.12s, border-color 0.12s;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__jump-date-btn:hover {
+  background: rgba(var(--bs-primary-rgb), 0.85);
+  border-color: rgba(var(--bs-primary-rgb), 0.85);
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__jump-date-btn:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 1px;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__grid {
+  display: flex;
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__resource-panel {
+  flex: 0 0 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--bs-body-bg);
+  z-index: 2;
+  scrollbar-width: none;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__resource-panel::-webkit-scrollbar {
+  display: none;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter {
+  flex: 0 0 var(--allocation-scheduler-splitter-width, 8px);
+  background: var(--allocation-scheduler-splitter-background, var(--bs-border-color));
+  cursor: var(--allocation-scheduler-splitter-cursor, col-resize);
+  z-index: 3;
+  transition: background-color 0.15s;
+  position: relative;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  cursor: var(--allocation-scheduler-splitter-cursor, col-resize);
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter:hover {
+  background: var(--allocation-scheduler-splitter-hover-background, var(--bs-primary));
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter--dragging {
+  background: var(--allocation-scheduler-splitter-active-background, var(--bs-primary));
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter--focused {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: -1px;
+  background: var(--allocation-scheduler-splitter-hover-background, var(--bs-primary));
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter--locked {
+  cursor: default;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter--locked::before {
+  cursor: default;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter--locked:hover {
+  background: var(--allocation-scheduler-splitter-background, var(--bs-border-color));
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: -1px;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter-restore {
+  flex: 0 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--allocation-scheduler-splitter-collapse-indicator-background, var(--bs-tertiary-bg, var(--bs-light)));
+  border: 1px solid var(--bs-border-color);
+  cursor: pointer;
+  z-index: 3;
+  transition: background-color 0.15s;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter-restore span {
+  color: var(--allocation-scheduler-splitter-collapse-indicator-icon-color, var(--bs-primary));
+  font-size: 0.75rem;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter-restore:hover {
+  background: rgba(var(--bs-primary-rgb), 0.08);
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter-restore:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: -1px;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter-restore--left {
+  border-right: none;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter-restore--right {
+  border-left: none;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__pane--collapsed {
+  width: 0 !important;
+  overflow: hidden !important;
+  border: none !important;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__timeline-panel {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: auto;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__resource-panel .mar-allocation-scheduler__table {
+  width: 100%;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__header-group-row {
+  background: var(--bs-tertiary-bg, var(--bs-light, #f8f9fa));
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__header-group-row th {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--bs-tertiary-bg, var(--bs-light, #f8f9fa));
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__header-group-cell {
+  height: var(--mas-header-group-height);
+  box-sizing: border-box;
+  padding: 0 0.5rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-right: 1px solid var(--marilo-scheduler-border-color);
+  border-bottom: 1px solid var(--marilo-scheduler-border-color);
+  color: var(--bs-secondary-color, #6c757d);
+  vertical-align: middle;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__header-row {
+  background: var(--bs-tertiary-bg, var(--bs-light, #f8f9fa));
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__header-row th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--bs-tertiary-bg, var(--bs-light, #f8f9fa));
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__header-group-row ~ .mar-allocation-scheduler__header-row th {
+  top: var(--mas-header-group-height, 32px);
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__resource-col {
+  padding: 0.375rem var(--bs-scheduler-col-pad-x);
+  border-right: 1px solid var(--marilo-scheduler-border-color);
+  border-bottom: 1px solid var(--marilo-scheduler-border-color);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: left;
+  vertical-align: middle;
+  height: var(--mas-header-leaf-height, var(--bs-scheduler-row-height));
+  box-sizing: border-box;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__resource-col > * {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  overflow: hidden;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__resource-col[role=columnheader] {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  overflow: visible;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--bs-secondary-color, var(--bs-secondary));
+  background: var(--bs-body-bg);
+  border-bottom: 2px solid var(--marilo-scheduler-border-color);
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__resource-col[role=gridcell] {
+  font-weight: 400;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__resource-col--spanning[role=columnheader] {
+  height: calc(var(--mas-header-group-height) + var(--mas-header-leaf-height));
+  vertical-align: middle;
+  border-bottom: 2px solid var(--marilo-scheduler-border-color);
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__time-header {
+  padding: var(--bs-scheduler-cell-pad-y) var(--bs-scheduler-cell-pad-x);
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: var(--mas-header-leaf-height, var(--bs-scheduler-row-height));
+  box-sizing: border-box;
+  vertical-align: middle;
+  border-right: 1px solid var(--marilo-scheduler-border-color);
+  border-bottom: 2px solid var(--marilo-scheduler-border-color);
+  color: var(--bs-secondary-color, #6c757d);
+  font-variant-numeric: tabular-nums;
+  position: relative;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__time-header--day {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row {
+  transition: background-color 0.1s;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row td, .mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row th {
+  height: var(--bs-scheduler-row-height);
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row--striped {
+  background-color: rgba(0, 0, 0, 0.022);
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row:hover {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row--selected {
+  background-color: rgba(var(--bs-primary-rgb), 0.07) !important;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row--over-allocated {
+  background-color: rgba(var(--bs-danger-rgb), 0.07) !important;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell {
+  padding: var(--bs-scheduler-cell-pad-y) var(--bs-scheduler-cell-pad-x);
+  text-align: center;
+  border-right: 1px solid var(--marilo-scheduler-border-color);
+  border-bottom: 1px solid var(--marilo-scheduler-border-color);
+  position: relative;
+  cursor: default;
+  transition: background-color 0.1s;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell--editable {
+  cursor: text;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell--editable:hover {
+  background-color: rgba(var(--bs-primary-rgb), 0.05);
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell--selected {
+  background-color: rgba(var(--bs-primary-rgb), 0.12) !important;
+  box-shadow: inset 0 0 0 2px var(--bs-primary);
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell--conflict {
+  background-color: var(--bs-scheduler-conflict-bg) !important;
+  box-shadow: var(--bs-scheduler-conflict-shadow);
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell--disabled {
+  background-color: var(--bs-scheduler-disabled-bg) !important;
+  background-image: var(--bs-scheduler-disabled-pattern) !important;
+  color: var(--bs-scheduler-disabled-color) !important;
+  cursor: not-allowed;
+  --bs-table-bg: transparent;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell--active {
+  background-color: rgba(var(--bs-primary-rgb), 0.12) !important;
+  box-shadow: inset 0 0 0 2px var(--bs-primary);
+  outline: none;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell--drag-target {
+  background-color: rgba(var(--bs-primary-rgb), 0.17) !important;
+  box-shadow: inset 0 0 0 1px var(--bs-primary);
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell--editing {
+  padding: 0;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell--editing input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: 2px solid var(--bs-primary);
+  outline-offset: -2px;
+  text-align: center;
+  font-size: inherit;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+  background: var(--bs-body-bg);
+  padding: var(--bs-scheduler-cell-pad-y) var(--bs-scheduler-cell-pad-x);
+  box-sizing: border-box;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__fill-handle {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 8px;
+  height: 8px;
+  background: var(--bs-primary);
+  border: 2px solid var(--bs-body-bg);
+  border-radius: 1px;
+  cursor: crosshair;
+  z-index: 4;
+  pointer-events: auto;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__fill-handle:hover {
+  filter: brightness(0.85);
+  transform: scale(1.25);
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__cell--active {
+  background-color: rgba(var(--bs-primary-rgb), 0.12) !important;
+  box-shadow: inset 0 0 0 2px var(--bs-primary);
+  outline: none;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__cell--editing {
+  padding: 0;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__cell--editing input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: 2px solid var(--bs-primary);
+  outline-offset: -2px;
+  text-align: center;
+  font-size: inherit;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+  background: var(--bs-body-bg);
+  padding: var(--bs-scheduler-cell-pad-y) var(--bs-scheduler-cell-pad-x);
+  box-sizing: border-box;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__col-current {
+  background-color: rgba(var(--bs-primary-rgb, 13, 110, 253), 0.07);
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__col-current.mar-bs-allocation-scheduler__time-header, .mar-bs-allocation-scheduler .mar-allocation-scheduler__col-current.mar-allocation-scheduler__time-header {
+  background-color: rgba(var(--bs-primary-rgb, 13, 110, 253), 0.13);
+  font-weight: 600;
+  color: var(--bs-primary, #0d6efd);
+  border-top: 3px solid var(--bs-primary, #0d6efd);
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell-value {
+  font-variant-numeric: tabular-nums;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell-value--currency {
+  color: var(--bs-success);
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__delta {
+  font-size: 0.7rem;
+  margin-left: 0.2rem;
+  font-variant-numeric: tabular-nums;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__ghost-bar {
+  border: 1px dashed var(--bs-border-color);
+  border-radius: 2px;
+  padding: 0 0.2rem;
+  margin-right: 0.2rem;
+  font-size: 0.7rem;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__context-menu {
+  min-width: 200px;
+  font-size: 0.875rem;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__context-menu button {
+  display: block;
+  width: 100%;
+  padding: 0.35rem 1rem;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--bs-body-color);
+  white-space: nowrap;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__context-menu button:hover {
+  background: var(--bs-tertiary-bg, var(--bs-light));
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__context-menu button:disabled {
+  color: var(--bs-secondary-color, #6c757d);
+  cursor: default;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__empty {
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__loader {
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__col-resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+  z-index: 5;
+  user-select: none;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__col-resize-handle::after {
+  content: "";
+  position: absolute;
+  top: 20%;
+  bottom: 20%;
+  right: 1px;
+  width: 2px;
+  background: transparent;
+  border-radius: 1px;
+  transition: background-color 0.12s;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__col-resize-handle:hover::after {
+  background: rgba(var(--bs-primary-rgb), 0.5);
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__col-resize-handle--active::after {
+  background: var(--bs-primary) !important;
+  top: 10%;
+  bottom: 10%;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__time-resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+  z-index: 5;
+  user-select: none;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__time-resize-handle::after {
+  content: "";
+  position: absolute;
+  top: 20%;
+  bottom: 20%;
+  right: 1px;
+  width: 2px;
+  background: transparent;
+  border-radius: 1px;
+  transition: background-color 0.12s;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__time-resize-handle:hover::after {
+  background: rgba(var(--bs-primary-rgb), 0.5);
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__time-resize-handle--active::after {
+  background: var(--bs-primary) !important;
+  top: 10%;
+  bottom: 10%;
+}
+
+[data-marilo-theme=dark] .mar-bs-allocation-scheduler,
+[data-bs-theme=dark] .mar-bs-allocation-scheduler {
+  --bs-body-bg: #212529;
+  --bs-body-color: #dee2e6;
+  --bs-border-color: #495057;
+  --bs-tertiary-bg: #2b3035;
+  --bs-secondary-color: #adb5bd;
+  --marilo-scheduler-border-color: #495057;
+  --bs-scheduler-disabled-bg: #2b3035;
+  --bs-scheduler-disabled-color: #adb5bd;
+}
+[data-marilo-theme=dark] .mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row--striped,
+[data-bs-theme=dark] .mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row--striped {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+[data-marilo-theme=dark] .mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row:hover,
+[data-bs-theme=dark] .mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row:hover {
+  background-color: rgba(255, 255, 255, 0.07) !important;
+}
+[data-marilo-theme=dark] .mar-bs-allocation-scheduler,
+[data-bs-theme=dark] .mar-bs-allocation-scheduler {
+  --bs-scheduler-disabled-pattern: repeating-linear-gradient(
+    135deg,
+    transparent,
+    transparent 3px,
+    rgba(255, 255, 255, 0.06) 3px,
+    rgba(255, 255, 255, 0.06) 6px
+  );
+}
+
+.mar-bs-resizable-container {
+  position: relative;
+  box-sizing: border-box;
+  overflow: hidden;
+  border: 1px solid var(--bs-border-color, rgba(0, 0, 0, 0.175));
+  border-radius: var(--bs-border-radius, 0.375rem);
+  background: var(--bs-body-bg, #fff);
+}
+.mar-bs-resizable-container--resizing {
+  user-select: none;
+}
+.mar-bs-resizable-container--disabled {
+  opacity: 0.65;
+  pointer-events: none;
+}
+
+.mar-bs-resizable-container__content {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+.mar-bs-resizable-container__handle {
+  position: absolute;
+  z-index: 10;
+  padding: 0;
+  border: none;
+  background: transparent;
+  outline: none;
+  touch-action: none;
+}
+.mar-bs-resizable-container__handle:focus-visible {
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb, 13, 110, 253), 0.25);
+  border-radius: 2px;
+}
+.mar-bs-resizable-container__handle--right {
+  top: 0;
+  right: 0;
+  width: 6px;
+  height: 100%;
+  cursor: ew-resize;
+}
+.mar-bs-resizable-container__handle--right::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 1px;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 24px;
+  border-radius: 2px;
+  background: var(--bs-border-color, rgba(0, 0, 0, 0.175));
+  transition: background-color 0.15s ease-in-out;
+}
+.mar-bs-resizable-container__handle--bottom {
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  cursor: ns-resize;
+}
+.mar-bs-resizable-container__handle--bottom::after {
+  content: "";
+  position: absolute;
+  bottom: 1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--bs-border-color, rgba(0, 0, 0, 0.175));
+  transition: background-color 0.15s ease-in-out;
+}
+.mar-bs-resizable-container__handle--bottom-right {
+  bottom: 0;
+  right: 0;
+  width: 16px;
+  height: 16px;
+  cursor: nwse-resize;
+}
+.mar-bs-resizable-container__handle--bottom-right::after {
+  content: "";
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  width: 10px;
+  height: 10px;
+  background: linear-gradient(135deg, transparent 30%, var(--bs-border-color, rgba(0, 0, 0, 0.175)) 30%, var(--bs-border-color, rgba(0, 0, 0, 0.175)) 40%, transparent 40%, transparent 60%, var(--bs-border-color, rgba(0, 0, 0, 0.175)) 60%, var(--bs-border-color, rgba(0, 0, 0, 0.175)) 70%, transparent 70%);
+  transition: background 0.15s ease-in-out;
+}
+.mar-bs-resizable-container__handle--left {
+  top: 0;
+  left: 0;
+  width: 6px;
+  height: 100%;
+  cursor: ew-resize;
+}
+.mar-bs-resizable-container__handle--left::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 1px;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 24px;
+  border-radius: 2px;
+  background: var(--bs-border-color, rgba(0, 0, 0, 0.175));
+  transition: background-color 0.15s ease-in-out;
+}
+.mar-bs-resizable-container__handle--top {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  cursor: ns-resize;
+}
+.mar-bs-resizable-container__handle--top::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--bs-border-color, rgba(0, 0, 0, 0.175));
+  transition: background-color 0.15s ease-in-out;
+}
+.mar-bs-resizable-container__handle--top-left {
+  top: 0;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  cursor: nwse-resize;
+}
+.mar-bs-resizable-container__handle--top-right {
+  top: 0;
+  right: 0;
+  width: 16px;
+  height: 16px;
+  cursor: nesw-resize;
+}
+.mar-bs-resizable-container__handle--bottom-left {
+  bottom: 0;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  cursor: nesw-resize;
+}
+.mar-bs-resizable-container__handle:hover::after, .mar-bs-resizable-container__handle--active::after {
+  background: var(--bs-primary, #0d6efd) !important;
+}
+.mar-bs-resizable-container__handle--focused {
+  box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb, 13, 110, 253), 0.25);
+}
+
+.mar-resizable-container__ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 2px dashed var(--bs-primary, #0d6efd);
+  border-radius: var(--bs-border-radius, 0.375rem);
+  background: rgba(var(--bs-primary-rgb, 13, 110, 253), 0.05);
+  pointer-events: none;
+  z-index: 5;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mar-bs-resizable-container__handle::after {
+    transition: none;
+  }
 }

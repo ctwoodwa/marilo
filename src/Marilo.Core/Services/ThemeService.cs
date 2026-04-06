@@ -49,7 +49,12 @@ public class ThemeService : IMariloThemeService
 
     public async Task ToggleDarkModeAsync()
     {
-        IsDarkMode = !IsDarkMode;
+        await SetDarkModeAsync(!IsDarkMode);
+    }
+
+    public async Task SetDarkModeAsync(bool dark)
+    {
+        IsDarkMode = dark;
         try
         {
             await _jsRuntime.InvokeVoidAsync("localStorage.setItem", "marilo-theme-mode", IsDarkMode ? "dark" : "light");

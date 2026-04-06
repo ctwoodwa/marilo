@@ -38,6 +38,19 @@ Read this file when the user types "setup". Ask ALL questions below in a single 
 
 ## After Onboarding
 
-Tell the user: "Got it. When you are ready, start with Stage 01 -- Discovery. I will walk you through understanding the full requirements."
+Tell the user:
+
+> Got it. The component-builder will guide you through seven stages:
+> 1. Discovery (requirements, use cases, accessibility)
+> 2. API Design (parameters, events, enums, CSS provider)
+> 3. Implementation (source code, models, enums)
+> 4. Theming (FluentUI and Bootstrap providers)
+> 5. Demos and Docs (demo pages, API documentation)
+> 6. Testing (unit tests, provider tests)
+> 7. Workspace Scaffolding (delivery workspace, gap-analysis workspace, spec docs)
+>
+> When complete, your component will have everything it needs to participate in the full ICM pipeline -- including its own delivery and gap-analysis workspaces.
+>
+> Ready? Start with Stage 01 -- Discovery.
 
 Then point them to `stages/01-discovery/CONTEXT.md`.

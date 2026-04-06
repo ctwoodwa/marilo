@@ -61,6 +61,7 @@ public partial class MariloDataGrid<TItem> : IAsyncDisposable
         {
             var column = _visibleColumns[columnIndex];
             column.RuntimeWidth = $"{newWidth}px";
+            ResolveLayoutContract();
 
             if (OnColumnResize.HasDelegate)
             {
@@ -71,6 +72,7 @@ public partial class MariloDataGrid<TItem> : IAsyncDisposable
                 });
             }
             await NotifyStateChanged("ColumnResize");
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -84,6 +86,7 @@ public partial class MariloDataGrid<TItem> : IAsyncDisposable
         var column = _columns[fromIndex];
         _columns.RemoveAt(fromIndex);
         _columns.Insert(toIndex, column);
+        ResolveLayoutContract();
 
         if (OnColumnReorder.HasDelegate)
         {

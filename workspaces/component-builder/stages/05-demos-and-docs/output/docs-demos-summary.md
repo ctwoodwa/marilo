@@ -1,27 +1,28 @@
-# Docs & Demos Summary: SignalRConnectionStatus
+# Docs & Demos Summary: MariloResizableContainer
 
-## Documentation Created
+## Documentation Files
 
-### Component Spec (`docs/component-specs/signalr-connection-status/`)
-- `overview.md` -- Purpose, basic usage, parameters table, service setup, aggregate state mapping
-- `appearance.md` -- Compact mode, hide counts, popup placement, health badges, critical vs noncritical
-- `accessibility/overview.md` -- Keyboard interactions, ARIA attributes, screen reader support
-- `toc.yml` -- DocFx table of contents
-
-All doc files include YAML front matter with title, slug, tags, and position.
+| File | Content |
+|------|---------|
+| `docs/component-specs/resizable-container/overview.md` | Purpose, parameters table, usage, integration guidance, performance |
+| `docs/component-specs/resizable-container/appearance.md` | ResizeEdges options, ghost outline, disabled state, CSS classes |
+| `docs/component-specs/resizable-container/events.md` | All events with code examples, EventArgs reference |
+| `docs/component-specs/resizable-container/accessibility/overview.md` | Keyboard interactions, ARIA, focus, reduced motion |
+| `docs/component-specs/resizable-container/toc.yml` | Table of contents for DocFx |
 
 ## Demo Pages
 
-Demo page creation deferred -- requires running app context. Structure follows existing Marilo demo pattern:
+| File | Sections |
+|------|----------|
+| `samples/Marilo.Demo/Pages/Components/ResizableContainer/Overview.razor` | 8 demo sections |
 
-```
-samples/Marilo.Demo/Pages/Components/SignalRConnectionStatus/Overview.razor
-```
+### Demo Sections
 
-Sections planned:
-- Basic Usage (default configuration)
-- Compact Mode (toolbar density)
-- Aggregate States (simulated healthy/degraded/offline)
-- Popup Content (hub rows with various health states)
-- Custom Title and Placement
-- Accessibility Info (keyboard interactions, ARIA attributes)
+1. **Basic Bottom-Right Resizing** — Simple content panel with min/max constraints and size display
+2. **Grid Host Example** — Realistic grid table inside container with OnObservedSizeChanged
+3. **AllocationScheduler Host** — Scheduler-like split layout (resources + timeline) in container
+4. **Chart Host** — Chart placeholder with observed size change callback
+5. **Right-Only / Bottom-Only / All Edges** — Three edge configuration demos
+6. **Keyboard Resizing** — Tab to handle, arrow keys to resize
+7. **Persisted Size** — localStorage persistence with PersistKey
+8. **Usage Guidance** — When to use, when NOT to use, integration pattern documentation

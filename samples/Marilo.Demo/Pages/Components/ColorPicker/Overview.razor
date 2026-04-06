@@ -78,8 +78,8 @@
 <PageSection Title="Programmatic Control">
     <DemoSection Title="Open / Close via Reference" Code="@_refCode">
         <MariloColorPicker @bind-Value="@_refColor" @ref="_cpRef" />
-        <button type="button" @onclick="() => _cpRef?.Open()">Open</button>
-        <button type="button" @onclick="() => _cpRef?.Close()">Close</button>
+        <button type="button" @onclick="async () => { if (_cpRef is not null) await _cpRef.Open(); }">Open</button>
+        <button type="button" @onclick="async () => { if (_cpRef is not null) await _cpRef.Close(); }">Close</button>
     </DemoSection>
 </PageSection>
 

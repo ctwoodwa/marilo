@@ -40,7 +40,7 @@
                     <button class="theme-picker-trigger" @onclick="ToggleThemePicker"
                             title="Change theme">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20 7 7 0 0 1 0-14 3.5 3.5 0 0 0 0-6"/></svg>
-                        <span class="theme-picker-label">@(_activeProvider == DesignProvider.FluentUI ? "Fluent" : "Bootstrap") · @_selectedPreset.Name</span>
+                        <span class="theme-picker-label">@(_activeProvider == DesignProvider.FluentUI ? "Fluent" : "Bootstrap") · @(_isDark ? "Dark" : _selectedPreset.Name)</span>
                         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
                     </button>
                     @if (_showThemePicker)
@@ -293,7 +293,7 @@
     private async Task ToggleDarkMode()
     {
         _isDark = !_isDark;
-        await ThemeService.ToggleDarkModeAsync();
+        await ThemeService.SetDarkModeAsync(_isDark);
         await PersistDarkMode();
     }
 
@@ -301,7 +301,7 @@
     {
         if (_isDark == dark) return;
         _isDark = dark;
-        await ThemeService.ToggleDarkModeAsync();
+        await ThemeService.SetDarkModeAsync(dark);
         await PersistDarkMode();
         _showThemePicker = false;
     }
@@ -317,16 +317,26 @@
 
     private async Task PersistDarkMode()
     {
-        _providerModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/provider-switcher.js");
-        await _providerModule.InvokeVoidAsync("setDarkMode", _isDark);
+        try
+        {
+            _providerModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/provider-switcher.js");
+            await _providerModule.InvokeVoidAsync("setDarkMode", _isDark);
+        }
+        catch (TaskCanceledException) { }
+        catch (OperationCanceledException) { }
     }
 
     private async Task SwitchProvider(DesignProvider provider)
     {
         if (_activeProvider == provider) return;
 
-        _providerModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/provider-switcher.js");
-        await _providerModule.InvokeVoidAsync("setProvider", provider == DesignProvider.Bootstrap ? "bootstrap" : "fluentui");
+        try
+        {
+            _providerModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/provider-switcher.js");
+            await _providerModule.InvokeVoidAsync("setProvider", provider == DesignProvider.Bootstrap ? "bootstrap" : "fluentui");
+        }
+        catch (TaskCanceledException) { }
+        catch (OperationCanceledException) { }
     }
 
     private void ToggleThemePicker() => _showThemePicker = !_showThemePicker;
@@ -395,11 +405,8 @@
             }
 
             var storedDark = await _providerModule.InvokeAsync<bool>("getStoredDarkMode");
-            if (storedDark != _isDark)
-            {
-                _isDark = storedDark;
-                await ThemeService.ToggleDarkModeAsync();
-            }
+            _isDark = storedDark;
+            await ThemeService.SetDarkModeAsync(storedDark);
 
             _settingsLoaded = true;
             StateHasChanged();

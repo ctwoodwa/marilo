@@ -485,6 +485,19 @@ public enum AutoCompleteAdaptiveMode
 }
 
 /// <summary>
+/// Specifies the adaptive rendering mode for popup-based components on mobile devices.
+/// When Auto, the component renders as a full-screen action sheet on small screens.
+/// </summary>
+public enum AdaptiveMode
+{
+    /// <summary>Standard popup rendering on all screen sizes.</summary>
+    None,
+
+    /// <summary>Automatically switch to action sheet on small screens.</summary>
+    Auto
+}
+
+/// <summary>
 /// Specifies the layout orientation of the two calendars in a DateRangePicker popup.
 /// </summary>
 public enum CalendarOrientation

@@ -8,7 +8,26 @@ public static class ThemePresets
 
     public static readonly ThemePreset[] All =
     [
-        new("Default", "●", new MariloTheme()),
+        new("Default", "●", new MariloTheme
+        {
+            Colors = new MariloColorPalette
+            {
+                Dark = new MariloColorPalette
+                {
+                    Primary = "#60cdff",
+                    Secondary = "#6bd18a",
+                    Danger = "#ff6347",
+                    Warning = "#fce100",
+                    Info = "#60cdff",
+                    Success = "#6ccb5f",
+                    Neutral = "#8a8886",
+                    Background = "#1b1a19",
+                    Surface = "#252423",
+                    OnPrimary = "#003a5c",
+                    OnBackground = "#ffffff"
+                }
+            }
+        }),
 
         new("Ocean", "●", new MariloTheme
         {

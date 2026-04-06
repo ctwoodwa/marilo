@@ -21,9 +21,11 @@
                readonly="true"
                tabindex="@TabIndex"
                inputmode="@InputMode"
+               role="combobox"
                aria-label="Start date"
                aria-haspopup="dialog"
                aria-expanded="@_isPopupOpen.ToString().ToLowerInvariant()"
+               aria-controls="@(_isPopupOpen ? _popupId : null)"
                @onfocus="OpenPopup"
                @onclick="OpenPopup" />
 
@@ -38,9 +40,11 @@
                disabled="@(!Enabled)"
                readonly="true"
                tabindex="@TabIndex"
+               role="combobox"
                aria-label="End date"
                aria-haspopup="dialog"
                aria-expanded="@_isPopupOpen.ToString().ToLowerInvariant()"
+               aria-controls="@(_isPopupOpen ? _popupId : null)"
                @onfocus="OpenPopup"
                @onclick="OpenPopup" />
 
@@ -60,7 +64,8 @@
     @if (_isPopupOpen && Enabled && !ReadOnly)
     {
         <div class="mar-datepicker__overlay" @onclick="ClosePopup"></div>
-        <div class="mar-date-range-picker__popup @(Orientation == CalendarOrientation.Vertical ? "mar-date-range-picker__popup--vertical" : "") @PopupClass"
+        <div id="@_popupId"
+             class="mar-date-range-picker__popup @(Orientation == CalendarOrientation.Vertical ? "mar-date-range-picker__popup--vertical" : "") @PopupClass"
              role="dialog"
              aria-label="Select date range"
              aria-modal="true"
@@ -166,9 +171,13 @@
     /// <summary>Fires before the popup closes. Set <see cref="PopupEventArgs.IsCancelled"/> to prevent closing.</summary>
     [Parameter] public EventCallback<PopupEventArgs> OnClose { get; set; }
 
+    /// <summary>Specifies the adaptive rendering mode for the popup on mobile devices.</summary>
+    [Parameter] public AdaptiveMode AdaptiveMode { get; set; } = AdaptiveMode.None;
+
     // ─── Private State ────────────────────────────────────────────────────────
 
     private bool _isPopupOpen;
+    private readonly string _popupId = $"mar-drp-{Guid.NewGuid():N}";
     private DateTime _startDisplayMonth;
     private DateTime _endDisplayMonth;
     private DateOnly? _hoverDate;

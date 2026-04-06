@@ -208,6 +208,18 @@ public enum SplitterOrientation
 }
 
 /// <summary>
+/// Identifies which side of a splitter is being collapsed or restored.
+/// </summary>
+public enum SplitterSide
+{
+    /// <summary>The left (or top) pane.</summary>
+    Left,
+
+    /// <summary>The right (or bottom) pane.</summary>
+    Right
+}
+
+/// <summary>
 /// Specifies the layout orientation of a stepper control.
 /// </summary>
 public enum StepperOrientation

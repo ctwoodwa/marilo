@@ -380,6 +380,14 @@ public class BootstrapCssProvider : IMariloCssProvider
 
     public string TimePickerClass() => "form-control mar-bs-timepicker";
 
+    public string DateRangePickerClass() => "mar-date-range-picker";
+
+    public string DateRangePickerPopupClass() => "mar-date-range-picker__popup";
+
+    public string DateTimePickerClass() => "mar-datetime-picker";
+
+    public string DateTimePickerPopupClass() => "mar-datetime-picker__popup";
+
     public string FileUploadClass() => "form-control mar-bs-file-upload";
 
     public string FileUploadFileListClass() => "list-group list-group-flush mar-bs-file-upload-list";
@@ -818,6 +826,115 @@ public class BootstrapCssProvider : IMariloCssProvider
     public string CalendarClass() => "mar-bs-calendar";
 
     public string SchedulerClass() => "mar-bs-scheduler";
+
+    // AllocationScheduler
+    // Note: table-responsive removed — it adds overflow-x:auto which conflicts with internal scroll.
+    public string AllocationSchedulerClass() => "mar-bs-allocation-scheduler";
+
+    // Note: d-flex/gap moved to SCSS; mb-2 removed to avoid gap between toolbar and grid.
+    public string AllocationSchedulerToolbarClass() => "mar-bs-allocation-scheduler__toolbar";
+
+    public string AllocationSchedulerResourceColumnClass(bool isPinned) =>
+        new CssClassBuilder()
+            .AddClass("mar-bs-allocation-scheduler__resource-col")
+            .AddClass("position-sticky start-0", isPinned)
+            .Build();
+
+    public string AllocationSchedulerTimeHeaderClass(TimeGranularity grain) =>
+        new CssClassBuilder()
+            .AddClass("mar-bs-allocation-scheduler__time-header")
+            .AddClass($"mar-bs-allocation-scheduler__time-header--{grain.ToString().ToLower()}")
+            .Build();
+
+    public string AllocationSchedulerRowClass(bool isSelected, bool isOverAllocated, bool isStriped = false) =>
+        new CssClassBuilder()
+            .AddClass("mar-bs-allocation-scheduler__row")
+            .AddClass("mar-bs-allocation-scheduler__row--selected", isSelected)
+            .AddClass("mar-bs-allocation-scheduler__row--over-allocated", isOverAllocated)
+            .AddClass("mar-bs-allocation-scheduler__row--striped", isStriped)
+            .Build();
+
+    public string AllocationSchedulerCellClass(bool isEditable, bool isSelected, bool isConflict, bool isDisabled, bool isDragTarget) =>
+        new CssClassBuilder()
+            .AddClass("mar-bs-allocation-scheduler__cell")
+            .AddClass("mar-bs-allocation-scheduler__cell--editable", isEditable)
+            .AddClass("mar-bs-allocation-scheduler__cell--selected", isSelected)
+            .AddClass("mar-bs-allocation-scheduler__cell--conflict", isConflict)
+            .AddClass("mar-bs-allocation-scheduler__cell--disabled", isDisabled)
+            .AddClass("mar-bs-allocation-scheduler__cell--drag-target", isDragTarget)
+            .Build();
+
+    public string AllocationSchedulerCellValueClass(AllocationValueMode mode) =>
+        new CssClassBuilder()
+            .AddClass("mar-bs-allocation-scheduler__cell-value")
+            .AddClass(mode == AllocationValueMode.Currency ? "mar-bs-allocation-scheduler__cell-value--currency" : "")
+            .Build();
+
+    public string AllocationSchedulerDeltaClass(DeltaDisplayMode mode, bool isOver, bool isUnder) =>
+        new CssClassBuilder()
+            .AddClass("mar-bs-allocation-scheduler__delta")
+            .AddClass("text-danger", isOver)
+            .AddClass("text-warning", isUnder)
+            .Build();
+
+    // Note: d-flex/gap moved to SCSS; mb-2 removed.
+    public string AllocationSchedulerScenarioStripClass() => "mar-bs-allocation-scheduler__scenario-strip";
+
+    public string AllocationSchedulerScenarioChipClass(bool isActive, bool isLocked) =>
+        new CssClassBuilder()
+            .AddClass("badge rounded-pill mar-bs-allocation-scheduler__scenario-chip")
+            .AddClass(isActive ? "bg-primary" : "bg-secondary")
+            .AddClass("opacity-75", isLocked)
+            .Build();
+
+    public string AllocationSchedulerGhostBarClass() => "text-muted opacity-50 mar-bs-allocation-scheduler__ghost-bar";
+
+    public string AllocationSchedulerContextMenuClass() => "dropdown-menu mar-bs-allocation-scheduler__context-menu";
+
+    public string AllocationSchedulerEmptyClass() => "text-center text-muted p-4 mar-bs-allocation-scheduler__empty";
+
+    public string AllocationSchedulerLoaderClass() => "d-flex justify-content-center p-4 mar-bs-allocation-scheduler__loader";
+
+    public string AllocationSchedulerSplitterClass(bool isDragging, bool isFocused) =>
+        new CssClassBuilder()
+            .AddClass("mar-allocation-scheduler__splitter")
+            .AddClass("mar-allocation-scheduler__splitter--dragging", isDragging)
+            .AddClass("mar-allocation-scheduler__splitter--focused", isFocused)
+            .Build();
+
+    public string AllocationSchedulerSplitterRestoreClass(SplitterSide collapsedSide) =>
+        new CssClassBuilder()
+            .AddClass("mar-allocation-scheduler__splitter-restore")
+            .AddClass($"mar-allocation-scheduler__splitter-restore--{collapsedSide.ToString().ToLower()}")
+            .Build();
+
+    // ───────────────────────────────────────────────
+    // ResizableContainer
+    // ───────────────────────────────────────────────
+
+    public string ResizableContainerClass(bool isResizing, bool isDisabled) =>
+        new CssClassBuilder()
+            .AddClass("mar-bs-resizable-container")
+            .AddClass("mar-bs-resizable-container--resizing", isResizing)
+            .AddClass("mar-bs-resizable-container--disabled", isDisabled)
+            .Build();
+
+    public string ResizableContainerContentClass() => "mar-bs-resizable-container__content";
+
+    public string ResizableContainerHandleClass(MariloResizeEdges edge, bool isActive, bool isFocused) =>
+        new CssClassBuilder()
+            .AddClass("mar-bs-resizable-container__handle")
+            .AddClass("mar-bs-resizable-container__handle--right", edge == MariloResizeEdges.Right)
+            .AddClass("mar-bs-resizable-container__handle--bottom", edge == MariloResizeEdges.Bottom)
+            .AddClass("mar-bs-resizable-container__handle--bottom-right", edge == MariloResizeEdges.BottomRight)
+            .AddClass("mar-bs-resizable-container__handle--left", edge == MariloResizeEdges.Left)
+            .AddClass("mar-bs-resizable-container__handle--top", edge == MariloResizeEdges.Top)
+            .AddClass("mar-bs-resizable-container__handle--top-left", edge == MariloResizeEdges.TopLeft)
+            .AddClass("mar-bs-resizable-container__handle--top-right", edge == MariloResizeEdges.TopRight)
+            .AddClass("mar-bs-resizable-container__handle--bottom-left", edge == MariloResizeEdges.BottomLeft)
+            .AddClass("mar-bs-resizable-container__handle--active", isActive)
+            .AddClass("mar-bs-resizable-container__handle--focused", isFocused)
+            .Build();
 
     // ───────────────────────────────────────────────
     // Overlays

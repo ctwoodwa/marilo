@@ -70,29 +70,36 @@ public partial class MariloDataGrid<TItem>
             builder.CloseElement(); // td
         }
 
-        // Data cells
         foreach (var column in _visibleColumns)
         {
             var cellRenderArgs = GetCellRenderArgs(column, item);
-            var baseCellStyle = column.TextAlign != null ? $"text-align:{column.TextAlign};" : null;
             var cellClass = CssProvider.DataGridCellClass();
             if (cellRenderArgs?.Class != null) cellClass = $"{cellClass} {cellRenderArgs.Class}";
-            var cellStyle = cellRenderArgs?.Style != null
-                ? (baseCellStyle != null ? $"{baseCellStyle}{cellRenderArgs.Style}" : cellRenderArgs.Style)
-                : baseCellStyle;
+            if (IsCellSelected(index, column.Field)) cellClass = $"{cellClass} mar-datagrid-cell--selected";
+            var finalCellStyle = GetColumnCellStyle(column, cellRenderArgs?.Style);
 
             builder.OpenElement(50, "td");
             builder.AddAttribute(51, "class", cellClass);
             builder.AddAttribute(52, "role", "gridcell");
-            if (cellStyle != null) builder.AddAttribute(53, "style", cellStyle);
+            if (finalCellStyle != null) builder.AddAttribute(53, "style", finalCellStyle);
+
+            // Cell selection: click handler (stop propagation so row click doesn't also fire)
+            if (SelectionUnit == GridSelectionUnit.Cell && SelectionMode != GridSelectionMode.None)
+            {
+                var cellSelCol = column;
+                var cellSelItem = item;
+                var cellSelIndex = index;
+                builder.AddAttribute(54, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, async (_) => await HandleCellClick(cellSelItem, cellSelCol.Field, cellSelIndex)));
+                builder.AddEventStopPropagationAttribute(55, "onclick", true);
+            }
 
             // InCell: click to edit a specific cell
             if (EditMode == GridEditMode.InCell && !isEditing && column.Editable)
             {
                 var cellCol = column;
                 var cellItem = item;
-                builder.AddAttribute(54, "ondblclick", EventCallback.Factory.Create<MouseEventArgs>(this, async (_) => await BeginCellEdit(cellItem, cellCol.Field)));
-                builder.AddEventStopPropagationAttribute(55, "ondblclick", true);
+                builder.AddAttribute(56, "ondblclick", EventCallback.Factory.Create<MouseEventArgs>(this, async (_) => await BeginCellEdit(cellItem, cellCol.Field)));
+                builder.AddEventStopPropagationAttribute(57, "ondblclick", true);
             }
 
             // Determine what to render in the cell
@@ -145,12 +152,10 @@ public partial class MariloDataGrid<TItem>
 
             if (isEditing && EditMode == GridEditMode.Inline)
             {
-                // Inline editing: Save/Cancel in the row
                 builder.OpenElement(82, "button");
                 builder.AddAttribute(83, "type", "button");
                 builder.AddAttribute(84, "class", "mar-datagrid-cmd-btn");
                 builder.AddAttribute(85, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, async (_) => await SaveEdit()));
-                builder.AddEventStopPropagationAttribute(86, "onclick", true);
                 builder.AddContent(87, "Save");
                 builder.CloseElement();
 
@@ -216,13 +221,15 @@ public partial class MariloDataGrid<TItem>
             builder.OpenElement(10, "td");
             builder.AddAttribute(11, "class", CssProvider.DataGridCellClass());
             builder.AddAttribute(12, "role", "gridcell");
+            var editRowCombinedStyle = GetColumnCellStyle(column);
+            if (!string.IsNullOrEmpty(editRowCombinedStyle)) builder.AddAttribute(13, "style", editRowCombinedStyle);
             if (column.EditorTemplate != null)
             {
-                builder.AddContent(13, column.EditorTemplate(item));
+                builder.AddContent(14, column.EditorTemplate(item));
             }
             else
             {
-                builder.AddContent(13, column.GetDisplayValue(item));
+                builder.AddContent(14, column.GetDisplayValue(item));
             }
             builder.CloseElement();
         }
@@ -331,6 +338,93 @@ public partial class MariloDataGrid<TItem>
 
         builder.CloseElement(); // div actions
         builder.CloseElement(); // div filter-menu
+    };
+
+    internal RenderFragment RenderCheckBoxFilterMenu() => builder =>
+    {
+        builder.OpenElement(0, "div");
+        builder.AddAttribute(1, "class", "mar-datagrid-filter-menu mar-datagrid-filter-checkbox");
+
+        // Select All / Deselect All
+        builder.OpenElement(2, "div");
+        builder.AddAttribute(3, "class", "mar-datagrid-filter-checkbox-actions");
+
+        builder.OpenElement(4, "button");
+        builder.AddAttribute(5, "type", "button");
+        builder.AddAttribute(6, "class", "mar-datagrid-cmd-btn mar-datagrid-cmd-btn--sm");
+        builder.AddAttribute(7, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, (_) =>
+        {
+            _checkBoxFilterSelected = new HashSet<string>(_checkBoxFilterDistinct);
+            StateHasChanged();
+        }));
+        builder.AddContent(8, "All");
+        builder.CloseElement();
+
+        builder.OpenElement(9, "button");
+        builder.AddAttribute(10, "type", "button");
+        builder.AddAttribute(11, "class", "mar-datagrid-cmd-btn mar-datagrid-cmd-btn--sm");
+        builder.AddAttribute(12, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, (_) =>
+        {
+            _checkBoxFilterSelected.Clear();
+            StateHasChanged();
+        }));
+        builder.AddContent(13, "None");
+        builder.CloseElement();
+
+        builder.CloseElement(); // actions div
+
+        // Checkbox list
+        builder.OpenElement(20, "div");
+        builder.AddAttribute(21, "class", "mar-datagrid-filter-checkbox-list");
+        builder.AddAttribute(22, "role", "listbox");
+        builder.AddAttribute(23, "aria-label", "Filter values");
+
+        foreach (var value in _checkBoxFilterDistinct)
+        {
+            var capturedValue = value;
+            var isChecked = _checkBoxFilterSelected.Contains(value);
+
+            builder.OpenElement(30, "label");
+            builder.AddAttribute(31, "class", "mar-datagrid-filter-checkbox-item");
+            builder.AddAttribute(32, "role", "option");
+            builder.AddAttribute(33, "aria-selected", isChecked.ToString().ToLowerInvariant());
+
+            builder.OpenElement(34, "input");
+            builder.AddAttribute(35, "type", "checkbox");
+            builder.AddAttribute(36, "checked", isChecked);
+            builder.AddAttribute(37, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, (_) =>
+            {
+                ToggleCheckBoxValue(capturedValue);
+                StateHasChanged();
+            }));
+            builder.CloseElement();
+
+            builder.AddContent(38, value);
+            builder.CloseElement(); // label
+        }
+
+        builder.CloseElement(); // checkbox-list div
+
+        // Apply / Clear buttons
+        builder.OpenElement(40, "div");
+        builder.AddAttribute(41, "class", "mar-datagrid-filter-menu-actions");
+
+        builder.OpenElement(42, "button");
+        builder.AddAttribute(43, "type", "button");
+        builder.AddAttribute(44, "class", "mar-datagrid-cmd-btn");
+        builder.AddAttribute(45, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, async (_) => await ApplyCheckBoxFilter()));
+        builder.AddContent(46, "Apply");
+        builder.CloseElement();
+
+        builder.OpenElement(47, "button");
+        builder.AddAttribute(48, "type", "button");
+        builder.AddAttribute(49, "class", "mar-datagrid-cmd-btn");
+        builder.AddAttribute(50, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, async (_) => await ClearCheckBoxFilter()));
+        builder.AddContent(51, "Clear");
+        builder.CloseElement();
+
+        builder.CloseElement(); // actions div
+        builder.CloseElement(); // filter-menu div
     };
 
     // ── Group Row Rendering ───────────────────────────────────────────────

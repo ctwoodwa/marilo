@@ -1,31 +1,37 @@
-# Theming Summary: SignalRConnectionStatus
+# Theming Summary: MariloResizableContainer
 
 ## Provider Implementations
 
-### FluentUI CSS Provider
-- `FluentUICssProvider.cs` -- Added 4 methods:
-  - `SignalRStatusClass(state, isCompact)` -- mar-signalr-status with state + compact modifiers
-  - `SignalRPopupClass()` -- mar-signalr-popup
-  - `SignalRRowClass(health)` -- mar-signalr-row with health modifier
-  - `SignalRBadgeClass(health)` -- mar-signalr-badge with health modifier
-
-### Bootstrap CSS Provider
-- `BootstrapCssProvider.cs` -- Added 4 methods using Bootstrap utility classes:
-  - `SignalRStatusClass` -- btn btn-sm btn-outline-{contextual} + mar-signalr-status
-  - `SignalRPopupClass` -- card shadow-lg border mar-signalr-popup
-  - `SignalRRowClass` -- list-group-item list-group-item-{contextual} mar-signalr-row
-  - `SignalRBadgeClass` -- badge bg-{contextual} mar-signalr-badge
+Both FluentUI and Bootstrap providers implement these methods:
+- `ResizableContainerClass(bool isResizing, bool isDisabled)`
+- `ResizableContainerContentClass()`
+- `ResizableContainerHandleClass(MariloResizeEdges edge, bool isActive, bool isFocused)`
 
 ## SCSS Files Created
 
-- `src/Marilo.Providers.FluentUI/Styles/_signalr-status.scss` -- Full FluentUI styles with design tokens
-- `src/Marilo.Providers.Bootstrap/Styles/_bridge-signalr-status.scss` -- Bootstrap bridge styles
+| File | Provider |
+|------|----------|
+| `src/Marilo.Providers.FluentUI/Styles/_resizable-container.scss` | FluentUI |
+| `src/Marilo.Providers.Bootstrap/Styles/_bridge-resizable-container.scss` | Bootstrap |
 
-## SCSS Imports Updated
+## SCSS Imports Added
 
-- `marilo-fluentui.scss` -- Added `@forward 'signalr-status'`
-- `marilo-bootstrap.scss` -- Added `@import "bridge-signalr-status"`
+- FluentUI: `@forward 'resizable-container'` in `marilo-fluentui.scss`
+- Bootstrap: `@import "bridge-resizable-container"` in `marilo-bootstrap.scss`
 
-## Build Status
+## SCSS Build Status
 
-`npm run scss:build` -- Both providers compile successfully
+Both providers compile successfully via `npm run scss:build`.
+
+## Style Features
+
+- Container: positioned, bordered, overflow hidden, disabled opacity
+- Content: full width/height with overflow auto (scroll support)
+- Handle positions: right, bottom, bottom-right, left, top, and all corner variants
+- Handle visual: subtle bar/grip indicators using `::after` pseudo-elements
+- Hover/active state: handle indicator turns primary color
+- Focus state: visible focus ring (FluentUI: solid box-shadow, Bootstrap: 0.25rem RGBA)
+- Ghost outline: dashed primary border with transparent fill during drag
+- Reduced motion: transitions disabled via `prefers-reduced-motion`
+- FluentUI uses Marilo design tokens (`--marilo-color-*`)
+- Bootstrap uses Bootstrap variables (`--bs-*`, `--bs-border-color`)

@@ -31,7 +31,7 @@ This document defines the resolution strategy for all 87 Marilo Blazor component
 | MariloRow | 0 | single-pass | No | **T1 - Critical** | ✅ COMPLETE (0 gaps) |
 | MariloColumn | 0 | single-pass | No | **T1 - Critical** | ✅ COMPLETE (0 gaps) |
 | MariloDivider | 0 | single-pass | No | **T1 - Critical** | ✅ COMPLETE (0 gaps) |
-| MariloDataGrid | 44 | multi-pass | Yes (virtual scroll, grouping, CRUD, export) | **T2 - High** | ✅ IMPLEMENTED (Pass 3: grouping, auto-columns, resize/reorder, keyboard nav, search, CSV export, templates, GridState enrichment) |
+| MariloDataGrid | 44 | multi-pass | Yes (virtual scroll, grouping, CRUD, export) | **T2 - High** | 🔄 ACTIVE REMEDIATION (Pass 3 complete; 2026-04-04 alignment follow-up: centralized Phase-1 width contract for header/body/filter/footer + resize re-render sync) |
 | MariloGridColumn | 8 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED (all 4 gaps resolved Pass 1 + footer rendering) |
 | MariloGridToolbar | 2 | single-pass | No | **T2 - High** | ✅ IMPLEMENTED (ARIA + GridCommandButton) |
 | MariloEditor | 54 | multi-pass | Yes (ProseMirror / rich-text engine) | **T2 - High** | ✅ IMPLEMENTED (WYSIWYG contenteditable, execCommand, paste cleanup, XSS fix; Batch 1: validation, custom tools, 14 tests; ProseMirror/advanced deferred) |
@@ -1045,6 +1045,7 @@ This section routes the "Recommended Next Actions" from the executive report int
 | T2 Wizard | Full pipeline: intake through validation | No | `gap-analysis-resolution` Stage 01→06 | **Complete** (18/18 resolved; 27 tests) |
 | DataGrid Phase 1 | Pure C# gap resolutions (SortMode, Editable, ConfirmDelete, SetStateAsync, filters, pager, DisplayFormat, Groupable, ExpandedItems) | No | `gap-analysis-resolution` Stage 02→03→05 | **Complete** (9 resolved, 18 tests) |
 | DataGrid Phase 2 | Validation, composite filters, auto-gen attrs, aggregates, export lifecycle, CancellationToken | No | `gap-analysis-resolution` Stage 03→05 | **Complete** (6 resolved, 15 tests) |
+| DataGrid Header Alignment | Fix intermittent header/body column misalignment (header, body, filter, footer, inline edit rows) | No | `gap-analysis-resolution` Stage 05→06 | **Complete** (implemented + demo build validation) |
 | DataGrid Phase 3+ | Frozen columns, cell selection, row drag-drop, checkbox filter | No | `gap-analysis-resolution` Stage 03 | **Pending** (~20 remaining gaps, JS interop needed) |
 | DataGrid Delivery | Per-feature spec/demo audits for 24 feature areas (~35-50 gaps) | No | `datagrid-delivery` CDW | **Checklist ready for CDW** (71 items) |
 | No-source Components (T4) | Architecture strategy for Diagram, DockManager, Map, PivotGrid | **Yes** — human decision | Planning / enterprise-ICM | Awaiting decision |
@@ -1115,6 +1116,25 @@ This section routes the "Recommended Next Actions" from the executive report int
 **Closure report:** `stages/06-validate/output/gap-t4-picker-batch1-closure-report.md`
 
 ### T1 Splitter/Wizard — Full Pipeline Tracking
+
+### DataGrid Header Alignment Fix (2026-04-04)
+
+- status: completed
+- owner: coordinator
+- stage: 05-implement -> 06-validate
+- component or gap slug: datagrid-header-alignment
+- files read:
+    - `src/Marilo.Components/DataGrid/MariloDataGrid.razor`
+    - `src/Marilo.Components/DataGrid/GAP_ANALYSIS.md`
+    - `workspaces/datagrid-delivery/stages/01-spec-review/output/datagrid-spec-gaps.md`
+- files written:
+    - `src/Marilo.Components/DataGrid/MariloDataGrid.razor`
+    - `src/Marilo.Components/GAP_ANALYSIS_RESOLUTION_PLAN.md`
+- concise progress note: Added table-level `colgroup` width binding plus filter/footer width styling in `MariloDataGrid.razor` so header, body, filter, and footer columns share a single width model.
+- follow-up tasks discovered:
+    - Add bUnit coverage for column width propagation across header/body/filter/footer.
+    - Verify sticky/frozen column JS interop behavior after width propagation in Phase 3+.
+- blockers needing human input: none
 
 | Component | Intake (Stage 01) | Prioritize (Stage 02) | Resolution Design (Stage 03) | Implement (Stage 05) | Validate (Stage 06) |
 |-----------|-------------------|----------------------|------------------------------|---------------------|---------------------|

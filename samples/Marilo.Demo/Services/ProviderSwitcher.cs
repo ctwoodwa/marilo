@@ -244,6 +244,30 @@ public class ProviderSwitcher : IMariloCssProvider, IMariloIconProvider, IMarilo
     public string CalendarClass() => Css.CalendarClass();
     public string SchedulerClass() => Css.SchedulerClass();
 
+    // ── DateRangePicker / DateTimePicker ──
+    public string DateRangePickerClass() => Css.DateRangePickerClass();
+    public string DateRangePickerPopupClass() => Css.DateRangePickerPopupClass();
+    public string DateTimePickerClass() => Css.DateTimePickerClass();
+    public string DateTimePickerPopupClass() => Css.DateTimePickerPopupClass();
+
+    // ── AllocationScheduler ──
+    public string AllocationSchedulerClass() => Css.AllocationSchedulerClass();
+    public string AllocationSchedulerToolbarClass() => Css.AllocationSchedulerToolbarClass();
+    public string AllocationSchedulerResourceColumnClass(bool isPinned) => Css.AllocationSchedulerResourceColumnClass(isPinned);
+    public string AllocationSchedulerTimeHeaderClass(TimeGranularity grain) => Css.AllocationSchedulerTimeHeaderClass(grain);
+    public string AllocationSchedulerRowClass(bool isSelected, bool isOverAllocated, bool isStriped = false) => Css.AllocationSchedulerRowClass(isSelected, isOverAllocated, isStriped);
+    public string AllocationSchedulerCellClass(bool isEditable, bool isSelected, bool isConflict, bool isDisabled, bool isDragTarget) => Css.AllocationSchedulerCellClass(isEditable, isSelected, isConflict, isDisabled, isDragTarget);
+    public string AllocationSchedulerCellValueClass(AllocationValueMode mode) => Css.AllocationSchedulerCellValueClass(mode);
+    public string AllocationSchedulerDeltaClass(DeltaDisplayMode mode, bool isOver, bool isUnder) => Css.AllocationSchedulerDeltaClass(mode, isOver, isUnder);
+    public string AllocationSchedulerScenarioStripClass() => Css.AllocationSchedulerScenarioStripClass();
+    public string AllocationSchedulerScenarioChipClass(bool isActive, bool isLocked) => Css.AllocationSchedulerScenarioChipClass(isActive, isLocked);
+    public string AllocationSchedulerGhostBarClass() => Css.AllocationSchedulerGhostBarClass();
+    public string AllocationSchedulerContextMenuClass() => Css.AllocationSchedulerContextMenuClass();
+    public string AllocationSchedulerEmptyClass() => Css.AllocationSchedulerEmptyClass();
+    public string AllocationSchedulerLoaderClass() => Css.AllocationSchedulerLoaderClass();
+    public string AllocationSchedulerSplitterClass(bool isDragging, bool isFocused) => Css.AllocationSchedulerSplitterClass(isDragging, isFocused);
+    public string AllocationSchedulerSplitterRestoreClass(SplitterSide collapsedSide) => Css.AllocationSchedulerSplitterRestoreClass(collapsedSide);
+
     // ── Overlays ──
     public string ModalClass(ModalSize size) => Css.ModalClass(size);
     public string ModalOverlayClass() => Css.ModalOverlayClass();
@@ -253,6 +277,11 @@ public class ProviderSwitcher : IMariloCssProvider, IMariloIconProvider, IMarilo
     public string SignalRPopupClass() => Css.SignalRPopupClass();
     public string SignalRRowClass(ConnectionHealthState health) => Css.SignalRRowClass(health);
     public string SignalRBadgeClass(ConnectionHealthState health) => Css.SignalRBadgeClass(health);
+
+    // ── ResizableContainer ──
+    public string ResizableContainerClass(bool isResizing, bool isDisabled) => Css.ResizableContainerClass(isResizing, isDisabled);
+    public string ResizableContainerContentClass() => Css.ResizableContainerContentClass();
+    public string ResizableContainerHandleClass(MariloResizeEdges edge, bool isActive, bool isFocused) => Css.ResizableContainerHandleClass(edge, isActive, isFocused);
 
     // ── Utility ──
     public string IconClass(string iconName, IconSize size, IconFlip flip = IconFlip.None, IconThemeColor themeColor = IconThemeColor.Base) => Css.IconClass(iconName, size, flip, themeColor);

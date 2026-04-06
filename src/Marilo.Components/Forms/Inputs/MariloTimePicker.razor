@@ -21,8 +21,10 @@
                readonly="@(ReadOnly || _isOpen)"
                tabindex="@TabIndex"
                autocomplete="@(AutoComplete ?? "off")"
-               aria-haspopup="true"
+               role="combobox"
+               aria-haspopup="dialog"
                aria-expanded="@_isOpen.ToString().ToLowerInvariant()"
+               aria-controls="@(_isOpen ? _popupId : null)"
                aria-label="@(Id is null ? "Time picker" : null)"
                @oninput="OnTextInput"
                @onfocus="OnInputFocus"
@@ -55,7 +57,8 @@
     @* Tumbler dropdown *@
     @if (_isOpen)
     {
-        <div class="mar-timepicker__popup @PopupClass"
+        <div id="@_popupId"
+             class="mar-timepicker__popup @PopupClass"
              role="dialog"
              aria-label="Choose time"
              @onclick:stopPropagation="true">
@@ -212,6 +215,9 @@
     [Parameter] public string? Width { get; set; }
     [Parameter] public string? PopupClass { get; set; }
 
+    /// <summary>Specifies the adaptive rendering mode for the popup on mobile devices.</summary>
+    [Parameter] public AdaptiveMode AdaptiveMode { get; set; } = AdaptiveMode.None;
+
     // Step parameters (matching TimePickerSteps child component concept)
     [Parameter] public int HourStep { get; set; } = 1;
     [Parameter] public int MinuteStep { get; set; } = 1;
@@ -220,6 +226,7 @@
     // ── Private state ─────────────────────────────────────────────────────────
     private bool _isOpen;
     private string _inputText = string.Empty;
+    private readonly string _popupId = $"mar-tp-{Guid.NewGuid():N}";
     private int _pendingHour;
     private int _pendingMinute;
     private int _pendingSecond;

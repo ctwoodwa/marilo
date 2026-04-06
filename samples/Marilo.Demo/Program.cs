@@ -9,6 +9,21 @@ using Marilo.Providers.FluentUI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var isContainer = string.Equals(
+    Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"),
+    "true",
+    StringComparison.OrdinalIgnoreCase);
+var hasExplicitHttpsCertificate =
+    !string.IsNullOrWhiteSpace(builder.Configuration["Kestrel:Certificates:Default:Path"]) ||
+    !string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("ASPNETCORE_Kestrel__Certificates__Default__Path"));
+var useHttpOnly = builder.Environment.IsDevelopment() && isContainer && !hasExplicitHttpsCertificate;
+
+if (useHttpOnly)
+{
+    // Containers often do not have a trusted dev cert; run the demo over HTTP.
+    builder.WebHost.UseUrls("http://0.0.0.0:5301");
+}
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
@@ -43,7 +58,7 @@ builder.Services.AddSingleton(sp =>
     return new SiteLinks
     {
         DocsBaseUrl = config["docsBaseUrl"] ?? "http://localhost:8081",
-        DemoBaseUrl = config["demoBaseUrl"] ?? "https://localhost:5301"
+        DemoBaseUrl = config["demoBaseUrl"] ?? "http://localhost:5301"
     };
 });
 
@@ -54,7 +69,10 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+if (!useHttpOnly)
+{
+    app.UseHttpsRedirection();
+}
 app.UseStaticFiles();
 app.UseAntiforgery();
 

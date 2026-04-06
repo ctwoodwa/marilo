@@ -1,4 +1,5 @@
 using Marilo.Core.Base;
+using Marilo.Core.Enums;
 using Marilo.Core.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -68,6 +69,9 @@ public partial class MariloFileUpload : MariloComponentBase
 
     /// <summary>Fires when the user removes a file from the list.</summary>
     [Parameter] public EventCallback<FileSelectEventArgs> OnRemove { get; set; }
+
+    /// <summary>Specifies the adaptive rendering mode for the popup on mobile devices.</summary>
+    [Parameter] public AdaptiveMode AdaptiveMode { get; set; } = AdaptiveMode.None;
 
     // ── Internal state ───────────────────────────────────────────────────────
 

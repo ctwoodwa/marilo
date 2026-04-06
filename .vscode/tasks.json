@@ -52,6 +52,12 @@
     {
       "label": "docs:serve",
       "type": "shell",
+      "options": {
+        "shell": {
+          "executable": "cmd.exe",
+          "args": ["/d", "/c"]
+        }
+      },
       "command": "node scripts/patch-site-links.js && dotnet tool restore && dotnet docfx build docfx/docfx.json --logLevel error && dotnet docfx serve docfx/_site --port 8081",
       "isBackground": true,
       "problemMatcher": {
@@ -70,6 +76,12 @@
       "label": "dotnet:build:demo+docs",
       "dependsOn": ["dotnet:build:demo", "docs:serve"],
       "dependsOrder": "parallel",
+      "problemMatcher": []
+    },
+    {
+      "label": "build:demo",
+      "dependsOn": ["scss:build", "dotnet:build:demo+docs"],
+      "dependsOrder": "sequence",
       "problemMatcher": []
     },
     {

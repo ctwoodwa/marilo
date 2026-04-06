@@ -4,8 +4,8 @@
 
 | Category | Workspaces | Purpose |
 |---|---|---|
-| **Gap Analysis** | gap-analysis-resolution, datagrid-gap-analysis, datasheet-gap-analysis | Intake, prioritize, resolve, and close documented component gaps |
-| **Component Delivery** | treeview-delivery | Coordinate spec accuracy, demo completeness, and release readiness for complex components |
+| **Gap Analysis** | gap-analysis-resolution, datagrid-gap-analysis, datasheet-gap-analysis, resizable-container-gap-analysis | Intake, prioritize, resolve, and close documented component gaps |
+| **Component Delivery** | treeview-delivery, resizable-container-delivery | Coordinate spec accuracy, demo completeness, and release readiness for complex components |
 | **Component Pipeline** | component-builder | End-to-end new component creation (discovery → build → test) |
 | **Migration** | asp-classic-to-blazor, dotnet-framework-to-blazor, jquery-to-blazor, data-layer-migration | Structured legacy-to-modern porting workflows |
 | **Enterprise Patterns** | enterprise-software-dev, enterprise-api-change, enterprise-feature-change, enterprise-standards-upgrade, enterprise-test-coverage, enterprise-observability-enhancement, enterprise-quality-control | Cross-cutting engineering practices and standards |

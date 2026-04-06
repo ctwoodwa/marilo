@@ -83,6 +83,10 @@ public interface IMariloCssProvider
     string ColorPickerPopupClass();
     string DatePickerClass();
     string TimePickerClass();
+    string DateRangePickerClass();
+    string DateRangePickerPopupClass();
+    string DateTimePickerClass();
+    string DateTimePickerPopupClass();
     string FileUploadClass();
     string FileUploadFileListClass();
 
@@ -194,6 +198,24 @@ public interface IMariloCssProvider
     string CalendarClass();
     string SchedulerClass();
 
+    // ── AllocationScheduler ─────────────────────────────────────────────
+    string AllocationSchedulerClass();
+    string AllocationSchedulerToolbarClass();
+    string AllocationSchedulerResourceColumnClass(bool isPinned);
+    string AllocationSchedulerTimeHeaderClass(TimeGranularity grain);
+    string AllocationSchedulerRowClass(bool isSelected, bool isOverAllocated, bool isStriped = false);
+    string AllocationSchedulerCellClass(bool isEditable, bool isSelected, bool isConflict, bool isDisabled, bool isDragTarget);
+    string AllocationSchedulerCellValueClass(AllocationValueMode mode);
+    string AllocationSchedulerDeltaClass(DeltaDisplayMode mode, bool isOver, bool isUnder);
+    string AllocationSchedulerScenarioStripClass();
+    string AllocationSchedulerScenarioChipClass(bool isActive, bool isLocked);
+    string AllocationSchedulerGhostBarClass();
+    string AllocationSchedulerContextMenuClass();
+    string AllocationSchedulerEmptyClass();
+    string AllocationSchedulerLoaderClass();
+    string AllocationSchedulerSplitterClass(bool isDragging, bool isFocused);
+    string AllocationSchedulerSplitterRestoreClass(SplitterSide collapsedSide);
+
     // ── Overlays ────────────────────────────────────────────────────────
     string ModalClass(ModalSize size);
     string ModalOverlayClass();
@@ -203,6 +225,11 @@ public interface IMariloCssProvider
     string SignalRPopupClass();
     string SignalRRowClass(ConnectionHealthState health);
     string SignalRBadgeClass(ConnectionHealthState health);
+
+    // ── ResizableContainer ────────────────────────────────────────────
+    string ResizableContainerClass(bool isResizing, bool isDisabled);
+    string ResizableContainerContentClass();
+    string ResizableContainerHandleClass(MariloResizeEdges edge, bool isActive, bool isFocused);
 
     // ── Utility ─────────────────────────────────────────────────────────
     string IconClass(string iconName, IconSize size, IconFlip flip = IconFlip.None, IconThemeColor themeColor = IconThemeColor.Base);

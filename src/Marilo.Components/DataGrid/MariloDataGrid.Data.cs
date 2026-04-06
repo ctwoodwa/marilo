@@ -640,6 +640,111 @@ public partial class MariloDataGrid<TItem>
         await NotifyStateChanged("Filter");
     }
 
+    // ── CheckBoxList filter support ─────────────────────────────────────
+
+    internal void ToggleCheckBoxFilter(string field)
+    {
+        if (_checkBoxFilterField == field)
+        {
+            _checkBoxFilterField = null;
+            return;
+        }
+
+        _checkBoxFilterField = field;
+
+        // Extract distinct values from the source data
+        _checkBoxFilterDistinct = GetDistinctValues(field);
+
+        // Pre-select currently filtered values, or all if no filter active
+        var existing = _state.FilterDescriptors
+            .Where(f => f.Field == field && f.Operator == FilterOperator.Equals)
+            .Select(f => f.Value?.ToString() ?? "")
+            .ToList();
+
+        _checkBoxFilterSelected = existing.Count > 0
+            ? new HashSet<string>(existing)
+            : new HashSet<string>(_checkBoxFilterDistinct);
+    }
+
+    internal void ToggleCheckBoxValue(string value)
+    {
+        if (_checkBoxFilterSelected.Contains(value))
+            _checkBoxFilterSelected.Remove(value);
+        else
+            _checkBoxFilterSelected.Add(value);
+    }
+
+    internal async Task ApplyCheckBoxFilter()
+    {
+        if (_checkBoxFilterField == null) return;
+
+        // Remove existing filters for this field
+        _state.FilterDescriptors.RemoveAll(f => f.Field == _checkBoxFilterField);
+
+        // If not all values are selected, add inclusion filters via composite
+        if (_checkBoxFilterSelected.Count < _checkBoxFilterDistinct.Count && _checkBoxFilterSelected.Count > 0)
+        {
+            // Use composite OR filter: value == A OR value == B OR ...
+            var composite = new CompositeFilterDescriptor
+            {
+                LogicalOperator = FilterCompositionOperator.Or,
+                Filters = _checkBoxFilterSelected.Select(v => new FilterDescriptor
+                {
+                    Field = _checkBoxFilterField,
+                    Operator = FilterOperator.Equals,
+                    Value = v
+                }).ToList()
+            };
+
+            // Remove existing composite for this field
+            _state.CompositeFilterDescriptors.RemoveAll(c =>
+                c.Filters.Count > 0 && c.Filters[0].Field == _checkBoxFilterField);
+            _state.CompositeFilterDescriptors.Add(composite);
+        }
+        else
+        {
+            // All selected or none — remove composite filter for this field
+            _state.CompositeFilterDescriptors.RemoveAll(c =>
+                c.Filters.Count > 0 && c.Filters[0].Field == _checkBoxFilterField);
+        }
+
+        _checkBoxFilterField = null;
+        _state.CurrentPage = 1;
+        await ProcessDataAsync();
+        await NotifyPageChanged();
+        await NotifyStateChanged("Filter");
+    }
+
+    internal async Task ClearCheckBoxFilter()
+    {
+        if (_checkBoxFilterField == null) return;
+
+        _state.FilterDescriptors.RemoveAll(f => f.Field == _checkBoxFilterField);
+        _state.CompositeFilterDescriptors.RemoveAll(c =>
+            c.Filters.Count > 0 && c.Filters[0].Field == _checkBoxFilterField);
+
+        _checkBoxFilterField = null;
+        _checkBoxFilterSelected.Clear();
+        _state.CurrentPage = 1;
+        await ProcessDataAsync();
+        await NotifyPageChanged();
+        await NotifyStateChanged("Filter");
+    }
+
+    private List<string> GetDistinctValues(string field)
+    {
+        if (Data is null) return new List<string>();
+
+        var prop = typeof(TItem).GetProperty(field);
+        if (prop == null) return new List<string>();
+
+        return Data
+            .Select(item => prop.GetValue(item)?.ToString() ?? "(null)")
+            .Distinct()
+            .OrderBy(v => v)
+            .ToList();
+    }
+
     /// <summary>Programmatically adds or replaces a filter on the specified field.</summary>
     public async Task AddFilter(FilterDescriptor filter)
     {
@@ -756,6 +861,50 @@ public partial class MariloDataGrid<TItem>
     internal async Task OnCheckboxToggle(TItem item)
     {
         await ToggleSelection(item);
+    }
+
+    // ── Cell Selection ─────────────────────────────────────────────────
+
+    internal async Task HandleCellClick(TItem item, string field, int rowIndex)
+    {
+        if (SelectionUnit != GridSelectionUnit.Cell) return;
+
+        var key = (rowIndex, field);
+
+        if (SelectionMode == GridSelectionMode.Single)
+        {
+            _selectedCellKeys.Clear();
+            _selectedCellKeys.Add(key);
+        }
+        else if (SelectionMode == GridSelectionMode.Multiple)
+        {
+            if (_selectedCellKeys.Contains(key))
+                _selectedCellKeys.Remove(key);
+            else
+                _selectedCellKeys.Add(key);
+        }
+
+        // Build cell references for the callback
+        var cellRefs = _selectedCellKeys.Select(k =>
+        {
+            var displayItem = _displayedItems.ElementAtOrDefault(k.RowIndex);
+            var prop = typeof(TItem).GetProperty(k.Field);
+            return new GridCellReference<TItem>
+            {
+                Item = displayItem!,
+                Field = k.Field,
+                Value = prop?.GetValue(displayItem),
+                RowIndex = k.RowIndex
+            };
+        }).Where(c => c.Item is not null).ToList();
+
+        if (SelectedCellsChanged.HasDelegate)
+            await SelectedCellsChanged.InvokeAsync(cellRefs);
+    }
+
+    internal bool IsCellSelected(int rowIndex, string field)
+    {
+        return SelectionUnit == GridSelectionUnit.Cell && _selectedCellKeys.Contains((rowIndex, field));
     }
 
     internal async Task OnSelectAllChanged(ChangeEventArgs e)
