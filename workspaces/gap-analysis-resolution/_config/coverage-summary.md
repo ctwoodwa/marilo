@@ -26,6 +26,7 @@
 | DockManager | ~15-25 | 0 | 0 | 1 (no source) | — | 0 | Architecture decision needed |
 | Map | ~15-25 | 0 | 0 | 1 (no source) | — | 0 | Architecture decision needed |
 | PivotGrid | ~15-25 | 0 | 0 | 1 (no source) | — | 0 | Architecture decision needed |
+| ResizableContainer | 0 | 0 | 0 | 0 | — (new component) | 27 | Built via component-builder; dedicated CDW + gap workspace |
 
 ## Stage Output Index
 | Item | Stage 03 Resolution | Stage 05 Implementation | Stage 06 Closure | Last Updated |

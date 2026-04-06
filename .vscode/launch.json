@@ -17,40 +17,6 @@
         "action": "openExternally",
         "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
       }
-    },
-    {
-      "name": "Marilo Demo FluentUI",
-      "type": "coreclr",
-      "request": "launch",
-      "preLaunchTask": "build:all",
-      "program": "${workspaceFolder}/samples/Marilo.Demo.FluentUI/bin/Debug/net10.0/Marilo.Demo.FluentUI.dll",
-      "args": ["--urls", "https://localhost:5101;http://localhost:5100"],
-      "cwd": "${workspaceFolder}/samples/Marilo.Demo.FluentUI",
-      "stopAtEntry": false,
-      "env": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "serverReadyAction": {
-        "action": "openExternally",
-        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-      }
-    },
-    {
-      "name": "Marilo Demo Bootstrap",
-      "type": "coreclr",
-      "request": "launch",
-      "preLaunchTask": "build:bootstrap",
-      "program": "${workspaceFolder}/samples/Marilo.Demo.Bootstrap/bin/Debug/net10.0/Marilo.Demo.Bootstrap.dll",
-      "args": ["--urls", "https://localhost:5201;http://localhost:5200"],
-      "cwd": "${workspaceFolder}/samples/Marilo.Demo.Bootstrap",
-      "stopAtEntry": false,
-      "env": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "serverReadyAction": {
-        "action": "openExternally",
-        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
-      }
-    }
+    }    
   ]
 }

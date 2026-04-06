@@ -37,6 +37,9 @@
   );
   --bs-scheduler-conflict-bg:        rgba(var(--bs-danger-rgb), 0.13);
   --bs-scheduler-conflict-shadow:    inset 0 0 0 1px rgba(var(--bs-danger-rgb), 0.45);
+  // Border token — consumers can override; falls back to Bootstrap's border color
+  // then to a visible RGBA value so cells always show a grid even without Bootstrap.
+  --marilo-scheduler-border-color:   var(--bs-border-color, rgba(0, 0, 0, 0.15));
 
   // ── Root layout ─────────────────────────────────────
   display: flex;
@@ -276,17 +279,20 @@
     width: 100%;
   }
 
-  // Timeline table: let it be as wide as its column definitions.
-  // min-width: 100% fills sparse views (few buckets, wide panel) without
-  // stretching columns (browser does not stretch fixed-layout columns past their
-  // declared widths when min-width forces the table wider in modern engines).
+  // Timeline table width is controlled by GetTimelineTableStyle() in C#:
+  //   Month/Week/Quarter/Year → inline style: table-layout:fixed; width:100%
+  //     Columns use calc(100%/N) from GetBucketWidthStyle(), filling the panel exactly.
+  //   Day → inline style: table-layout:fixed  (no explicit width)
+  //     Fixed-pixel columns auto-size the table; overflow:auto on the panel shows scrollbar.
+  // No CSS width/min-width override here — let the inline style govern table sizing.
   .mar-allocation-scheduler__timeline-panel .mar-allocation-scheduler__table {
-    min-width: 100%;
+    // intentionally empty — width managed via C#-generated inline style
   }
 
   // ── Header Row (hardcoded class) ──────────────────────
+  // NOTE: border-bottom on <tr> is unreliable in border-collapse:collapse.
+  // The 2px bottom separator is applied directly on the <th> cells below.
   .mar-allocation-scheduler__header-row {
-    border-bottom: 2px solid var(--bs-border-color);
     background: var(--bs-tertiary-bg, var(--bs-light, #f8f9fa));
 
     th {
@@ -300,7 +306,8 @@
   // ── Resource Column Cells (provider-injected class) ───
   .mar-bs-allocation-scheduler__resource-col {
     padding: 0.375rem var(--bs-scheduler-col-pad-x);
-    border-right: 1px solid var(--bs-border-color);
+    border-right: 1px solid var(--marilo-scheduler-border-color);
+    border-bottom: 1px solid var(--marilo-scheduler-border-color);
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
@@ -326,6 +333,8 @@
       text-transform: uppercase;
       letter-spacing: 0.03em;
       color: var(--bs-secondary-color, var(--bs-secondary));
+      // Header separator is 2px to visually distinguish header from body rows
+      border-bottom: 2px solid var(--marilo-scheduler-border-color);
     }
 
     &[role="gridcell"] {
@@ -340,9 +349,16 @@
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.02em;
-    white-space: nowrap;    // no-wrap is critical — combined with table-layout:fixed
-    overflow: hidden;       // clip any overflow from narrow columns
-    border-right: 1px solid var(--bs-border-color);
+    white-space: nowrap;           // prevent wrapping regardless of column width
+    overflow: hidden;              // clip text that overflows a narrow column
+    text-overflow: ellipsis;       // show ellipsis when clipped (cosmetic fallback)
+    height: var(--bs-scheduler-row-height);  // consistent header height across view modes
+    box-sizing: border-box;
+    vertical-align: middle;
+    border-right: 1px solid var(--marilo-scheduler-border-color);
+    // 2px bottom border matches resource-col[role="columnheader"] — draws the
+    // header separator on the <th> cell so it renders in border-collapse:collapse
+    border-bottom: 2px solid var(--marilo-scheduler-border-color);
     color: var(--bs-secondary-color, #6c757d);
 
     // Day view: tighter label hierarchy
@@ -354,8 +370,10 @@
   }
 
   // ── Resource Rows (provider-injected class) ───────────
+  // NOTE: border-bottom on <tr> is unreliable in border-collapse:collapse;
+  // the actual bottom border is applied via border-bottom on <td>/<th> cells.
+  // We keep it here as a non-collapsing-layout fallback (e.g. flex-based consumers).
   .mar-bs-allocation-scheduler__row {
-    border-bottom: 1px solid var(--bs-border-color);
     transition: background-color 0.1s;
 
     td, th {
@@ -364,8 +382,7 @@
       vertical-align: middle;
     }
 
-    // Striped rows
-    &:nth-child(even) {
+    &--striped {
       background-color: rgba(0, 0, 0, 0.022);
     }
 
@@ -387,7 +404,8 @@
   .mar-bs-allocation-scheduler__cell {
     padding: var(--bs-scheduler-cell-pad-y) var(--bs-scheduler-cell-pad-x);
     text-align: center;
-    border-right: 1px solid var(--bs-border-color);
+    border-right: 1px solid var(--marilo-scheduler-border-color);
+    border-bottom: 1px solid var(--marilo-scheduler-border-color);
     position: relative;
     cursor: default;
     transition: background-color 0.1s;

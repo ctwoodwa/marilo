@@ -649,11 +649,12 @@ public class FluentUICssProvider : IMariloCssProvider
             .AddClass($"mar-allocation-scheduler__time-header--{grain.ToString().ToLower()}")
             .Build();
 
-    public string AllocationSchedulerRowClass(bool isSelected, bool isOverAllocated) =>
+    public string AllocationSchedulerRowClass(bool isSelected, bool isOverAllocated, bool isStriped = false) =>
         new CssClassBuilder()
             .AddClass("mar-allocation-scheduler__row")
             .AddClass("mar-allocation-scheduler__row--selected", isSelected)
             .AddClass("mar-allocation-scheduler__row--over-allocated", isOverAllocated)
+            .AddClass("mar-allocation-scheduler__row--striped", isStriped)
             .Build();
 
     public string AllocationSchedulerCellClass(bool isEditable, bool isSelected, bool isConflict, bool isDisabled, bool isDragTarget) =>
@@ -718,6 +719,31 @@ public class FluentUICssProvider : IMariloCssProvider
             .Build();
 
     public string ModalOverlayClass() => "mar-modal-overlay";
+
+    // ResizableContainer
+    public string ResizableContainerClass(bool isResizing, bool isDisabled) =>
+        new CssClassBuilder()
+            .AddClass("mar-resizable-container")
+            .AddClass("mar-resizable-container--resizing", isResizing)
+            .AddClass("mar-resizable-container--disabled", isDisabled)
+            .Build();
+
+    public string ResizableContainerContentClass() => "mar-resizable-container__content";
+
+    public string ResizableContainerHandleClass(MariloResizeEdges edge, bool isActive, bool isFocused) =>
+        new CssClassBuilder()
+            .AddClass("mar-resizable-container__handle")
+            .AddClass("mar-resizable-container__handle--right", edge == MariloResizeEdges.Right)
+            .AddClass("mar-resizable-container__handle--bottom", edge == MariloResizeEdges.Bottom)
+            .AddClass("mar-resizable-container__handle--bottom-right", edge == MariloResizeEdges.BottomRight)
+            .AddClass("mar-resizable-container__handle--left", edge == MariloResizeEdges.Left)
+            .AddClass("mar-resizable-container__handle--top", edge == MariloResizeEdges.Top)
+            .AddClass("mar-resizable-container__handle--top-left", edge == MariloResizeEdges.TopLeft)
+            .AddClass("mar-resizable-container__handle--top-right", edge == MariloResizeEdges.TopRight)
+            .AddClass("mar-resizable-container__handle--bottom-left", edge == MariloResizeEdges.BottomLeft)
+            .AddClass("mar-resizable-container__handle--active", isActive)
+            .AddClass("mar-resizable-container__handle--focused", isFocused)
+            .Build();
 
     // Utility
     public string IconClass(string iconName, IconSize size, IconFlip flip = IconFlip.None, IconThemeColor themeColor = IconThemeColor.Base) =>

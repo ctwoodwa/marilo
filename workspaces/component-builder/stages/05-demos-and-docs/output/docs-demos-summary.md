@@ -1,51 +1,28 @@
-# Docs & Demos Summary: MariloAllocationScheduler
+# Docs & Demos Summary: MariloResizableContainer
 
 ## Documentation Files
 
-### Existing (from prior sessions)
+| File | Content |
+|------|---------|
+| `docs/component-specs/resizable-container/overview.md` | Purpose, parameters table, usage, integration guidance, performance |
+| `docs/component-specs/resizable-container/appearance.md` | ResizeEdges options, ghost outline, disabled state, CSS classes |
+| `docs/component-specs/resizable-container/events.md` | All events with code examples, EventArgs reference |
+| `docs/component-specs/resizable-container/accessibility/overview.md` | Keyboard interactions, ARIA, focus, reduced motion |
+| `docs/component-specs/resizable-container/toc.yml` | Table of contents for DocFx |
 
-| File | Path | Description |
-|---|---|---|
-| Overview | `docs/component-specs/allocation-scheduler/overview.md` | Comprehensive component overview with parameters, events, enums, domain model |
-| Editing Grain | `docs/component-specs/allocation-scheduler/editing-grain.md` | Design decision: single authoritative level |
-| Scenario Planning | `docs/component-specs/allocation-scheduler/scenario-planning.md` | Baseline/scenario model, diff overlay, lifecycle |
-| Business Objects | `docs/component-specs/allocation-scheduler/allocation-scheduler-business-objects.md` | CSLA-inspired BO design for consumer-side objects |
+## Demo Pages
 
-### Created This Session
+| File | Sections |
+|------|----------|
+| `samples/Marilo.Demo/Pages/Components/ResizableContainer/Overview.razor` | 8 demo sections |
 
-| File | Path | Description |
-|---|---|---|
-| Data Binding | `docs/component-specs/allocation-scheduler/data-binding.md` | Resources, Allocations, Targets, two-way binding |
-| Events | `docs/component-specs/allocation-scheduler/events.md` | All EventCallback parameters with payload descriptions |
-| Templates | `docs/component-specs/allocation-scheduler/templates.md` | RenderFragment slots: ResourceColumns, CellTemplate, EmptyTemplate, ToolbarTemplate |
-| Theming | `docs/component-specs/allocation-scheduler/theming.md` | CSS provider methods, BEM classes, FluentUI tokens, Bootstrap mapping |
-| TOC | `docs/component-specs/allocation-scheduler/toc.yml` | Updated table of contents |
+### Demo Sections
 
-## Demo Page
-
-| File | Path | Description |
-|---|---|---|
-| AllocationSchedulerDemo.razor | `samples/Marilo.Demo/Pages/Components/AllocationScheduler/AllocationSchedulerDemo.razor` | Main demo page at `/components/allocation-scheduler` |
-
-### Demo Scenarios
-
-| # | Scenario | Description |
-|---|---|---|
-| 1 | Basic Resource Grid | 3 resources, pre-populated allocations, read-only |
-| 2 | Interactive Allocation | Drag-fill and keyboard editing, OnCellEdited wired |
-| 3 | Conflict Detection | Overlapping allocations highlighted |
-| 4 | Grouped Resources | Resources with department grouping column |
-| 5 | Custom Templates | ResourceColumn Template RenderFragment |
-| 6 | Disabled Slots | Day-level view showing disabled cells |
-
-## Audit Checks
-
-| Check | Status |
-|---|---|
-| Parameter coverage | PASS -- all parameters documented in overview.md |
-| Code examples | PASS -- 6 demo scenarios with live component usage |
-| Accessibility section | PASS -- covered in overview.md (keyboard, ARIA) |
-| Demo completeness | PASS -- basic usage, interaction, conflict, grouping, templates, disabled |
-| Front matter | PASS -- all new docs have valid YAML front matter with slugs and tags |
-| No em dashes | PASS -- all dashes are double hyphens |
-| No MariloScheduler references | PASS -- zero scheduler-delivery references |
+1. **Basic Bottom-Right Resizing** — Simple content panel with min/max constraints and size display
+2. **Grid Host Example** — Realistic grid table inside container with OnObservedSizeChanged
+3. **AllocationScheduler Host** — Scheduler-like split layout (resources + timeline) in container
+4. **Chart Host** — Chart placeholder with observed size change callback
+5. **Right-Only / Bottom-Only / All Edges** — Three edge configuration demos
+6. **Keyboard Resizing** — Tab to handle, arrow keys to resize
+7. **Persisted Size** — localStorage persistence with PersistKey
+8. **Usage Guidance** — When to use, when NOT to use, integration pattern documentation

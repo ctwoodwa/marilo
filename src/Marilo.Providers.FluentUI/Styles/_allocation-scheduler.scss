@@ -301,6 +301,10 @@
     &--over-allocated {
       background: color-mix(in srgb, var(--marilo-color-danger, #bc2f32) 6%, #ffffff);
     }
+
+    &--striped {
+      background: var(--marilo-color-subtle-background, #fafafa);
+    }
   }
 
   // ── Allocation Cells (right panel) ───────────────────

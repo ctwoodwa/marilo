@@ -846,11 +846,12 @@ public class BootstrapCssProvider : IMariloCssProvider
             .AddClass($"mar-bs-allocation-scheduler__time-header--{grain.ToString().ToLower()}")
             .Build();
 
-    public string AllocationSchedulerRowClass(bool isSelected, bool isOverAllocated) =>
+    public string AllocationSchedulerRowClass(bool isSelected, bool isOverAllocated, bool isStriped = false) =>
         new CssClassBuilder()
             .AddClass("mar-bs-allocation-scheduler__row")
             .AddClass("mar-bs-allocation-scheduler__row--selected", isSelected)
             .AddClass("mar-bs-allocation-scheduler__row--over-allocated", isOverAllocated)
+            .AddClass("mar-bs-allocation-scheduler__row--striped", isStriped)
             .Build();
 
     public string AllocationSchedulerCellClass(bool isEditable, bool isSelected, bool isConflict, bool isDisabled, bool isDragTarget) =>
@@ -905,6 +906,34 @@ public class BootstrapCssProvider : IMariloCssProvider
         new CssClassBuilder()
             .AddClass("mar-allocation-scheduler__splitter-restore")
             .AddClass($"mar-allocation-scheduler__splitter-restore--{collapsedSide.ToString().ToLower()}")
+            .Build();
+
+    // ───────────────────────────────────────────────
+    // ResizableContainer
+    // ───────────────────────────────────────────────
+
+    public string ResizableContainerClass(bool isResizing, bool isDisabled) =>
+        new CssClassBuilder()
+            .AddClass("mar-bs-resizable-container")
+            .AddClass("mar-bs-resizable-container--resizing", isResizing)
+            .AddClass("mar-bs-resizable-container--disabled", isDisabled)
+            .Build();
+
+    public string ResizableContainerContentClass() => "mar-bs-resizable-container__content";
+
+    public string ResizableContainerHandleClass(MariloResizeEdges edge, bool isActive, bool isFocused) =>
+        new CssClassBuilder()
+            .AddClass("mar-bs-resizable-container__handle")
+            .AddClass("mar-bs-resizable-container__handle--right", edge == MariloResizeEdges.Right)
+            .AddClass("mar-bs-resizable-container__handle--bottom", edge == MariloResizeEdges.Bottom)
+            .AddClass("mar-bs-resizable-container__handle--bottom-right", edge == MariloResizeEdges.BottomRight)
+            .AddClass("mar-bs-resizable-container__handle--left", edge == MariloResizeEdges.Left)
+            .AddClass("mar-bs-resizable-container__handle--top", edge == MariloResizeEdges.Top)
+            .AddClass("mar-bs-resizable-container__handle--top-left", edge == MariloResizeEdges.TopLeft)
+            .AddClass("mar-bs-resizable-container__handle--top-right", edge == MariloResizeEdges.TopRight)
+            .AddClass("mar-bs-resizable-container__handle--bottom-left", edge == MariloResizeEdges.BottomLeft)
+            .AddClass("mar-bs-resizable-container__handle--active", isActive)
+            .AddClass("mar-bs-resizable-container__handle--focused", isFocused)
             .Build();
 
     // ───────────────────────────────────────────────

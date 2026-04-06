@@ -119,13 +119,16 @@
                         <tbody>
                             @if (Resources is not null)
                             {
+                                var _resRowIdx = 0;
                                 @foreach (var resource in Resources)
                                 {
                                     var resourceKey = GetResourceKey(resource);
                                     var isOverAllocated = IsResourceOverAllocated(resourceKey);
                                     var isRowSelected = IsResourceRowSelected(resourceKey);
+                                    var isStripe = StripedRows && _resRowIdx % 2 == 1;
+                                    _resRowIdx++;
 
-                                    <tr class="@CssProvider.AllocationSchedulerRowClass(isRowSelected, isOverAllocated)"
+                                    <tr class="@CssProvider.AllocationSchedulerRowClass(isRowSelected, isOverAllocated, isStripe)"
                                         role="row"
                                         aria-label="@GetResourceLabel(resource)">
                                         @foreach (var col in _columns.Where(c => c.Visible))
@@ -175,7 +178,7 @@
                 @* ── Right panel: timeline buckets (horizontally scrollable) *@
                 <div class="mar-allocation-scheduler__timeline-panel @(_collapsedSide == SplitterSide.Right ? "mar-allocation-scheduler__pane--collapsed" : "")"
                      style="@GetRightPaneStyle()">
-                    <table class="mar-allocation-scheduler__table" style="table-layout:fixed">
+                    <table class="mar-allocation-scheduler__table" style="@GetTimelineTableStyle()">
                         <colgroup>
                             @{ var bucketIdx = 0; }
                             @foreach (var bucket in _visibleBuckets)
@@ -199,13 +202,16 @@
                         <tbody>
                             @if (Resources is not null)
                             {
+                                var _tlRowIdx = 0;
                                 @foreach (var resource in Resources)
                                 {
                                     var resourceKey = GetResourceKey(resource);
                                     var isOverAllocated = IsResourceOverAllocated(resourceKey);
                                     var isRowSelected = IsResourceRowSelected(resourceKey);
+                                    var isTlStripe = StripedRows && _tlRowIdx % 2 == 1;
+                                    _tlRowIdx++;
 
-                                    <tr class="@CssProvider.AllocationSchedulerRowClass(isRowSelected, isOverAllocated)"
+                                    <tr class="@CssProvider.AllocationSchedulerRowClass(isRowSelected, isOverAllocated, isTlStripe)"
                                         role="row">
                                         @foreach (var bucket in _visibleBuckets)
                                         {

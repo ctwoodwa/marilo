@@ -203,7 +203,7 @@ public interface IMariloCssProvider
     string AllocationSchedulerToolbarClass();
     string AllocationSchedulerResourceColumnClass(bool isPinned);
     string AllocationSchedulerTimeHeaderClass(TimeGranularity grain);
-    string AllocationSchedulerRowClass(bool isSelected, bool isOverAllocated);
+    string AllocationSchedulerRowClass(bool isSelected, bool isOverAllocated, bool isStriped = false);
     string AllocationSchedulerCellClass(bool isEditable, bool isSelected, bool isConflict, bool isDisabled, bool isDragTarget);
     string AllocationSchedulerCellValueClass(AllocationValueMode mode);
     string AllocationSchedulerDeltaClass(DeltaDisplayMode mode, bool isOver, bool isUnder);
@@ -225,6 +225,11 @@ public interface IMariloCssProvider
     string SignalRPopupClass();
     string SignalRRowClass(ConnectionHealthState health);
     string SignalRBadgeClass(ConnectionHealthState health);
+
+    // ── ResizableContainer ────────────────────────────────────────────
+    string ResizableContainerClass(bool isResizing, bool isDisabled);
+    string ResizableContainerContentClass();
+    string ResizableContainerHandleClass(MariloResizeEdges edge, bool isActive, bool isFocused);
 
     // ── Utility ─────────────────────────────────────────────────────────
     string IconClass(string iconName, IconSize size, IconFlip flip = IconFlip.None, IconThemeColor themeColor = IconThemeColor.Base);

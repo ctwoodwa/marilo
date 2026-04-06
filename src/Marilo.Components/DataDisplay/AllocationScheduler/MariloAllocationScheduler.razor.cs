@@ -33,6 +33,13 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
 
     [Parameter] public IColumnWidthProvider? ColumnWidthProvider { get; set; }
 
+    /// <summary>
+    /// Overrides the number of time columns that fill the panel width in non-Day view modes.
+    /// When null, Month uses all visible buckets, Week uses all visible buckets, and Day uses fixed 80px columns.
+    /// Set to a positive integer to force exactly that many equally-spaced columns regardless of view mode.
+    /// </summary>
+    [Parameter] public int? VisibleColumnOverride { get; set; }
+
     // ── Splitter ────────────────────────────────────────────────────────
 
     [Parameter] public double? SplitterPosition { get; set; }
@@ -47,6 +54,7 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
     // ── Display ─────────────────────────────────────────────────────────
 
     [Parameter] public AllocationValueMode ValueMode { get; set; } = AllocationValueMode.Hours;
+    [Parameter] public bool StripedRows { get; set; } = true;
     [Parameter] public bool ShowTargets { get; set; }
     [Parameter] public bool ShowDeltas { get; set; }
     [Parameter] public DeltaDisplayMode DeltaDisplayMode { get; set; } = DeltaDisplayMode.Value;
@@ -819,13 +827,43 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
 
     private static string GetBucketDefaultWidth(TimeGranularity grain) => grain switch
     {
-        TimeGranularity.Day => "60px",
+        TimeGranularity.Day => "80px",
         TimeGranularity.Week => "85px",
         TimeGranularity.Month => "100px",
         TimeGranularity.Quarter => "120px",
         TimeGranularity.Year => "140px",
         _ => "85px"
     };
+
+    /// <summary>
+    /// Returns the number of columns that should fill the panel width via CSS calc.
+    /// Returns 0 for Day mode (use fixed-pixel widths + scrollbar instead).
+    /// </summary>
+    private int GetFillColumnCount()
+    {
+        if (VisibleColumnOverride.HasValue && VisibleColumnOverride.Value > 0)
+            return VisibleColumnOverride.Value;
+
+        return _currentViewGrain switch
+        {
+            TimeGranularity.Day => 0,   // fixed 80px columns → scrollbar when overflowing
+            _ => _visibleBuckets.Count  // fill panel with all visible buckets (no scrollbar)
+        };
+    }
+
+    /// <summary>
+    /// Returns the inline style string for the timeline table element.
+    /// Month/Week/Quarter/Year: width:100% so CSS calc column widths fill the panel.
+    /// Day: no explicit width — table auto-sizes to the sum of fixed-pixel column widths,
+    ///      which allows the timeline panel's overflow:auto to show a scrollbar.
+    /// </summary>
+    private string GetTimelineTableStyle()
+    {
+        var fillCount = GetFillColumnCount();
+        return fillCount > 0
+            ? "table-layout:fixed;width:100%;"
+            : "table-layout:fixed;";
+    }
 
     internal string? GetResolvedColumnWidth(AllocationResourceColumn<TResource> column)
     {
@@ -841,6 +879,15 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
 
     internal string? GetBucketWidthStyle(int bucketIndex)
     {
+        var fillCount = GetFillColumnCount();
+        if (fillCount > 0)
+        {
+            // Distribute panel width evenly via CSS calc — no JS measurement needed.
+            // Works because the timeline table has width:100% in fill modes.
+            return $"width:calc(100% / {fillCount});";
+        }
+
+        // Day mode: fixed pixel width from layout contract; overflow → scrollbar.
         var id = $"bucket-{bucketIndex}";
         return _layoutContract.WidthById.TryGetValue(id, out var width) ? $"width:{width};" : null;
     }
