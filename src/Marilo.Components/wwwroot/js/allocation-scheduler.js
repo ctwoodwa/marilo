@@ -1,142 +1,233 @@
 /**
  * MariloAllocationScheduler JS Interop
- * Handles drag-fill, cell selection, and keyboard traversal interactions
- * that require DOM-level event handling beyond Blazor's event system.
+ * Handles drag-fill, cell selection, keyboard editing, and clipboard
+ * interactions that require DOM-level event handling.
  */
 export const AllocationSchedulerInterop = {
 
     /**
-     * Initialize drag-fill behavior on the scheduler grid.
-     * @param {HTMLElement} gridElement - The root .mar-allocation-scheduler element
-     * @param {DotNetObjectReference} dotNetRef - Reference to the Blazor component
+     * Initialize fill-handle drag behavior.
+     * Drag starts ONLY when the user grabs the .mar-allocation-scheduler__fill-handle element.
+     * Sends {source, targets} JSON to .NET on drop.
      */
     initDragFill: function (gridElement, dotNetRef) {
         if (!gridElement) return;
 
         let isDragging = false;
-        let startCell = null;
-        let dragCells = [];
-
-        const getCellKey = (cell) => {
-            return {
-                resourceKey: cell.dataset.resourceKey,
-                bucketStart: cell.dataset.bucketStart
-            };
-        };
-
-        const handleMouseDown = (e) => {
-            const cell = e.target.closest('[role="gridcell"][data-resource-key]');
-            if (!cell || cell.getAttribute('aria-disabled') === 'true') return;
-            if (cell.getAttribute('aria-readonly') === 'true') return;
-
-            isDragging = true;
-            startCell = cell;
-            dragCells = [cell];
-            cell.classList.add('mar-allocation-scheduler__cell--drag-target');
-            e.preventDefault();
-        };
-
-        const handleMouseMove = (e) => {
-            if (!isDragging) return;
-            const cell = e.target.closest('[role="gridcell"][data-resource-key]');
-            if (!cell || dragCells.includes(cell)) return;
-            if (cell.getAttribute('aria-disabled') === 'true') return;
-
-            dragCells.push(cell);
-            cell.classList.add('mar-allocation-scheduler__cell--drag-target');
-        };
-
-        const handleMouseUp = async (e) => {
-            if (!isDragging) return;
-            isDragging = false;
-
-            const cellKeys = dragCells.map(getCellKey);
-            dragCells.forEach(c => c.classList.remove('mar-allocation-scheduler__cell--drag-target'));
-            dragCells = [];
-
-            if (cellKeys.length > 1) {
-                await dotNetRef.invokeMethodAsync('OnDragFillCompleted', JSON.stringify(cellKeys));
-            }
-        };
-
-        gridElement.addEventListener('mousedown', handleMouseDown);
-        gridElement.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', handleMouseUp);
-
-        // Store cleanup reference
-        gridElement._allocationSchedulerCleanup = () => {
-            gridElement.removeEventListener('mousedown', handleMouseDown);
-            gridElement.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
-        };
-    },
-
-    /**
-     * Initialize keyboard navigation for the scheduler grid.
-     * @param {HTMLElement} gridElement - The root .mar-allocation-scheduler element
-     * @param {DotNetObjectReference} dotNetRef - Reference to the Blazor component
-     */
-    initKeyboardNav: function (gridElement, dotNetRef) {
-        if (!gridElement) return;
-
-        const handleKeyDown = async (e) => {
-            const cell = e.target.closest('[role="gridcell"]');
-            if (!cell) return;
-
-            const allCells = Array.from(gridElement.querySelectorAll('[role="gridcell"][tabindex="0"]'));
-            const currentIndex = allCells.indexOf(cell);
-            if (currentIndex === -1) return;
-
-            let nextIndex = currentIndex;
-
-            switch (e.key) {
-                case 'ArrowRight':
-                case 'Tab':
-                    if (!e.shiftKey) {
-                        nextIndex = Math.min(currentIndex + 1, allCells.length - 1);
-                        e.preventDefault();
-                    }
-                    break;
-                case 'ArrowLeft':
-                    nextIndex = Math.max(currentIndex - 1, 0);
-                    e.preventDefault();
-                    break;
-                case 'ArrowDown':
-                case 'Enter':
-                    // Move to same column in next row (approximate by row length)
-                    nextIndex = Math.min(currentIndex + getColumnsPerRow(gridElement), allCells.length - 1);
-                    e.preventDefault();
-                    break;
-                case 'ArrowUp':
-                    nextIndex = Math.max(currentIndex - getColumnsPerRow(gridElement), 0);
-                    e.preventDefault();
-                    break;
-                case 'Escape':
-                    cell.blur();
-                    await dotNetRef.invokeMethodAsync('OnEscapePressed');
-                    e.preventDefault();
-                    break;
-                case 'Delete':
-                    await dotNetRef.invokeMethodAsync('OnDeletePressed', getCellKey(cell));
-                    e.preventDefault();
-                    break;
-                default:
-                    return;
-            }
-
-            if (nextIndex !== currentIndex && allCells[nextIndex]) {
-                allCells[nextIndex].focus();
-                const key = getCellKey(allCells[nextIndex]);
-                if (key.resourceKey) {
-                    await dotNetRef.invokeMethodAsync('OnCellFocused', JSON.stringify(key));
-                }
-            }
-        };
+        let sourceCell = null;
+        let previewCells = [];
 
         const getCellKey = (cell) => ({
             resourceKey: cell.dataset.resourceKey,
             bucketStart: cell.dataset.bucketStart
         });
+
+        const clearPreview = () => {
+            previewCells.forEach(c => c.classList.remove('mar-allocation-scheduler__cell--drag-target'));
+            previewCells = [];
+        };
+
+        const handleMouseDown = (e) => {
+            const handle = e.target.closest('.mar-allocation-scheduler__fill-handle');
+            if (!handle) return;
+
+            const cell = handle.closest('[role="gridcell"][data-resource-key]');
+            if (!cell) return;
+            if (cell.getAttribute('aria-disabled') === 'true') return;
+            if (cell.getAttribute('aria-readonly') === 'true') return;
+
+            isDragging = true;
+            sourceCell = cell;
+            previewCells = [];
+            e.preventDefault();
+            e.stopPropagation();
+        };
+
+        const handleMouseMove = (e) => {
+            if (!isDragging || !sourceCell) return;
+
+            const cell = e.target.closest('[role="gridcell"][data-resource-key]');
+            if (!cell || cell === sourceCell) return;
+            if (cell.getAttribute('aria-disabled') === 'true') return;
+
+            // Rebuild preview from scratch each move — keep order natural
+            clearPreview();
+
+            // Collect all cells in the timeline panel between source and target
+            const timelinePanel = sourceCell.closest('.mar-allocation-scheduler__timeline-panel');
+            if (!timelinePanel) return;
+
+            const allCells = Array.from(timelinePanel.querySelectorAll('[role="gridcell"][data-resource-key]'));
+            const srcIdx = allCells.indexOf(sourceCell);
+            const tgtIdx = allCells.indexOf(cell);
+            if (srcIdx < 0 || tgtIdx < 0) return;
+
+            const lo = Math.min(srcIdx, tgtIdx);
+            const hi = Math.max(srcIdx, tgtIdx);
+            previewCells = allCells.slice(lo, hi + 1).filter(c => c !== sourceCell);
+            previewCells.forEach(c => {
+                if (c.getAttribute('aria-disabled') !== 'true')
+                    c.classList.add('mar-allocation-scheduler__cell--drag-target');
+            });
+        };
+
+        const handleMouseUp = async () => {
+            if (!isDragging) return;
+            isDragging = false;
+
+            const validTargets = previewCells.filter(c =>
+                c.getAttribute('aria-disabled') !== 'true' &&
+                c.getAttribute('aria-readonly') !== 'true'
+            );
+
+            clearPreview();
+
+            if (sourceCell && validTargets.length > 0) {
+                const payload = {
+                    source: getCellKey(sourceCell),
+                    targets: validTargets.map(getCellKey)
+                };
+                try {
+                    await dotNetRef.invokeMethodAsync('OnDragFillCompleted', JSON.stringify(payload));
+                } catch (_) { /* component may have been disposed */ }
+            }
+
+            sourceCell = null;
+        };
+
+        gridElement.addEventListener('mousedown', handleMouseDown);
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+
+        gridElement._allocationSchedulerCleanup = () => {
+            gridElement.removeEventListener('mousedown', handleMouseDown);
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+    },
+
+    /**
+     * Initialize keyboard navigation and editing for the scheduler grid.
+     * Arrow keys move the active cell.
+     * Enter / F2 enter edit mode on the focused cell.
+     * Direct typing enters edit mode and seeds the input with the typed character.
+     * Delete / Backspace clears the cell value.
+     * Escape cancels pending actions.
+     */
+    initKeyboardNav: function (gridElement, dotNetRef) {
+        if (!gridElement) return;
+
+        const getCellKey = (cell) => ({
+            resourceKey: cell.dataset.resourceKey,
+            bucketStart: cell.dataset.bucketStart
+        });
+
+        // Returns only the editable cells in the timeline panel, in DOM order.
+        const getEditableCells = () =>
+            Array.from(gridElement.querySelectorAll(
+                '.mar-allocation-scheduler__timeline-panel [role="gridcell"][tabindex="0"]'
+            ));
+
+        // Number of columns in one timeline row.
+        const columnsPerRow = () => {
+            const panel = gridElement.querySelector('.mar-allocation-scheduler__timeline-panel');
+            if (!panel) return 1;
+            const rows = panel.querySelectorAll('[role="row"]');
+            if (rows.length < 2) return 1;
+            return rows[1].querySelectorAll('[role="gridcell"][tabindex="0"]').length || 1;
+        };
+
+        const handleKeyDown = async (e) => {
+            // Only handle keydown events that originated from a gridcell (not from an input inside edit mode)
+            const cell = e.target.closest('[role="gridcell"]');
+            if (!cell) return;
+            if (e.target.tagName === 'INPUT') return; // edit-mode input handles its own keys
+
+            const allCells = getEditableCells();
+            const currentIndex = allCells.indexOf(cell);
+            if (currentIndex === -1) return;
+
+            let nextIndex = currentIndex;
+            let handled = true;
+
+            const cols = columnsPerRow();
+
+            switch (e.key) {
+                case 'ArrowRight':
+                    nextIndex = Math.min(currentIndex + 1, allCells.length - 1);
+                    break;
+                case 'ArrowLeft':
+                    nextIndex = Math.max(currentIndex - 1, 0);
+                    break;
+                case 'ArrowDown':
+                    nextIndex = Math.min(currentIndex + cols, allCells.length - 1);
+                    break;
+                case 'ArrowUp':
+                    nextIndex = Math.max(currentIndex - cols, 0);
+                    break;
+                case 'Tab':
+                    if (e.shiftKey) {
+                        nextIndex = Math.max(currentIndex - 1, 0);
+                    } else {
+                        nextIndex = Math.min(currentIndex + 1, allCells.length - 1);
+                    }
+                    break;
+                case 'Enter':
+                case 'F2': {
+                    // Enter edit mode for the focused cell
+                    const key = getCellKey(cell);
+                    if (key.resourceKey) {
+                        try {
+                            await dotNetRef.invokeMethodAsync('OnEnterEditMode', JSON.stringify(key));
+                        } catch (_) { }
+                    }
+                    e.preventDefault();
+                    return;
+                }
+                case 'Delete':
+                case 'Backspace': {
+                    const key = getCellKey(cell);
+                    if (key.resourceKey) {
+                        try {
+                            await dotNetRef.invokeMethodAsync('OnDeletePressed', JSON.stringify(key));
+                        } catch (_) { }
+                    }
+                    e.preventDefault();
+                    return;
+                }
+                case 'Escape':
+                    cell.blur();
+                    try {
+                        await dotNetRef.invokeMethodAsync('OnEscapePressed');
+                    } catch (_) { }
+                    e.preventDefault();
+                    return;
+                default:
+                    // Printable characters start typing / enter edit mode
+                    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                        const key = getCellKey(cell);
+                        if (key.resourceKey) {
+                            try {
+                                await dotNetRef.invokeMethodAsync('OnStartTyping', JSON.stringify(key), e.key);
+                            } catch (_) { }
+                        }
+                        e.preventDefault();
+                    }
+                    return;
+            }
+
+            e.preventDefault();
+
+            if (nextIndex !== currentIndex && allCells[nextIndex]) {
+                allCells[nextIndex].focus();
+                const key = getCellKey(allCells[nextIndex]);
+                if (key.resourceKey) {
+                    try {
+                        await dotNetRef.invokeMethodAsync('OnCellFocused', JSON.stringify(key));
+                    } catch (_) { }
+                }
+            }
+        };
 
         gridElement.addEventListener('keydown', handleKeyDown);
 
@@ -148,12 +239,176 @@ export const AllocationSchedulerInterop = {
     },
 
     /**
+     * Initialize clipboard copy (Ctrl/Cmd+C) and paste (Ctrl/Cmd+V).
+     * Copy serialises the selected cells as tab/newline-delimited text.
+     * Paste sends the raw text to .NET for parsing and application.
+     */
+    initClipboard: function (gridElement, dotNetRef) {
+        if (!gridElement) return;
+        if (typeof navigator.clipboard === 'undefined') return;
+
+        const handleKeyDown = async (e) => {
+            if (!e.ctrlKey && !e.metaKey) return;
+
+            if (e.key === 'c' || e.key === 'C') {
+                // ── Copy ───────────────────────────────────────────────
+                const selected = Array.from(
+                    gridElement.querySelectorAll(
+                        '.mar-allocation-scheduler__timeline-panel [role="gridcell"].mar-allocation-scheduler__cell--selected[data-resource-key],' +
+                        '.mar-allocation-scheduler__timeline-panel [role="gridcell"].mar-bs-allocation-scheduler__cell--selected[data-resource-key]'
+                    )
+                );
+                if (selected.length === 0) return;
+
+                // Build row-major map: resourceKey -> sorted bucketStart -> display text
+                const rowMap = new Map();   // resourceKey -> Map<bucketStart, text>
+                const bucketSet = new Set();
+
+                selected.forEach(cell => {
+                    const rk = cell.dataset.resourceKey;
+                    const bs = cell.dataset.bucketStart;
+                    const valueEl = cell.querySelector(
+                        '.mar-allocation-scheduler__cell-value, .mar-bs-allocation-scheduler__cell-value'
+                    );
+                    const text = valueEl ? valueEl.textContent.trim() : '';
+
+                    if (!rowMap.has(rk)) rowMap.set(rk, new Map());
+                    rowMap.get(rk).set(bs, text);
+                    bucketSet.add(bs);
+                });
+
+                const buckets = Array.from(bucketSet).sort();
+                const tsv = Array.from(rowMap.values())
+                    .map(colMap => buckets.map(b => colMap.get(b) ?? '').join('\t'))
+                    .join('\n');
+
+                try {
+                    await navigator.clipboard.writeText(tsv);
+                    e.preventDefault();
+                } catch (_) { }
+
+            } else if (e.key === 'v' || e.key === 'V') {
+                // ── Paste ──────────────────────────────────────────────
+                try {
+                    const text = await navigator.clipboard.readText();
+                    if (text && text.trim()) {
+                        await dotNetRef.invokeMethodAsync('OnPasteData', text);
+                        e.preventDefault();
+                    }
+                } catch (_) { }
+            }
+        };
+
+        gridElement.addEventListener('keydown', handleKeyDown);
+
+        const existingClipboardCleanup = gridElement._allocationSchedulerClipboardCleanup;
+        existingClipboardCleanup?.();
+        gridElement._allocationSchedulerClipboardCleanup = () => {
+            gridElement.removeEventListener('keydown', handleKeyDown);
+        };
+
+        const existingCleanup = gridElement._allocationSchedulerCleanup;
+        gridElement._allocationSchedulerCleanup = () => {
+            existingCleanup?.();
+            gridElement._allocationSchedulerClipboardCleanup?.();
+        };
+    },
+
+    /**
+     * Initialize per-column header drag-to-resize for resource columns.
+     * Handles rendered inside <th> cells (class mar-allocation-scheduler__col-resize-handle).
+     * On drag: fires OnColumnResizeDrag for live preview (same pattern as splitter).
+     * On release: fires OnColumnResizeEnd to persist.
+     */
+    initColumnResize: function (gridElement, dotNetRef) {
+        if (!gridElement) return;
+
+        let isDragging = false;
+        let startX = 0;
+        let startWidth = 0;
+        let activeColId = null;
+        let activeColEl = null;  // the <col> element in the colgroup
+
+        const findCol = (colId) => {
+            return gridElement.querySelector(
+                `.mar-allocation-scheduler__resource-panel colgroup col[data-col-id="${colId}"]`
+            );
+        };
+
+        const handleMouseDown = (e) => {
+            const handle = e.target.closest('.mar-allocation-scheduler__col-resize-handle');
+            if (!handle) return;
+
+            const colId = handle.dataset.colId;
+            if (!colId) return;
+
+            const th = handle.closest('th');
+            if (!th) return;
+
+            const col = findCol(colId);
+
+            isDragging = true;
+            startX = e.clientX;
+            startWidth = th.getBoundingClientRect().width;
+            activeColId = colId;
+            activeColEl = col;
+
+            handle.classList.add('mar-allocation-scheduler__col-resize-handle--active');
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+            e.preventDefault();
+            e.stopPropagation();
+        };
+
+        const handleMouseMove = async (e) => {
+            if (!isDragging || !activeColId) return;
+            const delta = e.clientX - startX;
+            const newWidth = Math.max(40, startWidth + delta);
+            try {
+                await dotNetRef.invokeMethodAsync('OnColumnResizeDrag', activeColId, newWidth);
+            } catch (_) { /* component disposed */ }
+        };
+
+        const handleMouseUp = async () => {
+            if (!isDragging) return;
+            isDragging = false;
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+
+            // Remove active class from all handles
+            gridElement.querySelectorAll('.mar-allocation-scheduler__col-resize-handle--active')
+                .forEach(h => h.classList.remove('mar-allocation-scheduler__col-resize-handle--active'));
+
+            if (activeColId) {
+                const delta = 0; // already applied via OnColumnResizeDrag
+                // Read the current col width that .NET has set (or fall back to startWidth + last delta)
+                const currentWidth = activeColEl
+                    ? parseFloat(activeColEl.style.width || startWidth)
+                    : startWidth;
+                try {
+                    await dotNetRef.invokeMethodAsync('OnColumnResizeEnd', activeColId, currentWidth);
+                } catch (_) { }
+            }
+
+            activeColId = null;
+            activeColEl = null;
+        };
+
+        gridElement.addEventListener('mousedown', handleMouseDown);
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+
+        const existingCleanup = gridElement._allocationSchedulerCleanup;
+        gridElement._allocationSchedulerCleanup = () => {
+            existingCleanup?.();
+            gridElement.removeEventListener('mousedown', handleMouseDown);
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        };
+    },
+
+    /**
      * Initialize splitter drag-to-resize behavior.
-     * The splitter position is always derived from column widths — the JS sends
-     * the desired total left-pane width to .NET, which maps it onto columns.
-     * The left pane width is set via inline style to match the column sum exactly.
-     * @param {HTMLElement} gridElement - The root .mar-allocation-scheduler element
-     * @param {DotNetObjectReference} dotNetRef - Reference to the Blazor component
      */
     initSplitter: function (gridElement, dotNetRef) {
         if (!gridElement) return;
@@ -172,7 +427,6 @@ export const AllocationSchedulerInterop = {
         const handleMouseDown = (e) => {
             const sep = e.target.closest('[role="separator"]');
             if (sep !== splitter) return;
-            // If splitter is locked (all columns non-resizable), do nothing
             if (splitter.dataset.locked === 'true') return;
 
             isDragging = true;
@@ -204,12 +458,11 @@ export const AllocationSchedulerInterop = {
                 return;
             }
 
-            // Clamp and apply visual preview — .NET will map this to column widths on drag end
             const clamped = Math.max(minLeft, Math.min(newWidth, containerWidth - splitterWidth - minRight));
             resourcePanel.style.width = clamped + 'px';
         };
 
-        const handleMouseUp = async (e) => {
+        const handleMouseUp = async () => {
             if (!isDragging) return;
             isDragging = false;
             splitter.classList.remove('mar-allocation-scheduler__splitter--dragging');
@@ -233,7 +486,6 @@ export const AllocationSchedulerInterop = {
                 return;
             }
 
-            // Send the target width to .NET — it maps the delta onto the last resizable column
             const clamped = Math.max(minLeft, Math.min(currentWidth, containerWidth - splitterWidth - minRight));
             await dotNetRef.invokeMethodAsync('OnSplitterDragEnd', clamped);
         };
@@ -253,7 +505,6 @@ export const AllocationSchedulerInterop = {
 
     /**
      * Synchronize vertical scrolling between resource panel and timeline panel.
-     * @param {HTMLElement} gridElement - The root .mar-allocation-scheduler element
      */
     initScrollSync: function (gridElement) {
         if (!gridElement) return;
@@ -291,15 +542,8 @@ export const AllocationSchedulerInterop = {
 
     /**
      * Dispose all event listeners for the scheduler grid.
-     * @param {HTMLElement} gridElement - The root .mar-allocation-scheduler element
      */
     dispose: function (gridElement) {
         gridElement?._allocationSchedulerCleanup?.();
     }
 };
-
-function getColumnsPerRow(gridElement) {
-    const rows = gridElement.querySelectorAll('[role="row"]');
-    if (rows.length < 2) return 1;
-    return rows[1].querySelectorAll('[role="gridcell"][tabindex="0"]').length || 1;
-}

@@ -128,6 +128,9 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
     private object? _editResourceKey;
     private DateRange? _editBucket;
 
+    // Active cell — the last focused/clicked cell; determines fill handle placement.
+    private (object ResourceKey, DateTime BucketStart)? _activeCell;
+
     // Splitter state
     private double _lastNonCollapsedPosition;
     private bool _isDraggingSplitter;
@@ -176,10 +179,12 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
 
                 await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.initScrollSync", _gridRef);
                 await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.initSplitter", _gridRef, _dotNetRef);
+                await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.initColumnResize", _gridRef, _dotNetRef);
                 if (AllowDragFill)
                     await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.initDragFill", _gridRef, _dotNetRef);
                 if (AllowKeyboardEdit)
                     await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.initKeyboardNav", _gridRef, _dotNetRef);
+                await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.initClipboard", _gridRef, _dotNetRef);
             }
             catch (JSException)
             {
@@ -191,32 +196,56 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
     // ── JS Interop Callbacks ────────────────────────────────────────────
 
     [JSInvokable]
-    public async Task OnDragFillCompleted(string cellKeysJson)
+    public async Task OnDragFillCompleted(string payloadJson)
     {
-        var cells = System.Text.Json.JsonSerializer.Deserialize<List<CellKeyDto>>(cellKeysJson);
-        if (cells is null || cells.Count < 2) return;
+        var payload = System.Text.Json.JsonSerializer.Deserialize<DragFillPayloadDto>(payloadJson);
+        if (payload?.source is null || payload.targets is null || payload.targets.Count == 0) return;
 
-        var refs = cells.Select(c => new AllocationCellRef
-        {
-            ResourceKey = c.resourceKey ?? string.Empty,
-            BucketStart = DateTime.TryParse(c.bucketStart, out var dt) ? dt : default
-        }).ToList();
+        // Resolve source value
+        var srcStart = DateTime.TryParse(payload.source.bucketStart, out var sd) ? sd : default;
+        var srcBucket = new DateRange { Start = srcStart, End = AdvanceDate(srcStart, _currentViewGrain, 1) };
+        var sourceRecord = GetRecord(payload.source.resourceKey ?? string.Empty, srcBucket);
+        var fillValue = sourceRecord?.Value ?? 0;
 
-        var records = refs
-            .Select(r => GetRecord(r.ResourceKey, new DateRange { Start = r.BucketStart, End = AdvanceDate(r.BucketStart, _currentViewGrain, 1) }))
+        // Resolve target cells, skipping disabled/read-only
+        var targetRefs = payload.targets
+            .Select(c =>
+            {
+                var start = DateTime.TryParse(c.bucketStart, out var dt) ? dt : default;
+                var bucket = new DateRange { Start = start, End = AdvanceDate(start, _currentViewGrain, 1) };
+                return new { ResourceKey = (object)(c.resourceKey ?? string.Empty), Bucket = bucket };
+            })
+            .Where(r => IsCellEditable(r.Bucket) && !IsCellDisabled(r.Bucket))
+            .ToList();
+
+        if (targetRefs.Count == 0) return;
+
+        var affectedRecords = targetRefs
+            .Select(r => GetRecord(r.ResourceKey, r.Bucket))
             .Where(r => r is not null)
             .Cast<AllocationRecord>()
             .ToList();
 
-        var firstRecord = GetRecord(
-            refs[0].ResourceKey,
-            new DateRange { Start = refs[0].BucketStart, End = AdvanceDate(refs[0].BucketStart, _currentViewGrain, 1) });
-
+        // Fire batch event so consumers can update their data in one shot
         await OnRangeEdited.InvokeAsync(new RangeEditedArgs
         {
-            AffectedRecords = records,
-            Value = firstRecord?.Value ?? 0
+            AffectedRecords = affectedRecords,
+            Value = fillValue
         });
+
+        // Also fire individual OnCellEdited for each target so single-cell consumers are notified
+        foreach (var r in targetRefs)
+        {
+            var record = GetRecord(r.ResourceKey, r.Bucket);
+            await OnCellEdited.InvokeAsync(new CellEditedArgs
+            {
+                ResourceKey = r.ResourceKey,
+                BucketStart = r.Bucket.Start,
+                BucketEnd = r.Bucket.End,
+                OldValue = record?.Value ?? 0,
+                NewValue = fillValue
+            });
+        }
     }
 
     [JSInvokable]
@@ -225,13 +254,22 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
         var cell = System.Text.Json.JsonSerializer.Deserialize<CellKeyDto>(cellKeyJson);
         if (cell?.resourceKey is null) return;
 
-        var bucket = new DateRange
-        {
-            Start = DateTime.TryParse(cell.bucketStart, out var dt) ? dt : default,
-            End = DateTime.TryParse(cell.bucketStart, out var dt2) ? AdvanceDate(dt2, _currentViewGrain, 1) : default
-        };
+        var start = DateTime.TryParse(cell.bucketStart, out var dt) ? dt : default;
+        var bucket = new DateRange { Start = start, End = AdvanceDate(start, _currentViewGrain, 1) };
 
-        await HandleCellClick(cell.resourceKey, bucket);
+        // Keyboard navigation moves the active cell; move selection without toggling
+        _activeCell = (cell.resourceKey, bucket.Start);
+        if (SelectionMode != AllocationSelectionMode.None)
+        {
+            _selectedCells.Clear();
+            _selectedCells.Add((cell.resourceKey, bucket.Start));
+            await OnSelectionChanged.InvokeAsync(new SelectionChangedArgs
+            {
+                SelectedCells = GetSelectedCells(),
+                SelectionMode = SelectionMode
+            });
+        }
+        await InvokeAsync(StateHasChanged);
     }
 
     [JSInvokable]
@@ -244,13 +282,148 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
     }
 
     [JSInvokable]
-    public Task OnDeletePressed(string cellKeyJson)
+    public async Task OnDeletePressed(string cellKeyJson)
     {
-        // Clear value for the focused cell — fires OnCellEdited with NewValue = 0
-        return Task.CompletedTask;
+        var cell = System.Text.Json.JsonSerializer.Deserialize<CellKeyDto>(cellKeyJson);
+        if (cell?.resourceKey is null) return;
+
+        var start = DateTime.TryParse(cell.bucketStart, out var dt) ? dt : default;
+        var bucket = new DateRange { Start = start, End = AdvanceDate(start, _currentViewGrain, 1) };
+
+        if (!IsCellEditable(bucket) || IsCellDisabled(bucket)) return;
+
+        var record = GetRecord(cell.resourceKey, bucket);
+        await OnCellEdited.InvokeAsync(new CellEditedArgs
+        {
+            ResourceKey = cell.resourceKey,
+            BucketStart = bucket.Start,
+            BucketEnd = bucket.End,
+            OldValue = record?.Value ?? 0,
+            NewValue = 0
+        });
+        await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>
+    /// JS interop: user pressed Enter or F2 on a focused cell — enter edit mode.
+    /// </summary>
+    [JSInvokable]
+    public async Task OnEnterEditMode(string cellKeyJson)
+    {
+        var cell = System.Text.Json.JsonSerializer.Deserialize<CellKeyDto>(cellKeyJson);
+        if (cell?.resourceKey is null) return;
+
+        var start = DateTime.TryParse(cell.bucketStart, out var dt) ? dt : default;
+        var bucket = new DateRange { Start = start, End = AdvanceDate(start, _currentViewGrain, 1) };
+
+        if (!IsCellEditable(bucket) || IsCellDisabled(bucket)) return;
+
+        var record = GetRecord(cell.resourceKey, bucket);
+        _editMode = true;
+        _editResourceKey = cell.resourceKey;
+        _editBucket = bucket;
+        _editValue = record?.Value.ToString("0.#") ?? "0";
+        _activeCell = (cell.resourceKey, bucket.Start);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>
+    /// JS interop: user started typing while a cell was focused — enter edit mode
+    /// with the typed character as the initial value (replaces existing content).
+    /// </summary>
+    [JSInvokable]
+    public async Task OnStartTyping(string cellKeyJson, string initialChar)
+    {
+        var cell = System.Text.Json.JsonSerializer.Deserialize<CellKeyDto>(cellKeyJson);
+        if (cell?.resourceKey is null) return;
+
+        var start = DateTime.TryParse(cell.bucketStart, out var dt) ? dt : default;
+        var bucket = new DateRange { Start = start, End = AdvanceDate(start, _currentViewGrain, 1) };
+
+        if (!IsCellEditable(bucket) || IsCellDisabled(bucket)) return;
+
+        _editMode = true;
+        _editResourceKey = cell.resourceKey;
+        _editBucket = bucket;
+        _editValue = initialChar;   // Replace existing value — matches Excel direct-type behaviour
+        _activeCell = (cell.resourceKey, bucket.Start);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>
+    /// JS interop: user pasted tab/newline-delimited text.
+    /// Parses the TSV and fires OnCellEdited for each editable target cell.
+    /// Disabled/read-only cells in the paste range are silently skipped.
+    /// </summary>
+    [JSInvokable]
+    public async Task OnPasteData(string tsv)
+    {
+        if (_activeCell is null) return;
+
+        var resourceList = Resources?.ToList();
+        if (resourceList is null) return;
+
+        // Find active resource index
+        var activeResourceKey = _activeCell.Value.ResourceKey;
+        var activeBucketStart = _activeCell.Value.BucketStart;
+
+        int startResourceIdx = -1;
+        for (int i = 0; i < resourceList.Count; i++)
+        {
+            if (Equals(GetResourceKey(resourceList[i]), activeResourceKey))
+            {
+                startResourceIdx = i;
+                break;
+            }
+        }
+        if (startResourceIdx < 0) return;
+
+        int startBucketIdx = _visibleBuckets.FindIndex(b => b.Start == activeBucketStart);
+        if (startBucketIdx < 0) return;
+
+        var rows = tsv.Split('\n');
+
+        for (int ri = 0; ri < rows.Length; ri++)
+        {
+            int resourceIdx = startResourceIdx + ri;
+            if (resourceIdx >= resourceList.Count) break;
+
+            var resourceKey = GetResourceKey(resourceList[resourceIdx]);
+            var cols = rows[ri].Split('\t');
+
+            for (int ci = 0; ci < cols.Length; ci++)
+            {
+                int bucketIdx = startBucketIdx + ci;
+                if (bucketIdx >= _visibleBuckets.Count) break;
+
+                var bucket = _visibleBuckets[bucketIdx];
+                if (!IsCellEditable(bucket) || IsCellDisabled(bucket)) continue;
+
+                // Strip common unit suffixes before parsing
+                var raw = cols[ci].Trim().TrimEnd('h', 'H').Replace("$", "").Trim();
+                if (!decimal.TryParse(raw, System.Globalization.NumberStyles.Float,
+                    System.Globalization.CultureInfo.InvariantCulture, out var newValue))
+                    continue;
+
+                var record = GetRecord(resourceKey, bucket);
+                await OnCellEdited.InvokeAsync(new CellEditedArgs
+                {
+                    ResourceKey = resourceKey,
+                    BucketStart = bucket.Start,
+                    BucketEnd = bucket.End,
+                    OldValue = record?.Value ?? 0,
+                    NewValue = newValue
+                });
+            }
+        }
+
+        await InvokeAsync(StateHasChanged);
     }
 
     private record CellKeyDto(string? resourceKey, string? bucketStart);
+
+    // Payload sent by the JS fill-handle drag handler.
+    private record DragFillPayloadDto(CellKeyDto? source, List<CellKeyDto>? targets);
 
     // ── Public Methods (via @ref) ───────────────────────────────────────
 
@@ -558,6 +731,45 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
         }
     }
 
+    // ── Column Resize JS Interop Callbacks ─────────────────────────────
+
+    /// <summary>Called on every mousemove while a column header resize is in progress. Updates
+    /// the column RuntimeWidth and re-renders for live feedback.</summary>
+    [JSInvokable]
+    public Task OnColumnResizeDrag(string columnId, double newWidth)
+    {
+        var col = FindColumnBySizingId(columnId);
+        if (col is null) return Task.CompletedTask;
+
+        var clamped = Math.Max(col.MinWidth, col.MaxWidth.HasValue ? Math.Min(col.MaxWidth.Value, newWidth) : newWidth);
+        col.RuntimeWidth = $"{clamped:F0}px";
+        ResolveLayoutContract();
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    /// <summary>Called once on mouseup to finalize a column header resize.</summary>
+    [JSInvokable]
+    public async Task OnColumnResizeEnd(string columnId, double newWidth)
+    {
+        var col = FindColumnBySizingId(columnId);
+        if (col is null) return;
+
+        var clamped = Math.Max(col.MinWidth, col.MaxWidth.HasValue ? Math.Min(col.MaxWidth.Value, newWidth) : newWidth);
+        col.RuntimeWidth = $"{clamped:F0}px";
+        ResolveLayoutContract();
+
+        var newPosition = ComputeColumnWidthSum();
+        await SplitterPositionChanged.InvokeAsync(newPosition);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private AllocationResourceColumn<TResource>? FindColumnBySizingId(string id)
+        => _columnSizingIds
+            .Where(kvp => kvp.Value == id && kvp.Key is AllocationResourceColumn<TResource>)
+            .Select(kvp => (AllocationResourceColumn<TResource>)kvp.Key)
+            .FirstOrDefault();
+
     // ── Column Registration ─────────────────────────────────────────────
 
     internal void AddColumn(AllocationResourceColumn<TResource> column)
@@ -668,6 +880,8 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
 
     private async Task HandleCellClick(object resourceKey, DateRange bucket)
     {
+        _activeCell = (resourceKey, bucket.Start);
+
         if (SelectionMode == AllocationSelectionMode.None) return;
 
         var key = (resourceKey, bucket.Start);
@@ -979,6 +1193,11 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
 
     private bool IsCellSelected(object resourceKey, DateRange bucket) =>
         _selectedCells.Contains((resourceKey, bucket.Start));
+
+    private bool IsCellActive(object resourceKey, DateRange bucket) =>
+        _activeCell.HasValue &&
+        Equals(_activeCell.Value.ResourceKey, resourceKey) &&
+        _activeCell.Value.BucketStart == bucket.Start;
 
     private bool IsCellConflict(object resourceKey, DateRange bucket)
     {

@@ -14017,31 +14017,113 @@ textarea.form-control-lg {
 }
 
 .mar-bs-allocation-scheduler {
+  --bs-scheduler-row-height: 38px;
+  --bs-scheduler-cell-pad-x: 0.4rem;
+  --bs-scheduler-cell-pad-y: 0.3rem;
+  --bs-scheduler-col-pad-x: 0.625rem;
+  --bs-scheduler-toolbar-gap: 0.375rem;
+  --bs-scheduler-disabled-bg: #e9ecef;
+  --bs-scheduler-disabled-color: #6c757d;
+  --bs-scheduler-disabled-pattern: repeating-linear-gradient(
+    135deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.07) 3px,
+    rgba(0, 0, 0, 0.07) 6px
+  );
+  --bs-scheduler-conflict-bg: rgba(var(--bs-danger-rgb), 0.13);
+  --bs-scheduler-conflict-shadow: inset 0 0 0 1px rgba(var(--bs-danger-rgb), 0.45);
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--bs-border-color);
   border-radius: var(--bs-border-radius);
   background: var(--bs-body-bg);
   overflow: hidden;
+  font-size: 0.875rem;
+  font-family: var(--bs-font-sans-serif, system-ui, sans-serif);
 }
 
-.mar-bs-allocation-scheduler .mar-allocation-scheduler__toolbar {
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--bs-scheduler-toolbar-gap);
+  padding: 0.375rem 0.75rem;
   border-bottom: 1px solid var(--bs-border-color);
-  background: var(--bs-light);
+  background: var(--bs-tertiary-bg, var(--bs-light, #f8f9fa));
+  flex-shrink: 0;
 }
-.mar-bs-allocation-scheduler .mar-allocation-scheduler__scenario-strip {
-  border-bottom: 1px solid var(--bs-border-color);
-  background: var(--bs-light);
-  overflow-x: auto;
-}
-.mar-bs-allocation-scheduler .mar-allocation-scheduler__scenario-chip {
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-sm);
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
   cursor: pointer;
-  transition: opacity 0.15s;
+  white-space: nowrap;
+  transition: background-color 0.12s, border-color 0.12s;
 }
-.mar-bs-allocation-scheduler .mar-allocation-scheduler__scenario-chip:hover {
-  opacity: 0.85;
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__toolbar button:hover {
+  background: rgba(var(--bs-primary-rgb), 0.06);
+  border-color: rgba(var(--bs-primary-rgb), 0.45);
+  color: var(--bs-primary);
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__toolbar button:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 1px;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__scenario-strip {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border-bottom: 1px solid var(--bs-border-color);
+  background: var(--bs-tertiary-bg, var(--bs-light, #f8f9fa));
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__scenario-chip {
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.65rem;
+  border-radius: 12px;
+  white-space: nowrap;
+  transition: opacity 0.12s, box-shadow 0.12s;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__scenario-chip:hover {
+  opacity: 0.88;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__scenario-chip:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 1px;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__grain-select {
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-sm);
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  font-size: 0.8125rem;
+  font-family: inherit;
+  cursor: pointer;
+  line-height: 1.4;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__grain-select:hover {
+  border-color: rgba(var(--bs-primary-rgb), 0.45);
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__grain-select:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 1px;
 }
 .mar-bs-allocation-scheduler .mar-allocation-scheduler__grid {
   display: flex;
-  flex: 1;
+  flex: 1 1 0;
+  min-height: 0;
   overflow: hidden;
   position: relative;
 }
@@ -14057,93 +14139,344 @@ textarea.form-control-lg {
   display: none;
 }
 .mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter {
-  flex: 0 0 4px;
-  background: var(--bs-border-color);
-  cursor: col-resize;
+  flex: 0 0 var(--allocation-scheduler-splitter-width, 8px);
+  background: var(--allocation-scheduler-splitter-background, var(--bs-border-color));
+  cursor: var(--allocation-scheduler-splitter-cursor, col-resize);
   z-index: 3;
+  transition: background-color 0.15s;
+  position: relative;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  cursor: var(--allocation-scheduler-splitter-cursor, col-resize);
 }
 .mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter:hover {
-  background: var(--bs-primary);
+  background: var(--allocation-scheduler-splitter-hover-background, var(--bs-primary));
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter--dragging {
+  background: var(--allocation-scheduler-splitter-active-background, var(--bs-primary));
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter--focused {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: -1px;
+  background: var(--allocation-scheduler-splitter-hover-background, var(--bs-primary));
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter--locked {
+  cursor: default;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter--locked::before {
+  cursor: default;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter--locked:hover {
+  background: var(--allocation-scheduler-splitter-background, var(--bs-border-color));
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: -1px;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter-restore {
+  flex: 0 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--allocation-scheduler-splitter-collapse-indicator-background, var(--bs-tertiary-bg, var(--bs-light)));
+  border: 1px solid var(--bs-border-color);
+  cursor: pointer;
+  z-index: 3;
+  transition: background-color 0.15s;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter-restore span {
+  color: var(--allocation-scheduler-splitter-collapse-indicator-icon-color, var(--bs-primary));
+  font-size: 0.75rem;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter-restore:hover {
+  background: rgba(var(--bs-primary-rgb), 0.08);
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter-restore:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: -1px;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter-restore--left {
+  border-right: none;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__splitter-restore--right {
+  border-left: none;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__pane--collapsed {
+  width: 0 !important;
+  overflow: hidden !important;
+  border: none !important;
 }
 .mar-bs-allocation-scheduler .mar-allocation-scheduler__timeline-panel {
   flex: 1 1 0;
+  min-width: 0;
   overflow: auto;
 }
 .mar-bs-allocation-scheduler .mar-allocation-scheduler__table {
   border-collapse: collapse;
   border-spacing: 0;
 }
-.mar-bs-allocation-scheduler .mar-allocation-scheduler__resource-col {
-  padding: 0.5rem 0.75rem;
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__resource-panel .mar-allocation-scheduler__table {
+  width: 100%;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__timeline-panel .mar-allocation-scheduler__table {
+  min-width: 100%;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__header-row {
+  border-bottom: 2px solid var(--bs-border-color);
+  background: var(--bs-tertiary-bg, var(--bs-light, #f8f9fa));
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__header-row th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--bs-tertiary-bg, var(--bs-light, #f8f9fa));
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__resource-col {
+  padding: 0.375rem var(--bs-scheduler-col-pad-x);
   border-right: 1px solid var(--bs-border-color);
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: left;
-}
-.mar-bs-allocation-scheduler .mar-allocation-scheduler__resource-col[role=gridcell] {
-  font-weight: 400;
-}
-.mar-bs-allocation-scheduler .mar-allocation-scheduler__time-header {
-  padding: 0.5rem 0.25rem;
-  text-align: center;
-  font-weight: 600;
-  white-space: nowrap;
-  border-right: 1px solid var(--bs-border-color);
-}
-.mar-bs-allocation-scheduler .mar-allocation-scheduler__row {
-  border-bottom: 1px solid var(--bs-border-color);
-}
-.mar-bs-allocation-scheduler .mar-allocation-scheduler__row td, .mar-bs-allocation-scheduler .mar-allocation-scheduler__row th {
-  height: 40px;
+  vertical-align: middle;
+  height: var(--bs-scheduler-row-height);
   box-sizing: border-box;
 }
-.mar-bs-allocation-scheduler .mar-allocation-scheduler__cell {
-  padding: 0.375rem 0.25rem;
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__resource-col > * {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  overflow: hidden;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__resource-col[role=columnheader] {
+  position: relative;
+  overflow: visible;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--bs-secondary-color, var(--bs-secondary));
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__resource-col[role=gridcell] {
+  font-weight: 400;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__time-header {
+  padding: var(--bs-scheduler-cell-pad-y) var(--bs-scheduler-cell-pad-x);
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 1px solid var(--bs-border-color);
+  color: var(--bs-secondary-color, #6c757d);
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__time-header--day {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row {
+  border-bottom: 1px solid var(--bs-border-color);
+  transition: background-color 0.1s;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row td, .mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row th {
+  height: var(--bs-scheduler-row-height);
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.022);
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row:hover {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row--selected {
+  background-color: rgba(var(--bs-primary-rgb), 0.07) !important;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row--over-allocated {
+  background-color: rgba(var(--bs-danger-rgb), 0.07) !important;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell {
+  padding: var(--bs-scheduler-cell-pad-y) var(--bs-scheduler-cell-pad-x);
   text-align: center;
   border-right: 1px solid var(--bs-border-color);
   position: relative;
   cursor: default;
+  transition: background-color 0.1s;
 }
-.mar-bs-allocation-scheduler .mar-allocation-scheduler__cell--editable {
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell--editable {
   cursor: text;
 }
-.mar-bs-allocation-scheduler .mar-allocation-scheduler__cell--editable:hover {
-  background-color: rgba(var(--bs-primary-rgb), 0.04);
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell--editable:hover {
+  background-color: rgba(var(--bs-primary-rgb), 0.05);
 }
-.mar-bs-allocation-scheduler .mar-allocation-scheduler__cell-value {
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell--selected {
+  background-color: rgba(var(--bs-primary-rgb), 0.12) !important;
+  box-shadow: inset 0 0 0 2px var(--bs-primary);
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell--conflict {
+  background-color: var(--bs-scheduler-conflict-bg) !important;
+  box-shadow: var(--bs-scheduler-conflict-shadow);
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell--disabled {
+  background-color: var(--bs-scheduler-disabled-bg) !important;
+  background-image: var(--bs-scheduler-disabled-pattern) !important;
+  color: var(--bs-scheduler-disabled-color) !important;
+  cursor: not-allowed;
+  --bs-table-bg: transparent;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell--active {
+  background-color: rgba(var(--bs-primary-rgb), 0.12) !important;
+  box-shadow: inset 0 0 0 2px var(--bs-primary);
+  outline: none;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell--drag-target {
+  background-color: rgba(var(--bs-primary-rgb), 0.17) !important;
+  box-shadow: inset 0 0 0 1px var(--bs-primary);
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell--editing {
+  padding: 0;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell--editing input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: 2px solid var(--bs-primary);
+  outline-offset: -2px;
+  text-align: center;
+  font-size: inherit;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+  background: var(--bs-body-bg);
+  padding: var(--bs-scheduler-cell-pad-y) var(--bs-scheduler-cell-pad-x);
+  box-sizing: border-box;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__fill-handle {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 8px;
+  height: 8px;
+  background: var(--bs-primary);
+  border: 2px solid var(--bs-body-bg);
+  border-radius: 1px;
+  cursor: crosshair;
+  z-index: 4;
+  pointer-events: auto;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__fill-handle:hover {
+  filter: brightness(0.85);
+  transform: scale(1.25);
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__cell--active {
+  background-color: rgba(var(--bs-primary-rgb), 0.12) !important;
+  box-shadow: inset 0 0 0 2px var(--bs-primary);
+  outline: none;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__cell--editing {
+  padding: 0;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__cell--editing input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: 2px solid var(--bs-primary);
+  outline-offset: -2px;
+  text-align: center;
+  font-size: inherit;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+  background: var(--bs-body-bg);
+  padding: var(--bs-scheduler-cell-pad-y) var(--bs-scheduler-cell-pad-x);
+  box-sizing: border-box;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell-value {
   font-variant-numeric: tabular-nums;
 }
-.mar-bs-allocation-scheduler .mar-allocation-scheduler__delta {
-  margin-left: 0.25rem;
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell-value--currency {
+  color: var(--bs-success);
 }
-.mar-bs-allocation-scheduler .mar-allocation-scheduler__ghost-bar {
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__delta {
+  font-size: 0.7rem;
+  margin-left: 0.2rem;
+  font-variant-numeric: tabular-nums;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__ghost-bar {
   border: 1px dashed var(--bs-border-color);
   border-radius: 2px;
-  padding: 0 0.25rem;
-  margin-right: 0.25rem;
-  font-size: 0.75rem;
+  padding: 0 0.2rem;
+  margin-right: 0.2rem;
+  font-size: 0.7rem;
 }
-.mar-bs-allocation-scheduler .mar-allocation-scheduler__context-menu {
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__context-menu {
   min-width: 200px;
+  font-size: 0.875rem;
 }
-.mar-bs-allocation-scheduler .mar-allocation-scheduler__empty {
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__context-menu button {
+  display: block;
+  width: 100%;
+  padding: 0.35rem 1rem;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--bs-body-color);
+  white-space: nowrap;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__context-menu button:hover {
+  background: var(--bs-tertiary-bg, var(--bs-light));
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__context-menu button:disabled {
+  color: var(--bs-secondary-color, #6c757d);
+  cursor: default;
+}
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__empty {
   min-height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.mar-bs-allocation-scheduler .mar-allocation-scheduler__loader {
+.mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__loader {
   min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.mar-bs-allocation-scheduler .mar-allocation-scheduler__header-row {
-  border-bottom: 2px solid var(--bs-border-color);
-  background: var(--bs-light);
-}
-.mar-bs-allocation-scheduler .mar-allocation-scheduler__header-row th {
-  position: sticky;
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__col-resize-handle {
+  position: absolute;
   top: 0;
-  z-index: 2;
-  background: var(--bs-light);
+  right: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+  z-index: 5;
+  user-select: none;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__col-resize-handle::after {
+  content: "";
+  position: absolute;
+  top: 20%;
+  bottom: 20%;
+  right: 1px;
+  width: 2px;
+  background: transparent;
+  border-radius: 1px;
+  transition: background-color 0.12s;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__col-resize-handle:hover::after {
+  background: rgba(var(--bs-primary-rgb), 0.5);
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__col-resize-handle--active::after {
+  background: var(--bs-primary) !important;
+  top: 10%;
+  bottom: 10%;
 }

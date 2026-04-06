@@ -1,59 +1,158 @@
 // MariloAllocationScheduler - Bootstrap Bridge Styles
 // Maps mar-bs-allocation-scheduler classes to Bootstrap utilities
 // and adds custom rules where Bootstrap has no equivalent.
+//
+// Class naming contract:
+//   - Root and provider-injected classes:  mar-bs-allocation-scheduler[__element[--modifier]]
+//   - Hardcoded structural classes:        mar-allocation-scheduler__[element[--modifier]]
+//     (splitter, grid, panels, table, header-row, grain-select, cell--editing)
+//
+// Design tokens (override on the root element or a parent scope):
+//   --bs-scheduler-row-height           row height in both panels (default 38px)
+//   --bs-scheduler-cell-pad-x           timeline cell horizontal padding
+//   --bs-scheduler-cell-pad-y           timeline cell vertical padding
+//   --bs-scheduler-col-pad-x            resource column horizontal padding
+//   --bs-scheduler-disabled-bg          disabled cell background
+//   --bs-scheduler-disabled-color       disabled cell text color
+//   --bs-scheduler-disabled-pattern     disabled cell diagonal-stripe gradient
+//   --bs-scheduler-conflict-bg          conflict cell background
+//   --bs-scheduler-conflict-shadow      conflict cell inset border (box-shadow)
+//   --bs-scheduler-toolbar-gap          gap between toolbar controls
 
-// Bootstrap bridge — root class from provider is `mar-bs-allocation-scheduler`
-// but structural child classes use the `mar-allocation-scheduler__*` prefix
-// (hardcoded in the component markup for provider independence).
 .mar-bs-allocation-scheduler {
+  // ── Design tokens ───────────────────────────────────
+  --bs-scheduler-row-height:         38px;
+  --bs-scheduler-cell-pad-x:         0.4rem;
+  --bs-scheduler-cell-pad-y:         0.3rem;
+  --bs-scheduler-col-pad-x:          0.625rem;
+  --bs-scheduler-toolbar-gap:        0.375rem;
+  --bs-scheduler-disabled-bg:        #e9ecef;
+  --bs-scheduler-disabled-color:     #6c757d;
+  --bs-scheduler-disabled-pattern:   repeating-linear-gradient(
+    135deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.07) 3px,
+    rgba(0, 0, 0, 0.07) 6px
+  );
+  --bs-scheduler-conflict-bg:        rgba(var(--bs-danger-rgb), 0.13);
+  --bs-scheduler-conflict-shadow:    inset 0 0 0 1px rgba(var(--bs-danger-rgb), 0.45);
+
+  // ── Root layout ─────────────────────────────────────
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--bs-border-color);
   border-radius: var(--bs-border-radius);
   background: var(--bs-body-bg);
   overflow: hidden;
+  font-size: 0.875rem;
+  font-family: var(--bs-font-sans-serif, system-ui, sans-serif);
 }
 
-// Structural classes — must use `mar-allocation-scheduler` prefix to match markup.
-// Scoped under the Bootstrap root for specificity.
+// ── Scoped structural and provider-injected styles ───
 .mar-bs-allocation-scheduler {
-  .mar-allocation-scheduler__toolbar {
+
+  // ── Toolbar ──────────────────────────────────────────
+  .mar-bs-allocation-scheduler__toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--bs-scheduler-toolbar-gap);
+    padding: 0.375rem 0.75rem;
     border-bottom: 1px solid var(--bs-border-color);
-    background: var(--bs-light);
-  }
+    background: var(--bs-tertiary-bg, var(--bs-light, #f8f9fa));
+    flex-shrink: 0;
 
-  .mar-allocation-scheduler__scenario-strip {
-    border-bottom: 1px solid var(--bs-border-color);
-    background: var(--bs-light);
-    overflow-x: auto;
-  }
+    // Toolbar nav/action buttons
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.2rem 0.55rem;
+      font-size: 0.8125rem;
+      line-height: 1.4;
+      border: 1px solid var(--bs-border-color);
+      border-radius: var(--bs-border-radius-sm);
+      background: var(--bs-body-bg);
+      color: var(--bs-body-color);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.12s, border-color 0.12s;
 
-  .mar-allocation-scheduler__scenario-chip {
-    cursor: pointer;
-    transition: opacity 0.15s;
+      &:hover {
+        background: rgba(var(--bs-primary-rgb), 0.06);
+        border-color: rgba(var(--bs-primary-rgb), 0.45);
+        color: var(--bs-primary);
+      }
 
-    &:hover {
-      opacity: 0.85;
+      &:focus-visible {
+        outline: 2px solid var(--bs-primary);
+        outline-offset: 1px;
+      }
     }
   }
 
-  // ── Grain Selector ────────────────────────────────────
-  .mar-allocation-scheduler__grain-select {
-    padding: 0.25rem 0.5rem;
-    border: 1px solid var(--bs-border-color);
-    border-radius: var(--bs-border-radius);
-    background: var(--bs-body-bg);
-    font-size: 0.875rem;
+  // ── Scenario Strip ───────────────────────────────────
+  .mar-bs-allocation-scheduler__scenario-strip {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.375rem 0.75rem;
+    border-bottom: 1px solid var(--bs-border-color);
+    background: var(--bs-tertiary-bg, var(--bs-light, #f8f9fa));
+    overflow-x: auto;
+    flex-shrink: 0;
+  }
+
+  // ── Scenario Chip ────────────────────────────────────
+  // Provider emits badge + bg-primary/bg-secondary utilities.
+  // These overrides tune the chip to look scheduler-native.
+  .mar-bs-allocation-scheduler__scenario-chip {
     cursor: pointer;
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.25rem 0.65rem;
+    border-radius: 12px;
+    white-space: nowrap;
+    transition: opacity 0.12s, box-shadow 0.12s;
+
+    &:hover {
+      opacity: 0.88;
+    }
+
+    &:focus-visible {
+      outline: 2px solid rgba(255, 255, 255, 0.6);
+      outline-offset: 1px;
+    }
+  }
+
+  // ── Grain Selector (hardcoded class in markup) ────────
+  .mar-allocation-scheduler__grain-select {
+    padding: 0.2rem 0.5rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: var(--bs-border-radius-sm);
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    font-size: 0.8125rem;
+    font-family: inherit;
+    cursor: pointer;
+    line-height: 1.4;
+
+    &:hover {
+      border-color: rgba(var(--bs-primary-rgb), 0.45);
+    }
 
     &:focus-visible {
       outline: 2px solid var(--bs-primary);
-      outline-offset: -1px;
+      outline-offset: 1px;
     }
   }
 
   // ── Split-Panel Grid Surface ──────────────────────────
+  // Hardcoded in markup — keeps mar-allocation-scheduler__ prefix.
   .mar-allocation-scheduler__grid {
     display: flex;
-    flex: 1;
+    flex: 1 1 0;
+    min-height: 0;
     overflow: hidden;
     position: relative;
   }
@@ -65,9 +164,11 @@
     background: var(--bs-body-bg);
     z-index: 2;
     scrollbar-width: none;
+
     &::-webkit-scrollbar { display: none; }
   }
 
+  // ── Splitter handle (hardcoded class) ─────────────────
   .mar-allocation-scheduler__splitter {
     flex: 0 0 var(--allocation-scheduler-splitter-width, 8px);
     background: var(--allocation-scheduler-splitter-background, var(--bs-border-color));
@@ -76,7 +177,6 @@
     transition: background-color 0.15s;
     position: relative;
 
-    // Expanded hit area (24px)
     &::before {
       content: '';
       position: absolute;
@@ -105,9 +205,7 @@
     &--locked {
       cursor: default;
 
-      &::before {
-        cursor: default;
-      }
+      &::before { cursor: default; }
 
       &:hover {
         background: var(--allocation-scheduler-splitter-background, var(--bs-border-color));
@@ -120,13 +218,13 @@
     }
   }
 
-  // ── Splitter Restore Zones ──────────────────────────────────
+  // ── Splitter Restore Zones (hardcoded class) ──────────
   .mar-allocation-scheduler__splitter-restore {
     flex: 0 0 24px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--allocation-scheduler-splitter-collapse-indicator-background, var(--bs-light));
+    background: var(--allocation-scheduler-splitter-collapse-indicator-background, var(--bs-tertiary-bg, var(--bs-light)));
     border: 1px solid var(--bs-border-color);
     cursor: pointer;
     z-index: 3;
@@ -146,16 +244,11 @@
       outline-offset: -1px;
     }
 
-    &--left {
-      border-right: none;
-    }
-
-    &--right {
-      border-left: none;
-    }
+    &--left  { border-right: none; }
+    &--right { border-left: none;  }
   }
 
-  // ── Pane collapse modifier ──────────────────────────────────
+  // ── Pane collapse modifier (hardcoded class) ──────────
   .mar-allocation-scheduler__pane--collapsed {
     width: 0 !important;
     overflow: hidden !important;
@@ -164,91 +257,186 @@
 
   .mar-allocation-scheduler__timeline-panel {
     flex: 1 1 0;
+    min-width: 0;
     overflow: auto;
   }
 
+  // ── Table (hardcoded class, both panels) ──────────────
+  // No width: 100% here — scoped below.
+  // Resource panel: 100% fills the panel (panel width = sum of column widths).
+  // Timeline panel: natural/auto width so column widths from <col> are NOT
+  //   compressed to fit a narrower container; the panel uses overflow:auto to
+  //   handle the horizontal overflow when many buckets are visible.
   .mar-allocation-scheduler__table {
     border-collapse: collapse;
     border-spacing: 0;
+  }
+
+  .mar-allocation-scheduler__resource-panel .mar-allocation-scheduler__table {
     width: 100%;
   }
 
-  // ── Resource Columns ─────────────────────────────────
-  .mar-allocation-scheduler__resource-col {
-    padding: 0.5rem 0.75rem;
+  // Timeline table: let it be as wide as its column definitions.
+  // min-width: 100% fills sparse views (few buckets, wide panel) without
+  // stretching columns (browser does not stretch fixed-layout columns past their
+  // declared widths when min-width forces the table wider in modern engines).
+  .mar-allocation-scheduler__timeline-panel .mar-allocation-scheduler__table {
+    min-width: 100%;
+  }
+
+  // ── Header Row (hardcoded class) ──────────────────────
+  .mar-allocation-scheduler__header-row {
+    border-bottom: 2px solid var(--bs-border-color);
+    background: var(--bs-tertiary-bg, var(--bs-light, #f8f9fa));
+
+    th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: var(--bs-tertiary-bg, var(--bs-light, #f8f9fa));
+    }
+  }
+
+  // ── Resource Column Cells (provider-injected class) ───
+  .mar-bs-allocation-scheduler__resource-col {
+    padding: 0.375rem var(--bs-scheduler-col-pad-x);
     border-right: 1px solid var(--bs-border-color);
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     text-align: left;
+    vertical-align: middle;
+    height: var(--bs-scheduler-row-height);
+    box-sizing: border-box;
+
+    // Cell content: enforce flex so avatar+text templates don't overflow
+    > * {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      overflow: hidden;
+    }
+
+    &[role="columnheader"] {
+      position: relative;       // anchor for the resize handle
+      overflow: visible;        // allow handle to extend to cell edge without clipping
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      color: var(--bs-secondary-color, var(--bs-secondary));
+    }
 
     &[role="gridcell"] {
       font-weight: 400;
     }
   }
 
-  // ── Time Headers ─────────────────────────────────────
-  .mar-allocation-scheduler__time-header {
-    padding: 0.5rem 0.25rem;
+  // ── Time Headers (provider-injected class) ────────────
+  .mar-bs-allocation-scheduler__time-header {
+    padding: var(--bs-scheduler-cell-pad-y) var(--bs-scheduler-cell-pad-x);
     text-align: center;
+    font-size: 0.75rem;
     font-weight: 600;
-    white-space: nowrap;
+    letter-spacing: 0.02em;
+    white-space: nowrap;    // no-wrap is critical — combined with table-layout:fixed
+    overflow: hidden;       // clip any overflow from narrow columns
     border-right: 1px solid var(--bs-border-color);
+    color: var(--bs-secondary-color, #6c757d);
+
+    // Day view: tighter label hierarchy
+    &--day {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
   }
 
-  // ── Resource Rows ────────────────────────────────────
-  .mar-allocation-scheduler__row {
+  // ── Resource Rows (provider-injected class) ───────────
+  .mar-bs-allocation-scheduler__row {
     border-bottom: 1px solid var(--bs-border-color);
+    transition: background-color 0.1s;
 
     td, th {
-      height: 40px;
+      height: var(--bs-scheduler-row-height);
       box-sizing: border-box;
-      border-bottom: 1px solid var(--bs-border-color);
+      vertical-align: middle;
     }
 
-    // Striped rows (like DataGrid)
+    // Striped rows
     &:nth-child(even) {
-      background-color: rgba(0, 0, 0, 0.025);
+      background-color: rgba(0, 0, 0, 0.022);
     }
 
     &:hover {
-      background-color: rgba(0, 0, 0, 0.04);
+      background-color: rgba(0, 0, 0, 0.04) !important;
+    }
+
+    // Row-level state modifiers
+    &--selected {
+      background-color: rgba(var(--bs-primary-rgb), 0.07) !important;
+    }
+
+    &--over-allocated {
+      background-color: rgba(var(--bs-danger-rgb), 0.07) !important;
     }
   }
 
-  // ── Allocation Cells ─────────────────────────────────
-  .mar-allocation-scheduler__cell {
-    padding: 0.375rem 0.25rem;
+  // ── Allocation Cells (provider-injected class) ────────
+  .mar-bs-allocation-scheduler__cell {
+    padding: var(--bs-scheduler-cell-pad-y) var(--bs-scheduler-cell-pad-x);
     text-align: center;
     border-right: 1px solid var(--bs-border-color);
-    border-bottom: 1px solid var(--bs-border-color);
     position: relative;
     cursor: default;
+    transition: background-color 0.1s;
 
     &--editable {
       cursor: text;
 
       &:hover {
-        background-color: rgba(var(--bs-primary-rgb), 0.04);
+        background-color: rgba(var(--bs-primary-rgb), 0.05);
       }
     }
 
+    // Selected: blue fill + inset ring (color + shape — accessible)
     &--selected {
-      background-color: rgba(var(--bs-primary-rgb), 0.1);
+      background-color: rgba(var(--bs-primary-rgb), 0.12) !important;
       box-shadow: inset 0 0 0 2px var(--bs-primary);
     }
 
+    // Conflict: red tint + inset border (color + shape)
     &--conflict {
-      background-color: rgba(var(--bs-danger-rgb), 0.1);
+      background-color: var(--bs-scheduler-conflict-bg) !important;
+      box-shadow: var(--bs-scheduler-conflict-shadow);
     }
 
+    // Disabled: diagonal stripes + muted text (pattern + color — accessible)
     &--disabled {
-      background-color: var(--bs-secondary-bg);
-      color: var(--bs-secondary-color);
+      background-color: var(--bs-scheduler-disabled-bg) !important;
+      background-image: var(--bs-scheduler-disabled-pattern) !important;
+      color: var(--bs-scheduler-disabled-color) !important;
       cursor: not-allowed;
+
+      // Strip out any Bootstrap table-primary/table-danger overrides on disabled cells
+      --bs-table-bg: transparent;
     }
 
+    // Active cell: keyboard-focus point, shows fill handle
+    &--active {
+      background-color: rgba(var(--bs-primary-rgb), 0.12) !important;
+      box-shadow: inset 0 0 0 2px var(--bs-primary);
+      outline: none;
+    }
+
+    // Drag-fill target: distinct highlight
+    &--drag-target {
+      background-color: rgba(var(--bs-primary-rgb), 0.17) !important;
+      box-shadow: inset 0 0 0 1px var(--bs-primary);
+    }
+
+    // Edit mode: inline input fills cell
     &--editing {
       padding: 0;
 
@@ -257,64 +445,168 @@
         height: 100%;
         border: none;
         outline: 2px solid var(--bs-primary);
+        outline-offset: -2px;
         text-align: center;
         font-size: inherit;
         font-family: inherit;
         font-variant-numeric: tabular-nums;
         background: var(--bs-body-bg);
-        padding: 0.375rem 0.25rem;
+        padding: var(--bs-scheduler-cell-pad-y) var(--bs-scheduler-cell-pad-x);
         box-sizing: border-box;
       }
     }
   }
 
-  // ── Cell Value ───────────────────────────────────────
-  .mar-allocation-scheduler__cell-value {
+  // ── Fill Handle (hardcoded class — same for all themes) ──
+  .mar-allocation-scheduler__fill-handle {
+    position: absolute;
+    right: -4px;
+    bottom: -4px;
+    width: 8px;
+    height: 8px;
+    background: var(--bs-primary);
+    border: 2px solid var(--bs-body-bg);
+    border-radius: 1px;
+    cursor: crosshair;
+    z-index: 4;
+    pointer-events: auto;
+
+    &:hover {
+      filter: brightness(0.85);
+      transform: scale(1.25);
+    }
+  }
+
+  // Active cell (hardcoded class applied in Razor markup)
+  .mar-allocation-scheduler__cell--active {
+    background-color: rgba(var(--bs-primary-rgb), 0.12) !important;
+    box-shadow: inset 0 0 0 2px var(--bs-primary);
+    outline: none;
+  }
+
+  // Hardcoded --editing modifier added directly in markup
+  .mar-allocation-scheduler__cell--editing {
+    padding: 0;
+
+    input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      outline: 2px solid var(--bs-primary);
+      outline-offset: -2px;
+      text-align: center;
+      font-size: inherit;
+      font-family: inherit;
+      font-variant-numeric: tabular-nums;
+      background: var(--bs-body-bg);
+      padding: var(--bs-scheduler-cell-pad-y) var(--bs-scheduler-cell-pad-x);
+      box-sizing: border-box;
+    }
+  }
+
+  // ── Cell Value (provider-injected class) ──────────────
+  .mar-bs-allocation-scheduler__cell-value {
+    font-variant-numeric: tabular-nums;
+
+    &--currency { color: var(--bs-success); }
+  }
+
+  // ── Delta Indicator (provider-injected class) ─────────
+  .mar-bs-allocation-scheduler__delta {
+    font-size: 0.7rem;
+    margin-left: 0.2rem;
     font-variant-numeric: tabular-nums;
   }
 
-  // ── Delta Indicator ──────────────────────────────────
-  .mar-allocation-scheduler__delta {
-    margin-left: 0.25rem;
-  }
-
-  // ── Ghost Bar ────────────────────────────────────────
-  .mar-allocation-scheduler__ghost-bar {
+  // ── Ghost Bar (provider-injected class) ───────────────
+  .mar-bs-allocation-scheduler__ghost-bar {
     border: 1px dashed var(--bs-border-color);
     border-radius: 2px;
-    padding: 0 0.25rem;
-    margin-right: 0.25rem;
-    font-size: 0.75rem;
+    padding: 0 0.2rem;
+    margin-right: 0.2rem;
+    font-size: 0.7rem;
   }
 
-  // ── Context Menu ─────────────────────────────────────
-  .mar-allocation-scheduler__context-menu {
+  // ── Context Menu (provider-injected class) ────────────
+  // Provider also applies .dropdown-menu which gives bg/shadow/border.
+  // These rules add scheduler-specific sizing.
+  .mar-bs-allocation-scheduler__context-menu {
     min-width: 200px;
+    font-size: 0.875rem;
+
+    button {
+      display: block;
+      width: 100%;
+      padding: 0.35rem 1rem;
+      text-align: left;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--bs-body-color);
+      white-space: nowrap;
+
+      &:hover {
+        background: var(--bs-tertiary-bg, var(--bs-light));
+      }
+
+      &:disabled {
+        color: var(--bs-secondary-color, #6c757d);
+        cursor: default;
+      }
+    }
   }
 
-  // ── Empty State ──────────────────────────────────────
-  .mar-allocation-scheduler__empty {
+  // ── Empty / Loader (provider-injected class) ──────────
+  .mar-bs-allocation-scheduler__empty {
     min-height: 120px;
     display: flex;
     align-items: center;
     justify-content: center;
   }
 
-  // ── Loader ───────────────────────────────────────────
-  .mar-allocation-scheduler__loader {
+  .mar-bs-allocation-scheduler__loader {
     min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  // ── Header Row ───────────────────────────────────────
-  .mar-allocation-scheduler__header-row {
-    border-bottom: 2px solid var(--bs-border-color);
-    background: var(--bs-light);
+  // ── Column Resize Handle (hardcoded class — theme-neutral) ─
+  // Rendered by the Razor markup inside resource column <th> cells.
+  // Uses position:absolute relative to the <th> (which has position:relative
+  // via the [role="columnheader"] rule above).
+  .mar-allocation-scheduler__col-resize-handle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 8px;           // visible drag zone width
+    cursor: col-resize;
+    z-index: 5;
+    user-select: none;
 
-    th {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      background: var(--bs-light);
+    // Thin visual indicator — appears on hover/drag
+    &::after {
+      content: '';
+      position: absolute;
+      top: 20%;
+      bottom: 20%;
+      right: 1px;
+      width: 2px;
+      background: transparent;
+      border-radius: 1px;
+      transition: background-color 0.12s;
     }
+
+    &:hover::after {
+      background: rgba(var(--bs-primary-rgb), 0.5);
+    }
+  }
+
+  // Active resize state — set by JS during drag
+  .mar-allocation-scheduler__col-resize-handle--active::after {
+    background: var(--bs-primary) !important;
+    top: 10%;
+    bottom: 10%;
   }
 }

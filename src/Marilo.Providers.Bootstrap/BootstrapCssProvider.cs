@@ -828,53 +828,56 @@ public class BootstrapCssProvider : IMariloCssProvider
     public string SchedulerClass() => "mar-bs-scheduler";
 
     // AllocationScheduler
-    public string AllocationSchedulerClass() => "table-responsive mar-bs-allocation-scheduler";
+    // Note: table-responsive removed — it adds overflow-x:auto which conflicts with internal scroll.
+    public string AllocationSchedulerClass() => "mar-bs-allocation-scheduler";
 
-    public string AllocationSchedulerToolbarClass() => "d-flex gap-2 mb-2 mar-bs-allocation-scheduler__toolbar";
+    // Note: d-flex/gap moved to SCSS; mb-2 removed to avoid gap between toolbar and grid.
+    public string AllocationSchedulerToolbarClass() => "mar-bs-allocation-scheduler__toolbar";
 
     public string AllocationSchedulerResourceColumnClass(bool isPinned) =>
         new CssClassBuilder()
             .AddClass("mar-bs-allocation-scheduler__resource-col")
-            .AddClass("position-sticky start-0 bg-white", isPinned)
+            .AddClass("position-sticky start-0", isPinned)
             .Build();
 
     public string AllocationSchedulerTimeHeaderClass(TimeGranularity grain) =>
         new CssClassBuilder()
-            .AddClass("mar-bs-allocation-scheduler__time-header text-center text-nowrap")
+            .AddClass("mar-bs-allocation-scheduler__time-header")
             .AddClass($"mar-bs-allocation-scheduler__time-header--{grain.ToString().ToLower()}")
             .Build();
 
     public string AllocationSchedulerRowClass(bool isSelected, bool isOverAllocated) =>
         new CssClassBuilder()
             .AddClass("mar-bs-allocation-scheduler__row")
-            .AddClass("table-active", isSelected)
-            .AddClass("table-danger", isOverAllocated)
+            .AddClass("mar-bs-allocation-scheduler__row--selected", isSelected)
+            .AddClass("mar-bs-allocation-scheduler__row--over-allocated", isOverAllocated)
             .Build();
 
     public string AllocationSchedulerCellClass(bool isEditable, bool isSelected, bool isConflict, bool isDisabled, bool isDragTarget) =>
         new CssClassBuilder()
-            .AddClass("mar-bs-allocation-scheduler__cell text-center")
+            .AddClass("mar-bs-allocation-scheduler__cell")
             .AddClass("mar-bs-allocation-scheduler__cell--editable", isEditable)
-            .AddClass("table-primary", isSelected)
-            .AddClass("table-danger", isConflict)
-            .AddClass("text-muted bg-light", isDisabled)
-            .AddClass("border-primary", isDragTarget)
+            .AddClass("mar-bs-allocation-scheduler__cell--selected", isSelected)
+            .AddClass("mar-bs-allocation-scheduler__cell--conflict", isConflict)
+            .AddClass("mar-bs-allocation-scheduler__cell--disabled", isDisabled)
+            .AddClass("mar-bs-allocation-scheduler__cell--drag-target", isDragTarget)
             .Build();
 
     public string AllocationSchedulerCellValueClass(AllocationValueMode mode) =>
         new CssClassBuilder()
             .AddClass("mar-bs-allocation-scheduler__cell-value")
-            .AddClass(mode == AllocationValueMode.Currency ? "text-success" : "")
+            .AddClass(mode == AllocationValueMode.Currency ? "mar-bs-allocation-scheduler__cell-value--currency" : "")
             .Build();
 
     public string AllocationSchedulerDeltaClass(DeltaDisplayMode mode, bool isOver, bool isUnder) =>
         new CssClassBuilder()
-            .AddClass("mar-bs-allocation-scheduler__delta small")
+            .AddClass("mar-bs-allocation-scheduler__delta")
             .AddClass("text-danger", isOver)
             .AddClass("text-warning", isUnder)
             .Build();
 
-    public string AllocationSchedulerScenarioStripClass() => "d-flex gap-2 mb-2 mar-bs-allocation-scheduler__scenario-strip";
+    // Note: d-flex/gap moved to SCSS; mb-2 removed.
+    public string AllocationSchedulerScenarioStripClass() => "mar-bs-allocation-scheduler__scenario-strip";
 
     public string AllocationSchedulerScenarioChipClass(bool isActive, bool isLocked) =>
         new CssClassBuilder()

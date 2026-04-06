@@ -88,7 +88,8 @@
                         <colgroup>
                             @foreach (var col in _columns.Where(c => c.Visible))
                             {
-                                <col style="@GetColumnWidthStyle(col)" />
+                                <col style="@GetColumnWidthStyle(col)"
+                                     data-col-id="@(_columnSizingIds.TryGetValue(col, out var _cid) ? _cid : string.Empty)" />
                             }
                         </colgroup>
                         <thead>
@@ -104,6 +105,12 @@
                                         else
                                         {
                                             @col.Title
+                                        }
+                                        @if (col.AllowResize && _columnSizingIds.TryGetValue(col, out var _rszId))
+                                        {
+                                            <div class="mar-allocation-scheduler__col-resize-handle"
+                                                 data-col-id="@_rszId"
+                                                 aria-hidden="true"></div>
                                         }
                                     </th>
                                 }
@@ -205,12 +212,13 @@
                                             var record = GetRecord(resourceKey, bucket);
                                             var isEditable = IsCellEditable(bucket);
                                             var isSelected = IsCellSelected(resourceKey, bucket);
+                                            var isActive = IsCellActive(resourceKey, bucket);
                                             var isConflict = IsCellConflict(resourceKey, bucket);
                                             var isDisabled = IsCellDisabled(bucket);
 
                                             var isCellEditing = _editMode && Equals(_editResourceKey, resourceKey) && _editBucket?.Start == bucket.Start;
 
-                                            <td class="@($"{CssProvider.AllocationSchedulerCellClass(isEditable, isSelected, isConflict, isDisabled, false)}{(isCellEditing ? " mar-allocation-scheduler__cell--editing" : "")}")"
+                                            <td class="@($"{CssProvider.AllocationSchedulerCellClass(isEditable, isSelected, isConflict, isDisabled, false)}{(isActive ? " mar-allocation-scheduler__cell--active" : "")}{(isCellEditing ? " mar-allocation-scheduler__cell--editing" : "")}")"
                                                 role="gridcell"
                                                 tabindex="@(isEditable ? 0 : -1)"
                                                 data-resource-key="@resourceKey"
@@ -260,6 +268,10 @@
                                                             @FormatDelta(delta)
                                                         </span>
                                                     }
+                                                }
+                                                @if (AllowDragFill && isActive && isEditable && !isDisabled && !isCellEditing)
+                                                {
+                                                    <div class="mar-allocation-scheduler__fill-handle" aria-hidden="true"></div>
                                                 }
                                             </td>
                                         }

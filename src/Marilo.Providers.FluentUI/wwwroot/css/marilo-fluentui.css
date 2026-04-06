@@ -5052,6 +5052,19 @@
 .mar-allocation-scheduler__scenario-chip--locked {
   opacity: 0.85;
 }
+.mar-allocation-scheduler__grain-select {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--marilo-color-border, #d1d1d1);
+  border-radius: var(--marilo-border-radius, 4px);
+  background: var(--marilo-color-surface, #ffffff);
+  font-size: 0.8125rem;
+  font-family: inherit;
+  cursor: pointer;
+}
+.mar-allocation-scheduler__grain-select:focus-visible {
+  outline: 2px solid var(--marilo-color-primary, #0f6cbd);
+  outline-offset: -1px;
+}
 .mar-allocation-scheduler__grid {
   display: flex;
   flex: 1;
@@ -5071,14 +5084,79 @@
   display: none;
 }
 .mar-allocation-scheduler__splitter {
-  flex: 0 0 4px;
-  background: var(--marilo-color-border, #d1d1d1);
-  cursor: col-resize;
+  flex: 0 0 var(--allocation-scheduler-splitter-width, 8px);
+  background: var(--allocation-scheduler-splitter-background, var(--marilo-color-border, #d1d1d1));
+  cursor: var(--allocation-scheduler-splitter-cursor, col-resize);
+  z-index: 3;
+  transition: background-color 0.15s;
+  position: relative;
+}
+.mar-allocation-scheduler__splitter::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  cursor: var(--allocation-scheduler-splitter-cursor, col-resize);
+}
+.mar-allocation-scheduler__splitter:hover {
+  background: var(--allocation-scheduler-splitter-hover-background, var(--marilo-color-primary, #0f6cbd));
+}
+.mar-allocation-scheduler__splitter--dragging {
+  background: var(--allocation-scheduler-splitter-active-background, var(--marilo-color-primary, #0f6cbd));
+}
+.mar-allocation-scheduler__splitter--focused {
+  outline: 2px solid var(--marilo-color-primary, #0f6cbd);
+  outline-offset: -1px;
+  background: var(--allocation-scheduler-splitter-hover-background, var(--marilo-color-primary, #0f6cbd));
+}
+.mar-allocation-scheduler__splitter--locked {
+  cursor: default;
+}
+.mar-allocation-scheduler__splitter--locked::before {
+  cursor: default;
+}
+.mar-allocation-scheduler__splitter--locked:hover {
+  background: var(--allocation-scheduler-splitter-background, var(--marilo-color-border, #d1d1d1));
+}
+.mar-allocation-scheduler__splitter:focus-visible {
+  outline: var(--focus-ring, 2px solid var(--marilo-color-primary, #0f6cbd));
+  outline-offset: -1px;
+}
+.mar-allocation-scheduler__splitter-restore {
+  flex: 0 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--allocation-scheduler-splitter-collapse-indicator-background, var(--marilo-color-subtle-background, #fafafa));
+  border: 1px solid var(--marilo-color-border, #d1d1d1);
+  cursor: pointer;
   z-index: 3;
   transition: background-color 0.15s;
 }
-.mar-allocation-scheduler__splitter:hover {
-  background: var(--marilo-color-primary, #0f6cbd);
+.mar-allocation-scheduler__splitter-restore span {
+  color: var(--allocation-scheduler-splitter-collapse-indicator-icon-color, var(--marilo-color-primary, #0f6cbd));
+  font-size: 0.75rem;
+}
+.mar-allocation-scheduler__splitter-restore:hover {
+  background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 8%, #ffffff);
+}
+.mar-allocation-scheduler__splitter-restore:focus-visible {
+  outline: var(--focus-ring, 2px solid var(--marilo-color-primary, #0f6cbd));
+  outline-offset: -1px;
+}
+.mar-allocation-scheduler__splitter-restore--left {
+  border-right: none;
+}
+.mar-allocation-scheduler__splitter-restore--right {
+  border-left: none;
+}
+.mar-allocation-scheduler__pane--collapsed {
+  width: 0 !important;
+  overflow: hidden !important;
+  border: none !important;
 }
 .mar-allocation-scheduler__timeline-panel {
   flex: 1 1 0;
@@ -5107,8 +5185,41 @@
   text-overflow: ellipsis;
   text-align: left;
 }
+.mar-allocation-scheduler__resource-col[role=columnheader] {
+  position: relative;
+  overflow: visible;
+}
 .mar-allocation-scheduler__resource-col[role=gridcell] {
   font-weight: 400;
+}
+.mar-allocation-scheduler__col-resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+  z-index: 5;
+  user-select: none;
+}
+.mar-allocation-scheduler__col-resize-handle::after {
+  content: "";
+  position: absolute;
+  top: 20%;
+  bottom: 20%;
+  right: 1px;
+  width: 2px;
+  background: transparent;
+  border-radius: 1px;
+  transition: background-color 0.12s;
+}
+.mar-allocation-scheduler__col-resize-handle:hover::after {
+  background: rgba(var(--marilo-color-primary-rgb, 15, 108, 189), 0.4);
+}
+.mar-allocation-scheduler__col-resize-handle--active::after {
+  background: var(--marilo-color-primary, #0f6cbd) !important;
+  top: 10%;
+  bottom: 10%;
 }
 .mar-allocation-scheduler__time-header {
   padding: 0.5rem 0.25rem;
@@ -5160,9 +5271,47 @@
   color: var(--marilo-color-disabled-text, #a19f9d);
   cursor: not-allowed;
 }
+.mar-allocation-scheduler__cell--active {
+  background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 10%, #ffffff);
+  box-shadow: inset 0 0 0 2px var(--marilo-color-primary, #0f6cbd);
+  outline: none;
+}
 .mar-allocation-scheduler__cell--drag-target {
   background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 15%, #ffffff);
   box-shadow: inset 0 0 0 1px var(--marilo-color-primary, #0f6cbd);
+}
+.mar-allocation-scheduler__cell--editing {
+  padding: 0;
+}
+.mar-allocation-scheduler__cell--editing input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: 2px solid var(--marilo-color-primary, #0f6cbd);
+  text-align: center;
+  font-size: inherit;
+  font-family: inherit;
+  font-variant-numeric: tabular-nums;
+  background: var(--marilo-color-surface, #ffffff);
+  padding: 0.375rem 0.25rem;
+  box-sizing: border-box;
+}
+.mar-allocation-scheduler__fill-handle {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  width: 8px;
+  height: 8px;
+  background: var(--marilo-color-primary, #0f6cbd);
+  border: 2px solid var(--marilo-color-surface, #ffffff);
+  border-radius: 1px;
+  cursor: crosshair;
+  z-index: 4;
+  pointer-events: auto;
+}
+.mar-allocation-scheduler__fill-handle:hover {
+  background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 80%, #000000);
+  transform: scale(1.25);
 }
 .mar-allocation-scheduler__cell-value {
   font-variant-numeric: tabular-nums;
