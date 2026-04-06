@@ -26,7 +26,23 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
     [Parameter] public DateTime VisibleStart { get; set; } = DateTime.Today;
     [Parameter] public EventCallback<DateTime> VisibleStartChanged { get; set; }
     [Parameter] public DateTime? VisibleEnd { get; set; }
-    [Parameter] public int DefaultRangeLength { get; set; } = 3;
+
+    /// <summary>
+    /// Minimum number of time-range columns that must remain visible regardless of
+    /// pane width. The actual column count is computed dynamically from the measured
+    /// pane width divided by a per-granularity minimum column width; this parameter
+    /// acts as a floor. Defaults to 3.
+    /// </summary>
+    [Parameter] public int MinVisibleColumns { get; set; } = 3;
+
+    /// <summary>Obsolete: use <see cref="MinVisibleColumns"/> instead.</summary>
+    [Obsolete("Use MinVisibleColumns instead. DefaultRangeLength now acts as a minimum floor, not an exact count.")]
+    [Parameter] public int DefaultRangeLength
+    {
+        get => MinVisibleColumns;
+        set => MinVisibleColumns = value;
+    }
+
     [Parameter] public TimeGranularity DefaultRangeUnit { get; set; } = TimeGranularity.Month;
 
     // ── Sizing ───────────────────────────────────────────────────────────
@@ -39,6 +55,47 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
     /// Set to a positive integer to force exactly that many equally-spaced columns regardless of view mode.
     /// </summary>
     [Parameter] public int? VisibleColumnOverride { get; set; }
+
+    /// <summary>
+    /// Fixed width in pixels for each time-range column in the timeline pane.
+    /// Defaults to 80px. Must be >= 40px.
+    /// All time columns render at exactly this width regardless of container size;
+    /// the timeline panel scrolls horizontally when columns overflow.
+    /// </summary>
+    [Parameter] public int TimeColumnWidth { get; set; } = 80;
+
+    /// <summary>
+    /// When true, the user can resize individual time columns by dragging the
+    /// column header border (analogous to Excel column resize).
+    /// Defaults to false.
+    /// </summary>
+    [Parameter] public bool AllowTimeColumnResize { get; set; }
+
+    /// <summary>
+    /// When true, double-clicking a time column header border triggers AutoFit:
+    /// the column snaps to the width of its widest rendered cell content
+    /// (analogous to Excel AutoFit Column Width).
+    /// Only applies when AllowTimeColumnResize is true.
+    /// </summary>
+    [Parameter] public bool AutoFitOnDoubleClick { get; set; } = true;
+
+    /// <summary>
+    /// Minimum column width in pixels enforced during time column resize drag.
+    /// Defaults to 48px.
+    /// </summary>
+    [Parameter] public int MinTimeColumnWidth { get; set; } = 48;
+
+    /// <summary>
+    /// Maximum column width in pixels enforced during time column resize drag.
+    /// 0 = no maximum. Defaults to 0.
+    /// </summary>
+    [Parameter] public int MaxTimeColumnWidth { get; set; }
+
+    /// <summary>
+    /// EventCallback fired after the user resizes one or more time columns.
+    /// Payload is a Dictionary mapping column index to new width in pixels.
+    /// </summary>
+    [Parameter] public EventCallback<Dictionary<int, int>> OnTimeColumnResized { get; set; }
 
     // ── Splitter ────────────────────────────────────────────────────────
 
@@ -55,6 +112,12 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
 
     [Parameter] public AllocationValueMode ValueMode { get; set; } = AllocationValueMode.Hours;
     [Parameter] public bool StripedRows { get; set; } = true;
+
+    /// <summary>
+    /// When true (default), renders a date picker and Jump button in the toolbar
+    /// so the user can navigate directly to any date without stepping forward/back.
+    /// </summary>
+    [Parameter] public bool ShowJumpToDate { get; set; } = true;
     [Parameter] public bool ShowTargets { get; set; }
     [Parameter] public bool ShowDeltas { get; set; }
     [Parameter] public DeltaDisplayMode DeltaDisplayMode { get; set; } = DeltaDisplayMode.Value;
@@ -111,12 +174,25 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
     [Parameter] public EventCallback<ScenarioPromotedArgs> OnScenarioPromoted { get; set; }
     [Parameter] public EventCallback<CanExecuteActionArgs> CanExecuteAction { get; set; }
 
+    // ── Per-Granularity Minimum Column Widths ─────────────────────────
+    // Used by the ResizeObserver to compute how many columns fit in the pane.
+
+    private static readonly Dictionary<TimeGranularity, int> MinColumnWidthsByGrain = new()
+    {
+        { TimeGranularity.Day,     60  },
+        { TimeGranularity.Week,    80  },
+        { TimeGranularity.Month,   90  },
+        { TimeGranularity.Quarter, 100 },
+        { TimeGranularity.Year,    120 },
+    };
+
     // ── Internal State ──────────────────────────────────────────────────
 
     private readonly List<AllocationResourceColumn<TResource>> _columns = new();
     private IEnumerable<AllocationSet>? _allocationSets;
     private IEnumerable<AllocationRecord>? _effectiveAllocations;
     private List<DateRange> _visibleBuckets = new();
+    private List<TimelineHeaderGroup> _headerGroups = new();
     private HashSet<(object ResourceKey, DateTime BucketStart)> _selectedCells = new();
     private TimeGranularity _currentViewGrain;
     private bool _isLoading;
@@ -139,6 +215,20 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
     // Active cell — the last focused/clicked cell; determines fill handle placement.
     private (object ResourceKey, DateTime BucketStart)? _activeCell;
 
+    // Jump-to-date picker state
+    private DateTime _jumpToDate = DateTime.Today;
+
+    // Per-column runtime widths for time columns (bucket index → px). Set during resize drag.
+    private readonly Dictionary<int, int> _timeColumnRuntimeWidths = new();
+
+    // Unique DOM id for the right (timeline) pane so ResizeObserver can target it.
+    private readonly string _rightPaneId = $"sched-right-{Guid.NewGuid():N}";
+
+    // Computed column count — updated dynamically by the JS ResizeObserver callback.
+    // Before JS fires, defaults to MinVisibleColumns (set in OnParametersSet).
+    private int _visibleColumnCount;
+    private bool _paneObserverActive;
+
     // Splitter state
     private double _lastNonCollapsedPosition;
     private bool _isDraggingSplitter;
@@ -156,11 +246,22 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
 
     protected override void OnParametersSet()
     {
+        var previousGrain = _currentViewGrain;
         _currentViewGrain = ViewGrain == default ? AuthoritativeLevel : ViewGrain;
         _allocationSets = AllocationSets;
+
+        // Before the JS ResizeObserver fires, use MinVisibleColumns as the column count.
+        if (!_paneObserverActive)
+            _visibleColumnCount = Math.Max(1, MinVisibleColumns);
+
         _effectiveAllocations = ComputeEffectiveAllocations();
         _visibleBuckets = ComputeVisibleBuckets();
+        _headerGroups = ComputeTimelineHeaderGroups();
         ResolveLayoutContract();
+
+        // Track whether grain changed so we can re-register the observer
+        if (previousGrain != _currentViewGrain)
+            _grainChangedSinceLastRender = true;
 
         // On first render, apply DefaultSplitterPosition restore if provided
         if (!_splitterInitialized && _columns.Count > 0)
@@ -175,6 +276,8 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
         }
     }
 
+    private bool _grainChangedSinceLastRender;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -188,20 +291,63 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
                 await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.initScrollSync", _gridRef);
                 await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.initSplitter", _gridRef, _dotNetRef);
                 await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.initColumnResize", _gridRef, _dotNetRef);
+                if (AllowTimeColumnResize)
+                    await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.initTimeColumnResize", _gridRef, _dotNetRef, MinTimeColumnWidth, MaxTimeColumnWidth, AutoFitOnDoubleClick);
                 if (AllowDragFill)
                     await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.initDragFill", _gridRef, _dotNetRef);
                 if (AllowKeyboardEdit)
                     await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.initKeyboardNav", _gridRef, _dotNetRef);
                 await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.initClipboard", _gridRef, _dotNetRef);
+
+                // Start observing the timeline pane width for dynamic column count
+                await RegisterPaneObserverAsync();
             }
             catch (JSException)
             {
                 // JS interop not available (e.g., prerendering or test context)
             }
         }
+        else if (_grainChangedSinceLastRender && _jsModule is not null)
+        {
+            _grainChangedSinceLastRender = false;
+            // Re-register with updated minColWidth for the new grain
+            try
+            {
+                await RegisterPaneObserverAsync();
+            }
+            catch (JSException) { }
+        }
+    }
+
+    private async Task RegisterPaneObserverAsync()
+    {
+        if (_jsModule is null || _dotNetRef is null) return;
+        var minColWidth = MinColumnWidthsByGrain.GetValueOrDefault(_currentViewGrain, 80);
+        await _jsModule.InvokeVoidAsync(
+            "AllocationSchedulerInterop.observePane",
+            _dotNetRef, _rightPaneId, minColWidth, MinVisibleColumns);
     }
 
     // ── JS Interop Callbacks ────────────────────────────────────────────
+
+    /// <summary>
+    /// Called by the JS ResizeObserver when the timeline pane width changes
+    /// (browser resize, splitter drag, etc.). Recomputes the visible column
+    /// count and rebuilds buckets if the count changed.
+    /// </summary>
+    [JSInvokable]
+    public void OnPaneWidthChanged(double paneWidth, int computedCount)
+    {
+        _paneObserverActive = true;
+        var clamped = Math.Max(MinVisibleColumns, computedCount);
+        if (_visibleColumnCount == clamped) return;
+
+        _visibleColumnCount = clamped;
+        _visibleBuckets = ComputeVisibleBuckets();
+        _headerGroups = ComputeTimelineHeaderGroups();
+        ResolveLayoutContract();
+        InvokeAsync(StateHasChanged);
+    }
 
     [JSInvokable]
     public async Task OnDragFillCompleted(string payloadJson)
@@ -442,6 +588,7 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
 
         _effectiveAllocations = ComputeEffectiveAllocations();
         _visibleBuckets = ComputeVisibleBuckets();
+        _headerGroups = ComputeTimelineHeaderGroups();
 
         _isLoading = false;
         await InvokeAsync(StateHasChanged);
@@ -456,6 +603,7 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
     {
         VisibleStart = date;
         _visibleBuckets = ComputeVisibleBuckets();
+        _headerGroups = ComputeTimelineHeaderGroups();
         await VisibleStartChanged.InvokeAsync(VisibleStart);
         await OnVisibleRangeChanged.InvokeAsync(new VisibleRangeChangedArgs
         {
@@ -468,7 +616,19 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
 
     public Task NavigateForward() => NavigateTo(AdvanceDate(VisibleStart, _currentViewGrain, 1));
     public Task NavigateBack() => NavigateTo(AdvanceDate(VisibleStart, _currentViewGrain, -1));
-    public Task NavigateToToday() => NavigateTo(DateTime.Today);
+
+    private Task HandleJumpToDate() => NavigateTo(_jumpToDate);
+
+    /// <summary>
+    /// Navigate so the current-period column (today/this week/this month/etc.)
+    /// appears as the second column in the viewport, giving one column of context.
+    /// </summary>
+    public Task NavigateToToday()
+    {
+        var periodStart = GetPeriodStart(DateTime.Today, _currentViewGrain);
+        var target = AdvanceDate(periodStart, _currentViewGrain, -1);
+        return NavigateTo(target);
+    }
 
     public IReadOnlyList<AllocationCellRef> GetSelectedCells() =>
         _selectedCells.Select(c => new AllocationCellRef
@@ -778,6 +938,52 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
             .Select(kvp => (AllocationResourceColumn<TResource>)kvp.Key)
             .FirstOrDefault();
 
+    // ── Time Column Resize JS Interop Callbacks ──────────────────────────
+
+    /// <summary>Called on every mousemove while a time column header resize is in progress.
+    /// Updates the per-column runtime width and re-renders for live feedback.</summary>
+    [JSInvokable]
+    public Task OnTimeColumnResizeDrag(int colIndex, int newWidth)
+    {
+        var min = Math.Max(40, MinTimeColumnWidth);
+        var clamped = Math.Max(min, newWidth);
+        if (MaxTimeColumnWidth > 0) clamped = Math.Min(MaxTimeColumnWidth, clamped);
+
+        _timeColumnRuntimeWidths[colIndex] = clamped;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    /// <summary>Called once on mouseup to finalize a time column resize.</summary>
+    [JSInvokable]
+    public async Task OnTimeColumnResizeEnd(int colIndex, int newWidth)
+    {
+        var min = Math.Max(40, MinTimeColumnWidth);
+        var clamped = Math.Max(min, newWidth);
+        if (MaxTimeColumnWidth > 0) clamped = Math.Min(MaxTimeColumnWidth, clamped);
+
+        _timeColumnRuntimeWidths[colIndex] = clamped;
+
+        var dict = new Dictionary<int, int> { [colIndex] = clamped };
+        await OnTimeColumnResized.InvokeAsync(dict);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>Called by JS after measuring the widest cell content for auto-fit.</summary>
+    [JSInvokable]
+    public async Task OnTimeColumnAutoFit(int colIndex, int measuredWidth)
+    {
+        var min = Math.Max(40, MinTimeColumnWidth);
+        var clamped = Math.Max(min, measuredWidth);
+        if (MaxTimeColumnWidth > 0) clamped = Math.Min(MaxTimeColumnWidth, clamped);
+
+        _timeColumnRuntimeWidths[colIndex] = clamped;
+
+        var dict = new Dictionary<int, int> { [colIndex] = clamped };
+        await OnTimeColumnResized.InvokeAsync(dict);
+        await InvokeAsync(StateHasChanged);
+    }
+
     // ── Column Registration ─────────────────────────────────────────────
 
     internal void AddColumn(AllocationResourceColumn<TResource> column)
@@ -825,37 +1031,34 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
         _layoutContract = _widthProvider.Resolve(entries);
     }
 
-    private static string GetBucketDefaultWidth(TimeGranularity grain) => grain switch
+    private string GetBucketDefaultWidth(TimeGranularity grain)
     {
-        TimeGranularity.Day => "80px",
-        TimeGranularity.Week => "85px",
-        TimeGranularity.Month => "100px",
-        TimeGranularity.Quarter => "120px",
-        TimeGranularity.Year => "140px",
-        _ => "85px"
-    };
+        var px = Math.Max(40, TimeColumnWidth);
+        return $"{px}px";
+    }
 
     /// <summary>
     /// Returns the number of columns that should fill the panel width via CSS calc.
-    /// Returns 0 for Day mode (use fixed-pixel widths + scrollbar instead).
+    /// When VisibleEnd is null (the common dynamic case), returns _visibleColumnCount
+    /// so columns stretch to fill the pane edge-to-edge.
+    /// When VisibleEnd is explicitly set, returns 0 (fixed pixel columns with scrollbar).
     /// </summary>
     private int GetFillColumnCount()
     {
         if (VisibleColumnOverride.HasValue && VisibleColumnOverride.Value > 0)
             return VisibleColumnOverride.Value;
 
-        return _currentViewGrain switch
-        {
-            TimeGranularity.Day => 0,   // fixed 80px columns → scrollbar when overflowing
-            _ => _visibleBuckets.Count  // fill panel with all visible buckets (no scrollbar)
-        };
+        // Dynamic mode: columns fill the pane when no explicit VisibleEnd is set
+        if (!VisibleEnd.HasValue)
+            return _visibleColumnCount;
+
+        return 0; // explicit range → fixed-pixel columns with scrollbar
     }
 
     /// <summary>
     /// Returns the inline style string for the timeline table element.
-    /// Month/Week/Quarter/Year: width:100% so CSS calc column widths fill the panel.
-    /// Day: no explicit width — table auto-sizes to the sum of fixed-pixel column widths,
-    ///      which allows the timeline panel's overflow:auto to show a scrollbar.
+    /// Uses table-layout:fixed without width:100% so the table auto-sizes to the
+    /// sum of fixed-pixel column widths, allowing horizontal scrolling.
     /// </summary>
     private string GetTimelineTableStyle()
     {
@@ -887,9 +1090,23 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
             return $"width:calc(100% / {fillCount});";
         }
 
-        // Day mode: fixed pixel width from layout contract; overflow → scrollbar.
+        // Check per-column runtime override (set during resize drag)
+        if (_timeColumnRuntimeWidths.TryGetValue(bucketIndex, out var runtimePx))
+            return $"width:{runtimePx}px;";
+
+        // Fixed pixel width from layout contract; overflow → scrollbar.
         var id = $"bucket-{bucketIndex}";
         return _layoutContract.WidthById.TryGetValue(id, out var width) ? $"width:{width};" : null;
+    }
+
+    /// <summary>
+    /// Returns the effective pixel width for a time column, accounting for per-column overrides.
+    /// </summary>
+    internal int GetEffectiveTimeColumnWidth(int bucketIndex)
+    {
+        if (_timeColumnRuntimeWidths.TryGetValue(bucketIndex, out var runtimePx))
+            return runtimePx;
+        return Math.Max(40, TimeColumnWidth);
     }
 
     // ── Event Handlers ──────────────────────────────────────────────────
@@ -900,6 +1117,7 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
         {
             _currentViewGrain = grain;
             _visibleBuckets = ComputeVisibleBuckets();
+            _headerGroups = ComputeTimelineHeaderGroups();
             ResolveLayoutContract();
             await ViewGrainChanged.InvokeAsync(grain);
             await InvokeAsync(StateHasChanged);
@@ -1177,7 +1395,8 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
     private DateTime GetVisibleEnd()
     {
         if (VisibleEnd.HasValue) return VisibleEnd.Value;
-        return AdvanceDate(VisibleStart, DefaultRangeUnit, DefaultRangeLength);
+        // Dynamic: generate enough buckets to fill _visibleColumnCount at the current grain
+        return AdvanceDate(VisibleStart, _currentViewGrain, _visibleColumnCount);
     }
 
     private static DateTime AdvanceDate(DateTime date, TimeGranularity grain, int count)
@@ -1191,6 +1410,50 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
             TimeGranularity.Year => date.AddYears(count),
             _ => date.AddDays(count)
         };
+    }
+
+    // ── Current-Period Detection ──────────────────────────────────────
+
+    /// <summary>
+    /// Returns true when the given bucket's period contains "now", used to
+    /// highlight the current day/week/month/quarter/year column.
+    /// </summary>
+    private bool IsCurrentPeriod(DateRange bucket)
+    {
+        var now = DateTime.Now;
+        return _currentViewGrain switch
+        {
+            TimeGranularity.Day     => bucket.Start.Date == DateTime.Today,
+            TimeGranularity.Week    => GetIsoWeekStart(now) == bucket.Start.Date,
+            TimeGranularity.Month   => bucket.Start.Year == now.Year && bucket.Start.Month == now.Month,
+            TimeGranularity.Quarter => GetQuarterStart(now) == bucket.Start.Date,
+            TimeGranularity.Year    => bucket.Start.Year == now.Year,
+            _                       => false,
+        };
+    }
+
+    /// <summary>Returns the start of the period that contains the given date.</summary>
+    private static DateTime GetPeriodStart(DateTime date, TimeGranularity grain) => grain switch
+    {
+        TimeGranularity.Day     => date.Date,
+        TimeGranularity.Week    => GetIsoWeekStart(date),
+        TimeGranularity.Month   => new DateTime(date.Year, date.Month, 1),
+        TimeGranularity.Quarter => GetQuarterStart(date),
+        TimeGranularity.Year    => new DateTime(date.Year, 1, 1),
+        _                       => date.Date,
+    };
+
+    private static DateTime GetIsoWeekStart(DateTime date)
+    {
+        var dow = (int)date.DayOfWeek;
+        var diff = dow == 0 ? 6 : dow - 1; // Monday = 0
+        return date.AddDays(-diff).Date;
+    }
+
+    private static DateTime GetQuarterStart(DateTime date)
+    {
+        var quarterMonth = ((date.Month - 1) / 3) * 3 + 1;
+        return new DateTime(date.Year, quarterMonth, 1);
     }
 
     private object GetResourceKey(TResource resource)
@@ -1283,14 +1546,85 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
         return actual - target;
     }
 
+    // ── Timeline Header Groups ────────────────────────────────────────────
+
+    /// <summary>Represents a grouped header cell that spans multiple time columns.</summary>
+    internal record TimelineHeaderGroup(string Text, int StartIndex, int ColumnSpan);
+
+    /// <summary>Whether grouped header rows should be rendered above the leaf header row.</summary>
+    internal bool HasTimelineHeaderGroups => _headerGroups.Count > 0;
+
+    /// <summary>
+    /// Computes grouped header rows from the visible time columns.
+    /// Groups are determined by the current view grain:
+    /// Day/Week → group by month-year of bucket start date.
+    /// Month/Quarter → group by year.
+    /// Year → no grouping (single leaf row is sufficient).
+    /// </summary>
+    private List<TimelineHeaderGroup> ComputeTimelineHeaderGroups()
+    {
+        if (_visibleBuckets.Count == 0) return new();
+
+        return _currentViewGrain switch
+        {
+            TimeGranularity.Day => GroupBucketsBy(b => b.Start.ToString("MMM yyyy")),
+            TimeGranularity.Week => GroupBucketsBy(b => b.Start.ToString("MMM yyyy")),
+            TimeGranularity.Month => GroupBucketsBy(b => b.Start.Year.ToString()),
+            TimeGranularity.Quarter => GroupBucketsBy(b => b.Start.Year.ToString()),
+            // Year view: no meaningful grouping above year-level columns
+            TimeGranularity.Year => new(),
+            _ => new()
+        };
+    }
+
+    private List<TimelineHeaderGroup> GroupBucketsBy(Func<DateRange, string> keySelector)
+    {
+        var groups = new List<TimelineHeaderGroup>();
+        string? currentKey = null;
+        int startIdx = 0;
+        int count = 0;
+
+        for (int i = 0; i < _visibleBuckets.Count; i++)
+        {
+            var key = keySelector(_visibleBuckets[i]);
+            if (key != currentKey)
+            {
+                if (currentKey is not null)
+                    groups.Add(new(currentKey, startIdx, count));
+                currentKey = key;
+                startIdx = i;
+                count = 1;
+            }
+            else
+            {
+                count++;
+            }
+        }
+
+        if (currentKey is not null)
+            groups.Add(new(currentKey, startIdx, count));
+
+        return groups;
+    }
+
+    /// <summary>
+    /// Formats the leaf-row (bottom) header label for a time column.
+    /// When grouped headers are active, the leaf label is shorter because
+    /// month/year context is shown in the group row above.
+    /// </summary>
     private string FormatBucketHeader(DateRange bucket)
     {
         return _currentViewGrain switch
         {
-            TimeGranularity.Day => bucket.Start.ToString("MMM d"),
-            TimeGranularity.Week => $"W{GetIsoWeekNumber(bucket.Start)} {bucket.Start:MMM d}",
-            TimeGranularity.Month => bucket.Start.ToString("MMM yyyy"),
-            TimeGranularity.Quarter => $"Q{(bucket.Start.Month - 1) / 3 + 1} {bucket.Start:yyyy}",
+            // Day: short day label — month/year shown in group row
+            TimeGranularity.Day => bucket.Start.ToString("ddd d"),
+            // Week: week number + short date — month/year shown in group row
+            TimeGranularity.Week => $"W{GetIsoWeekNumber(bucket.Start)} · {bucket.Start:MMM d}",
+            // Month: short month name — year shown in group row
+            TimeGranularity.Month => bucket.Start.ToString("MMM"),
+            // Quarter: quarter label — year shown in group row
+            TimeGranularity.Quarter => $"Q{(bucket.Start.Month - 1) / 3 + 1}",
+            // Year: full year (no group row)
             TimeGranularity.Year => bucket.Start.ToString("yyyy"),
             _ => bucket.Start.ToShortDateString()
         };
@@ -1363,6 +1697,7 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
         {
             try
             {
+                await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.unobservePane", _rightPaneId);
                 await _jsModule.InvokeVoidAsync("AllocationSchedulerInterop.dispose", _gridRef);
                 await _jsModule.DisposeAsync();
             }

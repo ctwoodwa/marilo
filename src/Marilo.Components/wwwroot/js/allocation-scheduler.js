@@ -504,6 +504,131 @@ export const AllocationSchedulerInterop = {
     },
 
     /**
+     * Initialize per-column header drag-to-resize for time (bucket) columns.
+     * Handles rendered inside <th> cells (class mar-allocation-scheduler__time-resize-handle).
+     * On drag: fires OnTimeColumnResizeDrag for live preview.
+     * On release: fires OnTimeColumnResizeEnd to persist.
+     * On double-click (when autoFit is true): measures widest cell and fires OnTimeColumnAutoFit.
+     */
+    initTimeColumnResize: function (gridElement, dotNetRef, minWidth, maxWidth, autoFit) {
+        if (!gridElement) return;
+
+        let isDragging = false;
+        let startX = 0;
+        let startWidth = 0;
+        let activeColIdx = -1;
+
+        const handleMouseDown = (e) => {
+            const handle = e.target.closest('.mar-allocation-scheduler__time-resize-handle');
+            if (!handle) return;
+
+            const colIdx = parseInt(handle.dataset.bucketColIdx, 10);
+            if (isNaN(colIdx)) return;
+
+            const th = handle.closest('th');
+            if (!th) return;
+
+            isDragging = true;
+            startX = e.clientX;
+            startWidth = th.getBoundingClientRect().width;
+            activeColIdx = colIdx;
+
+            handle.classList.add('mar-allocation-scheduler__time-resize-handle--active');
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+            e.preventDefault();
+            e.stopPropagation();
+        };
+
+        const handleMouseMove = async (e) => {
+            if (!isDragging || activeColIdx < 0) return;
+            const delta = e.clientX - startX;
+            let newWidth = Math.round(startWidth + delta);
+            newWidth = Math.max(minWidth || 48, newWidth);
+            if (maxWidth > 0) newWidth = Math.min(maxWidth, newWidth);
+            try {
+                await dotNetRef.invokeMethodAsync('OnTimeColumnResizeDrag', activeColIdx, newWidth);
+            } catch (_) { /* component disposed */ }
+        };
+
+        const handleMouseUp = async () => {
+            if (!isDragging) return;
+            isDragging = false;
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+
+            // Remove active class from all time resize handles
+            gridElement.querySelectorAll('.mar-allocation-scheduler__time-resize-handle--active')
+                .forEach(h => h.classList.remove('mar-allocation-scheduler__time-resize-handle--active'));
+
+            if (activeColIdx >= 0) {
+                // Read the current <th> width
+                const th = gridElement.querySelector(
+                    `.mar-allocation-scheduler__timeline-panel th[data-bucket-col-idx="${activeColIdx}"]`
+                );
+                const finalWidth = th ? Math.round(th.getBoundingClientRect().width) : Math.round(startWidth);
+                try {
+                    await dotNetRef.invokeMethodAsync('OnTimeColumnResizeEnd', activeColIdx, finalWidth);
+                } catch (_) { }
+            }
+
+            activeColIdx = -1;
+        };
+
+        const handleDblClick = async (e) => {
+            if (!autoFit) return;
+            const handle = e.target.closest('.mar-allocation-scheduler__time-resize-handle');
+            if (!handle) return;
+
+            const colIdx = parseInt(handle.dataset.bucketColIdx, 10);
+            if (isNaN(colIdx)) return;
+
+            // Measure widest cell content in this column (header + body rows)
+            const timelinePanel = gridElement.querySelector('.mar-allocation-scheduler__timeline-panel');
+            if (!timelinePanel) return;
+
+            const nthChild = colIdx + 1;
+            const cells = timelinePanel.querySelectorAll(
+                `th:nth-child(${nthChild}), td:nth-child(${nthChild})`
+            );
+
+            let maxContentWidth = 0;
+            cells.forEach(cell => {
+                // Measure the scrollWidth with width temporarily set to auto
+                const originalWidth = cell.style.width;
+                const originalMinWidth = cell.style.minWidth;
+                const originalMaxWidth = cell.style.maxWidth;
+                cell.style.width = 'auto';
+                cell.style.minWidth = 'auto';
+                cell.style.maxWidth = 'none';
+                maxContentWidth = Math.max(maxContentWidth, cell.scrollWidth);
+                cell.style.width = originalWidth;
+                cell.style.minWidth = originalMinWidth;
+                cell.style.maxWidth = originalMaxWidth;
+            });
+
+            const measuredWidth = maxContentWidth + 8; // +8px padding buffer
+            try {
+                await dotNetRef.invokeMethodAsync('OnTimeColumnAutoFit', colIdx, measuredWidth);
+            } catch (_) { }
+        };
+
+        gridElement.addEventListener('mousedown', handleMouseDown);
+        document.addEventListener('mousemove', handleMouseMove);
+        document.addEventListener('mouseup', handleMouseUp);
+        gridElement.addEventListener('dblclick', handleDblClick);
+
+        const existingCleanup = gridElement._allocationSchedulerCleanup;
+        gridElement._allocationSchedulerCleanup = () => {
+            existingCleanup?.();
+            gridElement.removeEventListener('mousedown', handleMouseDown);
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+            gridElement.removeEventListener('dblclick', handleDblClick);
+        };
+    },
+
+    /**
      * Synchronize vertical scrolling between resource panel and timeline panel.
      */
     initScrollSync: function (gridElement) {
@@ -540,10 +665,82 @@ export const AllocationSchedulerInterop = {
         };
     },
 
+    // ── Pane Width Observer ────────────────────────────────────────────
+    // Map of elementId → { observer, rafId } for cleanup.
+    _paneObservers: new Map(),
+
+    /**
+     * Attach a ResizeObserver to the timeline pane element.
+     * On every size change (debounced via requestAnimationFrame) computes
+     * the number of columns that fit and calls .NET back.
+     * Also fires once immediately with the current width.
+     *
+     * @param {DotNetObjectReference} dotNetRef - .NET object ref for callbacks
+     * @param {string} elementId - DOM id of the timeline pane
+     * @param {number} minColWidth - minimum column width in pixels
+     * @param {number} minVisibleColumns - floor for the column count
+     */
+    observePane: function (dotNetRef, elementId, minColWidth, minVisibleColumns) {
+        // Clean up any existing observer for this element
+        this.unobservePane(elementId);
+
+        const el = document.getElementById(elementId);
+        if (!el) return;
+
+        let rafId = 0;
+
+        const measure = () => {
+            const paneWidth = el.clientWidth;
+            const count = Math.max(minVisibleColumns, Math.floor(paneWidth / minColWidth));
+            try {
+                dotNetRef.invokeMethodAsync('OnPaneWidthChanged', paneWidth, count);
+            } catch (_) { /* component disposed */ }
+        };
+
+        const onResize = () => {
+            if (rafId) cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(() => {
+                rafId = 0;
+                measure();
+            });
+        };
+
+        const observer = new ResizeObserver(onResize);
+        observer.observe(el);
+
+        this._paneObservers.set(elementId, { observer, getRafId: () => rafId, cancelRaf: () => { if (rafId) cancelAnimationFrame(rafId); } });
+
+        // Fire immediately with current size
+        measure();
+    },
+
+    /**
+     * Disconnect and remove the ResizeObserver for the given element.
+     * @param {string} elementId - DOM id of the timeline pane
+     */
+    unobservePane: function (elementId) {
+        const entry = this._paneObservers.get(elementId);
+        if (!entry) return;
+        entry.cancelRaf();
+        entry.observer.disconnect();
+        this._paneObservers.delete(elementId);
+    },
+
     /**
      * Dispose all event listeners for the scheduler grid.
      */
     dispose: function (gridElement) {
         gridElement?._allocationSchedulerCleanup?.();
+        // Clean up any pane observers associated with elements inside this grid
+        if (gridElement) {
+            for (const [id, entry] of this._paneObservers) {
+                const el = document.getElementById(id);
+                if (el && gridElement.contains(el)) {
+                    entry.cancelRaf();
+                    entry.observer.disconnect();
+                    this._paneObservers.delete(id);
+                }
+            }
+        }
     }
 };

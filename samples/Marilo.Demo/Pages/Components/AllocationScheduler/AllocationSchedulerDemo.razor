@@ -87,7 +87,40 @@
     </DemoSection>
 </PageSection>
 
-@* ─── 4. Analysis and Targets ───────────────────────────────────────────── *@
+@* ─── 4. Grouped Timeline Headers ──────────────────────────────────────── *@
+<PageSection Title="Grouped Timeline Headers">
+    <DemoSection Title="Week Headers Across Year Boundaries"
+                 Description="Grouped timeline headers add a top row showing month-year context above the leaf week labels. This eliminates ambiguity when weeks cross Dec/Jan — the group row clearly shows 'Dec 2025' and 'Jan 2026'. Switch granularity to see how groups adapt: Day groups by month, Month/Quarter groups by year."
+                 Code="@_groupedHeaderCode">
+        <div style="margin-bottom:1rem;display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap">
+            <span>Granularity:</span>
+            @foreach (var grain in new[] { TimeGranularity.Day, TimeGranularity.Week, TimeGranularity.Month, TimeGranularity.Quarter })
+            {
+                var g = grain;
+                <button style="padding:0.25rem 0.75rem;@(_groupedGrain == g ? "font-weight:bold;text-decoration:underline" : "")"
+                        @onclick="@(() => _groupedGrain = g)">@g</button>
+            }
+        </div>
+
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_allResources"
+                                   Allocations="@_yearBoundaryAllocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="@_groupedGrain"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   VisibleStart="@_yearBoundaryStart"
+                                   DefaultRangeLength="3"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   Height="400px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+                <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
+    </DemoSection>
+</PageSection>
+
+@* ─── 5. Analysis and Targets ───────────────────────────────────────────── *@
 <PageSection Title="Analysis and Targets">
     <DemoSection Title="Delta View"
                  Description="Set desired totals per resource using AllocationTarget records, enable ShowTargets and ShowDeltas, and see variance highlighted. Resources over target are flagged red; under target are flagged yellow."
@@ -324,7 +357,51 @@
     </DemoSection>
 </PageSection>
 
-@* ─── 10. Custom Context Menu ────────────────────────────────────────────── *@
+@* ─── 10. Jump-to-Date Toolbar Control ──────────────────────────────────── *@
+<PageSection Title="Jump-to-Date">
+    <DemoSection Title="Built-in Date Picker (default)"
+                 Description="By default ShowJumpToDate=true — the toolbar includes a date picker and Go button. Selecting a date and clicking Go navigates the timeline directly to that period without stepping forward or back."
+                 Code="@_jumpToDateCode">
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_allResources"
+                                   Allocations="@_editableAllocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="2"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   Height="400px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+                <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
+    </DemoSection>
+
+    <DemoSection Title="Jump-to-Date Hidden"
+                 Description="Set ShowJumpToDate=false to remove the built-in date picker from the toolbar. Use this when the host page already provides its own navigation UI or you want a minimal toolbar."
+                 Code="@_jumpToDateHiddenCode">
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_allResources"
+                                   Allocations="@_editableAllocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   ShowJumpToDate="false"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="2"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   Height="400px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+                <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
+    </DemoSection>
+</PageSection>
+
+@* ─── 11. Custom Context Menu ────────────────────────────────────────────── *@
 <PageSection Title="Custom Context Menu">
     <DemoSection Title="Custom Commands"
                  Description="Extend the built-in context menu with custom commands using ContextMenuItems. 'Flag for Review' fires OnContextMenuAction. 'Copy Row to Clipboard' is disabled for Project Manager resources via CanExecuteAction."
@@ -379,7 +456,71 @@
     </DemoSection>
 </PageSection>
 
-@* ─── 12. Disabled Slots ────────────────────────────────────────────────── *@
+@* ─── 12. Column Width Control ─────────────────────────────────────────── *@
+<PageSection Title="Column Width Control">
+    <DemoSection Title="Fixed-Width Time Columns with Resize"
+                 Description="Time columns use a fixed pixel width (TimeColumnWidth) instead of fluid layout, preventing content compression. Enable AllowTimeColumnResize for drag-to-resize, or double-click a header border to auto-fit to content (like Excel Alt+H, O, I)."
+                 Code="@_colWidthCode">
+        <div style="margin-bottom:1rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
+            <label>
+                Column Width:
+                <select @bind="_colWidthPx">
+                    <option value="60">60px (compact)</option>
+                    <option value="80">80px (default)</option>
+                    <option value="100">100px (wide)</option>
+                    <option value="120">120px (extra wide)</option>
+                </select>
+            </label>
+            <label>
+                <input type="checkbox" @bind="_colWidthResizable" />
+                AllowTimeColumnResize
+            </label>
+            <label>
+                <input type="checkbox" @bind="_colWidthAutoFit" />
+                AutoFitOnDoubleClick
+            </label>
+            <label>
+                Value Mode:
+                <select @bind="_colWidthValueMode">
+                    <option value="@AllocationValueMode.Hours">Hours</option>
+                    <option value="@AllocationValueMode.Currency">Currency</option>
+                </select>
+            </label>
+        </div>
+
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_allResources"
+                                   Allocations="@(_colWidthValueMode == AllocationValueMode.Currency ? _currencyAllocations : _basicAllocations)"
+                                   Targets="@(_colWidthValueMode == AllocationValueMode.Currency ? _currencyTargets : _targets)"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="@_colWidthValueMode"
+                                   ShowTargets="true"
+                                   ShowDeltas="true"
+                                   TimeColumnWidth="@_colWidthPx"
+                                   AllowTimeColumnResize="@_colWidthResizable"
+                                   AutoFitOnDoubleClick="@_colWidthAutoFit"
+                                   MinTimeColumnWidth="48"
+                                   MaxTimeColumnWidth="200"
+                                   OnTimeColumnResized="@HandleTimeColumnResized"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="2"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   Height="400px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+                <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
+
+        @if (!string.IsNullOrEmpty(_colWidthMessage))
+        {
+            <p><strong>Column resized:</strong> @_colWidthMessage</p>
+        }
+    </DemoSection>
+</PageSection>
+
+@* ─── 13. Disabled Slots ────────────────────────────────────────────────── *@
 <PageSection Title="Disabled Slots">
     <DemoSection Title="Non-Editable Date Ranges"
                  Description="Configure disabled slot ranges (public holidays, company blackout periods) to render specific cells as locked and non-interactive. Define a list of DateRange objects and bind to DisabledSlots."
@@ -442,11 +583,18 @@
     private List<AllocationRecord> _conflictAllocations = new();
     private List<AllocationRecord> _currencyAllocations = new();
     private List<AllocationRecord> _dailyAllocations    = new();
+    private List<AllocationRecord> _yearBoundaryAllocations = new();
 
     // ── Targets ──────────────────────────────────────────────────────────
 
     private List<AllocationTarget> _targets         = new();
     private List<AllocationTarget> _currencyTargets = new();
+
+    // ── Section 4 — Grouped Headers ─────────────────────────────────────
+
+    // Start in early December so the range crosses into January
+    private DateTime _yearBoundaryStart = new DateTime(DateTime.Today.Year, 12, 1);
+    private TimeGranularity _groupedGrain = TimeGranularity.Week;
 
     // ── Section 2 — Editing ──────────────────────────────────────────────
 
@@ -480,6 +628,14 @@
     private string _navRangeLabel = string.Empty;
     private MariloAllocationScheduler<StaffResource>? _navScheduler;
 
+    // ── Section 12 — Column Width Control ───────────────────────────────
+
+    private int _colWidthPx = 80;
+    private bool _colWidthResizable = true;
+    private bool _colWidthAutoFit = true;
+    private AllocationValueMode _colWidthValueMode = AllocationValueMode.Hours;
+    private string _colWidthMessage = string.Empty;
+
     // ── Section 10 — Custom Menu ─────────────────────────────────────────
 
     private string _customMenuMessage = string.Empty;
@@ -501,6 +657,7 @@
         BuildCurrencyAllocations();   // depends on _basicAllocations
         BuildTargets();
         BuildDailyAllocations();
+        BuildYearBoundaryAllocations();
     }
 
     // ── Data Builders ────────────────────────────────────────────────────
@@ -675,6 +832,31 @@
         }
     }
 
+    private void BuildYearBoundaryAllocations()
+    {
+        // Allocations starting early December, crossing into January
+        // to demonstrate grouped headers across year boundaries
+        var w = _yearBoundaryStart;
+
+        // Normalize to Monday of the week containing Dec 1
+        int diff = ((int)w.DayOfWeek - (int)DayOfWeek.Monday + 7) % 7;
+        w = w.AddDays(-diff);
+
+        _yearBoundaryAllocations = new();
+        _yearBoundaryAllocations.AddRange(BuildWeeklyAllocations(1,  101, "Backend API Development",     w, new[] { 40m, 36m, 32m, 40m, 40m, 24m, 40m, 36m, 32m, 40m, 40m, 36m }));
+        _yearBoundaryAllocations.AddRange(BuildWeeklyAllocations(2,  101, "Backend API Development",     w, new[] { 32m, 40m, 40m, 36m, 40m, 32m, 40m, 40m, 36m, 40m, 32m, 40m }));
+        _yearBoundaryAllocations.AddRange(BuildWeeklyAllocations(3,  103, "QA & Test Automation",        w, new[] { 16m, 24m, 32m, 40m, 40m, 36m, 40m, 24m, 32m, 40m, 36m, 40m }));
+        _yearBoundaryAllocations.AddRange(BuildWeeklyAllocations(4,  108, "Project Coordination",        w, new[] { 20m, 20m, 24m, 20m, 20m, 24m, 20m, 20m, 24m, 20m, 20m, 24m }));
+        _yearBoundaryAllocations.AddRange(BuildWeeklyAllocations(5,  102, "Frontend UI Build",           w, new[] { 40m, 40m, 36m, 40m, 32m, 40m, 40m, 36m, 40m, 40m, 32m, 40m }));
+        _yearBoundaryAllocations.AddRange(BuildWeeklyAllocations(6,  101, "Backend API Development",     w, new[] { 32m, 40m, 40m, 32m, 40m, 40m, 36m, 40m, 32m, 40m, 40m, 36m }));
+        _yearBoundaryAllocations.AddRange(BuildWeeklyAllocations(7,  105, "UX Research & Design",        w, new[] { 24m, 32m, 36m, 40m, 32m, 24m,  0m, 24m, 32m, 40m, 32m, 24m }));
+        _yearBoundaryAllocations.AddRange(BuildWeeklyAllocations(8,  104, "Infrastructure & CI/CD",      w, new[] { 20m, 32m, 24m, 16m, 32m, 40m, 32m, 40m, 24m, 32m, 40m, 32m }));
+        _yearBoundaryAllocations.AddRange(BuildWeeklyAllocations(9,  108, "Project Coordination",        w, new[] { 16m, 16m, 20m, 16m, 20m, 24m, 16m, 20m, 16m, 20m, 24m, 16m }));
+        _yearBoundaryAllocations.AddRange(BuildWeeklyAllocations(10, 101, "Backend API Development",     w, new[] { 32m, 40m, 40m, 40m, 36m, 40m, 40m, 40m, 32m, 40m, 40m, 36m }));
+        _yearBoundaryAllocations.AddRange(BuildWeeklyAllocations(11, 106, "Database Schema & Migration", w, new[] { 32m, 36m, 40m, 40m, 32m, 36m, 40m, 32m, 24m, 40m, 40m, 32m }));
+        _yearBoundaryAllocations.AddRange(BuildWeeklyAllocations(12, 107, "Security Audit & Hardening",  w, new[] { 16m, 24m, 32m, 24m, 16m, 24m, 32m, 24m, 40m, 32m, 24m, 16m }));
+    }
+
     // ── Helper ───────────────────────────────────────────────────────────
 
     private static List<AllocationRecord> BuildWeeklyAllocations(
@@ -820,6 +1002,15 @@
         return Task.CompletedTask;
     }
 
+    // ── Event Handlers: Section 12 — Column Width ──────────────────────────
+
+    private Task HandleTimeColumnResized(Dictionary<int, int> widths)
+    {
+        foreach (var kv in widths)
+            _colWidthMessage = $"Column {kv.Key} → {kv.Value}px";
+        return Task.CompletedTask;
+    }
+
     // ── Model ─────────────────────────────────────────────────────────────
 
     public class StaffResource
@@ -868,6 +1059,23 @@
         "\n" +
         "// Alice: 32h task-101 + 24h task-102 = 56h in week 1 (conflict)\n" +
         "// James: 40h task-101 + 16h task-108 = 56h in week 1 (conflict)";
+
+    private const string _groupedHeaderCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "    Resources=\"@_allResources\"\n" +
+        "    Allocations=\"@_yearBoundaryAllocations\"\n" +
+        "    AuthoritativeLevel=\"TimeGranularity.Week\"\n" +
+        "    ViewGrain=\"@_groupedGrain\"\n" +
+        "    VisibleStart=\"new DateTime(2025, 12, 1)\"\n" +
+        "    DefaultRangeLength=\"3\"\n" +
+        "    DefaultRangeUnit=\"TimeGranularity.Month\"\n" +
+        "    Height=\"400px\" />\n" +
+        "\n" +
+        "// Grouped headers are automatic:\n" +
+        "// Day/Week → top row groups by Month-Year (e.g., Dec 2025, Jan 2026)\n" +
+        "// Month/Quarter → top row groups by Year\n" +
+        "// Year → single row (no parent grouping)\n" +
+        "// The left resource header mirrors the group row height for alignment.";
 
     private const string _deltaCode =
         "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
@@ -944,6 +1152,26 @@
         "// await _navScheduler.NavigateToToday();\n" +
         "// await _navScheduler.NavigateForward();";
 
+    private const string _jumpToDateCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "    Resources=\"@_allResources\"\n" +
+        "    Allocations=\"@_allocations\"\n" +
+        "    AuthoritativeLevel=\"TimeGranularity.Week\"\n" +
+        "    ViewGrain=\"TimeGranularity.Week\"\n" +
+        "    Height=\"400px\">\n" +
+        "    <!-- ShowJumpToDate defaults to true -->\n" +
+        "    <!-- Toolbar includes a date picker + Go button -->\n" +
+        "</MariloAllocationScheduler>";
+
+    private const string _jumpToDateHiddenCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "    Resources=\"@_allResources\"\n" +
+        "    Allocations=\"@_allocations\"\n" +
+        "    AuthoritativeLevel=\"TimeGranularity.Week\"\n" +
+        "    ViewGrain=\"TimeGranularity.Week\"\n" +
+        "    ShowJumpToDate=\"false\"\n" +
+        "    Height=\"400px\" />";
+
     private const string _customMenuCode =
         "// Custom menu items\n" +
         "private List<AllocationMenuDescriptor> _customMenuItems = new()\n" +
@@ -971,6 +1199,23 @@
         "\n" +
         "// Daily records: BucketStart = date, BucketEnd = date.AddDays(1)\n" +
         "// Weekends skipped in BuildDailyAllocations()";
+
+    private const string _colWidthCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "    Resources=\"@_allResources\"\n" +
+        "    Allocations=\"@_basicAllocations\"\n" +
+        "    TimeColumnWidth=\"80\"\n" +
+        "    AllowTimeColumnResize=\"true\"\n" +
+        "    AutoFitOnDoubleClick=\"true\"\n" +
+        "    MinTimeColumnWidth=\"48\"\n" +
+        "    MaxTimeColumnWidth=\"200\"\n" +
+        "    OnTimeColumnResized=\"@HandleTimeColumnResized\"\n" +
+        "    Height=\"400px\" />\n" +
+        "\n" +
+        "// TimeColumnWidth: fixed pixel width (analogous to Excel Set Specific Width)\n" +
+        "// AllowTimeColumnResize: drag column borders to resize\n" +
+        "// AutoFitOnDoubleClick: double-click border to snap to widest content\n" +
+        "// OnTimeColumnResized: persist per-user column width preferences";
 
     private const string _disabledSlotsCode =
         "// Define non-editable date ranges\n" +

@@ -85,8 +85,8 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         var rows = cut.FindAll("[role='row']");
-        // Split-panel: (1 header + 3 resource) x 2 panels = 8
-        Assert.Equal(8, rows.Count);
+        // Split-panel with grouped headers: (1 group-header + 1 leaf-header + 3 resource) x 2 panels = 10
+        Assert.Equal(10, rows.Count);
     }
 
     [Fact]
@@ -722,6 +722,59 @@ public class MariloAllocationSchedulerTests : MariloTestBase
 
         // Component renders with scenario overrides applied without error
         Assert.Contains("mar-allocation-scheduler", cut.Markup);
+    }
+
+    // ── ShowJumpToDate Tests ────────────────────────────────────────
+
+    [Fact]
+    public void ShowJumpToDate_True_Renders_Date_Input_And_Go_Button()
+    {
+        var cut = Render<MariloAllocationScheduler<TestResource>>(p => p
+            .Add(x => x.Resources, TestResources)
+            .Add(x => x.Allocations, TestAllocations)
+            .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
+            .Add(x => x.ViewGrain, TimeGranularity.Week)
+            .Add(x => x.ShowJumpToDate, true)
+            .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
+            .Add(x => x.DefaultRangeLength, 1)
+            .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
+
+        Assert.Contains("mar-allocation-scheduler__jump-date-input", cut.Markup);
+        Assert.Contains("mar-allocation-scheduler__jump-date-btn", cut.Markup);
+        Assert.Contains("Jump to date", cut.Markup);
+    }
+
+    [Fact]
+    public void ShowJumpToDate_Default_Is_True()
+    {
+        // ShowJumpToDate defaults to true — verify the picker renders without setting the parameter
+        var cut = Render<MariloAllocationScheduler<TestResource>>(p => p
+            .Add(x => x.Resources, TestResources)
+            .Add(x => x.Allocations, TestAllocations)
+            .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
+            .Add(x => x.ViewGrain, TimeGranularity.Week)
+            .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
+            .Add(x => x.DefaultRangeLength, 1)
+            .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
+
+        Assert.Contains("mar-allocation-scheduler__jump-date-input", cut.Markup);
+    }
+
+    [Fact]
+    public void ShowJumpToDate_False_Hides_Date_Input_And_Go_Button()
+    {
+        var cut = Render<MariloAllocationScheduler<TestResource>>(p => p
+            .Add(x => x.Resources, TestResources)
+            .Add(x => x.Allocations, TestAllocations)
+            .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
+            .Add(x => x.ViewGrain, TimeGranularity.Week)
+            .Add(x => x.ShowJumpToDate, false)
+            .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
+            .Add(x => x.DefaultRangeLength, 1)
+            .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
+
+        Assert.DoesNotContain("mar-allocation-scheduler__jump-date-input", cut.Markup);
+        Assert.DoesNotContain("mar-allocation-scheduler__jump-date-btn", cut.Markup);
     }
 
     // ── Model class ─────────────────────────────────────────────────

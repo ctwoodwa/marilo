@@ -35,7 +35,12 @@ public partial class AllocationResourceColumn<TResource> : ComponentBase, IDispo
     /// <summary>Show or hide this column.</summary>
     [Parameter] public bool Visible { get; set; } = true;
 
-    /// <summary>Pin column to left edge during horizontal scroll.</summary>
+    /// <summary>
+    /// Pin column to left edge during horizontal scroll.
+    /// Obsolete: AllocationScheduler now uses a splitter-based dual-pane layout
+    /// where the left pane is the frozen region. This property is no longer honored.
+    /// </summary>
+    [Obsolete("Resource column pinning is obsolete. The left pane is the frozen region in the splitter-based layout.")]
     [Parameter] public bool Pinned { get; set; }
 
     /// <summary>Allow the user to resize this column via the splitter or column header drag. Defaults to true.</summary>

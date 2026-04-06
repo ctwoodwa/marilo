@@ -2,6 +2,11 @@
 // BEM naming: mar-allocation-scheduler__[element]--[modifier]
 
 .mar-allocation-scheduler {
+  // Shared header row heights — used in BOTH the resource pane and timeline pane
+  // so their headers are pixel-identical and body rows start at the same baseline.
+  --mas-header-group-height: 30px;   // top group row (Month-Year, Year, etc.)
+  --mas-header-leaf-height: 36px;    // bottom leaf row (Resource/Role or W15·Apr6)
+
   display: flex;
   flex-direction: column;
   border: 1px solid var(--marilo-color-border, #d1d1d1);
@@ -51,7 +56,7 @@
 
     &--active {
       border-color: var(--marilo-color-primary, #0f6cbd);
-      background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 8%, #ffffff);
+      background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 8%, var(--marilo-color-surface, #ffffff));
       font-weight: 600;
     }
 
@@ -73,6 +78,52 @@
     &:focus-visible {
       outline: 2px solid var(--marilo-color-primary, #0f6cbd);
       outline-offset: -1px;
+    }
+  }
+
+  // ── Jump-to-Date Controls ─────────────────────────────
+  &__jump-date-input {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--marilo-color-border, #d1d1d1);
+    border-radius: var(--marilo-border-radius, 4px);
+    background: var(--marilo-color-surface, #ffffff);
+    color: var(--marilo-color-text, #323130);
+    font-size: 0.8125rem;
+    font-family: inherit;
+    line-height: 1.4;
+
+    &:hover {
+      border-color: var(--marilo-color-primary, #0f6cbd);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--marilo-color-primary, #0f6cbd);
+      outline-offset: -1px;
+    }
+  }
+
+  &__jump-date-btn {
+    padding: 0.25rem 0.625rem;
+    border: 1px solid var(--marilo-color-primary, #0f6cbd);
+    border-radius: var(--marilo-border-radius, 4px);
+    background: var(--marilo-color-primary, #0f6cbd);
+    color: var(--marilo-color-primary-foreground, #ffffff);
+    font-size: 0.8125rem;
+    font-family: inherit;
+    font-weight: 600;
+    line-height: 1.4;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.15s, border-color 0.15s;
+
+    &:hover {
+      background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 85%, #000000);
+      border-color: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 85%, #000000);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--marilo-color-primary, #0f6cbd);
+      outline-offset: 1px;
     }
   }
 
@@ -167,7 +218,7 @@
     }
 
     &:hover {
-      background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 8%, #ffffff);
+      background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 8%, var(--marilo-color-surface, #ffffff));
     }
 
     &:focus-visible {
@@ -196,22 +247,68 @@
     overflow: auto;
   }
 
-  // Table shared between both panels
+  // Table shared between both panels.
+  // IMPORTANT: border-collapse:separate (not collapse) is required for
+  // position:sticky on <th> to properly reserve header space in all browsers.
+  // With collapse, the <thead> can fail to reserve its height, causing the
+  // first <tbody> row to be hidden behind sticky headers.
   &__table {
-    border-collapse: collapse;
+    border-collapse: separate;
     border-spacing: 0;
   }
 
-  &__header-row {
-    border-bottom: 2px solid var(--marilo-color-border, #d1d1d1);
+  // ── Grouped Header Row (top row of multi-row header stack) ──
+  // Rendered above the leaf header row for Day/Week/Month/Quarter views.
+  // Shows grouped date context (e.g., "Jan 2026", "2026").
+  &__header-group-row {
     background: var(--marilo-color-subtle-background, #fafafa);
 
     th {
       position: sticky;
       top: 0;
-      z-index: 2;
+      z-index: 3;  // above leaf header row
       background: var(--marilo-color-subtle-background, #fafafa);
     }
+
+  }
+
+  &__header-group-cell {
+    // Explicit height + vertical-align:middle centres text without line-height.
+    // Do NOT set line-height equal to height — it exceeds the border-box content
+    // area (height - border) and causes the cell to expand, breaking cross-pane
+    // alignment between the spacer cell and text-bearing cells.
+    height: var(--mas-header-group-height);
+    box-sizing: border-box;
+    padding: 0 0.5rem;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    vertical-align: middle;
+    border-right: 1px solid var(--marilo-color-border, #e1dfdd);
+    border-bottom: 1px solid var(--marilo-color-border, #e1dfdd);
+    color: var(--marilo-color-text, #323130);
+  }
+
+  &__header-row {
+    background: var(--marilo-color-subtle-background, #fafafa);
+
+    th {
+      position: sticky;
+      top: 0;  // default: stick to top when no group row exists
+      z-index: 2;
+      background: var(--marilo-color-subtle-background, #fafafa);
+      // 2px bottom border draws the header-body separator on cells directly
+      // (border-separate mode ignores borders on <tr> elements)
+      border-bottom: 2px solid var(--marilo-color-border, #d1d1d1);
+    }
+  }
+
+  // When a group row precedes the leaf row, offset the leaf row below it.
+  // This applies in BOTH panes (resource panel spacer + timeline panel groups).
+  &__header-group-row ~ &__header-row th {
+    top: var(--mas-header-group-height, 30px);
   }
 
   // ── Resource Columns (left panel) ────────────────────
@@ -224,10 +321,25 @@
     text-overflow: ellipsis;
     text-align: left;
 
-    // Anchor for resize handle
+    // Sticky + anchor for resize handle — explicit height matches time-header leaf row.
+    // position:sticky (not relative) so headers stay pinned on vertical scroll;
+    // sticky also creates a containing block for the absolute-positioned resize handle.
     &[role="columnheader"] {
-      position: relative;
+      position: sticky;
+      top: 0;
+      z-index: 3;
       overflow: visible;    // let the handle extend to edge without clipping
+      height: var(--mas-header-leaf-height);
+      box-sizing: border-box;
+      background: var(--marilo-color-surface, #ffffff);  // opaque — prevent data rows bleeding through
+    }
+
+    // When grouped headers are active, resource column headers span both rows
+    // (rowspan="2") and are vertically centered across the full header height.
+    &--spanning[role="columnheader"] {
+      height: calc(var(--mas-header-group-height) + var(--mas-header-leaf-height));
+      vertical-align: middle;
+      border-bottom: 2px solid var(--marilo-color-border, #d1d1d1);
     }
 
     &[role="gridcell"] {
@@ -276,18 +388,28 @@
     text-align: center;
     font-weight: 600;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     border-right: 1px solid var(--marilo-color-border, #e1dfdd);
+    font-variant-numeric: tabular-nums;
+    // Explicit height matches resource-col[role="columnheader"] for cross-pane alignment
+    height: var(--mas-header-leaf-height);
+    box-sizing: border-box;
+
+    // Anchor for resize handle
+    position: relative;
   }
 
   // ── Resource Rows (shared by both panels) ────────────
   &__row {
-    border-bottom: 1px solid var(--marilo-color-border, #e1dfdd);
     transition: background-color 0.1s;
 
-    // Fixed row height to keep both panels in sync
+    // Fixed row height to keep both panels in sync.
+    // border-bottom on cells (not <tr>) for border-separate compatibility.
     td, th {
       height: 40px;
       box-sizing: border-box;
+      border-bottom: 1px solid var(--marilo-color-border, #e1dfdd);
     }
 
     &:hover {
@@ -295,11 +417,11 @@
     }
 
     &--selected {
-      background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 6%, #ffffff);
+      background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 6%, var(--marilo-color-surface, #ffffff));
     }
 
     &--over-allocated {
-      background: color-mix(in srgb, var(--marilo-color-danger, #bc2f32) 6%, #ffffff);
+      background: color-mix(in srgb, var(--marilo-color-danger, #bc2f32) 6%, var(--marilo-color-surface, #ffffff));
     }
 
     &--striped {
@@ -315,22 +437,26 @@
     cursor: default;
     transition: background-color 0.1s, box-shadow 0.1s;
     position: relative;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 
     &--editable {
       cursor: text;
 
       &:hover {
-        background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 4%, #ffffff);
+        background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 4%, var(--marilo-color-surface, #ffffff));
       }
     }
 
     &--selected {
-      background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 10%, #ffffff);
+      background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 10%, var(--marilo-color-surface, #ffffff));
       box-shadow: inset 0 0 0 2px var(--marilo-color-primary, #0f6cbd);
     }
 
     &--conflict {
-      background: color-mix(in srgb, var(--marilo-color-danger, #bc2f32) 10%, #ffffff);
+      background: color-mix(in srgb, var(--marilo-color-danger, #bc2f32) 10%, var(--marilo-color-surface, #ffffff));
     }
 
     &--disabled {
@@ -341,13 +467,13 @@
 
     // Active cell: stronger selected ring, shows fill handle
     &--active {
-      background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 10%, #ffffff);
+      background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 10%, var(--marilo-color-surface, #ffffff));
       box-shadow: inset 0 0 0 2px var(--marilo-color-primary, #0f6cbd);
       outline: none;
     }
 
     &--drag-target {
-      background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 15%, #ffffff);
+      background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 15%, var(--marilo-color-surface, #ffffff));
       box-shadow: inset 0 0 0 1px var(--marilo-color-primary, #0f6cbd);
     }
 
@@ -389,6 +515,57 @@
     &:hover {
       background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 80%, #000000);
       transform: scale(1.25);
+    }
+  }
+
+  // ── Time Column Resize Handle ─────────────────────────
+  // Theme-neutral class — same markup rendered for all themes.
+  // Positioned inside timeline <th> cells for drag-to-resize.
+  &__time-resize-handle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 8px;
+    cursor: col-resize;
+    z-index: 5;
+    user-select: none;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 20%;
+      bottom: 20%;
+      right: 1px;
+      width: 2px;
+      background: transparent;
+      border-radius: 1px;
+      transition: background-color 0.12s;
+    }
+
+    &:hover::after {
+      background: rgba(var(--marilo-color-primary-rgb, 15, 108, 189), 0.4);
+    }
+
+    &--active::after {
+      background: var(--marilo-color-primary, #0f6cbd) !important;
+      top: 10%;
+      bottom: 10%;
+    }
+  }
+
+  // ── Current-Period Column Highlight ──────────────────
+  // Applied to both header cells and data cells in the column whose
+  // period contains "now" (today/this week/this month/this quarter/this year).
+  &__col-current {
+    background-color: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 7%, var(--marilo-color-surface, #ffffff));
+
+    // Header cell variant: stronger tint + top accent border
+    &.mar-allocation-scheduler__time-header {
+      background-color: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 13%, var(--marilo-color-surface, #ffffff));
+      font-weight: 700;
+      color: var(--marilo-color-primary, #0f6cbd);
+      border-top: 3px solid var(--marilo-color-primary, #0f6cbd);
     }
   }
 
@@ -446,5 +623,31 @@
     align-items: center;
     justify-content: center;
     padding: 2rem;
+  }
+}
+
+// ── Dark Theme Patches ───────────────────────────────────────────────
+// These tokens are used in the component SCSS but absent from the main
+// [data-marilo-theme="dark"] token override set in _generated-base.scss.
+// Scoped to the component so they don't bleed into unrelated styles.
+[data-marilo-theme="dark"] {
+  .mar-allocation-scheduler {
+    // Subtle surface — toolbar, headers, stripes, row hover, splitter restore
+    --marilo-color-subtle-background: #2d2c2b;    // one step above surface #252423
+
+    // Disabled cell colours
+    --marilo-color-disabled-background: #333231;
+    --marilo-color-disabled-text:       #8a8886;
+
+    // RGB triplet for dark primary (#60cdff = 96 205 255)
+    // Used in rgba() calculations for resize handles and interactive tints
+    --marilo-color-primary-rgb: 96, 205, 255;
+
+    // Cell/header text — MariloColorPalette.OnBackground defaults to #323130 (near-black)
+    // even when no Dark palette is configured (Default theme). Bridge to the system-level
+    // dark text token so Default-theme dark mode renders readable light text.
+    // Themes with an explicit Dark.OnBackground will have their value set via ThemeProvider
+    // inline style on the parent; this patch provides the correct fallback for the default case.
+    --marilo-color-text: var(--marilo-color-on-background, #e0e0e0);
   }
 }

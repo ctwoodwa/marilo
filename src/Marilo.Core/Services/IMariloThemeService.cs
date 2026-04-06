@@ -41,6 +41,13 @@ public interface IMariloThemeService
     Task ToggleDarkModeAsync();
 
     /// <summary>
+    /// Sets dark mode to the specified value and notifies subscribers.
+    /// Unlike <see cref="ToggleDarkModeAsync"/>, this is idempotent — safe to call
+    /// when the current state is unknown (e.g., after page reload).
+    /// </summary>
+    Task SetDarkModeAsync(bool dark);
+
+    /// <summary>
     /// Performs one-time initialization of the theme service (e.g., loading persisted preferences).
     /// </summary>
     Task InitializeAsync();

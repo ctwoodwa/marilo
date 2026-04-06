@@ -14017,6 +14017,8 @@ textarea.form-control-lg {
 }
 
 .mar-bs-allocation-scheduler {
+  --mas-header-group-height: 32px;
+  --mas-header-leaf-height: 38px;
   --bs-scheduler-row-height: 38px;
   --bs-scheduler-cell-pad-x: 0.4rem;
   --bs-scheduler-cell-pad-y: 0.3rem;
@@ -14121,6 +14123,48 @@ textarea.form-control-lg {
   outline: 2px solid var(--bs-primary);
   outline-offset: 1px;
 }
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__jump-date-input {
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius-sm);
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+  font-size: 0.8125rem;
+  font-family: inherit;
+  line-height: 1.4;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__jump-date-input:hover {
+  border-color: rgba(var(--bs-primary-rgb), 0.45);
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__jump-date-input:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 1px;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__jump-date-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.65rem;
+  font-size: 0.8125rem;
+  font-family: inherit;
+  font-weight: 600;
+  line-height: 1.4;
+  border: 1px solid var(--bs-primary);
+  border-radius: var(--bs-border-radius-sm);
+  background: var(--bs-primary);
+  color: var(--bs-white, #fff);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.12s, border-color 0.12s;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__jump-date-btn:hover {
+  background: rgba(var(--bs-primary-rgb), 0.85);
+  border-color: rgba(var(--bs-primary-rgb), 0.85);
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__jump-date-btn:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 1px;
+}
 .mar-bs-allocation-scheduler .mar-allocation-scheduler__grid {
   display: flex;
   flex: 1 1 0;
@@ -14220,11 +14264,35 @@ textarea.form-control-lg {
   overflow: auto;
 }
 .mar-bs-allocation-scheduler .mar-allocation-scheduler__table {
-  border-collapse: collapse;
+  border-collapse: separate;
   border-spacing: 0;
 }
 .mar-bs-allocation-scheduler .mar-allocation-scheduler__resource-panel .mar-allocation-scheduler__table {
   width: 100%;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__header-group-row {
+  background: var(--bs-tertiary-bg, var(--bs-light, #f8f9fa));
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__header-group-row th {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--bs-tertiary-bg, var(--bs-light, #f8f9fa));
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__header-group-cell {
+  height: var(--mas-header-group-height);
+  box-sizing: border-box;
+  padding: 0 0.5rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-right: 1px solid var(--marilo-scheduler-border-color);
+  border-bottom: 1px solid var(--marilo-scheduler-border-color);
+  color: var(--bs-secondary-color, #6c757d);
+  vertical-align: middle;
 }
 .mar-bs-allocation-scheduler .mar-allocation-scheduler__header-row {
   background: var(--bs-tertiary-bg, var(--bs-light, #f8f9fa));
@@ -14234,6 +14302,9 @@ textarea.form-control-lg {
   top: 0;
   z-index: 2;
   background: var(--bs-tertiary-bg, var(--bs-light, #f8f9fa));
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__header-group-row ~ .mar-allocation-scheduler__header-row th {
+  top: var(--mas-header-group-height, 32px);
 }
 .mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__resource-col {
   padding: 0.375rem var(--bs-scheduler-col-pad-x);
@@ -14245,7 +14316,7 @@ textarea.form-control-lg {
   text-overflow: ellipsis;
   text-align: left;
   vertical-align: middle;
-  height: var(--bs-scheduler-row-height);
+  height: var(--mas-header-leaf-height, var(--bs-scheduler-row-height));
   box-sizing: border-box;
 }
 .mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__resource-col > * {
@@ -14255,17 +14326,25 @@ textarea.form-control-lg {
   overflow: hidden;
 }
 .mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__resource-col[role=columnheader] {
-  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: 3;
   overflow: visible;
   font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
   color: var(--bs-secondary-color, var(--bs-secondary));
+  background: var(--bs-body-bg);
   border-bottom: 2px solid var(--marilo-scheduler-border-color);
 }
 .mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__resource-col[role=gridcell] {
   font-weight: 400;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__resource-col--spanning[role=columnheader] {
+  height: calc(var(--mas-header-group-height) + var(--mas-header-leaf-height));
+  vertical-align: middle;
+  border-bottom: 2px solid var(--marilo-scheduler-border-color);
 }
 .mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__time-header {
   padding: var(--bs-scheduler-cell-pad-y) var(--bs-scheduler-cell-pad-x);
@@ -14276,12 +14355,14 @@ textarea.form-control-lg {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  height: var(--bs-scheduler-row-height);
+  height: var(--mas-header-leaf-height, var(--bs-scheduler-row-height));
   box-sizing: border-box;
   vertical-align: middle;
   border-right: 1px solid var(--marilo-scheduler-border-color);
   border-bottom: 2px solid var(--marilo-scheduler-border-color);
   color: var(--bs-secondary-color, #6c757d);
+  font-variant-numeric: tabular-nums;
+  position: relative;
 }
 .mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__time-header--day {
   font-size: 0.7rem;
@@ -14316,6 +14397,10 @@ textarea.form-control-lg {
   position: relative;
   cursor: default;
   transition: background-color 0.1s;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell--editable {
   cursor: text;
@@ -14403,6 +14488,15 @@ textarea.form-control-lg {
   padding: var(--bs-scheduler-cell-pad-y) var(--bs-scheduler-cell-pad-x);
   box-sizing: border-box;
 }
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__col-current {
+  background-color: rgba(var(--bs-primary-rgb, 13, 110, 253), 0.07);
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__col-current.mar-bs-allocation-scheduler__time-header, .mar-bs-allocation-scheduler .mar-allocation-scheduler__col-current.mar-allocation-scheduler__time-header {
+  background-color: rgba(var(--bs-primary-rgb, 13, 110, 253), 0.13);
+  font-weight: 600;
+  color: var(--bs-primary, #0d6efd);
+  border-top: 3px solid var(--bs-primary, #0d6efd);
+}
 .mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__cell-value {
   font-variant-numeric: tabular-nums;
 }
@@ -14483,6 +14577,65 @@ textarea.form-control-lg {
   background: var(--bs-primary) !important;
   top: 10%;
   bottom: 10%;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__time-resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+  z-index: 5;
+  user-select: none;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__time-resize-handle::after {
+  content: "";
+  position: absolute;
+  top: 20%;
+  bottom: 20%;
+  right: 1px;
+  width: 2px;
+  background: transparent;
+  border-radius: 1px;
+  transition: background-color 0.12s;
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__time-resize-handle:hover::after {
+  background: rgba(var(--bs-primary-rgb), 0.5);
+}
+.mar-bs-allocation-scheduler .mar-allocation-scheduler__time-resize-handle--active::after {
+  background: var(--bs-primary) !important;
+  top: 10%;
+  bottom: 10%;
+}
+
+[data-marilo-theme=dark] .mar-bs-allocation-scheduler,
+[data-bs-theme=dark] .mar-bs-allocation-scheduler {
+  --bs-body-bg: #212529;
+  --bs-body-color: #dee2e6;
+  --bs-border-color: #495057;
+  --bs-tertiary-bg: #2b3035;
+  --bs-secondary-color: #adb5bd;
+  --marilo-scheduler-border-color: #495057;
+  --bs-scheduler-disabled-bg: #2b3035;
+  --bs-scheduler-disabled-color: #adb5bd;
+}
+[data-marilo-theme=dark] .mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row--striped,
+[data-bs-theme=dark] .mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row--striped {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+[data-marilo-theme=dark] .mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row:hover,
+[data-bs-theme=dark] .mar-bs-allocation-scheduler .mar-bs-allocation-scheduler__row:hover {
+  background-color: rgba(255, 255, 255, 0.07) !important;
+}
+[data-marilo-theme=dark] .mar-bs-allocation-scheduler,
+[data-bs-theme=dark] .mar-bs-allocation-scheduler {
+  --bs-scheduler-disabled-pattern: repeating-linear-gradient(
+    135deg,
+    transparent,
+    transparent 3px,
+    rgba(255, 255, 255, 0.06) 3px,
+    rgba(255, 255, 255, 0.06) 6px
+  );
 }
 
 .mar-bs-resizable-container {

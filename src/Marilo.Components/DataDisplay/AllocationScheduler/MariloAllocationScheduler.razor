@@ -47,6 +47,17 @@
                 <option value="Quarter">Quarter</option>
                 <option value="Year">Year</option>
             </select>
+            @if (ShowJumpToDate)
+            {
+                <input type="date"
+                       class="mar-allocation-scheduler__jump-date-input"
+                       value="@_jumpToDate.ToString("yyyy-MM-dd")"
+                       @onchange="@((ChangeEventArgs e) => { if (DateTime.TryParse(e.Value?.ToString(), out var d)) _jumpToDate = d; })"
+                       aria-label="Jump to date" />
+                <button class="mar-allocation-scheduler__jump-date-btn"
+                        @onclick="HandleJumpToDate"
+                        aria-label="Jump to selected date">Go</button>
+            }
             @ToolbarTemplate
         </div>
 
@@ -93,28 +104,60 @@
                             }
                         </colgroup>
                         <thead>
-                            <tr class="mar-allocation-scheduler__header-row" role="row">
-                                @foreach (var col in _columns.Where(c => c.Visible))
-                                {
-                                    <th class="@CssProvider.AllocationSchedulerResourceColumnClass(col.Pinned)"
-                                        role="columnheader">
-                                        @if (col.HeaderTemplate is not null)
-                                        {
-                                            @col.HeaderTemplate
-                                        }
-                                        else
-                                        {
-                                            @col.Title
-                                        }
-                                        @if (col.AllowResize && _columnSizingIds.TryGetValue(col, out var _rszId))
-                                        {
-                                            <div class="mar-allocation-scheduler__col-resize-handle"
-                                                 data-col-id="@_rszId"
-                                                 aria-hidden="true"></div>
-                                        }
-                                    </th>
-                                }
-                            </tr>
+                            @if (HasTimelineHeaderGroups)
+                            {
+                                <tr class="mar-allocation-scheduler__header-group-row" role="row">
+                                    @foreach (var col in _columns.Where(c => c.Visible))
+                                    {
+                                        <th rowspan="2"
+                                            class="@($"{CssProvider.AllocationSchedulerResourceColumnClass(false)} mar-allocation-scheduler__resource-col--spanning")"
+                                            role="columnheader">
+                                            @if (col.HeaderTemplate is not null)
+                                            {
+                                                @col.HeaderTemplate
+                                            }
+                                            else
+                                            {
+                                                @col.Title
+                                            }
+                                            @if (col.AllowResize && _columnSizingIds.TryGetValue(col, out var _rszId))
+                                            {
+                                                <div class="mar-allocation-scheduler__col-resize-handle"
+                                                     data-col-id="@_rszId"
+                                                     aria-hidden="true"></div>
+                                            }
+                                        </th>
+                                    }
+                                </tr>
+                                <tr class="mar-allocation-scheduler__header-row" role="row">
+                                    @* Empty — cells from the group row span into this row via rowspan="2" *@
+                                </tr>
+                            }
+                            else
+                            {
+                                <tr class="mar-allocation-scheduler__header-row" role="row">
+                                    @foreach (var col in _columns.Where(c => c.Visible))
+                                    {
+                                        <th class="@CssProvider.AllocationSchedulerResourceColumnClass(false)"
+                                            role="columnheader">
+                                            @if (col.HeaderTemplate is not null)
+                                            {
+                                                @col.HeaderTemplate
+                                            }
+                                            else
+                                            {
+                                                @col.Title
+                                            }
+                                            @if (col.AllowResize && _columnSizingIds.TryGetValue(col, out var _rszId))
+                                            {
+                                                <div class="mar-allocation-scheduler__col-resize-handle"
+                                                     data-col-id="@_rszId"
+                                                     aria-hidden="true"></div>
+                                            }
+                                        </th>
+                                    }
+                                </tr>
+                            }
                         </thead>
                         <tbody>
                             @if (Resources is not null)
@@ -133,7 +176,7 @@
                                         aria-label="@GetResourceLabel(resource)">
                                         @foreach (var col in _columns.Where(c => c.Visible))
                                         {
-                                            <td class="@CssProvider.AllocationSchedulerResourceColumnClass(col.Pinned)"
+                                            <td class="@CssProvider.AllocationSchedulerResourceColumnClass(false)"
                                                 role="gridcell">
                                                 @if (col.Template is not null)
                                                 {
@@ -176,7 +219,8 @@
                 }
 
                 @* ── Right panel: timeline buckets (horizontally scrollable) *@
-                <div class="mar-allocation-scheduler__timeline-panel @(_collapsedSide == SplitterSide.Right ? "mar-allocation-scheduler__pane--collapsed" : "")"
+                <div id="@_rightPaneId"
+                     class="mar-allocation-scheduler__timeline-panel @(_collapsedSide == SplitterSide.Right ? "mar-allocation-scheduler__pane--collapsed" : "")"
                      style="@GetRightPaneStyle()">
                     <table class="mar-allocation-scheduler__table" style="@GetTimelineTableStyle()">
                         <colgroup>
@@ -188,14 +232,39 @@
                             }
                         </colgroup>
                         <thead>
+                            @if (HasTimelineHeaderGroups)
+                            {
+                                <tr class="mar-allocation-scheduler__header-group-row" role="row">
+                                    @foreach (var group in _headerGroups)
+                                    {
+                                        <th colspan="@group.ColumnSpan"
+                                            class="mar-allocation-scheduler__header-group-cell"
+                                            role="columnheader"
+                                            aria-label="@group.Text">
+                                            @group.Text
+                                        </th>
+                                    }
+                                </tr>
+                            }
                             <tr class="mar-allocation-scheduler__header-row" role="row">
+                                @{ var _thIdx = 0; }
                                 @foreach (var bucket in _visibleBuckets)
                                 {
-                                    <th class="@CssProvider.AllocationSchedulerTimeHeaderClass(_currentViewGrain)"
+                                    var _isCurrent = IsCurrentPeriod(bucket);
+                                    <th class="@($"{CssProvider.AllocationSchedulerTimeHeaderClass(_currentViewGrain)}{(_isCurrent ? " mar-allocation-scheduler__col-current" : "")}")"
                                         role="columnheader"
-                                        aria-label="@FormatBucketHeader(bucket)">
+                                        data-bucket-col-idx="@_thIdx"
+                                        aria-label="@FormatBucketHeader(bucket)"
+                                        aria-current="@(_isCurrent ? "date" : null)">
                                         @FormatBucketHeader(bucket)
+                                        @if (AllowTimeColumnResize)
+                                        {
+                                            <div class="mar-allocation-scheduler__time-resize-handle"
+                                                 data-bucket-col-idx="@_thIdx"
+                                                 aria-hidden="true"></div>
+                                        }
                                     </th>
+                                    _thIdx++;
                                 }
                             </tr>
                         </thead>
@@ -221,10 +290,11 @@
                                             var isActive = IsCellActive(resourceKey, bucket);
                                             var isConflict = IsCellConflict(resourceKey, bucket);
                                             var isDisabled = IsCellDisabled(bucket);
+                                            var isBucketCurrent = IsCurrentPeriod(bucket);
 
                                             var isCellEditing = _editMode && Equals(_editResourceKey, resourceKey) && _editBucket?.Start == bucket.Start;
 
-                                            <td class="@($"{CssProvider.AllocationSchedulerCellClass(isEditable, isSelected, isConflict, isDisabled, false)}{(isActive ? " mar-allocation-scheduler__cell--active" : "")}{(isCellEditing ? " mar-allocation-scheduler__cell--editing" : "")}")"
+                                            <td class="@($"{CssProvider.AllocationSchedulerCellClass(isEditable, isSelected, isConflict, isDisabled, false)}{(isActive ? " mar-allocation-scheduler__cell--active" : "")}{(isCellEditing ? " mar-allocation-scheduler__cell--editing" : "")}{(isBucketCurrent ? " mar-allocation-scheduler__col-current" : "")}")"
                                                 role="gridcell"
                                                 tabindex="@(isEditable ? 0 : -1)"
                                                 data-resource-key="@resourceKey"

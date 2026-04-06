@@ -5002,6 +5002,8 @@
 }
 
 .mar-allocation-scheduler {
+  --mas-header-group-height: 30px;
+  --mas-header-leaf-height: 36px;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--marilo-color-border, #d1d1d1);
@@ -5046,7 +5048,7 @@
 }
 .mar-allocation-scheduler__scenario-chip--active {
   border-color: var(--marilo-color-primary, #0f6cbd);
-  background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 8%, #ffffff);
+  background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 8%, var(--marilo-color-surface, #ffffff));
   font-weight: 600;
 }
 .mar-allocation-scheduler__scenario-chip--locked {
@@ -5064,6 +5066,45 @@
 .mar-allocation-scheduler__grain-select:focus-visible {
   outline: 2px solid var(--marilo-color-primary, #0f6cbd);
   outline-offset: -1px;
+}
+.mar-allocation-scheduler__jump-date-input {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--marilo-color-border, #d1d1d1);
+  border-radius: var(--marilo-border-radius, 4px);
+  background: var(--marilo-color-surface, #ffffff);
+  color: var(--marilo-color-text, #323130);
+  font-size: 0.8125rem;
+  font-family: inherit;
+  line-height: 1.4;
+}
+.mar-allocation-scheduler__jump-date-input:hover {
+  border-color: var(--marilo-color-primary, #0f6cbd);
+}
+.mar-allocation-scheduler__jump-date-input:focus-visible {
+  outline: 2px solid var(--marilo-color-primary, #0f6cbd);
+  outline-offset: -1px;
+}
+.mar-allocation-scheduler__jump-date-btn {
+  padding: 0.25rem 0.625rem;
+  border: 1px solid var(--marilo-color-primary, #0f6cbd);
+  border-radius: var(--marilo-border-radius, 4px);
+  background: var(--marilo-color-primary, #0f6cbd);
+  color: var(--marilo-color-primary-foreground, #ffffff);
+  font-size: 0.8125rem;
+  font-family: inherit;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+.mar-allocation-scheduler__jump-date-btn:hover {
+  background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 85%, #000000);
+  border-color: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 85%, #000000);
+}
+.mar-allocation-scheduler__jump-date-btn:focus-visible {
+  outline: 2px solid var(--marilo-color-primary, #0f6cbd);
+  outline-offset: 1px;
 }
 .mar-allocation-scheduler__grid {
   display: flex;
@@ -5141,7 +5182,7 @@
   font-size: 0.75rem;
 }
 .mar-allocation-scheduler__splitter-restore:hover {
-  background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 8%, #ffffff);
+  background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 8%, var(--marilo-color-surface, #ffffff));
 }
 .mar-allocation-scheduler__splitter-restore:focus-visible {
   outline: var(--focus-ring, 2px solid var(--marilo-color-primary, #0f6cbd));
@@ -5163,11 +5204,33 @@
   overflow: auto;
 }
 .mar-allocation-scheduler__table {
-  border-collapse: collapse;
+  border-collapse: separate;
   border-spacing: 0;
 }
+.mar-allocation-scheduler__header-group-row {
+  background: var(--marilo-color-subtle-background, #fafafa);
+}
+.mar-allocation-scheduler__header-group-row th {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--marilo-color-subtle-background, #fafafa);
+}
+.mar-allocation-scheduler__header-group-cell {
+  height: var(--mas-header-group-height);
+  box-sizing: border-box;
+  padding: 0 0.5rem;
+  text-align: center;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  vertical-align: middle;
+  border-right: 1px solid var(--marilo-color-border, #e1dfdd);
+  border-bottom: 1px solid var(--marilo-color-border, #e1dfdd);
+  color: var(--marilo-color-text, #323130);
+}
 .mar-allocation-scheduler__header-row {
-  border-bottom: 2px solid var(--marilo-color-border, #d1d1d1);
   background: var(--marilo-color-subtle-background, #fafafa);
 }
 .mar-allocation-scheduler__header-row th {
@@ -5175,6 +5238,10 @@
   top: 0;
   z-index: 2;
   background: var(--marilo-color-subtle-background, #fafafa);
+  border-bottom: 2px solid var(--marilo-color-border, #d1d1d1);
+}
+.mar-allocation-scheduler__header-group-row ~ .mar-allocation-scheduler__header-row th {
+  top: var(--mas-header-group-height, 30px);
 }
 .mar-allocation-scheduler__resource-col {
   padding: 0.5rem 0.75rem;
@@ -5186,8 +5253,18 @@
   text-align: left;
 }
 .mar-allocation-scheduler__resource-col[role=columnheader] {
-  position: relative;
+  position: sticky;
+  top: 0;
+  z-index: 3;
   overflow: visible;
+  height: var(--mas-header-leaf-height);
+  box-sizing: border-box;
+  background: var(--marilo-color-surface, #ffffff);
+}
+.mar-allocation-scheduler__resource-col--spanning[role=columnheader] {
+  height: calc(var(--mas-header-group-height) + var(--mas-header-leaf-height));
+  vertical-align: middle;
+  border-bottom: 2px solid var(--marilo-color-border, #d1d1d1);
 }
 .mar-allocation-scheduler__resource-col[role=gridcell] {
   font-weight: 400;
@@ -5226,24 +5303,30 @@
   text-align: center;
   font-weight: 600;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   border-right: 1px solid var(--marilo-color-border, #e1dfdd);
+  font-variant-numeric: tabular-nums;
+  height: var(--mas-header-leaf-height);
+  box-sizing: border-box;
+  position: relative;
 }
 .mar-allocation-scheduler__row {
-  border-bottom: 1px solid var(--marilo-color-border, #e1dfdd);
   transition: background-color 0.1s;
 }
 .mar-allocation-scheduler__row td, .mar-allocation-scheduler__row th {
   height: 40px;
   box-sizing: border-box;
+  border-bottom: 1px solid var(--marilo-color-border, #e1dfdd);
 }
 .mar-allocation-scheduler__row:hover {
   background: var(--marilo-color-subtle-background, #f5f5f5);
 }
 .mar-allocation-scheduler__row--selected {
-  background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 6%, #ffffff);
+  background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 6%, var(--marilo-color-surface, #ffffff));
 }
 .mar-allocation-scheduler__row--over-allocated {
-  background: color-mix(in srgb, var(--marilo-color-danger, #bc2f32) 6%, #ffffff);
+  background: color-mix(in srgb, var(--marilo-color-danger, #bc2f32) 6%, var(--marilo-color-surface, #ffffff));
 }
 .mar-allocation-scheduler__row--striped {
   background: var(--marilo-color-subtle-background, #fafafa);
@@ -5255,19 +5338,23 @@
   cursor: default;
   transition: background-color 0.1s, box-shadow 0.1s;
   position: relative;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .mar-allocation-scheduler__cell--editable {
   cursor: text;
 }
 .mar-allocation-scheduler__cell--editable:hover {
-  background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 4%, #ffffff);
+  background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 4%, var(--marilo-color-surface, #ffffff));
 }
 .mar-allocation-scheduler__cell--selected {
-  background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 10%, #ffffff);
+  background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 10%, var(--marilo-color-surface, #ffffff));
   box-shadow: inset 0 0 0 2px var(--marilo-color-primary, #0f6cbd);
 }
 .mar-allocation-scheduler__cell--conflict {
-  background: color-mix(in srgb, var(--marilo-color-danger, #bc2f32) 10%, #ffffff);
+  background: color-mix(in srgb, var(--marilo-color-danger, #bc2f32) 10%, var(--marilo-color-surface, #ffffff));
 }
 .mar-allocation-scheduler__cell--disabled {
   background: var(--marilo-color-disabled-background, #f0f0f0);
@@ -5275,12 +5362,12 @@
   cursor: not-allowed;
 }
 .mar-allocation-scheduler__cell--active {
-  background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 10%, #ffffff);
+  background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 10%, var(--marilo-color-surface, #ffffff));
   box-shadow: inset 0 0 0 2px var(--marilo-color-primary, #0f6cbd);
   outline: none;
 }
 .mar-allocation-scheduler__cell--drag-target {
-  background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 15%, #ffffff);
+  background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 15%, var(--marilo-color-surface, #ffffff));
   box-shadow: inset 0 0 0 1px var(--marilo-color-primary, #0f6cbd);
 }
 .mar-allocation-scheduler__cell--editing {
@@ -5315,6 +5402,44 @@
 .mar-allocation-scheduler__fill-handle:hover {
   background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 80%, #000000);
   transform: scale(1.25);
+}
+.mar-allocation-scheduler__time-resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+  z-index: 5;
+  user-select: none;
+}
+.mar-allocation-scheduler__time-resize-handle::after {
+  content: "";
+  position: absolute;
+  top: 20%;
+  bottom: 20%;
+  right: 1px;
+  width: 2px;
+  background: transparent;
+  border-radius: 1px;
+  transition: background-color 0.12s;
+}
+.mar-allocation-scheduler__time-resize-handle:hover::after {
+  background: rgba(var(--marilo-color-primary-rgb, 15, 108, 189), 0.4);
+}
+.mar-allocation-scheduler__time-resize-handle--active::after {
+  background: var(--marilo-color-primary, #0f6cbd) !important;
+  top: 10%;
+  bottom: 10%;
+}
+.mar-allocation-scheduler__col-current {
+  background-color: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 7%, var(--marilo-color-surface, #ffffff));
+}
+.mar-allocation-scheduler__col-current.mar-allocation-scheduler__time-header {
+  background-color: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 13%, var(--marilo-color-surface, #ffffff));
+  font-weight: 700;
+  color: var(--marilo-color-primary, #0f6cbd);
+  border-top: 3px solid var(--marilo-color-primary, #0f6cbd);
 }
 .mar-allocation-scheduler__cell-value {
   font-variant-numeric: tabular-nums;
@@ -5365,6 +5490,14 @@
   align-items: center;
   justify-content: center;
   padding: 2rem;
+}
+
+[data-marilo-theme=dark] .mar-allocation-scheduler {
+  --marilo-color-subtle-background: #2d2c2b;
+  --marilo-color-disabled-background: #333231;
+  --marilo-color-disabled-text: #8a8886;
+  --marilo-color-primary-rgb: 96, 205, 255;
+  --marilo-color-text: var(--marilo-color-on-background, #e0e0e0);
 }
 
 .mar-resizable-container {
