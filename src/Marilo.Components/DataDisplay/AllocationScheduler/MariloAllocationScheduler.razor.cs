@@ -635,6 +635,18 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
 
     // ── Event Handlers ──────────────────────────────────────────────────
 
+    private async Task HandleViewGrainChange(ChangeEventArgs e)
+    {
+        if (Enum.TryParse<TimeGranularity>(e.Value?.ToString(), out var grain))
+        {
+            _currentViewGrain = grain;
+            _visibleBuckets = ComputeVisibleBuckets();
+            ResolveLayoutContract();
+            await ViewGrainChanged.InvokeAsync(grain);
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
     private async Task HandleNavigateBack() => await NavigateBack();
     private async Task HandleNavigateForward() => await NavigateForward();
     private async Task HandleNavigateToToday() => await NavigateToToday();
@@ -689,6 +701,49 @@ public partial class MariloAllocationScheduler<TResource> : MariloComponentBase,
         var record = GetRecord(resourceKey, bucket);
         _editValue = record?.Value.ToString("0.#") ?? "0";
         await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleEditCommit(ChangeEventArgs e)
+    {
+        if (_editResourceKey is null || _editBucket is null) return;
+
+        var newValueStr = e.Value?.ToString() ?? "0";
+        if (!decimal.TryParse(newValueStr, System.Globalization.NumberStyles.Float,
+            System.Globalization.CultureInfo.InvariantCulture, out var newValue))
+            newValue = 0;
+
+        var record = GetRecord(_editResourceKey, _editBucket);
+        var oldValue = record?.Value ?? 0;
+
+        _editMode = false;
+
+        await OnCellEdited.InvokeAsync(new CellEditedArgs
+        {
+            ResourceKey = _editResourceKey,
+            BucketStart = _editBucket.Start,
+            BucketEnd = _editBucket.End,
+            OldValue = oldValue,
+            NewValue = newValue
+        });
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleEditBlur()
+    {
+        if (_editMode)
+        {
+            _editMode = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task HandleEditKeyDown(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            _editMode = false;
+            await InvokeAsync(StateHasChanged);
+        }
     }
 
     private async Task HandleCellContextMenu(Microsoft.AspNetCore.Components.Web.MouseEventArgs e, object resourceKey, DateRange bucket)

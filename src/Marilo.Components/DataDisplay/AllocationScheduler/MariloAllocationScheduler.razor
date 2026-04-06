@@ -39,6 +39,14 @@
             <button @onclick="HandleNavigateBack" aria-label="Navigate back">&lt;</button>
             <button @onclick="HandleNavigateToToday" aria-label="Navigate to today">Today</button>
             <button @onclick="HandleNavigateForward" aria-label="Navigate forward">&gt;</button>
+            <select value="@_currentViewGrain" @onchange="HandleViewGrainChange" aria-label="Time range zoom"
+                    class="mar-allocation-scheduler__grain-select">
+                <option value="Day">Day</option>
+                <option value="Week">Week</option>
+                <option value="Month">Month</option>
+                <option value="Quarter">Quarter</option>
+                <option value="Year">Year</option>
+            </select>
             @ToolbarTemplate
         </div>
 
@@ -200,7 +208,9 @@
                                             var isConflict = IsCellConflict(resourceKey, bucket);
                                             var isDisabled = IsCellDisabled(bucket);
 
-                                            <td class="@CssProvider.AllocationSchedulerCellClass(isEditable, isSelected, isConflict, isDisabled, false)"
+                                            var isCellEditing = _editMode && Equals(_editResourceKey, resourceKey) && _editBucket?.Start == bucket.Start;
+
+                                            <td class="@($"{CssProvider.AllocationSchedulerCellClass(isEditable, isSelected, isConflict, isDisabled, false)}{(isCellEditing ? " mar-allocation-scheduler__cell--editing" : "")}")"
                                                 role="gridcell"
                                                 tabindex="@(isEditable ? 0 : -1)"
                                                 data-resource-key="@resourceKey"
@@ -213,7 +223,16 @@
                                                 @ondblclick="() => HandleCellDoubleClick(resourceKey, bucket)"
                                                 @oncontextmenu="(e) => HandleCellContextMenu(e, resourceKey, bucket)"
                                                 @oncontextmenu:preventDefault="EnableContextMenu">
-                                                @if (CellTemplate is not null)
+                                                @if (_editMode && Equals(_editResourceKey, resourceKey) && _editBucket?.Start == bucket.Start)
+                                                {
+                                                    <input type="text"
+                                                           value="@_editValue"
+                                                           @onchange="HandleEditCommit"
+                                                           @onblur="HandleEditBlur"
+                                                           @onkeydown="HandleEditKeyDown"
+                                                           aria-label="@($"Edit value for {GetCellAriaLabel(resource, bucket, record)}")" />
+                                                }
+                                                else if (CellTemplate is not null)
                                                 {
                                                     @CellTemplate(new AllocationCellContext
                                                     {
