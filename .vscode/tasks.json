@@ -100,7 +100,7 @@
     {
       "label": "dotnet:build:pmdemo",
       "type": "shell",
-      "command": "dotnet build samples/Marilo.PmDemo/Marilo.PmDemo/Marilo.PmDemo.csproj",
+      "command": "dotnet build samples/Marilo.PmDemo/Marilo.PmDemo.AppHost/Marilo.PmDemo.AppHost.csproj",
       "group": "build",
       "problemMatcher": "$msCompile"
     },

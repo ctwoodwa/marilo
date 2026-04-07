@@ -3,7 +3,6 @@ using System.Security.Cryptography;
 using System.Diagnostics;
 using System.Net;
 using System.Security.Claims;
-using CommandCenter.ServiceDefaults;
 using Microsoft.IdentityModel.Tokens;
 using MockOktaService.Services;
 

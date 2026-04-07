@@ -1,0 +1,139 @@
+{
+  "$schema": "https://github.com/Azure/data-api-builder/releases/latest/download/dab.draft.schema.json",
+  "data-source": {
+    "database-type": "postgresql",
+    "connection-string": "@env('DAB_CONNECTION_STRING')",
+    "options": {
+      "set-session-context": false
+    }
+  },
+  "runtime": {
+    "rest": {
+      "enabled": false,
+      "path": "/api"
+    },
+    "graphql": {
+      "enabled": true,
+      "path": "/graphql",
+      "allow-introspection": true
+    },
+    "host": {
+      "mode": "development",
+      "cors": {
+        "origins": ["*"],
+        "allow-credentials": false
+      },
+      "authentication": {
+        "provider": "StaticWebApps"
+      }
+    }
+  },
+  "entities": {
+    "Project": {
+      "source": { "object": "\"Projects\"", "type": "table" },
+      "graphql": { "enabled": true, "type": { "singular": "Project", "plural": "projects" } },
+      "rest": { "enabled": false },
+      "permissions": [
+        { "role": "Owner",          "actions": ["create", "read", "update", "delete"] },
+        { "role": "Admin",          "actions": ["create", "read", "update", "delete"] },
+        { "role": "ProjectManager", "actions": ["create", "read", "update", "delete"] },
+        { "role": "TeamMember",     "actions": ["read"] },
+        { "role": "Viewer",         "actions": ["read"] }
+      ]
+    },
+    "ProjectMember": {
+      "source": { "object": "\"ProjectMembers\"", "type": "table" },
+      "graphql": { "enabled": true, "type": { "singular": "ProjectMember", "plural": "projectMembers" } },
+      "rest": { "enabled": false },
+      "permissions": [
+        { "role": "Owner",          "actions": ["create", "read", "update", "delete"] },
+        { "role": "Admin",          "actions": ["create", "read", "update", "delete"] },
+        { "role": "ProjectManager", "actions": ["create", "read", "update", "delete"] },
+        { "role": "TeamMember",     "actions": ["read"] },
+        { "role": "Viewer",         "actions": ["read"] }
+      ]
+    },
+    "Task": {
+      "source": { "object": "\"Tasks\"", "type": "table" },
+      "graphql": { "enabled": true, "type": { "singular": "Task", "plural": "tasks" } },
+      "rest": { "enabled": false },
+      "permissions": [
+        { "role": "Owner",          "actions": ["create", "read", "update", "delete"] },
+        { "role": "Admin",          "actions": ["create", "read", "update", "delete"] },
+        { "role": "ProjectManager", "actions": ["create", "read", "update", "delete"] },
+        { "role": "TeamMember",     "actions": ["create", "read", "update"] },
+        { "role": "Viewer",         "actions": ["read"] }
+      ]
+    },
+    "Subtask": {
+      "source": { "object": "\"Subtasks\"", "type": "table" },
+      "graphql": { "enabled": true, "type": { "singular": "Subtask", "plural": "subtasks" } },
+      "rest": { "enabled": false },
+      "permissions": [
+        { "role": "Owner",          "actions": ["create", "read", "update", "delete"] },
+        { "role": "Admin",          "actions": ["create", "read", "update", "delete"] },
+        { "role": "ProjectManager", "actions": ["create", "read", "update", "delete"] },
+        { "role": "TeamMember",     "actions": ["create", "read", "update", "delete"] },
+        { "role": "Viewer",         "actions": ["read"] }
+      ]
+    },
+    "Comment": {
+      "source": { "object": "\"Comments\"", "type": "table" },
+      "graphql": { "enabled": true, "type": { "singular": "Comment", "plural": "comments" } },
+      "rest": { "enabled": false },
+      "permissions": [
+        { "role": "Owner",          "actions": ["create", "read", "update", "delete"] },
+        { "role": "Admin",          "actions": ["create", "read", "update", "delete"] },
+        { "role": "ProjectManager", "actions": ["create", "read", "update", "delete"] },
+        { "role": "TeamMember",     "actions": ["create", "read", "update", "delete"] },
+        { "role": "Viewer",         "actions": ["read"] }
+      ]
+    },
+    "Milestone": {
+      "source": { "object": "\"Milestones\"", "type": "table" },
+      "graphql": { "enabled": true, "type": { "singular": "Milestone", "plural": "milestones" } },
+      "rest": { "enabled": false },
+      "permissions": [
+        { "role": "Owner",          "actions": ["create", "read", "update", "delete"] },
+        { "role": "Admin",          "actions": ["create", "read", "update", "delete"] },
+        { "role": "ProjectManager", "actions": ["create", "read", "update", "delete"] },
+        { "role": "TeamMember",     "actions": ["read"] },
+        { "role": "Viewer",         "actions": ["read"] }
+      ]
+    },
+    "Risk": {
+      "source": { "object": "\"Risks\"", "type": "table" },
+      "graphql": { "enabled": true, "type": { "singular": "Risk", "plural": "risks" } },
+      "rest": { "enabled": false },
+      "permissions": [
+        { "role": "Owner",          "actions": ["create", "read", "update", "delete"] },
+        { "role": "Admin",          "actions": ["create", "read", "update", "delete"] },
+        { "role": "ProjectManager", "actions": ["create", "read", "update", "delete"] },
+        { "role": "TeamMember",     "actions": ["read", "update"] },
+        { "role": "Viewer",         "actions": ["read"] }
+      ]
+    },
+    "BudgetLine": {
+      "source": { "object": "\"BudgetLines\"", "type": "table" },
+      "graphql": { "enabled": true, "type": { "singular": "BudgetLine", "plural": "budgetLines" } },
+      "rest": { "enabled": false },
+      "permissions": [
+        { "role": "Owner",          "actions": ["create", "read", "update", "delete"] },
+        { "role": "Admin",          "actions": ["create", "read", "update", "delete"] },
+        { "role": "ProjectManager", "actions": ["create", "read", "update", "delete"] },
+        { "role": "TeamMember",     "actions": ["read"] },
+        { "role": "Viewer",         "actions": ["read"] }
+      ]
+    },
+    "AuditRecord": {
+      "source": { "object": "\"AuditRecords\"", "type": "table" },
+      "graphql": { "enabled": true, "type": { "singular": "AuditRecord", "plural": "auditRecords" } },
+      "rest": { "enabled": false },
+      "permissions": [
+        { "role": "Owner",          "actions": ["read"] },
+        { "role": "Admin",          "actions": ["read"] },
+        { "role": "ProjectManager", "actions": ["read"] }
+      ]
+    }
+  }
+}

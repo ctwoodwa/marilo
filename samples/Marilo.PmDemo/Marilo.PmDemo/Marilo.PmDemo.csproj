@@ -9,7 +9,19 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Marilo.PmDemo.Client\Marilo.PmDemo.Client.csproj" />
+    <ProjectReference Include="..\Marilo.PmDemo.Data\Marilo.PmDemo.Data.csproj" />
+    <ProjectReference Include="..\Marilo.PmDemo.ServiceDefaults\Marilo.PmDemo.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" />
+    <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Aspire.StackExchange.Redis.OutputCaching" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" />
+    <PackageReference Include="Microsoft.FeatureManagement.AspNetCore" />
+    <PackageReference Include="WolverineFx" />
+    <PackageReference Include="WolverineFx.RabbitMQ" />
+    <PackageReference Include="WolverineFx.Postgresql" />
   </ItemGroup>
 
 </Project>
