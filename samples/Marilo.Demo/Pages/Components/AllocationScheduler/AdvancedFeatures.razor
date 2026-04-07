@@ -156,6 +156,59 @@
     </DemoSection>
 </PageSection>
 
+<PageSection Title="Column Width Control">
+    <DemoSection Title="Fixed-Width Time Columns with Resize"
+                 Description="Time columns use a fixed pixel width (TimeColumnWidth) instead of fluid layout, preventing content compression. Enable AllowTimeColumnResize for drag-to-resize, or double-click a header border to auto-fit to content (like Excel Alt+H, O, I)."
+                 Code="@_colWidthCode">
+        <div style="margin-bottom:1rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
+            <label>
+                Column Width:
+                <select @bind="_colWidthPx">
+                    <option value="60">60px (compact)</option>
+                    <option value="80">80px (default)</option>
+                    <option value="100">100px (wide)</option>
+                    <option value="120">120px (extra wide)</option>
+                </select>
+            </label>
+            <label>
+                <input type="checkbox" @bind="_colWidthResizable" />
+                AllowTimeColumnResize
+            </label>
+            <label>
+                <input type="checkbox" @bind="_colWidthAutoFit" />
+                AutoFitOnDoubleClick
+            </label>
+        </div>
+
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_allocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   TimeColumnWidth="@_colWidthPx"
+                                   AllowTimeColumnResize="@_colWidthResizable"
+                                   AutoFitOnDoubleClick="@_colWidthAutoFit"
+                                   MinTimeColumnWidth="48"
+                                   MaxTimeColumnWidth="200"
+                                   OnTimeColumnResized="@HandleTimeColumnResized"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="2"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   Height="400px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+                <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
+
+        @if (!string.IsNullOrEmpty(_colWidthMessage))
+        {
+            <p><strong>Column resized:</strong> @_colWidthMessage</p>
+        }
+    </DemoSection>
+</PageSection>
+
 @code {
     private DateTime _demoStart = new(2026, 4, 6);
     private DateTime _visibleStart = new(2026, 4, 6);
@@ -248,6 +301,37 @@
         public string Role       { get; set; } = string.Empty;
         public string Department { get; set; } = string.Empty;
     }
+
+    // ── Column Width Control ─────────────────────────────────────────────
+
+    private int _colWidthPx = 80;
+    private bool _colWidthResizable = true;
+    private bool _colWidthAutoFit = true;
+    private string _colWidthMessage = string.Empty;
+
+    private Task HandleTimeColumnResized(Dictionary<int, int> widths)
+    {
+        foreach (var kv in widths)
+            _colWidthMessage = $"Column {kv.Key} → {kv.Value}px";
+        return Task.CompletedTask;
+    }
+
+    private const string _colWidthCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           TimeColumnWidth=\"80\"\n" +
+        "                           AllowTimeColumnResize=\"true\"\n" +
+        "                           AutoFitOnDoubleClick=\"true\"\n" +
+        "                           MinTimeColumnWidth=\"48\"\n" +
+        "                           MaxTimeColumnWidth=\"200\"\n" +
+        "                           OnTimeColumnResized=\"@HandleTimeColumnResized\"\n" +
+        "                           Height=\"400px\" />\n" +
+        "\n" +
+        "// TimeColumnWidth: fixed pixel width (analogous to Excel Set Specific Width)\n" +
+        "// AllowTimeColumnResize: drag column borders to resize\n" +
+        "// AutoFitOnDoubleClick: double-click border to snap to widest content\n" +
+        "// OnTimeColumnResized: persist per-user column width preferences";
 
     private const string _criticalPathCode =
         "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +

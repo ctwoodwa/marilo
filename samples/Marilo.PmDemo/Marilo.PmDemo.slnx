@@ -1,0 +1,9 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Marilo.PmDemo.Client/Marilo.PmDemo.Client.csproj" />
+  <Project Path="Marilo.PmDemo/Marilo.PmDemo.csproj" />
+</Solution>
