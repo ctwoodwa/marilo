@@ -6,4 +6,11 @@
   </Configurations>
   <Project Path="Marilo.PmDemo.Client/Marilo.PmDemo.Client.csproj" />
   <Project Path="Marilo.PmDemo/Marilo.PmDemo.csproj" />
+  <Project Path="Marilo.PmDemo.AppHost/Marilo.PmDemo.AppHost.csproj" />
+  <Project Path="Marilo.PmDemo.ServiceDefaults/Marilo.PmDemo.ServiceDefaults.csproj" />
+  <Project Path="MockOktaService/MockOktaService.csproj" />
+  <Project Path="Marilo.PmDemo.Data/Marilo.PmDemo.Data.csproj" />
+  <Project Path="Marilo.PmDemo.Tests.Unit/Marilo.PmDemo.Tests.Unit.csproj" />
+  <Project Path="Marilo.PmDemo.Tests.Integration/Marilo.PmDemo.Tests.Integration.csproj" />
+  <Project Path="Marilo.PmDemo.Tests.Performance/Marilo.PmDemo.Tests.Performance.csproj" />
 </Solution>
