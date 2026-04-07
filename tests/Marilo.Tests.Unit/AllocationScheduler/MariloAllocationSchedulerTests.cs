@@ -81,7 +81,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         var rows = cut.FindAll("[role='row']");
@@ -99,7 +99,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.ValueMode, AllocationValueMode.Hours)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         // Check that allocation values appear in the markup
@@ -116,7 +116,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month)
             .Add(x => x.EmptyTemplate, (Microsoft.AspNetCore.Components.RenderFragment)(b =>
             {
@@ -138,7 +138,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         Assert.Contains("mar-allocation-scheduler__cell--conflict", cut.Markup);
@@ -153,7 +153,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         Assert.DoesNotContain("mar-allocation-scheduler__cell--conflict", cut.Markup);
@@ -171,7 +171,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.AllowDragFill, false)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         Assert.DoesNotContain("mar-allocation-scheduler__cell--drag-target", cut.Markup);
@@ -186,7 +186,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Month)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 1))
-            .Add(x => x.DefaultRangeLength, 2)
+            // .Add(x => x.DefaultRangeLength, 2)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         // When month view but weekly authoritative, cells should not have editable class
@@ -203,7 +203,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month)
             .Add(x => x.OnCellEdited, new EventCallback<CellEditedArgs>(null, (CellEditedArgs args) =>
             {
@@ -225,7 +225,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         var grid = cut.Find("[role='grid']");
@@ -241,7 +241,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         var rows = cut.FindAll("[role='row']");
@@ -257,7 +257,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         var cells = cut.FindAll("[role='gridcell']");
@@ -273,7 +273,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         Assert.Contains("aria-selected", cut.Markup);
@@ -288,7 +288,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         var headers = cut.FindAll("[role='columnheader']");
@@ -306,7 +306,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month)
             .Add<AllocationResourceColumn<TestResource>>(x => x.AllocationResourceColumns,
                 colParams => colParams
@@ -328,7 +328,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         Assert.Contains("mar-allocation-scheduler", cut.Markup);
@@ -343,7 +343,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         var cells = cut.FindAll(".mar-allocation-scheduler__cell");
@@ -359,7 +359,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         var rows = cut.FindAll(".mar-allocation-scheduler__row");
@@ -377,7 +377,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         Assert.Contains("mar-allocation-scheduler__toolbar", cut.Markup);
@@ -397,7 +397,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.ValueMode, AllocationValueMode.Currency)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         // Currency mode should render without error and contain values
@@ -420,7 +420,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         Assert.Contains("mar-allocation-scheduler", cut.Markup);
@@ -444,7 +444,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         Assert.Contains("mar-allocation-scheduler", cut.Markup);
@@ -460,7 +460,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.SelectionMode, AllocationSelectionMode.None)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         // In None mode, cells should not have selected state
@@ -477,7 +477,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.Height, "400px")
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         Assert.Contains("400px", cut.Markup);
@@ -493,7 +493,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.Width, "800px")
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         Assert.Contains("800px", cut.Markup);
@@ -509,7 +509,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.Class, "my-custom-scheduler")
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         Assert.Contains("my-custom-scheduler", cut.Markup);
@@ -525,7 +525,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.EnableContextMenu, false)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         Assert.DoesNotContain("mar-allocation-scheduler__context-menu", cut.Markup);
@@ -541,7 +541,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.ShowCriticalPath, true)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         // Component renders with ShowCriticalPath enabled
@@ -586,7 +586,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         Assert.Contains("mar-allocation-scheduler__scenario-strip", cut.Markup);
@@ -653,7 +653,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         Assert.Contains("mar-allocation-scheduler", cut.Markup);
@@ -717,7 +717,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         // Component renders with scenario overrides applied without error
@@ -736,7 +736,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.ShowJumpToDate, true)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         Assert.Contains("mar-allocation-scheduler__jump-date-input", cut.Markup);
@@ -754,7 +754,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         Assert.Contains("mar-allocation-scheduler__jump-date-input", cut.Markup);
@@ -770,7 +770,7 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.ShowJumpToDate, false)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            .Add(x => x.DefaultRangeLength, 1)
+            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month));
 
         Assert.DoesNotContain("mar-allocation-scheduler__jump-date-input", cut.Markup);
