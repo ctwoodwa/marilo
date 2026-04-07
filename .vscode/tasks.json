@@ -96,6 +96,19 @@
       "dependsOn": ["scss:build", "dotnet:build:bootstrap"],
       "dependsOrder": "sequence",
       "problemMatcher": []
+    },
+    {
+      "label": "dotnet:build:pmdemo",
+      "type": "shell",
+      "command": "dotnet build samples/Marilo.PmDemo/Marilo.PmDemo/Marilo.PmDemo.csproj",
+      "group": "build",
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "build:pmdemo",
+      "dependsOn": ["scss:build", "dotnet:build:pmdemo"],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
     }
   ]
 }

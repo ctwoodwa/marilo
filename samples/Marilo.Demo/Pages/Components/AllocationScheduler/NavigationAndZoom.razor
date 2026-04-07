@@ -105,6 +105,29 @@
     </DemoSection>
 </PageSection>
 
+<PageSection Title="Jump-to-Date Visibility">
+    <DemoSection Title="Jump-to-Date Hidden"
+                 Description="Set ShowJumpToDate=false to remove the built-in date picker from the toolbar. Use this when the host page already provides its own navigation UI or you want a minimal toolbar."
+                 Code="@_jumpToDateHiddenCode">
+        <MariloAllocationScheduler TResource="StaffResource"
+                                   Resources="@_resources"
+                                   Allocations="@_allocations"
+                                   AuthoritativeLevel="TimeGranularity.Week"
+                                   ViewGrain="TimeGranularity.Week"
+                                   ValueMode="AllocationValueMode.Hours"
+                                   ShowJumpToDate="false"
+                                   VisibleStart="@_demoStart"
+                                   DefaultRangeLength="2"
+                                   DefaultRangeUnit="TimeGranularity.Month"
+                                   Height="400px">
+            <AllocationResourceColumns>
+                <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
+                <AllocationResourceColumn TResource="StaffResource" Field="Role" Title="Role" Width="120px" />
+            </AllocationResourceColumns>
+        </MariloAllocationScheduler>
+    </DemoSection>
+</PageSection>
+
 @code {
     private DateTime _demoStart = new(2026, 4, 6);
     private TimeGranularity _viewGrain = TimeGranularity.Week;
@@ -166,6 +189,15 @@
         "                           ViewGrainChanged=\"@(g => _viewGrain = g)\"\n" +
         "                           OnVisibleRangeChanged=\"@HandleRangeChanged\"\n" +
         "                           Height=\"250px\" />";
+
+    private const string _jumpToDateHiddenCode =
+        "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +
+        "                           Resources=\"@_resources\"\n" +
+        "                           Allocations=\"@_allocations\"\n" +
+        "                           AuthoritativeLevel=\"TimeGranularity.Week\"\n" +
+        "                           ViewGrain=\"TimeGranularity.Week\"\n" +
+        "                           ShowJumpToDate=\"false\"\n" +
+        "                           Height=\"400px\" />";
 
     private const string _zoomEditCode =
         "<MariloAllocationScheduler TResource=\"StaffResource\"\n" +

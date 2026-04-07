@@ -17,6 +17,23 @@
         "action": "openExternally",
         "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
       }
+    },
+    {
+      "name": "PM Demo",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build:pmdemo",
+      "program": "${workspaceFolder}/samples/Marilo.PmDemo/Marilo.PmDemo/bin/Debug/net10.0/Marilo.PmDemo.dll",
+      "args": ["--urls", "https://localhost:7101;http://localhost:5253"],
+      "cwd": "${workspaceFolder}/samples/Marilo.PmDemo/Marilo.PmDemo",
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "serverReadyAction": {
+        "action": "openExternally",
+        "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+      }
     }    
   ]
 }
