@@ -12,7 +12,7 @@ namespace Marilo.PmDemo.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AuditRecords",
+                name: "audit_records",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -27,11 +27,11 @@ namespace Marilo.PmDemo.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AuditRecords", x => x.Id);
+                    table.PrimaryKey("PK_audit_records", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "BudgetLines",
+                name: "budget_lines",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -43,11 +43,11 @@ namespace Marilo.PmDemo.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BudgetLines", x => x.Id);
+                    table.PrimaryKey("PK_budget_lines", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Comments",
+                name: "comments",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -58,11 +58,11 @@ namespace Marilo.PmDemo.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Comments", x => x.Id);
+                    table.PrimaryKey("PK_comments", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Milestones",
+                name: "milestones",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -73,11 +73,11 @@ namespace Marilo.PmDemo.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Milestones", x => x.Id);
+                    table.PrimaryKey("PK_milestones", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProjectMembers",
+                name: "project_members",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -87,11 +87,11 @@ namespace Marilo.PmDemo.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProjectMembers", x => x.Id);
+                    table.PrimaryKey("PK_project_members", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Projects",
+                name: "projects",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -104,11 +104,11 @@ namespace Marilo.PmDemo.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Projects", x => x.Id);
+                    table.PrimaryKey("PK_projects", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Risks",
+                name: "risks",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -123,11 +123,11 @@ namespace Marilo.PmDemo.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Risks", x => x.Id);
+                    table.PrimaryKey("PK_risks", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Subtasks",
+                name: "subtasks",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -137,11 +137,11 @@ namespace Marilo.PmDemo.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Subtasks", x => x.Id);
+                    table.PrimaryKey("PK_subtasks", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tasks",
+                name: "tasks",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
@@ -156,7 +156,7 @@ namespace Marilo.PmDemo.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tasks", x => x.Id);
+                    table.PrimaryKey("PK_tasks", x => x.Id);
                 });
         }
 
@@ -164,31 +164,31 @@ namespace Marilo.PmDemo.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AuditRecords");
+                name: "audit_records");
 
             migrationBuilder.DropTable(
-                name: "BudgetLines");
+                name: "budget_lines");
 
             migrationBuilder.DropTable(
-                name: "Comments");
+                name: "comments");
 
             migrationBuilder.DropTable(
-                name: "Milestones");
+                name: "milestones");
 
             migrationBuilder.DropTable(
-                name: "ProjectMembers");
+                name: "project_members");
 
             migrationBuilder.DropTable(
-                name: "Projects");
+                name: "projects");
 
             migrationBuilder.DropTable(
-                name: "Risks");
+                name: "risks");
 
             migrationBuilder.DropTable(
-                name: "Subtasks");
+                name: "subtasks");
 
             migrationBuilder.DropTable(
-                name: "Tasks");
+                name: "tasks");
         }
     }
 }

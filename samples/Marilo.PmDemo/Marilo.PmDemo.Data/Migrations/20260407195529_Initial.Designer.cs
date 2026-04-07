@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Marilo.PmDemo.Data.Migrations
 {
     [DbContext(typeof(PmDemoDbContext))]
-    [Migration("20260407164452_Initial")]
+    [Migration("20260407195529_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -62,7 +62,7 @@ namespace Marilo.PmDemo.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AuditRecords");
+                    b.ToTable("audit_records", (string)null);
                 });
 
             modelBuilder.Entity("Marilo.PmDemo.Data.Entities.BudgetLine", b =>
@@ -90,7 +90,7 @@ namespace Marilo.PmDemo.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BudgetLines");
+                    b.ToTable("budget_lines", (string)null);
                 });
 
             modelBuilder.Entity("Marilo.PmDemo.Data.Entities.Comment", b =>
@@ -115,7 +115,7 @@ namespace Marilo.PmDemo.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Comments");
+                    b.ToTable("comments", (string)null);
                 });
 
             modelBuilder.Entity("Marilo.PmDemo.Data.Entities.Milestone", b =>
@@ -139,7 +139,7 @@ namespace Marilo.PmDemo.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Milestones");
+                    b.ToTable("milestones", (string)null);
                 });
 
             modelBuilder.Entity("Marilo.PmDemo.Data.Entities.Project", b =>
@@ -171,7 +171,7 @@ namespace Marilo.PmDemo.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Projects");
+                    b.ToTable("projects", (string)null);
                 });
 
             modelBuilder.Entity("Marilo.PmDemo.Data.Entities.ProjectMember", b =>
@@ -193,7 +193,7 @@ namespace Marilo.PmDemo.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ProjectMembers");
+                    b.ToTable("project_members", (string)null);
                 });
 
             modelBuilder.Entity("Marilo.PmDemo.Data.Entities.Risk", b =>
@@ -229,7 +229,7 @@ namespace Marilo.PmDemo.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Risks");
+                    b.ToTable("risks", (string)null);
                 });
 
             modelBuilder.Entity("Marilo.PmDemo.Data.Entities.Subtask", b =>
@@ -250,7 +250,7 @@ namespace Marilo.PmDemo.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Subtasks");
+                    b.ToTable("subtasks", (string)null);
                 });
 
             modelBuilder.Entity("Marilo.PmDemo.Data.Entities.TaskItem", b =>
@@ -287,7 +287,7 @@ namespace Marilo.PmDemo.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tasks");
+                    b.ToTable("tasks", (string)null);
                 });
 #pragma warning restore 612, 618
         }

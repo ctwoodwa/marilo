@@ -2,6 +2,7 @@ using Marilo.PmDemo.Data;
 using Marilo.PmDemo.Data.Authorization;
 using Marilo.PmDemo.Data.Seeding;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
@@ -21,9 +22,12 @@ public class SeederSmokeTests
     [Fact]
     public async Task Seeder_populates_demo_data()
     {
+        // Explicit InMemoryDatabaseRoot guarantees all DbContext instances created
+        // from this provider share the same store across scopes.
+        var dbRoot = new InMemoryDatabaseRoot();
         var services = new ServiceCollection();
         services.AddSingleton<ITenantContext, TestTenant>();
-        services.AddDbContext<PmDemoDbContext>(o => o.UseInMemoryDatabase("seed-test"));
+        services.AddDbContext<PmDemoDbContext>(o => o.UseInMemoryDatabase("seed-test", dbRoot));
         var sp = services.BuildServiceProvider();
 
         var seeder = new PmDemoSeeder(sp, NullLogger<PmDemoSeeder>.Instance);
