@@ -19,7 +19,9 @@
                     class="@GetHandleClass(edge)"
                     style="@HandleStyle"
                     aria-label="@(HandleAriaLabel ?? "Resize")"
-                    tabindex="0" />
+                    tabindex="0"
+                    @onfocus="@(() => { _handleFocused = true; StateHasChanged(); })"
+                    @onblur="@(() => { _handleFocused = false; StateHasChanged(); })" />
         }
     }
 

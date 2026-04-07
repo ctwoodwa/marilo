@@ -4,7 +4,7 @@ namespace Marilo.Core.Models;
 
 /// <summary>
 /// Event arguments for resize start, resizing, and resize end events
-/// raised by <see cref="MariloResizableContainer"/>.
+/// raised by MariloResizableContainer.
 /// </summary>
 public sealed class MariloResizeEventArgs
 {
