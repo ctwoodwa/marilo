@@ -1,7 +1,16 @@
-﻿@page "/"
+@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Dashboard · Marilo PM</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1 style="margin-top:0;">Dashboard</h1>
+<p style="color:#6b7280;">Welcome to the Marilo PM demo. Use the sidebar to navigate planning, governance, and team views.</p>
 
-Welcome to your new app.
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-top:24px;">
+    @foreach (var (label, value) in new[] { ("Active Projects", "12"), ("Open Risks", "4"), ("Budget Used", "62%"), ("On-Track Tasks", "184") })
+    {
+        <div style="background:#fff;border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:18px;">
+            <div style="font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;">@label</div>
+            <div style="font-size:28px;font-weight:600;margin-top:4px;">@value</div>
+        </div>
+    }
+</div>

@@ -1,0 +1,402 @@
+/* MariloAppShell — modern enterprise sidebar layout (Linear/Perplexity-inspired)
+   Theme tokens use --marilo-* with safe fallbacks so this works without a provider. */
+
+.mar-appshell {
+    --mas-sidebar-w: 256px;
+    --mas-sidebar-collapsed-w: 68px;
+    --mas-bg: var(--marilo-color-background, #fafafa);
+    --mas-surface: var(--marilo-color-surface, #ffffff);
+    --mas-sidebar-bg: var(--marilo-color-sidebar, #f4f5f7);
+    --mas-border: var(--marilo-color-border, rgba(0,0,0,0.08));
+    --mas-text: var(--marilo-color-text, #1f2328);
+    --mas-text-muted: var(--marilo-color-text-muted, #6b7280);
+    --mas-primary: var(--marilo-color-primary, #5b6cff);
+    --mas-active-bg: color-mix(in srgb, var(--mas-primary) 12%, transparent);
+    --mas-hover-bg: color-mix(in srgb, var(--mas-text) 6%, transparent);
+    --mas-radius: 8px;
+    --mas-transition: 180ms cubic-bezier(.2,.8,.2,1);
+
+    display: grid;
+    grid-template-columns: var(--mas-sidebar-w) 1fr;
+    height: 100vh;
+    width: 100%;
+    background: var(--mas-bg);
+    color: var(--mas-text);
+    font-family: var(--marilo-font-family, system-ui, -apple-system, 'Segoe UI', sans-serif);
+    overflow: hidden;
+}
+
+.mar-appshell.is-collapsed {
+    grid-template-columns: var(--mas-sidebar-collapsed-w) 1fr;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .mar-appshell { transition: grid-template-columns var(--mas-transition); }
+}
+
+/* ── Sidebar ────────────────────────────────────────────────────────── */
+
+.mar-appshell__sidebar {
+    display: flex;
+    flex-direction: column;
+    background: var(--mas-sidebar-bg);
+    border-right: 1px solid var(--mas-border);
+    min-width: 0;
+    overflow: hidden;
+}
+
+.mar-appshell__brand {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 14px 14px 10px;
+    min-height: 56px;
+    font-weight: 600;
+    font-size: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.is-collapsed .mar-appshell__brand-fallback,
+.is-collapsed .mar-appshell__brand > :not(.mar-appshell__collapse-btn) {
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+}
+
+.mar-appshell__collapse-btn {
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    padding: 6px;
+    cursor: pointer;
+    color: var(--mas-text-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.mar-appshell__collapse-btn:hover { background: var(--mas-hover-bg); color: var(--mas-text); }
+
+/* ── Nav ────────────────────────────────────────────────────────────── */
+
+.mar-appshell__nav {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 4px 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-height: 0;
+}
+
+.mar-appshell__nav-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.mar-appshell__nav-group-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--mas-text-muted);
+    padding: 6px 10px 4px;
+}
+.is-collapsed .mar-appshell__nav-group-title {
+    visibility: hidden;
+    height: 8px;
+    padding: 0;
+}
+
+.mar-appshell__nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    border-radius: var(--mas-radius);
+    color: var(--mas-text);
+    text-decoration: none;
+    font-size: 14px;
+    line-height: 1.2;
+    position: relative;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    width: 100%;
+    text-align: left;
+}
+.mar-appshell__nav-link:hover { background: var(--mas-hover-bg); }
+.mar-appshell__nav-link.active {
+    background: var(--mas-active-bg);
+    color: var(--mas-primary);
+    font-weight: 600;
+}
+.mar-appshell__nav-link.active::before {
+    content: "";
+    position: absolute;
+    left: -8px;
+    top: 8px;
+    bottom: 8px;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: var(--mas-primary);
+}
+.mar-appshell__nav-link:focus-visible {
+    outline: 2px solid var(--mas-primary);
+    outline-offset: 2px;
+}
+
+.mar-appshell__nav-link-icon {
+    flex: 0 0 22px;
+    width: 22px;
+    height: 22px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: currentColor;
+}
+.mar-appshell__nav-link-label {
+    flex: 1 1 auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.mar-appshell__nav-link-badge {
+    flex: 0 0 auto;
+    background: var(--mas-primary);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 3px 6px;
+    border-radius: 999px;
+    min-width: 18px;
+    text-align: center;
+}
+
+.is-collapsed .mar-appshell__nav-link {
+    justify-content: center;
+    padding: 10px 0;
+}
+.is-collapsed .mar-appshell__nav-link-label,
+.is-collapsed .mar-appshell__nav-link-badge {
+    display: none;
+}
+
+/* ── Footer (avatar + bell) ─────────────────────────────────────────── */
+
+.mar-appshell__footer {
+    border-top: 1px solid var(--mas-border);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: auto;
+}
+
+.mar-appshell__icon-btn,
+.mar-appshell__avatar-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: transparent;
+    border: none;
+    border-radius: var(--mas-radius);
+    padding: 8px 10px;
+    color: var(--mas-text);
+    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+    text-align: left;
+    position: relative;
+}
+.mar-appshell__icon-btn:hover,
+.mar-appshell__avatar-btn:hover { background: var(--mas-hover-bg); }
+
+.mar-appshell__avatar {
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--mas-primary);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.mar-appshell__avatar-name {
+    flex: 1 1 auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mar-appshell__badge {
+    position: absolute;
+    top: 4px;
+    left: 22px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    padding: 2px 5px;
+    border-radius: 999px;
+    min-width: 16px;
+    text-align: center;
+}
+
+.is-collapsed .mar-appshell__icon-btn,
+.is-collapsed .mar-appshell__avatar-btn {
+    justify-content: center;
+    padding: 10px 0;
+}
+.is-collapsed .mar-appshell__avatar-name { display: none; }
+
+/* ── Main ───────────────────────────────────────────────────────────── */
+
+.mar-appshell__main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    background: var(--mas-bg);
+    overflow: hidden;
+}
+
+.mar-appshell__content {
+    flex: 1 1 auto;
+    overflow: auto;
+    padding: 24px clamp(16px, 3vw, 40px);
+}
+
+.mar-appshell__mobile-toggle {
+    display: none;
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: var(--mas-surface);
+    border: 1px solid var(--mas-border);
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    color: var(--mas-text);
+    z-index: 5;
+}
+
+/* ── Context rail (page-owned) ──────────────────────────────────────── */
+
+.mar-appshell:has(.mar-appshell__context) {
+    grid-template-columns: var(--mas-sidebar-w) 1fr 320px;
+}
+.mar-appshell.is-collapsed:has(.mar-appshell__context) {
+    grid-template-columns: var(--mas-sidebar-collapsed-w) 1fr 320px;
+}
+.mar-appshell__context {
+    border-left: 1px solid var(--mas-border);
+    background: var(--mas-surface);
+    overflow-y: auto;
+    padding: 16px;
+}
+
+/* ── Mobile / drawer ────────────────────────────────────────────────── */
+
+.mar-appshell__scrim {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 30;
+}
+
+@media (max-width: 768px) {
+    .mar-appshell,
+    .mar-appshell.is-collapsed,
+    .mar-appshell:has(.mar-appshell__context),
+    .mar-appshell.is-collapsed:has(.mar-appshell__context) {
+        grid-template-columns: 1fr;
+    }
+    .mar-appshell__sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: var(--mas-sidebar-w);
+        transform: translateX(-100%);
+        z-index: 40;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+    }
+    .mar-appshell.mobile-open .mar-appshell__sidebar {
+        transform: translateX(0);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+        .mar-appshell__sidebar { transition: transform var(--mas-transition); }
+    }
+    .mar-appshell.mobile-open .mar-appshell__scrim { display: block; }
+    .mar-appshell__mobile-toggle { display: inline-flex; }
+    .mar-appshell__content { padding-top: 60px; }
+    .mar-appshell__context { display: none; }
+    /* on mobile show labels even if collapsed */
+    .mar-appshell.is-collapsed .mar-appshell__nav-link {
+        justify-content: flex-start;
+        padding: 8px 10px;
+    }
+    .mar-appshell.is-collapsed .mar-appshell__nav-link-label,
+    .mar-appshell.is-collapsed .mar-appshell__nav-link-badge,
+    .mar-appshell.is-collapsed .mar-appshell__avatar-name {
+        display: inline;
+    }
+}
+
+/* ── Slide-over ─────────────────────────────────────────────────────── */
+
+.mar-appshell-slideover {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(420px, 100vw);
+    background: var(--marilo-color-surface, #fff);
+    color: var(--marilo-color-text, #1f2328);
+    border-left: 1px solid var(--marilo-color-border, rgba(0,0,0,0.08));
+    box-shadow: -8px 0 32px rgba(0,0,0,0.18);
+    z-index: 50;
+    transform: translateX(100%);
+    display: flex;
+    flex-direction: column;
+}
+.mar-appshell-slideover.is-open { transform: translateX(0); }
+@media (prefers-reduced-motion: no-preference) {
+    .mar-appshell-slideover { transition: transform 220ms cubic-bezier(.2,.8,.2,1); }
+}
+.mar-appshell-slideover__scrim {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 49;
+}
+.mar-appshell-slideover__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--marilo-color-border, rgba(0,0,0,0.08));
+    font-weight: 600;
+}
+.mar-appshell-slideover__close {
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    padding: 6px;
+    cursor: pointer;
+    color: inherit;
+}
+.mar-appshell-slideover__close:hover { background: rgba(0,0,0,0.06); }
+.mar-appshell-slideover__body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 16px 20px;
+}

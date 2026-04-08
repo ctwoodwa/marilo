@@ -1,9 +1,88 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 
-@Body
+<MariloAppShell @bind-SidebarCollapsed="_collapsed"
+                BrandText="Marilo PM"
+                UserName="Avery Chen"
+                NotificationCount="3"
+                OnNotificationsClick="() => _notificationsOpen = true"
+                OnAvatarClick="() => _accountOpen = true">
+    <SidebarBrand>
+        <span style="display:inline-flex;align-items:center;gap:10px;">
+            <span style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#5b6cff,#9b6bff);display:inline-block;"></span>
+            <span>Marilo PM</span>
+        </span>
+    </SidebarBrand>
+
+    <SidebarContent>
+        <MariloAppShellNavGroup Title="Overview">
+            <MariloAppShellNavLink Href="/" Match="NavLinkMatch.All" Label="Dashboard">
+                <Icon>@Svg("M3 12l9-9 9 9M5 10v10h14V10")</Icon>
+            </MariloAppShellNavLink>
+        </MariloAppShellNavGroup>
+
+        <MariloAppShellNavGroup Title="Planning">
+            <MariloAppShellNavLink Href="/board" Label="Task Board" Badge="12">
+                <Icon>@Svg("M4 4h6v16H4zM14 4h6v9h-6z")</Icon>
+            </MariloAppShellNavLink>
+            <MariloAppShellNavLink Href="/tasks" Label="Task List">
+                <Icon>@Svg("M4 6h16M4 12h16M4 18h16")</Icon>
+            </MariloAppShellNavLink>
+            <MariloAppShellNavLink Href="/timeline" Label="Timeline">
+                <Icon>@Svg("M3 6h12M3 12h18M3 18h9")</Icon>
+            </MariloAppShellNavLink>
+        </MariloAppShellNavGroup>
+
+        <MariloAppShellNavGroup Title="Governance">
+            <MariloAppShellNavLink Href="/budget" Label="Budget">
+                <Icon>@Svg("M3 20V10M9 20V4M15 20v-8M21 20V8")</Icon>
+            </MariloAppShellNavLink>
+            <MariloAppShellNavLink Href="/team" Label="Team Resource">
+                <Icon>@Svg("M16 11a4 4 0 1 0-4-4 4 4 0 0 0 4 4zM2 20c0-3 3-5 6-5s6 2 6 5M14 20c0-2 2-4 5-4s5 2 5 4")</Icon>
+            </MariloAppShellNavLink>
+            <MariloAppShellNavLink Href="/risk" Label="Risk Register" Badge="!">
+                <Icon>@Svg("M12 3l10 18H2zM12 10v5M12 18v.01")</Icon>
+            </MariloAppShellNavLink>
+        </MariloAppShellNavGroup>
+    </SidebarContent>
+
+    <ChildContent>
+        @Body
+    </ChildContent>
+
+    <SlideOver>
+        <MariloAppShellSlideOver @bind-Open="_notificationsOpen" Title="Notifications">
+            <p style="margin:0 0 12px;color:#6b7280;font-size:13px;">Recent activity</p>
+            <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;">
+                <li>Sprint 14 planning completed</li>
+                <li>Risk R-203 escalated to High</li>
+                <li>Budget threshold reached on Phase 2</li>
+            </ul>
+        </MariloAppShellSlideOver>
+        <MariloAppShellSlideOver @bind-Open="_accountOpen" Title="Account">
+            <p style="margin:0 0 8px;font-weight:600;">Avery Chen</p>
+            <p style="margin:0 0 16px;color:#6b7280;font-size:13px;">avery.chen@example.com</p>
+            <button type="button" style="padding:8px 12px;border-radius:6px;border:1px solid rgba(0,0,0,.12);background:#fff;cursor:pointer;">Sign out</button>
+        </MariloAppShellSlideOver>
+    </SlideOver>
+</MariloAppShell>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+    private bool _collapsed;
+    private bool _notificationsOpen;
+    private bool _accountOpen;
+
+    private RenderFragment Svg(string path) => __builder =>
+    {
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none"
+             stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="@path"/>
+        </svg>
+    };
+}

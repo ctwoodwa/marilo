@@ -13,4 +13,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Marilo.Components.Shell\Marilo.Components.Shell.csproj" />
+  </ItemGroup>
+
 </Project>
