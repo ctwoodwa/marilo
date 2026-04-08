@@ -1,5 +1,1 @@
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-
-var builder = WebAssemblyHostBuilder.CreateDefault(args);
-
-await builder.Build().RunAsync();
+// This project is a Razor Class Library — no entry point needed.

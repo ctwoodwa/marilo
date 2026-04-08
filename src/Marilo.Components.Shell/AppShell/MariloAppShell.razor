@@ -46,30 +46,50 @@
             }
             else
             {
-                <button type="button"
-                        class="mar-appshell__icon-btn"
-                        title="Notifications"
-                        aria-label="Notifications"
-                        @onclick="() => OnNotificationsClick.InvokeAsync()">
-                    <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
-                        <path d="M10 2a5 5 0 0 0-5 5v3l-1.5 2.5h13L15 10V7a5 5 0 0 0-5-5zm-2 13a2 2 0 0 0 4 0"
-                              fill="none" stroke="currentColor" stroke-width="1.5"
-                              stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    @if (NotificationCount > 0)
-                    {
-                        <span class="mar-appshell__badge" aria-label="@NotificationCount unread">@(NotificationCount > 99 ? "99+" : NotificationCount.ToString())</span>
-                    }
-                </button>
-
-                <button type="button"
-                        class="mar-appshell__avatar-btn"
-                        title="@(UserName ?? "Account")"
-                        aria-label="Account"
-                        @onclick="() => OnAvatarClick.InvokeAsync()">
-                    <span class="mar-appshell__avatar">@GetInitials()</span>
-                    <span class="mar-appshell__avatar-name">@UserName</span>
-                </button>
+                <div class="mar-appshell__user-group">
+                    <button type="button"
+                            class="mar-appshell__avatar-btn"
+                            title="@(UserName ?? "Account")"
+                            aria-label="Account"
+                            @onclick="() => OnAvatarClick.InvokeAsync()">
+                        <span class="mar-appshell__avatar">
+                            @if (!string.IsNullOrEmpty(UserAvatarUrl))
+                            {
+                                <img src="@UserAvatarUrl" alt="" />
+                            }
+                            else
+                            {
+                                @GetInitials()
+                            }
+                            @if (!string.IsNullOrEmpty(UserBadge))
+                            {
+                                <span class="mar-appshell__avatar-badge">@UserBadge</span>
+                            }
+                        </span>
+                        <span class="mar-appshell__identity">
+                            <span class="mar-appshell__avatar-name">@UserName</span>
+                            @if (!string.IsNullOrEmpty(UserEmail))
+                            {
+                                <span class="mar-appshell__avatar-email">@UserEmail</span>
+                            }
+                        </span>
+                    </button>
+                    <button type="button"
+                            class="mar-appshell__notif-btn"
+                            title="Notifications"
+                            aria-label="Notifications"
+                            @onclick="() => OnNotificationsClick.InvokeAsync()">
+                        <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+                            <path d="M10 2a5 5 0 0 0-5 5v3l-1.5 2.5h13L15 10V7a5 5 0 0 0-5-5zm-2 13a2 2 0 0 0 4 0"
+                                  fill="none" stroke="currentColor" stroke-width="1.5"
+                                  stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        @if (NotificationCount > 0)
+                        {
+                            <span class="mar-appshell__badge" aria-label="@NotificationCount unread">@(NotificationCount > 99 ? "99+" : NotificationCount.ToString())</span>
+                        }
+                    </button>
+                </div>
             }
         </div>
     </aside>
@@ -118,6 +138,9 @@
     [Parameter] public bool ShowContextPanel { get; set; }
     [Parameter] public string BrandText { get; set; } = "Marilo";
     [Parameter] public string? UserName { get; set; }
+    [Parameter] public string? UserAvatarUrl { get; set; }
+    [Parameter] public string? UserEmail { get; set; }
+    [Parameter] public string? UserBadge { get; set; }
     [Parameter] public int NotificationCount { get; set; }
     [Parameter] public EventCallback OnNotificationsClick { get; set; }
     [Parameter] public EventCallback OnAvatarClick { get; set; }

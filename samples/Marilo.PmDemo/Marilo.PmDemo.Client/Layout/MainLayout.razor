@@ -1,11 +1,10 @@
 @inherits LayoutComponentBase
+@inject NavigationManager Nav
 
 <MariloAppShell @bind-SidebarCollapsed="_collapsed"
                 BrandText="Marilo PM"
                 UserName="Avery Chen"
-                NotificationCount="3"
-                OnNotificationsClick="() => _notificationsOpen = true"
-                OnAvatarClick="() => _accountOpen = true">
+                NotificationCount="3">
     <SidebarBrand>
         <span style="display:inline-flex;align-items:center;gap:10px;">
             <span style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#5b6cff,#9b6bff);display:inline-block;"></span>
@@ -49,21 +48,46 @@
         @Body
     </ChildContent>
 
-    <SlideOver>
-        <MariloAppShellSlideOver @bind-Open="_notificationsOpen" Title="Notifications">
-            <p style="margin:0 0 12px;color:#6b7280;font-size:13px;">Recent activity</p>
-            <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px;">
-                <li>Sprint 14 planning completed</li>
-                <li>Risk R-203 escalated to High</li>
-                <li>Budget threshold reached on Phase 2</li>
-            </ul>
-        </MariloAppShellSlideOver>
-        <MariloAppShellSlideOver @bind-Open="_accountOpen" Title="Account">
-            <p style="margin:0 0 8px;font-weight:600;">Avery Chen</p>
-            <p style="margin:0 0 16px;color:#6b7280;font-size:13px;">avery.chen@example.com</p>
-            <button type="button" style="padding:8px 12px;border-radius:6px;border:1px solid rgba(0,0,0,.12);background:#fff;cursor:pointer;">Sign out</button>
-        </MariloAppShellSlideOver>
-    </SlideOver>
+    <SidebarFooter>
+        <div class="mar-appshell__user-group" style="position:relative;">
+            <button type="button"
+                    class="mar-appshell__avatar-btn"
+                    title="Avery Chen"
+                    aria-label="Account"
+                    aria-haspopup="menu"
+                    aria-expanded="@_menuOpen.ToString().ToLowerInvariant()"
+                    @onclick="() => _menuOpen = !_menuOpen">
+                <span class="mar-appshell__avatar">AC</span>
+                <span class="mar-appshell__avatar-name">Avery Chen</span>
+            </button>
+            <button type="button"
+                    class="mar-appshell__notif-btn"
+                    title="Notifications"
+                    aria-label="Notifications"
+                    aria-haspopup="dialog"
+                    aria-expanded="@_bellOpen.ToString().ToLowerInvariant()"
+                    @onclick="() => _bellOpen = !_bellOpen">
+                <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+                    <path d="M10 2a5 5 0 0 0-5 5v3l-1.5 2.5h13L15 10V7a5 5 0 0 0-5-5zm-2 13a2 2 0 0 0 4 0"
+                          fill="none" stroke="currentColor" stroke-width="1.5"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                @if (_notifs.Count(n => !n.IsRead) > 0)
+                {
+                    <span class="mar-appshell__badge">@_notifs.Count(n => !n.IsRead)</span>
+                }
+            </button>
+
+            <MariloUserMenu @bind-Open="_menuOpen"
+                            UserName="Avery Chen"
+                            UserEmail="avery.chen@example.com"
+                            Items="_menuItems" />
+
+            <MariloNotificationBell @bind-Open="_bellOpen"
+                                    Items="_notifs"
+                                    OnSettingsClick="GoToNotificationSettings" />
+        </div>
+    </SidebarFooter>
 </MariloAppShell>
 
 <div id="blazor-error-ui" data-nosnippet>
@@ -74,8 +98,27 @@
 
 @code {
     private bool _collapsed;
-    private bool _notificationsOpen;
-    private bool _accountOpen;
+    private bool _menuOpen;
+    private bool _bellOpen;
+
+    private List<PopupMenuItem> _menuItems = new()
+    {
+        new() { Label = "Profile",   Shortcut = "⇧P" },
+        new() { Label = "Settings",  Shortcut = "⌘," },
+        new() { Label = "Theme",     IsExpandable = true, CurrentValue = "System", IsDividerAfter = true },
+        new() { Label = "Help & docs" },
+        new() { Label = "Keyboard shortcuts", Shortcut = "?", IsDividerAfter = true },
+        new() { Label = "Sign out" },
+    };
+
+    private List<NotificationItem> _notifs = new()
+    {
+        new() { Title = "Sprint 14",  Message = "Planning completed",            Timestamp = DateTimeOffset.Now.AddMinutes(-12) },
+        new() { Title = "Risk R-203", Message = "Escalated to High",             Timestamp = DateTimeOffset.Now.AddHours(-2) },
+        new() { Title = "Budget",     Message = "Threshold reached on Phase 2",  Timestamp = DateTimeOffset.Now.AddHours(-26), IsRead = false },
+    };
+
+    private void GoToNotificationSettings() => Nav.NavigateTo("/account/details");
 
     private RenderFragment Svg(string path) => __builder =>
     {

@@ -1,3 +1,5 @@
+using Marilo.Core.Extensions;
+using Marilo.Providers.FluentUI.Extensions;
 using Marilo.PmDemo.Authorization;
 using Marilo.PmDemo.Components;
 using Marilo.PmDemo.Data;
@@ -68,16 +70,15 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddCors();
 builder.Services.AddAuthorization();
 
+// Marilo component services (FluentUI provider + theme service)
+builder.Services.AddMarilo().UseFluentUI();
+
 builder.Services.AddRazorComponents()
-    .AddInteractiveWebAssemblyComponents();
+    .AddInteractiveServerComponents();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseWebAssemblyDebugging();
-}
-else
+if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
@@ -94,7 +95,7 @@ app.MapHub<PmDemoHub>("/hubs/pmdemo");
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
-    .AddInteractiveWebAssemblyRenderMode()
+    .AddInteractiveServerRenderMode()
     .AddAdditionalAssemblies(typeof(Marilo.PmDemo.Client._Imports).Assembly);
 
 app.Run();

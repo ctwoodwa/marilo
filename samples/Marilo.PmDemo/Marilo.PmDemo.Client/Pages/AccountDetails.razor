@@ -1,0 +1,41 @@
+@page "/account/details"
+@namespace Marilo.PmDemo.Client.Pages
+
+<PageTitle>Account details · Marilo PM</PageTitle>
+
+<section style="max-width:860px;">
+    <header style="margin-bottom:24px;">
+        <h1 style="font-size:24px;font-weight:600;margin:0 0 4px;">Account</h1>
+        <p style="color:var(--marilo-color-text-muted,#6b7280);margin:0;">
+            Profile, workspace identity, and sign-in details.
+        </p>
+    </header>
+
+    <div style="display:grid;gap:16px;">
+        <article style="background:#fff;border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:20px;">
+            <h2 style="font-size:14px;font-weight:600;margin:0 0 12px;">Profile</h2>
+            <div style="display:grid;grid-template-columns:140px 1fr;gap:12px 20px;font-size:14px;">
+                <div style="color:#6b7280;">Full name</div><div>Avery Chen</div>
+                <div style="color:#6b7280;">Email</div><div>avery.chen@example.com</div>
+                <div style="color:#6b7280;">Job title</div><div>Program Manager</div>
+                <div style="color:#6b7280;">Timezone</div><div>Australia/Melbourne (AEDT)</div>
+                <div style="color:#6b7280;">Locale</div><div>English (Australia)</div>
+            </div>
+        </article>
+
+        <article style="background:#fff;border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:20px;">
+            <h2 style="font-size:14px;font-weight:600;margin:0 0 12px;">Plan</h2>
+            <p style="margin:0;font-size:14px;">
+                <strong>Team</strong> · 14 seats · renews 2026-12-01
+            </p>
+        </article>
+
+        <article style="background:#fff;border:1px solid rgba(0,0,0,0.08);border-radius:12px;padding:20px;">
+            <h2 style="font-size:14px;font-weight:600;margin:0 0 12px;">Sign-in</h2>
+            <p style="margin:0 0 8px;font-size:14px;">Signed in via SSO (Microsoft Entra ID).</p>
+            <button type="button" style="background:#ef4444;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;">
+                Sign out of all sessions
+            </button>
+        </article>
+    </div>
+</section>

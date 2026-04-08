@@ -24,8 +24,9 @@ var migrations = builder.AddProject<Projects.Marilo_PmDemo_MigrationService>("pm
 // WithReference(postgres) injects ConnectionStrings__pmdemodb with the correct
 // container-to-container hostname (pmdemodb-server, NOT localhost). dab-config.json
 // reads it via @env('ConnectionStrings__pmdemodb').
+var dabConfigPath = Path.Combine(AppContext.BaseDirectory, "..", "..", "dab-config.json");
 var dab = builder.AddContainer("pmdemo-dab", "mcr.microsoft.com/azure-databases/data-api-builder", "latest")
-    .WithBindMount("../dab-config.json", "/App/dab-config.json", isReadOnly: true)
+    .WithBindMount(dabConfigPath, "/App/dab-config.json", isReadOnly: true)
     .WithReference(postgres)
     .WithHttpEndpoint(targetPort: 5000, name: "graphql")
     .WaitForCompletion(migrations);
