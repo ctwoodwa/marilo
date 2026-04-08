@@ -11,7 +11,7 @@ Scan all ICM workspaces and report pipeline completion status.
 
 ## How to Check Status
 
-For each workspace under `workspaces/`, scan its `stages/*/output/` folders (or `output/stage-*/` for gap analysis stubs). A stage is **COMPLETE** if its output folder contains files other than `.gitkeep`. Otherwise it is **PENDING**.
+For each workspace under `ICM/workspaces/`, scan its `stages/*/output/` folders (or `output/stage-*/` for gap analysis stubs). A stage is **COMPLETE** if its output folder contains files other than `.gitkeep`. Otherwise it is **PENDING**.
 
 ## Procedure
 
@@ -48,4 +48,4 @@ For the summary view, show a compact table:
 
 ## Routing Reference
 
-For workspace taxonomy and graduation criteria, read `workspaces/shared/workspace-routing.md`.
+For workspace taxonomy and graduation criteria, read `ICM/workspaces/shared/workspace-routing.md`.

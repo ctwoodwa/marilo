@@ -11,7 +11,7 @@ You are entering an **Interpretable Context Methodology (ICM)** workspace. The f
 
 ## Entry Point
 
-1. Read `workspaces/editor-gap-analysis/CLAUDE.md` — this is the workspace routing layer
+1. Read `ICM/workspaces/editor-gap-analysis/CLAUDE.md` — this is the workspace routing layer
 2. If `$ARGUMENTS` is provided, treat it as a **trigger keyword** and follow the Triggers table in CLAUDE.md
 3. If no argument, read the CLAUDE.md routing table for task routing
 
@@ -35,4 +35,4 @@ You are entering an **Interpretable Context Methodology (ICM)** workspace. The f
 
 ## Delivery Partner
 
-`workspaces/editor-delivery/` — spec accuracy and Example UX coordination happen there.
+`ICM/workspaces/editor-delivery/` — spec accuracy and Example UX coordination happen there.
