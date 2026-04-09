@@ -18,6 +18,11 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     private List<GanttNode<TItem>> _flatVisible = new();
     private readonly HashSet<object> _expandedIds = new();
 
+    // ── Filter state ──────────────────────────────────────────────────
+    private readonly Dictionary<string, string> _filterValues = new();
+    /// <summary>Ids that were auto-expanded by the filter so we can restore state when cleared.</summary>
+    private readonly HashSet<object> _filterExpandedIds = new();
+
     // ── Sort state ────────────────────────────────────────────────────
     private string? _sortField;
     private bool _sortAscending = true;
@@ -589,15 +594,114 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         }
     }
 
+    // ── Filter logic ──────────────────────────────────────────────────
+
+    /// <summary>Called from @oninput on filter row inputs.</summary>
+    internal void OnFilterInput(string field, string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            _filterValues.Remove(field);
+        else
+            _filterValues[field] = value;
+
+        RebuildFlatVisible();
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>Whether any filter is currently active.</summary>
+    private bool HasActiveFilters => _filterValues.Count > 0;
+
+    /// <summary>Returns true if a node's own field values match ALL active filters (AND logic).</summary>
+    private bool NodeMatchesAllFilters(GanttNode<TItem> node)
+    {
+        var accessor = _accessor!;
+        foreach (var kvp in _filterValues)
+        {
+            var fieldValue = accessor.GetFieldValue(node.Item, kvp.Key)?.ToString();
+            if (fieldValue is null || !fieldValue.Contains(kvp.Value, StringComparison.OrdinalIgnoreCase))
+                return false;
+        }
+        return true;
+    }
+
+    /// <summary>Returns true if the node or any of its descendants match all filters.</summary>
+    private bool NodeOrDescendantMatches(GanttNode<TItem> node)
+    {
+        if (NodeMatchesAllFilters(node)) return true;
+        foreach (var child in node.Children)
+        {
+            if (NodeOrDescendantMatches(child)) return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Marks nodes as filter-visible using a bottom-up check.
+    /// A node is visible if it matches all filters OR any descendant does.
+    /// Auto-expands parents of matches so results are visible.
+    /// Returns the set of visible node references.
+    /// </summary>
+    private HashSet<GanttNode<TItem>>? ComputeFilterVisibility()
+    {
+        if (!HasActiveFilters)
+        {
+            // Restore any filter-expanded ids back to collapsed
+            foreach (var id in _filterExpandedIds)
+                _expandedIds.Remove(id);
+            _filterExpandedIds.Clear();
+            return null; // null means "show all"
+        }
+
+        _filterExpandedIds.Clear();
+        var visible = new HashSet<GanttNode<TItem>>();
+        foreach (var root in _roots)
+            MarkVisible(root, visible);
+        return visible;
+    }
+
+    /// <summary>Recursively marks a node visible if it or any descendant matches. Returns true if visible.</summary>
+    private bool MarkVisible(GanttNode<TItem> node, HashSet<GanttNode<TItem>> visible)
+    {
+        bool selfMatches = NodeMatchesAllFilters(node);
+        bool anyChildVisible = false;
+
+        foreach (var child in node.Children)
+        {
+            if (MarkVisible(child, visible))
+                anyChildVisible = true;
+        }
+
+        if (selfMatches || anyChildVisible)
+        {
+            visible.Add(node);
+
+            // Auto-expand parents with matching descendants so matches are visible
+            if (anyChildVisible && node.Id is not null && !_expandedIds.Contains(node.Id))
+            {
+                _expandedIds.Add(node.Id);
+                _filterExpandedIds.Add(node.Id);
+            }
+
+            return true;
+        }
+
+        return false;
+    }
+
     private void RebuildFlatVisible()
     {
-        // Apply hierarchical sort before flattening
+        // Compute filter visibility (non-destructive), then sort, then flatten
+        var filterVisible = ComputeFilterVisibility();
         ApplyHierarchicalSort();
 
         var list = new List<GanttNode<TItem>>();
         var visited = new HashSet<GanttNode<TItem>>();
         var stack = new Stack<GanttNode<TItem>>();
-        for (int i = _roots.Count - 1; i >= 0; i--) stack.Push(_roots[i]);
+        for (int i = _roots.Count - 1; i >= 0; i--)
+        {
+            if (filterVisible is null || filterVisible.Contains(_roots[i]))
+                stack.Push(_roots[i]);
+        }
         while (stack.Count > 0)
         {
             var n = stack.Pop();
@@ -605,7 +709,11 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
             list.Add(n);
             if (IsExpanded(n))
             {
-                for (int i = n.Children.Count - 1; i >= 0; i--) stack.Push(n.Children[i]);
+                for (int i = n.Children.Count - 1; i >= 0; i--)
+                {
+                    if (filterVisible is null || filterVisible.Contains(n.Children[i]))
+                        stack.Push(n.Children[i]);
+                }
             }
         }
         _flatVisible = list;

@@ -67,6 +67,29 @@
                     <span>Task</span>
                 }
             </div>
+            @if (useColumns && cols.Any(c => c.Filterable))
+            {
+                <div class="mar-gantt__filter-row">
+                    @foreach (var col in cols)
+                    {
+                        var c = col;
+                        var cellStyle = "";
+                        if (!string.IsNullOrEmpty(c.Width)) cellStyle += $"width:{c.Width};";
+                        <div class="mar-gantt__task-cell" style="@cellStyle">
+                            @if (c.Filterable && !string.IsNullOrEmpty(c.Field))
+                            {
+                                _filterValues.TryGetValue(c.Field, out var currentVal);
+                                var field = c.Field;
+                                <input type="text"
+                                       class="mar-gantt__filter-input"
+                                       placeholder="Filter..."
+                                       value="@(currentVal ?? "")"
+                                       @oninput="@(e => OnFilterInput(field, e.Value?.ToString() ?? ""))" />
+                            }
+                        </div>
+                    }
+                </div>
+            }
             @foreach (var node in visible)
             {
                 var n = node;
