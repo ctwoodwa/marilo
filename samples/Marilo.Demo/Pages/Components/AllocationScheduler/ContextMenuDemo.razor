@@ -23,7 +23,7 @@
                                    ValueMode="AllocationValueMode.Hours"
                                    EnableContextMenu="@_enableMenu"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="2"
+                                   MinVisibleColumns="2"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    OnContextMenuAction="@HandleContextMenu"
                                    Height="250px">
@@ -53,7 +53,7 @@
                                    EnableContextMenu="true"
                                    ContextMenuItems="@_customMenuItems"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="2"
+                                   MinVisibleColumns="2"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    OnContextMenuAction="@HandleCustomMenuAction"
                                    Height="250px">
@@ -95,7 +95,7 @@
                                    EnableContextMenu="true"
                                    DefaultDistributionMode="@_distributionMode"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="3"
+                                   MinVisibleColumns="3"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    OnDistributeRequested="@HandleDistribute"
                                    Height="250px">
@@ -124,7 +124,7 @@
                                    EnableContextMenu="true"
                                    AllowKeyboardEdit="true"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="3"
+                                   MinVisibleColumns="3"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    OnShiftValues="@HandleShift"
                                    OnMoveValues="@HandleMove"

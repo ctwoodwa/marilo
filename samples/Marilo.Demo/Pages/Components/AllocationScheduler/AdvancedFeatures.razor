@@ -40,7 +40,7 @@
                                    Width="@_width"
                                    Class="demo-custom-class"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="2"
+                                   MinVisibleColumns="2"
                                    DefaultRangeUnit="TimeGranularity.Month">
             <AllocationResourceColumns>
                 <AllocationResourceColumn TResource="StaffResource" Field="Name" Title="Resource" Width="180px" />
@@ -62,7 +62,7 @@
                                    EnableContextMenu="true"
                                    CanExecuteAction="@HandleCanExecute"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="1"
+                                   MinVisibleColumns="1"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    Height="200px">
             <AllocationResourceColumns>
@@ -95,7 +95,7 @@
                                    ValueMode="AllocationValueMode.Hours"
                                    AllowKeyboardEdit="true"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="2"
+                                   MinVisibleColumns="2"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    OnAllocationOverridden="@HandleOverridden"
                                    OnScenarioStatusChanged="@HandleStatusChanged"
@@ -146,7 +146,7 @@
                                    VisibleStart="@_visibleStart"
                                    VisibleStartChanged="@(d => _visibleStart = d)"
                                    VisibleEnd="@_visibleEnd"
-                                   DefaultRangeLength="2"
+                                   MinVisibleColumns="2"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    Height="250px">
             <AllocationResourceColumns>
@@ -193,7 +193,7 @@
                                    MaxTimeColumnWidth="200"
                                    OnTimeColumnResized="@HandleTimeColumnResized"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="2"
+                                   MinVisibleColumns="2"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    Height="400px">
             <AllocationResourceColumns>

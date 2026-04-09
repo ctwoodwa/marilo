@@ -50,7 +50,7 @@ public enum FileManagerViewType
 // ── Upload Settings ──────────────────────────────────────────────────────────
 
 /// <summary>
-/// Configures upload behaviour for <see cref="MariloFileManager{TItem}"/>.
+/// Configures upload behaviour for <c>MariloFileManager&lt;TItem&gt;</c>.
 /// Assign to the <c>UploadSettings</c> parameter to enable the Upload button.
 /// </summary>
 public class FileManagerUploadSettings

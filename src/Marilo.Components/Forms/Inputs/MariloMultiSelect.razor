@@ -429,7 +429,9 @@
     private CancellationTokenSource? _filterDebounce;
     private CancellationTokenSource? _readCts;
     private bool _initialReadDone;
+#pragma warning disable CS8714 // TItem may be nullable but is constrained by caller
     private Dictionary<TItem, MultiSelectItemRenderEventArgs<TItem>> _itemRenderCache = new();
+#pragma warning restore CS8714
 
     // Settings child component registrations (Telerik-shaped child API). Populated
     // via the IMultiSelectSettingsSink cascade from MultiSelectSettings /
