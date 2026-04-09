@@ -24,8 +24,8 @@
 | Field | Value |
 |-------|-------|
 | Spec version | unversioned |
-| Last spec audit | PENDING |
-| Open spec gaps | PENDING |
+| Last spec audit | 2026-04-09 |
+| Open spec gaps | 36 (4 undocumented, 28 spec-ahead, 4 mismatch; 5 P1, 26 P2, 5 P3) |
 
 ## Example UX State
 
@@ -54,19 +54,19 @@
 
 | Feature Area | Spec Path | Status |
 |---|---|---|
-| accessibility | docs/component-specs/filemanager/accessibility/ | PENDING |
-| data-binding | docs/component-specs/filemanager/data-binding/ | PENDING |
-| context-menu | docs/component-specs/filemanager/context-menu.md | PENDING |
-| events | docs/component-specs/filemanager/events.md | PENDING |
-| navigation | docs/component-specs/filemanager/navigation.md | PENDING |
-| overview | docs/component-specs/filemanager/overview.md | PENDING |
-| preview-pane | docs/component-specs/filemanager/preview-pane.md | PENDING |
-| search | docs/component-specs/filemanager/search.md | PENDING |
-| selection | docs/component-specs/filemanager/selection.md | PENDING |
-| sort | docs/component-specs/filemanager/sort.md | PENDING |
-| toolbar | docs/component-specs/filemanager/toolbar.md | PENDING |
-| upload | docs/component-specs/filemanager/upload.md | PENDING |
-| views | docs/component-specs/filemanager/views.md | PENDING |
+| accessibility | docs/component-specs/filemanager/accessibility/ | COMPLETE (2026-04-09) |
+| data-binding | docs/component-specs/filemanager/data-binding/ | COMPLETE (2026-04-09) |
+| context-menu | docs/component-specs/filemanager/context-menu.md | COMPLETE (2026-04-09) |
+| events | docs/component-specs/filemanager/events.md | COMPLETE (2026-04-09) |
+| navigation | docs/component-specs/filemanager/navigation.md | COMPLETE (2026-04-09) |
+| overview | docs/component-specs/filemanager/overview.md | COMPLETE (2026-04-09) |
+| preview-pane | docs/component-specs/filemanager/preview-pane.md | COMPLETE (2026-04-09) |
+| search | docs/component-specs/filemanager/search.md | COMPLETE (2026-04-09) |
+| selection | docs/component-specs/filemanager/selection.md | COMPLETE (2026-04-09) |
+| sort | docs/component-specs/filemanager/sort.md | COMPLETE (2026-04-09) |
+| toolbar | docs/component-specs/filemanager/toolbar.md | COMPLETE (2026-04-09) |
+| upload | docs/component-specs/filemanager/upload.md | COMPLETE (2026-04-09) |
+| views | docs/component-specs/filemanager/views.md | COMPLETE (2026-04-09) |
 
 Stage 01 processes one feature area at a time.
 Update status to IN PROGRESS / COMPLETE per area as work proceeds.

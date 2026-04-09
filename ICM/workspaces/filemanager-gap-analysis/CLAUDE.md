@@ -1,8 +1,6 @@
 # Gap Analysis -- MariloFileManager
 
-**Status:** STUB -- no gap phases started
-
-Run intake (Stage 01) via ../filemanager-delivery/ to begin gap analysis. Feature areas tracked in ../filemanager-delivery/_config/delivery-context.md.
+**Status:** ACTIVE -- Stage 01 intake complete (36 gaps from CDW spec review)
 
 ## Folder Map
 
@@ -36,6 +34,13 @@ filemanager-gap-analysis/
 | `batch` | Related gaps in one area | 01 > 02 > 03 > 05 > 06 |
 | `systematic` | Cross-cutting gaps | 01 > 02 > 03 > 04 > 05 > 06 |
 
+## Current State
+
+- **Intake source:** `filemanager-delivery/stages/01-spec-review/output/filemanager-spec-gap-list.md`
+- **36 gaps:** 5 P1 (blocking), 26 P2 (this phase), 5 P3 (next phase)
+- **Architecture:** Full rewrite from 170-line scaffold to generic `MariloFileManager<TItem>`
+- **Next step:** Stage 02 (prioritize) — batch gaps into implementation phases
+
 ## Triggers
 
 | Keyword | Action |
@@ -45,14 +50,3 @@ filemanager-gap-analysis/
 | `ingest` | Fast path: paste/point to gap analysis file, jump to Stage 01 import mode |
 | `resolve` | Start or continue resolution design (Stage 03) |
 | `close` | Jump to validation (Stage 06) for a specific gap |
-
-## Routing
-
-| Task | Go To |
-|------|-------|
-| Import or create a gap analysis | output/stage-01/ |
-| Prioritize and sequence gaps | output/stage-02/ |
-| Design a resolution for a gap | output/stage-03/ |
-| Plan remediation tasks and phases | output/stage-04/ |
-| Implement changes | output/stage-05/ |
-| Validate closure and enforce | output/stage-06/ |

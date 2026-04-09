@@ -1188,6 +1188,30 @@ Total: 7 new bUnit tests + 1 Batch 6 fix; runtime pending (.NET SDK unavailable 
 **Implementation log:** `stages/05-implement/output/gap-t4-picker-batch1-implementation-log.md`
 **Closure report:** `stages/06-validate/output/gap-t4-picker-batch1-closure-report.md`
 
+### T4 Picker Batch 8 — Implementation Tracking (2026-04-09, subagent-driven)
+
+**Scope:** 13 final C# polish gaps across 5 components (DateRangePicker, DateTimePicker, TimePicker, FileUpload, Upload)
+**Execution:** 3 parallel subagents (8A: DateRangePicker+DateTimePicker, 8B: TimePicker, 8C: FileUpload+Upload)
+
+| Subagent | Gaps | Component(s) | Status |
+|----------|------|-------------|--------|
+| **8A** | PopupClass bug, ShowWeekNumbers, Size/Rounded/FillMode, DebounceDelay/Title, HeaderTemplate, ValidateOn | DateRangePicker, DateTimePicker | **Resolved** ✅ (23 bUnit tests) |
+| **8B** | InputMode, ValidateOn, OnChange-on-blur, CSS provider integration | TimePicker | **Resolved** ✅ (13 bUnit tests) |
+| **8C** | Template context type fix, CSS provider delegation, UploadChunkSettings nested tag | FileUpload, Upload | **Resolved** ✅ (12 bUnit tests) |
+
+**Records:**
+- 8A: [Resolution](../workspaces/gap-analysis-resolution/stages/03-resolution-design/output/gap-t4-picker-batch8a-resolutions.md) | [Implementation](../workspaces/gap-analysis-resolution/stages/05-implement/output/gap-t4-picker-batch8a-implementation-log.md) | [Closure](../workspaces/gap-analysis-resolution/stages/06-validate/output/gap-t4-picker-batch8a-closure-report.md)
+- 8B: [Resolution](../workspaces/gap-analysis-resolution/stages/03-resolution-design/output/gap-t4-picker-batch8b-resolutions.md) | [Implementation](../workspaces/gap-analysis-resolution/stages/05-implement/output/gap-t4-picker-batch8b-implementation-log.md) | [Closure](../workspaces/gap-analysis-resolution/stages/06-validate/output/gap-t4-picker-batch8b-closure-report.md)
+- 8C: [Resolution](../workspaces/gap-analysis-resolution/stages/03-resolution-design/output/gap-t4-picker-batch8c-resolutions.md) | [Implementation](../workspaces/gap-analysis-resolution/stages/05-implement/output/gap-t4-picker-batch8c-implementation-log.md) | [Closure](../workspaces/gap-analysis-resolution/stages/06-validate/output/gap-t4-picker-batch8c-closure-report.md)
+
+**Runtime validation:** 726/726 full suite passing (2026-04-09). Zero regressions.
+
+**Remaining T4 gaps after Batch 8 (deferred):**
+- ColorPicker: FlatColorPicker, ColorGradient, ColorPalette standalone components + ColorPickerViews child tags (significant new component work)
+- DateRangePicker: Multi-view calendar navigation (large feature)
+- FileUpload/Upload: DropZoneId (JS interop needed)
+- DateRangePicker: FocusStartAsync/FocusEndAsync (JS interop needed)
+
 ### T1 Splitter/Wizard — Full Pipeline Tracking
 
 ### DataGrid Header Alignment Fix (2026-04-04)

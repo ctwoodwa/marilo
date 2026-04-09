@@ -86,6 +86,9 @@ All implementations are independent (no Telerik dependency), use MIT/Apache-2.0-
 | datagrid-phase2 | 15 | 15 | Stage 06 closed (2026-04-04); 6 resolved (validation, composite filters, auto-gen attrs, aggregates, export, CancellationToken); runtime test pending |
 | datagrid-phase3 | 10 | 10 | Stage 06 closed (2026-04-05); 2 resolved (CheckBoxList filter, cell selection); 557/557 full suite |
 | gantt-full | 31 | 31/31 ✅ | Stage 06 closed (2026-04-09); 20/20 gaps resolved (full generic rewrite); subagent-driven dev; runtime pending |
+| t4-pickers-batch8a | 23 | 23/23 ✅ | Stage 06 closed (2026-04-09); 6/6 resolved (DRP PopupClass/ShowWeekNumbers/Size/Rounded/FillMode/DebounceDelay/Title/HeaderTemplate + DTP ValidateOn); 726/726 full suite |
+| t4-pickers-batch8b | 13 | 13/13 ✅ | Stage 06 closed (2026-04-09); 4/4 resolved (TP InputMode/ValidateOn/OnChange-on-blur/CSS provider); 726/726 full suite |
+| t4-pickers-batch8c | 12 | 12/12 ✅ | Stage 06 closed (2026-04-09); 3/3 resolved (FU template context/CSS provider + UPL UploadChunkSettings); 726/726 full suite |
 | datagrid-cdw | 0 | 0 | Per-feature checklist ready for CDW handoff (2026-04-03) |
 
 Canonical test evidence: `stages/06-validate/output/gap-*-closure-report.md`
