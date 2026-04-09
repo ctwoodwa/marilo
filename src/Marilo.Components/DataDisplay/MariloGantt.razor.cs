@@ -435,6 +435,7 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         var byId = new Dictionary<object, GanttNode<TItem>>();
         var ordered = new List<GanttNode<TItem>>(items.Count);
 
+        var insertionIndex = 0;
         foreach (var item in items)
         {
             var node = new GanttNode<TItem>
@@ -442,6 +443,7 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
                 Item = item,
                 Id = accessor.GetId(item),
                 ParentId = accessor.GetParentId(item),
+                OriginalIndex = insertionIndex++,
             };
             ordered.Add(node);
             if (node.Id is not null && !byId.ContainsKey(node.Id))
@@ -542,7 +544,7 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         }
 
         RebuildFlatVisible();
-        StateHasChanged();
+        _ = InvokeAsync(StateHasChanged);
     }
 
     /// <summary>
@@ -551,13 +553,23 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     /// </summary>
     private void ApplyHierarchicalSort()
     {
-        if (_sortField is null || _accessor is null) return;
+        if (_accessor is null) return;
 
-        var field = _sortField;
-        var ascending = _sortAscending;
-        var accessor = _accessor;
+        if (_sortField is null)
+        {
+            RestoreOriginalOrder(_roots);
+            return;
+        }
 
-        SortSiblings(_roots, field, ascending, accessor);
+        SortSiblings(_roots, _sortField, _sortAscending, _accessor);
+    }
+
+    private static void RestoreOriginalOrder(List<GanttNode<TItem>> siblings)
+    {
+        siblings.Sort((a, b) => a.OriginalIndex.CompareTo(b.OriginalIndex));
+        foreach (var node in siblings)
+            if (node.Children.Count > 0)
+                RestoreOriginalOrder(node.Children);
     }
 
     private static void SortSiblings(List<GanttNode<TItem>> siblings, string field, bool ascending, GanttFieldAccessor<TItem> accessor)
@@ -652,7 +664,12 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
             return null; // null means "show all"
         }
 
+        // First, undo previous auto-expansions so MarkVisible sees a clean slate
+        foreach (var id in _filterExpandedIds)
+            _expandedIds.Remove(id);
         _filterExpandedIds.Clear();
+
+        // Now compute visibility fresh
         var visible = new HashSet<GanttNode<TItem>>();
         foreach (var root in _roots)
             MarkVisible(root, visible);

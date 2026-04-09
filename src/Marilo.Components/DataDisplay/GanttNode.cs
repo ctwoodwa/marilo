@@ -15,4 +15,5 @@ internal sealed class GanttNode<TItem> where TItem : class
     public List<GanttNode<TItem>> Children { get; } = new();
     public bool IsExpanded { get; set; } = true;
     public GanttNode<TItem>? Parent { get; set; }
+    internal int OriginalIndex { get; set; }
 }
