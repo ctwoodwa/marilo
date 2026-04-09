@@ -559,18 +559,33 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     {
         if (siblings.Count <= 1) return;
 
-        siblings.Sort((a, b) =>
-        {
-            var va = accessor.GetFieldValue(a.Item, field);
-            var vb = accessor.GetFieldValue(b.Item, field);
-            int cmp = Comparer<object>.Default.Compare(va, vb);
-            return ascending ? cmp : -cmp;
-        });
+        var sorted = ascending
+            ? siblings.OrderBy(n => accessor.GetFieldValue(n.Item, field), NullSafeObjectComparer.Instance).ToList()
+            : siblings.OrderByDescending(n => accessor.GetFieldValue(n.Item, field), NullSafeObjectComparer.Instance).ToList();
+        siblings.Clear();
+        siblings.AddRange(sorted);
 
         foreach (var node in siblings)
         {
             if (node.Children.Count > 0)
                 SortSiblings(node.Children, field, ascending, accessor);
+        }
+    }
+
+    private sealed class NullSafeObjectComparer : IComparer<object?>
+    {
+        public static readonly NullSafeObjectComparer Instance = new();
+        public int Compare(object? x, object? y)
+        {
+            if (ReferenceEquals(x, y)) return 0;
+            if (x is null) return -1;
+            if (y is null) return 1;
+            if (x is IComparable cx)
+            {
+                try { return cx.CompareTo(y); }
+                catch { return string.Compare(x.ToString(), y.ToString(), StringComparison.Ordinal); }
+            }
+            return string.Compare(x.ToString(), y.ToString(), StringComparison.Ordinal);
         }
     }
 

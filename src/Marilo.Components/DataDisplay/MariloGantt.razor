@@ -45,7 +45,7 @@
                         <div class="@headerCssClass"
                              style="@headerStyle"
                              role="columnheader"
-                             aria-sort="@(isSorted ? (_sortAscending ? "ascending" : "descending") : null)"
+                             aria-sort="@(isSorted ? (_sortAscending ? "ascending" : "descending") : (c.Sortable ? "none" : null))"
                              @onclick="() => { if (c.Sortable) SortBy(c.Field); }">
                             @if (c.HeaderTemplate is not null)
                             {
