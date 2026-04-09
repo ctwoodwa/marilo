@@ -18,6 +18,7 @@ public partial class MariloFileManager<TItem> : MariloComponentBase
     private string? _selectedItemPath;
     private IEnumerable<TItem> _resolvedItems = Enumerable.Empty<TItem>();
     private CancellationTokenSource? _readCts;
+    private string _searchFilter = string.Empty;
 
     // ── Parameters: Data ────────────────────────────────────────────────────────
 
@@ -92,6 +93,14 @@ public partial class MariloFileManager<TItem> : MariloComponentBase
 
     /// <summary>Fires when the view type changes.</summary>
     [Parameter] public EventCallback<FileManagerViewType> ViewChanged { get; set; }
+
+    // ── Parameters: Toolbar ─────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Optional custom toolbar content. When null, the default toolbar is rendered
+    /// with Up, breadcrumb, view toggle, New Folder (if AllowCreate), and search.
+    /// </summary>
+    [Parameter] public RenderFragment? ToolBarTemplate { get; set; }
 
     // ── Parameters: Layout ──────────────────────────────────────────────────────
 
@@ -217,10 +226,15 @@ public partial class MariloFileManager<TItem> : MariloComponentBase
 
     internal IEnumerable<TItem> GetCurrentItems()
     {
-        return _resolvedItems
+        var items = _resolvedItems
             .Where(i => GetParentPath(GetPath(i)) == Path.TrimEnd('/'))
             .OrderByDescending(GetIsDirectory)
             .ThenBy(GetName);
+
+        if (!string.IsNullOrWhiteSpace(_searchFilter))
+            items = items.Where(i => GetName(i).Contains(_searchFilter, StringComparison.OrdinalIgnoreCase));
+
+        return items;
     }
 
     internal IEnumerable<TItem> GetRootFolders()
@@ -275,6 +289,53 @@ public partial class MariloFileManager<TItem> : MariloComponentBase
     {
         var args = new FileManagerDeleteEventArgs<TItem> { Item = item };
         await OnDelete.InvokeAsync(args);
+    }
+
+    // ── Search ──────────────────────────────────────────────────────────────────
+
+    internal string SearchFilter
+    {
+        get => _searchFilter;
+        set
+        {
+            _searchFilter = value ?? string.Empty;
+            StateHasChanged();
+        }
+    }
+
+    // ── View Toggle ─────────────────────────────────────────────────────────────
+
+    internal async Task SetViewType(FileManagerViewType viewType)
+    {
+        View = viewType;
+        await ViewChanged.InvokeAsync(View);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    internal async Task ToggleView()
+    {
+        var next = View == FileManagerViewType.Grid
+            ? FileManagerViewType.ListView
+            : FileManagerViewType.Grid;
+        await SetViewType(next);
+    }
+
+    // ── Breadcrumb ──────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Returns the breadcrumb segments for the current path.
+    /// Each element is (label, path). The root "/" is always the first segment.
+    /// </summary>
+    internal IEnumerable<(string Label, string SegmentPath)> GetBreadcrumbSegments()
+    {
+        yield return ("/", "/");
+
+        var parts = Path.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        for (var i = 0; i < parts.Length; i++)
+        {
+            var segPath = "/" + string.Join("/", parts[..^(parts.Length - 1 - i)]);
+            yield return (parts[i], segPath);
+        }
     }
 
     // ── Helpers ─────────────────────────────────────────────────────────────────
