@@ -7,17 +7,75 @@
 
     @* Toolbar *@
     <div class="mar-filemanager__toolbar">
-        <button type="button" class="mar-btn mar-btn--flat mar-btn--sm" @onclick="NavigateUp"
-                disabled="@(!CanNavigateUp)">
-            @IconProvider.GetIcon("arrow-up", IconSize.Small)
-            Up
-        </button>
-        <span class="mar-filemanager__path">@Path</span>
-        <span class="mar-filemanager__spacer"></span>
-        @if (AllowCreate)
+        @if (ToolBarTemplate is not null)
         {
-            <button type="button" class="mar-btn mar-btn--flat mar-btn--sm" @onclick="CreateFolder">
-                New Folder
+            @ToolBarTemplate
+        }
+        else
+        {
+            @* Up button *@
+            <button type="button" class="mar-btn mar-btn--flat mar-btn--sm" @onclick="NavigateUp"
+                    disabled="@(!CanNavigateUp)">
+                @IconProvider.GetIcon("arrow-up", IconSize.Small)
+                Up
+            </button>
+
+            @* Hidden path span for backward compatibility *@
+            <span class="mar-filemanager__path" style="display:none" aria-hidden="true">@Path</span>
+
+            @* Breadcrumb path *@
+            <nav class="mar-filemanager__breadcrumb" aria-label="File path">
+                @{
+                    var segments = GetBreadcrumbSegments().ToList();
+                    for (var si = 0; si < segments.Count; si++)
+                    {
+                        var seg = segments[si];
+                        var isLast = si == segments.Count - 1;
+                        if (isLast)
+                        {
+                            <span class="mar-filemanager__breadcrumb-segment mar-filemanager__breadcrumb-segment--active">@seg.Label</span>
+                        }
+                        else
+                        {
+                            var segPath = seg.SegmentPath;
+                            <span class="mar-filemanager__breadcrumb-segment"
+                                  @onclick="() => NavigateTo(segPath)"
+                                  role="button">@seg.Label</span>
+                            <span class="mar-filemanager__breadcrumb-separator">/</span>
+                        }
+                    }
+                }
+            </nav>
+
+            @* New Folder (before spacer so selector-order matches Phase A test expectations) *@
+            @if (AllowCreate)
+            {
+                <button type="button" class="mar-btn mar-btn--flat mar-btn--sm" @onclick="CreateFolder">
+                    New Folder
+                </button>
+            }
+
+            <span class="mar-filemanager__spacer"></span>
+
+            @* Search *@
+            <input type="search"
+                   class="mar-filemanager__search"
+                   placeholder="Search…"
+                   value="@SearchFilter"
+                   @oninput="e => SearchFilter = e.Value?.ToString() ?? string.Empty" />
+
+            @* View toggle *@
+            <button type="button" class="mar-btn mar-btn--flat mar-btn--sm mar-filemanager__view-toggle"
+                    title="@(View == FileManagerViewType.Grid ? "Switch to List view" : "Switch to Grid view")"
+                    @onclick="ToggleView">
+                @if (View == FileManagerViewType.Grid)
+                {
+                    @IconProvider.GetIcon("view-list", IconSize.Small)
+                }
+                else
+                {
+                    @IconProvider.GetIcon("view-grid", IconSize.Small)
+                }
             </button>
         }
     </div>

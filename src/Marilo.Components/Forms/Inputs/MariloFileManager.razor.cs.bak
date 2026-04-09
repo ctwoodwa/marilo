@@ -15,7 +15,7 @@ public partial class MariloFileManager<TItem> : MariloComponentBase
 {
     // ── Internal state ──────────────────────────────────────────────────────────
 
-    private List<TItem> _selectedItems = new();
+    private string? _selectedItemPath;
     private IEnumerable<TItem> _resolvedItems = Enumerable.Empty<TItem>();
     private CancellationTokenSource? _readCts;
     private string _searchFilter = string.Empty;
@@ -121,14 +121,6 @@ public partial class MariloFileManager<TItem> : MariloComponentBase
     /// <summary>Enables the Rename action.</summary>
     [Parameter] public bool AllowRename { get; set; }
 
-    // ── Parameters: Selection ───────────────────────────────────────────────────
-
-    /// <summary>The currently selected items. Supports two-way binding.</summary>
-    [Parameter] public IEnumerable<TItem> SelectedItems { get; set; } = Enumerable.Empty<TItem>();
-
-    /// <summary>Fires when the selection changes.</summary>
-    [Parameter] public EventCallback<IEnumerable<TItem>> SelectedItemsChanged { get; set; }
-
     // ── Parameters: Events ──────────────────────────────────────────────────────
 
     /// <summary>Fires when the user single-clicks an item.</summary>
@@ -142,23 +134,6 @@ public partial class MariloFileManager<TItem> : MariloComponentBase
 
     /// <summary>Fires when the user deletes an item.</summary>
     [Parameter] public EventCallback<FileManagerDeleteEventArgs<TItem>> OnDelete { get; set; }
-
-    /// <summary>Fires when the user starts renaming an item (Phase D wires the rename UI).</summary>
-    [Parameter] public EventCallback<FileManagerEditEventArgs<TItem>> OnEdit { get; set; }
-
-    /// <summary>Fires when a rename operation completes.</summary>
-    [Parameter] public EventCallback<FileManagerUpdateEventArgs<TItem>> OnUpdate { get; set; }
-
-    /// <summary>
-    /// Fires before a file download is initiated. Set IsCancelled = true to suppress the download.
-    /// </summary>
-    [Parameter] public EventCallback<FileManagerDownloadEventArgs<TItem>> OnDownload { get; set; }
-
-    /// <summary>
-    /// Factory callback invoked when a new TItem instance is needed (e.g. folder creation).
-    /// When null, default(TItem) is used.
-    /// </summary>
-    [Parameter] public Func<TItem>? OnModelInit { get; set; }
 
     // ── Derived state ───────────────────────────────────────────────────────────
 
@@ -211,9 +186,6 @@ public partial class MariloFileManager<TItem> : MariloComponentBase
         // If OnRead is not bound, sync _resolvedItems from the Data parameter
         if (!OnRead.HasDelegate)
             _resolvedItems = Data;
-
-        // Sync internal selection list from the bound SelectedItems parameter
-        _selectedItems = SelectedItems.ToList();
     }
 
     // ── Data loading ────────────────────────────────────────────────────────────
@@ -254,7 +226,7 @@ public partial class MariloFileManager<TItem> : MariloComponentBase
 
     internal IEnumerable<TItem> GetCurrentItems()
     {
-        IEnumerable<TItem> items = _resolvedItems
+        var items = _resolvedItems
             .Where(i => GetParentPath(GetPath(i)) == Path.TrimEnd('/'))
             .OrderByDescending(GetIsDirectory)
             .ThenBy(GetName);
@@ -295,8 +267,7 @@ public partial class MariloFileManager<TItem> : MariloComponentBase
 
     internal async Task SelectItem(TItem item)
     {
-        _selectedItems = new List<TItem> { item };
-        await SelectedItemsChanged.InvokeAsync(_selectedItems);
+        _selectedItemPath = GetPath(item);
         await OnSelect.InvokeAsync(item);
     }
 
@@ -310,91 +281,19 @@ public partial class MariloFileManager<TItem> : MariloComponentBase
 
     internal async Task CreateFolder()
     {
-        TItem? newItem = OnModelInit is not null ? OnModelInit() : default;
-        var args = new FileManagerCreateEventArgs<TItem> { Item = newItem };
+        var args = new FileManagerCreateEventArgs<TItem>();
         await OnCreate.InvokeAsync(args);
     }
 
     internal async Task DeleteItem(TItem item)
     {
-        if (!AllowDelete) return;
         var args = new FileManagerDeleteEventArgs<TItem> { Item = item };
         await OnDelete.InvokeAsync(args);
     }
 
-    internal async Task EditItem(TItem item)
-    {
-        var args = new FileManagerEditEventArgs<TItem> { Item = item };
-        await OnEdit.InvokeAsync(args);
-    }
-
-    internal async Task UpdateItem(TItem item)
-    {
-        var args = new FileManagerUpdateEventArgs<TItem> { Item = item };
-        await OnUpdate.InvokeAsync(args);
-    }
-
-    /// <summary>
-    /// Initiates a file download. Fires OnDownload; if the handler sets IsCancelled,
-    /// the download is suppressed. Returns the event args so callers can inspect IsCancelled.
-    /// </summary>
-    internal async Task<FileManagerDownloadEventArgs<TItem>> DownloadItem(TItem item)
-    {
-        var args = new FileManagerDownloadEventArgs<TItem> { Item = item };
-        await OnDownload.InvokeAsync(args);
-        return args;
-    }
-
-    // ── Search ──────────────────────────────────────────────────────────────────
-
-    internal string SearchFilter
-    {
-        get => _searchFilter;
-        set
-        {
-            _searchFilter = value ?? string.Empty;
-            StateHasChanged();
-        }
-    }
-
-    // ── View Toggle ─────────────────────────────────────────────────────────────
-
-    internal async Task SetViewType(FileManagerViewType viewType)
-    {
-        View = viewType;
-        await ViewChanged.InvokeAsync(View);
-        await InvokeAsync(StateHasChanged);
-    }
-
-    internal async Task ToggleView()
-    {
-        var next = View == FileManagerViewType.Grid
-            ? FileManagerViewType.ListView
-            : FileManagerViewType.Grid;
-        await SetViewType(next);
-    }
-
-    // ── Breadcrumb ──────────────────────────────────────────────────────────────
-
-    /// <summary>
-    /// Returns the breadcrumb segments for the current path.
-    /// Each element is (label, path). The root "/" is always the first segment.
-    /// </summary>
-    internal IEnumerable<(string Label, string SegmentPath)> GetBreadcrumbSegments()
-    {
-        yield return ("/", "/");
-
-        var parts = Path.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        for (var i = 0; i < parts.Length; i++)
-        {
-            var segPath = "/" + string.Join("/", parts[..^(parts.Length - 1 - i)]);
-            yield return (parts[i], segPath);
-        }
-    }
-
     // ── Helpers ─────────────────────────────────────────────────────────────────
 
-    internal bool IsSelected(TItem item) => _selectedItems.Contains(item);
+    internal bool IsSelected(TItem item) => GetPath(item) == _selectedItemPath;
 
     internal static string FormatSize(long bytes)
     {

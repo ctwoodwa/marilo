@@ -18,7 +18,7 @@
 | Wizard | 0 | 0 | 18 resolved | 0 | **06-validate** | 27 | Stage 06 closure report complete; runtime test pending |
 | Chart | 2 remaining | 0 | 13 (B1+B2) | 2 deferred | **06-validate (B2)** | 27 | Batch 1+2 closed; 4 pre-existing, 9 implemented; drilldown+demos deferred |
 | Editor | ~5 remaining | 0 | 7 (B1+B2a) | 0 | **06-validate (B2a)** | 22 (14+8) | Batch 1+2a closed; B2a adds Markdig import/export; 675/675 runtime validated |
-| FileManager | 28 | 0 | 8 (Phase A) | 0 | 05-implement (Phase A) | 26 | Phase A foundation complete: generic TItem, 14 field params, naming, OnRead, partial files; 752/752 full suite |
+| FileManager | 14 | 0 | 22 (A+B+C) | 0 | 05-implement (Phase C) | 74 | Phases A+B+C complete; generic TItem, events, selection, toolbar, breadcrumb, search; 800/800 full suite |
 | Scheduler | ~25-40 | 0 | 0 | 0 | 01-intake | 0 | Recommend dedicated CDW |
 | Gantt | 0 | 0 | 20 | 0 | **06-validate** | 31 | Full rewrite complete; 20/20 gaps resolved; subagent-driven dev |
 | TreeList | ~35-55 | 0 | 0 | 0 | 01-intake | 0 | Recommend dedicated CDW |
