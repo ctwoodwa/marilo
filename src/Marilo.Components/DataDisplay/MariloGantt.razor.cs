@@ -72,11 +72,14 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
 
     internal void UnregisterColumn(GanttColumn<TItem> column)
     {
-        if (_columns.Remove(column))
+        _ = InvokeAsync(() =>
         {
-            _visibleColumnsCache = null;
-            _ = InvokeAsync(StateHasChanged);
-        }
+            if (_columns.Remove(column))
+            {
+                _visibleColumnsCache = null;
+                StateHasChanged();
+            }
+        });
     }
 
     internal List<GanttColumn<TItem>> VisibleColumns
@@ -91,14 +94,18 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         if (!_views.Contains(view))
         {
             _views.Add(view);
+            ComputeTimeline();
             _ = InvokeAsync(StateHasChanged);
         }
     }
 
     void IGanttViewHost.UnregisterView(GanttViewBase view)
     {
-        if (_views.Remove(view))
-            _ = InvokeAsync(StateHasChanged);
+        _ = InvokeAsync(() =>
+        {
+            if (_views.Remove(view))
+                StateHasChanged();
+        });
     }
 
     /// <summary>The view component matching the current View enum, or the first registered, or null.</summary>
@@ -117,6 +124,7 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     private List<TimelineSlot> _slots = new();
     private List<TimelineHeader> _mainHeaders = new();
     private double _totalTimelineWidth;
+    private bool _timelineComputed;
 
     private void ComputeTimeline()
     {
@@ -150,6 +158,8 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
             _slots = new List<TimelineSlot>();
             _mainHeaders = new List<TimelineHeader>();
         }
+
+        _timelineComputed = true;
     }
 
     private static DateTime ComputeDataMin(GanttFieldAccessor<TItem> accessor, List<GanttNode<TItem>> visible)
@@ -171,7 +181,7 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     {
         GanttView.Day => date.Date.AddDays(1),
         GanttView.Week => StartOfWeek(date).AddDays(7),
-        GanttView.Month => StartOfWeek(new DateTime(date.Year, date.Month, 1).AddMonths(1)),
+        GanttView.Month => StartOfWeek(new DateTime(date.Year, date.Month, 1).AddMonths(1)).AddDays(7),
         GanttView.Year => new DateTime(date.Year, date.Month, 1).AddMonths(1),
         _ => date
     };
@@ -311,7 +321,7 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         var view = ActiveView!;
         var slotWidth = view.SlotWidth;
 
-        return View switch
+        var raw = View switch
         {
             GanttView.Day => (date - _rangeStart).TotalHours * slotWidth,
             GanttView.Week => (date - _rangeStart).TotalDays * slotWidth,
@@ -319,6 +329,8 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
             GanttView.Year => GetMonthFractionalOffset(date, _rangeStart) * slotWidth,
             _ => 0
         };
+
+        return Math.Clamp(raw, 0, _totalTimelineWidth);
     }
 
     /// <summary>
@@ -326,15 +338,9 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     /// </summary>
     private static double GetMonthFractionalOffset(DateTime date, DateTime rangeStart)
     {
-        var wholeMonths = (date.Year - rangeStart.Year) * 12 + (date.Month - rangeStart.Month);
-        // Add fractional part based on day position within the month
-        var daysInStartMonth = DateTime.DaysInMonth(rangeStart.Year, rangeStart.Month);
-        var startDayFraction = (rangeStart.Day - 1.0) / daysInStartMonth;
-
-        var daysInTargetMonth = DateTime.DaysInMonth(date.Year, date.Month);
-        var targetDayFraction = (date.Day - 1.0) / daysInTargetMonth;
-
-        return wholeMonths - startDayFraction + targetDayFraction;
+        int wholeMonths = (date.Year - rangeStart.Year) * 12 + (date.Month - rangeStart.Month);
+        double dayFraction = (date.Day - 1.0) / DateTime.DaysInMonth(date.Year, date.Month);
+        return wholeMonths + dayFraction;
     }
 
     /// <summary>
@@ -345,6 +351,15 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         => Math.Max(GetPixelOffset(end) - GetPixelOffset(start), 4);
 
     // ── Lifecycle ──────────────────────────────────────────────────────
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender && UseViewEngine && !_timelineComputed)
+        {
+            ComputeTimeline();
+            StateHasChanged();
+        }
+    }
 
     protected override void OnParametersSet()
     {
@@ -365,6 +380,7 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
             }
         }
         _visibleColumnsCache = null;
+        _timelineComputed = false;
         ComputeTimeline();
         base.OnParametersSet();
     }
