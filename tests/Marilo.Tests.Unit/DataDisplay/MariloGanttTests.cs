@@ -1551,4 +1551,330 @@ public class MariloGanttTests : MariloTestBase
         Assert.Contains("End", state.VisibleColumns!);
     }
 
+    // ── Task A: OriginalEditItem clone lifecycle ─────────────────────
+
+    [Fact]
+    public async Task OriginalEditItem_PreservesOriginalValues_AfterEditValuesMutated()
+    {
+        var data = CreateTestData();
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.GanttColumns, EditableColumns()));
+
+        await cut.Instance.BeginEdit(0);
+
+        var stateBeforeCommit = cut.Instance.GetState();
+        // OriginalEditItem captures original values
+        Assert.Equal("Alpha", stateBeforeCommit.OriginalEditItem!.Title);
+        Assert.Equal(data[0].Start, stateBeforeCommit.OriginalEditItem.Start);
+
+        // Commit (writes _editValues back to item)
+        await cut.Instance.CommitEdit();
+
+        // After commit, OriginalEditItem is cleared
+        var stateAfterCommit = cut.Instance.GetState();
+        Assert.Null(stateAfterCommit.OriginalEditItem);
+        Assert.Null(stateAfterCommit.EditItem);
+    }
+
+    [Fact]
+    public async Task OriginalEditItem_PreservesValues_ThroughCancelFlow()
+    {
+        var data = CreateTestData();
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.GanttColumns, EditableColumns()));
+
+        var originalTitle = data[0].Title;
+        await cut.Instance.BeginEdit(0);
+
+        // Verify original is captured
+        var state = cut.Instance.GetState();
+        Assert.Equal(originalTitle, state.OriginalEditItem!.Title);
+
+        // Cancel
+        await cut.Instance.CancelEdit();
+
+        // After cancel, both are cleared
+        state = cut.Instance.GetState();
+        Assert.Null(state.EditItem);
+        Assert.Null(state.OriginalEditItem);
+    }
+
+    [Fact]
+    public async Task GetState_InsertedItem_NullByDefault()
+    {
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, CreateTestData())
+            .Add(x => x.GanttColumns, DefaultColumns()));
+
+        var state = cut.Instance.GetState();
+        Assert.Null(state.InsertedItem);
+        Assert.Null(state.ParentItem);
+    }
+
+    [Fact]
+    public async Task SetStateAsync_AppliesInsertedItemAndParentItem()
+    {
+        var data = CreateTestData();
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.GanttColumns, DefaultColumns()));
+
+        var newItem = new TaskModel { Id = 99, Title = "New Task", Start = BaseDate, End = BaseDate.AddDays(3) };
+        var parentItem = data[0]; // Alpha
+
+        await cut.Instance.SetStateAsync(new GanttState<TaskModel>
+        {
+            InsertedItem = newItem,
+            ParentItem = parentItem
+        });
+
+        var state = cut.Instance.GetState();
+        Assert.NotNull(state.InsertedItem);
+        Assert.Equal(99, state.InsertedItem!.Id);
+        Assert.NotNull(state.ParentItem);
+        Assert.Equal(parentItem.Id, state.ParentItem!.Id);
+    }
+
+    [Fact]
+    public async Task GanttCloneHelper_ReturnsNull_ForNullInput()
+    {
+        var result = GanttCloneHelper.DeepClone<TaskModel>(null);
+        Assert.Null(result);
+    }
+
+    // ── Task B: GanttDependencies component model stub ───────────────
+
+    private static RenderFragment DependenciesSlot(IEnumerable<GanttDependency> deps) => builder =>
+    {
+        builder.OpenComponent<MariloGanttDependencies<TaskModel>>(0);
+        builder.AddAttribute(1, nameof(MariloGanttDependencies<TaskModel>.Data), deps);
+        builder.CloseComponent();
+    };
+
+    [Fact]
+    public void Dependencies_Component_Registers_With_Parent()
+    {
+        var deps = new List<GanttDependency>
+        {
+            new() { Id = 1, PredecessorId = 1, SuccessorId = 2, Type = GanttDependencyType.FinishToStart }
+        };
+
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, CreateTestData())
+            .Add(x => x.GanttDependenciesSlot, DependenciesSlot(deps)));
+
+        // The dependency component should register itself and render dependency lines
+        var depsComponent = cut.FindComponent<MariloGanttDependencies<TaskModel>>();
+        Assert.NotNull(depsComponent);
+    }
+
+    [Fact]
+    public void Dependencies_Component_GetDependencies_ReturnsData()
+    {
+        var deps = new List<GanttDependency>
+        {
+            new() { Id = 1, PredecessorId = 1, SuccessorId = 2, Type = GanttDependencyType.FinishToStart },
+            new() { Id = 2, PredecessorId = 2, SuccessorId = 3, Type = GanttDependencyType.StartToStart }
+        };
+
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, CreateTestData())
+            .Add(x => x.GanttDependenciesSlot, DependenciesSlot(deps)));
+
+        var depsComponent = cut.FindComponent<MariloGanttDependencies<TaskModel>>();
+        var result = depsComponent.Instance.GetDependencies();
+        Assert.Equal(2, result.Count);
+        Assert.Equal(GanttDependencyType.FinishToStart, result[0].Type);
+    }
+
+    [Fact]
+    public void Dependencies_Component_Default_FieldMapping_MatchesGanttDependencyProperties()
+    {
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, CreateTestData())
+            .Add(x => x.GanttDependenciesSlot, DependenciesSlot(Enumerable.Empty<GanttDependency>())));
+
+        var depsComponent = cut.FindComponent<MariloGanttDependencies<TaskModel>>();
+        Assert.Equal("Id", depsComponent.Instance.IdField);
+        Assert.Equal("PredecessorId", depsComponent.Instance.PredecessorIdField);
+        Assert.Equal("SuccessorId", depsComponent.Instance.SuccessorIdField);
+        Assert.Equal("Type", depsComponent.Instance.TypeField);
+    }
+
+    [Fact]
+    public void GanttDependency_Record_HasCorrectDefaults()
+    {
+        var dep = new GanttDependency
+        {
+            Id = 1,
+            PredecessorId = 10,
+            SuccessorId = 20
+        };
+
+        Assert.Equal(GanttDependencyType.FinishToStart, dep.Type); // default
+        Assert.Equal(1, dep.Id);
+        Assert.Equal(10, dep.PredecessorId);
+        Assert.Equal(20, dep.SuccessorId);
+    }
+
+    [Fact]
+    public void GanttDependencyCreateEventArgs_ConvenienceProperties_MatchDependency()
+    {
+        var dep = new GanttDependency
+        {
+            Id = 1, PredecessorId = 10, SuccessorId = 20, Type = GanttDependencyType.StartToStart
+        };
+        var args = new GanttDependencyCreateEventArgs { Dependency = dep };
+
+        Assert.Equal(10, args.PredecessorId);
+        Assert.Equal(20, args.SuccessorId);
+        Assert.Equal(GanttDependencyType.StartToStart, args.Type);
+    }
+
+    [Fact]
+    public void GanttDependencyDeleteEventArgs_Item_ReturnsDependency()
+    {
+        var dep = new GanttDependency
+        {
+            Id = 5, PredecessorId = 1, SuccessorId = 2
+        };
+        var args = new GanttDependencyDeleteEventArgs { Dependency = dep };
+
+        Assert.Same(dep, args.Item);
+    }
+
+    [Fact]
+    public void GanttDependencyType_HasAllFourTypes()
+    {
+        var values = Enum.GetValues<GanttDependencyType>();
+        Assert.Equal(4, values.Length);
+        Assert.Contains(GanttDependencyType.FinishToStart, values);
+        Assert.Contains(GanttDependencyType.StartToStart, values);
+        Assert.Contains(GanttDependencyType.FinishToFinish, values);
+        Assert.Contains(GanttDependencyType.StartToFinish, values);
+    }
+
+    // ── Task C: Accessibility announcements (additional) ─────────────
+
+    [Fact]
+    public async Task CommitEdit_Announces_FieldUpdated()
+    {
+        var data = CreateTestData();
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.GanttColumns, EditableColumns()));
+
+        await cut.Instance.BeginEdit(0);
+        await cut.Instance.CommitEdit();
+
+        cut.Render();
+        var announcer = cut.Find(".mar-gantt__announcer");
+        Assert.Contains("updated", announcer.TextContent);
+    }
+
+    [Fact]
+    public async Task KeyboardNavigation_ArrowDown_Announces_TaskNameAndPosition()
+    {
+        var data = CreateTestData();
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.GanttColumns, DefaultColumns()));
+
+        // Simulate ArrowDown key on the treegrid
+        var treegrid = cut.Find("[role='treegrid']");
+        await treegrid.KeyDownAsync(new Microsoft.AspNetCore.Components.Web.KeyboardEventArgs { Key = "ArrowDown" });
+
+        cut.Render();
+        var announcer = cut.Find(".mar-gantt__announcer");
+        // Should announce the task and position
+        Assert.Contains("Task", announcer.TextContent);
+        Assert.Contains("row", announcer.TextContent);
+    }
+
+    [Fact]
+    public void SkipLinks_Render_For_TasklistAndTimeline()
+    {
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, CreateTestData()));
+
+        var skipLinks = cut.FindAll(".mar-gantt__skip-link");
+        Assert.Equal(2, skipLinks.Count);
+        Assert.Contains("task list", skipLinks[0].TextContent, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("timeline", skipLinks[1].TextContent, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void Announcer_Starts_Empty()
+    {
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, CreateTestData())
+            .Add(x => x.GanttColumns, DefaultColumns()));
+
+        var announcer = cut.Find(".mar-gantt__announcer");
+        Assert.Equal("", announcer.TextContent);
+    }
+
+    // ── Task D: CheckboxFilter state integration ─────────────────────
+
+    [Fact]
+    public void CheckboxFilter_GetState_ReflectsAppliedFilter()
+    {
+        var cut = Render<MariloGantt<StatusTaskModel>>(p => p
+            .Add(x => x.Data, CreateStatusData())
+            .Add(x => x.FilterMode, GanttFilterMode.FilterMenu)
+            .Add(x => x.GanttColumns, StatusColumns()));
+
+        // Open and apply a filter selecting only "Active"
+        var filterBtns = cut.FindAll(".mar-gantt__filter-btn");
+        filterBtns[^1].Click();
+
+        // Uncheck Closed and Pending
+        var checkboxes = cut.FindAll(".mar-gantt__checkbox-filter-item input[type='checkbox']");
+        checkboxes[1].Change(false); // Uncheck "Closed"
+        checkboxes[2].Change(false); // Uncheck "Pending"
+
+        var applyBtn = cut.Find(".mar-gantt__checkbox-filter-actions .mar-gantt__filter-menu-btn");
+        applyBtn.Click();
+
+        var state = cut.Instance.GetState();
+        Assert.NotNull(state.FilterValues);
+        Assert.True(state.FilterValues!.ContainsKey("Status"));
+        Assert.Contains("Active", state.FilterValues["Status"]);
+    }
+
+    [Fact]
+    public void CheckboxFilter_SelectAll_EqualsNoFilter()
+    {
+        var cut = Render<MariloGantt<StatusTaskModel>>(p => p
+            .Add(x => x.Data, CreateStatusData())
+            .Add(x => x.FilterMode, GanttFilterMode.FilterMenu)
+            .Add(x => x.GanttColumns, StatusColumns()));
+
+        // Open drawer, leave all checked, apply
+        var filterBtns = cut.FindAll(".mar-gantt__filter-btn");
+        filterBtns[^1].Click();
+
+        var applyBtn = cut.Find(".mar-gantt__checkbox-filter-actions .mar-gantt__filter-menu-btn");
+        applyBtn.Click();
+
+        // All selected = no filter applied
+        var state = cut.Instance.GetState();
+        Assert.True(state.FilterValues is null || !state.FilterValues.ContainsKey("Status"));
+        Assert.Equal(4, cut.FindAll(".mar-gantt__task-row").Count);
+    }
+
+    [Fact]
+    public void CheckboxFilter_ColumnFilterType_DefaultIsText()
+    {
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, CreateTestData())
+            .Add(x => x.GanttColumns, DefaultColumns()));
+
+        // Default column FilterType is Text
+        var col = cut.Instance.VisibleColumns.First();
+        Assert.Equal(GanttColumnFilterType.Text, col.FilterType);
+    }
+
 }

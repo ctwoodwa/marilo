@@ -56,6 +56,10 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     private string? _editingField;
     /// <summary>Deep clone of the item captured when editing began. Used for revert/comparison.</summary>
     private TItem? _originalItem;
+    /// <summary>The item currently being inserted (new row). Null when not inserting.</summary>
+    private TItem? _insertedItem;
+    /// <summary>The parent item under which a child is being inserted. Null for root-level insert.</summary>
+    private TItem? _parentItem;
 
     // ── Popup edit state ───────────────────────────────────────────────
     private bool _popupEditOpen;
@@ -1585,7 +1589,12 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     /// <summary>Fires OnCreate with a new default instance when the command column Add button is clicked.</summary>
     private async Task HandleCommandAdd()
     {
-        await OnCreate.InvokeAsync(new GanttCreateEventArgs { Item = Activator.CreateInstance<TItem>() });
+        var newItem = Activator.CreateInstance<TItem>();
+        _insertedItem = newItem;
+        _parentItem = null;
+        await OnCreate.InvokeAsync(new GanttCreateEventArgs { Item = newItem });
+        _insertedItem = null;
+        _parentItem = null;
     }
 
     /// <summary>Returns the HTML input type for a given field based on its property type, with optional column EditorType override.</summary>
@@ -1680,6 +1689,8 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
                 ? _flatVisible[_editingRowIndex].Item
                 : default,
             OriginalEditItem = _originalItem,
+            InsertedItem = _insertedItem,
+            ParentItem = _parentItem,
             EditField = _editingField,
             VisibleColumns = _columns.Any(c => !c.Visible)
                 ? _columns.Where(c => c.Visible).Select(c => c.Field).ToList()
@@ -1770,6 +1781,10 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         {
             await CancelEdit();
         }
+
+        // Apply insert tracking (transient — consumer manages data)
+        _insertedItem = state.InsertedItem;
+        _parentItem = state.ParentItem;
 
         await InvokeAsync(StateHasChanged);
     }

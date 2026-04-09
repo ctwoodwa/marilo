@@ -30,7 +30,37 @@ Spec files in `docs/component-specs/gantt/` aligned with source. ~60 gaps closed
 | E16 | Filter checkbox list via MariloPopup | ✅ Complete | GanttState.cs (GanttFilterPopupMode enum), MariloGantt.razor, MariloGantt.razor.cs |
 | E17 | Column chooser using MariloPopup | ✅ Complete | GanttState.cs (VisibleColumns), MariloGantt.razor, MariloGantt.razor.cs |
 
-## Deferred to Pass 4+
+## Pass 4 — Stage 05 Implementation (InsertedItem/ParentItem wiring, dependency API, test coverage)
+
+| ID | Description | Status | Files |
+|----|-------------|--------|-------|
+| S05-A | GanttState InsertedItem + ParentItem wiring to GetState/SetStateAsync | ✅ Complete | MariloGantt.razor.cs |
+| S05-B | GanttDependencies component: field mapping parameters (IdField, PredecessorIdField, SuccessorIdField, TypeField) + convenience event args | ✅ Complete | MariloGanttDependencies.razor, GanttDependencyEventArgs.cs |
+| S05-C | Accessibility: validate existing aria-live announcements + add test coverage | ✅ Complete | MariloGanttTests.cs (tests only — announcements already implemented) |
+| S05-D | Filter checkbox list: validate existing implementation + add test coverage | ✅ Complete | MariloGanttTests.cs (tests only — filtering already implemented) |
+
+### Tests Added (Pass 4)
+- OriginalEditItem_PreservesOriginalValues_AfterEditValuesMutated
+- OriginalEditItem_PreservesValues_ThroughCancelFlow
+- GetState_InsertedItem_NullByDefault
+- SetStateAsync_AppliesInsertedItemAndParentItem
+- GanttCloneHelper_ReturnsNull_ForNullInput
+- Dependencies_Component_Registers_With_Parent
+- Dependencies_Component_GetDependencies_ReturnsData
+- Dependencies_Component_Default_FieldMapping_MatchesGanttDependencyProperties
+- GanttDependency_Record_HasCorrectDefaults
+- GanttDependencyCreateEventArgs_ConvenienceProperties_MatchDependency
+- GanttDependencyDeleteEventArgs_Item_ReturnsDependency
+- GanttDependencyType_HasAllFourTypes
+- CommitEdit_Announces_FieldUpdated
+- KeyboardNavigation_ArrowDown_Announces_TaskNameAndPosition
+- SkipLinks_Render_For_TasklistAndTimeline
+- Announcer_Starts_Empty
+- CheckboxFilter_GetState_ReflectsAppliedFilter
+- CheckboxFilter_SelectAll_EqualsNoFilter
+- CheckboxFilter_ColumnFilterType_DefaultIsText
+
+## Deferred to Pass 5+
 - Column reorder (JS drag interop required)
 - Column resize (JS drag interop required)
 - Timeline bar drag-move (JS drag interop required)

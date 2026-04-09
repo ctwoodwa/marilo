@@ -120,3 +120,29 @@
 - Popup contains checkbox per column, toggling `Visible` property.
 - `VisibleColumns` added to GanttState for state persistence.
 - GetState/SetStateAsync wired for column visibility.
+
+## Design Decisions (Pass 4: Stage 05 — S05-A through S05-D)
+
+### S05-A — InsertedItem/ParentItem State Wiring
+- Added `_insertedItem` and `_parentItem` private fields to MariloGantt.
+- `GetState()` now includes `InsertedItem` and `ParentItem` in the snapshot.
+- `SetStateAsync()` applies InsertedItem/ParentItem from incoming state.
+- `HandleCommandAdd()` sets `_insertedItem` transiently during `OnCreate` callback (cleared after).
+- `_parentItem` is set to null for root-level adds; consumers can set via `SetStateAsync` for child-level inserts.
+- Limitation: InsertedItem/ParentItem are transient — the Gantt does not manage data mutations itself. Consumers handle data via event callbacks.
+
+### S05-B — GanttDependencies Field Mapping
+- Added `IdField`, `PredecessorIdField`, `SuccessorIdField`, `TypeField` parameters to `MariloGanttDependencies`.
+- Default values match `GanttDependency` record properties for zero-config with strongly typed data.
+- Field mapping parameters enable future use with arbitrary model types without requiring `GanttDependency` records.
+- Added convenience properties to `GanttDependencyCreateEventArgs` (PredecessorId, SuccessorId, Type) matching spec examples.
+- Added `Item` convenience property to `GanttDependencyDeleteEventArgs` for consistent access pattern.
+- `GetDependencies()` internal method added for parent Gantt to consume dependency data.
+
+### S05-C — Accessibility Announcements (Test Coverage)
+- All non-drag announcement points already implemented in Pass 3 (E11).
+- Added 4 tests validating: CommitEdit announcement, keyboard navigation announcement, skip-link rendering, empty initial announcer.
+
+### S05-D — Filter Checkbox List (Test Coverage)
+- Checkbox filter implementation already complete from Pass 3 (E12 + E16).
+- Added 3 tests validating: GetState reflects applied filter, select-all equals no filter, default FilterType is Text.
