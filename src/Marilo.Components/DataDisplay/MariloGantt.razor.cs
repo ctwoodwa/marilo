@@ -66,6 +66,9 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     [Parameter] public EventCallback<GanttExpandEventArgs> OnExpand { get; set; }
     [Parameter] public EventCallback<GanttCollapseEventArgs> OnCollapse { get; set; }
 
+    /// <summary>Custom toolbar content rendered inside the toolbar area above the Gantt chart.</summary>
+    [Parameter] public RenderFragment? GanttToolBarTemplate { get; set; }
+
     /// <summary>Child content slot where GanttColumn instances are declared.</summary>
     [Parameter] public RenderFragment? GanttColumns { get; set; }
 
@@ -136,6 +139,17 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
 
     /// <summary>Whether timeline rendering should use the view-driven engine (true) or legacy DayWidth fallback (false).</summary>
     private bool UseViewEngine => _views.Count > 0;
+
+    /// <summary>Whether the toolbar area should render (view selector buttons or custom template present).</summary>
+    private bool ShowToolbar => _views.Count > 1 || GanttToolBarTemplate is not null;
+
+    private async Task SwitchView(GanttView view)
+    {
+        View = view;
+        await ViewChanged.InvokeAsync(view);
+        ComputeTimeline();
+        await InvokeAsync(StateHasChanged);
+    }
 
     // ── Timeline engine ────────────────────────────────────────────────
 

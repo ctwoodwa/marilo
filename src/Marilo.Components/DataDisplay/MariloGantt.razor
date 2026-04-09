@@ -26,6 +26,24 @@
 <div class="@CombineClasses("mar-gantt")"
      style="@CombineStyles(containerStyle.ToString())"
      @attributes="AdditionalAttributes">
+    @if (ShowToolbar)
+    {
+        <div class="mar-gantt__toolbar">
+            @if (_views.Count > 1)
+            {
+                <div class="mar-gantt__view-selector">
+                    @foreach (var v in _views)
+                    {
+                        <button class="mar-gantt__view-btn @(v.ViewType == View ? "mar-gantt__view-btn--active" : "")"
+                                @onclick="() => SwitchView(v.ViewType)">
+                            @v.ViewType
+                        </button>
+                    }
+                </div>
+            }
+            @GanttToolBarTemplate
+        </div>
+    }
     <div class="mar-gantt__container">
         @* Task list *@
         <div class="mar-gantt__tasklist" style="width: @(TaskListWidth)px;">
