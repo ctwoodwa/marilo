@@ -1,0 +1,152 @@
+﻿// _telerik-overrides.scss
+// Maps design tokens to Telerik Fluent CSS variables and component selectors.
+// Source of truth: design-language-blazor-telerik.md
+// All values MUST reference CSS variables from _tokens.scss. No raw hex or px.
+
+// ── Global Telerik token wiring ──────────────────────────────────────────────
+:root {
+  --kendo-color-primary:       var(--color-accent);
+  --kendo-color-primary-hover: var(--color-accent-hover);
+  --kendo-color-text:          var(--color-text-primary);
+  --kendo-subtle-text:         var(--color-text-muted);
+  --kendo-color-bg:            var(--color-bg-page);
+  --kendo-border-color:        var(--color-border-subtle);
+  --kendo-color-success:       var(--color-success);
+  --kendo-color-warning:       var(--color-warning);
+  --kendo-color-error:         var(--color-error);
+  --kendo-font-family:         var(--font-family-base);
+  --kendo-font-size:           var(--font-size-body);
+}
+
+// ── Base html and body ───────────────────────────────────────────────────────
+html, body {
+  background-color: var(--color-bg-page);
+  color:            var(--color-text-primary);
+  font-family:      var(--font-family-base);
+  font-size:        var(--font-size-body);
+  line-height:      var(--line-height-body);
+}
+
+// ── Cards ─────────────────────────────────────────────────────────────────────
+.k-card {
+  background-color: var(--color-bg-surface);
+  border-color:     var(--color-border-subtle);
+  border-radius:    var(--radius-md);
+  box-shadow:       var(--shadow-subtle);
+}
+
+.k-card-header {
+  border-bottom-color: var(--color-border-subtle);
+  font-weight:         var(--font-weight-semibold);
+}
+
+// ── Grid ──────────────────────────────────────────────────────────────────────
+.k-grid {
+  border-color: var(--color-border-subtle);
+  background:   var(--color-bg-surface);
+}
+
+.k-grid .k-grid-header .k-header {
+  background-color: var(--color-bg-surface-alt);
+  color:            var(--color-text-muted);
+  font-size:        var(--font-size-caption);
+  font-weight:      var(--font-weight-semibold);
+  border-bottom-color: var(--color-border-subtle);
+}
+
+.k-grid td, .k-grid .k-grid-content td {
+  border-color: var(--color-border-subtle);
+}
+
+.k-grid tr:hover td {
+  background-color: var(--color-accent-subtle);
+}
+
+.k-grid tr.k-selected td {
+  background-color: var(--color-accent-subtle);
+  color:            var(--color-text-primary);
+}
+
+// ── Buttons ───────────────────────────────────────────────────────────────────
+.k-button {
+  border-radius: var(--radius-sm);
+  font-family:   var(--font-family-base);
+  font-size:     var(--font-size-body);
+  font-weight:   var(--font-weight-medium);
+}
+
+.k-button.k-button-solid-primary {
+  background-color: var(--color-accent);
+  border-color:     var(--color-accent);
+  color:            #FFFFFF;
+}
+
+.k-button.k-button-solid-primary:hover {
+  background-color: var(--color-accent-hover);
+  border-color:     var(--color-accent-hover);
+}
+
+// ── Inputs and form controls ──────────────────────────────────────────────────
+.k-input,
+.k-textbox,
+.k-textarea,
+.k-dropdown,
+.k-datepicker .k-input {
+  background-color: var(--color-bg-surface);
+  border-color:     var(--color-border-subtle);
+  border-radius:    var(--radius-sm);
+  color:            var(--color-text-primary);
+  font-family:      var(--font-family-base);
+  font-size:        var(--font-size-body);
+}
+
+.k-input:focus,
+.k-textbox:focus {
+  border-color: var(--color-accent);
+  outline:      none;
+  box-shadow:   0 0 0 2px var(--color-accent-subtle);
+}
+
+// ── Dialog and Window ─────────────────────────────────────────────────────────
+.k-dialog,
+.k-window {
+  background-color: var(--color-bg-surface);
+  border-color:     var(--color-border-subtle);
+  border-radius:    var(--radius-lg);
+  box-shadow:       var(--shadow-modal);
+}
+
+.k-dialog-titlebar,
+.k-window-titlebar {
+  background-color: var(--color-bg-surface);
+  border-bottom-color: var(--color-border-subtle);
+  font-weight:      var(--font-weight-semibold);
+  font-size:        var(--font-size-h3);
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+.k-tabstrip .k-item {
+  font-size:   var(--font-size-body);
+  font-weight: var(--font-weight-medium);
+  color:       var(--color-text-muted);
+}
+
+.k-tabstrip .k-item.k-active {
+  color:            var(--color-accent);
+  border-bottom:    2px solid var(--color-accent);
+  font-weight:      var(--font-weight-semibold);
+}
+
+// ── Notification and status pills ─────────────────────────────────────────────
+.k-notification-success { background-color: var(--color-success-subtle); color: var(--color-success); }
+.k-notification-warning { background-color: var(--color-warning-subtle); color: var(--color-warning); }
+.k-notification-error   { background-color: var(--color-error-subtle);   color: var(--color-error); }
+
+// ── Tooltip ───────────────────────────────────────────────────────────────────
+.k-tooltip {
+  background-color: var(--color-text-primary);
+  color:            var(--color-bg-page);
+  border-radius:    var(--radius-sm);
+  font-size:        var(--font-size-caption);
+  box-shadow:       var(--shadow-raised);
+}
