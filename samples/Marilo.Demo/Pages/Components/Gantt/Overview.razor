@@ -5,12 +5,73 @@
 <PageSection Title="Overview">
     <DemoSection Title="Basic Usage" Description="Gantt chart displays project tasks on a timeline with dependencies and progress tracking." Code="@_basicCode">
         <div class="demo-row">
-            <MariloGantt TItem="GanttTask" Style="height:300px;" />
+            <MariloGantt TItem="GanttTask"
+                         Data="@_tasks"
+                         IdField="Id"
+                         ParentIdField="ParentId"
+                         Height="400px"
+                         Width="100%">
+                <GanttColumns>
+                    <GanttColumn TItem="GanttTask"
+                                 Field="Title"
+                                 Expandable="true"
+                                 Width="200px"
+                                 Title="Task Title" />
+                    <GanttColumn TItem="GanttTask"
+                                 Field="PercentComplete"
+                                 Width="80px"
+                                 Title="% Complete"
+                                 DisplayFormat="{0:N0}%"
+                                 TextAlign="right" />
+                    <GanttColumn TItem="GanttTask"
+                                 Field="Start"
+                                 Width="100px"
+                                 DisplayFormat="{0:d}" />
+                    <GanttColumn TItem="GanttTask"
+                                 Field="End"
+                                 Width="100px"
+                                 DisplayFormat="{0:d}" />
+                </GanttColumns>
+            </MariloGantt>
         </div>
     </DemoSection>
 </PageSection>
 
 @code {
-    private const string _basicCode =
-        "<MariloGantt Style=\"height:300px;\" />";
+    private List<GanttTask> _tasks = new()
+    {
+        new GanttTask { Id = "1", Title = "Project Plan", Start = DateTime.Today, End = DateTime.Today.AddDays(20), PercentComplete = 40 },
+        new GanttTask { Id = "2", ParentId = "1", Title = "Requirements", Start = DateTime.Today, End = DateTime.Today.AddDays(5), PercentComplete = 100 },
+        new GanttTask { Id = "3", ParentId = "1", Title = "Design", Start = DateTime.Today.AddDays(5), End = DateTime.Today.AddDays(10), PercentComplete = 50 },
+        new GanttTask { Id = "4", ParentId = "1", Title = "Implementation", Start = DateTime.Today.AddDays(10), End = DateTime.Today.AddDays(18), PercentComplete = 0 },
+        new GanttTask { Id = "5", Title = "Testing", Start = DateTime.Today.AddDays(18), End = DateTime.Today.AddDays(25), PercentComplete = 0 },
+    };
+
+    private const string _basicCode = @"<MariloGantt TItem=""GanttTask""
+             Data=""@_tasks""
+             IdField=""Id""
+             ParentIdField=""ParentId""
+             Height=""400px"">
+    <GanttColumns>
+        <GanttColumn TItem=""GanttTask""
+                     Field=""Title""
+                     Expandable=""true""
+                     Width=""200px""
+                     Title=""Task Title"" />
+        <GanttColumn TItem=""GanttTask""
+                     Field=""PercentComplete""
+                     Width=""80px""
+                     Title=""% Complete""
+                     DisplayFormat=""{0:N0}%""
+                     TextAlign=""right"" />
+        <GanttColumn TItem=""GanttTask""
+                     Field=""Start""
+                     Width=""100px""
+                     DisplayFormat=""{0:d}"" />
+        <GanttColumn TItem=""GanttTask""
+                     Field=""End""
+                     Width=""100px""
+                     DisplayFormat=""{0:d}"" />
+    </GanttColumns>
+</MariloGantt>";
 }

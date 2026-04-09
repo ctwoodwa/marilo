@@ -12,7 +12,15 @@
     var containerStyle = new System.Text.StringBuilder();
     if (!string.IsNullOrEmpty(Width)) containerStyle.Append($"width:{Width};");
     if (!string.IsNullOrEmpty(Height)) containerStyle.Append($"height:{Height};");
+
+    var cols = VisibleColumns;
+    var useColumns = cols.Count > 0;
 }
+
+@* Column definitions (hidden, just registers via CascadingValue) *@
+<CascadingValue Value="this" IsFixed="true">
+    @GanttColumns
+</CascadingValue>
 
 <div class="@CombineClasses("mar-gantt")"
      style="@CombineStyles(containerStyle.ToString())"
@@ -21,30 +29,106 @@
         @* Task list *@
         <div class="mar-gantt__tasklist" style="width: @(TaskListWidth)px;">
             <div class="mar-gantt__tasklist-header">
-                <span>Task</span>
+                @if (useColumns)
+                {
+                    @foreach (var col in cols)
+                    {
+                        var headerStyle = "";
+                        if (!string.IsNullOrEmpty(col.Width)) headerStyle += $"width:{col.Width};";
+                        <div class="mar-gantt__header-cell @col.HeaderClass" style="@headerStyle">
+                            @if (col.HeaderTemplate is not null)
+                            {
+                                @col.HeaderTemplate
+                            }
+                            else
+                            {
+                                <span>@col.DisplayTitle</span>
+                            }
+                        </div>
+                    }
+                }
+                else
+                {
+                    <span>Task</span>
+                }
             </div>
             @foreach (var node in visible)
             {
                 var n = node;
                 var hasChildren = n.Children.Count > 0;
-                var pad = (int)(n.Depth * 16 + (hasChildren ? 0 : 16));
                 var expanded = IsExpanded(n);
-                <div class="mar-gantt__task-row"
-                     style="padding-left: @(pad)px;"
-                     @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
-                    @if (hasChildren)
-                    {
-                        <button type="button"
-                                class="mar-gantt__chevron"
-                                aria-expanded="@(expanded ? "true" : "false")"
-                                aria-label="@(expanded ? "Collapse" : "Expand")"
-                                @onclick:stopPropagation="true"
-                                @onclick="() => ToggleExpanded(n)">
-                            @(expanded ? "▼" : "▶")
-                        </button>
-                    }
-                    @accessor.GetTitle(n.Item)
-                </div>
+
+                @if (useColumns)
+                {
+                    <div class="mar-gantt__task-row"
+                         @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
+                        @foreach (var col in cols)
+                        {
+                            var cellStyle = "";
+                            if (!string.IsNullOrEmpty(col.Width)) cellStyle += $"width:{col.Width};";
+                            if (!string.IsNullOrEmpty(col.TextAlign)) cellStyle += $"text-align:{col.TextAlign};";
+
+                            <div class="mar-gantt__task-cell" style="@cellStyle">
+                                @if (col.Expandable)
+                                {
+                                    var pad = (int)(n.Depth * 16 + (hasChildren ? 0 : 16));
+                                    <span style="padding-left: @(pad)px; display: inline-flex; align-items: center;">
+                                        @if (hasChildren)
+                                        {
+                                            <button type="button"
+                                                    class="mar-gantt__chevron"
+                                                    aria-expanded="@(expanded ? "true" : "false")"
+                                                    aria-label="@(expanded ? "Collapse" : "Expand")"
+                                                    @onclick:stopPropagation="true"
+                                                    @onclick="() => ToggleExpanded(n)">
+                                                @(expanded ? "▼" : "▶")
+                                            </button>
+                                        }
+                                        @if (col.Template is not null)
+                                        {
+                                            @col.Template(n.Item)
+                                        }
+                                        else
+                                        {
+                                            @col.GetDisplayValue(n.Item)
+                                        }
+                                    </span>
+                                }
+                                else
+                                {
+                                    @if (col.Template is not null)
+                                    {
+                                        @col.Template(n.Item)
+                                    }
+                                    else
+                                    {
+                                        @col.GetDisplayValue(n.Item)
+                                    }
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    var pad = (int)(n.Depth * 16 + (hasChildren ? 0 : 16));
+                    <div class="mar-gantt__task-row"
+                         style="padding-left: @(pad)px;"
+                         @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
+                        @if (hasChildren)
+                        {
+                            <button type="button"
+                                    class="mar-gantt__chevron"
+                                    aria-expanded="@(expanded ? "true" : "false")"
+                                    aria-label="@(expanded ? "Collapse" : "Expand")"
+                                    @onclick:stopPropagation="true"
+                                    @onclick="() => ToggleExpanded(n)">
+                                @(expanded ? "▼" : "▶")
+                            </button>
+                        }
+                        @accessor.GetTitle(n.Item)
+                    </div>
+                }
             }
         </div>
 

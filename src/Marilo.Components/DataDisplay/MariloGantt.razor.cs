@@ -42,6 +42,26 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IAsyncDisposable
     [Parameter] public EventCallback<TItem> OnTaskClick { get; set; }
     [Parameter] public EventCallback<TItem> OnTaskEdit { get; set; }
 
+    /// <summary>Child content slot where GanttColumn instances are declared. Rendered inside a CascadingValue so columns can discover the parent.</summary>
+    [Parameter] public RenderFragment? GanttColumns { get; set; }
+
+    // Column management
+    private readonly List<GanttColumn<TItem>> _columns = new();
+    internal void RegisterColumn(GanttColumn<TItem> column)
+    {
+        if (!_columns.Contains(column))
+        {
+            _columns.Add(column);
+            StateHasChanged();
+        }
+    }
+    internal void UnregisterColumn(GanttColumn<TItem> column)
+    {
+        _columns.Remove(column);
+        StateHasChanged();
+    }
+    internal List<GanttColumn<TItem>> VisibleColumns => _columns.Where(c => c.Visible).ToList();
+
     protected override void OnParametersSet()
     {
         var prevKey = _accessorKey;
