@@ -1,5 +1,7 @@
 @inherits LayoutComponentBase
+@inject Marilo.Core.Services.IMariloThemeService ThemeService
 
+<MariloThemeProvider Theme="@ThemeService.CurrentTheme">
 <div class="account-layout @(_mobileOpen ? "mobile-open" : "")" @onkeydown="HandleKeyDown">
     <div class="account-layout__scrim" @onclick="CloseMobile" aria-hidden="true"></div>
     <button type="button" class="account-layout__mobile-toggle" aria-label="Open settings navigation" @onclick="OpenMobile">
@@ -17,6 +19,7 @@
         </div>
     </main>
 </div>
+</MariloThemeProvider>
 
 @code {
     private bool _mobileOpen;

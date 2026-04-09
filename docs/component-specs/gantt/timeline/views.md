@@ -175,13 +175,19 @@ The Gantt Timeline provides four predefined views, which dictate how much time a
 ````
 
 
+> `@bind-View` works because `View` and `ViewChanged` follow Blazor's standard two-way binding convention.
+
 ## View Parameters
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `SlotWidth` | `double` | The width of each individual slot in pixels. |
-| `RangeStart` | `DateTime` | Determines where the view should start. If not provided, the value is calculated based on the data source. If no data is present `DateTime.Now` is used, and the view shows a single major time slot (a day in `DayView`, month in `MonthView` and so on). |
-| `RangeEnd` | `DateTime` | Determines where the view should end. If not provided the value is calculated based on the data source. |
+| `SlotWidth` | `double` | The width of each individual slot in pixels. Defaults: GanttDayView=40, GanttWeekView=40, GanttMonthView=60, GanttYearView=80. |
+| `RangeStart` | `DateTime?` | Determines where the view should start. When null, auto-calculated from data source. If no data is present `DateTime.Now` is used, and the view shows a single major time slot (a day in `DayView`, month in `MonthView` and so on). |
+| `RangeEnd` | `DateTime?` | Determines where the view should end. When null, auto-calculated from data source. |
+
+## DayWidth Legacy Parameter
+
+`DayWidth` (`int`, default `30`) is a legacy parameter used when no `<GanttViews>` children are registered. When view components are present, `SlotWidth` on each view component controls timeline column width instead. If neither views nor `DayWidth` are configured, the component throws an exception.
 
 ## See Also
 

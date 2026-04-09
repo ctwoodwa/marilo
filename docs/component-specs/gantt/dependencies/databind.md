@@ -11,6 +11,18 @@ components: ["gantt"]
 ---
 # Dependencies Data Binding
 
+## Current Implementation
+
+The current implementation uses a simplified `DependsOnField` string parameter on `MariloGantt` to specify a model property that contains the ID of the predecessor task. This provides basic finish-to-start dependency rendering without a separate dependency collection.
+
+```razor
+<MariloGantt Data="@Data"
+              DependsOnField="PredecessorId"
+              ...>
+```
+
+## Target Architecture -- Planned
+
 To bind a collection of dependencies to the Gantt Chart you should use the `Data` parameter, available for the `GanttDependencies` tag. This article explains how to use the data binding schema for the Gantt Dependencies.
 
 ## Gantt Dependencies Features:
@@ -39,7 +51,7 @@ To bind a collection of dependencies to the Gantt Chart you should use the `Data
               SortMode="@SortMode.Multiple"
               FilterMode="@GanttFilterMode.FilterMenu"
               FilterMenuType="@FilterMenuType.Menu"
-              OnEdit="@( (GanttEditEventArgs args) => args.IsCancelled = true )">
+              OnTaskEdit="@( (GanttEditEventArgs args) => args.IsCancelled = true )">
     <GanttViews>
         <GanttWeekView></GanttWeekView>
         <GanttMonthView></GanttMonthView>

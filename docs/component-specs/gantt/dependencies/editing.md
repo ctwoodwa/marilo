@@ -34,7 +34,7 @@ The Gantt provides the following dependency events:
               SortMode="@SortMode.Multiple"
               FilterMode="@GanttFilterMode.FilterMenu"
               FilterMenuType="@FilterMenuType.Menu"
-              OnEdit="@( (GanttEditEventArgs args) => args.IsCancelled = true )">
+              OnTaskEdit="@( (GanttEditEventArgs args) => args.IsCancelled = true )">
     <GanttViews>
         <GanttWeekView></GanttWeekView>
         <GanttMonthView></GanttMonthView>

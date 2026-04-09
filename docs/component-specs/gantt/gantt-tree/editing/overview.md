@@ -292,7 +292,7 @@ You can customize the editors rendered in the Gantt Tree by providing the `Edito
 }
 ````
 
-* `OnEdit` - fires when the user is about to enter edit mode on an existing item(Cancellable). The event handler receives an argument of type `GanttEditEventArgs` that exposes the following fields:
+* `OnTaskEdit` - fires when the user is about to enter edit mode on an existing item(Cancellable). The event handler receives an argument of type `GanttEditEventArgs` that exposes the following fields:
 
     * `Item` - an object you can cast to your model class to obtain the current data item.
     
@@ -344,7 +344,7 @@ The example below shows how you can handle the events the Gantt component expose
               OnUpdate="@UpdateItem"
               OnDelete="@DeleteItem"
               OnCreate="@CreateItem"
-              OnEdit="@OnEditItem">
+              OnTaskEdit="@OnEditItem">
     <GanttToolBarTemplate>
         <GanttCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</GanttCommandButton>
     </GanttToolBarTemplate>

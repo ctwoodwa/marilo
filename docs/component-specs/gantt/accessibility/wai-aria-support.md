@@ -49,15 +49,19 @@ The following Wai-Aria support is implemented in the TimeLine of the Gantt.
 
 | Selector | Attribute | Usage |
 | -------- | --------- | ----- |
-| `.k-gantt-timeline .k-grid-content` | `role=tree` | Associates the role of the timeline as a tree. |
+| `.k-gantt-timeline .k-grid-content` | `role=presentation` | Container for the timeline content. |
 | `.k-gantt-timeline .k-gantt-rows` | `role=presentation` | Used to build the accessibility tree. |
 | `.k-gantt-timeline .k-gantt-columns` | `role=presentation` | Used to build the accessibility tree. |
 | `.k-gantt-timeline .k-gantt-tasks` | `role=presentation` | Used to build the accessibility tasks. |
-| `.k-gantt-timeline .k-task` | `role=treeitem` | Associates the role of the timeline task as a tree item. |
-|  | `aria-level` | Specifies the level of the task. |
+| `.k-gantt-timeline .k-task` | `role=img` | Represents a timeline bar as a visual element. |
+|  | `aria-label="{title}: {start} – {end}"` | Provides an accessible description of the task's title and date range. |
 |  | `aria-describedby=.k-tooltip id` | Gives more details for the task through its tooltip. |
 | `.k-gantt-timeline .k-task .k-task-complete` | `aria-hidden=true` | Hides the status element from the task. |
 | `.k-gantt-timeline .k-task .k-task-actions` | `aria-hidden=true` | Hides the actions element from the task. |
+| `[role=columnheader]` (sortable) | `aria-sort` | Applied to sortable column headers. Values: `ascending`, `descending`, or `none` depending on current sort state. |
+| `.k-gantt [role=treegrid]` | `tabindex=0` | Enables keyboard entry into the treegrid container. |
+| `.k-gantt [role=row]` (focused) | `tabindex=0` | The currently focused row receives `tabindex="0"` (roving tabindex pattern). |
+| `.k-gantt [role=row]` (unfocused) | `tabindex=-1` | All non-focused rows receive `tabindex="-1"` to remove them from the tab order. |
 
 ## Section 508
 

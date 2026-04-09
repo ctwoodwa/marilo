@@ -152,6 +152,13 @@ When the data collection is passed to the [Gantt Tree](slug:gantt-tree), the com
 }
 ````
 
+## Gantt Parameters
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `RowHeight` | `int` | `36` | Controls the pixel height of each row in the tree list and timeline. |
+| `GanttToolBarTemplate` | `RenderFragment?` | `null` | Custom toolbar content rendered above the Gantt chart. The toolbar area automatically appears when either custom content or multiple views are configured. |
+
 ## Data Binding
 
 To show data in a Marilo Gantt Chart, define [GanttColumn](slug:gantt-columns-bound) instances - they take a model `Field` and expose settings to control the [visibility](slug:gantt-columns-visible) of the column, the [format of the displayed data](slug:gantt-columns-displayformat), and the text alignment.

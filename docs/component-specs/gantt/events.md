@@ -13,29 +13,53 @@ components: ["gantt"]
 This article explains the events available in the Marilo Gantt for Blazor. They are grouped logically.
 
 * [CUD Event](#cud-events) - events related to Creating, Updating and Deleting items
+* [OnTaskClick](#ontaskclick) - fires when the user clicks a task row
+* [ViewChanged](#viewchanged) - fires when the active timeline view changes
 * [OnExpand and OnCollapse](#onexpand-and-oncollapse) - events related to Expanding and Collapsing Gantt Tree items
 
 ## CUD Events
 
 The `OnCreate`, `OnUpdate` and `OnDelete` events lets you get the data item that the user changed so you can transfer the user action to the actual data source.
 
-The `OnEdit` event lets you respond to user actions when they want to edit an item. For example, you can use it to prevent editing of certain items based on some condition.
+The `OnTaskEdit` event lets you respond to user actions when they want to edit an item. For example, you can use it to prevent editing of certain items based on some condition.
 
 You can read more about the CUD events in the [Gantt Tree Editing Overview](slug:gantt-tree-editing) article.
 
-## TreeListWidthChanged
+## OnTaskClick
 
-The `TreeListWidthChanged` event fires as a response to the user changing the width of the TreeList pane in the splitter.
+The `OnTaskClick` event fires when the user clicks a task row in the tree list.
+
+The event handler receives an argument of type `TItem` — the data item of the clicked row.
+
+`OnTaskClick` — `EventCallback<TItem>`.
+
+## ViewChanged
+
+The `ViewChanged` event fires when the active timeline view changes (Day/Week/Month/Year). It is used as the callback half of `@bind-View`.
+
+`ViewChanged` — `EventCallback<GanttView>`.
+
+> `@bind-View` works because `View` and `ViewChanged` follow Blazor's standard two-way binding convention. If you only need to read the current view, use one-way binding with `View` and handle `ViewChanged` separately.
+
+## TaskListWidthChanged
+
+The `TaskListWidthChanged` event fires as a response to the user changing the width of the TreeList pane in the splitter.
 
 ## OnExpand and OnCollapse
 
 The `OnExpand` and `OnCollapse` events fire as a response to the user expanding and collapsing an item of the Gantt Tree.
 
-The event handlers receive arguments of type `GanttExpandEventArgs` and `GanttCollapseEventArgs` respectively which exposes the following fields:
-* `Item` - an object you can cast to your model class to obtain the current data item.
-* `ShouldRender` - a boolean field indicating whether the component will re-render.
+The event handlers receive arguments of type `GanttExpandEventArgs` and `GanttCollapseEventArgs` respectively which expose the following fields:
 
-The `OnCollapse` event fires as a response to the user collapsing an item of the Gantt Tree.
+* `Item` — `object`. Cast to your model class to obtain the current data item.
+* `ShouldRender` — `bool`, default `true`. Set to `false` in the handler to suppress the re-render after the expand/collapse action.
+
+### OnCreate ParentItem
+
+The `OnCreate` event uses `GanttCreateEventArgs` which has the following fields:
+
+* `Item` — `object`. The new item being created.
+* `ParentItem` — `object?`. The parent item under which the new item is created, or `null` when creating a root-level item.
 
 
 >caption Handle OnExpand and OnCollapse events

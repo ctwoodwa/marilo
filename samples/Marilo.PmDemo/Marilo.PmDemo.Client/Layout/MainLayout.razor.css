@@ -46,6 +46,66 @@
     height: 36px;
 }
 
+/* ── Theme picker (inside user menu footer) ────────────────────────── */
+
+::deep .theme-picker {
+    padding: 2px 0 0;
+}
+
+::deep .theme-picker__section-title {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--marilo-color-text-muted, #888880);
+    padding: 6px 10px 4px;
+}
+
+::deep .theme-picker__option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 6px 10px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--marilo-color-text, #1f2328);
+    text-align: left;
+    cursor: pointer;
+}
+
+::deep .theme-picker__option:hover {
+    background: rgba(0, 0, 0, 0.045);
+}
+
+::deep .theme-picker__option--active {
+    font-weight: 500;
+}
+
+::deep .theme-picker__swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+::deep .theme-picker__label {
+    flex: 1 1 auto;
+}
+
+::deep .theme-picker__check {
+    flex-shrink: 0;
+    color: var(--marilo-color-primary, #5b6cff);
+}
+
+::deep .theme-picker__divider {
+    height: 1px;
+    background: var(--marilo-color-border, rgba(0,0,0,0.08));
+    margin: 4px 0;
+}
+
 /* ── Blazor error UI ───────────────────────────────────────────────── */
 
 #blazor-error-ui {

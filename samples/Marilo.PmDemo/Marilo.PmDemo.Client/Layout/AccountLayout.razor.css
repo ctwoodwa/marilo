@@ -1,7 +1,7 @@
 .account-layout {
-    --al-bg: var(--marilo-color-background, #fafafa);
+    --al-bg: var(--marilo-color-bg, #fafafa);
     --al-surface: var(--marilo-color-surface, #ffffff);
-    --al-border: var(--marilo-color-border, rgba(0,0,0,0.08));
+    --al-border: color-mix(in srgb, var(--marilo-color-text, #1f2328) 8%, transparent);
     --al-text: var(--marilo-color-text, #1f2328);
 
     display: grid;
@@ -19,23 +19,6 @@
     background: var(--al-surface);
     border-right: 1px solid var(--al-border);
     overflow-y: auto;
-}
-
-.account-layout__content {
-    overflow-y: auto;
-    padding: 40px 48px;
-}
-
-.account-layout__content-inner {
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-:global([data-marilo-theme="dark"]) .account-layout {
-    --al-bg: var(--marilo-color-background, #1a1a1a);
-    --al-surface: var(--marilo-color-surface, #252423);
-    --al-border: var(--marilo-color-border, rgba(255,255,255,0.08));
-    --al-text: var(--marilo-color-text, #f3f3ef);
 }
 
 .account-layout__scrim {

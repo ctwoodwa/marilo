@@ -1,8 +1,8 @@
 # Gap Analysis -- MariloGantt
 
-**Status:** STUB -- no gap phases started
+**Status:** Stage 05 in progress -- Phase A (spec corrections) and Phase B (state API) complete
 
-Run intake (Stage 01) via ../gantt-delivery/ to begin gap analysis. Feature areas tracked in ../gantt-delivery/_config/delivery-context.md.
+Phase A: 12 Tier 1 spec corrections + 12 Tier 2 documentation additions applied across ~20 spec files. Phase B: Minimal GanttState(TItem) API implemented in gantt-rewrite worktree + state.md spec updated. Next: Phase C (feature implementations) and Phase D (accessibility).
 
 ## Folder Map
 

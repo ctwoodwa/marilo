@@ -55,6 +55,20 @@ The properties of a Gantt Tree item match directly to a field of the model the t
 | Start | `DateTime` | `StartField` |
 | Title | `string` | `TitleField` |
 
+## Field Mapping Parameters
+
+All field mapping parameters are customizable. If your model uses different property names, set these parameters on the `MariloGantt` component to match.
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `IdField` | `string` | `"Id"` | Property name for the unique task identifier. |
+| `ParentIdField` | `string` | `"ParentId"` | Property name for the parent task reference (flat-to-hierarchy linking). |
+| `TitleField` | `string` | `"Title"` | Property name for the task display title. |
+| `StartField` | `string` | `"Start"` | Property name for the task start date. |
+| `EndField` | `string` | `"End"` | Property name for the task end date. |
+| `PercentCompleteField` | `string` | `"PercentComplete"` | Property name for the task completion percentage. |
+| `DependsOnField` | `string` | `"DependsOn"` | Property name for the list of predecessor task IDs (e.g., `List<int>`). |
+
 ## Notes
 
 * The Gantt is designed to work with a collection of strongly typed models (e.g., `IEnumerable<SomeDataModel>`). If you provide an `IEnumerable<object>` instead, you must set the `FieldType` of the `<GanttColumn>` instances to the data type of the fields they use (e.g., `<GanttColumn Field=@nameof(Employee.Name) FieldType="@(typeof(string))" />`).

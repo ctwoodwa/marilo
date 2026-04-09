@@ -4,16 +4,16 @@
 .mar-appshell {
     --mas-sidebar-w: 256px;
     --mas-sidebar-collapsed-w: 68px;
-    --mas-bg: var(--marilo-color-background, #fafafa);
+    --mas-bg: var(--marilo-color-bg, var(--marilo-color-background, #fafafa));
     --mas-surface: var(--marilo-color-surface, #ffffff);
-    --mas-sidebar-bg: var(--marilo-color-sidebar, #f4f5f7);
-    --mas-border: var(--marilo-color-border, rgba(0,0,0,0.08));
+    --mas-sidebar-bg: var(--marilo-color-surface, #f4f5f7);
+    --mas-border: color-mix(in srgb, var(--marilo-color-text, #1f2328) 8%, transparent);
     --mas-text: var(--marilo-color-text, #1f2328);
-    --mas-text-muted: var(--marilo-color-text-muted, #6b7280);
+    --mas-text-muted: color-mix(in srgb, var(--marilo-color-text, #1f2328) 50%, transparent);
     --mas-primary: var(--marilo-color-primary, #5b6cff);
     --mas-active-bg: color-mix(in srgb, var(--mas-primary) 12%, transparent);
     --mas-hover-bg: color-mix(in srgb, var(--mas-text) 6%, transparent);
-    --mas-radius: 8px;
+    --mas-radius: var(--marilo-radius-md, 8px);
     --mas-transition: 180ms cubic-bezier(.2,.8,.2,1);
 
     display: grid;

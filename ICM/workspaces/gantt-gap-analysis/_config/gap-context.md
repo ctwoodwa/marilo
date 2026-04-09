@@ -6,8 +6,8 @@
 |-------|-------|
 | Component | MariloGantt |
 | Scope | systematic |
-| Active phase | Stage 01 — Intake |
-| Total gaps identified | TBD (intake in progress) |
+| Active phase | Stage 05 in progress — Phase A+B complete, Phase C+D pending |
+| Total gaps identified | ~107 unique (134 raw across 8 areas) |
 | Total gaps resolved | 0 |
 | Test coverage status | Not started |
 | Delivery workspace | ../gantt-delivery/ |

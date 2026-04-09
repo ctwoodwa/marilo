@@ -10,7 +10,7 @@ components: ["gantt"]
 ---
 # Gantt Tree
 
-The Gantt Tree is the left part of the [Gantt Chart](slug:gantt-overview). The component exposes `TreeListWidth` (string, default `30`) parameter for changing the width of the TreeList pane in the splitter. 
+The Gantt Tree is the left part of the [Gantt Chart](slug:gantt-overview). The component exposes `TaskListWidth` (int, default `250`) parameter for changing the width of the TreeList pane in the splitter.
 
 Set data to the component through its [data binding](slug:gantt-data-binding-overview) options. You can also use the [filtering](slug:gantt-filtering-overview), [sorting](slug:gantt-sorting), and [editing](slug:gantt-tree-editing) capabilities of the Marilo Gantt for Blazor.
 

@@ -23,6 +23,8 @@ To enable the filter row set the `FilterMode` property of the Gantt Chart to `Ma
 
 The Gantt Chart will render a row below the column headers in the Gantt Tree with UI that you can use to fill in the filter criteria. You can type in the input to execute the default operator as you type, or click a button to choose a different filter operator (like "contains", "greater than" and so on). Filters are applied as the user types in the inputs. Once you enter a filter criteria, the clear button will be enabled to allow you to reset the filter state.
 
+When a filter matches child items, the Gantt automatically expands parent nodes to reveal matching results.
+
 >caption Filter Row in Marilo Gantt
 
 ````RAZOR
@@ -126,6 +128,7 @@ The Gantt allows you to customize the default behavior of the Filter Row in a co
 
 ### Debouncing the Filtering
 
+> This feature is planned for a future release.
 
 ### Configuring the Filter Row
 

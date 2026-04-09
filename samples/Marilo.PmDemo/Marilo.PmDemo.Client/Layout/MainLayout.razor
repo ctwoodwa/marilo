@@ -4,8 +4,10 @@
 @inject IUserNotificationService UserNotifications
 @inject Marilo.Core.Services.IMariloThemeService ThemeService
 @using Marilo.PmDemo.Client.Notifications
+@using Marilo.PmDemo.Client.Data
 @using Marilo.Components.Feedback
 
+<MariloThemeProvider Theme="@_selectedPreset.Theme">
 <MariloAppShell @bind-SidebarCollapsed="_collapsed"
                 BrandText="Marilo PM"
                 UserName="Avery Chen"
@@ -89,7 +91,11 @@
                 <MariloUserMenu @bind-Open="_menuOpen"
                                 UserName="Avery Chen"
                                 UserEmail="avery.chen@example.com"
-                                Items="_menuItems" />
+                                Items="_menuItems">
+                    <Footer>
+                        @RenderThemePicker
+                    </Footer>
+                </MariloUserMenu>
 
                 <MariloNotificationBell @bind-Open="_bellOpen"
                                         Items="_feedItems"
@@ -133,7 +139,11 @@
                 <MariloUserMenu @bind-Open="_menuOpen"
                                 UserName="Avery Chen"
                                 UserEmail="avery.chen@example.com"
-                                Items="_menuItems" />
+                                Items="_menuItems">
+                    <Footer>
+                        @RenderThemePicker
+                    </Footer>
+                </MariloUserMenu>
 
                 <MariloNotificationBell @bind-Open="_bellOpen"
                                         Items="_feedItems"
@@ -145,6 +155,7 @@
         }
     </SidebarFooter>
 </MariloAppShell>
+</MariloThemeProvider>
 
 <div id="blazor-error-ui" data-nosnippet>
     An unhandled error has occurred.
@@ -156,6 +167,8 @@
     private bool _collapsed;
     private bool _menuOpen;
     private bool _bellOpen;
+    private bool _isDark;
+    private ThemePresets.ThemePreset _selectedPreset = ThemePresets.All[0];
 
     private List<PopupMenuItem> _menuItems = new();
 
@@ -165,11 +178,12 @@
 
     protected override void OnInitialized()
     {
+        _isDark = ThemeService.IsDarkMode;
+
         _menuItems = new()
         {
             new() { Label = "Profile",   Shortcut = "⇧P", OnClick = () => Nav.NavigateTo("/account/details") },
-            new() { Label = "Settings",  Shortcut = "⌘,", OnClick = () => Nav.NavigateTo("/account/preferences") },
-            new() { Label = "Theme",     IsExpandable = true, CurrentValue = ThemeService.IsDarkMode ? "Dark" : "Light", IsDividerAfter = true, OnClick = () => ToggleTheme() },
+            new() { Label = "Settings",  Shortcut = "⌘,", OnClick = () => Nav.NavigateTo("/account/preferences"), IsDividerAfter = true },
             new() { Label = "Help & docs", OnClick = () => Nav.NavigateTo("/docs") },
             new() { Label = "Keyboard shortcuts", Shortcut = "?", IsDividerAfter = true, OnClick = () => Nav.NavigateTo("/account/shortcuts") },
             new() { Label = "Sign out", OnClick = () => Nav.NavigateTo("/") },
@@ -179,12 +193,17 @@
         RefreshFeed();
     }
 
-    private void ToggleTheme()
+    private async Task SelectTheme(ThemePresets.ThemePreset preset)
     {
-        _ = ThemeService.ToggleDarkModeAsync();
-        var themeItem = _menuItems.Find(i => i.Label == "Theme");
-        if (themeItem is not null)
-            themeItem.CurrentValue = ThemeService.IsDarkMode ? "Dark" : "Light";
+        _selectedPreset = preset;
+        await ThemeService.SetThemeAsync(preset.Theme);
+    }
+
+    private async Task SetDarkMode(bool dark)
+    {
+        if (_isDark == dark) return;
+        _isDark = dark;
+        await ThemeService.SetDarkModeAsync(dark);
     }
 
     private void OnNotificationsChanged()
@@ -215,7 +234,7 @@
         await UserNotifications.DeleteAllReadAsync();
     }
 
-    private void GoToNotificationSettings() => Nav.NavigateTo("/account/details");
+    private void GoToNotificationSettings() => Nav.NavigateTo("/account/notifications");
 
     public void Dispose()
     {
@@ -229,5 +248,67 @@
              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="@path"/>
         </svg>
+    };
+
+    private RenderFragment RenderThemePicker => __builder =>
+    {
+        <div class="theme-picker">
+            <div class="theme-picker__section-title">Theme</div>
+            @foreach (var preset in ThemePresets.All)
+            {
+                var p = preset;
+                var isActive = p.Name == _selectedPreset.Name;
+                <button type="button"
+                        class="theme-picker__option @(isActive ? "theme-picker__option--active" : "")"
+                        @onclick="() => SelectTheme(p)"
+                        @onclick:stopPropagation="true">
+                    <span class="theme-picker__swatch" style="background: @p.Theme.Colors.Primary;"></span>
+                    <span class="theme-picker__label">@p.Name</span>
+                    @if (isActive)
+                    {
+                        <svg class="theme-picker__check" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    }
+                </button>
+            }
+            <div class="theme-picker__divider"></div>
+            <div class="theme-picker__section-title">Mode</div>
+            <button type="button"
+                    class="theme-picker__option @(!_isDark ? "theme-picker__option--active" : "")"
+                    @onclick="() => SetDarkMode(false)"
+                    @onclick:stopPropagation="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                </svg>
+                <span class="theme-picker__label">Light</span>
+                @if (!_isDark)
+                {
+                    <svg class="theme-picker__check" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                }
+            </button>
+            <button type="button"
+                    class="theme-picker__option @(_isDark ? "theme-picker__option--active" : "")"
+                    @onclick="() => SetDarkMode(true)"
+                    @onclick:stopPropagation="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                </svg>
+                <span class="theme-picker__label">Dark</span>
+                @if (_isDark)
+                {
+                    <svg class="theme-picker__check" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                }
+            </button>
+        </div>
     };
 }
