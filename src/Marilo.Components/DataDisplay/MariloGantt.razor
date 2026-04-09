@@ -4,9 +4,9 @@
 
 @{
     var accessor = _accessor!;
-    var tasks = (Data ?? Enumerable.Empty<TItem>()).ToList();
-    var minDate = tasks.Count > 0 ? tasks.Min(t => accessor.GetStart(t)) : DateTime.Today;
-    var maxDate = tasks.Count > 0 ? tasks.Max(t => accessor.GetEnd(t)) : DateTime.Today.AddDays(30);
+    var visible = _flatVisible;
+    var minDate = visible.Count > 0 ? visible.Min(n => accessor.GetStart(n.Item)) : DateTime.Today;
+    var maxDate = visible.Count > 0 ? visible.Max(n => accessor.GetEnd(n.Item)) : DateTime.Today.AddDays(30);
     var totalDays = (maxDate - minDate).TotalDays;
     if (totalDays <= 0) totalDays = 1;
 
@@ -24,12 +24,27 @@
             <div class="mar-gantt__tasklist-header">
                 <span>Task</span>
             </div>
-            @foreach (var task in tasks)
+            @foreach (var node in visible)
             {
-                var t = task;
+                var n = node;
+                var hasChildren = n.Children.Count > 0;
+                var pad = (int)(n.Depth * 16 + (hasChildren ? 0 : 16));
+                var expanded = IsExpanded(n);
                 <div class="mar-gantt__task-row"
-                     @onclick="() => OnTaskClick.InvokeAsync(t)">
-                    @accessor.GetTitle(t)
+                     style="padding-left: @(pad)px;"
+                     @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
+                    @if (hasChildren)
+                    {
+                        <button type="button"
+                                class="mar-gantt__chevron"
+                                aria-expanded="@(expanded ? "true" : "false")"
+                                aria-label="@(expanded ? "Collapse" : "Expand")"
+                                @onclick:stopPropagation="true"
+                                @onclick="() => ToggleExpanded(n)">
+                            @(expanded ? "▼" : "▶")
+                        </button>
+                    }
+                    @accessor.GetTitle(n.Item)
                 </div>
             }
         </div>
@@ -50,12 +65,12 @@
             </div>
 
             <div class="mar-gantt__bars" style="width: @((int)(totalDays * DayWidth))px;">
-                @foreach (var task in tasks)
+                @foreach (var node in visible)
                 {
-                    var t = task;
-                    var start = accessor.GetStart(t);
-                    var end = accessor.GetEnd(t);
-                    var pct = accessor.GetPercentComplete(t);
+                    var n = node;
+                    var start = accessor.GetStart(n.Item);
+                    var end = accessor.GetEnd(n.Item);
+                    var pct = accessor.GetPercentComplete(n.Item);
                     var startOffset = (start - minDate).TotalDays * DayWidth;
                     var barWidth = Math.Max((end - start).TotalDays * DayWidth, 4);
                     var progressWidth = barWidth * (pct / 100.0);
@@ -63,7 +78,7 @@
                     <div class="mar-gantt__bar-row">
                         <div class="mar-gantt__bar"
                              style="left: @((int)startOffset)px; width: @((int)barWidth)px;"
-                             @onclick="() => OnTaskClick.InvokeAsync(t)">
+                             @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
                             @if (pct > 0)
                             {
                                 <div class="mar-gantt__bar-progress" style="width: @((int)progressWidth)px;"></div>
@@ -79,6 +94,10 @@
 @code {
     private GanttFieldAccessor<TItem>? _accessor;
     private string? _accessorKey;
+    private IEnumerable<TItem>? _lastData;
+    private readonly List<GanttNode<TItem>> _roots = new();
+    private List<GanttNode<TItem>> _flatVisible = new();
+    private readonly HashSet<object> _expandedIds = new();
 
     [Parameter] public IEnumerable<TItem> Data { get; set; } = Enumerable.Empty<TItem>();
 
@@ -102,7 +121,14 @@
 
     protected override void OnParametersSet()
     {
+        var prevKey = _accessorKey;
         _accessor = GetAccessor();
+        if (!ReferenceEquals(_lastData, Data) || prevKey != _accessorKey)
+        {
+            _lastData = Data;
+            BuildTree();
+            RebuildFlatVisible();
+        }
         base.OnParametersSet();
     }
 
@@ -116,5 +142,97 @@
             _accessorKey = key;
         }
         return _accessor;
+    }
+
+    private void BuildTree()
+    {
+        _roots.Clear();
+        var accessor = _accessor!;
+        var items = (Data ?? Enumerable.Empty<TItem>()).ToList();
+        var byId = new Dictionary<object, GanttNode<TItem>>();
+        var ordered = new List<GanttNode<TItem>>(items.Count);
+
+        foreach (var item in items)
+        {
+            var node = new GanttNode<TItem>
+            {
+                Item = item,
+                Id = accessor.GetId(item),
+                ParentId = accessor.GetParentId(item),
+            };
+            ordered.Add(node);
+            if (node.Id is not null && !byId.ContainsKey(node.Id))
+            {
+                byId[node.Id] = node;
+            }
+        }
+
+        foreach (var node in ordered)
+        {
+            if (node.ParentId is not null && byId.TryGetValue(node.ParentId, out var parent))
+            {
+                parent.Children.Add(node);
+                node.Parent = parent;
+            }
+            else
+            {
+                _roots.Add(node);
+            }
+        }
+
+        // Depth assignment via DFS from roots
+        var stack = new Stack<GanttNode<TItem>>();
+        foreach (var r in _roots)
+        {
+            r.Depth = 0;
+            stack.Push(r);
+        }
+        while (stack.Count > 0)
+        {
+            var n = stack.Pop();
+            foreach (var c in n.Children)
+            {
+                c.Depth = n.Depth + 1;
+                stack.Push(c);
+            }
+        }
+
+        // Seed expanded state for nodes with children, preserving existing entries
+        foreach (var node in ordered)
+        {
+            if (node.Id is not null && node.Children.Count > 0 && !_expandedIds.Contains(node.Id))
+            {
+                _expandedIds.Add(node.Id);
+            }
+        }
+    }
+
+    private bool IsExpanded(GanttNode<TItem> node)
+        => node.Id is null || _expandedIds.Contains(node.Id);
+
+    private void RebuildFlatVisible()
+    {
+        var list = new List<GanttNode<TItem>>();
+        void Walk(GanttNode<TItem> node)
+        {
+            list.Add(node);
+            if (node.Children.Count > 0 && IsExpanded(node))
+            {
+                foreach (var c in node.Children) Walk(c);
+            }
+        }
+        foreach (var r in _roots) Walk(r);
+        _flatVisible = list;
+    }
+
+    private void ToggleExpanded(GanttNode<TItem> node)
+    {
+        if (node.Id is null) return;
+        if (!_expandedIds.Add(node.Id))
+        {
+            _expandedIds.Remove(node.Id);
+        }
+        RebuildFlatVisible();
+        StateHasChanged();
     }
 }
