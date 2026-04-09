@@ -2,8 +2,9 @@
 
 <div class="@CombineClasses(RootCss)"
      style="@CombineStyles()"
-     role="listbox"
+     role="grid"
      aria-label="Color palette"
+     aria-colcount="@Columns"
      id="@Id"
      tabindex="@(TabIndex ?? 0)"
      @attributes="AdditionalAttributes"
@@ -19,7 +20,7 @@
             var isSelected = string.Equals(c, Value, StringComparison.OrdinalIgnoreCase);
             var isFocused = i == _focusedIndex;
             <button type="button"
-                    role="option"
+                    role="gridcell"
                     class="mar-colorpalette__tile @(isSelected ? "mar-colorpalette__tile--selected" : "") @(isFocused ? "mar-colorpalette__tile--focused" : "")"
                     style="background-color: @c; width: @EffectiveTileWidth; height: @EffectiveTileHeight;"
                     aria-label="@c"
@@ -80,6 +81,9 @@
     {
         _colorList = (Colors ?? ColorPalettePresets.Office).ToList();
 
+        if (_focusedIndex >= _colorList.Count)
+            _focusedIndex = _colorList.Count > 0 ? _colorList.Count - 1 : -1;
+
         // Sync focused index to current value
         if (!string.IsNullOrEmpty(Value))
         {
@@ -112,11 +116,17 @@
         switch (e.Key)
         {
             case "ArrowRight":
-                newIndex = Math.Min(oldIndex + 1, count - 1);
+            {
+                var rowEnd = Math.Min((oldIndex / cols + 1) * cols - 1, count - 1);
+                newIndex = Math.Min(oldIndex + 1, rowEnd);
                 break;
+            }
             case "ArrowLeft":
-                newIndex = Math.Max(oldIndex - 1, 0);
+            {
+                var rowStart = (oldIndex / cols) * cols;
+                newIndex = Math.Max(oldIndex - 1, rowStart);
                 break;
+            }
             case "ArrowDown":
                 newIndex = Math.Min(oldIndex + cols, count - 1);
                 break;
@@ -141,5 +151,6 @@
         }
 
         _focusedIndex = newIndex;
+        await InvokeAsync(StateHasChanged);
     }
 }
