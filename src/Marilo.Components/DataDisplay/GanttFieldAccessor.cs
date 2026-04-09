@@ -49,6 +49,18 @@ internal sealed class GanttFieldAccessor<TItem> where TItem : class
     private object? Read(TItem item, string name)
         => item is null ? null : GetProp(name)?.GetValue(item);
 
+    private void Write(TItem item, string name, object? value)
+    {
+        if (item is null || string.IsNullOrEmpty(name)) return;
+        var prop = GetProp(name);
+        if (prop is null || !prop.CanWrite) return;
+        prop.SetValue(item, Convert.ChangeType(value, prop.PropertyType));
+    }
+
+    public void SetStart(TItem item, DateTime value) => Write(item, StartField, value);
+    public void SetEnd(TItem item, DateTime value) => Write(item, EndField, value);
+    public void SetPercentComplete(TItem item, double value) => Write(item, PercentCompleteField, value);
+
     /// <summary>Public cached field lookup for use by GanttColumn.</summary>
     public object? GetFieldValue(TItem item, string fieldName)
     {

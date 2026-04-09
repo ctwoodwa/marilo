@@ -23,7 +23,8 @@
     @GanttViews
 </CascadingValue>
 
-<div class="@CombineClasses("mar-gantt")"
+<div @ref="_containerRef"
+     class="@CombineClasses("mar-gantt")"
      style="@CombineStyles(containerStyle.ToString())"
      @attributes="AdditionalAttributes">
     @if (ShowToolbar)
@@ -238,9 +239,10 @@
                 </div>
 
                 <div class="mar-gantt__bars" style="width: @((int)_totalTimelineWidth)px; position: relative;">
-                    @foreach (var node in visible)
+                    @for (var bi = 0; bi < visible.Count; bi++)
                     {
-                        var n = node;
+                        var n = visible[bi];
+                        var barIdx = bi;
                         var start = accessor.GetStart(n.Item);
                         var end = accessor.GetEnd(n.Item);
                         var pct = accessor.GetPercentComplete(n.Item);
@@ -251,10 +253,12 @@
 
                         <div class="mar-gantt__bar-row">
                             <div class="mar-gantt__bar"
+                                 data-index="@barIdx"
                                  role="img"
                                  aria-label="@($"{barTitle}: {start:M/d/yyyy} – {end:M/d/yyyy}")"
                                  style="left: @((int)startOffset)px; width: @((int)barWidth)px;"
                                  @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
+                                <div class="mar-gantt__bar-resize mar-gantt__bar-resize--left"></div>
                                 @if (TaskTemplate is not null)
                                 {
                                     @TaskTemplate(n.Item)
@@ -262,7 +266,10 @@
                                 else if (pct > 0)
                                 {
                                     <div class="mar-gantt__bar-progress" style="width: @((int)progressWidth)px;"></div>
+                                    <div class="mar-gantt__bar-progress-handle"
+                                         style="left: @((int)progressWidth)px;"></div>
                                 }
+                                <div class="mar-gantt__bar-resize mar-gantt__bar-resize--right"></div>
                             </div>
                             @if (TooltipTemplate is not null)
                             {
@@ -315,9 +322,10 @@
                 </div>
 
                 <div class="mar-gantt__bars" style="width: @((int)_totalTimelineWidth)px; position: relative;">
-                    @foreach (var node in visible)
+                    @for (var bi = 0; bi < visible.Count; bi++)
                     {
-                        var n = node;
+                        var n = visible[bi];
+                        var barIdx = bi;
                         var start = accessor.GetStart(n.Item);
                         var end = accessor.GetEnd(n.Item);
                         var pct = accessor.GetPercentComplete(n.Item);
@@ -328,10 +336,12 @@
 
                         <div class="mar-gantt__bar-row">
                             <div class="mar-gantt__bar"
+                                 data-index="@barIdx"
                                  role="img"
                                  aria-label="@($"{barTitle}: {start:M/d/yyyy} – {end:M/d/yyyy}")"
                                  style="left: @((int)startOffset)px; width: @((int)barWidth)px;"
                                  @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
+                                <div class="mar-gantt__bar-resize mar-gantt__bar-resize--left"></div>
                                 @if (TaskTemplate is not null)
                                 {
                                     @TaskTemplate(n.Item)
@@ -339,7 +349,10 @@
                                 else if (pct > 0)
                                 {
                                     <div class="mar-gantt__bar-progress" style="width: @((int)progressWidth)px;"></div>
+                                    <div class="mar-gantt__bar-progress-handle"
+                                         style="left: @((int)progressWidth)px;"></div>
                                 }
+                                <div class="mar-gantt__bar-resize mar-gantt__bar-resize--right"></div>
                             </div>
                             @if (TooltipTemplate is not null)
                             {

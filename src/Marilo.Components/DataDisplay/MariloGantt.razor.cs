@@ -38,10 +38,10 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     /// <summary>Tri-state cycle counter: 0 = first click (asc), 1 = second (desc), 2 = third (clear).</summary>
     private int _sortCycleStep;
 
-#pragma warning disable CS0649 // Assigned in D1 phase (JS interop)
     private IJSObjectReference? _jsModule;
+    private IJSObjectReference? _jsInstance;
     private DotNetObjectReference<MariloGantt<TItem>>? _dotNetRef;
-#pragma warning restore CS0649
+    private ElementReference _containerRef;
 
     [Parameter] public IEnumerable<TItem> Data { get; set; } = Enumerable.Empty<TItem>();
 
@@ -399,12 +399,22 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
 
     // ── Lifecycle ──────────────────────────────────────────────────────
 
-    protected override void OnAfterRender(bool firstRender)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && UseViewEngine && !_timelineComputed)
+        if (firstRender)
         {
-            ComputeTimeline();
-            StateHasChanged();
+            if (UseViewEngine && !_timelineComputed)
+            {
+                ComputeTimeline();
+                StateHasChanged();
+            }
+
+            _dotNetRef = DotNetObjectReference.Create(this);
+            _jsModule = await JS.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/Marilo.Components/js/marilo-gantt.js");
+            _jsInstance = await _jsModule.InvokeAsync<IJSObjectReference>(
+                "initGantt", _dotNetRef, _containerRef,
+                new { rowHeight = RowHeight, slotWidth = ActiveView?.SlotWidth ?? DayWidth });
         }
     }
 
@@ -886,8 +896,96 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         return siblings.IndexOf(node) + 1;
     }
 
+    // ── JS interop callbacks (D1) ─────────────────────────────────────
+
+    /// <summary>Converts a pixel delta to a TimeSpan based on the active view's scale.</summary>
+    private TimeSpan PixelsToTimeSpan(double deltaPixels)
+    {
+        if (UseViewEngine)
+        {
+            var view = ActiveView!;
+            var slotWidth = view.SlotWidth;
+            if (slotWidth <= 0) return TimeSpan.Zero;
+
+            return View switch
+            {
+                GanttView.Day => TimeSpan.FromHours(deltaPixels / slotWidth),
+                GanttView.Week => TimeSpan.FromDays(deltaPixels / slotWidth),
+                GanttView.Month => TimeSpan.FromDays(deltaPixels / slotWidth * 7),
+                GanttView.Year => TimeSpan.FromDays(deltaPixels / slotWidth * 30.44),
+                _ => TimeSpan.Zero
+            };
+        }
+
+        // Legacy DayWidth fallback
+        return DayWidth > 0 ? TimeSpan.FromDays(deltaPixels / DayWidth) : TimeSpan.Zero;
+    }
+
+    [JSInvokable]
+    public async Task OnBarMoved(int barIndex, double deltaPixels)
+    {
+        if (barIndex < 0 || barIndex >= _flatVisible.Count) return;
+        var node = _flatVisible[barIndex];
+        var accessor = _accessor!;
+        var delta = PixelsToTimeSpan(deltaPixels);
+
+        var oldStart = accessor.GetStart(node.Item);
+        var oldEnd = accessor.GetEnd(node.Item);
+        accessor.SetStart(node.Item, oldStart + delta);
+        accessor.SetEnd(node.Item, oldEnd + delta);
+
+        ComputeTimeline();
+        await OnUpdate.InvokeAsync(new GanttUpdateEventArgs { Item = node.Item });
+        await InvokeAsync(StateHasChanged);
+    }
+
+    [JSInvokable]
+    public async Task OnBarResized(int barIndex, double leftDelta, double rightDelta)
+    {
+        if (barIndex < 0 || barIndex >= _flatVisible.Count) return;
+        var node = _flatVisible[barIndex];
+        var accessor = _accessor!;
+
+        if (leftDelta != 0)
+        {
+            var oldStart = accessor.GetStart(node.Item);
+            accessor.SetStart(node.Item, oldStart + PixelsToTimeSpan(leftDelta));
+        }
+
+        if (rightDelta != 0)
+        {
+            var oldEnd = accessor.GetEnd(node.Item);
+            accessor.SetEnd(node.Item, oldEnd + PixelsToTimeSpan(rightDelta));
+        }
+
+        ComputeTimeline();
+        await OnUpdate.InvokeAsync(new GanttUpdateEventArgs { Item = node.Item });
+        await InvokeAsync(StateHasChanged);
+    }
+
+    [JSInvokable]
+    public async Task OnBarProgressChanged(int barIndex, double newPercent)
+    {
+        if (barIndex < 0 || barIndex >= _flatVisible.Count) return;
+        var node = _flatVisible[barIndex];
+        var clamped = Math.Clamp(newPercent, 0, 100);
+        _accessor!.SetPercentComplete(node.Item, Math.Round(clamped, 1));
+
+        await OnUpdate.InvokeAsync(new GanttUpdateEventArgs { Item = node.Item });
+        await InvokeAsync(StateHasChanged);
+    }
+
     public async ValueTask DisposeAsync()
     {
+        if (_jsInstance is not null)
+        {
+            try
+            {
+                if (_jsModule is not null)
+                    await _jsModule.InvokeVoidAsync("dispose", _jsInstance);
+            }
+            catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
+        }
         if (_jsModule is not null)
         {
             try { await _jsModule.DisposeAsync(); }
