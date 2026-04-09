@@ -4,7 +4,7 @@
 
 @using Marilo.Core.Enums
 
-<div class="@CombineClasses("mar-colorgradient" + (Enabled ? "" : " mar-colorgradient--disabled"))"
+<div class="@CombineClasses(CssProvider.ColorGradientClass() + " mar-colorgradient" + (Enabled ? "" : " mar-colorgradient--disabled"))"
      style="@CombineStyles()"
      @attributes="AdditionalAttributes"
      @ref="_rootRef">

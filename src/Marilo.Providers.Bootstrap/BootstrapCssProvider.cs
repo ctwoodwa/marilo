@@ -375,6 +375,9 @@ public class BootstrapCssProvider : IMariloCssProvider
 
     public string ColorPickerClass() => "form-control form-control-color mar-bs-color-picker";
     public string ColorPickerPopupClass() => "dropdown-menu mar-bs-color-picker__popup p-2";
+    public string ColorGradientClass() => "mar-bs-colorgradient";
+    public string ColorPaletteClass() => "mar-bs-colorpalette";
+    public string FlatColorPickerClass() => "mar-bs-flatcolorpicker";
 
     public string DatePickerClass() => "form-control mar-bs-datepicker";
 

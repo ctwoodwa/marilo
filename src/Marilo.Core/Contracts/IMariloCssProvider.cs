@@ -81,6 +81,9 @@ public interface IMariloCssProvider
     string RatingClass();
     string ColorPickerClass();
     string ColorPickerPopupClass();
+    string ColorGradientClass();
+    string ColorPaletteClass();
+    string FlatColorPickerClass();
     string DatePickerClass();
     string TimePickerClass();
     string TimePickerPopupClass();

@@ -71,7 +71,7 @@
     {
         get
         {
-            var css = "mar-colorpalette";
+            var css = CssProvider.ColorPaletteClass() + " mar-colorpalette";
             if (!Enabled) css += " mar-colorpalette--disabled";
             return css;
         }

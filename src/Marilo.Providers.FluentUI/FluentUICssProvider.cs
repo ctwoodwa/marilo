@@ -295,6 +295,9 @@ public class FluentUICssProvider : IMariloCssProvider
 
     public string ColorPickerClass() => "mar-color-picker";
     public string ColorPickerPopupClass() => "mar-color-picker__popup";
+    public string ColorGradientClass() => "fui-colorgradient";
+    public string ColorPaletteClass() => "fui-colorpalette";
+    public string FlatColorPickerClass() => "fui-flatcolorpicker";
 
     public string DatePickerClass() => "mar-datepicker";
 

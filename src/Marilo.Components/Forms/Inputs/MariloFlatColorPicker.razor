@@ -3,7 +3,7 @@
 
 @using Marilo.Core.Enums
 
-<div class="@CombineClasses("mar-flatcolorpicker" + (Enabled ? "" : " mar-flatcolorpicker--disabled"))"
+<div class="@CombineClasses(CssProvider.FlatColorPickerClass() + " mar-flatcolorpicker" + (Enabled ? "" : " mar-flatcolorpicker--disabled"))"
      style="@CombineStyles()"
      @attributes="AdditionalAttributes">
 
