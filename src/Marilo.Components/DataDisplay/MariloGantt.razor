@@ -1,15 +1,22 @@
+@typeparam TItem where TItem : class
+@using Marilo.Components.DataDisplay
 @inherits MariloComponentBase
 
 @{
-    var tasks = Data.ToList();
-    var minDate = tasks.Any() ? tasks.Min(t => t.Start) : DateTime.Today;
-    var maxDate = tasks.Any() ? tasks.Max(t => t.End) : DateTime.Today.AddDays(30);
+    var accessor = GetAccessor();
+    var tasks = (Data ?? Enumerable.Empty<TItem>()).ToList();
+    var minDate = tasks.Count > 0 ? tasks.Min(t => accessor.GetStart(t)) : DateTime.Today;
+    var maxDate = tasks.Count > 0 ? tasks.Max(t => accessor.GetEnd(t)) : DateTime.Today.AddDays(30);
     var totalDays = (maxDate - minDate).TotalDays;
     if (totalDays <= 0) totalDays = 1;
+
+    var containerStyle = new System.Text.StringBuilder();
+    if (!string.IsNullOrEmpty(Width)) containerStyle.Append($"width:{Width};");
+    if (!string.IsNullOrEmpty(Height)) containerStyle.Append($"height:{Height};");
 }
 
 <div class="@CombineClasses("mar-gantt")"
-     style="@CombineStyles()"
+     style="@CombineStyles(containerStyle.ToString())"
      @attributes="AdditionalAttributes">
     <div class="mar-gantt__container">
         @* Task list *@
@@ -20,16 +27,15 @@
             @foreach (var task in tasks)
             {
                 var t = task;
-                <div class="mar-gantt__task-row" style="padding-left: @(t.Level * 16)px;"
+                <div class="mar-gantt__task-row"
                      @onclick="() => OnTaskClick.InvokeAsync(t)">
-                    @t.Title
+                    @accessor.GetTitle(t)
                 </div>
             }
         </div>
 
         @* Timeline *@
         <div class="mar-gantt__timeline" style="overflow-x: auto;">
-            @* Timeline header *@
             <div class="mar-gantt__timeline-header" style="width: @(totalDays * DayWidth)px;">
                 @{
                     var d = minDate;
@@ -43,41 +49,26 @@
                 }
             </div>
 
-            @* Task bars *@
             <div class="mar-gantt__bars" style="width: @(totalDays * DayWidth)px;">
                 @foreach (var task in tasks)
                 {
                     var t = task;
-                    var startOffset = (t.Start - minDate).TotalDays * DayWidth;
-                    var barWidth = Math.Max((t.End - t.Start).TotalDays * DayWidth, 4);
-                    var progressWidth = barWidth * (t.PercentComplete / 100.0);
+                    var start = accessor.GetStart(t);
+                    var end = accessor.GetEnd(t);
+                    var pct = accessor.GetPercentComplete(t);
+                    var startOffset = (start - minDate).TotalDays * DayWidth;
+                    var barWidth = Math.Max((end - start).TotalDays * DayWidth, 4);
+                    var progressWidth = barWidth * (pct / 100.0);
 
                     <div class="mar-gantt__bar-row">
-                        <div class="mar-gantt__bar @(t.IsMilestone ? "mar-gantt__bar--milestone" : "")"
-                             style="left: @(startOffset)px; width: @(barWidth)px; @(!string.IsNullOrEmpty(t.Color) ? $"background-color:{t.Color};" : "")"
+                        <div class="mar-gantt__bar"
+                             style="left: @(startOffset)px; width: @(barWidth)px;"
                              @onclick="() => OnTaskClick.InvokeAsync(t)">
-                            @if (t.PercentComplete > 0 && !t.IsMilestone)
+                            @if (pct > 0)
                             {
                                 <div class="mar-gantt__bar-progress" style="width: @(progressWidth)px;"></div>
                             }
                         </div>
-                        @* Dependencies *@
-                        @if (t.DependsOn != null)
-                        {
-                            foreach (var depId in t.DependsOn)
-                            {
-                                var dep = tasks.FirstOrDefault(x => x.Id == depId);
-                                if (dep != null)
-                                {
-                                    var depEnd = (dep.End - minDate).TotalDays * DayWidth;
-                                    <svg class="mar-gantt__dependency" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;">
-                                        <line x1="@depEnd" y1="@(tasks.IndexOf(dep) * RowHeight + RowHeight / 2)"
-                                              x2="@startOffset" y2="@(tasks.IndexOf(t) * RowHeight + RowHeight / 2)"
-                                              stroke="#999" stroke-width="1" marker-end="url(#arrow)" />
-                                    </svg>
-                                }
-                            }
-                        }
                     </div>
                 }
             </div>
@@ -86,10 +77,38 @@
 </div>
 
 @code {
-    [Parameter] public IEnumerable<GanttTask> Data { get; set; } = Enumerable.Empty<GanttTask>();
+    private GanttFieldAccessor<TItem>? _accessor;
+    private string? _accessorKey;
+
+    [Parameter] public IEnumerable<TItem> Data { get; set; } = Enumerable.Empty<TItem>();
+
+    [Parameter] public string IdField { get; set; } = "Id";
+    [Parameter] public string ParentIdField { get; set; } = "ParentId";
+    [Parameter] public string TitleField { get; set; } = "Title";
+    [Parameter] public string StartField { get; set; } = "Start";
+    [Parameter] public string EndField { get; set; } = "End";
+    [Parameter] public string PercentCompleteField { get; set; } = "PercentComplete";
+    [Parameter] public string DependsOnField { get; set; } = "DependsOn";
+
+    [Parameter] public string? Width { get; set; }
+    [Parameter] public string? Height { get; set; }
+
     [Parameter] public int TaskListWidth { get; set; } = 250;
     [Parameter] public int DayWidth { get; set; } = 30;
     [Parameter] public int RowHeight { get; set; } = 36;
-    [Parameter] public EventCallback<GanttTask> OnTaskClick { get; set; }
-    [Parameter] public EventCallback<GanttTask> OnTaskEdit { get; set; }
+
+    [Parameter] public EventCallback<TItem> OnTaskClick { get; set; }
+    [Parameter] public EventCallback<TItem> OnTaskEdit { get; set; }
+
+    private GanttFieldAccessor<TItem> GetAccessor()
+    {
+        var key = $"{IdField}|{ParentIdField}|{TitleField}|{StartField}|{EndField}|{PercentCompleteField}|{DependsOnField}";
+        if (_accessor is null || _accessorKey != key)
+        {
+            _accessor = new GanttFieldAccessor<TItem>(
+                IdField, ParentIdField, TitleField, StartField, EndField, PercentCompleteField, DependsOnField);
+            _accessorKey = key;
+        }
+        return _accessor;
+    }
 }
