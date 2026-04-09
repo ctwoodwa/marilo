@@ -81,13 +81,24 @@
 - [x] 03-resolution through 06-validate (subagent-driven dev; 9 commits, 23 bUnit tests)
 - Closure report: `stages/06-validate/output/gap-colorpicker-standalone-closure-report.md`
 
-## Next Actions
+## Pipeline Pause — All C# Work Complete
 
-1. Editor Batch 2 remainder: Adaptive toolbar (JS), table/image resize (JS).
-2. DataGrid Phase 3 remaining: Frozen columns (JS), Row drag-drop (JS).
-3. **FileManager: COMPLETE** (36/36 gaps, 151 tests, full rewrite).
-4. Chart: Drilldown feature (separate scope / CDW).
-5. Scheduler / TreeList: Recommend dedicated CDW.
+All pure C# gaps in this workspace are resolved. Remaining items require JS interop or belong to dedicated delivery workspaces.
+
+## Remaining (JS Interop — Future Batch)
+
+1. Editor: Adaptive toolbar (ResizeObserver), table/image resize (drag handles).
+2. DataGrid: Frozen columns (JS sticky), Row drag-drop (JS events).
+3. FileUpload/Upload: DropZoneId (external drop zone JS wiring).
+
+## Routed to Other Workspaces
+
+- Chart drilldown → `chart-delivery` CDW
+- Scheduler → `scheduler-gap-analysis` or dedicated CDW
+- TreeList → `treelist-gap-analysis` or dedicated CDW
+- DataSheet → `datasheet-delivery` CDW (true spreadsheet architecture)
+- No-source components (Diagram, DockManager, Map, PivotGrid) → spec + concept-demo only per human decision
+- TreeView demos → `treeview-delivery` CDW (scenario coverage)
 
 ## Human Decisions Resolved (2026-04-09)
 
@@ -96,7 +107,9 @@
 - TreeView demos: **Scenario coverage** and spec alignment (not exhaustive UX exploration)
 - No-source components: **Spec + concept-demo only** until source exists
 
-## Blockers
+## Closure Reports Written (2026-04-09 housekeeping)
 
-- Editor adaptive toolbar + table resize: Require JS interop (ResizeObserver, drag handles).
-- DataGrid frozen columns + row drag: Require JS interop.
+- `gap-filemanager-closure-report.md` — retroactive Stage 06 for 36/36 gaps, 151 tests
+- `gap-drp-multiview-closure-report.md` — retroactive Stage 06 for 2/2 DRP gaps, 5 tests
+- gap-context.md updated with FileManager test rollup entry
+- Plan lines 1209-1213 updated: ColorPicker standalone + DRP multi-view marked resolved (were stale "deferred")

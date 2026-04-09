@@ -1,0 +1,14 @@
+.settings-card {
+    --local-surface: var(--marilo-color-surface, #ffffff);
+    --local-border: var(--marilo-color-border, rgba(0,0,0,0.08));
+
+    background: var(--local-surface);
+    border: 1px solid var(--local-border);
+    border-radius: 12px;
+    padding: 20px;
+}
+
+:global([data-marilo-theme="dark"]) .settings-card {
+    --local-surface: var(--marilo-color-surface, #252423);
+    --local-border: var(--marilo-color-border, rgba(255,255,255,0.08));
+}

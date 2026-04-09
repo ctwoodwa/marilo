@@ -1,0 +1,49 @@
+@inherits LayoutComponentBase
+
+<div class="account-layout @(_mobileOpen ? "mobile-open" : "")" @onkeydown="HandleKeyDown">
+    <div class="account-layout__scrim" @onclick="CloseMobile" aria-hidden="true"></div>
+    <button type="button" class="account-layout__mobile-toggle" aria-label="Open settings navigation" @onclick="OpenMobile">
+        <svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
+            <path d="M3 5h14M3 10h14M3 15h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+    </button>
+    <aside class="account-layout__sidebar" aria-label="Settings navigation">
+        <SettingsHomeLink Href="/" Label="Home" />
+        <SettingsSidebar NavGroups="_navGroups" />
+    </aside>
+    <main class="account-layout__content">
+        <div class="account-layout__content-inner">
+            @Body
+        </div>
+    </main>
+</div>
+
+@code {
+    private bool _mobileOpen;
+    private void OpenMobile() => _mobileOpen = true;
+    private void CloseMobile() => _mobileOpen = false;
+
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (_mobileOpen && e.Key == "Escape")
+            CloseMobile();
+    }
+
+    private readonly List<SettingsNavGroup> _navGroups = new()
+    {
+        new SettingsNavGroup("Account", new List<SettingsNavItem>
+        {
+            new("Account", "/account/details"),
+            new("Preferences", "/account/preferences"),
+            new("Personalization", "/account/personalization"),
+            new("Notifications", "/account/notifications"),
+            new("Keyboard shortcuts", "/account/shortcuts"),
+        }),
+        new SettingsNavGroup("Workspace", new List<SettingsNavItem>
+        {
+            new("Team members", "/account/team"),
+            new("Billing & plan", "/account/billing"),
+            new("Integrations", "/account/integrations"),
+        }),
+    };
+}
