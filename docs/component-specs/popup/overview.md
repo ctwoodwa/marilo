@@ -1,133 +1,47 @@
----
-title: Overview
-page_title: Popup Overview
-description: Discover the Blazor Popup. Learn how to add the component to your app and explore its features like positioning, alignment, and animation customization.
-slug: popup-overview
-tags: marilo,blazor,popup
-published: True
-position: 0
-components: ["popup"]
----
-# Blazor Popup Overview
+# MariloPopup — Component Specification
 
-The <a href = "https://www.marilo.com/blazor-ui/popup" target="_blank">Blazor Popup component</a> helps you easily display a popup for a target element (anchor) in your application. You can use the Marilo UI for Blazor Popup to display additional information. This article explains how to start using the component and describes its features.
+## Overview
+Lightweight anchor-positioned popup for filter menus, column choosers, and popup edit forms.
+Intermediate between MariloPopover (tooltip-like) and MariloDialog (full-screen modal).
 
-## Creating Blazor Popup
+## Parameters
 
-1. Add the `<MariloPopup>` tag to a Razor file.
-1. Set the `AnchorSelector` parameter to a CSS selector, which points to the HTML element that the Popup will align with.
-1. [Obtain the component reference to show and hide the Popover programmatically](#popup-reference-and-methods).
-1. (optional) Set the Popup `Width` and `Height`, or configure animations.
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| IsOpen | bool | false | Controls visibility |
+| IsOpenChanged | EventCallback<bool> | - | Two-way binding callback |
+| AnchorId | string? | null | ID of the anchor element for positioning |
+| Placement | PopupPlacement | Bottom | Preferred position relative to anchor |
+| Offset | int | 4 | Pixel offset from anchor |
+| ChildContent | RenderFragment | - | Popup content |
+| Class | string? | null | Additional CSS classes (via MariloComponentBase) |
+| OnOutsideClick | EventCallback | - | Fires when clicking outside the popup |
+| FocusTrap | bool | false | Whether to trap focus inside |
+| CloseOnEscape | bool | true | Close when Escape is pressed |
 
->caption Basic configuration of the Marilo Popup for Blazor
+## PopupPlacement Enum
+Top, Bottom, Left, Right, Auto
 
-````RAZOR
-<MariloPopup @ref="@PopupRef"
-              AnchorSelector=".popup-target"
-              AnimationType="@AnimationType.SlideDown"
-              AnimationDuration="200"
-              Width="200px"
-              Height="100px">
-    <div style="text-align: center;">
-        <p>Marilo Popup for Blazor</p>
-        <MariloButton OnClick="@( () => PopupRef?.Hide() )"
-                       Icon="@SvgIcon.XCircle">Close</MariloButton>
-    </div>
+## Behavior
+- Opens when IsOpen = true
+- Closes on Escape key (when CloseOnEscape = true)
+- Closes on outside click (fires OnOutsideClick, then sets IsOpen = false)
+- Focus management: moves focus into popup on open, returns on close
+- Anchor positioning: stub uses absolute CSS (no JS scroll tracking)
+- Full anchor tracking (Floating UI) deferred to Pass 4
 
-</MariloPopup>
+## Accessibility
+- role="dialog" with aria-modal when FocusTrap is true
+- role="listbox" or no role when FocusTrap is false
+- Focus returned to trigger element on close
 
-<MariloButton OnClick="@( () => PopupRef?.Show() )"
-               Class="popup-target">Show Popup</MariloButton>
+## CSS Classes
+- `mar-popup` — root container
+- `mar-popup--open` — when visible
+- `mar-popup--{placement}` — position modifier
+- Provider integration: IPopupClass on IMariloProvider (deferred)
 
-@code {
-    private MariloPopup? PopupRef { get; set; }
-}
-````
-
-## Popup Positioning and Collision
-
-Use the available positioning and collision settings to customize how the Popup positions and reacts to insufficient space in the viewport. [Read more about the Blazor Popup Positioning and Collision...](slug:popup-position-collision)
-
-## Popup Animations 
-
-Use the available parameters to customize the animation type and its duration. [Read more about the Blazor Popup animations...](slug:popup-animation).
-
-## Popup Parameters
-
-The Blazor Popup provides parameters to configure the component. Also check the [Popup API Reference](slug:Marilo.Blazor.Components.MariloPopup) for a full list of properties, methods and events.
-
-
-| Parameter | Type | Description |
-| ----------- | ----------- | ----------- |
-| `AnchorHorizontalAlign` | `PopupAnchorHorizontalAlign` enum <br /> (`Left`) | Defines how the anchor aligns with the Popup component on the horizontal plane. [Read more about Popup Positioning.](slug:popup-position-collision)|
-| `AnchorSelector` | `string` | The CSS selector for the anchor element of the Popup. |
-| `AnchorVerticalAlign` | `PopupAnchorVerticalAlign` enum <br /> (`Bottom`) | Defines how the anchor aligns with the Popup on the vertical plane. [Read more about Popup Positioning.](slug:popup-position-collision). |
-| `AnimationDuration` | `int` | The duration of the animation in milliseconds. [Read more about Popup animations.](slug:popup-animation) |
-| `AnimationType` | `AnimationType` enum <br /> (`SlideDown`) | The type of animation when the component displays and hides. [Read more about Popup animations.](slug:popup-animation) |
-| `HorizontalAlign` | `PopupHorizontalAlign ` enum <br /> (`Left`) | Determines if the left or the right side of the Popup will touch its anchor. [Read more about Popup Positioning.](slug:popup-position-collision) |
-| `HorizontalCollision` | `PopupCollision  ` enum <br /> (`Fit`) | Sets the behavior of the Popup when it doesn't fit in the viewport based on the horizontal plane. [Read more about Popup collision behavior.](slug:popup-position-collision) |
-| `HorizontalOffset` | `double` | The horizontal space between the Popup and its anchor in pixels. |
-| `VerticalAlign` | `PopupVerticalAlign ` enum <br /> (`Top`) | Determines if the Popup will touch the anchor with its top, bottom, or center. [Read more about Popup Positioning.](slug:popup-position-collision) |
-| `VerticalCollision` | `PopupCollision  ` enum <br /> (`Flip`) | Defines the behavior of the Popup when it doesn't fit in the viewport based on the vertical plane. [Read more about Popup collision behavior.](slug:popup-position-collision) |
-| `VerticalOffset` | `double` | The vertical space between the Popup and its anchor in `pixels`. |
-
-### Styling and Appearance
-
-The following parameters enable you to customize the appearance of the Blazor Popup:
-
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `Class` | `string` | The custom CSS class to be rendered on the `<div>` element, which wraps the component `ChildContent`. Use for [styling customizations](slug:themes-override). |
-| `Height` | `string` | The height of the Popup. |
-| `Width` | `string` | The width of the Popup. If not set, the component width will match the anchor width. |
-
-## Popup Reference and Methods
-
-To execute Popup methods, obtain a reference to the component instance with `@ref`.
-
-| Method  | Description |
-|---------|-------------|
-| `Refresh` | Re-renders the Popup. <br /> The Popup renders as a child of the `MariloRootComponent`, instead of where it is declared. As a result, it doesn't automatically refresh when its content is updated. In such cases, the `Refresh` method ensures that the Popup content is up-to-date. |
-| `Show` | Displays the Popup. |
-| `Hide` | Closes the Popup. |
-
-````RAZOR
-<MariloButton OnClick="@TogglePopup"
-               Class="popup-target">Toggle Popup</MariloButton>
-
-<MariloPopup @ref="@PopupRef"
-              AnchorSelector=".popup-target">
-    Marilo Popup for Blazor
-</MariloPopup>
-
-@code {
-    private MariloPopup? PopupRef { get; set; }
-
-    private bool PopupVisible { get; set; }
-
-    private void TogglePopup()
-    {
-        if (!PopupVisible)
-        {
-            PopupVisible = true;
-            PopupRef?.Show();
-        }
-        else
-        {
-            PopupVisible = false;
-            PopupRef?.Hide();
-        }
-    }
-}
-````
-
-## Next Steps
-
-* [Explore the Popup Positioning and Collision Settings](slug:popup-position-collision)
-* [Customize the Popup Animations](slug:popup-animation)
-
-## See Also
-
-* [Live Popup Demos](https://demos.marilo.com/blazor-ui/popup/overview)
-* [Popup API Reference](slug:Marilo.Blazor.Components.MariloPopup)
-* [Comparison between All Popup Components](slug:common-kb-popup-component-comparison)
+## Relationship to Existing Components
+- MariloPopover: tooltip-like, uses show/hide methods. MariloPopup is parameter-driven.
+- MariloDrawer: sidebar panel. MariloPopup is anchor-relative.
+- MariloDialog: full-screen modal. MariloPopup is lightweight inline.

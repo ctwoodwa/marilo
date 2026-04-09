@@ -1,0 +1,20 @@
+@typeparam TItem where TItem : class
+@implements IDisposable
+
+@code {
+    [CascadingParameter] private MariloGantt<TItem>? Parent { get; set; }
+
+    [Parameter] public IEnumerable<GanttDependency> Data { get; set; } = Enumerable.Empty<GanttDependency>();
+    [Parameter] public EventCallback<GanttDependencyCreateEventArgs> OnCreate { get; set; }
+    [Parameter] public EventCallback<GanttDependencyDeleteEventArgs> OnDelete { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Parent?.RegisterDependencies(this);
+    }
+
+    public void Dispose()
+    {
+        Parent?.UnregisterDependencies(this);
+    }
+}

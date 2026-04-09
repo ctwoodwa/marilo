@@ -31,11 +31,17 @@
     /// <summary>Whether this column is editable in edit mode. Defaults to true.</summary>
     [Parameter] public bool Editable { get; set; } = true;
 
+    /// <summary>Override the automatic editor input type for this column. When null, type is auto-detected from the field type.</summary>
+    [Parameter] public GanttEditorType? EditorType { get; set; }
+
     /// <summary>Whether this column is sortable. Defaults to true.</summary>
     [Parameter] public bool Sortable { get; set; } = true;
 
     /// <summary>Whether this column is filterable. Defaults to true.</summary>
     [Parameter] public bool Filterable { get; set; } = true;
+
+    /// <summary>Controls how the filter UI is presented for this column. Defaults to Text.</summary>
+    [Parameter] public GanttColumnFilterType FilterType { get; set; } = GanttColumnFilterType.Text;
 
     /// <summary>Custom cell template. Receives the row item as context.</summary>
     [Parameter] public RenderFragment<TItem>? Template { get; set; }

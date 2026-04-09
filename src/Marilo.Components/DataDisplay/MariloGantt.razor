@@ -23,10 +23,19 @@
     @GanttViews
 </CascadingValue>
 
+@* Dependency definitions (hidden, registers via MariloGantt cascade) *@
+<CascadingValue Value="this" IsFixed="true">
+    @GanttDependenciesSlot
+</CascadingValue>
+
 <div @ref="_containerRef"
      class="@CombineClasses("mar-gantt")"
      style="@CombineStyles(containerStyle.ToString())"
-     @attributes="AdditionalAttributes">
+     @attributes="AdditionalAttributes"
+     @onclick="HandleGanttClick">
+    <div class="mar-gantt__announcer" aria-live="polite" aria-atomic="true" role="status">@_announcement</div>
+    <a href="#mar-gantt-tasklist-@_instanceId" class="mar-gantt__skip-link">Skip to task list</a>
+    <a href="#mar-gantt-timeline-@_instanceId" class="mar-gantt__skip-link">Skip to timeline</a>
     @if (ShowToolbar)
     {
         <div class="mar-gantt__toolbar">
@@ -43,11 +52,23 @@
                 </div>
             }
             @GanttToolBarTemplate
+            @if (ShowColumnChooser)
+            {
+                <button type="button"
+                        id="mar-gantt-column-chooser-btn"
+                        class="mar-gantt__column-chooser-btn"
+                        title="Column Chooser"
+                        @onclick="() => _columnChooserOpen = !_columnChooserOpen"
+                        @onclick:stopPropagation="true">
+                    &#x2630;
+                </button>
+            }
         </div>
     }
     <div class="mar-gantt__container">
         @* Task list *@
         <div class="mar-gantt__tasklist"
+             id="mar-gantt-tasklist-@_instanceId"
              style="width: @(TaskListWidth)px;"
              role="treegrid"
              aria-label="Task list"
@@ -71,7 +92,7 @@
                              style="@headerStyle"
                              role="columnheader"
                              aria-sort="@(isSorted ? (_sortAscending ? "ascending" : "descending") : (c.Sortable ? "none" : null))"
-                             @onclick="() => { if (c.Sortable) SortBy(c.Field); }">
+                             @onclick="async () => { if (c.Sortable) await SortBy(c.Field); }">
                             @if (c.HeaderTemplate is not null)
                             {
                                 @c.HeaderTemplate
@@ -84,6 +105,50 @@
                                     <span class="mar-gantt__sort-indicator">@(_sortAscending ? "▲" : "▼")</span>
                                 }
                             }
+                            @if (FilterMode == GanttFilterMode.FilterMenu && c.Filterable && !string.IsNullOrEmpty(c.Field))
+                            {
+                                var isActive = _filterValues.ContainsKey(c.Field);
+                                var filterField = c.Field;
+
+                                @if (c.FilterType == GanttColumnFilterType.CheckboxList)
+                                {
+                                    <button type="button"
+                                            id="mar-gantt-filter-@filterField"
+                                            class="mar-gantt__filter-btn @(isActive ? "mar-gantt__filter-btn--active" : "")"
+                                            title="Filter"
+                                            @onclick="() => OpenCheckboxFilter(filterField)"
+                                            @onclick:stopPropagation="true">
+                                        &#x25BC;
+                                    </button>
+                                }
+                                else
+                                {
+                                    var isOpen = _filterMenuField == c.Field;
+
+                                    <button type="button"
+                                            class="mar-gantt__filter-btn @(isActive ? "mar-gantt__filter-btn--active" : "")"
+                                            title="Filter"
+                                            @onclick="() => ToggleFilterMenu(filterField)"
+                                            @onclick:stopPropagation="true">
+                                        &#x25BC;@* Funnel-like down arrow *@
+                                    </button>
+
+                                    @if (isOpen)
+                                    {
+                                        <div class="mar-gantt__filter-menu" @onclick:stopPropagation="true">
+                                            <input type="text"
+                                                   class="mar-gantt__filter-menu-input"
+                                                   placeholder="Filter..."
+                                                   value="@_filterMenuValue"
+                                                   @oninput="(e) => _filterMenuValue = e.Value?.ToString() ?? string.Empty" />
+                                            <div class="mar-gantt__filter-menu-actions">
+                                                <button type="button" class="mar-gantt__filter-menu-btn" @onclick="ApplyFilterMenu">Filter</button>
+                                                <button type="button" class="mar-gantt__filter-menu-btn" @onclick="ClearFilterMenu">Clear</button>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                            }
                         </div>
                     }
                 }
@@ -91,8 +156,24 @@
                 {
                     <span role="columnheader">Task</span>
                 }
+                @if (HasCommandColumn)
+                {
+                    var cmdCol = _commandColumn!;
+                    var cmdHeaderStyle = !string.IsNullOrEmpty(cmdCol.Width) ? $"width:{cmdCol.Width};" : "";
+                    <div class="mar-gantt__header-cell mar-gantt__command-header" style="@cmdHeaderStyle" role="columnheader">
+                        @if (cmdCol.ShowAddButton)
+                        {
+                            <button type="button" class="mar-gantt__cmd-btn mar-gantt__cmd-btn--add"
+                                    title="Add" @onclick="HandleCommandAdd" @onclick:stopPropagation="true">&#x2795;</button>
+                        }
+                        else
+                        {
+                            @(cmdCol.Title ?? "")
+                        }
+                    </div>
+                }
             </div>
-            @if (useColumns && cols.Any(c => c.Filterable))
+            @if (useColumns && cols.Any(c => c.Filterable) && FilterMode == GanttFilterMode.FilterRow)
             {
                 <div class="mar-gantt__filter-row">
                     @foreach (var col in cols)
@@ -109,9 +190,14 @@
                                        class="mar-gantt__filter-input"
                                        placeholder="Filter..."
                                        value="@(currentVal ?? "")"
-                                       @oninput="@(e => OnFilterInput(field, e.Value?.ToString() ?? ""))" />
+                                       @oninput="@(async e => await OnFilterInput(field, e.Value?.ToString() ?? ""))" />
                             }
                         </div>
+                    }
+                    @if (HasCommandColumn)
+                    {
+                        var cmdFilterStyle = !string.IsNullOrEmpty(_commandColumn!.Width) ? $"width:{_commandColumn.Width};" : "";
+                        <div class="mar-gantt__task-cell mar-gantt__command-cell" style="@cmdFilterStyle"></div>
                     }
                 </div>
             }
@@ -119,7 +205,7 @@
             {
                 var n = visible[idx];
                 var rowIdx = idx;
-                var hasChildren = n.Children.Count > 0;
+                var hasChildren = n.Children.Count > 0 || (!string.IsNullOrEmpty(HasChildrenField) && _accessor!.GetHasChildren(n.Item));
                 var expanded = IsExpanded(n);
                 var isFocused = rowIdx == _focusedIndex;
                 var siblingCount = GetSiblingCount(n);
@@ -128,8 +214,11 @@
 
                 @if (useColumns)
                 {
+                    var isIncell = TreeListEditMode == GanttTreeListEditMode.Incell;
+                    var isPopup = TreeListEditMode == GanttTreeListEditMode.Popup;
                     var isEditing = _editingRowIndex == rowIdx;
                     var editRowClass = rowClass + (isEditing ? " mar-gantt__task-row--editing" : "");
+                    var capturedRowIdx = rowIdx;
 
                     <div class="@editRowClass"
                          role="row"
@@ -139,7 +228,7 @@
                          aria-expanded="@(hasChildren ? (expanded ? "true" : "false") : null)"
                          tabindex="@(isFocused ? 0 : -1)"
                          @onclick="() => OnTaskClick.InvokeAsync(n.Item)"
-                         @ondblclick="() => BeginEdit(rowIdx)"
+                         @ondblclick="() => { if (!isIncell && !isPopup) _ = BeginEdit(capturedRowIdx); }"
                          @ondblclick:stopPropagation="true">
                         @foreach (var col in cols)
                         {
@@ -147,15 +236,20 @@
                             if (!string.IsNullOrEmpty(col.Width)) cellStyle += $"width:{col.Width};";
                             if (!string.IsNullOrEmpty(col.TextAlign)) cellStyle += $"text-align:{col.TextAlign};";
 
-                            <div class="mar-gantt__task-cell" role="gridcell" style="@cellStyle">
-                                @if (isEditing && col.Editable && !string.IsNullOrEmpty(col.Field))
+                            @* Determine whether this specific cell is in edit mode *@
+                            var isEditingThisCell = isIncell
+                                ? (_editingRowIndex == rowIdx && _editingField == col.Field)
+                                : isEditing;
+
+                            @if (isEditingThisCell && col.Editable && !string.IsNullOrEmpty(col.Field))
+                            {
+                                @* Incell / Inline editing mode: render input *@
+                                var editField = col.Field;
+                                var inputType = GetInputType(editField, col);
+                                if (col.Expandable)
                                 {
-                                    @* Editing mode: render input *@
-                                    var editField = col.Field;
-                                    var inputType = GetInputType(editField);
-                                    if (col.Expandable)
-                                    {
-                                        var pad = (int)(n.Depth * 16 + (hasChildren ? 0 : 16));
+                                    var pad = (int)(n.Depth * 16 + (hasChildren ? 0 : 16));
+                                    <div class="mar-gantt__task-cell" role="gridcell" style="@cellStyle">
                                         <span style="padding-left: @(pad)px; display: inline-flex; align-items: center;">
                                             @if (hasChildren)
                                             {
@@ -171,33 +265,63 @@
                                                    value="@FormatEditValue(editField, _editValues.GetValueOrDefault(editField))"
                                                    @onchange="(e) => _editValues[editField] = ParseValue(editField, e.Value?.ToString())"
                                                    @onclick:stopPropagation="true"
+                                                   @onkeydown="HandleCellKeyDown"
+                                                   @onkeydown:preventDefault="@isIncell"
                                                    class="mar-gantt__edit-input" />
                                         </span>
-                                    }
-                                    else
-                                    {
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="mar-gantt__task-cell" role="gridcell" style="@cellStyle">
                                         <input type="@inputType"
                                                value="@FormatEditValue(editField, _editValues.GetValueOrDefault(editField))"
                                                @onchange="(e) => _editValues[editField] = ParseValue(editField, e.Value?.ToString())"
                                                @onclick:stopPropagation="true"
+                                               @onkeydown="HandleCellKeyDown"
+                                               @onkeydown:preventDefault="@isIncell"
                                                class="mar-gantt__edit-input" />
-                                    }
+                                    </div>
                                 }
-                                else if (col.Expandable)
+                            }
+                            else if (isIncell && col.Editable && !string.IsNullOrEmpty(col.Field))
+                            {
+                                @* Incell mode: non-editing editable cell — clickable to start editing *@
+                                var incellField = col.Field;
+                                if (col.Expandable)
                                 {
                                     var pad = (int)(n.Depth * 16 + (hasChildren ? 0 : 16));
-                                    <span style="padding-left: @(pad)px; display: inline-flex; align-items: center;">
-                                        @if (hasChildren)
-                                        {
-                                            <button type="button"
-                                                    class="mar-gantt__chevron"
-                                                    aria-expanded="@(expanded ? "true" : "false")"
-                                                    aria-label="@(expanded ? $"Collapse {accessor.GetTitle(n.Item)}" : $"Expand {accessor.GetTitle(n.Item)}")"
-                                                    @onclick:stopPropagation="true"
-                                                    @onclick="() => ToggleExpanded(n)">
-                                                @(expanded ? "▼" : "▶")
-                                            </button>
-                                        }
+                                    <div class="mar-gantt__task-cell mar-gantt__task-cell--editable" role="gridcell" style="@cellStyle"
+                                         @onclick="() => BeginCellEdit(rowIdx, incellField)"
+                                         @onclick:stopPropagation="true">
+                                        <span style="padding-left: @(pad)px; display: inline-flex; align-items: center;">
+                                            @if (hasChildren)
+                                            {
+                                                <button type="button"
+                                                        class="mar-gantt__chevron"
+                                                        aria-expanded="@(expanded ? "true" : "false")"
+                                                        aria-label="@(expanded ? $"Collapse {accessor.GetTitle(n.Item)}" : $"Expand {accessor.GetTitle(n.Item)}")"
+                                                        @onclick:stopPropagation="true"
+                                                        @onclick="() => ToggleExpanded(n)">
+                                                    @(expanded ? "▼" : "▶")
+                                                </button>
+                                            }
+                                            @if (col.Template is not null)
+                                            {
+                                                @col.Template(n.Item)
+                                            }
+                                            else
+                                            {
+                                                @col.GetDisplayValue(n.Item)
+                                            }
+                                        </span>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="mar-gantt__task-cell mar-gantt__task-cell--editable" role="gridcell" style="@cellStyle"
+                                         @onclick="() => BeginCellEdit(rowIdx, incellField)"
+                                         @onclick:stopPropagation="true">
                                         @if (col.Template is not null)
                                         {
                                             @col.Template(n.Item)
@@ -206,22 +330,128 @@
                                         {
                                             @col.GetDisplayValue(n.Item)
                                         }
-                                    </span>
+                                    </div>
+                                }
+                            }
+                            else if (isPopup && col.Editable && !string.IsNullOrEmpty(col.Field))
+                            {
+                                @* Popup mode: editable cell — clicking opens popup form *@
+                                var popupField = col.Field;
+                                var cellAnchorId = $"mar-gantt-cell-{rowIdx}-{popupField}";
+                                if (col.Expandable)
+                                {
+                                    var pad = (int)(n.Depth * 16 + (hasChildren ? 0 : 16));
+                                    <div id="@cellAnchorId" class="mar-gantt__task-cell mar-gantt__task-cell--editable" role="gridcell" style="@cellStyle"
+                                         @onclick="() => BeginPopupEdit(rowIdx, popupField)"
+                                         @onclick:stopPropagation="true">
+                                        <span style="padding-left: @(pad)px; display: inline-flex; align-items: center;">
+                                            @if (hasChildren)
+                                            {
+                                                <button type="button"
+                                                        class="mar-gantt__chevron"
+                                                        aria-expanded="@(expanded ? "true" : "false")"
+                                                        aria-label="@(expanded ? $"Collapse {accessor.GetTitle(n.Item)}" : $"Expand {accessor.GetTitle(n.Item)}")"
+                                                        @onclick:stopPropagation="true"
+                                                        @onclick="() => ToggleExpanded(n)">
+                                                    @(expanded ? "▼" : "▶")
+                                                </button>
+                                            }
+                                            @if (col.Template is not null)
+                                            {
+                                                @col.Template(n.Item)
+                                            }
+                                            else
+                                            {
+                                                @col.GetDisplayValue(n.Item)
+                                            }
+                                        </span>
+                                    </div>
                                 }
                                 else
                                 {
-                                    @if (col.Template is not null)
+                                    <div id="@cellAnchorId" class="mar-gantt__task-cell mar-gantt__task-cell--editable" role="gridcell" style="@cellStyle"
+                                         @onclick="() => BeginPopupEdit(rowIdx, popupField)"
+                                         @onclick:stopPropagation="true">
+                                        @if (col.Template is not null)
+                                        {
+                                            @col.Template(n.Item)
+                                        }
+                                        else
+                                        {
+                                            @col.GetDisplayValue(n.Item)
+                                        }
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="mar-gantt__task-cell" role="gridcell" style="@cellStyle">
+                                    @if (col.Expandable)
                                     {
-                                        @col.Template(n.Item)
+                                        var pad = (int)(n.Depth * 16 + (hasChildren ? 0 : 16));
+                                        <span style="padding-left: @(pad)px; display: inline-flex; align-items: center;">
+                                            @if (hasChildren)
+                                            {
+                                                <button type="button"
+                                                        class="mar-gantt__chevron"
+                                                        aria-expanded="@(expanded ? "true" : "false")"
+                                                        aria-label="@(expanded ? $"Collapse {accessor.GetTitle(n.Item)}" : $"Expand {accessor.GetTitle(n.Item)}")"
+                                                        @onclick:stopPropagation="true"
+                                                        @onclick="() => ToggleExpanded(n)">
+                                                    @(expanded ? "▼" : "▶")
+                                                </button>
+                                            }
+                                            @if (col.Template is not null)
+                                            {
+                                                @col.Template(n.Item)
+                                            }
+                                            else
+                                            {
+                                                @col.GetDisplayValue(n.Item)
+                                            }
+                                        </span>
                                     }
                                     else
                                     {
-                                        @col.GetDisplayValue(n.Item)
+                                        @if (col.Template is not null)
+                                        {
+                                            @col.Template(n.Item)
+                                        }
+                                        else
+                                        {
+                                            @col.GetDisplayValue(n.Item)
+                                        }
                                     }
+                                </div>
+                            }
+                        }
+                        @if (HasCommandColumn)
+                        {
+                            var cmdCol = _commandColumn!;
+                            var cmdStyle = !string.IsNullOrEmpty(cmdCol.Width) ? $"width:{cmdCol.Width};" : "";
+                            <div class="mar-gantt__task-cell mar-gantt__command-cell" role="gridcell" style="@cmdStyle">
+                                @if (isEditing && !isIncell)
+                                {
+                                    <button type="button" class="mar-gantt__cmd-btn mar-gantt__cmd-btn--save"
+                                            title="Save" @onclick="CommitEdit" @onclick:stopPropagation="true">&#x2713;</button>
+                                    <button type="button" class="mar-gantt__cmd-btn mar-gantt__cmd-btn--cancel"
+                                            title="Cancel" @onclick="() => CancelEdit()" @onclick:stopPropagation="true">&#x2717;</button>
+                                }
+                                else if (!isIncell)
+                                {
+                                    <button type="button" class="mar-gantt__cmd-btn mar-gantt__cmd-btn--edit"
+                                            title="Edit" @onclick="() => BeginEdit(rowIdx)" @onclick:stopPropagation="true">&#x270E;</button>
+                                    <button type="button" class="mar-gantt__cmd-btn mar-gantt__cmd-btn--delete"
+                                            title="Delete" @onclick="() => HandleCommandDelete(n.Item)" @onclick:stopPropagation="true">&#x2716;</button>
+                                }
+                                else
+                                {
+                                    <button type="button" class="mar-gantt__cmd-btn mar-gantt__cmd-btn--delete"
+                                            title="Delete" @onclick="() => HandleCommandDelete(n.Item)" @onclick:stopPropagation="true">&#x2716;</button>
                                 }
                             </div>
                         }
-                        @if (isEditing)
+                        else if (isEditing && !isIncell)
                         {
                             <div class="mar-gantt__edit-actions">
                                 <button type="button"
@@ -268,7 +498,9 @@
         </div>
 
         @* Timeline *@
-        <div class="mar-gantt__timeline" style="overflow-x: auto;">
+        <div class="mar-gantt__timeline"
+             id="mar-gantt-timeline-@_instanceId"
+             style="overflow-x: auto;">
             @if (UseViewEngine && _slots.Count > 0)
             {
                 @* View-driven timeline with main + secondary headers *@
@@ -278,7 +510,14 @@
                         {
                             var hw = (int)(header.SpanSlots * ActiveView!.SlotWidth);
                             <span class="mar-gantt__date-label mar-gantt__date-label--main" style="width: @(hw)px;">
-                                @header.Label
+                                @if (ActiveView?.MainHeaderTemplate is { } mainTpl)
+                                {
+                                    @mainTpl(header.Start)
+                                }
+                                else
+                                {
+                                    @(ActiveView?.MainHeaderDateFormat is { } fmt ? header.Start.ToString(fmt) : header.Label)
+                                }
                             </span>
                         }
                     </div>
@@ -287,7 +526,14 @@
                         {
                             var sw = (int)ActiveView!.SlotWidth;
                             <span class="mar-gantt__date-label" style="width: @(sw)px;">
-                                @slot.Label
+                                @if (ActiveView?.SubHeaderTemplate is { } subTpl)
+                                {
+                                    @subTpl(slot.Start)
+                                }
+                                else
+                                {
+                                    @(ActiveView?.SubHeaderDateFormat is { } fmt ? slot.Start.ToString(fmt) : slot.Label)
+                                }
                             </span>
                         }
                     </div>
@@ -298,34 +544,57 @@
                     {
                         var n = visible[bi];
                         var barIdx = bi;
-                        var start = accessor.GetStart(n.Item);
-                        var end = accessor.GetEnd(n.Item);
-                        var pct = accessor.GetPercentComplete(n.Item);
-                        var startOffset = GetPixelOffset(start);
-                        var barWidth = GetBarWidth(start, end);
-                        var progressWidth = barWidth * (pct / 100.0);
+                        var taskStart = accessor.GetStart(n.Item);
+                        var taskEnd = accessor.GetEnd(n.Item);
+                        var isMilestone = taskStart == taskEnd;
+                        var isSummary = n.Children.Count > 0;
+
+                        var barStart = isSummary && n.ComputedStart.HasValue ? n.ComputedStart.Value : taskStart;
+                        var barEnd = isSummary && n.ComputedEnd.HasValue ? n.ComputedEnd.Value : taskEnd;
+                        var pctValue = accessor.GetPercentComplete(n.Item);
+                        var barPct = isSummary && n.ComputedPercentComplete.HasValue ? n.ComputedPercentComplete.Value : pctValue;
+
+                        var startOffset = GetPixelOffset(barStart);
+                        var barWidth = GetBarWidth(barStart, barEnd);
                         var barTitle = accessor.GetTitle(n.Item);
+                        var pctWidth = Math.Clamp(barPct, 0, 100);
+                        var barClass = "mar-gantt__bar" + (isSummary ? " mar-gantt__bar--summary" : "");
 
                         <div class="mar-gantt__bar-row">
-                            <div class="mar-gantt__bar"
-                                 data-index="@barIdx"
-                                 role="img"
-                                 aria-label="@($"{barTitle}: {start:M/d/yyyy} – {end:M/d/yyyy}")"
-                                 style="left: @((int)startOffset)px; width: @((int)barWidth)px;"
-                                 @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
-                                <div class="mar-gantt__bar-resize mar-gantt__bar-resize--left"></div>
-                                @if (TaskTemplate is not null)
-                                {
-                                    @TaskTemplate(n.Item)
-                                }
-                                else if (pct > 0)
-                                {
-                                    <div class="mar-gantt__bar-progress" style="width: @((int)progressWidth)px;"></div>
-                                    <div class="mar-gantt__bar-progress-handle"
-                                         style="left: @((int)progressWidth)px;"></div>
-                                }
-                                <div class="mar-gantt__bar-resize mar-gantt__bar-resize--right"></div>
-                            </div>
+                            @if (isMilestone)
+                            {
+                                var milestoneOffset = GetPixelOffset(taskStart);
+                                <div class="mar-gantt__milestone"
+                                     style="left: @((int)milestoneOffset)px; top: @(bi * RowHeight + RowHeight / 2 - 6)px;"
+                                     role="img"
+                                     aria-label="@($"Milestone: {barTitle}: {taskStart:M/d/yyyy}")"
+                                     @onclick="() => OnTaskClick.InvokeAsync(n.Item)"
+                                     @onclick:stopPropagation="true">
+                                    <span class="mar-gantt__milestone-diamond">&#x25C6;</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="@barClass"
+                                     data-index="@barIdx"
+                                     role="img"
+                                     aria-label="@($"{barTitle}: {barStart:M/d/yyyy} – {barEnd:M/d/yyyy}")"
+                                     style="left: @((int)startOffset)px; width: @((int)barWidth)px;"
+                                     @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
+                                    <div class="mar-gantt__bar-resize mar-gantt__bar-resize--left"></div>
+                                    <div class="mar-gantt__bar-progress" style="width: @(pctWidth)%;"></div>
+                                    @if (TaskTemplate is not null)
+                                    {
+                                        @TaskTemplate(n.Item)
+                                    }
+                                    <button type="button"
+                                            class="mar-gantt__bar-delete"
+                                            title="Delete"
+                                            @onclick="() => OnDelete.InvokeAsync(new GanttDeleteEventArgs { Item = n.Item })"
+                                            @onclick:stopPropagation="true">&#x2716;</button>
+                                    <div class="mar-gantt__bar-resize mar-gantt__bar-resize--right"></div>
+                                </div>
+                            }
                             @if (TooltipTemplate is not null)
                             {
                                 <div class="mar-gantt__tooltip" style="left: @((int)startOffset)px;">
@@ -336,7 +605,7 @@
                             {
                                 <div class="mar-gantt__tooltip" style="left: @((int)startOffset)px;">
                                     <strong>@accessor.GetTitle(n.Item)</strong><br />
-                                    @start.ToString("M/d/yyyy") &ndash; @end.ToString("M/d/yyyy")
+                                    @barStart.ToString("M/d/yyyy") &ndash; @barEnd.ToString("M/d/yyyy")
                                 </div>
                             }
                         </div>
@@ -381,34 +650,57 @@
                     {
                         var n = visible[bi];
                         var barIdx = bi;
-                        var start = accessor.GetStart(n.Item);
-                        var end = accessor.GetEnd(n.Item);
-                        var pct = accessor.GetPercentComplete(n.Item);
-                        var startOffset = GetPixelOffset(start);
-                        var barWidth = GetBarWidth(start, end);
-                        var progressWidth = barWidth * (pct / 100.0);
+                        var taskStart = accessor.GetStart(n.Item);
+                        var taskEnd = accessor.GetEnd(n.Item);
+                        var isMilestone = taskStart == taskEnd;
+                        var isSummary = n.Children.Count > 0;
+
+                        var barStart = isSummary && n.ComputedStart.HasValue ? n.ComputedStart.Value : taskStart;
+                        var barEnd = isSummary && n.ComputedEnd.HasValue ? n.ComputedEnd.Value : taskEnd;
+                        var pctValue = accessor.GetPercentComplete(n.Item);
+                        var barPct = isSummary && n.ComputedPercentComplete.HasValue ? n.ComputedPercentComplete.Value : pctValue;
+
+                        var startOffset = GetPixelOffset(barStart);
+                        var barWidth = GetBarWidth(barStart, barEnd);
                         var barTitle = accessor.GetTitle(n.Item);
+                        var pctWidth = Math.Clamp(barPct, 0, 100);
+                        var barClass = "mar-gantt__bar" + (isSummary ? " mar-gantt__bar--summary" : "");
 
                         <div class="mar-gantt__bar-row">
-                            <div class="mar-gantt__bar"
-                                 data-index="@barIdx"
-                                 role="img"
-                                 aria-label="@($"{barTitle}: {start:M/d/yyyy} – {end:M/d/yyyy}")"
-                                 style="left: @((int)startOffset)px; width: @((int)barWidth)px;"
-                                 @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
-                                <div class="mar-gantt__bar-resize mar-gantt__bar-resize--left"></div>
-                                @if (TaskTemplate is not null)
-                                {
-                                    @TaskTemplate(n.Item)
-                                }
-                                else if (pct > 0)
-                                {
-                                    <div class="mar-gantt__bar-progress" style="width: @((int)progressWidth)px;"></div>
-                                    <div class="mar-gantt__bar-progress-handle"
-                                         style="left: @((int)progressWidth)px;"></div>
-                                }
-                                <div class="mar-gantt__bar-resize mar-gantt__bar-resize--right"></div>
-                            </div>
+                            @if (isMilestone)
+                            {
+                                var milestoneOffset = GetPixelOffset(taskStart);
+                                <div class="mar-gantt__milestone"
+                                     style="left: @((int)milestoneOffset)px; top: @(bi * RowHeight + RowHeight / 2 - 6)px;"
+                                     role="img"
+                                     aria-label="@($"Milestone: {barTitle}: {taskStart:M/d/yyyy}")"
+                                     @onclick="() => OnTaskClick.InvokeAsync(n.Item)"
+                                     @onclick:stopPropagation="true">
+                                    <span class="mar-gantt__milestone-diamond">&#x25C6;</span>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="@barClass"
+                                     data-index="@barIdx"
+                                     role="img"
+                                     aria-label="@($"{barTitle}: {barStart:M/d/yyyy} – {barEnd:M/d/yyyy}")"
+                                     style="left: @((int)startOffset)px; width: @((int)barWidth)px;"
+                                     @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
+                                    <div class="mar-gantt__bar-resize mar-gantt__bar-resize--left"></div>
+                                    <div class="mar-gantt__bar-progress" style="width: @(pctWidth)%;"></div>
+                                    @if (TaskTemplate is not null)
+                                    {
+                                        @TaskTemplate(n.Item)
+                                    }
+                                    <button type="button"
+                                            class="mar-gantt__bar-delete"
+                                            title="Delete"
+                                            @onclick="() => OnDelete.InvokeAsync(new GanttDeleteEventArgs { Item = n.Item })"
+                                            @onclick:stopPropagation="true">&#x2716;</button>
+                                    <div class="mar-gantt__bar-resize mar-gantt__bar-resize--right"></div>
+                                </div>
+                            }
                             @if (TooltipTemplate is not null)
                             {
                                 <div class="mar-gantt__tooltip" style="left: @((int)startOffset)px;">
@@ -419,7 +711,7 @@
                             {
                                 <div class="mar-gantt__tooltip" style="left: @((int)startOffset)px;">
                                     <strong>@accessor.GetTitle(n.Item)</strong><br />
-                                    @start.ToString("M/d/yyyy") &ndash; @end.ToString("M/d/yyyy")
+                                    @barStart.ToString("M/d/yyyy") &ndash; @barEnd.ToString("M/d/yyyy")
                                 </div>
                             }
                         </div>
@@ -445,4 +737,115 @@
             }
         </div>
     </div>
+    @if (_columnChooserOpen)
+    {
+        <MariloPopup IsOpen="true"
+                     AnchorId="mar-gantt-column-chooser-btn"
+                     Placement="PopupPlacement.Bottom"
+                     CloseOnEscape="true"
+                     OnOutsideClick="() => { _columnChooserOpen = false; }">
+            <div class="mar-gantt__column-chooser">
+                <h3 class="mar-gantt__column-chooser-title">Columns</h3>
+                @foreach (var col in _columns)
+                {
+                    var c = col;
+                    <label class="mar-gantt__column-chooser-item">
+                        <input type="checkbox"
+                               checked="@c.Visible"
+                               @onchange="async () => await ToggleColumnVisibility(c)" />
+                        @(c.DisplayTitle ?? c.Field ?? "Column")
+                    </label>
+                }
+            </div>
+        </MariloPopup>
+    }
 </div>
+
+@if (_checkboxFilterField is not null)
+{
+    @if (FilterPopupMode == GanttFilterPopupMode.Popup)
+    {
+        <MariloPopup IsOpen="true"
+                     AnchorId="@($"mar-gantt-filter-{_checkboxFilterField}")"
+                     Placement="PopupPlacement.Bottom"
+                     CloseOnEscape="true"
+                     OnOutsideClick="EventCallback.Factory.Create(this, () => { _checkboxFilterField = null; StateHasChanged(); })">
+            <div class="mar-gantt__checkbox-filter">
+                <h3 class="mar-gantt__checkbox-filter-title">Filter: @(_columns.FirstOrDefault(col => col.Field == _checkboxFilterField)?.DisplayTitle ?? _checkboxFilterField)</h3>
+                <div class="mar-gantt__checkbox-filter-list">
+                    @foreach (var option in _checkboxFilterOptions)
+                    {
+                        var opt = option;
+                        <label class="mar-gantt__checkbox-filter-item">
+                            <input type="checkbox"
+                                   checked="@_checkboxFilterSelected.Contains(opt)"
+                                   @onchange="() => ToggleCheckboxOption(opt)" />
+                            @opt
+                        </label>
+                    }
+                </div>
+                <div class="mar-gantt__checkbox-filter-actions">
+                    <button type="button" class="mar-gantt__filter-menu-btn" @onclick="ApplyCheckboxFilter">Apply</button>
+                    <button type="button" class="mar-gantt__filter-menu-btn" @onclick="ClearCheckboxFilter">Clear</button>
+                </div>
+            </div>
+        </MariloPopup>
+    }
+    else
+    {
+        <MariloDrawer Expanded="true"
+                      Position="DrawerPosition.Right"
+                      Width="300px"
+                      OnClose="EventCallback.Factory.Create(this, () => { _checkboxFilterField = null; StateHasChanged(); })">
+            <div class="mar-gantt__checkbox-filter">
+                <h3 class="mar-gantt__checkbox-filter-title">Filter: @(_columns.FirstOrDefault(col => col.Field == _checkboxFilterField)?.DisplayTitle ?? _checkboxFilterField)</h3>
+                <div class="mar-gantt__checkbox-filter-list">
+                    @foreach (var option in _checkboxFilterOptions)
+                    {
+                        var opt = option;
+                        <label class="mar-gantt__checkbox-filter-item">
+                            <input type="checkbox"
+                                   checked="@_checkboxFilterSelected.Contains(opt)"
+                                   @onchange="() => ToggleCheckboxOption(opt)" />
+                            @opt
+                        </label>
+                    }
+                </div>
+                <div class="mar-gantt__checkbox-filter-actions">
+                    <button type="button" class="mar-gantt__filter-menu-btn" @onclick="ApplyCheckboxFilter">Apply</button>
+                    <button type="button" class="mar-gantt__filter-menu-btn" @onclick="ClearCheckboxFilter">Clear</button>
+                </div>
+            </div>
+        </MariloDrawer>
+    }
+}
+
+@if (TreeListEditMode == GanttTreeListEditMode.Popup && _popupEditOpen && _editingRowIndex >= 0)
+{
+    <MariloPopup IsOpen="@_popupEditOpen"
+                 AnchorId="@_popupEditAnchorId"
+                 Placement="PopupPlacement.Bottom"
+                 FocusTrap="true"
+                 CloseOnEscape="true"
+                 OnOutsideClick="() => CancelPopupEdit()">
+        <div class="mar-gantt__popup-edit">
+            <h3 class="mar-gantt__popup-edit-title">Edit Task</h3>
+            @foreach (var col in VisibleColumns.Where(c => c.Editable && !string.IsNullOrEmpty(c.Field)))
+            {
+                var editField = col.Field;
+                var inputType = GetInputType(editField!, col);
+                <div class="mar-gantt__popup-edit-field">
+                    <label>@col.DisplayTitle</label>
+                    <input type="@inputType"
+                           value="@FormatEditValue(editField!, _editValues.GetValueOrDefault(editField!))"
+                           @onchange="(e) => _editValues[editField!] = ParseValue(editField!, e.Value?.ToString())"
+                           class="mar-gantt__edit-input" />
+                </div>
+            }
+            <div class="mar-gantt__popup-edit-actions">
+                <button type="button" class="mar-gantt__edit-btn mar-gantt__edit-btn--save" @onclick="CommitPopupEdit">Save</button>
+                <button type="button" class="mar-gantt__edit-btn mar-gantt__edit-btn--cancel" @onclick="CancelPopupEdit">Cancel</button>
+            </div>
+        </div>
+    </MariloPopup>
+}

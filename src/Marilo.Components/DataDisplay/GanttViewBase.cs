@@ -20,6 +20,18 @@ public abstract class GanttViewBase : ComponentBase, IDisposable
     /// <summary>Optional explicit end of the visible range. If null, auto-calculated from data.</summary>
     [Parameter] public DateTime? RangeEnd { get; set; }
 
+    /// <summary>Custom template for the major (main) header cells. Receives the slot start DateTime as context.</summary>
+    [Parameter] public RenderFragment<DateTime>? MainHeaderTemplate { get; set; }
+
+    /// <summary>Custom template for the minor (sub) header cells. Receives the slot start DateTime as context.</summary>
+    [Parameter] public RenderFragment<DateTime>? SubHeaderTemplate { get; set; }
+
+    /// <summary>Format string for main header labels (e.g. "MMMM yyyy"). Overridden by MainHeaderTemplate.</summary>
+    [Parameter] public string? MainHeaderDateFormat { get; set; }
+
+    /// <summary>Format string for sub header labels (e.g. "ddd d"). Overridden by SubHeaderTemplate.</summary>
+    [Parameter] public string? SubHeaderDateFormat { get; set; }
+
     /// <summary>The view type this component represents.</summary>
     public abstract GanttView ViewType { get; }
 

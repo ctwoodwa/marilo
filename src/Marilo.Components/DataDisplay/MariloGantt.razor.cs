@@ -31,16 +31,50 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     private readonly Dictionary<string, string> _filterValues = new();
     /// <summary>Ids that were auto-expanded by the filter so we can restore state when cleared.</summary>
     private readonly HashSet<object> _filterExpandedIds = new();
+    private CancellationTokenSource? _filterDebounce;
+
+    /// <summary>Column field currently showing the filter menu popup. Null = no menu open.</summary>
+    private string? _filterMenuField;
+
+    /// <summary>Pending filter value in the filter menu input (not yet applied).</summary>
+    private string _filterMenuValue = "";
+
+    // ── Checkbox filter state ─────────────────────────────────────────
+    /// <summary>Column field whose checkbox-list drawer is currently open. Null = drawer closed.</summary>
+    private string? _checkboxFilterField;
+
+    /// <summary>Currently checked values in the open checkbox-list drawer.</summary>
+    private HashSet<string> _checkboxFilterSelected = new();
+
+    /// <summary>Distinct values available for the open checkbox-list column.</summary>
+    private List<string> _checkboxFilterOptions = new();
 
     // ── Edit state ─────────────────────────────────────────────────────
     private int _editingRowIndex = -1;
     private Dictionary<string, object?> _editValues = new();
+    /// <summary>In Incell mode, which column field is currently being edited. Null = no cell active.</summary>
+    private string? _editingField;
+    /// <summary>Deep clone of the item captured when editing began. Used for revert/comparison.</summary>
+    private TItem? _originalItem;
+
+    // ── Popup edit state ───────────────────────────────────────────────
+    private bool _popupEditOpen;
+    private string? _popupEditAnchorId;
 
     // ── Sort state ────────────────────────────────────────────────────
     private string? _sortField;
     private bool _sortAscending = true;
     /// <summary>Tri-state cycle counter: 0 = first click (asc), 1 = second (desc), 2 = third (clear).</summary>
     private int _sortCycleStep;
+
+    // ── Screen reader announcements ───────────────────────────────────
+    private string _announcement = "";
+
+    // ── State init guard ──────────────────────────────────────────────
+    private bool _stateInitFired;
+
+    // ── Column chooser state ──────────────────────────────────────────
+    private bool _columnChooserOpen;
 
     private IJSObjectReference? _jsModule;
     private IJSObjectReference? _jsInstance;
@@ -57,6 +91,30 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     [Parameter] public string PercentCompleteField { get; set; } = "PercentComplete";
     [Parameter] public string DependsOnField { get; set; } = "DependsOn";
 
+    /// <summary>
+    /// Property name on TItem that contains child items (e.g., "Children" returning IEnumerable&lt;TItem&gt;).
+    /// When set, enables hierarchical data binding mode. ParentIdField is ignored in this mode.
+    /// </summary>
+    [Parameter] public string? ItemsField { get; set; }
+
+    /// <summary>
+    /// Property name on TItem that returns a bool indicating whether the item has children that haven't been loaded yet.
+    /// Used to show an expand arrow even when Items is empty (for on-demand/lazy loading).
+    /// </summary>
+    [Parameter] public string? HasChildrenField { get; set; }
+
+    /// <summary>Whether sorting is enabled. When false, clicking column headers does not sort.</summary>
+    [Parameter] public bool Sortable { get; set; } = true;
+
+    /// <summary>Controls which filter UI is displayed. Currently only FilterRow is supported.</summary>
+    [Parameter] public GanttFilterMode FilterMode { get; set; } = GanttFilterMode.FilterRow;
+
+    /// <summary>Controls whether checkbox filters use a Drawer or Popup.</summary>
+    [Parameter] public GanttFilterPopupMode FilterPopupMode { get; set; } = GanttFilterPopupMode.Drawer;
+
+    /// <summary>Debounce delay in milliseconds for filter row input changes. 0 means immediate.</summary>
+    [Parameter] public int FilterRowDebounceDelay { get; set; }
+
     [Parameter] public string? Width { get; set; }
     [Parameter] public string? Height { get; set; }
 
@@ -71,13 +129,22 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     [Parameter] public RenderFragment<TItem>? TooltipTemplate { get; set; }
 
     [Parameter] public EventCallback<TItem> OnTaskClick { get; set; }
-    [Parameter] public EventCallback<TItem> OnTaskEdit { get; set; }
+    [Parameter] public EventCallback<GanttEditEventArgs> OnTaskEdit { get; set; }
+
+    /// <summary>Controls how the tree list enters edit mode. Currently only Inline is supported.</summary>
+    [Parameter] public GanttTreeListEditMode TreeListEditMode { get; set; } = GanttTreeListEditMode.Inline;
+
+    /// <summary>Where new items appear when added. Top = first row, Bottom = last row.</summary>
+    [Parameter] public GanttNewRowPosition NewRowPosition { get; set; } = GanttNewRowPosition.Top;
 
     [Parameter] public EventCallback<GanttCreateEventArgs> OnCreate { get; set; }
     [Parameter] public EventCallback<GanttUpdateEventArgs> OnUpdate { get; set; }
     [Parameter] public EventCallback<GanttDeleteEventArgs> OnDelete { get; set; }
     [Parameter] public EventCallback<GanttExpandEventArgs> OnExpand { get; set; }
     [Parameter] public EventCallback<GanttCollapseEventArgs> OnCollapse { get; set; }
+
+    /// <summary>When true, shows a column chooser button in the toolbar.</summary>
+    [Parameter] public bool ShowColumnChooser { get; set; }
 
     /// <summary>Custom toolbar content rendered inside the toolbar area above the Gantt chart.</summary>
     [Parameter] public RenderFragment? GanttToolBarTemplate { get; set; }
@@ -88,11 +155,20 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     /// <summary>Child content slot where GanttView instances (GanttDayView, GanttWeekView, etc.) are declared.</summary>
     [Parameter] public RenderFragment? GanttViews { get; set; }
 
+    /// <summary>Child content slot where MariloGanttDependencies is declared.</summary>
+    [Parameter] public RenderFragment? GanttDependenciesSlot { get; set; }
+
     /// <summary>The currently active view. Supports two-way binding via @bind-View.</summary>
     [Parameter] public GanttView View { get; set; } = GanttView.Week;
 
     /// <summary>Callback fired when the active view changes.</summary>
     [Parameter] public EventCallback<GanttView> ViewChanged { get; set; }
+
+    /// <summary>Fires during initialization. Use to load saved state.</summary>
+    [Parameter] public EventCallback<GanttStateEventArgs<TItem>> OnStateInit { get; set; }
+
+    /// <summary>Fires when sort, filter, expand, or view state changes.</summary>
+    [Parameter] public EventCallback<GanttStateEventArgs<TItem>> OnStateChanged { get; set; }
 
     // ── Column management ──────────────────────────────────────────────
 
@@ -124,6 +200,54 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     internal List<GanttColumn<TItem>> VisibleColumns
         => _visibleColumnsCache ??= _columns.Where(c => c.Visible).ToList();
 
+    private async Task ToggleColumnVisibility(GanttColumn<TItem> column)
+    {
+        column.Visible = !column.Visible;
+        _visibleColumnsCache = null;
+        await FireStateChanged("VisibleColumns");
+        await InvokeAsync(StateHasChanged);
+    }
+
+    // ── Command column management ──────────────────────────────────────
+
+    private GanttCommandColumn<TItem>? _commandColumn;
+
+    internal void RegisterCommandColumn(GanttCommandColumn<TItem> col)
+    {
+        _commandColumn = col;
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    internal void UnregisterCommandColumn(GanttCommandColumn<TItem> col)
+    {
+        if (ReferenceEquals(_commandColumn, col))
+        {
+            _commandColumn = null;
+            _ = InvokeAsync(StateHasChanged);
+        }
+    }
+
+    internal bool HasCommandColumn => _commandColumn is not null;
+
+    // ── Dependencies management ────────────────────────────────────────────────────
+
+    internal MariloGanttDependencies<TItem>? _dependencies;
+
+    internal void RegisterDependencies(MariloGanttDependencies<TItem> deps)
+    {
+        _dependencies = deps;
+        _ = InvokeAsync(StateHasChanged);
+    }
+
+    internal void UnregisterDependencies(MariloGanttDependencies<TItem> deps)
+    {
+        if (ReferenceEquals(_dependencies, deps))
+        {
+            _dependencies = null;
+            _ = InvokeAsync(StateHasChanged);
+        }
+    }
+
     // ── View management (IGanttViewHost) ───────────────────────────────
 
     private readonly List<GanttViewBase> _views = new();
@@ -153,14 +277,15 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     /// <summary>Whether timeline rendering should use the view-driven engine (true) or legacy DayWidth fallback (false).</summary>
     private bool UseViewEngine => _views.Count > 0;
 
-    /// <summary>Whether the toolbar area should render (view selector buttons or custom template present).</summary>
-    private bool ShowToolbar => _views.Count > 1 || GanttToolBarTemplate is not null;
+    /// <summary>Whether the toolbar area should render (view selector buttons, custom template, or column chooser present).</summary>
+    private bool ShowToolbar => _views.Count > 1 || GanttToolBarTemplate is not null || ShowColumnChooser;
 
     private async Task SwitchView(GanttView view)
     {
         View = view;
         await ViewChanged.InvokeAsync(view);
         ComputeTimeline();
+        await FireStateChanged("View");
         await InvokeAsync(StateHasChanged);
     }
 
@@ -422,7 +547,7 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         }
     }
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         var prevKey = _accessorKey;
         _accessor = GetAccessor();
@@ -443,7 +568,19 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         _visibleColumnsCache = null;
         _timelineComputed = false;
         ComputeTimeline();
-        base.OnParametersSet();
+
+        if (!_stateInitFired && OnStateInit.HasDelegate)
+        {
+            _stateInitFired = true;
+            var initialState = GetState();
+            var args = new GanttStateEventArgs<TItem> { State = initialState };
+            await OnStateInit.InvokeAsync(args);
+            // If the handler set a different state object, apply it
+            if (args.State is not null && !ReferenceEquals(args.State, initialState))
+                await SetStateAsync(args.State);
+        }
+
+        await base.OnParametersSetAsync();
     }
 
     /// <summary>Refreshes the Gantt's internal tree from the current Data collection. Call this after mutating Data in place.</summary>
@@ -461,11 +598,12 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
 
     private GanttFieldAccessor<TItem> GetAccessor()
     {
-        var key = $"{IdField}|{ParentIdField}|{TitleField}|{StartField}|{EndField}|{PercentCompleteField}|{DependsOnField}";
+        var key = $"{IdField}|{ParentIdField}|{TitleField}|{StartField}|{EndField}|{PercentCompleteField}|{DependsOnField}|{ItemsField}|{HasChildrenField}";
         if (_accessor is null || _accessorKey != key)
         {
             _accessor = new GanttFieldAccessor<TItem>(
-                IdField, ParentIdField, TitleField, StartField, EndField, PercentCompleteField, DependsOnField);
+                IdField, ParentIdField, TitleField, StartField, EndField, PercentCompleteField, DependsOnField,
+                ItemsField, HasChildrenField);
             _accessorKey = key;
         }
         return _accessor;
@@ -475,6 +613,71 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     {
         _roots.Clear();
         var accessor = _accessor!;
+
+        if (!string.IsNullOrEmpty(ItemsField))
+        {
+            // Hierarchical mode: items contain their children via ItemsField
+            BuildTreeHierarchical(accessor);
+        }
+        else
+        {
+            // Flat mode: ParentId-based linking
+            BuildTreeFlat(accessor);
+        }
+
+        ComputeSummaryValues();
+    }
+
+    private void BuildTreeHierarchical(GanttFieldAccessor<TItem> accessor)
+    {
+        var items = (Data ?? Enumerable.Empty<TItem>()).ToList();
+        foreach (var item in items)
+        {
+            var node = CreateNodeRecursive(accessor, item, 0);
+            _roots.Add(node);
+        }
+
+        // Seed expanded state
+        SeedExpandedState(_roots);
+    }
+
+    private GanttNode<TItem> CreateNodeRecursive(GanttFieldAccessor<TItem> accessor, TItem item, int depth)
+    {
+        var node = new GanttNode<TItem>
+        {
+            Item = item,
+            Id = accessor.GetId(item),
+            Depth = depth,
+        };
+
+        var children = accessor.GetItems(item);
+        if (children is not null)
+        {
+            foreach (var child in children)
+            {
+                var childNode = CreateNodeRecursive(accessor, child, depth + 1);
+                childNode.Parent = node;
+                node.Children.Add(childNode);
+            }
+        }
+
+        return node;
+    }
+
+    private void SeedExpandedState(List<GanttNode<TItem>> roots)
+    {
+        var stack = new Stack<GanttNode<TItem>>(roots);
+        while (stack.Count > 0)
+        {
+            var n = stack.Pop();
+            if (n.Id is not null && n.Children.Count > 0 && !_expandedIds.Contains(n.Id))
+                _expandedIds.Add(n.Id);
+            foreach (var c in n.Children) stack.Push(c);
+        }
+    }
+
+    private void BuildTreeFlat(GanttFieldAccessor<TItem> accessor)
+    {
         var items = (Data ?? Enumerable.Empty<TItem>()).ToList();
         var byId = new Dictionary<object, GanttNode<TItem>>();
         var ordered = new List<GanttNode<TItem>>(items.Count);
@@ -541,6 +744,42 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         }
     }
 
+    /// <summary>
+    /// Computes summary values for parent nodes: Start = min of children, End = max of children,
+    /// PercentComplete = weighted average by duration.
+    /// </summary>
+    private void ComputeSummaryValues()
+    {
+        var accessor = _accessor!;
+        var allNodes = new List<GanttNode<TItem>>();
+        CollectAllNodes(_roots, allNodes);
+
+        foreach (var node in allNodes.OrderByDescending(n => n.Depth))
+        {
+            if (node.Children.Count == 0) continue;
+
+            var minStart = node.Children.Min(c => accessor.GetStart(c.Item));
+            var maxEnd = node.Children.Max(c => accessor.GetEnd(c.Item));
+            var totalDuration = node.Children.Sum(c => (accessor.GetEnd(c.Item) - accessor.GetStart(c.Item)).TotalDays);
+            var weightedPct = totalDuration > 0
+                ? node.Children.Sum(c => accessor.GetPercentComplete(c.Item) * (accessor.GetEnd(c.Item) - accessor.GetStart(c.Item)).TotalDays) / totalDuration
+                : 0;
+
+            node.ComputedStart = minStart;
+            node.ComputedEnd = maxEnd;
+            node.ComputedPercentComplete = weightedPct;
+        }
+    }
+
+    private static void CollectAllNodes(List<GanttNode<TItem>> roots, List<GanttNode<TItem>> result)
+    {
+        foreach (var root in roots)
+        {
+            result.Add(root);
+            CollectAllNodes(root.Children, result);
+        }
+    }
+
     private static bool WouldCreateCycle(GanttNode<TItem> candidateChild, GanttNode<TItem> candidateParent)
     {
         var cursor = candidateParent;
@@ -559,8 +798,9 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     /// Toggles sort on the given field. Cycle: ascending -> descending -> unsorted.
     /// Called from clickable column headers.
     /// </summary>
-    internal void SortBy(string field)
+    internal async Task SortBy(string field)
     {
+        if (!Sortable) return;
         if (string.IsNullOrEmpty(field)) return;
 
         if (_sortField == field)
@@ -588,7 +828,8 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         }
 
         RebuildFlatVisible();
-        _ = InvokeAsync(StateHasChanged);
+        await FireStateChanged("SortDescriptor");
+        await InvokeAsync(StateHasChanged);
     }
 
     /// <summary>
@@ -653,15 +894,141 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     // ── Filter logic ──────────────────────────────────────────────────
 
     /// <summary>Called from @oninput on filter row inputs.</summary>
-    internal void OnFilterInput(string field, string value)
+    internal async Task OnFilterInput(string field, string value)
     {
+        if (FilterRowDebounceDelay > 0)
+        {
+            _filterDebounce?.Cancel();
+            _filterDebounce?.Dispose();
+            var cts = new CancellationTokenSource();
+            _filterDebounce = cts;
+            try
+            {
+                await Task.Delay(FilterRowDebounceDelay, cts.Token);
+            }
+            catch (TaskCanceledException)
+            {
+                return;
+            }
+        }
+
         if (string.IsNullOrEmpty(value))
             _filterValues.Remove(field);
         else
             _filterValues[field] = value;
 
         RebuildFlatVisible();
-        _ = InvokeAsync(StateHasChanged);
+        await FireStateChanged("FilterValues");
+        await InvokeAsync(StateHasChanged);
+    }
+
+    // ── Filter menu methods ───────────────────────────────────────────
+
+    private void ToggleFilterMenu(string field)
+    {
+        if (_filterMenuField == field)
+        {
+            _filterMenuField = null; // Close
+        }
+        else
+        {
+            _filterMenuField = field;
+            _filterValues.TryGetValue(field, out var current);
+            _filterMenuValue = current ?? "";
+        }
+    }
+
+    private async Task ApplyFilterMenu()
+    {
+        if (_filterMenuField is null) return;
+
+        if (string.IsNullOrEmpty(_filterMenuValue))
+            _filterValues.Remove(_filterMenuField);
+        else
+            _filterValues[_filterMenuField] = _filterMenuValue;
+
+        _filterMenuField = null;
+        _filterExpandedIds.Clear();
+        RebuildFlatVisible();
+        await FireStateChanged("FilterValues");
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ClearFilterMenu()
+    {
+        if (_filterMenuField is null) return;
+
+        _filterValues.Remove(_filterMenuField);
+        _filterMenuValue = "";
+        _filterMenuField = null;
+        _filterExpandedIds.Clear();
+        RebuildFlatVisible();
+        await FireStateChanged("FilterValues");
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private void HandleGanttClick()
+    {
+        if (_filterMenuField is not null)
+        {
+            _filterMenuField = null;
+        }
+    }
+
+    // ── Checkbox filter methods ───────────────────────────────────────
+
+    private void OpenCheckboxFilter(string field)
+    {
+        _checkboxFilterField = field;
+        var accessor = _accessor!;
+        _checkboxFilterOptions = _flatVisible
+            .Select(n => accessor.GetFieldValue(n.Item, field)?.ToString() ?? "")
+            .Where(v => !string.IsNullOrEmpty(v))
+            .Distinct()
+            .OrderBy(v => v)
+            .ToList();
+        // Pre-check currently filtered values; if no filter active, check all
+        _checkboxFilterSelected = _filterValues.TryGetValue(field, out var existing)
+            ? existing.Split('|').ToHashSet()
+            : _checkboxFilterOptions.ToHashSet();
+        StateHasChanged();
+    }
+
+    private void ToggleCheckboxOption(string value)
+    {
+        if (_checkboxFilterSelected.Contains(value))
+            _checkboxFilterSelected.Remove(value);
+        else
+            _checkboxFilterSelected.Add(value);
+        StateHasChanged();
+    }
+
+    private async Task ApplyCheckboxFilter()
+    {
+        if (_checkboxFilterField is null) return;
+        if (_checkboxFilterSelected.Count == _checkboxFilterOptions.Count)
+        {
+            // All selected = no filter
+            _filterValues.Remove(_checkboxFilterField);
+        }
+        else
+        {
+            _filterValues[_checkboxFilterField] = string.Join("|", _checkboxFilterSelected);
+        }
+        _checkboxFilterField = null;
+        RebuildFlatVisible();
+        await FireStateChanged("FilterValues");
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ClearCheckboxFilter()
+    {
+        if (_checkboxFilterField is null) return;
+        _filterValues.Remove(_checkboxFilterField);
+        _checkboxFilterField = null;
+        RebuildFlatVisible();
+        await FireStateChanged("FilterValues");
+        await InvokeAsync(StateHasChanged);
     }
 
     /// <summary>Whether any filter is currently active.</summary>
@@ -674,8 +1041,20 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         foreach (var kvp in _filterValues)
         {
             var fieldValue = accessor.GetFieldValue(node.Item, kvp.Key)?.ToString();
-            if (fieldValue is null || !fieldValue.Contains(kvp.Value, StringComparison.OrdinalIgnoreCase))
-                return false;
+            if (fieldValue is null) return false;
+
+            if (kvp.Value.Contains('|'))
+            {
+                // Checkbox filter: pipe-delimited set of allowed values
+                var allowed = kvp.Value.Split('|').ToHashSet(StringComparer.OrdinalIgnoreCase);
+                if (!allowed.Contains(fieldValue)) return false;
+            }
+            else
+            {
+                // Text filter: case-insensitive contains
+                if (!fieldValue.Contains(kvp.Value, StringComparison.OrdinalIgnoreCase))
+                    return false;
+            }
         }
         return true;
     }
@@ -828,18 +1207,24 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         RebuildFlatVisible();
 
         bool shouldRender = true;
+        var taskName = _accessor!.GetTitle(node.Item);
         if (wasExpanded)
         {
+            Announce($"{taskName} collapsed");
             var args = new GanttCollapseEventArgs { Item = node.Item };
             await OnCollapse.InvokeAsync(args);
             shouldRender = args.ShouldRender;
         }
         else
         {
+            var childCount = node.Children.Count;
+            Announce($"{taskName} expanded, {childCount} child tasks");
             var args = new GanttExpandEventArgs { Item = node.Item };
             await OnExpand.InvokeAsync(args);
             shouldRender = args.ShouldRender;
         }
+
+        await FireStateChanged("ExpandedItems");
 
         if (shouldRender)
             await InvokeAsync(StateHasChanged);
@@ -859,7 +1244,7 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
                     await CommitEdit();
                     return;
                 case "Escape":
-                    CancelEdit();
+                    await CancelEdit();
                     await InvokeAsync(StateHasChanged);
                     return;
                 default:
@@ -867,6 +1252,7 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
             }
         }
 
+        var prevFocusedIndex = _focusedIndex;
         switch (e.Key)
         {
             case "ArrowDown":
@@ -903,6 +1289,13 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
             default:
                 return; // Don't re-render for unhandled keys
         }
+
+        if (_focusedIndex != prevFocusedIndex && _focusedIndex >= 0 && _focusedIndex < _flatVisible.Count)
+        {
+            var name = _accessor!.GetTitle(_flatVisible[_focusedIndex].Item);
+            Announce($"Task {name}, row {_focusedIndex + 1} of {_flatVisible.Count}");
+        }
+
         await InvokeAsync(StateHasChanged);
     }
 
@@ -999,12 +1392,19 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     // ── Inline editing ─────────────────────────────────────────────────
 
     /// <summary>Enters edit mode for the specified row, populating _editValues from current field values.</summary>
-    private void BeginEdit(int rowIndex)
+    internal async Task BeginEdit(int rowIndex)
     {
         if (rowIndex < 0 || rowIndex >= _flatVisible.Count) return;
-        _editingRowIndex = rowIndex;
-        _editValues.Clear();
         var node = _flatVisible[rowIndex];
+        if (OnTaskEdit.HasDelegate)
+        {
+            var args = new GanttEditEventArgs { Item = node.Item };
+            await OnTaskEdit.InvokeAsync(args);
+            if (args.IsCancelled) return;
+        }
+        _editingRowIndex = rowIndex;
+        _originalItem = GanttCloneHelper.DeepClone(node.Item);
+        _editValues.Clear();
         var cols = VisibleColumns;
         foreach (var col in cols)
         {
@@ -1013,32 +1413,196 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
                 _editValues[col.Field] = _accessor!.GetFieldValue(node.Item, col.Field);
             }
         }
+        await FireStateChanged("EditItem");
     }
 
     /// <summary>Writes edited values back to the item and fires OnUpdate.</summary>
-    private async Task CommitEdit()
+    internal async Task CommitEdit()
     {
         if (_editingRowIndex < 0 || _editingRowIndex >= _flatVisible.Count) return;
         var node = _flatVisible[_editingRowIndex];
+        var committedField = _editingField ?? (VisibleColumns.FirstOrDefault(c => c.Editable)?.Field ?? "field");
         foreach (var (field, value) in _editValues)
             _accessor!.SetFieldValue(node.Item, field, value);
         _editingRowIndex = -1;
+        _editingField = null;
         _editValues.Clear();
+        _originalItem = null;
         ComputeTimeline();
+        Announce($"{committedField} updated");
         await OnUpdate.InvokeAsync(new GanttUpdateEventArgs { Item = node.Item });
+        await FireStateChanged("EditItem");
         await InvokeAsync(StateHasChanged);
     }
 
     /// <summary>Discards edits and exits edit mode.</summary>
-    private void CancelEdit()
+    internal async Task CancelEdit()
     {
         _editingRowIndex = -1;
+        _editingField = null;
         _editValues.Clear();
+        _originalItem = null;
+        Announce("Edit cancelled");
+        await FireStateChanged("EditItem");
     }
 
-    /// <summary>Returns the HTML input type for a given field based on its property type.</summary>
-    private string GetInputType(string field)
+    /// <summary>Enters incell edit mode for a single cell. Only active when TreeListEditMode == Incell.</summary>
+    internal async Task BeginCellEdit(int rowIdx, string field)
     {
+        if (TreeListEditMode != GanttTreeListEditMode.Incell) return;
+        if (rowIdx < 0 || rowIdx >= _flatVisible.Count) return;
+
+        if (OnTaskEdit.HasDelegate)
+        {
+            var node = _flatVisible[rowIdx];
+            var args = new GanttEditEventArgs { Item = node.Item };
+            await OnTaskEdit.InvokeAsync(args);
+            if (args.IsCancelled) return;
+        }
+
+        // If already editing a different cell, commit the previous one first
+        if (_editingRowIndex >= 0 && (_editingRowIndex != rowIdx || _editingField != field))
+        {
+            await CommitEdit();
+        }
+
+        var isNewRow = _editingRowIndex != rowIdx;
+        _editingRowIndex = rowIdx;
+        _editingField = field;
+        var node2 = _flatVisible[rowIdx];
+        if (isNewRow)
+            _originalItem = GanttCloneHelper.DeepClone(node2.Item);
+        _editValues.Clear();
+        // Only load the single field value
+        var val = _accessor!.GetFieldValue(node2.Item, field);
+        _editValues[field] = val;
+
+        var taskName2 = _accessor!.GetTitle(node2.Item);
+        Announce($"Editing {field} for {taskName2}");
+        await FireStateChanged("EditItem");
+        await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>Opens the popup edit form for a row. Only active when TreeListEditMode == Popup.</summary>
+    internal async Task BeginPopupEdit(int rowIdx, string field)
+    {
+        if (TreeListEditMode != GanttTreeListEditMode.Popup) return;
+        if (rowIdx < 0 || rowIdx >= _flatVisible.Count) return;
+
+        var node = _flatVisible[rowIdx];
+
+        if (OnTaskEdit.HasDelegate)
+        {
+            var args = new GanttEditEventArgs { Item = node.Item };
+            await OnTaskEdit.InvokeAsync(args);
+            if (args.IsCancelled) return;
+        }
+
+        _editingRowIndex = rowIdx;
+        _editingField = field;
+        _originalItem = GanttCloneHelper.DeepClone(node.Item);
+        _editValues.Clear();
+        foreach (var col in VisibleColumns.Where(c => c.Editable && !string.IsNullOrEmpty(c.Field)))
+        {
+            _editValues[col.Field!] = _accessor!.GetFieldValue(node.Item, col.Field!);
+        }
+
+        _popupEditAnchorId = $"mar-gantt-cell-{rowIdx}-{field}";
+        _popupEditOpen = true;
+
+        await FireStateChanged("EditItem");
+        await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>Commits popup edit values and closes the popup.</summary>
+    internal async Task CommitPopupEdit()
+    {
+        _popupEditOpen = false;
+        await CommitEdit();
+    }
+
+    /// <summary>Cancels popup editing and closes the popup.</summary>
+    internal async Task CancelPopupEdit()
+    {
+        _popupEditOpen = false;
+        await CancelEdit();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>Tabs to the next editable cell in incell mode. Commits current cell first.</summary>
+    internal async Task TabToNextCell()
+    {
+        if (_editingRowIndex < 0 || _editingField is null) return;
+
+        // Snapshot the current position before CommitEdit clears it
+        var currentRowIdx = _editingRowIndex;
+        var currentField = _editingField;
+
+        // Commit current cell
+        await CommitEdit();
+
+        var cols = VisibleColumns.Where(c => c.Editable && !string.IsNullOrEmpty(c.Field)).ToList();
+        var currentIdx = cols.FindIndex(c => c.Field == currentField);
+
+        if (currentIdx >= 0 && currentIdx < cols.Count - 1)
+        {
+            // Next cell in same row
+            await BeginCellEdit(currentRowIdx, cols[currentIdx + 1].Field!);
+        }
+        else if (currentRowIdx < _flatVisible.Count - 1)
+        {
+            // First cell in next row
+            if (cols.Count > 0)
+                await BeginCellEdit(currentRowIdx + 1, cols[0].Field!);
+        }
+        // else: last cell of last row — already committed, just exit
+    }
+
+    /// <summary>Keyboard handler for incell edit inputs (Tab, Enter, Escape).</summary>
+    private async Task HandleCellKeyDown(KeyboardEventArgs e)
+    {
+        switch (e.Key)
+        {
+            case "Tab":
+                await TabToNextCell();
+                break;
+            case "Enter":
+                await CommitEdit();
+                break;
+            case "Escape":
+                await CancelEdit();
+                await InvokeAsync(StateHasChanged);
+                break;
+        }
+    }
+
+    /// <summary>Fires OnDelete with the given item when the command column Delete button is clicked.</summary>
+    private async Task HandleCommandDelete(TItem item)
+    {
+        await OnDelete.InvokeAsync(new GanttDeleteEventArgs { Item = item });
+    }
+
+    /// <summary>Fires OnCreate with a new default instance when the command column Add button is clicked.</summary>
+    private async Task HandleCommandAdd()
+    {
+        await OnCreate.InvokeAsync(new GanttCreateEventArgs { Item = Activator.CreateInstance<TItem>() });
+    }
+
+    /// <summary>Returns the HTML input type for a given field based on its property type, with optional column EditorType override.</summary>
+    private string GetInputType(string field, GanttColumn<TItem>? col = null)
+    {
+        if (col?.EditorType is { } editorType)
+        {
+            return editorType switch
+            {
+                GanttEditorType.TextBox => "text",
+                GanttEditorType.TextArea => "text", // textarea handled in markup
+                GanttEditorType.CheckBox => "checkbox",
+                GanttEditorType.DatePicker => "date",
+                GanttEditorType.NumericTextBox => "number",
+                _ => "text"
+            };
+        }
         var prop = typeof(TItem).GetProperty(field);
         if (prop is null) return "text";
         var type = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
@@ -1093,6 +1657,139 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         if (inputType == "date" && value is DateTimeOffset dtoVal)
             return dtoVal.ToString("yyyy-MM-dd");
         return value.ToString() ?? string.Empty;
+    }
+
+    // ── State API ──────────────────────────────────────────────────────
+
+    /// <summary>Returns a snapshot of the current Gantt state.</summary>
+    public GanttState<TItem> GetState()
+    {
+        return new GanttState<TItem>
+        {
+            SortDescriptor = _sortField is not null
+                ? new GanttSortDescriptor { Field = _sortField, Ascending = _sortAscending }
+                : null,
+            FilterValues = _filterValues.Count > 0
+                ? new Dictionary<string, string>(_filterValues)
+                : null,
+            ExpandedItems = _expandedIds.Count > 0
+                ? _expandedIds.ToList().AsReadOnly()
+                : null,
+            View = View,
+            EditItem = _editingRowIndex >= 0 && _editingRowIndex < _flatVisible.Count
+                ? _flatVisible[_editingRowIndex].Item
+                : default,
+            OriginalEditItem = _originalItem,
+            EditField = _editingField,
+            VisibleColumns = _columns.Any(c => !c.Visible)
+                ? _columns.Where(c => c.Visible).Select(c => c.Field).ToList()
+                : null,
+        };
+    }
+
+    /// <summary>Applies a saved state. Pass null to reset to defaults. Does not fire OnStateChanged (avoids echo loops).</summary>
+    public async Task SetStateAsync(GanttState<TItem>? state)
+    {
+        if (state is null)
+        {
+            _sortField = null;
+            _sortAscending = true;
+            _sortCycleStep = 0;
+            _filterValues.Clear();
+            _filterExpandedIds.Clear();
+            if (_editingRowIndex >= 0) await CancelEdit();
+            // Don't clear _expandedIds — let BuildTree re-seed defaults
+            _lastData = null; // Force rebuild
+            BuildTree();
+            RebuildFlatVisible();
+            ComputeTimeline();
+            await InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        // Apply sort
+        if (state.SortDescriptor is { } sort)
+        {
+            _sortField = sort.Field;
+            _sortAscending = sort.Ascending;
+            _sortCycleStep = sort.Ascending ? 0 : 1;
+        }
+        else
+        {
+            _sortField = null;
+            _sortAscending = true;
+            _sortCycleStep = 0;
+        }
+
+        // Apply filters
+        _filterValues.Clear();
+        _filterExpandedIds.Clear();
+        if (state.FilterValues is { Count: > 0 } filters)
+        {
+            foreach (var (key, value) in filters)
+                _filterValues[key] = value;
+        }
+
+        // Apply expanded items (null = keep defaults, empty = collapse all, populated = use provided)
+        if (state.ExpandedItems is not null)
+        {
+            _expandedIds.Clear();
+            foreach (var id in state.ExpandedItems)
+                _expandedIds.Add(id);
+        }
+
+        // Apply view
+        if (state.View is { } view && view != View)
+        {
+            View = view;
+            await ViewChanged.InvokeAsync(view);
+        }
+
+        // Apply visible columns
+        if (state.VisibleColumns is { } visibleCols)
+        {
+            var visibleSet = new HashSet<string>(visibleCols, StringComparer.OrdinalIgnoreCase);
+            foreach (var col in _columns)
+                col.Visible = visibleSet.Contains(col.Field ?? "");
+            _visibleColumnsCache = null;
+        }
+
+        RebuildFlatVisible();
+        ComputeTimeline();
+
+        // Apply edit state
+        if (state.EditItem is not null)
+        {
+            var editIdx = _flatVisible.FindIndex(n => ReferenceEquals(n.Item, state.EditItem));
+            if (editIdx >= 0)
+            {
+                await BeginEdit(editIdx);
+            }
+        }
+        else if (_editingRowIndex >= 0)
+        {
+            await CancelEdit();
+        }
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task FireStateChanged(string propertyName)
+    {
+        if (OnStateChanged.HasDelegate)
+        {
+            await OnStateChanged.InvokeAsync(new GanttStateEventArgs<TItem>
+            {
+                State = GetState(),
+                PropertyName = propertyName
+            });
+        }
+    }
+
+    /// <summary>Sets the aria-live announcement text. The caller is responsible for triggering StateHasChanged after this call.</summary>
+    private void Announce(string message)
+    {
+        _announcement = message;
     }
 
     public async ValueTask DisposeAsync()

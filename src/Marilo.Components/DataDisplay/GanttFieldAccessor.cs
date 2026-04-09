@@ -21,6 +21,9 @@ internal sealed class GanttFieldAccessor<TItem> where TItem : class
     public string PercentCompleteField { get; }
     public string DependsOnField { get; }
 
+    private readonly string? _itemsField;
+    private readonly string? _hasChildrenField;
+
     public GanttFieldAccessor(
         string idField,
         string parentIdField,
@@ -28,7 +31,9 @@ internal sealed class GanttFieldAccessor<TItem> where TItem : class
         string startField,
         string endField,
         string percentCompleteField,
-        string dependsOnField)
+        string dependsOnField,
+        string? itemsField = null,
+        string? hasChildrenField = null)
     {
         IdField = idField;
         ParentIdField = parentIdField;
@@ -37,6 +42,8 @@ internal sealed class GanttFieldAccessor<TItem> where TItem : class
         EndField = endField;
         PercentCompleteField = percentCompleteField;
         DependsOnField = dependsOnField;
+        _itemsField = itemsField;
+        _hasChildrenField = hasChildrenField;
     }
 
     private PropertyInfo? GetProp(string name)
@@ -109,6 +116,20 @@ internal sealed class GanttFieldAccessor<TItem> where TItem : class
             return list;
         }
         return null;
+    }
+
+    public IEnumerable<TItem>? GetItems(TItem item)
+    {
+        if (_itemsField is null) return null;
+        var val = GetFieldValue(item, _itemsField);
+        return val as IEnumerable<TItem>;
+    }
+
+    public bool GetHasChildren(TItem item)
+    {
+        if (_hasChildrenField is null) return false;
+        var val = GetFieldValue(item, _hasChildrenField);
+        return val is true;
     }
 
     private static DateTime ToDateTime(object? v)

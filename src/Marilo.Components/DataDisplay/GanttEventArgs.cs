@@ -40,3 +40,12 @@ public class GanttCollapseEventArgs
     /// <summary>Whether the component should re-render after this event.</summary>
     public bool ShouldRender { get; set; } = true;
 }
+
+/// <summary>Event args for the OnTaskEdit pre-edit event. Set IsCancelled to prevent edit mode.</summary>
+public class GanttEditEventArgs
+{
+    /// <summary>The item about to be edited.</summary>
+    public object Item { get; set; } = default!;
+    /// <summary>Set to true to cancel entering edit mode.</summary>
+    public bool IsCancelled { get; set; }
+}

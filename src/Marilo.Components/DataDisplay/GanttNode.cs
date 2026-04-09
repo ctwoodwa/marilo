@@ -16,4 +16,11 @@ internal sealed class GanttNode<TItem> where TItem : class
     public bool IsExpanded { get; set; } = true;
     public GanttNode<TItem>? Parent { get; set; }
     internal int OriginalIndex { get; set; }
+
+    /// <summary>Computed start date for summary (parent) tasks. Null if leaf.</summary>
+    internal DateTime? ComputedStart { get; set; }
+    /// <summary>Computed end date for summary (parent) tasks. Null if leaf.</summary>
+    internal DateTime? ComputedEnd { get; set; }
+    /// <summary>Computed percent complete for summary (parent) tasks. Null if leaf.</summary>
+    internal double? ComputedPercentComplete { get; set; }
 }
