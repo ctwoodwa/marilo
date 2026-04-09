@@ -131,6 +131,9 @@ public class ProviderSwitcher : IMariloCssProvider, IMariloIconProvider, IMarilo
     public string RatingClass() => Css.RatingClass();
     public string ColorPickerClass() => Css.ColorPickerClass();
     public string ColorPickerPopupClass() => Css.ColorPickerPopupClass();
+    public string ColorGradientClass() => Css.ColorGradientClass();
+    public string ColorPaletteClass() => Css.ColorPaletteClass();
+    public string FlatColorPickerClass() => Css.FlatColorPickerClass();
     public string DatePickerClass() => Css.DatePickerClass();
     public string TimePickerClass() => Css.TimePickerClass();
     public string TimePickerPopupClass() => Css.TimePickerPopupClass();
