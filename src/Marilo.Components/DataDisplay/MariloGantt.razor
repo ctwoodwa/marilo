@@ -3,7 +3,7 @@
 @inherits MariloComponentBase
 
 @{
-    var accessor = GetAccessor();
+    var accessor = _accessor!;
     var tasks = (Data ?? Enumerable.Empty<TItem>()).ToList();
     var minDate = tasks.Count > 0 ? tasks.Min(t => accessor.GetStart(t)) : DateTime.Today;
     var maxDate = tasks.Count > 0 ? tasks.Max(t => accessor.GetEnd(t)) : DateTime.Today.AddDays(30);
@@ -36,7 +36,7 @@
 
         @* Timeline *@
         <div class="mar-gantt__timeline" style="overflow-x: auto;">
-            <div class="mar-gantt__timeline-header" style="width: @(totalDays * DayWidth)px;">
+            <div class="mar-gantt__timeline-header" style="width: @((int)(totalDays * DayWidth))px;">
                 @{
                     var d = minDate;
                     while (d <= maxDate)
@@ -49,7 +49,7 @@
                 }
             </div>
 
-            <div class="mar-gantt__bars" style="width: @(totalDays * DayWidth)px;">
+            <div class="mar-gantt__bars" style="width: @((int)(totalDays * DayWidth))px;">
                 @foreach (var task in tasks)
                 {
                     var t = task;
@@ -62,11 +62,11 @@
 
                     <div class="mar-gantt__bar-row">
                         <div class="mar-gantt__bar"
-                             style="left: @(startOffset)px; width: @(barWidth)px;"
+                             style="left: @((int)startOffset)px; width: @((int)barWidth)px;"
                              @onclick="() => OnTaskClick.InvokeAsync(t)">
                             @if (pct > 0)
                             {
-                                <div class="mar-gantt__bar-progress" style="width: @(progressWidth)px;"></div>
+                                <div class="mar-gantt__bar-progress" style="width: @((int)progressWidth)px;"></div>
                             }
                         </div>
                     </div>
@@ -99,6 +99,12 @@
 
     [Parameter] public EventCallback<TItem> OnTaskClick { get; set; }
     [Parameter] public EventCallback<TItem> OnTaskEdit { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        _accessor = GetAccessor();
+        base.OnParametersSet();
+    }
 
     private GanttFieldAccessor<TItem> GetAccessor()
     {

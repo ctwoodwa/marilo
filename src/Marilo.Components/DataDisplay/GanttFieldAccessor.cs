@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -10,7 +11,7 @@ namespace Marilo.Components.DataDisplay;
 /// </summary>
 internal sealed class GanttFieldAccessor<TItem> where TItem : class
 {
-    private readonly Dictionary<string, PropertyInfo?> _cache = new();
+    private static readonly ConcurrentDictionary<string, PropertyInfo?> _cache = new();
 
     public string IdField { get; }
     public string ParentIdField { get; }
@@ -41,10 +42,8 @@ internal sealed class GanttFieldAccessor<TItem> where TItem : class
     private PropertyInfo? GetProp(string name)
     {
         if (string.IsNullOrEmpty(name)) return null;
-        if (_cache.TryGetValue(name, out var pi)) return pi;
-        pi = typeof(TItem).GetProperty(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-        _cache[name] = pi;
-        return pi;
+        return _cache.GetOrAdd(name, static n =>
+            typeof(TItem).GetProperty(n, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase));
     }
 
     private object? Read(TItem item, string name)
