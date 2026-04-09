@@ -29,7 +29,7 @@ public class MariloIconProvider : IMariloIconProvider
             IconSize.ExtraLarge => "32",
             _ => "20"
         };
-        return new MarkupString($"""<svg class="mar-icon mar-icon--{size.ToString().ToLower()}" width="{px}" height="{px}" aria-hidden="true"><use href="{SpriteUrl}#{name}"></use></svg>""");
+        return new MarkupString($"""<svg class="mar-icon mar-icon--{size.ToString().ToLower()}" width="{px}" height="{px}" aria-hidden="true" focusable="false"><use href="{SpriteUrl}#{name}"></use></svg>""");
     }
 
     /// <inheritdoc />

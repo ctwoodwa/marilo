@@ -1592,9 +1592,15 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         var newItem = Activator.CreateInstance<TItem>();
         _insertedItem = newItem;
         _parentItem = null;
-        await OnCreate.InvokeAsync(new GanttCreateEventArgs { Item = newItem });
-        _insertedItem = null;
-        _parentItem = null;
+        try
+        {
+            await OnCreate.InvokeAsync(new GanttCreateEventArgs { Item = newItem });
+        }
+        finally
+        {
+            _insertedItem = null;
+            _parentItem = null;
+        }
     }
 
     /// <summary>Returns the HTML input type for a given field based on its property type, with optional column EditorType override.</summary>

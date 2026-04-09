@@ -26,6 +26,14 @@ export function getViewport() {
 }
 
 /**
+ * Focuses the element with the given ID.
+ * @param {string} elementId - The DOM element ID to focus
+ */
+export function focusById(elementId) {
+    document.getElementById(elementId)?.focus();
+}
+
+/**
  * Disposes module resources (stateless — no-op).
  */
 export function dispose() {
