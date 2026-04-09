@@ -12,7 +12,7 @@
 |-------|-------|
 | Workspace | gap-analysis-resolution |
 | Last updated | 2026-04-09 |
-| Current phase | **Runtime validated 2026-04-09: 667/667 tests passing.** Stage 06 complete (DataGrid Ph1+Ph2+Ph3 partial + splitter + wizard + T4 B1-B7 + chart B1+B2 + editor B1). MariloMultiSelect feature-complete. |
+| Current phase | **Gantt full rewrite complete (20/20 gaps, 31 tests).** Stage 06 complete (DataGrid Ph1+Ph2+Ph3 partial + splitter + wizard + T4 B1-B7 + chart B1+B2 + editor B1+B2a + **Gantt full rewrite**). MariloMultiSelect feature-complete. |
 
 ## Pipeline Status
 
@@ -68,6 +68,12 @@
 **DataGrid Phase 3 (2 of 4 C# gaps)** -- PARTIAL COMPLETE
 - [x] 03-resolution through 06-validate (CheckBoxList filter + Cell selection; 10 tests, 557/557 full suite)
 - Deferred: Frozen columns (JS sticky), Row drag-drop (JS events)
+
+**Gantt full rewrite (20 gaps: 20 resolved)** -- COMPLETE
+
+- [x] 01-intake (inventory imported 2026-04-03)
+- [x] 03-resolution through 06-validate (full generic rewrite via subagent-driven dev; 24 commits, 31 bUnit tests)
+- Closure report: `stages/06-validate/output/gap-gantt-closure-report.md`
 
 ## Next Actions
 

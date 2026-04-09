@@ -85,6 +85,7 @@ All implementations are independent (no Telerik dependency), use MIT/Apache-2.0-
 | datagrid-phase1 | 18 | 18 | Stage 06 closed (2026-04-04); 9 resolved, 1 deferred; runtime test pending |
 | datagrid-phase2 | 15 | 15 | Stage 06 closed (2026-04-04); 6 resolved (validation, composite filters, auto-gen attrs, aggregates, export, CancellationToken); runtime test pending |
 | datagrid-phase3 | 10 | 10 | Stage 06 closed (2026-04-05); 2 resolved (CheckBoxList filter, cell selection); 557/557 full suite |
+| gantt-full | 31 | 31/31 ✅ | Stage 06 closed (2026-04-09); 20/20 gaps resolved (full generic rewrite); subagent-driven dev; runtime pending |
 | datagrid-cdw | 0 | 0 | Per-feature checklist ready for CDW handoff (2026-04-03) |
 
 Canonical test evidence: `stages/06-validate/output/gap-*-closure-report.md`

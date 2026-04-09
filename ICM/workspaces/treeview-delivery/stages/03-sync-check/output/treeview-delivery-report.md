@@ -81,18 +81,23 @@ Rationale: The source implementation and test coverage are solid (67/67 passing,
 
 ### Non-Blocking (AMBER items)
 
-| # | Item | Owner | Type |
-|---|------|-------|------|
-| 1 | Document 14 undocumented parameters in spec (SPEC-001–014) | CDW (spec update) | Spec |
-| 2 | Resolve 7 naming mismatches — decide canonical names (SPEC-028–034) | CDW + gap-analysis-resolution | Spec + Code |
-| 3 | Mark 13 spec-ahead features as "Planned" or remove from spec (SPEC-015–027) | CDW (spec update) | Spec |
-| 4 | Version the spec to align with gap workspace phase tracking | CDW (spec update) | Spec |
-| 5 | Add empty-state demo scenario (P3) | CDW Stage 02 | Demo |
-| 6 | Implement Gap 18 (Virtualization) — currently deferred | gap-analysis-resolution | Code |
+| # | Item | Owner | Type | Decision (2026-04-09) |
+|---|------|-------|------|----------------------|
+| 1 | Document 14 undocumented parameters in spec (SPEC-001–014) | CDW (spec update) | Spec | — |
+| 2 | Rename 7 source parameters to match Telerik-canonical spec names (SPEC-028–034) | gap-analysis-resolution | Code | Telerik naming is canonical; code must rename to match spec (e.g., `EnableDragDrop` → `Draggable`, `AllowCheckChildren` → `CheckChildren`) |
+| 3 | 13 spec-ahead features marked "Planned" with gap ID links (SPEC-015–027) | CDW (spec update) | Spec | DONE — updated in spec gap list 2026-04-09 |
+| 4 | Version the spec to align with gap workspace phase tracking | CDW (spec update) | Spec | — |
+| 5 | Add empty-state demo scenario (P3) | CDW Stage 02 | Demo | — |
+| 6 | Implement Gap 18 (Virtualization) — currently deferred | gap-analysis-resolution | Code | — |
 
 ### Blocking (none)
 
 No blocking items. All failures are spec/documentation gaps that don't prevent the component from being used.
+
+### Decisions Recorded
+
+- **Telerik naming is canonical** (2026-04-09): Specs were imported from Telerik for API parity. When source and spec names differ, the code should be renamed to match the spec. Recorded in `.wolf/cerebrum.md`.
+- **Spec-ahead items stay as Planned** (2026-04-09): Keep in specs with "Planned" label and gap ID link. P2/P3 priority so they don't block delivery gates. Only remove if no realistic roadmap.
 
 ---
 
