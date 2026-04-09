@@ -18,6 +18,12 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     private List<GanttNode<TItem>> _flatVisible = new();
     private readonly HashSet<object> _expandedIds = new();
 
+    // ── Sort state ────────────────────────────────────────────────────
+    private string? _sortField;
+    private bool _sortAscending = true;
+    /// <summary>Tri-state cycle counter: 0 = first click (asc), 1 = second (desc), 2 = third (clear).</summary>
+    private int _sortCycleStep;
+
 #pragma warning disable CS0649 // Assigned in D1 phase (JS interop)
     private IJSObjectReference? _jsModule;
     private DotNetObjectReference<MariloGantt<TItem>>? _dotNetRef;
@@ -498,8 +504,81 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     private bool IsExpanded(GanttNode<TItem> node)
         => node.Id is null || _expandedIds.Contains(node.Id);
 
+    /// <summary>
+    /// Toggles sort on the given field. Cycle: ascending -> descending -> unsorted.
+    /// Called from clickable column headers.
+    /// </summary>
+    internal void SortBy(string field)
+    {
+        if (string.IsNullOrEmpty(field)) return;
+
+        if (_sortField == field)
+        {
+            _sortCycleStep++;
+            if (_sortCycleStep == 1)
+            {
+                // Second click: descending
+                _sortAscending = false;
+            }
+            else
+            {
+                // Third click: clear sort
+                _sortField = null;
+                _sortAscending = true;
+                _sortCycleStep = 0;
+            }
+        }
+        else
+        {
+            // New field: ascending
+            _sortField = field;
+            _sortAscending = true;
+            _sortCycleStep = 0;
+        }
+
+        RebuildFlatVisible();
+        StateHasChanged();
+    }
+
+    /// <summary>
+    /// Sorts sibling groups recursively by the current sort field, preserving hierarchy.
+    /// Children stay under their parent; only the order among siblings changes.
+    /// </summary>
+    private void ApplyHierarchicalSort()
+    {
+        if (_sortField is null || _accessor is null) return;
+
+        var field = _sortField;
+        var ascending = _sortAscending;
+        var accessor = _accessor;
+
+        SortSiblings(_roots, field, ascending, accessor);
+    }
+
+    private static void SortSiblings(List<GanttNode<TItem>> siblings, string field, bool ascending, GanttFieldAccessor<TItem> accessor)
+    {
+        if (siblings.Count <= 1) return;
+
+        siblings.Sort((a, b) =>
+        {
+            var va = accessor.GetFieldValue(a.Item, field);
+            var vb = accessor.GetFieldValue(b.Item, field);
+            int cmp = Comparer<object>.Default.Compare(va, vb);
+            return ascending ? cmp : -cmp;
+        });
+
+        foreach (var node in siblings)
+        {
+            if (node.Children.Count > 0)
+                SortSiblings(node.Children, field, ascending, accessor);
+        }
+    }
+
     private void RebuildFlatVisible()
     {
+        // Apply hierarchical sort before flattening
+        ApplyHierarchicalSort();
+
         var list = new List<GanttNode<TItem>>();
         var visited = new HashSet<GanttNode<TItem>>();
         var stack = new Stack<GanttNode<TItem>>();

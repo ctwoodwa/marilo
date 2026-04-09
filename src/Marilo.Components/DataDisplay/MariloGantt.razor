@@ -34,16 +34,30 @@
                 {
                     @foreach (var col in cols)
                     {
+                        var c = col;
                         var headerStyle = "";
-                        if (!string.IsNullOrEmpty(col.Width)) headerStyle += $"width:{col.Width};";
-                        <div class="mar-gantt__header-cell @col.HeaderClass" style="@headerStyle">
-                            @if (col.HeaderTemplate is not null)
+                        if (!string.IsNullOrEmpty(c.Width)) headerStyle += $"width:{c.Width};";
+                        var isSorted = _sortField is not null && _sortField == c.Field;
+                        var headerCssClass = "mar-gantt__header-cell"
+                            + (c.Sortable ? " mar-gantt__header--sortable" : "")
+                            + (isSorted ? " mar-gantt__header--sorted" : "")
+                            + (!string.IsNullOrEmpty(c.HeaderClass) ? $" {c.HeaderClass}" : "");
+                        <div class="@headerCssClass"
+                             style="@headerStyle"
+                             role="columnheader"
+                             aria-sort="@(isSorted ? (_sortAscending ? "ascending" : "descending") : null)"
+                             @onclick="() => { if (c.Sortable) SortBy(c.Field); }">
+                            @if (c.HeaderTemplate is not null)
                             {
-                                @col.HeaderTemplate
+                                @c.HeaderTemplate
                             }
                             else
                             {
-                                <span>@col.DisplayTitle</span>
+                                <span>@c.DisplayTitle</span>
+                                @if (isSorted)
+                                {
+                                    <span class="mar-gantt__sort-indicator">@(_sortAscending ? "▲" : "▼")</span>
+                                }
                             }
                         </div>
                     }
