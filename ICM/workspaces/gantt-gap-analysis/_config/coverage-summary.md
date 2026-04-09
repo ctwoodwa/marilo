@@ -11,4 +11,4 @@
 | accessibility | 23 | 0 | 0 | N/A | Intake + prioritize complete |
 | **Totals** | **~107 unique** | **0** | **0** | **N/A** | **Stage 02 complete** |
 
-Next: Stage 05 (implementation) — start with Phase A spec corrections, then Phase B state API.
+Pipeline COMPLETE. ~80 gaps resolved (two passes). ~27 deferred (JS interop, dependency model, popup edit). Closure report: output/stage-06/gantt-closure-report.md

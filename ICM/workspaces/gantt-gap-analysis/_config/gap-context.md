@@ -6,9 +6,9 @@
 |-------|-------|
 | Component | MariloGantt |
 | Scope | systematic |
-| Active phase | Stage 05 complete — Phase A+B+C+D done, awaiting Stage 06 validation |
+| Active phase | Stage 06 complete — closure report written |
 | Total gaps identified | ~107 unique (134 raw across 8 areas) |
-| Total gaps resolved | 0 |
+| Total gaps resolved | ~80 (Tier 1+2 spec, Phase B+C+D+E code) |
 | Test coverage status | Not started |
 | Delivery workspace | ../gantt-delivery/ |
 

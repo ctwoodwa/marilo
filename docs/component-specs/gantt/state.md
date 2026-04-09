@@ -76,13 +76,13 @@ Properties available in Phase 1:
 
 * `Rebind()` — `public async Task` — Refreshes the Gantt's internal tree from the current `Data` collection. Call this after mutating `Data` in place (e.g., adding or removing items without reassigning the collection reference). `Rebind()` also triggers timeline recomputation.
 
-## Phase 2 — Planned
+## Phase 2 — Partial Implementation
 
-The following properties and features are planned for future implementation and should NOT be used:
+The following properties and features have been partially implemented or are planned for future implementation:
 
-* **Editing State** — `EditItem`, `OriginalEditItem`, `InsertedItem`, `EditField`, `ParentItem` properties. Support for capturing and restoring item editing or insertion state.
+* **Editing State** — `EditItem` and `EditField` properties are now implemented for incell and inline editing. `OriginalEditItem`, `InsertedItem`, and `ParentItem` remain planned for future implementation. Support for capturing and restoring item editing or insertion state.
 
-* **TreeList Width** — `TreeListWidth` property for saving and restoring the width of the task list panel. Planned when splitter resize support is implemented.
+* **Task List Width** — `TaskListWidth` property for saving and restoring the width of the task list panel. Planned when splitter resize support is implemented.
 
 * **Column States** — `ColumnStates` property for tracking column visibility, width, and reorder. Planned when column reorder and resize features are implemented.
 
@@ -143,11 +143,11 @@ The following state information is available now:
 
 * **View** - `View` — The current [`GanttView`](slug:gantt-timeline-views) (Day, Week, Month, etc.).
 
-### Phase 2 — Planned
+### Phase 2 — Partial Implementation
 
-The following state information will be available in future releases:
+The following state information is being implemented in releases:
 
-* **Editing** - *Planned* — Whether the user is inserting or editing an item. Properties will include `EditItem`, `OriginalEditItem`, `InsertedItem`, `EditField`, and `ParentItem`. The `OriginalEditItem` will carry the original model without user modifications for comparison.
+* **Editing** - *Partially Implemented* — Whether the user is inserting or editing an item. Properties `EditItem` and `EditField` are now implemented. `OriginalEditItem`, `InsertedItem`, and `ParentItem` remain planned. The `OriginalEditItem` will carry the original model without user modifications for comparison.
 
 * **TreeList Width** - *Planned* — The width of the Gantt TreeList panel. This will be available once splitter resize is implemented.
 
@@ -1074,7 +1074,7 @@ The `ColumnStates` property of the `GanttState` object provides you with informa
 | `Index` | `int` | the current index of the column based on the position the user chose |
 | `Id` | `string` | the Id of the column if it is set |
 | `Field` | `string` | the field of the column |
-| `Visible` | `bool?` | whether the column is hidden or not |
+| `Visible` | `bool` | whether the column is hidden or not (default: true) |
 | `Width` | `string` | the width of the column if it is set |
 
 By looping over the `ColumnStates` collection you can know what the user sees. By default, the order of the columns in the state collection will remain the same but their `Index` value will change to indicate their position. You can, for example, sort by the index and filter by the visibility of the columns to get the approximate view the user sees.

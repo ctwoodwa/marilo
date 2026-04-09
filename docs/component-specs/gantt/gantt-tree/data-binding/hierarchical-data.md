@@ -17,6 +17,12 @@ Hierarchical data means that the collection of child items is provided in a fiel
 
 If there are items for a certain node, it will have an expand icon. The `HasChildren` field can override this, however, but it is not required for hierarchical data binding.
 
+## ItemsField and HasChildrenField Parameters
+
+Set `ItemsField` to the property name that contains child items (e.g., `ItemsField="Children"`). When set, the Gantt uses hierarchical data binding — items contain their children directly, and `ParentIdField` is ignored.
+
+Set `HasChildrenField` to show an expand arrow for items that have children not yet loaded (lazy loading). The `OnExpand` event fires when the user expands such an item — load the children and call `Rebind()`.  
+
 >caption Example of hierarchical data binding
 
 ````RAZOR

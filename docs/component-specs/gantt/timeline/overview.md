@@ -154,6 +154,7 @@ You can control the rendering of the tasks and their Tooltip in the Timeline thr
 
 * `RowHeight` affects the vertical positioning of timeline bars. Each bar is centered within its row at `rowIndex * RowHeight`.
 * `ViewChanged` fires when the user switches views via the view selector toolbar. See also [Events](slug:gantt-events).
+* When a task's Start equals its End (zero-duration), the Gantt renders it as a milestone marker (diamond ◆) instead of a bar.
 
 ## See Also
 

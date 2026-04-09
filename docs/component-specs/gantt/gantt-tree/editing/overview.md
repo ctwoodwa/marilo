@@ -29,7 +29,7 @@ Sections in this article:
 The Gantt Tree offers several editing modes with different user experience. Set the `TreeListEditMode` property to a member of the `GanttTreeListEditMode` enum:
 
 * `None` - The built-in [`Add` and `Edit` commands](slug:gantt-columns-command#built-in-commands) don't work in this mode.
-* `Incell` - the default `TreeListEditMode` value. [Edit a single cell](slug:gant-tree-incell-editing) by clicking on it or tabbing
+* `Incell` - the default `TreeListEditMode` value. [Edit a single cell](slug:gant-tree-incell-editing) by clicking on it or tabbing. Click a cell to edit just that cell. Press Tab to move to the next editable cell, Enter to commit, or Escape to cancel. Unlike Inline mode, only one cell is edited at a time.
 * `Inline` - [edit a row](slug:gant-tree-inline-editing) by clicking on an [Edit command button](slug:gantt-columns-command)
 * `Popup` - [edit a row in a popup form](slug:gant-tree-popup-editing) by clicking on an Edit button
 

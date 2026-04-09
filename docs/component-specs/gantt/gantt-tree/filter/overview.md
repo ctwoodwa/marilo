@@ -18,7 +18,7 @@ To enable filtering, set the grid's `FilterMode` property to one of the followin
 
 * [`Marilo.Blazor.GanttFilterMode.FilterRow`](slug:gantt-filter-row) - a row of filter options is rendered below the column headers
 
-* [`Marilo.Blazor.GanttFilterMode.FilterMenu`](slug:gantt-filter-menu) - the column headers render a button that shows a popup with filtering options
+* [`Marilo.Blazor.GanttFilterMode.FilterMenu`](slug:gantt-filter-menu) - the column headers render a funnel icon in each filterable column header. Clicking the icon opens a popup with a text input, Filter button, and Clear button. Set `FilterMode="GanttFilterMode.FilterMenu"` to enable.
 
 The behavior of the filter input and the available filter operators will depend on the column data type. For example, a `boolean` field will only have the options `"is true"` and `"is false"` and will not have operators like `"contains"` or `"greater than"`.
 

@@ -112,6 +112,11 @@ The Gantt provides accessible labels for interactive elements:
 * **Expand/collapse buttons** — Chevron buttons use `aria-label="Expand {title}"` or `aria-label="Collapse {title}"` based on the current expanded state of the row.
 * **Timeline bars** — Each timeline bar uses `aria-label="{title}: {start:M/d/yyyy} – {end:M/d/yyyy}"` to describe the task to screen readers.
 
+## Motion and High Contrast
+
+* **prefers-reduced-motion** — All animations and transitions are disabled when the user has reduced motion enabled.
+* **forced-colors (high contrast)** — Task bars, milestones, and active filter indicators use system colors.
+
 ## Keyboard Navigation
 
 The Gantt tree list supports full keyboard navigation via a roving `tabindex` pattern.

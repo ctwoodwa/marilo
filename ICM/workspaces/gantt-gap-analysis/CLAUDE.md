@@ -1,8 +1,8 @@
 # Gap Analysis -- MariloGantt
 
-**Status:** Stage 05 complete -- all implementation phases done
+**Status:** COMPLETE — all 6 stages done
 
-Phase A: 24 spec corrections/additions. Phase B: GanttState API. Phase C: CommandColumn, Sortable/FilterMode, percent bar, edit enums, date header templates, hover delete. Phase D: Skip nav links. D2 (reduced-motion) deferred — no Gantt SCSS file exists. Next: Stage 06 validation.
+Stages 01-06 complete. ~60 gaps resolved (spec corrections, documentation, code implementations). ~47 gaps deferred to next phase (P3 features, dependency component model, drag interop). Build passes, 648 tests pass. Closure report at output/stage-06/gantt-closure-report.md.
 
 ## Folder Map
 
