@@ -1,6 +1,7 @@
 @inherits MariloComponentBase
 @implements IAsyncDisposable
 @inject IJSRuntime JS
+@using Marilo.Components.Internal.Interop
 
 @if (Visible)
 {
@@ -129,6 +130,12 @@
 }
 
 @code {
+    // Shared interop services — injected for future migration from inline JS to shared modules.
+    // These will replace the per-component JS in GetWindowScript() in a subsequent pass.
+    [Inject] private IElementMeasurementService? MeasurementService { get; set; }
+    [Inject] private IDragService? SharedDragService { get; set; }
+    [Inject] private IResizeInteractionService? SharedResizeService { get; set; }
+
     private readonly string _titleId = $"mar-window-title-{Guid.NewGuid():N}";
     private ElementReference _windowRef;
     private ElementReference _titleBarRef;
