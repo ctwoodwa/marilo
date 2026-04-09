@@ -1,4 +1,5 @@
 @inherits MariloComponentBase
+@inject IJSRuntime JS
 
 <div class="@CombineClasses(CssProvider.DatePickerClass()) mar-date-range-picker @(_isPopupOpen ? "mar-date-range-picker--open" : "") @SizeClass @RoundedClass @FillModeClass"
      style="@CombineStyles()"
@@ -12,7 +13,7 @@
         </span>
 
         @* Start input *@
-        <input id="@StartId"
+        <input id="@_startInputId"
                type="text"
                class="@CssProvider.TextBoxClass(false, !Enabled) mar-date-range-picker__input"
                value="@FormatDate(StartValue)"
@@ -32,7 +33,7 @@
         <span class="mar-date-range-picker__separator" aria-hidden="true">&ndash;</span>
 
         @* End input *@
-        <input id="@EndId"
+        <input id="@_endInputId"
                type="text"
                class="@CssProvider.TextBoxClass(false, !Enabled) mar-date-range-picker__input"
                value="@FormatDate(EndValue)"
@@ -211,6 +212,11 @@
     /// <summary>Fires when the calendar view level changes.</summary>
     [Parameter] public EventCallback<CalendarView> ViewChanged { get; set; }
 
+    // ─── Computed Input IDs ──────────────────────────────────────────────────
+
+    private string _startInputId => StartId ?? $"mar-drp-start-{_popupId}";
+    private string _endInputId => EndId ?? $"mar-drp-end-{_popupId}";
+
     // ─── Private State ────────────────────────────────────────────────────────
 
     private bool _isPopupOpen;
@@ -285,6 +291,12 @@
 
     /// <summary>Re-renders the calendar popup.</summary>
     public void Refresh() => StateHasChanged();
+
+    /// <summary>Programmatically focuses the start-date input element via JS interop.</summary>
+    public async Task FocusStartAsync() => await JS.InvokeVoidAsync("eval", $"document.getElementById('{_startInputId}')?.focus()");
+
+    /// <summary>Programmatically focuses the end-date input element via JS interop.</summary>
+    public async Task FocusEndAsync() => await JS.InvokeVoidAsync("eval", $"document.getElementById('{_endInputId}')?.focus()");
 
     // ─── Popup Handling ───────────────────────────────────────────────────────
 
