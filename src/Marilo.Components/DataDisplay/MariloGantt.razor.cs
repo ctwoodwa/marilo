@@ -46,16 +46,19 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IAsyncDisposable
     {
         var prevKey = _accessorKey;
         _accessor = GetAccessor();
-        var newCount = (Data ?? Enumerable.Empty<TItem>()).Count();
         var keyChanged = prevKey != _accessorKey;
         var refChanged = !ReferenceEquals(_lastData, Data);
-        var skipEmpty = !keyChanged && newCount == 0 && _lastDataCount == 0;
-        if ((refChanged || keyChanged) && !skipEmpty)
+        if (refChanged || keyChanged)
         {
-            _lastData = Data;
-            _lastDataCount = newCount;
-            BuildTree();
-            RebuildFlatVisible();
+            var newCount = (Data ?? Enumerable.Empty<TItem>()).Count();
+            var skipEmpty = !keyChanged && newCount == 0 && _lastDataCount == 0;
+            if (!skipEmpty)
+            {
+                _lastData = Data;
+                _lastDataCount = newCount;
+                BuildTree();
+                RebuildFlatVisible();
+            }
         }
         base.OnParametersSet();
     }
@@ -67,6 +70,8 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IAsyncDisposable
         _lastDataCount = -1;
         BuildTree();
         RebuildFlatVisible();
+        _lastData = Data;
+        _lastDataCount = (Data ?? Enumerable.Empty<TItem>()).Count();
         await InvokeAsync(StateHasChanged);
     }
 
@@ -199,7 +204,7 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IAsyncDisposable
         if (_jsModule is not null)
         {
             try { await _jsModule.DisposeAsync(); }
-            catch (JSDisconnectedException) { }
+            catch (Exception ex) when (ex is JSDisconnectedException or TaskCanceledException or ObjectDisposedException) { }
         }
         _dotNetRef?.Dispose();
     }
