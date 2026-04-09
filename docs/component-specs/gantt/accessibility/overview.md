@@ -29,7 +29,7 @@ The following example demonstrates the [accessibility compliance of the Gantt co
               Height="600px"
               IdField="Id"
               ParentIdField="ParentId"
-              Navigable="true"
+              @* Keyboard navigation is built-in and always active. *@
               ColumnReorderable="true"
               Sortable="true"
               ColumnResizable="true"

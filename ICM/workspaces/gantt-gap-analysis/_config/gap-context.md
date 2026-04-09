@@ -6,7 +6,7 @@
 |-------|-------|
 | Component | MariloGantt |
 | Scope | systematic |
-| Active phase | Stage 05 in progress — Phase A+B complete, Phase C+D pending |
+| Active phase | Stage 05 complete — Phase A+B+C+D done, awaiting Stage 06 validation |
 | Total gaps identified | ~107 unique (134 raw across 8 areas) |
 | Total gaps resolved | 0 |
 | Test coverage status | Not started |

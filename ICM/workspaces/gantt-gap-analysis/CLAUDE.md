@@ -1,8 +1,8 @@
 # Gap Analysis -- MariloGantt
 
-**Status:** Stage 05 in progress -- Phase A (spec corrections) and Phase B (state API) complete
+**Status:** Stage 05 complete -- all implementation phases done
 
-Phase A: 12 Tier 1 spec corrections + 12 Tier 2 documentation additions applied across ~20 spec files. Phase B: Minimal GanttState(TItem) API implemented in gantt-rewrite worktree + state.md spec updated. Next: Phase C (feature implementations) and Phase D (accessibility).
+Phase A: 24 spec corrections/additions. Phase B: GanttState API. Phase C: CommandColumn, Sortable/FilterMode, percent bar, edit enums, date header templates, hover delete. Phase D: Skip nav links. D2 (reduced-motion) deferred — no Gantt SCSS file exists. Next: Stage 06 validation.
 
 ## Folder Map
 
