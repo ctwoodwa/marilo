@@ -46,8 +46,14 @@
     }
     <div class="mar-gantt__container">
         @* Task list *@
-        <div class="mar-gantt__tasklist" style="width: @(TaskListWidth)px;">
-            <div class="mar-gantt__tasklist-header">
+        <div class="mar-gantt__tasklist"
+             style="width: @(TaskListWidth)px;"
+             role="treegrid"
+             aria-label="Task list"
+             tabindex="0"
+             @onkeydown="HandleKeyDown"
+             @onkeydown:preventDefault="true">
+            <div class="mar-gantt__tasklist-header" role="row">
                 @if (useColumns)
                 {
                     @foreach (var col in cols)
@@ -82,7 +88,7 @@
                 }
                 else
                 {
-                    <span>Task</span>
+                    <span role="columnheader">Task</span>
                 }
             </div>
             @if (useColumns && cols.Any(c => c.Filterable))
@@ -108,15 +114,26 @@
                     }
                 </div>
             }
-            @foreach (var node in visible)
+            @for (var idx = 0; idx < visible.Count; idx++)
             {
-                var n = node;
+                var n = visible[idx];
+                var rowIdx = idx;
                 var hasChildren = n.Children.Count > 0;
                 var expanded = IsExpanded(n);
+                var isFocused = rowIdx == _focusedIndex;
+                var siblingCount = GetSiblingCount(n);
+                var posInSiblings = GetPositionInSiblings(n);
+                var rowClass = "mar-gantt__task-row" + (isFocused ? " mar-gantt__task-row--focused" : "");
 
                 @if (useColumns)
                 {
-                    <div class="mar-gantt__task-row"
+                    <div class="@rowClass"
+                         role="row"
+                         aria-level="@(n.Depth + 1)"
+                         aria-setsize="@siblingCount"
+                         aria-posinset="@posInSiblings"
+                         aria-expanded="@(hasChildren ? (expanded ? "true" : "false") : null)"
+                         tabindex="@(isFocused ? 0 : -1)"
                          @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
                         @foreach (var col in cols)
                         {
@@ -124,7 +141,7 @@
                             if (!string.IsNullOrEmpty(col.Width)) cellStyle += $"width:{col.Width};";
                             if (!string.IsNullOrEmpty(col.TextAlign)) cellStyle += $"text-align:{col.TextAlign};";
 
-                            <div class="mar-gantt__task-cell" style="@cellStyle">
+                            <div class="mar-gantt__task-cell" role="gridcell" style="@cellStyle">
                                 @if (col.Expandable)
                                 {
                                     var pad = (int)(n.Depth * 16 + (hasChildren ? 0 : 16));
@@ -134,7 +151,7 @@
                                             <button type="button"
                                                     class="mar-gantt__chevron"
                                                     aria-expanded="@(expanded ? "true" : "false")"
-                                                    aria-label="@(expanded ? "Collapse" : "Expand")"
+                                                    aria-label="@(expanded ? $"Collapse {accessor.GetTitle(n.Item)}" : $"Expand {accessor.GetTitle(n.Item)}")"
                                                     @onclick:stopPropagation="true"
                                                     @onclick="() => ToggleExpanded(n)">
                                                 @(expanded ? "▼" : "▶")
@@ -168,7 +185,13 @@
                 else
                 {
                     var pad = (int)(n.Depth * 16 + (hasChildren ? 0 : 16));
-                    <div class="mar-gantt__task-row"
+                    <div class="@rowClass"
+                         role="row"
+                         aria-level="@(n.Depth + 1)"
+                         aria-setsize="@siblingCount"
+                         aria-posinset="@posInSiblings"
+                         aria-expanded="@(hasChildren ? (expanded ? "true" : "false") : null)"
+                         tabindex="@(isFocused ? 0 : -1)"
                          style="padding-left: @(pad)px;"
                          @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
                         @if (hasChildren)
@@ -176,7 +199,7 @@
                             <button type="button"
                                     class="mar-gantt__chevron"
                                     aria-expanded="@(expanded ? "true" : "false")"
-                                    aria-label="@(expanded ? "Collapse" : "Expand")"
+                                    aria-label="@(expanded ? $"Collapse {accessor.GetTitle(n.Item)}" : $"Expand {accessor.GetTitle(n.Item)}")"
                                     @onclick:stopPropagation="true"
                                     @onclick="() => ToggleExpanded(n)">
                                 @(expanded ? "▼" : "▶")
@@ -224,9 +247,12 @@
                         var startOffset = GetPixelOffset(start);
                         var barWidth = GetBarWidth(start, end);
                         var progressWidth = barWidth * (pct / 100.0);
+                        var barTitle = accessor.GetTitle(n.Item);
 
                         <div class="mar-gantt__bar-row">
                             <div class="mar-gantt__bar"
+                                 role="img"
+                                 aria-label="@($"{barTitle}: {start:M/d/yyyy} – {end:M/d/yyyy}")"
                                  style="left: @((int)startOffset)px; width: @((int)barWidth)px;"
                                  @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
                                 @if (TaskTemplate is not null)
@@ -298,9 +324,12 @@
                         var startOffset = GetPixelOffset(start);
                         var barWidth = GetBarWidth(start, end);
                         var progressWidth = barWidth * (pct / 100.0);
+                        var barTitle = accessor.GetTitle(n.Item);
 
                         <div class="mar-gantt__bar-row">
                             <div class="mar-gantt__bar"
+                                 role="img"
+                                 aria-label="@($"{barTitle}: {start:M/d/yyyy} – {end:M/d/yyyy}")"
                                  style="left: @((int)startOffset)px; width: @((int)barWidth)px;"
                                  @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
                                 @if (TaskTemplate is not null)

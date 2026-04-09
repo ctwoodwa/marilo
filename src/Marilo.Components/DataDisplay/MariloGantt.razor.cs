@@ -1,6 +1,7 @@
 using System.Globalization;
 using Marilo.Core.Base;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 
 namespace Marilo.Components.DataDisplay;
@@ -22,6 +23,9 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     private record DependencyLine(double X1, double Y1, double X2, double Y2);
     private List<DependencyLine> _dependencyLines = new();
     private readonly string _instanceId = Guid.NewGuid().ToString("N")[..8];
+
+    // ── Keyboard navigation ─────────────────────────────────────────
+    private int _focusedIndex;
 
     // ── Filter state ──────────────────────────────────────────────────
     private readonly Dictionary<string, string> _filterValues = new();
@@ -760,6 +764,10 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
             }
         }
         _flatVisible = list;
+
+        // Clamp focused index after visibility changes
+        if (_focusedIndex >= _flatVisible.Count)
+            _focusedIndex = Math.Max(0, _flatVisible.Count - 1);
     }
 
     private void ComputeDependencyLines()
@@ -821,6 +829,61 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
 
         if (shouldRender)
             await InvokeAsync(StateHasChanged);
+    }
+
+    // ── Keyboard navigation handler ─────────────────────────────────
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (_flatVisible.Count == 0) return;
+
+        switch (e.Key)
+        {
+            case "ArrowDown":
+                _focusedIndex = Math.Min(_focusedIndex + 1, _flatVisible.Count - 1);
+                break;
+            case "ArrowUp":
+                _focusedIndex = Math.Max(_focusedIndex - 1, 0);
+                break;
+            case "ArrowRight":
+                var rightNode = _flatVisible[_focusedIndex];
+                if (rightNode.Children.Count > 0 && !IsExpanded(rightNode))
+                    await ToggleExpanded(rightNode);
+                else if (rightNode.Children.Count > 0 && IsExpanded(rightNode))
+                    _focusedIndex = Math.Min(_focusedIndex + 1, _flatVisible.Count - 1);
+                break;
+            case "ArrowLeft":
+                var leftNode = _flatVisible[_focusedIndex];
+                if (leftNode.Children.Count > 0 && IsExpanded(leftNode))
+                    await ToggleExpanded(leftNode);
+                else if (leftNode.Parent is not null)
+                    _focusedIndex = _flatVisible.IndexOf(leftNode.Parent);
+                break;
+            case "Home":
+                _focusedIndex = 0;
+                break;
+            case "End":
+                _focusedIndex = _flatVisible.Count - 1;
+                break;
+            case "Enter":
+            case " ":
+                if (_focusedIndex >= 0 && _focusedIndex < _flatVisible.Count)
+                    await OnTaskClick.InvokeAsync(_flatVisible[_focusedIndex].Item);
+                break;
+            default:
+                return; // Don't re-render for unhandled keys
+        }
+        await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>Returns the number of siblings (including this node) at the same level under the same parent.</summary>
+    private int GetSiblingCount(GanttNode<TItem> node)
+        => node.Parent is not null ? node.Parent.Children.Count : _roots.Count;
+
+    /// <summary>Returns the 1-based position of this node among its siblings.</summary>
+    private int GetPositionInSiblings(GanttNode<TItem> node)
+    {
+        var siblings = node.Parent is not null ? node.Parent.Children : _roots;
+        return siblings.IndexOf(node) + 1;
     }
 
     public async ValueTask DisposeAsync()
