@@ -4,13 +4,13 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.2.1"/>
-    <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.2.1"/>
-    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.2.1"/>
-    <PackageVersion Include="Aspire.Hosting.Redis" Version="13.2.1"/>
-    <PackageVersion Include="Aspire.Hosting.Testing" Version="13.2.1"/>
-    <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.2.1"/>
-    <PackageVersion Include="Aspire.StackExchange.Redis.OutputCaching" Version="13.2.1"/>
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.2.2"/>
+    <PackageVersion Include="Aspire.Hosting.PostgreSQL" Version="13.2.2"/>
+    <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="13.2.2"/>
+    <PackageVersion Include="Aspire.Hosting.Redis" Version="13.2.2"/>
+    <PackageVersion Include="Aspire.Hosting.Testing" Version="13.2.2"/>
+    <PackageVersion Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" Version="13.2.2"/>
+    <PackageVersion Include="Aspire.StackExchange.Redis.OutputCaching" Version="13.2.2"/>
     <PackageVersion Include="bunit" Version="2.7.2"/>
     <PackageVersion Include="Microsoft.AspNetCore.Components.Analyzers" Version="10.0.5"/>
     <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="10.0.5"/>
@@ -21,8 +21,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.5"/>
     <PackageVersion Include="Microsoft.AspNetCore.SignalR.Client" Version="10.0.5"/>
     <PackageVersion Include="Microsoft.AspNetCore.SignalR.StackExchangeRedis" Version="10.0.5"/>
-    
-    <PackageVersion Include="Markdig" Version="0.39.1"/>
+    <PackageVersion Include="Markdig" Version="1.1.2"/>
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.5"/>
     <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.5"/>
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.5"/>
@@ -37,8 +36,8 @@
     <PackageVersion Include="NBomber.Http" Version="6.2.0"/>
     <PackageVersion Include="NBomber" Version="6.3.0"/>
     <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1"/>
-    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.1"/>
-    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.15.1"/>
+    <PackageVersion Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.15.2"/>
+    <PackageVersion Include="OpenTelemetry.Extensions.Hosting" Version="1.15.2"/>
     <PackageVersion Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.15.1"/>
     <PackageVersion Include="OpenTelemetry.Instrumentation.Http" Version="1.15.0"/>
     <PackageVersion Include="OpenTelemetry.Instrumentation.Runtime" Version="1.15.0"/>
@@ -47,9 +46,9 @@
     <PackageVersion Include="Serilog.Sinks.File" Version="7.0.0"/>
     <PackageVersion Include="Serilog.Sinks.OpenTelemetry" Version="4.2.0"/>
     <PackageVersion Include="System.IdentityModel.Tokens.Jwt" Version="8.17.0"/>
-    <PackageVersion Include="WolverineFx.Postgresql" Version="5.28.0"/>
-    <PackageVersion Include="WolverineFx.RabbitMQ" Version="5.28.0"/>
-    <PackageVersion Include="WolverineFx" Version="5.28.0"/>
+    <PackageVersion Include="WolverineFx.Postgresql" Version="5.29.0"/>
+    <PackageVersion Include="WolverineFx.RabbitMQ" Version="5.29.0"/>
+    <PackageVersion Include="WolverineFx" Version="5.29.0"/>
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5"/>
     <PackageVersion Include="xunit" Version="2.9.3"/>
   </ItemGroup>
