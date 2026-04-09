@@ -8,6 +8,12 @@ public class BootstrapIconProvider : IMariloIconProvider
 {
     private const string SpriteUrl = "_content/Marilo.Icons/icons/sprite.svg";
 
+    /// <inheritdoc />
+    public IconRenderMode RenderMode => IconRenderMode.SvgSprite;
+
+    /// <inheritdoc />
+    public string LibraryName => "Bootstrap";
+
     public MarkupString GetIcon(string name, IconSize size = IconSize.Medium)
     {
         var px = size switch

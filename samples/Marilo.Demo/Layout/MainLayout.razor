@@ -39,9 +39,9 @@
                 <div class="theme-picker-wrapper">
                     <button class="theme-picker-trigger" @onclick="ToggleThemePicker"
                             title="Change theme">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 0 20 7 7 0 0 1 0-14 3.5 3.5 0 0 0 0-6"/></svg>
+                        <MariloIcon Name="palette" Size="IconSize.Small" />
                         <span class="theme-picker-label">@(_activeProvider == DesignProvider.FluentUI ? "Fluent" : "Bootstrap") · @(_isDark ? "Dark" : _selectedPreset.Name)</span>
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                        <MariloIcon Name="chevron-down" Size="IconSize.Small" />
                     </button>
                     @if (_showThemePicker)
                     {
@@ -57,7 +57,7 @@
                                     <span>@p.Name</span>
                                     @if (p.Name == _selectedPreset.Name)
                                     {
-                                        <svg class="theme-picker-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                        <MariloIcon Name="check" Size="IconSize.Small" Class="theme-picker-check" />
                                     }
                                 </button>
                             }
@@ -69,7 +69,7 @@
                                 <span>Fluent UI</span>
                                 @if (_activeProvider == DesignProvider.FluentUI)
                                 {
-                                    <svg class="theme-picker-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                    <MariloIcon Name="check" Size="IconSize.Small" Class="theme-picker-check" />
                                 }
                             </button>
                             <button class="theme-picker-option @(_activeProvider == DesignProvider.Bootstrap ? "active" : "")"
@@ -78,27 +78,27 @@
                                 <span>Bootstrap</span>
                                 @if (_activeProvider == DesignProvider.Bootstrap)
                                 {
-                                    <svg class="theme-picker-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                    <MariloIcon Name="check" Size="IconSize.Small" Class="theme-picker-check" />
                                 }
                             </button>
                             <div class="theme-picker-divider"></div>
                             <div class="theme-picker-section-title">Mode</div>
                             <button class="theme-picker-option @(!_isDark ? "active" : "")"
                                     @onclick="() => SetDarkMode(false)">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" /></svg>
+                                <MariloIcon Name="sun" Size="IconSize.Small" />
                                 <span>Light</span>
                                 @if (!_isDark)
                                 {
-                                    <svg class="theme-picker-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                    <MariloIcon Name="check" Size="IconSize.Small" Class="theme-picker-check" />
                                 }
                             </button>
                             <button class="theme-picker-option @(_isDark ? "active" : "")"
                                     @onclick="() => SetDarkMode(true)">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+                                <MariloIcon Name="moon" Size="IconSize.Small" />
                                 <span>Dark</span>
                                 @if (_isDark)
                                 {
-                                    <svg class="theme-picker-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                                    <MariloIcon Name="check" Size="IconSize.Small" Class="theme-picker-check" />
                                 }
                             </button>
                         </div>
@@ -108,11 +108,11 @@
                         title="@(_isDark ? "Switch to light mode" : "Switch to dark mode")">
                     @if (_isDark)
                     {
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" /></svg>
+                        <MariloIcon Name="sun" Size="IconSize.Small" />
                     }
                     else
                     {
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" /></svg>
+                        <MariloIcon Name="moon" Size="IconSize.Small" />
                     }
                 </button>
             </div>
@@ -154,9 +154,7 @@
                             @if (Favorites.Favorites.Count > 0)
                             {
                                 <div class="toc-section-title favorites-section-title">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" style="vertical-align: -2px; margin-right: 4px;">
-                                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                                    </svg>
+                                    <MariloIcon Name="star-filled" Size="IconSize.Small" style="vertical-align: -2px; margin-right: 4px;" />
                                     Favorites
                                 </div>
                                 @foreach (var fav in Favorites.Favorites)
@@ -167,7 +165,7 @@
                                         <button class="toc-fav-remove" title="Remove favorite"
                                                 @onclick="() => RemoveFavorite(fav.Id)"
                                                 @onclick:stopPropagation>
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                                            <MariloIcon Name="x" Size="IconSize.Small" />
                                         </button>
                                     </div>
                                 }

@@ -24,7 +24,7 @@ This document defines the resolution strategy for all 87 Marilo Blazor component
 | MariloValidation          | 15        | multi-pass  | Yes (EditContext, 3 sub-components)            | **T1 - Critical** | ✅ IMPLEMENTED (12/12 gaps + 3 new components)                                                                                                                                                                        |
 | MariloField               | 7         | multi-pass  | Yes (floating animation, focus)                | **T1 - Critical** | ✅ IMPLEMENTED (4/7 gaps, 3 deferred)                                                                                                                                                                                 |
 | MariloLabel               | 5         | multi-pass  | Yes (floating behavior)                        | **T1 - Critical** | ✅ IMPLEMENTED (4/5 gaps, 1 deferred)                                                                                                                                                                                 |
-| MariloIcon                | 3         | single-pass | No                                             | **T1 - Critical** | ✅ RESOLVED (doc-only)                                                                                                                                                                                                |
+| MariloIcon                | 3         | single-pass | No                                             | **T1 - Critical** | ✅ RESOLVED (doc-only; icon system upgrade complete — Tabler Icons default, multi-provider architecture)                                                                                                               |
 | MariloGrid (Layout)       | 7         | multi-pass  | Yes (child component structure)                | **T1 - Critical** | ✅ IMPLEMENTED                                                                                                                                                                                                        |
 | MariloStack               | 5         | single-pass | No                                             | **T1 - Critical** | ✅ IMPLEMENTED                                                                                                                                                                                                        |
 | MariloContainer           | 0         | single-pass | No                                             | **T1 - Critical** | ✅ COMPLETE (0 gaps)                                                                                                                                                                                                  |
@@ -1311,3 +1311,25 @@ All 18 gaps open. 14 resolutions designed across 3 batches:
 - **CDW target:** `workspaces/datagrid-delivery/`
 - **Ready for:** CDW Stage 01 spec review (using per-feature gap checklist as input)
 - **Format:** One entry per feature area × parameter/event, typed as: undocumented / spec-ahead / mismatch / implemented
+
+---
+
+## Icon System Upgrade
+
+**Status:** ✅ COMPLETE
+
+The Marilo icon system has been upgraded from a single custom icon set to a pluggable multi-provider architecture with Tabler Icons as the new default.
+
+### Changes
+
+| Change | Details |
+|---|---|
+| **New package: `Marilo.Icons.Tabler`** | 5,000+ Tabler Icons (MIT) via SVG sprite. Default icon provider for new projects. |
+| **Extended `IMariloIconProvider`** | Added `RenderMode` (`IconRenderMode` enum) and `LibraryName` properties as default interface members — additive, non-breaking. |
+| **New `IconRenderMode` enum** | `SvgSprite`, `InlineSvg`, `CssClass` — describes how an icon provider renders markup. |
+| **New `IconOptions` class** | Configuration object in `Marilo.Core.Configuration` for custom providers. |
+| **`CssIconProvider` base class** | Reusable base for font-based icon libraries (Bootstrap Icons, Font Awesome). |
+| **`CustomSpriteIconProvider`** | Provider for BYO SVG sprite sheets. |
+| **`AddMariloIconsCustom()` extension** | DI escape hatch for registering any custom sprite or CSS-class icon set. |
+| **Legacy `Marilo.Icons` preserved** | `MariloIconProvider` updated with new interface members. `UseMariloIcons()` and `AddMariloIcons()` marked `[Obsolete]`. |
+| **All existing providers updated** | `FluentUIIconProvider`, `BootstrapIconProvider`, `ProviderSwitcher`, `TestIconProvider` — all implement `RenderMode` and `LibraryName`. |

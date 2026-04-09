@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <PackageId>Marilo.Icons</PackageId>
+    <PackageId>Marilo.Icons.Tabler</PackageId>
     <Version>2.0.0</Version>
-    <Description>Legacy custom SVG icon set for Marilo. For new projects, prefer Marilo.Icons.Tabler.</Description>
-    <PackageTags>blazor;icons;svg;ui-framework</PackageTags>
+    <Description>Tabler Icons SVG sprite provider for the Marilo component library (MIT)</Description>
+    <PackageTags>blazor;icons;tabler;svg;ui-framework</PackageTags>
     <IsPackable>true</IsPackable>
   </PropertyGroup>
 

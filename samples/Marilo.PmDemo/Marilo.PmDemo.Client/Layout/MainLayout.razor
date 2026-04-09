@@ -22,31 +22,31 @@
     <SidebarContent>
         <MariloAppShellNavGroup Title="Overview">
             <MariloAppShellNavLink Href="/" Match="NavLinkMatch.All" Label="Dashboard">
-                <Icon>@Svg("M3 12l9-9 9 9M5 10v10h14V10")</Icon>
+                <Icon><MariloIcon Name="home" Size="IconSize.Small" /></Icon>
             </MariloAppShellNavLink>
         </MariloAppShellNavGroup>
 
         <MariloAppShellNavGroup Title="Planning">
             <MariloAppShellNavLink Href="/board" Label="Task Board" Badge="12">
-                <Icon>@Svg("M4 4h6v16H4zM14 4h6v9h-6z")</Icon>
+                <Icon><MariloIcon Name="layout-kanban" Size="IconSize.Small" /></Icon>
             </MariloAppShellNavLink>
             <MariloAppShellNavLink Href="/tasks" Label="Task List">
-                <Icon>@Svg("M4 6h16M4 12h16M4 18h16")</Icon>
+                <Icon><MariloIcon Name="list" Size="IconSize.Small" /></Icon>
             </MariloAppShellNavLink>
             <MariloAppShellNavLink Href="/timeline" Label="Timeline">
-                <Icon>@Svg("M3 6h12M3 12h18M3 18h9")</Icon>
+                <Icon><MariloIcon Name="timeline" Size="IconSize.Small" /></Icon>
             </MariloAppShellNavLink>
         </MariloAppShellNavGroup>
 
         <MariloAppShellNavGroup Title="Governance">
             <MariloAppShellNavLink Href="/budget" Label="Budget">
-                <Icon>@Svg("M3 20V10M9 20V4M15 20v-8M21 20V8")</Icon>
+                <Icon><MariloIcon Name="chart-bar" Size="IconSize.Small" /></Icon>
             </MariloAppShellNavLink>
             <MariloAppShellNavLink Href="/team" Label="Team Resource">
-                <Icon>@Svg("M16 11a4 4 0 1 0-4-4 4 4 0 0 0 4 4zM2 20c0-3 3-5 6-5s6 2 6 5M14 20c0-2 2-4 5-4s5 2 5 4")</Icon>
+                <Icon><MariloIcon Name="users" Size="IconSize.Small" /></Icon>
             </MariloAppShellNavLink>
             <MariloAppShellNavLink Href="/risk" Label="Risk Register" Badge="!">
-                <Icon>@Svg("M12 3l10 18H2zM12 10v5M12 18v.01")</Icon>
+                <Icon><MariloIcon Name="alert-triangle" Size="IconSize.Small" /></Icon>
             </MariloAppShellNavLink>
         </MariloAppShellNavGroup>
     </SidebarContent>
@@ -68,11 +68,7 @@
                         aria-haspopup="dialog"
                         aria-expanded="@_bellOpen.ToString().ToLowerInvariant()"
                         @onclick="() => _bellOpen = !_bellOpen">
-                    <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
-                        <path d="M10 2a5 5 0 0 0-5 5v3l-1.5 2.5h13L15 10V7a5 5 0 0 0-5-5zm-2 13a2 2 0 0 0 4 0"
-                              fill="none" stroke="currentColor" stroke-width="1.5"
-                              stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
+                    <MariloIcon Name="bell" Size="IconSize.Small" />
                     @if (UserNotifications.UnreadCount > 0)
                     {
                         <span class="mar-appshell__badge">@UserNotifications.UnreadCount</span>
@@ -102,11 +98,7 @@
                             aria-haspopup="dialog"
                             aria-expanded="@_bellOpen.ToString().ToLowerInvariant()"
                             @onclick="() => _bellOpen = !_bellOpen">
-                        <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
-                            <path d="M10 2a5 5 0 0 0-5 5v3l-1.5 2.5h13L15 10V7a5 5 0 0 0-5-5zm-2 13a2 2 0 0 0 4 0"
-                                  fill="none" stroke="currentColor" stroke-width="1.5"
-                                  stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                        <MariloIcon Name="bell" Size="IconSize.Small" />
                         @if (UserNotifications.UnreadCount > 0)
                         {
                             <span class="mar-appshell__badge">@UserNotifications.UnreadCount</span>
@@ -201,14 +193,4 @@
     {
         UserNotifications.Changed -= OnNotificationsChanged;
     }
-
-    private RenderFragment Svg(string path) => __builder =>
-    {
-        <svg viewBox="0 0 24 24" width="18" height="18" fill="none"
-             stroke="currentColor" stroke-width="1.8"
-             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="@path"/>
-        </svg>
-    };
-
 }

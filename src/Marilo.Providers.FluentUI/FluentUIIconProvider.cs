@@ -8,6 +8,12 @@ public class FluentUIIconProvider : IMariloIconProvider
 {
     private const string SpriteUrl = "_content/Marilo.Providers.FluentUI/icons/fluent-icons.svg";
 
+    /// <inheritdoc />
+    public IconRenderMode RenderMode => IconRenderMode.SvgSprite;
+
+    /// <inheritdoc />
+    public string LibraryName => "FluentUI";
+
     public MarkupString GetIcon(string name, IconSize size = IconSize.Medium)
     {
         var px = size switch

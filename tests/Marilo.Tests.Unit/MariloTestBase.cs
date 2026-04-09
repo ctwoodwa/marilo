@@ -51,5 +51,7 @@ public abstract class MariloTestBase : BunitContext
             new($"<span data-icon=\"{name}\"></span>");
 
         public string GetIconSpriteUrl() => "/icons/sprite.svg";
+        public IconRenderMode RenderMode => IconRenderMode.SvgSprite;
+        public string LibraryName => "Test";
     }
 }

@@ -50,6 +50,8 @@ public class ProviderSwitcher : IMariloCssProvider, IMariloIconProvider, IMarilo
     // ── IMariloIconProvider ──
     public MarkupString GetIcon(string name, IconSize size = IconSize.Medium) => Icons.GetIcon(name, size);
     public string GetIconSpriteUrl() => Icons.GetIconSpriteUrl();
+    public IconRenderMode RenderMode => Icons.RenderMode;
+    public string LibraryName => Icons.LibraryName;
 
     // ── IMariloJsInterop ──
     public ValueTask InitializeAsync() => JsInterop.InitializeAsync();

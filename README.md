@@ -23,7 +23,7 @@ Swap providers to change the entire look-and-feel without touching a single comp
 
 Marilo is an enterprise-grade Blazor component library built around a **provider pattern**: components are decoupled from their visual implementation. Register a provider (e.g., Fluent UI) at startup and all components automatically adopt that style system — without any per-component changes. This makes Marilo ideal for design system migrations, white-label products, and teams that need UI consistency across multiple applications.
 
-> 🧩 40+ components · 360+ icons · Provider-swappable styling · .NET 10 · Unlicense
+> 🧩 40+ components · 5,000+ Tabler Icons (MIT) · Provider-swappable styling · .NET 10 · Unlicense
 
 ---
 
@@ -48,7 +48,8 @@ Marilo is an enterprise-grade Blazor component library built around a **provider
 |---|---|---|
 | `Marilo.Components` | 40+ provider-agnostic Razor components | *(coming soon)* |
 | `Marilo.Providers.FluentUI` | Fluent UI visual styling provider | *(coming soon)* |
-| `Marilo.Icons` | 360+ SVG icons + `MariloIcon` component | *(coming soon)* |
+| `Marilo.Icons.Tabler` | 5,000+ Tabler Icons SVG sprite provider (MIT) | *(coming soon)* |
+| `Marilo.Icons` | Legacy custom SVG icon set (360 icons) | *(coming soon)* |
 | `Marilo.Core` | Base classes, contracts, and enums | *(coming soon)* |
 
 ---
@@ -65,7 +66,7 @@ Marilo is an enterprise-grade Blazor component library built around a **provider
 ```bash
 dotnet add package Marilo.Components
 dotnet add package Marilo.Providers.FluentUI
-dotnet add package Marilo.Icons   # optional — for icon support
+dotnet add package Marilo.Icons.Tabler   # recommended — 5,000+ Tabler Icons (MIT)
 ```
 
 ---
@@ -77,11 +78,8 @@ dotnet add package Marilo.Icons   # optional — for icon support
 In `Program.cs`, register Marilo and choose your provider:
 
 ```csharp
-builder.Services.AddMarilo(options =>
-    options
-        .UseFluentUI()
-        .UseMariloIcons()  // optional
-);
+builder.Services.AddMarilo(options => options.UseFluentUI());
+builder.Services.AddMariloIconsTabler();  // Tabler Icons (recommended)
 ```
 
 ### 2. Add stylesheets
@@ -146,18 +144,26 @@ Additional providers (e.g., Material, Bootstrap) can be created by implementing 
 
 ## Icons
 
-`Marilo.Icons` includes **360+ SVG icons** accessible via the `MariloIcon` component. An interactive icon browser is available in the docs.
+Marilo uses [Tabler Icons](https://tabler.io/icons) (MIT) as its default icon set — **5,000+ outline SVG icons** accessible via the `MariloIcon` component.
 
 ```razor
 <!-- Basic usage -->
 <MariloIcon Name="settings" />
 
 <!-- With size and color -->
-<MariloIcon Name="star" Size="IconSize.Large" Color="var(--marilo-primary)" />
-
-<!-- Optimized sprite rendering -->
-<MariloIconSprite />
+<MariloIcon Name="star" Size="IconSize.Large" ThemeColor="IconThemeColor.Primary" />
 ```
+
+### Icon Registration Options
+
+| Method | Package | Description |
+|---|---|---|
+| `AddMariloIconsTabler()` | `Marilo.Icons.Tabler` | **Recommended.** 5,000+ Tabler Icons (MIT). |
+| `AddMariloIcons()` | `Marilo.Icons` | Legacy custom icon set (360 icons). |
+| `AddMariloIconsCustom(opts => ...)` | `Marilo.Icons` | BYO sprite or CSS-class icon library. |
+
+Icon names use Tabler kebab-case (e.g., `home`, `calendar-event`, `user`).
+Browse the full icon reference at [tabler.io/icons](https://tabler.io/icons).
 
 > 🔍 [Browse all icons →](https://ctwoodwa.github.io/marilo/)
 
