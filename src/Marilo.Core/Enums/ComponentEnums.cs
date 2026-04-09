@@ -349,6 +349,21 @@ public enum ModalSize
 }
 
 /// <summary>
+/// Specifies how an icon provider renders icon markup.
+/// </summary>
+public enum IconRenderMode
+{
+    /// <summary>SVG sprite reference: &lt;svg&gt;&lt;use href="sprite.svg#name"&gt;&lt;/use&gt;&lt;/svg&gt;.</summary>
+    SvgSprite,
+
+    /// <summary>Raw &lt;svg&gt; markup injected directly into the DOM.</summary>
+    InlineSvg,
+
+    /// <summary>CSS class-based rendering: &lt;i class="{prefix} {prefix}-{name}"&gt;.</summary>
+    CssClass
+}
+
+/// <summary>
 /// Specifies the display size of an icon.
 /// </summary>
 public enum IconSize

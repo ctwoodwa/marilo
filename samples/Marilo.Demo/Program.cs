@@ -30,6 +30,10 @@ builder.Services.AddRazorComponents()
 // Register core Marilo services (theme service, notifications, etc.)
 builder.Services.AddMarilo().AddMariloCoreServices();
 
+// For standalone apps (without provider switching), use:
+//   builder.Services.AddMariloIconsTabler();   // Tabler Icons (recommended)
+// The demo uses ProviderSwitcher below which delegates to design-specific providers.
+
 // Register both provider implementations as concrete types
 builder.Services.AddSingleton(new FluentUIOptions());
 builder.Services.AddSingleton(new BootstrapOptions());

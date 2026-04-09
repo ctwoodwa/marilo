@@ -1,4 +1,5 @@
 @page "/icons"
+@using Marilo.Icons.Tabler
 @inject IWebHostEnvironment Env
 @inject IJSRuntime JS
 
@@ -29,6 +30,35 @@
     <section class="icons-hero">
         <h2 class="icons-hero-title">Hand-crafted SVG icons<br />for modern interfaces</h2>
         <p class="icons-hero-sub">@_allCount essential icons across @_categories.Count categories. 24×24 grid, 2px stroke, round joins. Uses <code>currentColor</code> for effortless theming.</p>
+    </section>
+
+    <!-- Tabler Icons Showcase -->
+    <section class="icons-hero" style="border-top: 1px solid var(--mar-color-border, #e0e0e0); padding-top: 2rem;">
+        <h2 class="icons-hero-title">Tabler Icons</h2>
+        <p class="icons-hero-sub">
+            5,000+ MIT-licensed icons via <code>Marilo.Icons.Tabler</code>.
+            Icon names use Tabler kebab-case (e.g. "home", "calendar-event", "user").
+            Browse the full set at <a href="https://tabler.io/icons" target="_blank" rel="noopener">tabler.io/icons</a>.
+        </p>
+        <div class="icons-grid icons-grid--m" style="max-width: 900px; margin: 1.5rem auto 0;">
+            @foreach (var name in _tablerSamples)
+            {
+                <div class="icons-card" title="@name">
+                    <div class="icons-card-icon">@_tablerProvider.GetIcon(name, IconSize.Medium)</div>
+                    <span class="icons-card-name">@name</span>
+                </div>
+            }
+        </div>
+        <h3 style="margin-top: 1.5rem; font-size: 0.875rem; opacity: 0.7;">Size variants</h3>
+        <div style="display: flex; gap: 2rem; justify-content: center; align-items: end; margin-top: 0.75rem; flex-wrap: wrap;">
+            @foreach (var size in new[] { IconSize.Small, IconSize.Medium, IconSize.Large, IconSize.ExtraLarge })
+            {
+                <div style="text-align: center;">
+                    @_tablerProvider.GetIcon("home", size)
+                    <div style="font-size: 0.75rem; margin-top: 0.25rem; opacity: 0.6;">@size</div>
+                </div>
+            }
+        </div>
     </section>
 
     <!-- Sticky toolbar -->
@@ -192,6 +222,12 @@
 </div>
 
 @code {
+    private readonly TablerIconProvider _tablerProvider = new();
+    private static readonly string[] _tablerSamples = [
+        "home", "search", "user", "settings", "calendar-event", "bell",
+        "mail", "heart", "star", "folder", "lock", "chart-bar"
+    ];
+
     private Dictionary<string, string> _icons = new();
     private Dictionary<string, List<string>> _categories = new();
     private Dictionary<string, string> _iconCategoryMap = new();
