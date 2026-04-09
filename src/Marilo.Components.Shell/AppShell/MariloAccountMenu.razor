@@ -133,7 +133,7 @@
                                     class="mar-account-menu__row @(idx == _focusedIndex ? "is-focused" : "") @(item.IsDisabled ? "is-disabled" : "")"
                                     role="menuitem"
                                     aria-haspopup="true"
-                                    aria-expanded="false"
+                                    aria-expanded="@(_activeSubmenu == item.Id ? "true" : "false")"
                                     aria-disabled="@(item.IsDisabled ? "true" : null)"
                                     data-testid="@item.TestId"
                                     @onclick="() => HandleItemClick(item)">
