@@ -63,7 +63,7 @@
                     role="listitem">
                     @if (FileTemplate != null)
                     {
-                        @FileTemplate(file)
+                        @FileTemplate(BuildTemplateContext(file))
                     }
                     else
                     {
@@ -74,7 +74,7 @@
                         <span class="mar-file-upload__file-info">
                             @if (FileInfoTemplate != null)
                             {
-                                @FileInfoTemplate(file)
+                                @FileInfoTemplate(BuildTemplateContext(file))
                             }
                             else
                             {

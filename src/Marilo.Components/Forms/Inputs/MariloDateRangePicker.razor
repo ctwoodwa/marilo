@@ -1,6 +1,6 @@
 @inherits MariloComponentBase
 
-<div class="@CombineClasses(CssProvider.DatePickerClass()) mar-date-range-picker @(_isPopupOpen ? "mar-date-range-picker--open" : "") @(PopupClass is not null ? "" : "")"
+<div class="@CombineClasses(CssProvider.DatePickerClass()) mar-date-range-picker @(_isPopupOpen ? "mar-date-range-picker--open" : "") @SizeClass @RoundedClass @FillModeClass"
      style="@CombineStyles()"
      @attributes="AdditionalAttributes"
      @onkeydown="OnKeyDown">
@@ -70,6 +70,16 @@
              aria-label="Select date range"
              aria-modal="true"
              @onclick:stopPropagation="true">
+
+            @* ── Header (custom or default) ── *@
+            @if (HeaderTemplate is not null)
+            {
+                @HeaderTemplate
+            }
+            else if (!string.IsNullOrEmpty(Title))
+            {
+                <div class="mar-date-range-picker__title">@Title</div>
+            }
 
             @* ── Dual calendars ── *@
             <div class="mar-date-range-picker__calendars">
@@ -173,6 +183,24 @@
 
     /// <summary>Specifies the adaptive rendering mode for the popup on mobile devices.</summary>
     [Parameter] public AdaptiveMode AdaptiveMode { get; set; } = AdaptiveMode.None;
+
+    /// <summary>Size of the component trigger. Use ThemeConstants size values (e.g. "sm", "md", "lg").</summary>
+    [Parameter] public string? Size { get; set; }
+
+    /// <summary>Border-radius rounding. Use ThemeConstants rounded values.</summary>
+    [Parameter] public string? Rounded { get; set; }
+
+    /// <summary>Fill mode (solid, flat, outline).</summary>
+    [Parameter] public string? FillMode { get; set; }
+
+    /// <summary>Debounce delay in milliseconds for value-change callbacks. Defaults to 150.</summary>
+    [Parameter] public int DebounceDelay { get; set; } = 150;
+
+    /// <summary>Optional title rendered at the top of the popup panel.</summary>
+    [Parameter] public string? Title { get; set; }
+
+    /// <summary>Custom header rendered at the top of the popup, replacing the default title. When null, Title is shown if set.</summary>
+    [Parameter] public RenderFragment? HeaderTemplate { get; set; }
 
     // ─── Private State ────────────────────────────────────────────────────────
 
@@ -458,47 +486,66 @@
                             @onclick="NextMonth">&#9654;</button>
                 }
             </div>
-            <div class="mar-calendar__grid">
+            <div class="mar-calendar__grid @(ShowWeekNumbers ? "mar-calendar__grid--week-numbers" : "")">
                 <div class="mar-calendar__weekdays">
+                    @if (ShowWeekNumbers)
+                    {
+                        <span class="mar-calendar__weekday mar-calendar__week-number-header">Wk</span>
+                    }
                     @foreach (var dayName in _dayHeaders)
                     {
                         <span class="mar-calendar__weekday">@dayName</span>
                     }
                 </div>
                 <div class="mar-calendar__days">
-                    @foreach (var day in GetCalendarDays(displayMonth))
-                    {
-                        var date = day.Date;
-                        var isDayDisabled = IsDayDisabled(date);
-                        var isToday = date == DateOnly.FromDateTime(DateTime.Today);
-                        var isStart2 = StartValue.HasValue && date == DateOnly.FromDateTime(StartValue.Value);
-                        var isEnd2 = EndValue.HasValue && date == DateOnly.FromDateTime(EndValue.Value);
-                        var inRange = IsInRange(date);
-                        var inHoverRange = IsInHoverRange(date);
-                        var isOutsideMonth = date.Month != displayMonth.Month || date.Year != displayMonth.Year;
+                    @{
+                        var calDays = GetCalendarDays(displayMonth);
+                        for (var rowIdx = 0; rowIdx < calDays.Count; rowIdx++)
+                        {
+                            var day = calDays[rowIdx];
+                            if (ShowWeekNumbers && rowIdx % 7 == 0)
+                            {
+                                var weekNum = System.Globalization.ISOWeek.GetWeekOfYear(day.Date.ToDateTime(TimeOnly.MinValue));
+                                <span class="mar-calendar__week-number" aria-hidden="true">@weekNum</span>
+                            }
+                            var date = day.Date;
+                            var isDayDisabled = IsDayDisabled(date);
+                            var isToday = date == DateOnly.FromDateTime(DateTime.Today);
+                            var isStart2 = StartValue.HasValue && date == DateOnly.FromDateTime(StartValue.Value);
+                            var isEnd2 = EndValue.HasValue && date == DateOnly.FromDateTime(EndValue.Value);
+                            var inRange = IsInRange(date);
+                            var inHoverRange = IsInHoverRange(date);
+                            var isOutsideMonth = date.Month != displayMonth.Month || date.Year != displayMonth.Year;
 
-                        if (isOutsideMonth && !ShowOtherMonthDays)
-                        {
-                            <span class="mar-calendar__day mar-calendar__day--outside mar-calendar__day--placeholder"></span>
-                        }
-                        else
-                        {
-                            <button type="button"
-                                    class="mar-calendar__day @(isToday ? "mar-calendar__day--today" : "") @(isStart2 ? "mar-calendar__day--range-start mar-calendar__day--selected" : "") @(isEnd2 ? "mar-calendar__day--range-end mar-calendar__day--selected" : "") @(inRange ? "mar-calendar__day--in-range" : "") @(inHoverRange ? "mar-calendar__day--in-range mar-calendar__day--hover" : "") @(isDayDisabled ? "mar-calendar__day--disabled" : "") @(isOutsideMonth ? "mar-calendar__day--outside" : "")"
-                                    disabled="@isDayDisabled"
-                                    aria-label="@date.ToString("MMMM d, yyyy")"
-                                    aria-selected="@((isStart2 || isEnd2).ToString().ToLowerInvariant())"
-                                    @onclick="() => SelectDay(date, isDayDisabled)"
-                                    @onmouseenter="() => OnDayHover(date)"
-                                    @onmouseleave="() => _hoverDate = null">
-                                @date.Day
-                            </button>
+                            if (isOutsideMonth && !ShowOtherMonthDays)
+                            {
+                                <span class="mar-calendar__day mar-calendar__day--outside mar-calendar__day--placeholder"></span>
+                            }
+                            else
+                            {
+                                <button type="button"
+                                        class="mar-calendar__day @(isToday ? "mar-calendar__day--today" : "") @(isStart2 ? "mar-calendar__day--range-start mar-calendar__day--selected" : "") @(isEnd2 ? "mar-calendar__day--range-end mar-calendar__day--selected" : "") @(inRange ? "mar-calendar__day--in-range" : "") @(inHoverRange ? "mar-calendar__day--in-range mar-calendar__day--hover" : "") @(isDayDisabled ? "mar-calendar__day--disabled" : "") @(isOutsideMonth ? "mar-calendar__day--outside" : "")"
+                                        disabled="@isDayDisabled"
+                                        aria-label="@date.ToString("MMMM d, yyyy")"
+                                        aria-selected="@((isStart2 || isEnd2).ToString().ToLowerInvariant())"
+                                        @onclick="() => SelectDay(date, isDayDisabled)"
+                                        @onmouseenter="() => OnDayHover(date)"
+                                        @onmouseleave="() => _hoverDate = null">
+                                    @date.Day
+                                </button>
+                            }
                         }
                     }
                 </div>
             </div>
         </div>
     };
+
+    // ─── Appearance Helpers ───────────────────────────────────────────────────
+
+    private string SizeClass => Size is { Length: > 0 } s ? $"mar-date-range-picker--{s}" : "mar-date-range-picker--md";
+    private string RoundedClass => Rounded is { Length: > 0 } r ? $"mar-date-range-picker--rounded-{r}" : "";
+    private string FillModeClass => FillMode is { Length: > 0 } f ? $"mar-date-range-picker--{f}" : "mar-date-range-picker--solid";
 
     // ─── Keyboard Handling ────────────────────────────────────────────────────
 

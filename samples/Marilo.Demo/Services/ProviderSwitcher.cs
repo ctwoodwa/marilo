@@ -133,8 +133,10 @@ public class ProviderSwitcher : IMariloCssProvider, IMariloIconProvider, IMarilo
     public string ColorPickerPopupClass() => Css.ColorPickerPopupClass();
     public string DatePickerClass() => Css.DatePickerClass();
     public string TimePickerClass() => Css.TimePickerClass();
+    public string TimePickerPopupClass() => Css.TimePickerPopupClass();
     public string FileUploadClass() => Css.FileUploadClass();
     public string FileUploadFileListClass() => Css.FileUploadFileListClass();
+    public string FileUploadDropZoneClass(bool isDragOver, bool isDisabled) => Css.FileUploadDropZoneClass(isDragOver, isDisabled);
 
     // ── Selection / Dropdowns ──
     public string DropDownListClass(bool isOpen, bool isDisabled, bool isInvalid) => Css.DropDownListClass(isOpen, isDisabled, isInvalid);

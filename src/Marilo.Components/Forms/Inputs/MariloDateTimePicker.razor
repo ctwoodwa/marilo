@@ -224,6 +224,9 @@
     /// <summary>Specifies the adaptive rendering mode for the popup on mobile devices.</summary>
     [Parameter] public AdaptiveMode AdaptiveMode { get; set; } = AdaptiveMode.None;
 
+    /// <summary>Controls when validation fires. Accepted values: "input", "blur", "change". Null means no automatic validation trigger.</summary>
+    [Parameter] public string? ValidateOn { get; set; }
+
     // Tumbler step parameters (matching DateTimePickerSteps child component concept).
     // Mirrors MariloTimePicker.razor:222-224 to keep both pickers consistent.
 

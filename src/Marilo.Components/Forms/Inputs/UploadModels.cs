@@ -83,6 +83,9 @@ public class UploadFileInfo
 
     /// <summary>Internal: number of bytes successfully uploaded so far (used for chunk resume).</summary>
     internal long UploadedBytes { get; set; }
+
+    /// <summary>Internal: number of auto-retries attempted for the current chunk.</summary>
+    internal int ChunkRetryCount { get; set; }
 }
 
 // ── FileSelect file info ─────────────────────────────────────────────────────
@@ -266,6 +269,25 @@ public class UploadResumeEventArgs
 
     /// <summary>Set to true to prevent resuming.</summary>
     public bool IsCancelled { get; set; }
+}
+
+// ── FileUpload template context ──────────────────────────────────────────────
+
+/// <summary>
+/// Context object passed to <see cref="MariloFileUpload.FileTemplate"/> and
+/// <see cref="MariloFileUpload.FileInfoTemplate"/>. Wraps the raw file info with
+/// convenience validation accessors for template authors.
+/// </summary>
+public class FileUploadTemplateContext
+{
+    /// <summary>The underlying file entry.</summary>
+    public FileSelectFileInfo File { get; init; } = new();
+
+    /// <summary>True if any validation rule was violated.</summary>
+    public bool IsInvalid => File.IsInvalid;
+
+    /// <summary>Human-readable summary of validation failures (empty string when valid).</summary>
+    public string ValidationMessage { get; init; } = string.Empty;
 }
 
 // ── FileSelect event args ────────────────────────────────────────────────────
