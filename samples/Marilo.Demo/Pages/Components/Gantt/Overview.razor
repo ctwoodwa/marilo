@@ -11,6 +11,8 @@
                          ParentIdField="ParentId"
                          Height="400px"
                          Width="100%"
+                         OnUpdate="@UpdateItem"
+                         OnDelete="@DeleteItem"
                          @bind-View="_currentView">
                 <GanttColumns>
                     <GanttColumn TItem="GanttTask"
@@ -53,6 +55,26 @@
         new GanttTask { Id = "4", ParentId = "1", Title = "Implementation", Start = DateTime.Today.AddDays(10), End = DateTime.Today.AddDays(18), PercentComplete = 0 },
         new GanttTask { Id = "5", Title = "Testing", Start = DateTime.Today.AddDays(18), End = DateTime.Today.AddDays(25), PercentComplete = 0 },
     };
+
+    private void UpdateItem(GanttUpdateEventArgs args)
+    {
+        var item = args.Item as GanttTask;
+        var found = _tasks.FirstOrDefault(d => d.Id == item?.Id);
+        if (found is not null && item is not null)
+        {
+            found.Title = item.Title;
+            found.Start = item.Start;
+            found.End = item.End;
+            found.PercentComplete = item.PercentComplete;
+        }
+    }
+
+    private void DeleteItem(GanttDeleteEventArgs args)
+    {
+        var item = args.Item as GanttTask;
+        if (item is not null)
+            _tasks.RemoveAll(d => d.Id == item.Id);
+    }
 
     private const string _basicCode = @"<MariloGantt TItem=""GanttTask""
              Data=""@_tasks""

@@ -43,6 +43,12 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     [Parameter] public EventCallback<TItem> OnTaskClick { get; set; }
     [Parameter] public EventCallback<TItem> OnTaskEdit { get; set; }
 
+    [Parameter] public EventCallback<GanttCreateEventArgs> OnCreate { get; set; }
+    [Parameter] public EventCallback<GanttUpdateEventArgs> OnUpdate { get; set; }
+    [Parameter] public EventCallback<GanttDeleteEventArgs> OnDelete { get; set; }
+    [Parameter] public EventCallback<GanttExpandEventArgs> OnExpand { get; set; }
+    [Parameter] public EventCallback<GanttCollapseEventArgs> OnCollapse { get; set; }
+
     /// <summary>Child content slot where GanttColumn instances are declared.</summary>
     [Parameter] public RenderFragment? GanttColumns { get; set; }
 
@@ -514,11 +520,19 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     private async Task ToggleExpanded(GanttNode<TItem> node)
     {
         if (node.Id is null) return;
+
+        bool wasExpanded = _expandedIds.Contains(node.Id);
         if (!_expandedIds.Add(node.Id))
         {
             _expandedIds.Remove(node.Id);
         }
         RebuildFlatVisible();
+
+        if (wasExpanded)
+            await OnCollapse.InvokeAsync(new GanttCollapseEventArgs { Item = node.Item });
+        else
+            await OnExpand.InvokeAsync(new GanttExpandEventArgs { Item = node.Item });
+
         await InvokeAsync(StateHasChanged);
     }
 
