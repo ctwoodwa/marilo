@@ -528,12 +528,22 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         }
         RebuildFlatVisible();
 
+        bool shouldRender = true;
         if (wasExpanded)
-            await OnCollapse.InvokeAsync(new GanttCollapseEventArgs { Item = node.Item });
+        {
+            var args = new GanttCollapseEventArgs { Item = node.Item };
+            await OnCollapse.InvokeAsync(args);
+            shouldRender = args.ShouldRender;
+        }
         else
-            await OnExpand.InvokeAsync(new GanttExpandEventArgs { Item = node.Item });
+        {
+            var args = new GanttExpandEventArgs { Item = node.Item };
+            await OnExpand.InvokeAsync(args);
+            shouldRender = args.ShouldRender;
+        }
 
-        await InvokeAsync(StateHasChanged);
+        if (shouldRender)
+            await InvokeAsync(StateHasChanged);
     }
 
     public async ValueTask DisposeAsync()
