@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Marilo.PmDemo\Marilo.PmDemo.csproj" />
+    <ProjectReference Include="..\Marilo.PmDemo.MigrationService\Marilo.PmDemo.MigrationService.csproj" />
     <ProjectReference Include="..\MockOktaService\MockOktaService.csproj" />
   </ItemGroup>
 

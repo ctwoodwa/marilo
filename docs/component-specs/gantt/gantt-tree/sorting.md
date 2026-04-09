@@ -14,6 +14,8 @@ The Gantt component offers support for sorting.
 
 To enable sorting, set the `Sortable` parameter to `true`.
 
+Sorting uses a tri-state cycle: first click sorts ascending, second click sorts descending, third click clears the sort. Only one column can be sorted at a time.
+
 When the user clicks the column header, the Gantt Tree will sort the data according to the column's data type, and an arrow indicator of the sorting direction will be shown next to the column title. Note that the hierarchical structure is kept, so an item's parent(s) will appear before the item.
 
 You can prevent the user from sorting a certain field by setting `Sortable="false"` on its column.
@@ -22,7 +24,7 @@ You can sort the Gantt on the different columns and sorting is done according to
 
 Sorting keeps the expanded/collapsed state of items. For example, if filtering brings into view a child whose parent is collapsed, you will only see the collapsed parent.
 
-You can let the user sort by more than one field by setting the `SortMode` parameter to `Marilo.Blazor.SortMode.Multiple`.
+> Multi-column sorting (`SortMode.Multiple`) is planned for a future release.
 
 The sorting criteria are stored in a [collection of `SortDescriptor`](slug:common-features-descriptors#sorting).
 

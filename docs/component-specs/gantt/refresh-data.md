@@ -18,6 +18,9 @@ In this article:
 
 ## Rebind Method
 
+The Gantt automatically detects both `Data` reference changes AND field parameter changes in `OnParametersSet`, triggering a full tree rebuild and timeline recalculation.
+
+`Rebind()` refreshes the Gantt's internal tree from the current `Data` collection when the collection is mutated in place (items added or removed without reassigning the reference). `Rebind()` also triggers timeline recomputation (range recalculation) in addition to the tree rebuild.
 
 ````RAZOR
 @* Add/remove task and rebind the Gantt to react to that change. *@
@@ -30,7 +33,7 @@ In this article:
               Data="@GanttData"
               @bind-View="@SelectedView"
               Width="1000px"
-              TreeListWidth="500px"
+              TaskListWidth="250"
               Height="600px"
               IdField="Id"
               ParentIdField="ParentId"
@@ -199,7 +202,7 @@ In this article:
 <MariloGantt Data="@GanttData"
               @bind-View="@SelectedView"
               Width="1000px"
-              TreeListWidth="500px"
+              TaskListWidth="250"
               Height="600px"
               IdField="Id"
               ParentIdField="ParentId"
@@ -359,7 +362,7 @@ In this article:
 <MariloGantt Data="@GanttData"
               @bind-View="@SelectedView"
               Width="1000px"
-              TreeListWidth="500px"
+              TaskListWidth="250"
               Height="600px"
               IdField="Id"
               ParentIdField="ParentId"

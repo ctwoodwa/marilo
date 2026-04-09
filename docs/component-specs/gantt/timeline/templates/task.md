@@ -10,6 +10,8 @@ components: ["gantt"]
 ---
 # TaskTemplate
 
+> TaskTemplate controls the inner content of the timeline bar (replacing the default progress fill). It does not replace the bar container itself.
+
 The `TaskTemplate` provides you with full control over the rendering of the Timeline tasks.
 It is applied on regular tasks (not summary or milestone).
 

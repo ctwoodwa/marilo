@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Marilo.Components\Marilo.Components.csproj" />
     <ProjectReference Include="..\..\src\Marilo.Providers.FluentUI\Marilo.Providers.FluentUI.csproj" />
+    <ProjectReference Include="..\..\samples\Marilo.PmDemo\Marilo.PmDemo.Client\Marilo.PmDemo.Client.csproj" />
   </ItemGroup>
 
 </Project>

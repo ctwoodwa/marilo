@@ -375,10 +375,14 @@ public class BootstrapCssProvider : IMariloCssProvider
 
     public string ColorPickerClass() => "form-control form-control-color mar-bs-color-picker";
     public string ColorPickerPopupClass() => "dropdown-menu mar-bs-color-picker__popup p-2";
+    public string ColorGradientClass() => "mar-bs-colorgradient";
+    public string ColorPaletteClass() => "mar-bs-colorpalette";
+    public string FlatColorPickerClass() => "mar-bs-flatcolorpicker";
 
     public string DatePickerClass() => "form-control mar-bs-datepicker";
 
     public string TimePickerClass() => "form-control mar-bs-timepicker";
+    public string TimePickerPopupClass() => "dropdown-menu mar-bs-timepicker__popup p-2";
 
     public string DateRangePickerClass() => "mar-date-range-picker";
 
@@ -391,6 +395,14 @@ public class BootstrapCssProvider : IMariloCssProvider
     public string FileUploadClass() => "form-control mar-bs-file-upload";
 
     public string FileUploadFileListClass() => "list-group list-group-flush mar-bs-file-upload-list";
+
+    public string FileUploadDropZoneClass(bool isDragOver, bool isDisabled) =>
+        new CssClassBuilder()
+            .AddClass("border border-2 rounded-3 p-4 text-center mar-bs-file-upload__zone")
+            .AddClass("border-primary bg-body-secondary", isDragOver)
+            .AddClass("border-secondary", !isDragOver)
+            .AddClass("opacity-50 pe-none", isDisabled)
+            .Build();
 
     // ───────────────────────────────────────────────
     // Selection / Dropdowns

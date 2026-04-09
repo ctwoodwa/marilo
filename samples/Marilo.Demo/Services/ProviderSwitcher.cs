@@ -50,6 +50,8 @@ public class ProviderSwitcher : IMariloCssProvider, IMariloIconProvider, IMarilo
     // ── IMariloIconProvider ──
     public MarkupString GetIcon(string name, IconSize size = IconSize.Medium) => Icons.GetIcon(name, size);
     public string GetIconSpriteUrl() => Icons.GetIconSpriteUrl();
+    public IconRenderMode RenderMode => Icons.RenderMode;
+    public string LibraryName => Icons.LibraryName;
 
     // ── IMariloJsInterop ──
     public ValueTask InitializeAsync() => JsInterop.InitializeAsync();
@@ -131,10 +133,15 @@ public class ProviderSwitcher : IMariloCssProvider, IMariloIconProvider, IMarilo
     public string RatingClass() => Css.RatingClass();
     public string ColorPickerClass() => Css.ColorPickerClass();
     public string ColorPickerPopupClass() => Css.ColorPickerPopupClass();
+    public string ColorGradientClass() => Css.ColorGradientClass();
+    public string ColorPaletteClass() => Css.ColorPaletteClass();
+    public string FlatColorPickerClass() => Css.FlatColorPickerClass();
     public string DatePickerClass() => Css.DatePickerClass();
     public string TimePickerClass() => Css.TimePickerClass();
+    public string TimePickerPopupClass() => Css.TimePickerPopupClass();
     public string FileUploadClass() => Css.FileUploadClass();
     public string FileUploadFileListClass() => Css.FileUploadFileListClass();
+    public string FileUploadDropZoneClass(bool isDragOver, bool isDisabled) => Css.FileUploadDropZoneClass(isDragOver, isDisabled);
 
     // ── Selection / Dropdowns ──
     public string DropDownListClass(bool isOpen, bool isDisabled, bool isInvalid) => Css.DropDownListClass(isOpen, isDisabled, isInvalid);

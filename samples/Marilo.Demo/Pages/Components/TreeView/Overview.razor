@@ -79,6 +79,185 @@
     </DemoSection>
 </PageSection>
 
+<PageSection Title="Checkboxes">
+    <DemoSection Title="CheckBoxMode (Multiple)" Description="Enable tri-state checkboxes with cascade. Checking a parent checks all children; children update parent state." Code="@_checkboxMultipleCode">
+        <MariloTreeView Data="@_flatData"
+                        IdField="Id"
+                        ParentIdField="ParentId"
+                        TextField="Name"
+                        CheckBoxMode="CheckBoxMode.Multiple"
+                        @bind-CheckedItems="_checkedIds" />
+        <p><strong>Checked IDs:</strong> @(string.Join(", ", _checkedIds ?? []))</p>
+    </DemoSection>
+
+    <DemoSection Title="CheckBoxMode (Single)" Description="Only one item can be checked at a time. Checking a new item unchecks the previous one." Code="@_checkboxSingleCode">
+        <MariloTreeView Data="@_flatData"
+                        IdField="Id"
+                        ParentIdField="ParentId"
+                        TextField="Name"
+                        CheckBoxMode="CheckBoxMode.Single"
+                        @bind-CheckedItems="_singleCheckedIds" />
+        <p><strong>Checked ID:</strong> @(string.Join(", ", _singleCheckedIds ?? []))</p>
+    </DemoSection>
+
+    <DemoSection Title="AllowCheckChildren / AllowCheckParents" Description="Disable cascade behavior. Parent checks do not cascade to children, and child checks do not update parent state." Code="@_noCascadeCode">
+        <MariloTreeView Data="@_flatData"
+                        IdField="Id"
+                        ParentIdField="ParentId"
+                        TextField="Name"
+                        CheckBoxMode="CheckBoxMode.Multiple"
+                        AllowCheckChildren="false"
+                        AllowCheckParents="false"
+                        @bind-CheckedItems="_noCascadeCheckedIds" />
+        <p><strong>Checked IDs:</strong> @(string.Join(", ", _noCascadeCheckedIds ?? []))</p>
+    </DemoSection>
+
+    <DemoSection Title="CheckedItemsChanged Event" Description="React to checkbox changes via the CheckedItemsChanged event callback." Code="@_checkedEventCode">
+        <MariloTreeView Data="@_flatData"
+                        IdField="Id"
+                        ParentIdField="ParentId"
+                        TextField="Name"
+                        CheckBoxMode="CheckBoxMode.Multiple"
+                        CheckedItems="_eventCheckedIds"
+                        CheckedItemsChanged="OnCheckedItemsChanged" />
+        <p><strong>Last event:</strong> @_checkedEventLog</p>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Expansion Behavior">
+    <DemoSection Title="ExpandOnClick" Description="Expand or collapse a node by clicking anywhere on the item, not just the expand arrow." Code="@_expandOnClickCode">
+        <MariloTreeView ExpandOnClick="true">
+            <MariloTreeItem Title="Folder A">
+                <MariloTreeItem Title="File 1" />
+                <MariloTreeItem Title="File 2" />
+            </MariloTreeItem>
+            <MariloTreeItem Title="Folder B">
+                <MariloTreeItem Title="File 3" />
+                <MariloTreeItem Title="File 4" />
+            </MariloTreeItem>
+        </MariloTreeView>
+    </DemoSection>
+
+    <DemoSection Title="SingleExpand (Accordion)" Description="Only one node at each level can be expanded at a time. Expanding a sibling collapses the others." Code="@_singleExpandCode">
+        <MariloTreeView SingleExpand="true">
+            <MariloTreeItem Title="Section A">
+                <MariloTreeItem Title="Item A1" />
+                <MariloTreeItem Title="Item A2" />
+            </MariloTreeItem>
+            <MariloTreeItem Title="Section B">
+                <MariloTreeItem Title="Item B1" />
+                <MariloTreeItem Title="Item B2" />
+            </MariloTreeItem>
+            <MariloTreeItem Title="Section C">
+                <MariloTreeItem Title="Item C1" />
+            </MariloTreeItem>
+        </MariloTreeView>
+    </DemoSection>
+
+    <DemoSection Title="AutoExpand" Description="Automatically expand ancestor nodes when an item is selected, ensuring the selected item is always visible." Code="@_autoExpandCode">
+        <MariloTreeView Data="@_flatData"
+                        IdField="Id"
+                        ParentIdField="ParentId"
+                        TextField="Name"
+                        AutoExpand="true"
+                        SelectionMode="TreeSelectionMode.Single"
+                        SelectedItems="@(new[] { "4" })" />
+    </DemoSection>
+
+    <DemoSection Title="ExpandAllAsync / CollapseAllAsync" Description="Programmatically expand or collapse all nodes using public methods." Code="@_expandCollapseAllCode">
+        <MariloTreeView @ref="_expandCollapseTree"
+                        Data="@_flatData"
+                        IdField="Id"
+                        ParentIdField="ParentId"
+                        TextField="Name" />
+        <div style="margin-top: 8px;">
+            <button @onclick="ExpandAll">Expand All</button>
+            <button @onclick="CollapseAll">Collapse All</button>
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Drag and Drop">
+    <DemoSection Title="EnableDragDrop + OnItemDrop" Description="Enable drag-and-drop reordering. Drag an item and drop it onto another to trigger the OnItemDrop event." Code="@_dragDropCode">
+        <MariloTreeView EnableDragDrop="true"
+                        OnItemDrop="OnItemDropped">
+            <MariloTreeItem Title="Task 1" />
+            <MariloTreeItem Title="Task 2" />
+            <MariloTreeItem Title="Task 3" />
+            <MariloTreeItem Title="Task 4" />
+        </MariloTreeView>
+        <p><strong>Last drop:</strong> @_dragDropLog</p>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Lazy Loading">
+    <DemoSection Title="LoadChildrenAsync" Description="Load child nodes on demand when a parent is expanded for the first time. Useful for large or remote data sets." Code="@_lazyLoadCode">
+        <MariloTreeView Data="@_lazyRootData"
+                        IdField="Id"
+                        TextField="Name"
+                        HasChildrenField="HasChildren"
+                        LoadChildrenAsync="LoadChildrenOnDemand" />
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Filtering and Editing">
+    <DemoSection Title="FilterFunc" Description="Filter visible nodes with a predicate. Ancestor nodes of matching items remain visible to preserve hierarchy." Code="@_filterFuncCode">
+        <div style="margin-bottom: 8px;">
+            <input type="text" placeholder="Type to filter..." @oninput="OnFilterTextChanged" />
+        </div>
+        <MariloTreeView Data="@_flatData"
+                        IdField="Id"
+                        ParentIdField="ParentId"
+                        TextField="Name"
+                        FilterFunc="@_currentFilter" />
+    </DemoSection>
+
+    <DemoSection Title="AllowEditing + OnItemEdit" Description="Double-click or press F2 on a node to edit its text inline. Press Enter to confirm or Escape to cancel." Code="@_editingCode">
+        <MariloTreeView Data="@_editableData"
+                        IdField="Id"
+                        ParentIdField="ParentId"
+                        TextField="Name"
+                        AllowEditing="true"
+                        OnItemEdit="OnNodeEdited" />
+        <p><strong>Last edit:</strong> @_editLog</p>
+    </DemoSection>
+
+    <DemoSection Title="ItemTemplate" Description="Customize the rendering of each tree node using a template. The template receives the data item." Code="@_itemTemplateCode">
+        <MariloTreeView Data="@_templateData"
+                        IdField="Id"
+                        ParentIdField="ParentId"
+                        TextField="Name">
+            <ItemTemplate>
+                @{ var item = (TemplateNode)context; }
+                <span style="color: @item.Color; font-weight: bold;">@item.Name</span>
+                <span style="color: gray; font-size: 0.85em; margin-left: 8px;">(@item.Badge)</span>
+            </ItemTemplate>
+        </MariloTreeView>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="State">
+    <DemoSection Title="Disabled" Description="A disabled tree prevents all user interaction including selection, expansion, and checkbox changes." Code="@_disabledCode">
+        <MariloTreeView Disabled="true">
+            <MariloTreeItem Title="Item A" IsExpanded="true">
+                <MariloTreeItem Title="Item A1" />
+                <MariloTreeItem Title="Item A2" />
+            </MariloTreeItem>
+            <MariloTreeItem Title="Item B" />
+        </MariloTreeView>
+    </DemoSection>
+
+    <DemoSection Title="ReadOnly" Description="A read-only tree displays current state but prevents any changes. Items remain visually interactive but mutations are blocked." Code="@_readOnlyCode">
+        <MariloTreeView ReadOnly="true"
+                        CheckBoxMode="CheckBoxMode.Multiple"
+                        CheckedItems="@(new[] { "opt-a" })">
+            <MariloTreeItem Title="Item A" Id="opt-a" />
+            <MariloTreeItem Title="Item B" Id="opt-b" />
+            <MariloTreeItem Title="Item C" Id="opt-c" />
+        </MariloTreeView>
+    </DemoSection>
+</PageSection>
+
 <PageSection Title="Accessibility">
     <AccessibilityInfo
         KeyboardInteractions="@_keyboard"
@@ -113,6 +292,100 @@
         ]),
         new TreeData("6", "Downloads"),
         new TreeData("7", "Desktop"),
+    ];
+
+    // ── New demo state ───────────────────────────────────────────────────
+
+    // Checkbox demos
+    private IEnumerable<string>? _checkedIds;
+    private IEnumerable<string>? _singleCheckedIds;
+    private IEnumerable<string>? _noCascadeCheckedIds;
+    private IEnumerable<string>? _eventCheckedIds;
+    private string _checkedEventLog = "(none)";
+
+    private void OnCheckedItemsChanged(IEnumerable<string> ids)
+    {
+        _eventCheckedIds = ids;
+        _checkedEventLog = $"Checked {ids.Count()} item(s): {string.Join(", ", ids)}";
+    }
+
+    // Drag-and-drop demo
+    private string _dragDropLog = "(none)";
+
+    private void OnItemDropped((string DraggedId, string TargetId) e)
+    {
+        _dragDropLog = $"Dragged \"{e.DraggedId}\" onto \"{e.TargetId}\"";
+    }
+
+    // Lazy loading demo
+    private record LazyNode(string Id, string Name, bool HasChildren = false);
+    private readonly List<object> _lazyRootData =
+    [
+        new LazyNode("r1", "Remote Folder A", HasChildren: true),
+        new LazyNode("r2", "Remote Folder B", HasChildren: true),
+        new LazyNode("r3", "Local File"),
+    ];
+
+    private async Task<IEnumerable<object>> LoadChildrenOnDemand(object parent)
+    {
+        await Task.Delay(500); // simulate network delay
+        var node = (LazyNode)parent;
+        return new List<object>
+        {
+            new LazyNode($"{node.Id}-c1", $"{node.Name} — Child 1"),
+            new LazyNode($"{node.Id}-c2", $"{node.Name} — Child 2"),
+        };
+    }
+
+    // Expand / Collapse all
+    private MariloTreeView? _expandCollapseTree;
+
+    private async Task ExpandAll()
+    {
+        if (_expandCollapseTree != null)
+            await _expandCollapseTree.ExpandAllAsync();
+    }
+
+    private async Task CollapseAll()
+    {
+        if (_expandCollapseTree != null)
+            await _expandCollapseTree.CollapseAllAsync();
+    }
+
+    // Filter demo
+    private string _filterText = "";
+    private Func<object, bool>? _currentFilter;
+
+    private void OnFilterTextChanged(ChangeEventArgs e)
+    {
+        _filterText = e.Value?.ToString() ?? "";
+        _currentFilter = string.IsNullOrWhiteSpace(_filterText)
+            ? null
+            : item => ((FlatNode)item).Name.Contains(_filterText, StringComparison.OrdinalIgnoreCase);
+    }
+
+    // Editing demo
+    private record EditableNode(string Id, string? ParentId, string Name);
+    private readonly List<object> _editableData =
+    [
+        new EditableNode("e1", null, "Rename Me"),
+        new EditableNode("e2", null, "Double-Click to Edit"),
+        new EditableNode("e3", null, "Press F2 to Edit"),
+    ];
+    private string _editLog = "(none)";
+
+    private void OnNodeEdited(TreeItemEditEventArgs args)
+    {
+        _editLog = $"Node \"{args.ItemId}\" renamed to \"{args.NewText}\"";
+    }
+
+    // ItemTemplate demo
+    private record TemplateNode(string Id, string? ParentId, string Name, string Color, string Badge);
+    private readonly List<object> _templateData =
+    [
+        new TemplateNode("t1", null, "High Priority", "#d32f2f", "3 items"),
+        new TemplateNode("t2", null, "Medium Priority", "#f57c00", "5 items"),
+        new TemplateNode("t3", null, "Low Priority", "#388e3c", "2 items"),
     ];
 
     // Code samples
@@ -194,6 +467,188 @@
         "    <MariloTreeItem Title=\"Folder B\">\n" +
         "        <MariloTreeItem Title=\"File 3\" />\n" +
         "    </MariloTreeItem>\n" +
+        "</MariloTreeView>";
+
+    // ── New demo code samples ─────────────────────────────────────────
+
+    private const string _checkboxMultipleCode =
+        "<MariloTreeView Data=\"@_data\"\n" +
+        "                IdField=\"Id\"\n" +
+        "                ParentIdField=\"ParentId\"\n" +
+        "                TextField=\"Name\"\n" +
+        "                CheckBoxMode=\"CheckBoxMode.Multiple\"\n" +
+        "                @bind-CheckedItems=\"_checkedIds\" />\n" +
+        "<p>Checked IDs: @(string.Join(\", \", _checkedIds ?? []))</p>";
+
+    private const string _checkboxSingleCode =
+        "<MariloTreeView Data=\"@_data\"\n" +
+        "                IdField=\"Id\"\n" +
+        "                ParentIdField=\"ParentId\"\n" +
+        "                TextField=\"Name\"\n" +
+        "                CheckBoxMode=\"CheckBoxMode.Single\"\n" +
+        "                @bind-CheckedItems=\"_singleCheckedIds\" />\n" +
+        "<p>Checked ID: @(string.Join(\", \", _singleCheckedIds ?? []))</p>";
+
+    private const string _noCascadeCode =
+        "<MariloTreeView Data=\"@_data\"\n" +
+        "                IdField=\"Id\"\n" +
+        "                ParentIdField=\"ParentId\"\n" +
+        "                TextField=\"Name\"\n" +
+        "                CheckBoxMode=\"CheckBoxMode.Multiple\"\n" +
+        "                AllowCheckChildren=\"false\"\n" +
+        "                AllowCheckParents=\"false\"\n" +
+        "                @bind-CheckedItems=\"_checkedIds\" />";
+
+    private const string _checkedEventCode =
+        "<MariloTreeView Data=\"@_data\"\n" +
+        "                CheckBoxMode=\"CheckBoxMode.Multiple\"\n" +
+        "                CheckedItems=\"_checkedIds\"\n" +
+        "                CheckedItemsChanged=\"OnCheckedChanged\" />\n\n" +
+        "@code {\n" +
+        "    IEnumerable<string>? _checkedIds;\n" +
+        "    void OnCheckedChanged(IEnumerable<string> ids)\n" +
+        "    {\n" +
+        "        _checkedIds = ids;\n" +
+        "        // react to change\n" +
+        "    }\n" +
+        "}";
+
+    private const string _expandOnClickCode =
+        "<MariloTreeView ExpandOnClick=\"true\">\n" +
+        "    <MariloTreeItem Title=\"Folder A\">\n" +
+        "        <MariloTreeItem Title=\"File 1\" />\n" +
+        "        <MariloTreeItem Title=\"File 2\" />\n" +
+        "    </MariloTreeItem>\n" +
+        "    <MariloTreeItem Title=\"Folder B\">\n" +
+        "        <MariloTreeItem Title=\"File 3\" />\n" +
+        "    </MariloTreeItem>\n" +
+        "</MariloTreeView>";
+
+    private const string _singleExpandCode =
+        "<MariloTreeView SingleExpand=\"true\">\n" +
+        "    <MariloTreeItem Title=\"Section A\">\n" +
+        "        <MariloTreeItem Title=\"Item A1\" />\n" +
+        "        <MariloTreeItem Title=\"Item A2\" />\n" +
+        "    </MariloTreeItem>\n" +
+        "    <MariloTreeItem Title=\"Section B\">\n" +
+        "        <MariloTreeItem Title=\"Item B1\" />\n" +
+        "    </MariloTreeItem>\n" +
+        "</MariloTreeView>";
+
+    private const string _autoExpandCode =
+        "<MariloTreeView Data=\"@_data\"\n" +
+        "                IdField=\"Id\"\n" +
+        "                ParentIdField=\"ParentId\"\n" +
+        "                TextField=\"Name\"\n" +
+        "                AutoExpand=\"true\"\n" +
+        "                SelectionMode=\"TreeSelectionMode.Single\"\n" +
+        "                SelectedItems=\"@(new[] { \\\"4\\\" })\" />";
+
+    private const string _expandCollapseAllCode =
+        "<MariloTreeView @ref=\"_tree\" Data=\"@_data\" ... />\n\n" +
+        "<button @onclick=\"ExpandAll\">Expand All</button>\n" +
+        "<button @onclick=\"CollapseAll\">Collapse All</button>\n\n" +
+        "@code {\n" +
+        "    MariloTreeView? _tree;\n" +
+        "    async Task ExpandAll() => await _tree!.ExpandAllAsync();\n" +
+        "    async Task CollapseAll() => await _tree!.CollapseAllAsync();\n" +
+        "}";
+
+    private const string _dragDropCode =
+        "<MariloTreeView EnableDragDrop=\"true\"\n" +
+        "                OnItemDrop=\"OnItemDropped\">\n" +
+        "    <MariloTreeItem Title=\"Task 1\" />\n" +
+        "    <MariloTreeItem Title=\"Task 2\" />\n" +
+        "    <MariloTreeItem Title=\"Task 3\" />\n" +
+        "</MariloTreeView>\n\n" +
+        "@code {\n" +
+        "    void OnItemDropped((string DraggedId, string TargetId) e)\n" +
+        "    {\n" +
+        "        Console.WriteLine($\"Dragged {e.DraggedId} onto {e.TargetId}\");\n" +
+        "    }\n" +
+        "}";
+
+    private const string _lazyLoadCode =
+        "<MariloTreeView Data=\"@_roots\"\n" +
+        "                IdField=\"Id\"\n" +
+        "                TextField=\"Name\"\n" +
+        "                HasChildrenField=\"HasChildren\"\n" +
+        "                LoadChildrenAsync=\"LoadChildren\" />\n\n" +
+        "@code {\n" +
+        "    record LazyNode(string Id, string Name, bool HasChildren = false);\n" +
+        "    List<object> _roots = [\n" +
+        "        new LazyNode(\"1\", \"Remote Folder\", HasChildren: true),\n" +
+        "    ];\n\n" +
+        "    async Task<IEnumerable<object>> LoadChildren(object parent)\n" +
+        "    {\n" +
+        "        await Task.Delay(500);\n" +
+        "        var node = (LazyNode)parent;\n" +
+        "        return [\n" +
+        "            new LazyNode($\"{node.Id}-1\", \"Child 1\"),\n" +
+        "            new LazyNode($\"{node.Id}-2\", \"Child 2\"),\n" +
+        "        ];\n" +
+        "    }\n" +
+        "}";
+
+    private const string _filterFuncCode =
+        "<input @oninput=\"OnFilter\" placeholder=\"Type to filter...\" />\n\n" +
+        "<MariloTreeView Data=\"@_data\"\n" +
+        "                IdField=\"Id\"\n" +
+        "                ParentIdField=\"ParentId\"\n" +
+        "                TextField=\"Name\"\n" +
+        "                FilterFunc=\"@_filter\" />\n\n" +
+        "@code {\n" +
+        "    Func<object, bool>? _filter;\n" +
+        "    void OnFilter(ChangeEventArgs e)\n" +
+        "    {\n" +
+        "        var text = e.Value?.ToString() ?? \"\";\n" +
+        "        _filter = string.IsNullOrWhiteSpace(text)\n" +
+        "            ? null\n" +
+        "            : item => ((MyNode)item).Name.Contains(text, StringComparison.OrdinalIgnoreCase);\n" +
+        "    }\n" +
+        "}";
+
+    private const string _editingCode =
+        "<MariloTreeView Data=\"@_data\"\n" +
+        "                IdField=\"Id\"\n" +
+        "                TextField=\"Name\"\n" +
+        "                AllowEditing=\"true\"\n" +
+        "                OnItemEdit=\"OnEdited\" />\n\n" +
+        "@code {\n" +
+        "    void OnEdited(TreeItemEditEventArgs args)\n" +
+        "    {\n" +
+        "        Console.WriteLine($\"Node {args.ItemId} → {args.NewText}\");\n" +
+        "    }\n" +
+        "}";
+
+    private const string _itemTemplateCode =
+        "<MariloTreeView Data=\"@_data\"\n" +
+        "                IdField=\"Id\"\n" +
+        "                ParentIdField=\"ParentId\"\n" +
+        "                TextField=\"Name\">\n" +
+        "    <ItemTemplate>\n" +
+        "        @{ var item = (MyNode)context; }\n" +
+        "        <span style=\"color: @item.Color\">@item.Name</span>\n" +
+        "        <span style=\"color: gray\">(@item.Badge)</span>\n" +
+        "    </ItemTemplate>\n" +
+        "</MariloTreeView>";
+
+    private const string _disabledCode =
+        "<MariloTreeView Disabled=\"true\">\n" +
+        "    <MariloTreeItem Title=\"Item A\" IsExpanded=\"true\">\n" +
+        "        <MariloTreeItem Title=\"Item A1\" />\n" +
+        "        <MariloTreeItem Title=\"Item A2\" />\n" +
+        "    </MariloTreeItem>\n" +
+        "    <MariloTreeItem Title=\"Item B\" />\n" +
+        "</MariloTreeView>";
+
+    private const string _readOnlyCode =
+        "<MariloTreeView ReadOnly=\"true\"\n" +
+        "                CheckBoxMode=\"CheckBoxMode.Multiple\"\n" +
+        "                CheckedItems=\"@(new[] { \\\"opt-a\\\" })\">\n" +
+        "    <MariloTreeItem Title=\"Item A\" Id=\"opt-a\" />\n" +
+        "    <MariloTreeItem Title=\"Item B\" Id=\"opt-b\" />\n" +
+        "    <MariloTreeItem Title=\"Item C\" Id=\"opt-c\" />\n" +
         "</MariloTreeView>";
 
     private static readonly (string Key, string Action)[] _keyboard =

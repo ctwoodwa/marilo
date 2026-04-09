@@ -24,8 +24,8 @@
 | Field | Value |
 |-------|-------|
 | Spec version | unversioned |
-| Last spec audit | PENDING |
-| Open spec gaps | PENDING |
+| Last spec audit | 2026-04-09 |
+| Open spec gaps | ~107 unique (see gantt-gap-analysis output/stage-01/) |
 
 ## Example UX State
 

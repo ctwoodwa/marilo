@@ -1,16 +1,21 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <NoDefaultLaunchSettingsFile>true</NoDefaultLaunchSettingsFile>
-    <StaticWebAssetProjectMode>Default</StaticWebAssetProjectMode>
-    <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
+    <RootNamespace>Marilo.PmDemo.Client</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\Marilo.Core\Marilo.Core.csproj" />
+    <ProjectReference Include="..\..\..\src\Marilo.Components\Marilo.Components.csproj" />
+    <ProjectReference Include="..\..\..\src\Marilo.Components.Shell\Marilo.Components.Shell.csproj" />
+    <ProjectReference Include="..\..\..\src\Marilo.Providers.FluentUI\Marilo.Providers.FluentUI.csproj" />
   </ItemGroup>
 
 </Project>

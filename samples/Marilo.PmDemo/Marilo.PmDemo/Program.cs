@@ -1,3 +1,5 @@
+using Marilo.Core.Extensions;
+using Marilo.Providers.FluentUI.Extensions;
 using Marilo.PmDemo.Authorization;
 using Marilo.PmDemo.Components;
 using Marilo.PmDemo.Data;
@@ -68,16 +70,24 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddCors();
 builder.Services.AddAuthorization();
 
+// Marilo component services (FluentUI provider + theme service + toast notification host)
+builder.Services.AddMarilo().UseFluentUI();
+
+// PM Demo canonical notification pipeline. Single source of truth for all
+// user-facing notifications (bell, inbox, toast). The canonical service owns
+// lifecycle; IMariloNotificationService is a downstream toast presentation channel
+// reached via the IUserNotificationToastForwarder adapter.
+builder.Services.AddScoped<Marilo.PmDemo.Client.Notifications.IUserNotificationToastForwarder,
+                            Marilo.PmDemo.Client.Notifications.MariloToastUserNotificationForwarder>();
+builder.Services.AddScoped<Marilo.PmDemo.Client.Notifications.IUserNotificationService,
+                            Marilo.PmDemo.Client.Notifications.InMemoryUserNotificationService>();
+
 builder.Services.AddRazorComponents()
-    .AddInteractiveWebAssemblyComponents();
+    .AddInteractiveServerComponents();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseWebAssemblyDebugging();
-}
-else
+if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
@@ -94,7 +104,7 @@ app.MapHub<PmDemoHub>("/hubs/pmdemo");
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
-    .AddInteractiveWebAssemblyRenderMode()
+    .AddInteractiveServerRenderMode()
     .AddAdditionalAssemblies(typeof(Marilo.PmDemo.Client._Imports).Assembly);
 
 app.Run();

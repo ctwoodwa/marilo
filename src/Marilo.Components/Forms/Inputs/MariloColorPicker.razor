@@ -1,9 +1,15 @@
 @inherits MariloComponentBase
 @inject IJSRuntime JS
 @implements IAsyncDisposable
+@implements IColorPickerViewHost
 
 @using Marilo.Core.Enums
 @using Marilo.Core.Models
+
+@* View child-tag registrations (outside popup so they persist across open/close) *@
+<CascadingValue Value="(IColorPickerViewHost)this" IsFixed="true">
+    @ColorPickerViews
+</CascadingValue>
 
 <div class="@CombineClasses("mar-colorpicker " + SizeClass + " " + RoundedClass + " " + FillModeClass + (Enabled ? "" : " mar-colorpicker--disabled"))"
      style="@CombineStyles()"
@@ -250,12 +256,6 @@
                 </div>
             }
 
-            @* Custom views content *@
-            @if (ColorPickerViews is not null)
-            {
-                @ColorPickerViews
-            }
-
         </div>
 
         @* Click-outside backdrop *@
@@ -356,8 +356,11 @@
     private string _paletteTileHeight = "24px";
 
     // ── Internal: View configuration ────────────────────────────────────
-    private bool _hasGradientView = true;
-    private bool _hasPaletteView = true;
+    private readonly List<ColorPickerViewBase> _registeredViews = new();
+    /// <summary>Whether a gradient view is available. True when no views are explicitly configured (default) or when a GradientView child is present.</summary>
+    private bool _hasGradientView => _registeredViews.Count == 0 || _registeredViews.Any(v => v.ViewType == ColorPickerView.Gradient);
+    /// <summary>Whether a palette view is available. True when no views are explicitly configured (default) or when a PaletteView child is present.</summary>
+    private bool _hasPaletteView => _registeredViews.Count == 0 || _registeredViews.Any(v => v.ViewType == ColorPickerView.Palette);
 
     // ── Internal: Popup state ───────────────────────────────────────────
     private bool _isOpen;
@@ -383,6 +386,65 @@
     private string SizeClass => Size is { Length: > 0 } s ? $"mar-colorpicker--{s}" : "mar-colorpicker--md";
     private string RoundedClass => Rounded is { Length: > 0 } r ? $"mar-colorpicker--rounded-{r}" : "";
     private string FillModeClass => FillMode is { Length: > 0 } f ? $"mar-colorpicker--{f}" : "mar-colorpicker--solid";
+
+    // ── View management (IColorPickerViewHost) ───────────────────────────
+    void IColorPickerViewHost.RegisterView(ColorPickerViewBase view)
+    {
+        if (!_registeredViews.Contains(view))
+        {
+            _registeredViews.Add(view);
+            ApplyViewSettings();
+            _ = InvokeAsync(StateHasChanged);
+        }
+    }
+
+    void IColorPickerViewHost.UnregisterView(ColorPickerViewBase view)
+    {
+        _ = InvokeAsync(() =>
+        {
+            if (_registeredViews.Remove(view))
+            {
+                ApplyViewSettings();
+                StateHasChanged();
+            }
+        });
+    }
+
+    /// <summary>Applies configuration from registered view child components to internal state.</summary>
+    private void ApplyViewSettings()
+    {
+        // Apply gradient view settings
+        var gradient = _registeredViews.OfType<ColorPickerGradientView>().FirstOrDefault();
+        if (gradient is not null)
+        {
+            _showOpacity = gradient.ShowOpacityEditor;
+            if (gradient.Format is { } fmt)
+                _textFormat = fmt;
+            if (gradient.Formats is { } fmts)
+            {
+                var fmtList = fmts.ToList();
+                _hasHexFormat = fmtList.Contains(ColorFormat.Hex);
+                _hasRgbFormat = fmtList.Contains(ColorFormat.Rgb);
+            }
+        }
+
+        // Apply palette view settings
+        var palette = _registeredViews.OfType<ColorPickerPaletteView>().FirstOrDefault();
+        if (palette is not null)
+        {
+            _paletteColumns = palette.Columns;
+            _paletteTileWidth = palette.TileWidth;
+            _paletteTileHeight = palette.TileHeight;
+            if (palette.Colors is not null)
+                _paletteColors = palette.Colors;
+        }
+
+        // If active view is no longer available, switch to the first available
+        if (_activeView == ColorPickerView.Gradient && !_hasGradientView)
+            _activeView = ColorPickerView.Palette;
+        else if (_activeView == ColorPickerView.Palette && !_hasPaletteView)
+            _activeView = ColorPickerView.Gradient;
+    }
 
     // ── Lifecycle ───────────────────────────────────────────────────────
     protected override void OnParametersSet()

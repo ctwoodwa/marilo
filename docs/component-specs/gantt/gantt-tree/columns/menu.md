@@ -38,7 +38,7 @@ To disable the Column Menu for a specific column in the Gantt, set the `ShowColu
               Height="600px"
               IdField="Id"
               ParentIdField="ParentId"
-              Navigable="true"
+              @* Keyboard navigation is built-in and always active. *@
               ColumnReorderable="true"
               Sortable="true"
               ColumnResizable="true"
@@ -185,7 +185,7 @@ The example shows the following things:
               Height="600px"
               IdField="Id"
               ParentIdField="ParentId"
-              Navigable="true"
+              @* Keyboard navigation is built-in and always active. *@
               ColumnReorderable="true"
               Sortable="true"
               FilterMode="@GanttFilterMode.FilterRow"

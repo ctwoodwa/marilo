@@ -26,6 +26,20 @@ public class ColorPickerCloseEventArgs
 public static class ColorPalettePresets
 {
     /// <summary>
+    /// The standard Office color palette (70 colors, 10 columns).
+    /// </summary>
+    public static readonly IEnumerable<string> Office = new[]
+    {
+        "#ffffff", "#000000", "#e7e6e6", "#44546a", "#4472c4", "#ed7d31", "#a5a5a5", "#ffc000", "#5b9bd5", "#70ad47",
+        "#f2f2f2", "#808080", "#d0cece", "#d6dce4", "#d9e2f3", "#fbe5d6", "#ededed", "#fff2cc", "#deebf7", "#e2efda",
+        "#d9d9d9", "#595959", "#aeaaaa", "#adb9ca", "#b4c7e7", "#f8cbad", "#dbdbdb", "#ffe699", "#bdd7ee", "#c5e0b4",
+        "#bfbfbf", "#404040", "#757171", "#8497b0", "#8faadc", "#f4b183", "#c9c9c9", "#ffd966", "#9cc3e5", "#a9d18e",
+        "#a6a6a6", "#262626", "#3b3838", "#333f4f", "#2f5597", "#c55a11", "#7b7b7b", "#bf9000", "#2e75b6", "#548235",
+        "#808080", "#0d0d0d", "#161616", "#222b35", "#1f3864", "#833c0b", "#525252", "#7f6000", "#1f4e79", "#375623",
+        "#c00000", "#ff0000", "#ffc000", "#ffff00", "#92d050", "#00b050", "#00b0f0", "#0070c0", "#002060", "#7030a0"
+    };
+
+    /// <summary>
     /// A basic palette of 20 common colors.
     /// </summary>
     public static readonly IEnumerable<string> Basic = new[]

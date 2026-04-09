@@ -60,7 +60,7 @@ The `OnClick` handler of the commands receives an argument of type `GanttTaskCom
 | `Item` | The model item of the Gantt row. Use it to access the model fields and perform the actual data source operations. This property is applicable only for command buttons that are inside a Gantt row, not the toolbar. |
 | `IsNew` | A boolean field indicating whether the item was just added through the Gantt interface. |
 
->tip For handling CRUD operations we recommend that you use the Gantt events (`OnEdit`, `OnUpdate`, `OnCancel`, `OnCreate`). The `OnClick` handler is available for the built-in commands to provide consistency of the API.
+>tip For handling CRUD operations we recommend that you use the Gantt events (`OnTaskEdit`, `OnUpdate`, `OnCancel`, `OnCreate`). The `OnClick` handler is available for the built-in commands to provide consistency of the API.
 
 ### Context
 

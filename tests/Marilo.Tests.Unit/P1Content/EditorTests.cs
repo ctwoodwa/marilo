@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using Bunit;
 using Marilo.Components.Editors;
 using Marilo.Core.Enums;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Marilo.Tests.Unit.P1Content;
@@ -197,5 +198,98 @@ public class EditorTests : MariloTestBase
     private class EditorModel
     {
         public string Content { get; set; } = "";
+    }
+
+    // ── Import/Export (GAP-EDITOR-005 / RES-EDITOR-B2A-01) ──────────
+
+    [Fact]
+    public void MarkdownConverter_ToHtml_ConvertsHeadingsAndBold()
+    {
+        // Internal MarkdownFormatConverter is accessible via InternalsVisibleTo
+        var converter = new MarkdownFormatConverter();
+        var html = converter.ToHtml("# Hello\n\nThis is **bold** text.");
+
+        // Markdig's advanced extensions add an id attribute to headings
+        Assert.Contains("Hello</h1>", html);
+        Assert.Contains("<strong>bold</strong>", html);
+    }
+
+    [Fact]
+    public void MarkdownConverter_ToHtml_EmptyReturnsEmpty()
+    {
+        var converter = new MarkdownFormatConverter();
+        Assert.Equal(string.Empty, converter.ToHtml(""));
+        Assert.Equal(string.Empty, converter.ToHtml(null!));
+    }
+
+    [Fact]
+    public void MarkdownConverter_FromHtml_ConvertsBoldAndHeadings()
+    {
+        var converter = new MarkdownFormatConverter();
+        var md = converter.FromHtml("<h1>Title</h1><p>This is <strong>bold</strong>.</p>");
+
+        Assert.Contains("# Title", md);
+        Assert.Contains("**bold**", md);
+    }
+
+    [Fact]
+    public void PlainTextConverter_ToHtml_WrapsLinesInParagraphs()
+    {
+        var converter = new PlainTextFormatConverter();
+        var html = converter.ToHtml("Line one\nLine two");
+
+        Assert.Contains("<p>Line one</p>", html);
+        Assert.Contains("<p>Line two</p>", html);
+    }
+
+    [Fact]
+    public void PlainTextConverter_FromHtml_StripsTagsAndDecodes()
+    {
+        var converter = new PlainTextFormatConverter();
+        var text = converter.FromHtml("<p>Hello &amp; world</p><p>Next line</p>");
+
+        Assert.Contains("Hello & world", text);
+        Assert.Contains("Next line", text);
+    }
+
+    [Fact]
+    public void ImportAsync_WithNoConverterRegistered_ThrowsInvalidOperationException()
+    {
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.Value, "<p>test</p>"));
+
+        var ex = Assert.ThrowsAsync<InvalidOperationException>(
+            () => cut.InvokeAsync(() => cut.Instance.ImportAsync("# Hello", "markdown")));
+
+        Assert.NotNull(ex);
+    }
+
+    [Fact]
+    public void ExportAsync_WithNoConverterRegistered_ThrowsInvalidOperationException()
+    {
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.Value, "<p>test</p>"));
+
+        var ex = Assert.ThrowsAsync<InvalidOperationException>(
+            () => cut.InvokeAsync(() => cut.Instance.ExportAsync("markdown")));
+
+        Assert.NotNull(ex);
+    }
+
+    [Fact]
+    public void ImportAsync_WithRegisteredConverter_SetsValue()
+    {
+        // Register the internal plaintext converter via DI
+        Services.AddSingleton<IEditorFormatConverter>(new PlainTextFormatConverter());
+
+        string? captured = null;
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.Value, "")
+            .Add(p => p.ValueChanged, v => captured = v));
+
+        cut.InvokeAsync(() => cut.Instance.ImportAsync("Hello world", "plaintext"));
+
+        Assert.NotNull(captured);
+        Assert.Contains("<p>Hello world</p>", captured);
     }
 }

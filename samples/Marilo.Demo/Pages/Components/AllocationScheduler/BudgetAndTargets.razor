@@ -22,7 +22,7 @@
                                    ViewGrain="TimeGranularity.Week"
                                    ValueMode="@(_useCurrency ? AllocationValueMode.Currency : AllocationValueMode.Hours)"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="2"
+                                   MinVisibleColumns="2"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    Height="250px">
             <AllocationResourceColumns>
@@ -53,7 +53,7 @@
                                    ValueMode="AllocationValueMode.Hours"
                                    ShowTargets="@_showTargets"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="2"
+                                   MinVisibleColumns="2"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    Height="250px">
             <AllocationResourceColumns>
@@ -93,7 +93,7 @@
                                    ShowDeltas="@_showDeltas"
                                    DeltaDisplayMode="@_deltaMode"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="2"
+                                   MinVisibleColumns="2"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    OnTargetChanged="@HandleTargetChanged"
                                    Height="280px">
@@ -165,7 +165,7 @@
         "                           ViewGrain=\"TimeGranularity.Week\"\n" +
         "                           ValueMode=\"@(_useCurrency ? AllocationValueMode.Currency : AllocationValueMode.Hours)\"\n" +
         "                           VisibleStart=\"@_demoStart\"\n" +
-        "                           DefaultRangeLength=\"2\"\n" +
+        "                           MinVisibleColumns=\"2\"\n" +
         "                           DefaultRangeUnit=\"TimeGranularity.Month\"\n" +
         "                           Height=\"250px\">\n" +
         "    <AllocationResourceColumns>\n" +

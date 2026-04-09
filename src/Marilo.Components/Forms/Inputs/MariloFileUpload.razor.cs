@@ -56,11 +56,19 @@ public partial class MariloFileUpload : MariloComponentBase
     /// <summary>Custom template for the select-files button.</summary>
     [Parameter] public RenderFragment? SelectFilesButtonTemplate { get; set; }
 
-    /// <summary>Custom template for each file item in the list. Context is FileSelectFileInfo.</summary>
-    [Parameter] public RenderFragment<FileSelectFileInfo>? FileTemplate { get; set; }
+    /// <summary>
+    /// Custom template for each file item in the list.
+    /// Context is <see cref="FileUploadTemplateContext"/> which wraps the file info
+    /// with validation state and message.
+    /// </summary>
+    [Parameter] public RenderFragment<FileUploadTemplateContext>? FileTemplate { get; set; }
 
-    /// <summary>Custom template for the file info section within each built-in file item.</summary>
-    [Parameter] public RenderFragment<FileSelectFileInfo>? FileInfoTemplate { get; set; }
+    /// <summary>
+    /// Custom template for the file info section within each built-in file item.
+    /// Context is <see cref="FileUploadTemplateContext"/> which wraps the file info
+    /// with validation state and message.
+    /// </summary>
+    [Parameter] public RenderFragment<FileUploadTemplateContext>? FileInfoTemplate { get; set; }
 
     // ── Parameters: Events ──────────────────────────────────────────────────
 
@@ -226,13 +234,17 @@ public partial class MariloFileUpload : MariloComponentBase
         return string.Join(", ", msgs);
     }
 
+    // ── Template context builder ─────────────────────────────────────────────
+
+    private FileUploadTemplateContext BuildTemplateContext(FileSelectFileInfo file) =>
+        new()
+        {
+            File = file,
+            ValidationMessage = ValidationSummary(file)
+        };
+
     // ── CSS helpers ──────────────────────────────────────────────────────────
 
-    private string DropZoneCssClass()
-    {
-        var cls = "mar-file-upload__zone";
-        if (_isDragOver) cls += " mar-file-upload__zone--dragover";
-        if (!Enabled) cls += " mar-file-upload__zone--disabled";
-        return cls;
-    }
+    private string DropZoneCssClass() =>
+        CssProvider.FileUploadDropZoneClass(_isDragOver, !Enabled);
 }

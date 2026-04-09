@@ -10,7 +10,7 @@ components: ["gantt"]
 ---
 # Gantt Tree
 
-The Gantt Tree is the left part of the [Gantt Chart](slug:gantt-overview). The component exposes `TreeListWidth` (string, default `30`) parameter for changing the width of the TreeList pane in the splitter. 
+The Gantt Tree is the left part of the [Gantt Chart](slug:gantt-overview). The component exposes `TaskListWidth` (int, default `250`) parameter for changing the width of the TreeList pane in the splitter.
 
 Set data to the component through its [data binding](slug:gantt-data-binding-overview) options. You can also use the [filtering](slug:gantt-filtering-overview), [sorting](slug:gantt-sorting), and [editing](slug:gantt-tree-editing) capabilities of the Marilo Gantt for Blazor.
 
@@ -21,3 +21,7 @@ Set data to the component through its [data binding](slug:gantt-data-binding-ove
 * `Editing` - Allows you to create new records, update the existing or deleting them. Read more on this topic in the [Editing](slug:gantt-tree-editing) article.
 * `Filtering` - The Gantt can filter data automatically. Read more about this feature in the [Filtering](slug:gantt-filtering-overview) article.
 * `Sorting` - Allows you to sort the data in ascending and descending order. Read more about this feature in the [Sorting](slug:gantt-sorting) article.
+
+## Summary Task Auto-Calculation
+
+Parent tasks (summary tasks) automatically compute their Start, End, and PercentComplete from their children. Start is the minimum child start, End is the maximum child end, and PercentComplete is the duration-weighted average of child percent-complete values.

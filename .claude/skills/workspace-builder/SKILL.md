@@ -11,9 +11,9 @@ You are entering an **Interpretable Context Methodology (ICM)** workspace. The f
 
 ## Entry Point
 
-1. Read `workspaces/workspace-builder/CLAUDE.md` — this is the workspace routing layer
+1. Read `ICM/workspaces/workspace-builder/CLAUDE.md` — this is the workspace routing layer
 2. If `$ARGUMENTS` is provided, treat it as a **trigger keyword** and follow the Triggers table in CLAUDE.md
-3. If no argument, read `workspaces/workspace-builder/CONTEXT.md` for task routing
+3. If no argument, read `ICM/workspaces/workspace-builder/CONTEXT.md` for task routing
 
 ## ICM Rules
 
@@ -33,4 +33,4 @@ You are entering an **Interpretable Context Methodology (ICM)** workspace. The f
 
 - `references/conventions-reference.md` — ICM conventions for workspace design
 - `_core/templates/` — master templates for workspace types
-- `workspaces/shared/workspace-routing.md` — taxonomy and graduation criteria
+- `ICM/workspaces/shared/workspace-routing.md` — taxonomy and graduation criteria

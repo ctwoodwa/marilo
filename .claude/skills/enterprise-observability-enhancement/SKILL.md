@@ -11,9 +11,9 @@ You are entering an **Interpretable Context Methodology (ICM)** workspace. The f
 
 ## Entry Point
 
-1. Read `workspaces/enterprise-observability-enhancement/CLAUDE.md` — this is the workspace routing layer
+1. Read `ICM/workspaces/enterprise-observability-enhancement/CLAUDE.md` — this is the workspace routing layer
 2. If `$ARGUMENTS` is provided, treat it as a **trigger keyword** and follow the Triggers table in CLAUDE.md
-3. If no argument, read `workspaces/enterprise-observability-enhancement/CONTEXT.md` for task routing
+3. If no argument, read `ICM/workspaces/enterprise-observability-enhancement/CONTEXT.md` for task routing
 
 ## ICM Rules
 

@@ -1,7 +1,7 @@
 @inherits MariloComponentBase
 @typeparam TValue
 
-<div class="@CombineClasses("mar-timepicker")"
+<div class="@CombineClasses(CssProvider.TimePickerClass())"
      style="@CombineStyles(_widthStyle)"
      @attributes="AdditionalAttributes"
      @onclick:stopPropagation="true">
@@ -21,6 +21,7 @@
                readonly="@(ReadOnly || _isOpen)"
                tabindex="@TabIndex"
                autocomplete="@(AutoComplete ?? "off")"
+               inputmode="@InputMode"
                role="combobox"
                aria-haspopup="dialog"
                aria-expanded="@_isOpen.ToString().ToLowerInvariant()"
@@ -58,7 +59,7 @@
     @if (_isOpen)
     {
         <div id="@_popupId"
-             class="mar-timepicker__popup @PopupClass"
+             class="@CssProvider.TimePickerPopupClass() @PopupClass"
              role="dialog"
              aria-label="Choose time"
              @onclick:stopPropagation="true">
@@ -215,6 +216,12 @@
     [Parameter] public string? Width { get; set; }
     [Parameter] public string? PopupClass { get; set; }
 
+    /// <summary>Sets the inputmode HTML attribute on the text input. Use "text" for typed input or "none" to hide the keyboard on mobile (tumbler-only mode).</summary>
+    [Parameter] public string? InputMode { get; set; }
+
+    /// <summary>Controls when validation fires. Accepted values: "input", "blur", "change". Null means no automatic validation trigger.</summary>
+    [Parameter] public string? ValidateOn { get; set; }
+
     /// <summary>Specifies the adaptive rendering mode for the popup on mobile devices.</summary>
     [Parameter] public AdaptiveMode AdaptiveMode { get; set; } = AdaptiveMode.None;
 
@@ -235,6 +242,7 @@
     private bool _showSeconds;
     private int _minHourDisplay;
     private int _maxHourDisplay = 23;
+    private TValue? _lastEmittedValue;
 
     private string _widthStyle => Width is not null ? $"width:{Width}" : string.Empty;
 
@@ -334,6 +342,7 @@
 
         var newValue = BuildValue(newTime);
         Value = newValue;
+        _lastEmittedValue = newValue;
         await ValueChanged.InvokeAsync(newValue);
         await OnChange.InvokeAsync(newValue is null ? null : (object)newValue);
 
@@ -365,6 +374,7 @@
     private async Task ClearValue()
     {
         Value = default;
+        _lastEmittedValue = default;
         _inputText = string.Empty;
         await ValueChanged.InvokeAsync(default);
         await OnChange.InvokeAsync(null);
@@ -455,6 +465,13 @@
 
     private async Task OnInputBlur()
     {
+        // Fire OnChange on blur if the value has changed since the last emitted change event.
+        // This satisfies the spec requirement that OnChange fires when the component loses focus.
+        if (!EqualityComparer<TValue?>.Default.Equals(Value, _lastEmittedValue))
+        {
+            _lastEmittedValue = Value;
+            await OnChange.InvokeAsync(Value is null ? null : (object)Value);
+        }
         await OnBlur.InvokeAsync();
     }
 

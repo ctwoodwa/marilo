@@ -268,14 +268,17 @@ These features exist in the component source but have no dedicated spec document
 
 ---
 
-## (B) Spec-Ahead — Documented but not implemented
+## (B) Spec-Ahead — Documented but not implemented (Planned)
+
+> **Policy (2026-04-09):** Spec-ahead items stay in specs marked "Planned" with gap ID links. Telerik naming is canonical. These do NOT block delivery gates at P2/P3 priority.
 
 ---
 
 **ID:** SPEC-treeview-015
-**Type:** spec-ahead
+**Type:** spec-ahead — **Planned**
 **Parameter/Event:** TreeViewBinding component
-**Priority:** P1
+**Priority:** P2
+**Gap link:** gap-analysis-resolution (future intake)
 
 | Field | In Spec | In Source |
 |-------|---------|-----------|
@@ -283,15 +286,15 @@ These features exist in the component source but have no dedicated spec document
 | Type | Component | missing |
 | Description | Per-level binding config (different TextField, ItemsField per level) | missing |
 
-**Recommended action:** Raise gap in gap-analysis-resolution (complex feature)
-**Delegated to:** gap-analysis-resolution intake
+**Status:** Planned — Telerik parity feature, awaiting gap intake
 
 ---
 
 **ID:** SPEC-treeview-016
-**Type:** spec-ahead
+**Type:** spec-ahead — **Planned**
 **Parameter/Event:** OnExpand event
-**Priority:** P1
+**Priority:** P2
+**Gap link:** gap-analysis-resolution (future intake)
 
 | Field | In Spec | In Source |
 |-------|---------|-----------|
@@ -299,15 +302,15 @@ These features exist in the component source but have no dedicated spec document
 | Type | EventCallback<TreeViewExpandEventArgs> | missing |
 | Description | Fires when node expands, provides cancellation | missing |
 
-**Recommended action:** Raise gap in gap-analysis-resolution
-**Delegated to:** gap-analysis-resolution intake
+**Status:** Planned — Telerik parity event
 
 ---
 
 **ID:** SPEC-treeview-017
-**Type:** spec-ahead
+**Type:** spec-ahead — **Planned**
 **Parameter/Event:** OnItemDoubleClick event
 **Priority:** P2
+**Gap link:** gap-analysis-resolution (future intake)
 
 | Field | In Spec | In Source |
 |-------|---------|-----------|
@@ -315,15 +318,15 @@ These features exist in the component source but have no dedicated spec document
 | Type | EventCallback<TreeViewItemDoubleClickEventArgs> | missing |
 | Description | Fires on item double-click | missing |
 
-**Recommended action:** Raise gap in gap-analysis-resolution
-**Delegated to:** gap-analysis-resolution intake
+**Status:** Planned — Telerik parity event
 
 ---
 
 **ID:** SPEC-treeview-018
-**Type:** spec-ahead
+**Type:** spec-ahead — **Planned**
 **Parameter/Event:** OnItemRender event
 **Priority:** P2
+**Gap link:** gap-analysis-resolution (future intake)
 
 | Field | In Spec | In Source |
 |-------|---------|-----------|
@@ -331,15 +334,15 @@ These features exist in the component source but have no dedicated spec document
 | Type | EventCallback<TreeViewItemRenderEventArgs> | missing |
 | Description | Per-item render callback for custom styling | missing |
 
-**Recommended action:** Raise gap in gap-analysis-resolution
-**Delegated to:** gap-analysis-resolution intake
+**Status:** Planned — Telerik parity event (pattern exists in MariloMultiSelect)
 
 ---
 
 **ID:** SPEC-treeview-019
-**Type:** spec-ahead
+**Type:** spec-ahead — **Planned**
 **Parameter/Event:** OnDragStart, OnDrag, OnDragEnd events
-**Priority:** P2
+**Priority:** P3
+**Gap link:** gap-analysis-resolution (future intake)
 
 | Field | In Spec | In Source |
 |-------|---------|-----------|
@@ -347,15 +350,15 @@ These features exist in the component source but have no dedicated spec document
 | Type | EventCallback<TreeViewDrag*EventArgs> | missing |
 | Description | Granular drag lifecycle events | missing (only OnItemDrop exists) |
 
-**Recommended action:** Raise gap in gap-analysis-resolution
-**Delegated to:** gap-analysis-resolution intake
+**Status:** Planned — Telerik parity; requires JS interop for full drag lifecycle
 
 ---
 
 **ID:** SPEC-treeview-020
-**Type:** spec-ahead
+**Type:** spec-ahead — **Planned**
 **Parameter/Event:** CheckOnClick
 **Priority:** P2
+**Gap link:** gap-analysis-resolution (future intake)
 
 | Field | In Spec | In Source |
 |-------|---------|-----------|
@@ -363,15 +366,15 @@ These features exist in the component source but have no dedicated spec document
 | Type | bool | missing |
 | Description | Click node to toggle checkbox | missing |
 
-**Recommended action:** Raise gap in gap-analysis-resolution
-**Delegated to:** gap-analysis-resolution intake
+**Status:** Planned — Telerik parity feature
 
 ---
 
 **ID:** SPEC-treeview-021
-**Type:** spec-ahead
+**Type:** spec-ahead — **Planned**
 **Parameter/Event:** UrlField
 **Priority:** P3
+**Gap link:** gap-analysis-resolution (future intake)
 
 | Field | In Spec | In Source |
 |-------|---------|-----------|
@@ -379,15 +382,15 @@ These features exist in the component source but have no dedicated spec document
 | Type | string | missing |
 | Description | Field name for navigation URL binding | missing |
 
-**Recommended action:** Raise gap in gap-analysis-resolution
-**Delegated to:** gap-analysis-resolution intake
+**Status:** Planned — Telerik parity feature
 
 ---
 
 **ID:** SPEC-treeview-022
-**Type:** spec-ahead
+**Type:** spec-ahead — **Planned**
 **Parameter/Event:** DragThrottleInterval
 **Priority:** P3
+**Gap link:** gap-analysis-resolution (future intake)
 
 | Field | In Spec | In Source |
 |-------|---------|-----------|
@@ -395,15 +398,15 @@ These features exist in the component source but have no dedicated spec document
 | Type | int (ms) | missing |
 | Description | Throttle interval for drag events | missing |
 
-**Recommended action:** Raise gap in gap-analysis-resolution
-**Delegated to:** gap-analysis-resolution intake
+**Status:** Planned — Telerik parity; depends on JS interop drag infrastructure
 
 ---
 
 **ID:** SPEC-treeview-023
-**Type:** spec-ahead
+**Type:** spec-ahead — **Planned**
 **Parameter/Event:** GetItemFromDropIndex()
 **Priority:** P3
+**Gap link:** gap-analysis-resolution (future intake)
 
 | Field | In Spec | In Source |
 |-------|---------|-----------|
@@ -411,13 +414,12 @@ These features exist in the component source but have no dedicated spec document
 | Type | method | missing |
 | Description | Resolve item from drag-drop index | missing |
 
-**Recommended action:** Raise gap in gap-analysis-resolution
-**Delegated to:** gap-analysis-resolution intake
+**Status:** Planned — Telerik parity; depends on JS interop drag infrastructure
 
 ---
 
 **ID:** SPEC-treeview-024
-**Type:** spec-ahead
+**Type:** spec-ahead — **Planned**
 **Parameter/Event:** Class parameter
 **Priority:** P3
 
@@ -427,17 +429,16 @@ These features exist in the component source but have no dedicated spec document
 | Type | string | string |
 | Description | Custom CSS class | Available via base class but not in spec param table |
 
-**Recommended action:** Verify MariloComponentBase provides this; update spec to clarify inheritance
-**Delegated to:** spec update only
+**Status:** Planned — spec update only; clarify inheritance from MariloComponentBase
 
 ---
 
 **ID:** SPEC-treeview-025-027
-**Type:** spec-ahead
+**Type:** spec-ahead — **Planned**
 **Parameter/Event:** Fluent UI forward-looking features
 **Priority:** P3
 
-Appearance, IconAfterField, AsideTemplate, ActionsTemplate, NavigationMode, AnimateExpand, Virtualization, InfiniteScroll, Tree Manipulation API, Subtree component — all documented in fluent-ui-gap-analysis.md as aspirational. These are not implementation gaps but roadmap items. **No action needed for delivery gate.**
+Appearance, IconAfterField, AsideTemplate, ActionsTemplate, NavigationMode, AnimateExpand, Virtualization, InfiniteScroll, Tree Manipulation API, Subtree component — all documented in fluent-ui-gap-analysis.md as aspirational roadmap items. **Status: Planned — do NOT block delivery gate.**
 
 ---
 

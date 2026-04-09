@@ -17,7 +17,7 @@
                                    ViewGrain="TimeGranularity.Week"
                                    ValueMode="AllocationValueMode.Hours"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="2"
+                                   MinVisibleColumns="2"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    AllowDragFill="false"
                                    AllowBulkEdit="false"
@@ -53,7 +53,7 @@
                                    ViewGrainChanged="@(g => _rollupGrain = g)"
                                    ValueMode="AllocationValueMode.Hours"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="3"
+                                   MinVisibleColumns="3"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    OnVisibleRangeChanged="@HandleRollupRangeChanged"
                                    Height="400px">
@@ -82,7 +82,7 @@
                                    ViewGrain="TimeGranularity.Week"
                                    ValueMode="AllocationValueMode.Hours"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="3"
+                                   MinVisibleColumns="3"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    AllowDragFill="true"
                                    AllowKeyboardEdit="true"
@@ -116,7 +116,7 @@
                                    ViewGrain="TimeGranularity.Week"
                                    ValueMode="AllocationValueMode.Hours"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="1"
+                                   MinVisibleColumns="1"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    Height="400px">
             <AllocationResourceColumns>
@@ -149,7 +149,7 @@
                                    ViewGrain="@_groupedGrain"
                                    ValueMode="AllocationValueMode.Hours"
                                    VisibleStart="@_yearBoundaryStart"
-                                   DefaultRangeLength="3"
+                                   MinVisibleColumns="3"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    Height="400px">
             <AllocationResourceColumns>
@@ -191,7 +191,7 @@
                                    ShowDeltas="@_showDeltas"
                                    DeltaDisplayMode="@_deltaMode"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="2"
+                                   MinVisibleColumns="2"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    OnTargetChanged="@HandleTargetChanged"
                                    Height="400px">
@@ -234,7 +234,7 @@
                                    OnSplitterCollapsed="@HandleSplitterCollapsed"
                                    OnSplitterRestored="@HandleSplitterRestored"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="2"
+                                   MinVisibleColumns="2"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    Height="400px">
             <AllocationResourceColumns>
@@ -275,7 +275,7 @@
                                    ViewGrain="TimeGranularity.Week"
                                    ValueMode="AllocationValueMode.Hours"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="2"
+                                   MinVisibleColumns="2"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    OnVisibleRangeChanged="@HandleNavRangeChanged"
                                    Height="400px">
@@ -687,7 +687,7 @@
         "    AuthoritativeLevel=\"TimeGranularity.Week\"\n" +
         "    ViewGrain=\"@_groupedGrain\"\n" +
         "    VisibleStart=\"new DateTime(2025, 12, 1)\"\n" +
-        "    DefaultRangeLength=\"3\"\n" +
+        "    MinVisibleColumns=\"3\"\n" +
         "    DefaultRangeUnit=\"TimeGranularity.Month\"\n" +
         "    Height=\"400px\" />\n" +
         "\n" +

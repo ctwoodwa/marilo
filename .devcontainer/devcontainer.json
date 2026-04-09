@@ -5,6 +5,7 @@
 		"ghcr.io/devcontainers/features/node:1": {
 			"version": "lts"
 		},
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
 		"ghcr.io/anthropics/devcontainer-features/claude-code:1": {},
 		"ghcr.io/devcontainers/features/github-cli:1": {}
 	},
@@ -22,7 +23,9 @@
 				"claude.mcpServers": {
 					"project-management": {
 						"command": "npx",
-						"args": ["@mcpmarket/project-management-task-orchestrator"],
+						"args": [
+							"@mcpmarket/project-management-task-orchestrator"
+						],
 						"env": {
 							"PLAN_FILE": "/workspaces/Marilo/src/Marilo.Components/GAP_ANALYSIS_RESOLUTION_PLAN.md",
 							"WORKSPACE_ROOT": "/workspaces/Marilo/workspaces/gap-analysis-resolution",
@@ -31,7 +34,10 @@
 					},
 					"memory": {
 						"command": "claude-mem-mcp",
-						"args": ["--store", "/workspaces/Marilo/.claude-mem"],
+						"args": [
+							"--store",
+							"/workspaces/Marilo/.claude-mem"
+						],
 						"env": {
 							"NAMESPACE": "marilo-gap-analysis",
 							"AUTO_SAVE_KEYS": "gap_context,routing_state,last_completed_stage"
@@ -39,7 +45,19 @@
 					},
 					"lsp-csharp": {
 						"command": "npx",
-						"args": ["@claude-code/lsp-csharp", "--solution", "/workspaces/Marilo/Marilo.slnx"]
+						"args": [
+							"@claude-code/lsp-csharp",
+							"--solution",
+							"/workspaces/Marilo/Marilo.slnx"
+						]
+					},
+					"postgres": {
+						"command": "npx",
+						"args": [
+							"-y",
+							"@modelcontextprotocol/server-postgres",
+							"postgresql://localhost/mydb"
+						]
 					}
 				}
 			}
@@ -54,12 +72,49 @@
 		"OPENWOLF_DASHBOARD_PORT": "18791"
 	},
 	"workspaceFolder": "/workspaces/Marilo",
-	"forwardPorts": [5000, 5001, 8080, 18790, 18791],
+	"forwardPorts": [
+		5000,
+		5001,
+		8080,
+		15101,
+		17101,
+		21101,
+		22101,
+		18790,
+		18791
+	],
 	"portsAttributes": {
-		"5001": { "protocol": "https" },
-		"8080": { "label": "DocFX" },
-		"18790": { "label": "OpenWolf Daemon", "onAutoForward": "silent" },
-		"18791": { "label": "OpenWolf Dashboard", "onAutoForward": "notify" }
+		"5001": {
+			"protocol": "https"
+		},
+		"8080": {
+			"label": "DocFX"
+		},
+		"15101": {
+			"label": "Aspire Dashboard (HTTP)",
+			"onAutoForward": "notify"
+		},
+		"17101": {
+			"label": "Aspire Dashboard (HTTPS)",
+			"protocol": "https",
+			"onAutoForward": "silent"
+		},
+		"21101": {
+			"label": "Aspire OTLP",
+			"onAutoForward": "silent"
+		},
+		"22101": {
+			"label": "Aspire Resource Service",
+			"onAutoForward": "silent"
+		},
+		"18790": {
+			"label": "OpenWolf Daemon",
+			"onAutoForward": "silent"
+		},
+		"18791": {
+			"label": "OpenWolf Dashboard",
+			"onAutoForward": "notify"
+		}
 	},
 	"postCreateCommand": "bash .devcontainer/post-create.sh"
 }

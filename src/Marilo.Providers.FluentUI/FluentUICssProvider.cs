@@ -295,10 +295,14 @@ public class FluentUICssProvider : IMariloCssProvider
 
     public string ColorPickerClass() => "mar-color-picker";
     public string ColorPickerPopupClass() => "mar-color-picker__popup";
+    public string ColorGradientClass() => "fui-colorgradient";
+    public string ColorPaletteClass() => "fui-colorpalette";
+    public string FlatColorPickerClass() => "fui-flatcolorpicker";
 
     public string DatePickerClass() => "mar-datepicker";
 
     public string TimePickerClass() => "mar-timepicker";
+    public string TimePickerPopupClass() => "mar-timepicker__popup";
 
     public string DateRangePickerClass() => "mar-date-range-picker";
 
@@ -311,6 +315,13 @@ public class FluentUICssProvider : IMariloCssProvider
     public string FileUploadClass() => "mar-file-upload";
 
     public string FileUploadFileListClass() => "mar-file-upload-file-list";
+
+    public string FileUploadDropZoneClass(bool isDragOver, bool isDisabled) =>
+        new CssClassBuilder()
+            .AddClass("mar-file-upload__zone")
+            .AddClass("mar-file-upload__zone--dragover", isDragOver)
+            .AddClass("mar-file-upload__zone--disabled", isDisabled)
+            .Build();
 
     // Selection / Dropdowns
     public string DropDownListClass(bool isOpen, bool isDisabled, bool isInvalid) =>

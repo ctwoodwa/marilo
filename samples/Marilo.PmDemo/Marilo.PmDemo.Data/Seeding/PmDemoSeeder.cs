@@ -22,16 +22,8 @@ public sealed class PmDemoSeeder : IHostedService
         using var scope = _services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<PmDemoDbContext>();
 
-        try
-        {
-            await db.Database.MigrateAsync(cancellationToken);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "Database migration failed; skipping seed (database may not be reachable yet).");
-            return;
-        }
-
+        // Schema migrations are owned by Marilo.PmDemo.MigrationService — the seeder
+        // assumes the schema already exists. It only inserts demo data.
         if (await db.Projects.IgnoreQueryFilters().AnyAsync(cancellationToken))
         {
             _logger.LogInformation("PmDemo data already present; skipping seed.");

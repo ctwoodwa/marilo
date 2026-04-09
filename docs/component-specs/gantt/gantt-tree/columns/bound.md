@@ -147,8 +147,10 @@ The Blazor Gantt Bound Column provides various parameters to configure the compo
 | `Width` | `string` | The width of the column. See the [Dimensions](slug:common-features/dimensions) article for information about the supported formats. See [Gantt Column Width Behavior](slug:gantt-columns-width) for detailed information about the Gantt behavior with different column width configurations. |
 | `MinResizableWidth` | `int` <br /> (`30`) | The minimum allowed column width during [user resizing](slug:gantt-columns-resize). Unlike the string `Width` property, this one is decimal and expects pixel values. |
 | `MaxResizableWidth` | `int` | The maximum allowed column width during [user resizing](slug:gantt-columns-resize). Unlike the string `Width` property, this one is decimal and expects pixel values. |
-| `Visible` | `bool?` <br /> (`null`) | If this parameter is set to `false`, it hides the column from the Gantt Tree. Accepts both `bool` and `bool?` types, and `null` is treated like `true`. |
+| `Visible` | `bool` <br /> (`true`) | If this parameter is set to `false`, it hides the column from the Gantt Tree. |
 | `HeaderClass` | `string` | Adds a custom CSS class to the header cell of the column. Use it to apply custom styles or [override the default Gantt styles](slug:themes-override). |
+| `Filterable` | `bool` <br /> (`true`) | Whether this column shows a filter input in the filter row. Set to `false` to exclude the column from filtering. |
+| `Sortable` | `bool` <br /> (`true`) | Whether clicking this column header triggers sorting. Set to `false` to disable sorting for this column. |
 
 ## Notes
 

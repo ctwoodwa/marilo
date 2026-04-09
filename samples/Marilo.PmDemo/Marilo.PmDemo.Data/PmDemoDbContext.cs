@@ -28,6 +28,18 @@ public class PmDemoDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        // Lowercase table names so DAB (and any plain-SQL consumer) can reference
+        // them without needing to quote case-preserving identifiers.
+        modelBuilder.Entity<Project>().ToTable("projects");
+        modelBuilder.Entity<ProjectMember>().ToTable("project_members");
+        modelBuilder.Entity<TaskItem>().ToTable("tasks");
+        modelBuilder.Entity<Subtask>().ToTable("subtasks");
+        modelBuilder.Entity<Comment>().ToTable("comments");
+        modelBuilder.Entity<Milestone>().ToTable("milestones");
+        modelBuilder.Entity<Risk>().ToTable("risks");
+        modelBuilder.Entity<BudgetLine>().ToTable("budget_lines");
+        modelBuilder.Entity<AuditRecord>().ToTable("audit_records");
+
         modelBuilder.Entity<Project>().HasQueryFilter(e => e.TenantId == _currentTenantId);
         modelBuilder.Entity<TaskItem>().HasQueryFilter(e => e.TenantId == _currentTenantId);
         modelBuilder.Entity<AuditRecord>().HasQueryFilter(e => e.TenantId == _currentTenantId);

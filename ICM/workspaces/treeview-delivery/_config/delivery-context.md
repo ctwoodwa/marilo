@@ -32,16 +32,16 @@
 | Field | Value |
 |-------|-------|
 | Demo page(s) | TreeView/Overview.razor |
-| Last demo audit | not yet run |
-| Open demo gaps | not yet run |
+| Last demo audit | 2026-04-09 |
+| Open demo gaps | 1 (empty-state scenario, P3 deferred) |
 
 ## Delivery Gate
 
 | Field | Value |
 |-------|-------|
-| Last sync check | not yet run |
-| Gate status | PENDING |
-| Blocking items | not yet run |
+| Last sync check | 2026-04-09 |
+| Gate status | AMBER |
+| Blocking items | 0 (all 10 failures are spec/documentation gaps, non-blocking) |
 
 ## Gap Workspace Link
 

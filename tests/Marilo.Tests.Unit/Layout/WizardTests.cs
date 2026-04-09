@@ -20,6 +20,7 @@ public class WizardTests : MariloTestBase
         });
     }
 
+#pragma warning disable ASP0006 // Computed sequence numbers are intentional in this loop
     private static RenderFragment BuildSteps(int count) => builder =>
     {
         for (var i = 0; i < count; i++)
@@ -33,6 +34,7 @@ public class WizardTests : MariloTestBase
             builder.CloseComponent();
         }
     };
+#pragma warning restore ASP0006
 
     // ── 1. Step registration ────────────────────────────────────────────────
 

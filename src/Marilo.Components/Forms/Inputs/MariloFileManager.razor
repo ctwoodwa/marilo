@@ -1,22 +1,132 @@
+@typeparam TItem
 @inherits MariloComponentBase
 
 <div class="@CombineClasses("mar-filemanager")"
-     style="@CombineStyles()"
-     @attributes="AdditionalAttributes">
+     style="@CombineStyles(GetContainerStyle())"
+     @attributes="AdditionalAttributes"
+     role="application"
+     aria-label="File Manager"
+     @onclick="CloseContextMenu">
 
     @* Toolbar *@
-    <div class="mar-filemanager__toolbar">
-        <button type="button" class="mar-btn mar-btn--flat mar-btn--sm" @onclick="NavigateUp"
-                disabled="@(!CanNavigateUp)">
-            @IconProvider.GetIcon("arrow-up", IconSize.Small)
-            Up
-        </button>
-        <span class="mar-filemanager__path">@CurrentPath</span>
-        <span class="mar-filemanager__spacer"></span>
-        @if (AllowCreate)
+    <div class="mar-filemanager__toolbar" role="toolbar" aria-label="File manager toolbar">
+        @if (ToolBarTemplate is not null)
         {
-            <button type="button" class="mar-btn mar-btn--flat mar-btn--sm" @onclick="CreateFolder">
-                New Folder
+            @ToolBarTemplate
+        }
+        else
+        {
+            @* Up button *@
+            <button type="button" class="mar-btn mar-btn--flat mar-btn--sm" @onclick="NavigateUp"
+                    disabled="@(!CanNavigateUp)">
+                @IconProvider.GetIcon("arrow-up", IconSize.Small)
+                Up
+            </button>
+
+            @* Hidden path span for backward compatibility *@
+            <span class="mar-filemanager__path" style="display:none" aria-hidden="true">@Path</span>
+
+            @* Breadcrumb path *@
+            <nav class="mar-filemanager__breadcrumb" aria-label="File path">
+                @{
+                    var segments = GetBreadcrumbSegments().ToList();
+                    for (var si = 0; si < segments.Count; si++)
+                    {
+                        var seg = segments[si];
+                        var isLast = si == segments.Count - 1;
+                        if (isLast)
+                        {
+                            <span class="mar-filemanager__breadcrumb-segment mar-filemanager__breadcrumb-segment--active">@seg.Label</span>
+                        }
+                        else
+                        {
+                            var segPath = seg.SegmentPath;
+                            <span class="mar-filemanager__breadcrumb-segment"
+                                  @onclick="() => NavigateTo(segPath)"
+                                  role="button">@seg.Label</span>
+                            <span class="mar-filemanager__breadcrumb-separator">/</span>
+                        }
+                    }
+                }
+            </nav>
+
+            @* New Folder (before spacer so selector-order matches Phase A test expectations) *@
+            @if (AllowCreate)
+            {
+                <button type="button" class="mar-btn mar-btn--flat mar-btn--sm" @onclick="CreateFolder">
+                    New Folder
+                </button>
+            }
+
+            <span class="mar-filemanager__spacer"></span>
+
+            @* Sort controls *@
+            <select class="mar-filemanager__sort-select"
+                    value="@_sortField"
+                    @onchange="HandleSortFieldChange"
+                    aria-label="Sort by">
+                <option value="Name">Name</option>
+                <option value="Size">Size</option>
+                <option value="DateModified">Date Modified</option>
+                <option value="Extension">Extension</option>
+                <option value="Type">Type</option>
+            </select>
+            <button type="button" class="mar-btn mar-btn--flat mar-btn--sm mar-filemanager__sort-dir"
+                    title="@(_sortAscending ? "Sort descending" : "Sort ascending")"
+                    @onclick="ToggleSortDirection">
+                @if (_sortAscending)
+                {
+                    @IconProvider.GetIcon("sort-asc", IconSize.Small)
+                }
+                else
+                {
+                    @IconProvider.GetIcon("sort-desc", IconSize.Small)
+                }
+            </button>
+
+            @* Search *@
+            <input type="search"
+                   class="mar-filemanager__search"
+                   placeholder="Search…"
+                   aria-label="Search files"
+                   value="@SearchFilter"
+                   @oninput="e => SearchFilter = e.Value?.ToString() ?? string.Empty" />
+
+            @* Upload button — visible when UploadSettings is configured *@
+            @if (UploadSettings is not null)
+            {
+                <button type="button" class="mar-btn mar-btn--flat mar-btn--sm mar-filemanager__upload-btn"
+                        title="Upload files"
+                        @onclick="ShowUploadDialog">
+                    @IconProvider.GetIcon("upload", IconSize.Small)
+                    Upload
+                </button>
+            }
+
+            @* Details toggle button — visible when ShowPreviewPane is enabled *@
+            @if (ShowPreviewPane)
+            {
+                <button type="button"
+                        class="mar-btn mar-btn--flat mar-btn--sm mar-filemanager__details-btn @(_previewPaneVisible ? "mar-filemanager__details-btn--active" : "")"
+                        title="@(_previewPaneVisible ? "Hide details" : "Show details")"
+                        @onclick="TogglePreviewPane">
+                    @IconProvider.GetIcon("info", IconSize.Small)
+                    Details
+                </button>
+            }
+
+            @* View toggle *@
+            <button type="button" class="mar-btn mar-btn--flat mar-btn--sm mar-filemanager__view-toggle"
+                    title="@(View == FileManagerViewType.Grid ? "Switch to List view" : "Switch to Grid view")"
+                    @onclick="ToggleView">
+                @if (View == FileManagerViewType.Grid)
+                {
+                    @IconProvider.GetIcon("view-list", IconSize.Small)
+                }
+                else
+                {
+                    @IconProvider.GetIcon("view-grid", IconSize.Small)
+                }
             </button>
         }
     </div>
@@ -27,143 +137,223 @@
         @if (ShowFolderTree)
         {
             <div class="mar-filemanager__sidebar">
-                <ul class="mar-filemanager__tree" role="tree">
+                <ul class="mar-filemanager__tree" role="tree" aria-label="Folder tree">
                     @foreach (var folder in GetRootFolders())
                     {
-                        <li role="treeitem" class="@(folder.Path == CurrentPath ? "mar-filemanager__tree-item--active" : "")"
-                            @onclick="() => NavigateTo(folder.Path)">
-                            @IconProvider.GetIcon("folder", IconSize.Small) @folder.Name
+                        var f = folder;
+                        var isActive = GetPath(f) == Path;
+                        <li role="treeitem"
+                            tabindex="0"
+                            aria-selected="@isActive"
+                            class="@(isActive ? "mar-filemanager__tree-item--active" : "")"
+                            @onclick="() => NavigateTo(GetPath(f))">
+                            @IconProvider.GetIcon("folder", IconSize.Small) @GetName(f)
                         </li>
                     }
                 </ul>
             </div>
         }
 
-        @* File list *@
-        <div class="mar-filemanager__files">
-            @if (ViewMode == FileManagerViewMode.Grid)
+        @* File list — shrinks when the preview pane is open *@
+        <div class="mar-filemanager__files @(_previewPaneVisible ? "mar-filemanager__files--with-preview" : "")">
+            @if (EnableLoaderContainer && _isLoading)
+            {
+                <div class="mar-filemanager__loader">Loading...</div>
+            }
+            @if (View == FileManagerViewType.Grid)
             {
                 <div class="mar-filemanager__grid">
                     @foreach (var item in GetCurrentItems())
                     {
                         var entry = item;
-                        <div class="mar-filemanager__grid-item @(entry.Path == SelectedItemPath ? "mar-filemanager__grid-item--selected" : "")"
+                        <div class="mar-filemanager__grid-item @(IsSelected(entry) ? "mar-filemanager__grid-item--selected" : "")"
+                             role="option"
+                             aria-selected="@IsSelected(entry)"
+                             @onclick:stopPropagation="true"
                              @onclick="() => SelectItem(entry)"
-                             @ondblclick="() => OpenItem(entry)">
+                             @ondblclick="() => OpenItem(entry)"
+                             @oncontextmenu="e => ShowContextMenu(entry, e)"
+                             @oncontextmenu:preventDefault="true">
                             <span class="mar-filemanager__icon">
-                                @IconProvider.GetIcon(entry.IsDirectory ? "folder" : "file", IconSize.Large)
+                                @IconProvider.GetIcon(GetIsDirectory(entry) ? "folder" : "file", IconSize.Large)
                             </span>
-                            <span class="mar-filemanager__name">@entry.Name</span>
+                            @if (IsRenaming(entry))
+                            {
+                                <input class="mar-filemanager__rename-input"
+                                       value="@_renameText"
+                                       @oninput="e => UpdateRenameText(e.Value?.ToString() ?? string.Empty)"
+                                       @onblur="CommitRename"
+                                       @onkeydown="HandleRenameKeyDown"
+                                       @onclick:stopPropagation="true" />
+                            }
+                            else
+                            {
+                                <span class="mar-filemanager__name">@GetName(entry)</span>
+                            }
                         </div>
                     }
                 </div>
             }
             else
             {
-                <table class="mar-filemanager__list">
+                <table class="mar-filemanager__list" role="grid">
                     <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Size</th>
-                            <th>Modified</th>
+                        <tr role="row">
+                            <th role="gridcell">Name</th>
+                            <th role="gridcell">Size</th>
+                            <th role="gridcell">Modified</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in GetCurrentItems())
                         {
                             var entry = item;
-                            <tr class="@(entry.Path == SelectedItemPath ? "mar-filemanager__row--selected" : "")"
+                            <tr role="row"
+                                class="@(IsSelected(entry) ? "mar-filemanager__row--selected" : "")"
+                                @onclick:stopPropagation="true"
                                 @onclick="() => SelectItem(entry)"
-                                @ondblclick="() => OpenItem(entry)">
-                                <td>
-                                    @IconProvider.GetIcon(entry.IsDirectory ? "folder" : "file", IconSize.Small)
-                                    @entry.Name
+                                @ondblclick="() => OpenItem(entry)"
+                                @oncontextmenu="e => ShowContextMenu(entry, e)"
+                                @oncontextmenu:preventDefault="true">
+                                <td role="gridcell">
+                                    @IconProvider.GetIcon(GetIsDirectory(entry) ? "folder" : "file", IconSize.Small)
+                                    @if (IsRenaming(entry))
+                                    {
+                                        <input class="mar-filemanager__rename-input"
+                                               value="@_renameText"
+                                               @oninput="e => UpdateRenameText(e.Value?.ToString() ?? string.Empty)"
+                                               @onblur="CommitRename"
+                                               @onkeydown="HandleRenameKeyDown"
+                                               @onclick:stopPropagation="true" />
+                                    }
+                                    else
+                                    {
+                                        <span class="mar-filemanager__name">@GetName(entry)</span>
+                                    }
                                 </td>
-                                <td>@(entry.IsDirectory ? "" : FormatSize(entry.Size))</td>
-                                <td>@entry.DateModified?.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td role="gridcell">@(GetIsDirectory(entry) ? "" : FormatSize(GetSize(entry)))</td>
+                                <td role="gridcell">@GetDateModified(entry)?.ToString("yyyy-MM-dd HH:mm")</td>
                             </tr>
                         }
                     </tbody>
                 </table>
             }
         </div>
+
+        @* Preview pane — rendered when ShowPreviewPane && _previewPaneVisible *@
+        @if (ShowPreviewPane && _previewPaneVisible)
+        {
+            <div class="mar-filemanager__preview" tabindex="0" aria-label="File details">
+                @if (SelectedItem is null)
+                {
+                    <p class="mar-filemanager__preview-empty">No item selected</p>
+                }
+                else
+                {
+                    var sel = SelectedItem;
+                    <div class="mar-filemanager__preview-icon">
+                        @IconProvider.GetIcon(GetIsDirectory(sel) ? "folder" : "file", IconSize.Large)
+                    </div>
+                    <div class="mar-filemanager__preview-details">
+                        <div class="mar-filemanager__preview-name">@GetName(sel)</div>
+                        <dl class="mar-filemanager__preview-meta">
+                            <dt>Type</dt>
+                            <dd>@(GetIsDirectory(sel) ? "Folder" : (GetExtension(sel) ?? "File"))</dd>
+                            @if (!GetIsDirectory(sel))
+                            {
+                                <dt>Size</dt>
+                                <dd>@FormatSize(GetSize(sel))</dd>
+                            }
+                            @if (GetDateCreated(sel) is { } dc)
+                            {
+                                <dt>Created</dt>
+                                <dd>@dc.ToString("yyyy-MM-dd HH:mm")</dd>
+                            }
+                            @if (GetDateModified(sel) is { } dm)
+                            {
+                                <dt>Modified</dt>
+                                <dd>@dm.ToString("yyyy-MM-dd HH:mm")</dd>
+                            }
+                        </dl>
+                    </div>
+                }
+            </div>
+        }
     </div>
+
+    @* Upload dialog overlay *@
+    @if (_uploadDialogVisible)
+    {
+        <div class="mar-filemanager__upload-overlay" @onclick="CloseUploadDialog">
+            <div class="mar-filemanager__upload-dialog" @onclick:stopPropagation="true">
+                <div class="mar-filemanager__upload-header">
+                    <span>Upload Files</span>
+                    <button type="button" class="mar-btn mar-btn--flat mar-btn--sm mar-filemanager__upload-close"
+                            @onclick="CloseUploadDialog">
+                        ×
+                    </button>
+                </div>
+                <div class="mar-filemanager__upload-body">
+                    <input type="file"
+                           class="mar-filemanager__upload-input"
+                           multiple="@(UploadSettings?.Multiple ?? true)"
+                           accept="@(UploadSettings?.AllowedExtensions is { Length: > 0 } exts ? string.Join(",", exts) : null)" />
+                </div>
+            </div>
+        </div>
+    }
+
+    @* Context menu overlay *@
+    @if (_contextMenuVisible && _contextMenuItem is not null)
+    {
+        <div class="mar-filemanager__context-menu"
+             role="menu"
+             style="position:fixed;left:@(_contextMenuX)px;top:@(_contextMenuY)px;z-index:1000;"
+             @onclick:stopPropagation="true">
+            @if (AllowRename)
+            {
+                <button type="button" role="menuitem"
+                        class="mar-filemanager__context-menu-item mar-filemanager__context-menu-item--rename"
+                        @onclick="() => StartRename(_contextMenuItem!)">
+                    Rename
+                </button>
+            }
+            @if (!GetIsDirectory(_contextMenuItem!))
+            {
+                <button type="button" role="menuitem"
+                        class="mar-filemanager__context-menu-item mar-filemanager__context-menu-item--download"
+                        @onclick="ContextMenuDownload">
+                    Download
+                </button>
+            }
+            @if (AllowDelete)
+            {
+                <button type="button" role="menuitem"
+                        class="mar-filemanager__context-menu-item mar-filemanager__context-menu-item--delete"
+                        @onclick="() => ConfirmDelete(_contextMenuItem!)">
+                    Delete
+                </button>
+            }
+        </div>
+    }
+
+    @* Delete confirmation dialog *@
+    @if (_deleteConfirmItem is not null)
+    {
+        <div class="mar-filemanager__confirm-overlay" @onclick:stopPropagation="true">
+            <div class="mar-filemanager__confirm-dialog" role="alertdialog" aria-modal="true">
+                <p class="mar-filemanager__confirm-message">Delete "@GetName(_deleteConfirmItem)"?</p>
+                <div class="mar-filemanager__confirm-actions">
+                    <button type="button" class="mar-btn mar-btn--danger mar-filemanager__confirm-ok"
+                            @onclick="ExecuteDelete">
+                        OK
+                    </button>
+                    <button type="button" class="mar-btn mar-btn--flat mar-filemanager__confirm-cancel"
+                            @onclick="CancelDelete">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
 </div>
-
-@code {
-    [Parameter] public IEnumerable<FileManagerEntry> Items { get; set; } = Enumerable.Empty<FileManagerEntry>();
-    [Parameter] public string CurrentPath { get; set; } = "/";
-    [Parameter] public EventCallback<string> CurrentPathChanged { get; set; }
-    [Parameter] public FileManagerViewMode ViewMode { get; set; } = FileManagerViewMode.List;
-    [Parameter] public bool ShowFolderTree { get; set; } = true;
-    [Parameter] public bool AllowCreate { get; set; }
-    [Parameter] public bool AllowDelete { get; set; }
-    [Parameter] public bool AllowRename { get; set; }
-    [Parameter] public EventCallback<FileManagerEntry> OnSelect { get; set; }
-    [Parameter] public EventCallback<FileManagerEntry> OnOpen { get; set; }
-    [Parameter] public EventCallback<string> OnCreateFolder { get; set; }
-    [Parameter] public EventCallback<FileManagerEntry> OnDelete { get; set; }
-
-    private string? SelectedItemPath;
-    private bool CanNavigateUp => CurrentPath != "/" && CurrentPath.Contains('/');
-
-    private IEnumerable<FileManagerEntry> GetCurrentItems()
-    {
-        return Items
-            .Where(i => GetParentPath(i.Path) == CurrentPath.TrimEnd('/'))
-            .OrderByDescending(i => i.IsDirectory)
-            .ThenBy(i => i.Name);
-    }
-
-    private IEnumerable<FileManagerEntry> GetRootFolders()
-    {
-        return Items.Where(i => i.IsDirectory).OrderBy(i => i.Path);
-    }
-
-    private static string GetParentPath(string path)
-    {
-        var lastSlash = path.TrimEnd('/').LastIndexOf('/');
-        return lastSlash <= 0 ? "" : path[..lastSlash];
-    }
-
-    private async Task NavigateTo(string path)
-    {
-        CurrentPath = path;
-        await CurrentPathChanged.InvokeAsync(CurrentPath);
-    }
-
-    private async Task NavigateUp()
-    {
-        var parent = GetParentPath(CurrentPath);
-        if (!string.IsNullOrEmpty(parent))
-            await NavigateTo(parent);
-        else
-            await NavigateTo("/");
-    }
-
-    private async Task SelectItem(FileManagerEntry entry)
-    {
-        SelectedItemPath = entry.Path;
-        await OnSelect.InvokeAsync(entry);
-    }
-
-    private async Task OpenItem(FileManagerEntry entry)
-    {
-        if (entry.IsDirectory)
-            await NavigateTo(entry.Path);
-        else
-            await OnOpen.InvokeAsync(entry);
-    }
-
-    private async Task CreateFolder()
-    {
-        await OnCreateFolder.InvokeAsync(CurrentPath);
-    }
-
-    private static string FormatSize(long bytes)
-    {
-        if (bytes < 1024) return $"{bytes} B";
-        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F1} KB";
-        return $"{bytes / (1024.0 * 1024):F1} MB";
-    }
-}

@@ -27,7 +27,7 @@
                                    ValueMode="AllocationValueMode.Hours"
                                    SelectionMode="@_selectionMode"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="2"
+                                   MinVisibleColumns="2"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    OnSelectionChanged="@HandleSelectionChanged"
                                    Height="250px">
@@ -59,7 +59,7 @@
                                    AllowDragFill="true"
                                    AllowKeyboardEdit="true"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="2"
+                                   MinVisibleColumns="2"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    OnRangeEdited="@HandleRangeEdited"
                                    OnCellEdited="@HandleCellEdited"
@@ -94,7 +94,7 @@
                                    EnableContextMenu="true"
                                    ContextMenuItems="@_customMenuItems"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="2"
+                                   MinVisibleColumns="2"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    OnContextMenuAction="@HandleCustomMenuAction"
                                    CanExecuteAction="@HandleCanExecute"
@@ -123,7 +123,7 @@
                                    ViewGrain="TimeGranularity.Day"
                                    ValueMode="AllocationValueMode.Hours"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="2"
+                                   MinVisibleColumns="2"
                                    DefaultRangeUnit="TimeGranularity.Week"
                                    Height="380px">
             <AllocationResourceColumns>
@@ -146,7 +146,7 @@
                                    ValueMode="AllocationValueMode.Hours"
                                    AllowKeyboardEdit="true"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="2"
+                                   MinVisibleColumns="2"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    Height="380px">
             <AllocationResourceColumns>
@@ -420,7 +420,7 @@
         "    Allocations=\"@_dailyAllocations\"\n" +
         "    AuthoritativeLevel=\"TimeGranularity.Day\"\n" +
         "    ViewGrain=\"TimeGranularity.Day\"\n" +
-        "    DefaultRangeLength=\"2\"\n" +
+        "    MinVisibleColumns=\"2\"\n" +
         "    DefaultRangeUnit=\"TimeGranularity.Week\"\n" +
         "    Height=\"380px\" />\n" +
         "\n" +

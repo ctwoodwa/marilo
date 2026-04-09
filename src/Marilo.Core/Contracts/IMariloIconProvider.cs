@@ -20,6 +20,18 @@ public interface IMariloIconProvider
     /// <summary>
     /// Gets the URL of the SVG sprite sheet used by this icon provider.
     /// </summary>
-    /// <returns>A relative or absolute URL pointing to the sprite SVG file.</returns>
+    /// <returns>A relative or absolute URL pointing to the sprite SVG file.
+    /// Returns <see cref="string.Empty"/> for <see cref="IconRenderMode.CssClass"/> providers.</returns>
     string GetIconSpriteUrl();
+
+    /// <summary>
+    /// Gets the render mode used by this icon provider (sprite, inline SVG, or CSS class).
+    /// </summary>
+    IconRenderMode RenderMode => IconRenderMode.SvgSprite;
+
+    /// <summary>
+    /// Gets the display name of the icon library (e.g., "Tabler", "Lucide", "Custom").
+    /// Used for diagnostics and tooling.
+    /// </summary>
+    string LibraryName => "Unknown";
 }

@@ -15,7 +15,7 @@
                                    ViewGrain="TimeGranularity.Month"
                                    ValueMode="AllocationValueMode.Hours"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="3"
+                                   MinVisibleColumns="3"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    Height="250px">
             <AllocationResourceColumns>
@@ -51,7 +51,7 @@
                                    ViewGrainChanged="@(g => _viewGrain = g)"
                                    ValueMode="AllocationValueMode.Hours"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="3"
+                                   MinVisibleColumns="3"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    OnVisibleRangeChanged="@HandleRangeChanged"
                                    Height="250px">
@@ -89,7 +89,7 @@
                                    DefaultDistributionMode="DistributionMode.EvenSpread"
                                    AllowKeyboardEdit="true"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="3"
+                                   MinVisibleColumns="3"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    OnCellEdited="@HandleCellEdited"
                                    Height="250px">
@@ -117,7 +117,7 @@
                                    ValueMode="AllocationValueMode.Hours"
                                    ShowJumpToDate="false"
                                    VisibleStart="@_demoStart"
-                                   DefaultRangeLength="2"
+                                   MinVisibleColumns="2"
                                    DefaultRangeUnit="TimeGranularity.Month"
                                    Height="400px">
             <AllocationResourceColumns>

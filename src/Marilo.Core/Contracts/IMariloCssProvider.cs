@@ -81,14 +81,19 @@ public interface IMariloCssProvider
     string RatingClass();
     string ColorPickerClass();
     string ColorPickerPopupClass();
+    string ColorGradientClass();
+    string ColorPaletteClass();
+    string FlatColorPickerClass();
     string DatePickerClass();
     string TimePickerClass();
+    string TimePickerPopupClass();
     string DateRangePickerClass();
     string DateRangePickerPopupClass();
     string DateTimePickerClass();
     string DateTimePickerPopupClass();
     string FileUploadClass();
     string FileUploadFileListClass();
+    string FileUploadDropZoneClass(bool isDragOver, bool isDisabled);
 
     // ── Selection / Dropdowns ───────────────────────────────────────────
     string DropDownListClass(bool isOpen, bool isDisabled, bool isInvalid);

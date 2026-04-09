@@ -203,12 +203,13 @@ public class MariloAllocationSchedulerTests : MariloTestBase
             .Add(x => x.AuthoritativeLevel, TimeGranularity.Week)
             .Add(x => x.ViewGrain, TimeGranularity.Week)
             .Add(x => x.VisibleStart, new DateTime(2026, 4, 6))
-            // .Add(x => x.DefaultRangeLength, 1)
             .Add(x => x.DefaultRangeUnit, TimeGranularity.Month)
             .Add(x => x.OnCellEdited, new EventCallback<CellEditedArgs>(null, (CellEditedArgs args) =>
             {
                 editedFired = true;
             })));
+
+        Assert.False(editedFired, "OnCellEdited should not fire on initial render");
 
         // Component renders without error -- event wiring verified
         Assert.Contains("mar-allocation-scheduler", cut.Markup);

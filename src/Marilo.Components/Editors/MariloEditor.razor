@@ -101,6 +101,8 @@
     }
 </div>
 
+@inject IEnumerable<IEditorFormatConverter> _formatConverters
+
 @code {
     private ElementReference _editorRef;
     private ElementReference _previewRef;
@@ -297,6 +299,52 @@
         if (_jsModule is not null && EditMode == EditorEditMode.Edit)
             return await _jsModule.InvokeAsync<string>("getContent");
         return Value ?? "";
+    }
+
+    // ── Import / Export ───────────────────────────────────────────────
+
+    /// <summary>
+    /// Imports content in the specified format, converting it to HTML via the
+    /// registered <see cref="IEditorFormatConverter"/> for that format, then
+    /// sets <see cref="Value"/> and syncs the editor UI.
+    /// </summary>
+    /// <param name="content">The content to import (e.g., Markdown text).</param>
+    /// <param name="format">The format name (e.g., "markdown", "plaintext"). Must match a registered converter's <see cref="IEditorFormatConverter.Format"/>.</param>
+    /// <exception cref="InvalidOperationException">No converter registered for the requested format.</exception>
+    public async Task ImportAsync(string content, string format)
+    {
+        var converter = ResolveConverter(format);
+        var html = converter.ToHtml(content);
+        Value = html;
+        await ValueChanged.InvokeAsync(Value);
+        if (_jsModule is not null)
+            await _jsModule.InvokeVoidAsync("setContent", Value);
+    }
+
+    /// <summary>
+    /// Exports the current HTML value in the specified format via the registered
+    /// <see cref="IEditorFormatConverter"/> for that format.
+    /// </summary>
+    /// <param name="format">The format name (e.g., "markdown", "plaintext"). Must match a registered converter's <see cref="IEditorFormatConverter.Format"/>.</param>
+    /// <returns>The converted content string.</returns>
+    /// <exception cref="InvalidOperationException">No converter registered for the requested format.</exception>
+    public async Task<string> ExportAsync(string format)
+    {
+        var html = await GetHtmlAsync();
+        var converter = ResolveConverter(format);
+        return converter.FromHtml(html);
+    }
+
+    private IEditorFormatConverter ResolveConverter(string format)
+    {
+        var converter = _formatConverters?.FirstOrDefault(c =>
+            string.Equals(c.Format, format, StringComparison.OrdinalIgnoreCase));
+        if (converter is null)
+            throw new InvalidOperationException(
+                $"No IEditorFormatConverter registered for format '{format}'. " +
+                "Register one via services.AddMariloEditorMarkdownSupport() or " +
+                "services.AddMariloEditorPlainTextSupport(), or add a custom implementation.");
+        return converter;
     }
 
     // ── JS Interop ─────────────────────────────────────────────────────

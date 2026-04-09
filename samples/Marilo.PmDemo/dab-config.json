@@ -2,7 +2,7 @@
   "$schema": "https://github.com/Azure/data-api-builder/releases/latest/download/dab.draft.schema.json",
   "data-source": {
     "database-type": "postgresql",
-    "connection-string": "@env('DAB_CONNECTION_STRING')",
+    "connection-string": "@env('ConnectionStrings__pmdemodb')",
     "options": {
       "set-session-context": false
     }
@@ -30,7 +30,7 @@
   },
   "entities": {
     "Project": {
-      "source": { "object": "\"Projects\"", "type": "table" },
+      "source": { "object": "projects", "type": "table" },
       "graphql": { "enabled": true, "type": { "singular": "Project", "plural": "projects" } },
       "rest": { "enabled": false },
       "permissions": [
@@ -42,7 +42,7 @@
       ]
     },
     "ProjectMember": {
-      "source": { "object": "\"ProjectMembers\"", "type": "table" },
+      "source": { "object": "project_members", "type": "table" },
       "graphql": { "enabled": true, "type": { "singular": "ProjectMember", "plural": "projectMembers" } },
       "rest": { "enabled": false },
       "permissions": [
@@ -54,7 +54,7 @@
       ]
     },
     "Task": {
-      "source": { "object": "\"Tasks\"", "type": "table" },
+      "source": { "object": "tasks", "type": "table" },
       "graphql": { "enabled": true, "type": { "singular": "Task", "plural": "tasks" } },
       "rest": { "enabled": false },
       "permissions": [
@@ -66,7 +66,7 @@
       ]
     },
     "Subtask": {
-      "source": { "object": "\"Subtasks\"", "type": "table" },
+      "source": { "object": "subtasks", "type": "table" },
       "graphql": { "enabled": true, "type": { "singular": "Subtask", "plural": "subtasks" } },
       "rest": { "enabled": false },
       "permissions": [
@@ -78,7 +78,7 @@
       ]
     },
     "Comment": {
-      "source": { "object": "\"Comments\"", "type": "table" },
+      "source": { "object": "comments", "type": "table" },
       "graphql": { "enabled": true, "type": { "singular": "Comment", "plural": "comments" } },
       "rest": { "enabled": false },
       "permissions": [
@@ -90,7 +90,7 @@
       ]
     },
     "Milestone": {
-      "source": { "object": "\"Milestones\"", "type": "table" },
+      "source": { "object": "milestones", "type": "table" },
       "graphql": { "enabled": true, "type": { "singular": "Milestone", "plural": "milestones" } },
       "rest": { "enabled": false },
       "permissions": [
@@ -102,7 +102,7 @@
       ]
     },
     "Risk": {
-      "source": { "object": "\"Risks\"", "type": "table" },
+      "source": { "object": "risks", "type": "table" },
       "graphql": { "enabled": true, "type": { "singular": "Risk", "plural": "risks" } },
       "rest": { "enabled": false },
       "permissions": [
@@ -114,7 +114,7 @@
       ]
     },
     "BudgetLine": {
-      "source": { "object": "\"BudgetLines\"", "type": "table" },
+      "source": { "object": "budget_lines", "type": "table" },
       "graphql": { "enabled": true, "type": { "singular": "BudgetLine", "plural": "budgetLines" } },
       "rest": { "enabled": false },
       "permissions": [
@@ -126,7 +126,7 @@
       ]
     },
     "AuditRecord": {
-      "source": { "object": "\"AuditRecords\"", "type": "table" },
+      "source": { "object": "audit_records", "type": "table" },
       "graphql": { "enabled": true, "type": { "singular": "AuditRecord", "plural": "auditRecords" } },
       "rest": { "enabled": false },
       "permissions": [

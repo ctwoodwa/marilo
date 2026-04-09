@@ -29,7 +29,7 @@ Sections in this article:
 The Gantt Tree offers several editing modes with different user experience. Set the `TreeListEditMode` property to a member of the `GanttTreeListEditMode` enum:
 
 * `None` - The built-in [`Add` and `Edit` commands](slug:gantt-columns-command#built-in-commands) don't work in this mode.
-* `Incell` - the default `TreeListEditMode` value. [Edit a single cell](slug:gant-tree-incell-editing) by clicking on it or tabbing
+* `Incell` - the default `TreeListEditMode` value. [Edit a single cell](slug:gant-tree-incell-editing) by clicking on it or tabbing. Click a cell to edit just that cell. Press Tab to move to the next editable cell, Enter to commit, or Escape to cancel. Unlike Inline mode, only one cell is edited at a time.
 * `Inline` - [edit a row](slug:gant-tree-inline-editing) by clicking on an [Edit command button](slug:gantt-columns-command)
 * `Popup` - [edit a row in a popup form](slug:gant-tree-popup-editing) by clicking on an Edit button
 
@@ -292,7 +292,7 @@ You can customize the editors rendered in the Gantt Tree by providing the `Edito
 }
 ````
 
-* `OnEdit` - fires when the user is about to enter edit mode on an existing item(Cancellable). The event handler receives an argument of type `GanttEditEventArgs` that exposes the following fields:
+* `OnTaskEdit` - fires when the user is about to enter edit mode on an existing item(Cancellable). The event handler receives an argument of type `GanttEditEventArgs` that exposes the following fields:
 
     * `Item` - an object you can cast to your model class to obtain the current data item.
     
@@ -344,7 +344,7 @@ The example below shows how you can handle the events the Gantt component expose
               OnUpdate="@UpdateItem"
               OnDelete="@DeleteItem"
               OnCreate="@CreateItem"
-              OnEdit="@OnEditItem">
+              OnTaskEdit="@OnEditItem">
     <GanttToolBarTemplate>
         <GanttCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</GanttCommandButton>
     </GanttToolBarTemplate>

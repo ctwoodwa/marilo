@@ -24,7 +24,7 @@ When you set up the Column Chooser Template, the list of columns that are render
               Height="600px"
               IdField="Id"
               ParentIdField="ParentId"
-              Navigable="true"
+              @* Keyboard navigation is built-in and always active. *@
               ColumnReorderable="true"
               Sortable="true"
               ColumnResizable="true"

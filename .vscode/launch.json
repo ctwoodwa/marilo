@@ -7,7 +7,10 @@
       "request": "launch",
       "preLaunchTask": "build:demo",
       "program": "${workspaceFolder}/samples/Marilo.Demo/bin/Debug/net10.0/Marilo.Demo.dll",
-      "args": ["--urls", "https://localhost:5301;http://localhost:5300"],
+      "args": [
+        "--urls",
+        "https://localhost:5301;http://localhost:5300"
+      ],
       "cwd": "${workspaceFolder}/samples/Marilo.Demo",
       "stopAtEntry": false,
       "env": {
@@ -27,6 +30,11 @@
       "args": [],
       "cwd": "${workspaceFolder}/samples/Marilo.PmDemo/Marilo.PmDemo.AppHost",
       "stopAtEntry": false,
+      "justMyCode": true,
+      "requireExactSource": false,
+      "symbolOptions": {
+        "searchMicrosoftSymbolServer": false
+      },
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DOTNET_ENVIRONMENT": "Development",

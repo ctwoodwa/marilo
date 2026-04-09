@@ -2,7 +2,9 @@
   <Folder Name="/src/">
     <Project Path="src/Marilo.Core/Marilo.Core.csproj" />
     <Project Path="src/Marilo.Components/Marilo.Components.csproj" />
+    <Project Path="src/Marilo.Components.Shell/Marilo.Components.Shell.csproj" />
     <Project Path="src/Marilo.Icons/Marilo.Icons.csproj" />
+    <Project Path="src/Marilo.Icons.Tabler/Marilo.Icons.Tabler.csproj" />
     <Project Path="src/Marilo.Providers.FluentUI/Marilo.Providers.FluentUI.csproj" />
     <Project Path="src/Marilo.Providers.Bootstrap/Marilo.Providers.Bootstrap.csproj" />
   </Folder>

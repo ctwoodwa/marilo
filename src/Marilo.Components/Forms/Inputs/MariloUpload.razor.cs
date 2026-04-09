@@ -12,7 +12,7 @@ namespace Marilo.Components.Forms.Inputs;
 /// Supports auto-upload or deferred upload, drag-and-drop, chunk upload, initial files,
 /// pause/resume/cancel per file, and full event model.
 /// </summary>
-public partial class MariloUpload : MariloComponentBase
+public partial class MariloUpload : MariloComponentBase, IUploadChunkSettingsSink
 {
     [Inject] private HttpClient Http { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
@@ -129,6 +129,33 @@ public partial class MariloUpload : MariloComponentBase
     /// <summary>Specifies the adaptive rendering mode for the popup on mobile devices.</summary>
     [Parameter] public AdaptiveMode AdaptiveMode { get; set; } = AdaptiveMode.None;
 
+    // ── IUploadChunkSettingsSink ──────────────────────────────────────────────
+
+    private MariloUploadChunkSettings? _chunkSettings;
+
+    void IUploadChunkSettingsSink.RegisterChunkSettings(MariloUploadChunkSettings settings)
+    {
+        _chunkSettings = settings;
+        InvokeAsync(StateHasChanged);
+    }
+
+    void IUploadChunkSettingsSink.UnregisterChunkSettings(MariloUploadChunkSettings settings)
+    {
+        if (ReferenceEquals(_chunkSettings, settings))
+        {
+            _chunkSettings = null;
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    // ── Effective chunk settings (child overrides flat parameters) ────────────
+
+    private long EffectiveChunkSize => _chunkSettings?.ChunkSize ?? ChunkSize;
+    private int? EffectiveAutoRetryAfter => _chunkSettings?.AutoRetryAfter;
+    private int EffectiveMaxAutoRetries => _chunkSettings?.MaxAutoRetries ?? 0;
+    private string? EffectiveMetadataField => _chunkSettings?.MetadataField;
+    private bool EffectiveResumable => _chunkSettings?.Resumable ?? true;
+
     // ── Internal state ────────────────────────────────────────────────────────
 
     private readonly List<UploadFileInfo> _files = [];
@@ -239,6 +266,8 @@ public partial class MariloUpload : MariloComponentBase
         await OnResume.InvokeAsync(args);
         if (!args.IsCancelled)
         {
+            if (!EffectiveResumable)
+                file.UploadedBytes = 0; // non-resumable: restart from byte 0
             file.CancellationTokenSource = new System.Threading.CancellationTokenSource();
             file.Status = UploadFileStatus.Uploading;
             await UploadFileAsync(file, [], []);
@@ -355,7 +384,7 @@ public partial class MariloUpload : MariloComponentBase
         {
             var maxReadSize = MaxFileSize ?? 2L * 1024 * 1024 * 1024;
 
-            if (ChunkSize > 0 && info.BrowserFile.Size > ChunkSize)
+            if (EffectiveChunkSize > 0 && info.BrowserFile.Size > EffectiveChunkSize)
             {
                 await UploadChunkedAsync(info, requestData, requestHeaders, maxReadSize);
             }
@@ -447,9 +476,10 @@ public partial class MariloUpload : MariloComponentBase
         Dictionary<string, object> requestHeaders,
         long maxReadSize)
     {
-        var totalChunks = (int)Math.Ceiling((double)info.BrowserFile!.Size / ChunkSize);
-        var buffer = new byte[ChunkSize];
-        var startChunk = (int)(info.UploadedBytes / ChunkSize);
+        var chunkSize = EffectiveChunkSize;
+        var totalChunks = (int)Math.Ceiling((double)info.BrowserFile!.Size / chunkSize);
+        var buffer = new byte[chunkSize];
+        var startChunk = (int)(info.UploadedBytes / chunkSize);
 
         await using var stream = info.BrowserFile.OpenReadStream(maxReadSize);
 
@@ -472,7 +502,7 @@ public partial class MariloUpload : MariloComponentBase
             // Check for cancellation/pause between chunks
             info.CancellationTokenSource!.Token.ThrowIfCancellationRequested();
 
-            var bytesToRead = (int)Math.Min(ChunkSize, info.BrowserFile.Size - (long)chunkIndex * ChunkSize);
+            var bytesToRead = (int)Math.Min(chunkSize, info.BrowserFile.Size - (long)chunkIndex * chunkSize);
             var bytesRead = await stream.ReadAsync(buffer.AsMemory(0, bytesToRead), info.CancellationTokenSource.Token);
 
             using var chunkContent = new MultipartFormDataContent();
@@ -484,6 +514,10 @@ public partial class MariloUpload : MariloComponentBase
             chunkContent.Add(new StringContent(totalChunks.ToString()), "totalChunks");
             chunkContent.Add(new StringContent(info.Name), "fileName");
             chunkContent.Add(new StringContent(info.Size.ToString()), "totalSize");
+
+            // Optional metadata field from chunk settings
+            if (!string.IsNullOrEmpty(EffectiveMetadataField))
+                chunkContent.Add(new StringContent(info.Id), EffectiveMetadataField);
 
             foreach (var kv in requestData)
                 chunkContent.Add(new StringContent(kv.Value?.ToString() ?? ""), kv.Key);
@@ -498,8 +532,18 @@ public partial class MariloUpload : MariloComponentBase
 
             if (!response.IsSuccessStatusCode)
             {
+                // Auto-retry logic when EffectiveAutoRetryAfter is configured
+                if (EffectiveAutoRetryAfter.HasValue && info.ChunkRetryCount < EffectiveMaxAutoRetries)
+                {
+                    info.ChunkRetryCount++;
+                    await Task.Delay(EffectiveAutoRetryAfter.Value, info.CancellationTokenSource.Token);
+                    chunkIndex--; // retry same chunk
+                    continue;
+                }
+
                 var responseText = await response.Content.ReadAsStringAsync();
                 info.Status = UploadFileStatus.Failed;
+                info.ChunkRetryCount = 0;
                 await OnError.InvokeAsync(new UploadErrorEventArgs
                 {
                     Files = [info],
@@ -514,7 +558,8 @@ public partial class MariloUpload : MariloComponentBase
                 return;
             }
 
-            info.UploadedBytes = (long)(chunkIndex + 1) * ChunkSize;
+            info.ChunkRetryCount = 0; // reset retry counter on success
+            info.UploadedBytes = (long)(chunkIndex + 1) * chunkSize;
             if (info.UploadedBytes > info.BrowserFile.Size)
                 info.UploadedBytes = info.BrowserFile.Size;
 

@@ -13,10 +13,10 @@
         <input id="@Id"
                type="text"
                class="@CssProvider.TextBoxClass(false, !Enabled)"
-               value="@FormatValue()"
+               value="@_inputText"
                placeholder="@Placeholder"
                disabled="@(!Enabled)"
-               readonly="true"
+               readonly="@ReadOnly"
                tabindex="@TabIndex"
                inputmode="@InputMode"
                autocomplete="@AutoComplete"
@@ -25,7 +25,7 @@
                aria-haspopup="dialog"
                aria-expanded="@_isPopupOpen.ToString().ToLowerInvariant()"
                aria-controls="@(_isPopupOpen ? _popupId : null)"
-               @onfocus="OpenPopup"
+               @oninput="OnInputChanged"
                @onclick="OpenPopup"
                @onblur="HandleBlur" />
         @if (ShowClearButton && Enabled && !ReadOnly && Value.HasValue)
@@ -224,12 +224,28 @@
     /// <summary>Specifies the adaptive rendering mode for the popup on mobile devices.</summary>
     [Parameter] public AdaptiveMode AdaptiveMode { get; set; } = AdaptiveMode.None;
 
+    /// <summary>Controls when validation fires. Accepted values: "input", "blur", "change". Null means no automatic validation trigger.</summary>
+    [Parameter] public string? ValidateOn { get; set; }
+
+    // Tumbler step parameters (matching DateTimePickerSteps child component concept).
+    // Mirrors MariloTimePicker.razor:222-224 to keep both pickers consistent.
+
+    /// <summary>Increment step for the hour tumbler. Defaults to 1. Values less than 1 are clamped to 1.</summary>
+    [Parameter] public int HourStep { get; set; } = 1;
+
+    /// <summary>Increment step for the minute tumbler. Defaults to 1. Values less than 1 are clamped to 1.</summary>
+    [Parameter] public int MinuteStep { get; set; } = 1;
+
+    /// <summary>Increment step for the second tumbler. Defaults to 1. Values less than 1 are clamped to 1.</summary>
+    [Parameter] public int SecondStep { get; set; } = 1;
+
     // ─── Private State ────────────────────────────────────────────────────────
 
     private bool _isPopupOpen;
     private readonly string _popupId = $"mar-dtp-{Guid.NewGuid():N}";
     private DateTime _displayMonth;
     private Dictionary<DateOnly, CalendarCellRenderEventArgs> _cellRenderCache = new();
+    private string _inputText = string.Empty;
 
     // Time tumbler state
     private int _hour;
@@ -245,6 +261,24 @@
         var reference = Value ?? DateTime.Today;
         _displayMonth = new DateTime(reference.Year, reference.Month, 1);
         InitTimeFromValue();
+        _inputText = FormatValue() ?? string.Empty;
+    }
+
+    protected override void OnParametersSet()
+    {
+        // Sync displayed text from Value when the consumer updates the binding
+        // externally. We only overwrite _inputText when the parsed Value differs
+        // from what the user has typed — otherwise mid-typing edits would jump.
+        var formatted = FormatValue() ?? string.Empty;
+        if (!string.Equals(_inputText, formatted, StringComparison.Ordinal))
+        {
+            // If _inputText currently parses to the same Value, leave it alone
+            // (user is mid-edit). Otherwise sync.
+            if (!TryParseInput(_inputText, out var parsed) || parsed != Value)
+            {
+                _inputText = formatted;
+            }
+        }
     }
 
     private void InitTimeFromValue()
@@ -322,6 +356,72 @@
         await OnBlur.InvokeAsync();
     }
 
+    // ─── Typed input parsing ──────────────────────────────────────────────────
+
+    private async Task OnInputChanged(ChangeEventArgs e)
+    {
+        if (!Enabled || ReadOnly) return;
+
+        var text = e.Value?.ToString() ?? string.Empty;
+        _inputText = text;
+
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            // Clearing the input clears Value (matches the existing × button behavior).
+            if (Value.HasValue)
+            {
+                Value = null;
+                await ValueChanged.InvokeAsync(null);
+            }
+            return;
+        }
+
+        if (TryParseInput(text, out var parsed) && parsed.HasValue)
+        {
+            // Clamp to Min/Max
+            var dt = parsed.Value;
+            if (dt < Min) dt = Min;
+            if (dt > Max) dt = Max;
+
+            if (Value != dt)
+            {
+                Value = dt;
+                _hour = dt.Hour;
+                _minute = dt.Minute;
+                _second = dt.Second;
+                _displayMonth = new DateTime(dt.Year, dt.Month, 1);
+                await ValueChanged.InvokeAsync(Value);
+            }
+        }
+        // Invalid input: keep _inputText (user keeps typing) but do not touch Value.
+    }
+
+    private bool TryParseInput(string text, out DateTime? result)
+    {
+        result = null;
+        if (string.IsNullOrWhiteSpace(text)) return false;
+
+        // Try the configured Format first (strict)
+        if (DateTime.TryParseExact(text, Format,
+                System.Globalization.CultureInfo.CurrentCulture,
+                System.Globalization.DateTimeStyles.None, out var exact))
+        {
+            result = exact;
+            return true;
+        }
+
+        // Fall back to tolerant parsing (lets users type "2026-05-20 14:30" even
+        // when Format is "M/d/yyyy h:mm tt")
+        if (DateTime.TryParse(text, System.Globalization.CultureInfo.CurrentCulture,
+                System.Globalization.DateTimeStyles.None, out var loose))
+        {
+            result = loose;
+            return true;
+        }
+
+        return false;
+    }
+
     // ─── Navigation ───────────────────────────────────────────────────────────
 
     private async Task PreviousMonth()
@@ -360,6 +460,7 @@
         if (dt > Max) dt = Max;
 
         Value = dt;
+        _inputText = FormatValue() ?? string.Empty;
         await ValueChanged.InvokeAsync(Value);
         await OnConfirm.InvokeAsync(Value);
         await ClosePopup();
@@ -375,6 +476,7 @@
         _displayMonth = new DateTime(now.Year, now.Month, 1);
 
         Value = now;
+        _inputText = FormatValue() ?? string.Empty;
         await ValueChanged.InvokeAsync(Value);
         await OnConfirm.InvokeAsync(Value);
         await ClosePopup();
@@ -384,17 +486,22 @@
     {
         Value = null;
         _pendingDate = null;
+        _inputText = string.Empty;
         await ValueChanged.InvokeAsync(null);
     }
 
     // ─── Time Tumblers ────────────────────────────────────────────────────────
 
-    private void IncrementHour() => _hour = (_hour + 1) % 24;
-    private void DecrementHour() => _hour = (_hour - 1 + 24) % 24;
-    private void IncrementMinute() => _minute = (_minute + 1) % 60;
-    private void DecrementMinute() => _minute = (_minute - 1 + 60) % 60;
-    private void IncrementSecond() => _second = (_second + 1) % 60;
-    private void DecrementSecond() => _second = (_second - 1 + 60) % 60;
+    private int HourStepClamped => Math.Max(1, HourStep);
+    private int MinuteStepClamped => Math.Max(1, MinuteStep);
+    private int SecondStepClamped => Math.Max(1, SecondStep);
+
+    private void IncrementHour() => _hour = (_hour + HourStepClamped) % 24;
+    private void DecrementHour() => _hour = (_hour - HourStepClamped + 24) % 24;
+    private void IncrementMinute() => _minute = (_minute + MinuteStepClamped) % 60;
+    private void DecrementMinute() => _minute = (_minute - MinuteStepClamped + 60) % 60;
+    private void IncrementSecond() => _second = (_second + SecondStepClamped) % 60;
+    private void DecrementSecond() => _second = (_second - SecondStepClamped + 60) % 60;
 
     // ─── Helper Predicates ────────────────────────────────────────────────────
 

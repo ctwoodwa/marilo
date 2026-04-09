@@ -10,7 +10,7 @@ components: ["gantt"]
 ---
 # Gantt State
 
-The Gantt lets you save, load and change its current state through code. The state management includes all the user-configurable properties of the Gantt - such as sorting, filtering, edited items, TreeList width, column size and order.
+The Gantt lets you save, load and change its current state through code. The Phase 1 implementation includes core state management for sorting, filtering, expanded items, and timeline view. Additional properties such as editing state, TreeList width, and column state are planned for Phase 2.
 
 See the feature in action in the [Live Demo: Gantt State](https://demos.marilo.com/blazor-ui/gantt/persist-state).
 
@@ -18,6 +18,8 @@ This article contains the following sections:
 
 <!-- Start Document Outline -->
 
+* [Phase 1 — Current Implementation](#phase-1--current-implementation)
+* [Phase 2 — Planned](#phase-2--planned)
 * [Basics](#basics)
 	* [Events](#events)
 	* [Methods](#methods)
@@ -32,6 +34,57 @@ This article contains the following sections:
 
 <!-- End Document Outline -->
 
+## Phase 1 — Current Implementation
+
+The minimal state API is currently implemented in MariloGantt. It provides core functionality for managing sort, filter, expanded items, and timeline view state.
+
+### GanttState(TItem) Class
+
+Properties available in Phase 1:
+
+* `SortDescriptor` — `GanttSortDescriptor?` — The current sort applied to the Gantt. Null indicates no sort is active. Contains the field name and sort direction.
+
+* `FilterValues` — `Dictionary<string, string>?` — Filter values keyed by column field name. Null indicates no filters. Empty dictionary means no filters applied.
+
+* `ExpandedItems` — `IReadOnlyCollection<object>?` — Collection of expanded node IDs (by their identity key). Null indicates default expansion behavior. Empty collection means all items are collapsed.
+
+* `View` — `GanttView?` — The currently active timeline view (e.g., Day, Week, Month).
+
+### GanttSortDescriptor Class
+
+* `Field` — `string` — The name of the column field to sort by.
+
+* `Ascending` — `bool` — Sort direction. True for ascending, false for descending.
+
+### GanttStateEventArgs(TItem) Class
+
+* `State` — `GanttState(TItem)` — The current state snapshot of the Gantt.
+
+* `PropertyName` — `string?` — The name of the property that changed. In `OnStateInit`, this is null. In `OnStateChanged`, this is one of: `"SortDescriptor"`, `"FilterValues"`, `"ExpandedItems"`, or `"View"`.
+
+### Events
+
+* `OnStateInit` — `EventCallback<GanttStateEventArgs(TItem)>` — Fires once during Gantt initialization. Handlers can provide a saved state by assigning to `args.State`. This allows you to restore persisted state during component startup.
+
+* `OnStateChanged` — `EventCallback<GanttStateEventArgs(TItem)>` — Fires when the user changes sort, filter, expanded items, or timeline view. The `PropertyName` field indicates which property changed. Does NOT fire when state is set programmatically via `SetStateAsync`.
+
+### Methods
+
+* `GetState()` — `GanttState(TItem>` — Returns a snapshot of the current Gantt state. Returns defensive copies of collections.
+
+* `SetStateAsync(GanttState(TItem)? state)` — `async Task` — Applies the provided state to the Gantt. Pass null to reset to defaults. Does NOT fire `OnStateChanged` to avoid feedback loops. Use this to programmatically change sort, filters, expanded items, or view.
+
+* `Rebind()` — `public async Task` — Refreshes the Gantt's internal tree from the current `Data` collection. Call this after mutating `Data` in place (e.g., adding or removing items without reassigning the collection reference). `Rebind()` also triggers timeline recomputation.
+
+## Phase 2 — Partial Implementation
+
+The following properties and features have been partially implemented or are planned for future implementation:
+
+* **Editing State** — `EditItem` and `EditField` properties are now implemented for incell and inline editing. `OriginalEditItem`, `InsertedItem`, and `ParentItem` remain planned for future implementation. Support for capturing and restoring item editing or insertion state.
+
+* **Task List Width** — `TaskListWidth` property for saving and restoring the width of the task list panel. Planned when splitter resize support is implemented.
+
+* **Column States** — `ColumnStates` property for tracking column visibility, width, and reorder. Planned when column reorder and resize features are implemented.
 
 ## Basics
 
@@ -64,39 +117,43 @@ The `GetState` and `SetStateAsync` instance methods provide flexibility for your
 
 * `SetStateAsync` takes an instance of a Gantt state so you can use your own code to alter the Gantt layout and state. For example, you can have a button that puts the Gantt in a certain configuration that helps your users review data (like certain filters, sorts, expanded items, initiate item editing or inserting, etc.).
 
-If you want to make changes on the current Gantt state, first get it from the Gantt through the `GetState` method, then apply the modifications on the object you got and pass it to `SetStateAsync`. This will allow you preserving the current component options such as TreeListWidth, Timeline View, sorts, filters etc. 
+If you want to make changes on the current Gantt state, first get it from the Gantt through the `GetState` method, then apply the modifications on the object you got and pass it to `SetStateAsync`. This will allow you preserving the current component options such as TaskListWidth, Timeline View, sorts, filters etc. 
 
 If you want to put the Gantt in a certain configuration without preserving the old one, create a `new GanttState<T>()` and apply the settings there, then pass it to `SetStateAsync`. Thus, any previously applied settings will be lost and the component options will be reset to their default state if not explicitly set through the `GanttState`.
 
 To reset the Gantt state, call `SetStateAsync(null)`.
 
-You should avoid calling `SetStateAsync` in the Gantt [CRUD methods](slug:gantt-tree-editing#events) (such as `OnUpdate`, `OnEdit`, `OnCreate`). Doing so may lead to unexpected results because the Gantt has more logic to execute after the event.
+You should avoid calling `SetStateAsync` in the Gantt [CRUD methods](slug:gantt-tree-editing#events) (such as `OnUpdate`, `OnTaskEdit`, `OnCreate`). Doing so may lead to unexpected results because the Gantt has more logic to execute after the event.
+
+#### Rebind
+
+`Rebind()` — `public async Task`. Refreshes the Gantt's internal tree from the current `Data` collection. Call this after mutating `Data` in place (e.g., adding or removing items without reassigning the collection reference). `Rebind()` also triggers timeline recomputation (range recalculation) in addition to tree rebuild. See [Refresh Data](slug:gantt-refresh-data) for usage examples.
 
 ## Information in the Gantt State
 
-The following information is present in the Gantt state:
+### Phase 1 — Currently Available
 
-* **Editing** - whether the user was inserting or editing an item (opens the same item for editing with the current data from the built-in editors of the Gantt - the data is updated in the `OnChange` event, not on every keystroke for performance reasons). The `OriginalEditItem` carries the original model without the user modifications so you can compare.
+The following state information is available now:
 
-* **Filtering** - filter descriptors (fields by which the Gantt is filtered, the operator and value).
+* **Sorting** - `SortDescriptor` — The sort field and direction applied to the Gantt. Null means no sort is active.
 
-* **Sorting** - sort descriptors (fields by which the Gantt is sorted, and the direction).
+* **Filtering** - `FilterValues` — Dictionary of filter values by column field name. Null means no filters. Empty dictionary means no filters applied.
 
-* **Expanded Items** - list of expanded parent items.
+* **Expanded Items** - `ExpandedItems` — The collection of expanded node IDs. Null means default expansion. Empty means all items are collapsed.
 
-* **View** - the current [`GanttView`](slug:gantt-timeline-views)
+* **View** - `View` — The current [`GanttView`](slug:gantt-timeline-views) (Day, Week, Month, etc.).
 
-* **TreeList Width** - the width of the Gantt TreeList.
+### Phase 2 — Partial Implementation
 
-* **TreeList Columns** - Field, Visible, Width, Index (order) of the column that the user sees.
+The following state information is being implemented in releases:
 
-    * The Gantt matches the columns from its markup sequentially (in the same order) with the columns list in the state object. So, when you restore/set the state, the Gantt must initialize with the same collection of columns that were used to save the state.
-    
-        The `Index` field in the column state object represents its place (order) that the user sees and can choose through the `Reordable` feature, not its place in the Gantt markup. You can find an example below.
-    
-        If you want to change the visibility of columns, we recommend you use their `Visible` parameter rather than conditional markup - this parameter will be present in the state and will not change the columns collection count which makes it easier to reconcile changes.
+* **Editing** - *Partially Implemented* — Whether the user is inserting or editing an item. Properties `EditItem` and `EditField` are now implemented. `OriginalEditItem`, `InsertedItem`, and `ParentItem` remain planned. The `OriginalEditItem` will carry the original model without user modifications for comparison.
 
->tip Check the [Gantt State API Reference](slug:Marilo.Blazor.Components.GanttState-1) for a full list of the properties available in the state.
+* **TreeList Width** - *Planned* — The width of the Gantt TreeList panel. This will be available once splitter resize is implemented.
+
+* **TreeList Columns** - *Planned* — Field, Visible, Width, Index (order) of each column. This will be available once column reorder and resize features are implemented. The `Index` field represents the visual order (after user reordering), not the markup order.
+
+>tip Check the [Gantt State API Reference](slug:Marilo.Blazor.Components.GanttState-1) for the current full list of available properties.
 
 ## Examples
 
@@ -128,7 +185,7 @@ If you want the Gantt to start with certain settings for your end users, you can
               IdField="Id"
               ParentIdField="ParentId"
               ColumnResizable="true"
-              TreeListWidth="50%"
+              TaskListWidth="250"
               Width="1000px"
               Height="600px"
               OnUpdate="@OnTaskUpdate"
@@ -306,7 +363,7 @@ Change something in the Gantt (like sort, filter, resize TreeList width, expand/
               @bind-View="@SelectedView"
               IdField="Id"
               ParentIdField="ParentId"
-              @bind-TreeListWidth="@TreeListWidth"
+              @bind-TaskListWidth="@TaskListWidth"
               Width="1000px"
               Height="600px"
               OnUpdate="@OnTaskUpdate"
@@ -344,7 +401,7 @@ Change something in the Gantt (like sort, filter, resize TreeList width, expand/
 
     private GanttView SelectedView { get; set; } = GanttView.Week;
 
-    private string TreeListWidth { get; set; } = "50%";
+    private int TaskListWidth { get; set; } = 250;
 
     private string UniqueStorageKey = "SampleGanttStateStorageThatShouldBeUnique";
 
@@ -572,7 +629,7 @@ To test it out, try filtering the Title column
               OnStateChanged="@( (GanttStateEventArgs<GanttTask> args) => OnStateChangedHandler(args) )"
               IdField="Id"
               ParentIdField="ParentId"
-              TreeListWidth="50%"
+              TaskListWidth="250"
               Width="1000px"
               Height="500px"
               OnUpdate="@OnTaskUpdate"
@@ -726,6 +783,8 @@ To test it out, try filtering the Title column
 
 ### Initiate Editing or Inserting of an Item
 
+> **Note:** This example uses planned features (`EditItem`, `OriginalEditItem`, `InsertedItem`, `EditField`, `ParentItem`) that are not yet available in the current implementation. These properties will be added in Phase 2.
+
 The Gantt state lets you store the item that the user is currently working on - both an existing model that is being edited, and a new item the user is inserting. This happens automatically when you save the Gantt state. If you want to save on every keystroke instead of on `OnChange` - use a custom [EditorTemplate](slug:gantt-templates-editor) and update the `EditItem` or `InsertedItem` of the state object as required, then save the state into your service.
 
 In addition to that, you can also use the `EditItem`, `OriginalEditItem`, `InsertItem` and `ParentItem` fields of the state object to put the Gantt in edit/insert mode through your own application code, instead of needing the user to initiate this through a [command button](slug:gantt-columns-command).
@@ -745,7 +804,7 @@ In addition to that, you can also use the `EditItem`, `OriginalEditItem`, `Inser
               TreeListEditMode="@GanttTreeListEditMode.Inline"
               IdField="Id"
               ParentIdField="ParentId"
-              TreeListWidth="60%"
+              TaskListWidth="250"
               Width="1000px"
               Height="600px"
               OnCreate="@CreateItem"
@@ -1005,6 +1064,8 @@ In addition to that, you can also use the `EditItem`, `OriginalEditItem`, `Inser
 
 ### Get Current Columns Visibility, Order, Field
 
+> **Note:** This example uses the planned `ColumnStates` property that is not yet available in the current implementation. Column state tracking will be added in Phase 2 when column reorder and resize features are implemented.
+
 The `ColumnStates` property of the `GanttState` object provides you with information about the current state of the Gantt columns. It contains the following properties:
 
 
@@ -1013,7 +1074,7 @@ The `ColumnStates` property of the `GanttState` object provides you with informa
 | `Index` | `int` | the current index of the column based on the position the user chose |
 | `Id` | `string` | the Id of the column if it is set |
 | `Field` | `string` | the field of the column |
-| `Visible` | `bool?` | whether the column is hidden or not |
+| `Visible` | `bool` | whether the column is hidden or not (default: true) |
 | `Width` | `string` | the width of the column if it is set |
 
 By looping over the `ColumnStates` collection you can know what the user sees. By default, the order of the columns in the state collection will remain the same but their `Index` value will change to indicate their position. You can, for example, sort by the index and filter by the visibility of the columns to get the approximate view the user sees.
@@ -1031,7 +1092,7 @@ By looping over the `ColumnStates` collection you can know what the user sees. B
               ParentIdField="ParentId"
               ColumnResizable="true"
               ColumnReorderable="true"
-              TreeListWidth="50%"
+              TaskListWidth="250"
               Width="1000px"
               Height="500px"
               OnUpdate="@UpdateItem"

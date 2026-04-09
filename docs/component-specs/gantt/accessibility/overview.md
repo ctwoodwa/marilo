@@ -29,7 +29,7 @@ The following example demonstrates the [accessibility compliance of the Gantt co
               Height="600px"
               IdField="Id"
               ParentIdField="ParentId"
-              Navigable="true"
+              @* Keyboard navigation is built-in and always active. *@
               ColumnReorderable="true"
               Sortable="true"
               ColumnResizable="true"
@@ -104,6 +104,34 @@ The following example demonstrates the [accessibility compliance of the Gantt co
     }
 }
 ````
+
+## Accessible Labels
+
+The Gantt provides accessible labels for interactive elements:
+
+* **Expand/collapse buttons** — Chevron buttons use `aria-label="Expand {title}"` or `aria-label="Collapse {title}"` based on the current expanded state of the row.
+* **Timeline bars** — Each timeline bar uses `aria-label="{title}: {start:M/d/yyyy} – {end:M/d/yyyy}"` to describe the task to screen readers.
+
+## Motion and High Contrast
+
+* **prefers-reduced-motion** — All animations and transitions are disabled when the user has reduced motion enabled.
+* **forced-colors (high contrast)** — Task bars, milestones, and active filter indicators use system colors.
+
+## Keyboard Navigation
+
+The Gantt tree list supports full keyboard navigation via a roving `tabindex` pattern.
+
+| Key | Action |
+| --- | --- |
+| ArrowDown | Move focus to the next visible row. |
+| ArrowUp | Move focus to the previous visible row. |
+| ArrowRight | Expand the current row (if collapsed) or move to the next row (if expanded/leaf). |
+| ArrowLeft | Collapse the current row (if expanded) or move focus to the parent row. |
+| Home | Move focus to the first row. |
+| End | Move focus to the last visible row. |
+| Enter / Space | Invoke `OnTaskClick` for the focused row. |
+| Enter (in edit mode) | Save the current edit. |
+| Escape (in edit mode) | Cancel the current edit. |
 
 ## See also
  * [Live demo: Gantt Accessibility](https://demos.marilo.com/blazor-ui/gantt/keyboard-navigation)

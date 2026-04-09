@@ -1,6 +1,8 @@
 @inherits MariloComponentBase
 @using Microsoft.AspNetCore.Components.Forms
+@implements IUploadChunkSettingsSink
 
+<CascadingValue Value="(IUploadChunkSettingsSink)this" IsFixed="true">
 <div class="@CombineClasses(CssProvider.UploadClass())"
      style="@CombineStyles()"
      role="region"
@@ -203,3 +205,4 @@
         }
     }
 </div>
+</CascadingValue>

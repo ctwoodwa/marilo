@@ -11,8 +11,8 @@
 | Field | Value |
 |-------|-------|
 | Workspace | gap-analysis-resolution |
-| Last updated | 2026-04-05 |
-| Current phase | Stage 06 complete (DataGrid Ph1+Ph2 + splitter + wizard + T4 B1-B3 + chart B1+B2 + editor B1) |
+| Last updated | 2026-04-09 |
+| Current phase | **FileManager full rewrite complete (36/36 gaps, 151 tests).** Stage 06 complete (DataGrid Ph1-3 + splitter + wizard + T4 B1-B8 + chart B1+B2 + editor B1+B2a + Gantt rewrite + ColorPicker standalone + DRP multi-view + **FileManager A-F**). 877/877 full suite. |
 
 ## Pipeline Status
 
@@ -39,17 +39,23 @@
 - [x] 05-implement (completed 2026-04-04)
 - [x] **06-validate** (closure report 2026-04-04; 27 tests written, runtime pending)
 
-**t4-pickers / readonly-guards / expandall-lazyload** -- BATCH 1+2+3 CLOSED
+**t4-pickers / readonly-guards / expandall-lazyload** -- BATCH 1+2+3+4+5+6+7+8 CLOSED
 - [x] 01-intake through 06-validate (Batch 1 complete: 7 resolved, 3 partial; 17 tests)
 - [x] 01-intake through 06-validate (Batch 2 complete: 4 resolved; 9 tests)
 - [x] 03-resolution through 06-validate (Batch 3: AdaptiveMode 7 pickers, ARIA combobox, CSS provider; 17 tests, 547/547 full suite)
+- [x] 03-resolution through 06-validate (Batch 4: MultiSelect GroupField + DateTimePicker tumbler steps; 12 tests pending runtime)
+- [x] 03-resolution through 06-validate (Batch 5: MultiSelect OnRead/Rebind/ValueMapper + DateTimePicker typed input; 12 tests pending runtime)
+- [x] 03-resolution through 06-validate (Batch 6: MultiSelect OnChange/OnItemRender + ItemHeight/PageSize virtual config; 11 tests pending runtime; GAP-MSEL-001 fully closed)
+- [x] 03-resolution through 06-validate (Batch 7: MultiSelect Settings/PopupSettings child component API; 7 tests pending runtime; subagent-driven dev mode; GAP-MSEL-005 closed)
+- [x] 03-resolution through 06-validate (Batch 8: DRP polish + TP polish + FU/UPL polish; 48 tests; 726/726 full suite runtime validated 2026-04-09)
 
 **Chart batch (16 gaps: 13 resolved B1+B2, 2 deferred, 1 partial)** -- BATCH 2 CLOSED
 - [x] 01-intake through 06-validate (Batch 1: wrappers, subtitle, CSS vars, 16 tests)
 - [x] 03-resolution through 06-validate (Batch 2: bubble, transitions, OnRender, tooltip template, 11 tests)
 
-**Editor batch (12 gaps: 6 resolved B1, 6 remaining)** -- BATCH 1 CLOSED
+**Editor batch (12 gaps: 7 resolved B1+B2a, 5 remaining)** -- BATCH 2a CLOSED
 - [x] 01-intake through 06-validate (Batch 1: validation, custom tools, docs, 14 tests)
+- [x] 03-resolution through 06-validate (Batch 2a: import/export with Markdig + plaintext; 8 tests, 675/675 full suite)
 
 **DataGrid Phase 1 (9 pure C# gaps + 1 deferred)** -- COMPLETE
 - [x] 01-intake → 02-prioritize → 03-resolution-design → 05-implement → **06-validate**
@@ -64,15 +70,46 @@
 - [x] 03-resolution through 06-validate (CheckBoxList filter + Cell selection; 10 tests, 557/557 full suite)
 - Deferred: Frozen columns (JS sticky), Row drag-drop (JS events)
 
-## Next Actions
+**Gantt full rewrite (20 gaps: 20 resolved)** -- COMPLETE
 
-1. Editor Batch 2: Adaptive toolbar (JS), table/image resize (JS), import/export (needs Markdig decision).
-2. T4 Pickers remaining: GroupField (MultiSelect), DateTimePickerSteps.
-3. DataGrid Phase 3 remaining: Frozen columns (JS), Row drag-drop (JS).
-4. Chart: Drilldown feature (separate scope / CDW).
+- [x] 01-intake (inventory imported 2026-04-03)
+- [x] 03-resolution through 06-validate (full generic rewrite via subagent-driven dev; 24 commits, 31 bUnit tests)
+- Closure report: `stages/06-validate/output/gap-gantt-closure-report.md`
 
-## Blockers
+**ColorPicker standalone + DRP multi-view (7 gaps: 5 CPICK + 2 DRP)** -- COMPLETE
 
-- Editor import/export: Needs decision on Markdown library dependency (Markdig vs custom).
-- Editor adaptive toolbar + table resize: Require JS interop (ResizeObserver, drag handles).
-- DataGrid frozen columns + row drag: Require JS interop.
+- [x] 03-resolution through 06-validate (subagent-driven dev; 9 commits, 23 bUnit tests)
+- Closure report: `stages/06-validate/output/gap-colorpicker-standalone-closure-report.md`
+
+## Pipeline Pause — All C# Work Complete
+
+All pure C# gaps in this workspace are resolved. Remaining items require JS interop or belong to dedicated delivery workspaces.
+
+## Remaining (JS Interop — Future Batch)
+
+1. Editor: Adaptive toolbar (ResizeObserver), table/image resize (drag handles).
+2. DataGrid: Frozen columns (JS sticky), Row drag-drop (JS events).
+3. FileUpload/Upload: DropZoneId (external drop zone JS wiring).
+
+## Routed to Other Workspaces
+
+- Chart drilldown → `chart-delivery` CDW
+- Scheduler → `scheduler-gap-analysis` or dedicated CDW
+- TreeList → `treelist-gap-analysis` or dedicated CDW
+- DataSheet → `datasheet-delivery` CDW (true spreadsheet architecture)
+- No-source components (Diagram, DockManager, Map, PivotGrid) → spec + concept-demo only per human decision
+- TreeView demos → `treeview-delivery` CDW (scenario coverage)
+
+## Human Decisions Resolved (2026-04-09)
+
+- Editor: **Markdig approved** as bounded Markdown adapter for import/export (not as core model)
+- DataSheet: **True spreadsheet** with its own architecture (not DataGrid reuse)
+- TreeView demos: **Scenario coverage** and spec alignment (not exhaustive UX exploration)
+- No-source components: **Spec + concept-demo only** until source exists
+
+## Closure Reports Written (2026-04-09 housekeeping)
+
+- `gap-filemanager-closure-report.md` — retroactive Stage 06 for 36/36 gaps, 151 tests
+- `gap-drp-multiview-closure-report.md` — retroactive Stage 06 for 2/2 DRP gaps, 5 tests
+- gap-context.md updated with FileManager test rollup entry
+- Plan lines 1209-1213 updated: ColorPicker standalone + DRP multi-view marked resolved (were stale "deferred")

@@ -69,6 +69,11 @@ All implementations are independent (no Telerik dependency), use MIT/Apache-2.0-
 | t4-pickers-batch1 | 17 | 17 | Stage 06 closed (2026-04-03); 7 resolved, 3 partially resolved |
 | t4-pickers-batch2 | 9 | pending | Stage 06 closed (2026-04-04); 4/4 resolved; runtime test pending |
 | t4-pickers-batch3 | 17 | 17 | Stage 06 closed (2026-04-05); 12 resolved, 1 won't fix; 547/547 full suite |
+| t4-pickers-batch4 | 12 | 12/12 ✅ | Stage 06 closed (2026-04-08); 2/2 resolved (MSEL-003 GroupField + DTP-002 tumbler steps); runtime validated 2026-04-09 (667/667 full suite) |
+| t4-pickers-batch5 | 12 | 12/12 ✅ | Stage 06 closed (2026-04-08); 2/2 resolved (MSEL-006 OnRead/Rebind/ValueMapper + DTP-003 typed input); also closes OnRead portion of GAP-MSEL-001; runtime validated 2026-04-09 |
+| t4-pickers-batch6 | 11 | 11/11 ✅ | Stage 06 closed (2026-04-08); 2/2 resolved (MSEL-001 final OnChange/OnItemRender + MSEL-007 ItemHeight/PageSize); MSEL-007 ScrollMode deferred; runtime validated 2026-04-09 (1 test fixed: OnItemRender cache double-rebuild) |
+| t4-pickers-batch7 | 7 | 7/7 ✅ | Stage 06 closed (2026-04-08); 1/1 resolved (MSEL-005 MultiSelectSettings + MultiSelectPopupSettings child API); subagent-driven dev mode; also fixed Batch 6 SetParametersAndRender→Render bUnit v2 build break; runtime validated 2026-04-09 |
+| editor-batch2a | 8 | 8/8 ✅ | Stage 06 closed (2026-04-09); GAP-EDITOR-005 resolved (import/export with Markdig + plaintext); 675/675 full suite runtime validated |
 | readonly-guards | 6 | 6 | Stage 06 closed (2026-04-03) |
 | expandall-lazyload | 6 | 6 | Stage 06 closed (2026-04-03) |
 
@@ -80,6 +85,13 @@ All implementations are independent (no Telerik dependency), use MIT/Apache-2.0-
 | datagrid-phase1 | 18 | 18 | Stage 06 closed (2026-04-04); 9 resolved, 1 deferred; runtime test pending |
 | datagrid-phase2 | 15 | 15 | Stage 06 closed (2026-04-04); 6 resolved (validation, composite filters, auto-gen attrs, aggregates, export, CancellationToken); runtime test pending |
 | datagrid-phase3 | 10 | 10 | Stage 06 closed (2026-04-05); 2 resolved (CheckBoxList filter, cell selection); 557/557 full suite |
+| gantt-full | 31 | 31/31 ✅ | Stage 06 closed (2026-04-09); 20/20 gaps resolved (full generic rewrite); subagent-driven dev; runtime pending |
+| t4-pickers-batch8a | 23 | 23/23 ✅ | Stage 06 closed (2026-04-09); 6/6 resolved (DRP PopupClass/ShowWeekNumbers/Size/Rounded/FillMode/DebounceDelay/Title/HeaderTemplate + DTP ValidateOn); 726/726 full suite |
+| t4-pickers-batch8b | 13 | 13/13 ✅ | Stage 06 closed (2026-04-09); 4/4 resolved (TP InputMode/ValidateOn/OnChange-on-blur/CSS provider); 726/726 full suite |
+| t4-pickers-batch8c | 12 | 12/12 ✅ | Stage 06 closed (2026-04-09); 3/3 resolved (FU template context/CSS provider + UPL UploadChunkSettings); 726/726 full suite |
+| colorpicker-standalone | 18 | 18/18 ✅ | Stage 06 closed (2026-04-09); 5/5 CPICK gaps resolved (Gradient, Palette, FlatPicker, Views API, CSS provider); subagent-driven dev |
+| drp-multiview | 5 | 5/5 ✅ | Stage 06 closed (2026-04-09); 2/2 DRP gaps resolved (Year/Decade calendar views, FocusAsync methods) |
+| filemanager | 151 | 151/151 ✅ | Stage 06 closed (2026-04-09); 36/36 gaps resolved (full generic rewrite, Phases A-F); 877/877 full suite runtime validated |
 | datagrid-cdw | 0 | 0 | Per-feature checklist ready for CDW handoff (2026-04-03) |
 
 Canonical test evidence: `stages/06-validate/output/gap-*-closure-report.md`

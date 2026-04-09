@@ -9,6 +9,7 @@
     <ProjectReference Include="..\..\src\Marilo.Core\Marilo.Core.csproj" />
     <ProjectReference Include="..\..\src\Marilo.Components\Marilo.Components.csproj" />
     <ProjectReference Include="..\..\src\Marilo.Icons\Marilo.Icons.csproj" />
+    <ProjectReference Include="..\..\src\Marilo.Icons.Tabler\Marilo.Icons.Tabler.csproj" />
     <ProjectReference Include="..\..\src\Marilo.Providers.FluentUI\Marilo.Providers.FluentUI.csproj" />
     <ProjectReference Include="..\..\src\Marilo.Providers.Bootstrap\Marilo.Providers.Bootstrap.csproj" />
   </ItemGroup>
