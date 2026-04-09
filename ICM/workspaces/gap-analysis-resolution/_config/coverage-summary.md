@@ -13,11 +13,11 @@
 | DataGrid | ~33-48 | 0 | 17 (Ph1+Ph2+Ph3) | 3 (expand args, frozen cols, drag-drop) | **06-validate** | 47 | Phase 1+2+3 closed (17/71); 2 JS deferred |
 | DataSheet | 0 | 0 | 0 | 1 (architecture decision) | — | 0 | Blocked: MariloSpreadsheet vs MariloDataSheet |
 | Forms | ~60 | 0 | 22+12+4+4 | 6 deferred | 03-resolution | 20/20 | Resolution design done; awaiting implementation |
-| T4 Pickers | ~6 | 0 | 30 (B1+B2+B3+B4+B5+B6+B7) | 1 partial (MSEL-007 ScrollMode deferred) + 1 won't fix (MSEL-008 naming) | **06-validate (B7)** | 85 (17+9+17+12+12+11+7) | Batch 1+2+3+4+5+6+7 closed; **MariloMultiSelect feature-complete** for all medium+ gaps |
+| T4 Pickers | ~6 | 0 | 30 (B1+B2+B3+B4+B5+B6+B7) | 1 partial (MSEL-007 ScrollMode deferred) + 1 won't fix (MSEL-008 naming) | **06-validate (B7)** | 85 (17+9+17+12+12+11+7) | Batch 1–7 closed; **MariloMultiSelect feature-complete** for medium+ gaps; **runtime validated 2026-04-09: 667/667 full suite** |
 | Splitter | 0 | 0 | 8 resolved | 1 demo deferred | **06-validate** | 17 | Stage 06 closure report complete; runtime test pending |
 | Wizard | 0 | 0 | 18 resolved | 0 | **06-validate** | 27 | Stage 06 closure report complete; runtime test pending |
 | Chart | 2 remaining | 0 | 13 (B1+B2) | 2 deferred | **06-validate (B2)** | 27 | Batch 1+2 closed; 4 pre-existing, 9 implemented; drilldown+demos deferred |
-| Editor | ~6 remaining | 0 | 6 (B1) | 0 | **06-validate (B1)** | 14 | Batch 1 closed; 2 already resolved, 4 implemented |
+| Editor | ~5 remaining | 0 | 7 (B1+B2a) | 0 | **06-validate (B2a)** | 22 (14+8) | Batch 1+2a closed; B2a adds Markdig import/export; 675/675 runtime validated |
 | FileManager | ~20-30 | 0 | 0 | 0 | 01-intake | 0 | Intake complete; awaiting prioritization |
 | Scheduler | ~25-40 | 0 | 0 | 0 | 01-intake | 0 | Recommend dedicated CDW |
 | Gantt | ~30-50 | 0 | 0 | 0 | 01-intake | 0 | Recommend dedicated CDW |
@@ -45,8 +45,10 @@
 | T4 Pickers B5 | `stages/03-resolution-design/output/gap-t4-picker-batch5-resolutions.md` | `stages/05-implement/output/gap-t4-picker-batch5-implementation-log.md` | `stages/06-validate/output/gap-t4-picker-batch5-closure-report.md` | 2026-04-08 |
 | T4 Pickers B6 | `stages/03-resolution-design/output/gap-t4-picker-batch6-resolutions.md` | `stages/05-implement/output/gap-t4-picker-batch6-implementation-log.md` | `stages/06-validate/output/gap-t4-picker-batch6-closure-report.md` | 2026-04-08 |
 | T4 Pickers B7 | `stages/03-resolution-design/output/gap-t4-picker-batch7-resolutions.md` | `stages/05-implement/output/gap-t4-picker-batch7-implementation-log.md` | `stages/06-validate/output/gap-t4-picker-batch7-closure-report.md` | 2026-04-08 |
+| Editor B2a | `stages/03-resolution-design/output/gap-editor-batch2-import-export-resolutions.md` | `stages/05-implement/output/gap-editor-batch2a-implementation-log.md` | `stages/06-validate/output/gap-editor-batch2a-closure-report.md` | 2026-04-09 |
 
 ## Recent Movement
+- Editor Batch 2a (2026-04-09): MariloEditor import/export with Markdig (MIT) + plaintext adapters; IEditorFormatConverter interface + DI registration; 8 bUnit tests; 675/675 full suite runtime validated. Closes GAP-EDITOR-005. First third-party NuGet on Marilo.Components.
 - T4 Pickers Batch 7 (2026-04-08): MariloMultiSelect MultiSelectSettings + MultiSelectPopupSettings child component API (interface-decoupled cascade, non-generic children, 5 Effective* properties, canonical CascadingValue wrap with interface cast); 7 bUnit tests; Stage 03→05→06 complete via subagent-driven dev (implementer + spec-compliance review + code-quality review + fix-and-re-review loop). Closes GAP-MSEL-005. Also fixed pre-existing Batch 6 build break in `OnChange_DoesNotFireOnExternalValueSet` (`SetParametersAndRender` → bUnit v2 `Render` rebind). MariloMultiSelect now feature-complete for all medium+ gaps.
 - T4 Pickers Batch 6 (2026-04-08): MariloMultiSelect OnChange + OnItemRender (cached args, IsDisabled blocks selection) + ItemHeight/PageSize virtualization config; 11 bUnit tests; Stage 03→05→06 complete; closes GAP-MSEL-001 fully (across B1+B5+B6) and GAP-MSEL-007 ItemHeight/PageSize (ScrollMode deferred with rationale)
 - T4 Pickers Batch 5 (2026-04-08): MariloMultiSelect OnRead/Rebind/ValueMapper + MariloDateTimePicker typed input parsing; 12 bUnit tests; Stage 03→05→06 complete; closes GAP-MSEL-006, GAP-DTP-003, and the OnRead portion of GAP-MSEL-001
@@ -61,7 +63,9 @@
 - Wizard: Stage 06 closure (18/18 resolved; 27 bUnit tests)
 
 ## Active Blockers
-- TreeView Delivery: Demo scope approval needed (human decision)
-- DataSheet: Architecture decision (MariloSpreadsheet vs MariloDataSheet)
-- No-source components (Diagram, DockManager, Map, PivotGrid): Build/integrate/defer decision needed
-- .NET SDK not available: Cannot run `dotnet test` to verify test pass/fail
+- ~~TreeView Delivery: Demo scope approval needed~~ → **RESOLVED 2026-04-09:** Focus on scenario coverage and spec alignment
+- ~~DataSheet: Architecture decision~~ → **RESOLVED 2026-04-09:** True spreadsheet component with its own architecture (not DataGrid reuse)
+- ~~No-source components~~ → **RESOLVED 2026-04-09:** Spec + concept-demo only; no full implementation until source exists
+- ~~.NET SDK not available~~ → **RESOLVED 2026-04-09:** SDK available, 667/667 tests passing
+- Editor Batch 2: Markdig approved as bounded Markdown adapter for import/export (not as core model). JS interop still needed for adaptive toolbar + table/image resize.
+- DataGrid Phase 3+: Frozen columns + Row drag-drop require JS interop

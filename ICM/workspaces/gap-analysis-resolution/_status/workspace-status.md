@@ -11,8 +11,8 @@
 | Field | Value |
 |-------|-------|
 | Workspace | gap-analysis-resolution |
-| Last updated | 2026-04-08 |
-| Current phase | Stage 06 complete (DataGrid Ph1+Ph2+Ph3 partial + splitter + wizard + T4 B1-B4 + chart B1+B2 + editor B1) |
+| Last updated | 2026-04-09 |
+| Current phase | **Runtime validated 2026-04-09: 667/667 tests passing.** Stage 06 complete (DataGrid Ph1+Ph2+Ph3 partial + splitter + wizard + T4 B1-B7 + chart B1+B2 + editor B1). MariloMultiSelect feature-complete. |
 
 ## Pipeline Status
 
@@ -52,8 +52,9 @@
 - [x] 01-intake through 06-validate (Batch 1: wrappers, subtitle, CSS vars, 16 tests)
 - [x] 03-resolution through 06-validate (Batch 2: bubble, transitions, OnRender, tooltip template, 11 tests)
 
-**Editor batch (12 gaps: 6 resolved B1, 6 remaining)** -- BATCH 1 CLOSED
+**Editor batch (12 gaps: 7 resolved B1+B2a, 5 remaining)** -- BATCH 2a CLOSED
 - [x] 01-intake through 06-validate (Batch 1: validation, custom tools, docs, 14 tests)
+- [x] 03-resolution through 06-validate (Batch 2a: import/export with Markdig + plaintext; 8 tests, 675/675 full suite)
 
 **DataGrid Phase 1 (9 pure C# gaps + 1 deferred)** -- COMPLETE
 - [x] 01-intake → 02-prioritize → 03-resolution-design → 05-implement → **06-validate**
@@ -75,8 +76,14 @@
 3. Chart: Drilldown feature (separate scope / CDW).
 4. **MariloMultiSelect is feature-complete.** Only GAP-MSEL-007 ScrollMode (deferred — requires custom virtualization rebuild) and GAP-MSEL-008 MaxVisibleTags naming (Won't Fix) remain.
 
+## Human Decisions Resolved (2026-04-09)
+
+- Editor: **Markdig approved** as bounded Markdown adapter for import/export (not as core model)
+- DataSheet: **True spreadsheet** with its own architecture (not DataGrid reuse)
+- TreeView demos: **Scenario coverage** and spec alignment (not exhaustive UX exploration)
+- No-source components: **Spec + concept-demo only** until source exists
+
 ## Blockers
 
-- Editor import/export: Needs decision on Markdown library dependency (Markdig vs custom).
 - Editor adaptive toolbar + table resize: Require JS interop (ResizeObserver, drag handles).
 - DataGrid frozen columns + row drag: Require JS interop.

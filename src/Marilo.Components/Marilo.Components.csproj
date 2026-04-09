@@ -13,6 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Markdig" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Marilo.Core\Marilo.Core.csproj" />
   </ItemGroup>
 

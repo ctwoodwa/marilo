@@ -556,6 +556,9 @@ public class MultiSelectTests : MariloTestBase
             .Add(p => p.Value, new List<int>())
             .Add(p => p.OnItemRender, args => { renderedItems.Add(args.Item.Name); }));
 
+        // Clear items captured during initial render's cache rebuild so we
+        // count only the rebuild triggered by the dropdown open action.
+        renderedItems.Clear();
         cut.Find(".mar-multiselect__input-area").Click();
 
         // 3 countries, dropdown open → 3 OnItemRender invocations (one per item)
