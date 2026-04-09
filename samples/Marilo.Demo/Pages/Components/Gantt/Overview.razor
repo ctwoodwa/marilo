@@ -10,7 +10,8 @@
                          IdField="Id"
                          ParentIdField="ParentId"
                          Height="400px"
-                         Width="100%">
+                         Width="100%"
+                         @bind-View="_currentView">
                 <GanttColumns>
                     <GanttColumn TItem="GanttTask"
                                  Field="Title"
@@ -32,12 +33,18 @@
                                  Width="100px"
                                  DisplayFormat="{0:d}" />
                 </GanttColumns>
+                <GanttViews>
+                    <GanttWeekView />
+                    <GanttMonthView />
+                </GanttViews>
             </MariloGantt>
         </div>
     </DemoSection>
 </PageSection>
 
 @code {
+    private GanttView _currentView = GanttView.Week;
+
     private List<GanttTask> _tasks = new()
     {
         new GanttTask { Id = "1", Title = "Project Plan", Start = DateTime.Today, End = DateTime.Today.AddDays(20), PercentComplete = 40 },
@@ -51,27 +58,18 @@
              Data=""@_tasks""
              IdField=""Id""
              ParentIdField=""ParentId""
-             Height=""400px"">
+             Height=""400px""
+             @bind-View=""_currentView"">
     <GanttColumns>
         <GanttColumn TItem=""GanttTask""
                      Field=""Title""
                      Expandable=""true""
                      Width=""200px""
                      Title=""Task Title"" />
-        <GanttColumn TItem=""GanttTask""
-                     Field=""PercentComplete""
-                     Width=""80px""
-                     Title=""% Complete""
-                     DisplayFormat=""{0:N0}%""
-                     TextAlign=""right"" />
-        <GanttColumn TItem=""GanttTask""
-                     Field=""Start""
-                     Width=""100px""
-                     DisplayFormat=""{0:d}"" />
-        <GanttColumn TItem=""GanttTask""
-                     Field=""End""
-                     Width=""100px""
-                     DisplayFormat=""{0:d}"" />
     </GanttColumns>
+    <GanttViews>
+        <GanttWeekView />
+        <GanttMonthView />
+    </GanttViews>
 </MariloGantt>";
 }

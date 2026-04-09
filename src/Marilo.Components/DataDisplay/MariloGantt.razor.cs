@@ -1,10 +1,11 @@
+using System.Globalization;
 using Marilo.Core.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace Marilo.Components.DataDisplay;
 
-public partial class MariloGantt<TItem> : MariloComponentBase, IAsyncDisposable
+public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, IAsyncDisposable
     where TItem : class
 {
     [Inject] private IJSRuntime JS { get; set; } = default!;
@@ -42,10 +43,20 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IAsyncDisposable
     [Parameter] public EventCallback<TItem> OnTaskClick { get; set; }
     [Parameter] public EventCallback<TItem> OnTaskEdit { get; set; }
 
-    /// <summary>Child content slot where GanttColumn instances are declared. Rendered inside a CascadingValue so columns can discover the parent.</summary>
+    /// <summary>Child content slot where GanttColumn instances are declared.</summary>
     [Parameter] public RenderFragment? GanttColumns { get; set; }
 
-    // Column management
+    /// <summary>Child content slot where GanttView instances (GanttDayView, GanttWeekView, etc.) are declared.</summary>
+    [Parameter] public RenderFragment? GanttViews { get; set; }
+
+    /// <summary>The currently active view. Supports two-way binding via @bind-View.</summary>
+    [Parameter] public GanttView View { get; set; } = GanttView.Week;
+
+    /// <summary>Callback fired when the active view changes.</summary>
+    [Parameter] public EventCallback<GanttView> ViewChanged { get; set; }
+
+    // ── Column management ──────────────────────────────────────────────
+
     private readonly List<GanttColumn<TItem>> _columns = new();
     private List<GanttColumn<TItem>>? _visibleColumnsCache;
 
@@ -71,6 +82,270 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IAsyncDisposable
     internal List<GanttColumn<TItem>> VisibleColumns
         => _visibleColumnsCache ??= _columns.Where(c => c.Visible).ToList();
 
+    // ── View management (IGanttViewHost) ───────────────────────────────
+
+    private readonly List<GanttViewBase> _views = new();
+
+    void IGanttViewHost.RegisterView(GanttViewBase view)
+    {
+        if (!_views.Contains(view))
+        {
+            _views.Add(view);
+            _ = InvokeAsync(StateHasChanged);
+        }
+    }
+
+    void IGanttViewHost.UnregisterView(GanttViewBase view)
+    {
+        if (_views.Remove(view))
+            _ = InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>The view component matching the current View enum, or the first registered, or null.</summary>
+    internal GanttViewBase? ActiveView => _views.FirstOrDefault(v => v.ViewType == View) ?? _views.FirstOrDefault();
+
+    /// <summary>Whether timeline rendering should use the view-driven engine (true) or legacy DayWidth fallback (false).</summary>
+    private bool UseViewEngine => _views.Count > 0;
+
+    // ── Timeline engine ────────────────────────────────────────────────
+
+    internal record TimelineSlot(DateTime Start, DateTime End, string Label);
+    internal record TimelineHeader(DateTime Start, DateTime End, string Label, int SpanSlots);
+
+    private DateTime _rangeStart;
+    private DateTime _rangeEnd;
+    private List<TimelineSlot> _slots = new();
+    private List<TimelineHeader> _mainHeaders = new();
+    private double _totalTimelineWidth;
+
+    private void ComputeTimeline()
+    {
+        var accessor = _accessor!;
+        var visible = _flatVisible;
+
+        if (UseViewEngine)
+        {
+            var view = ActiveView!;
+            _rangeStart = view.RangeStart ?? ComputeDataMin(accessor, visible);
+            _rangeEnd = view.RangeEnd ?? ComputeDataMax(accessor, visible);
+
+            // Align range to slot boundaries
+            _rangeStart = AlignToSlotStart(_rangeStart, View);
+            _rangeEnd = AlignToSlotEnd(_rangeEnd, View);
+
+            _slots = GenerateSlots(_rangeStart, _rangeEnd, View);
+            _mainHeaders = GenerateMainHeaders(_slots, View);
+            _totalTimelineWidth = _slots.Count * view.SlotWidth;
+        }
+        else
+        {
+            // Legacy DayWidth fallback
+            var minDate = visible.Count > 0 ? visible.Min(n => accessor.GetStart(n.Item)) : DateTime.Today;
+            var maxDate = visible.Count > 0 ? visible.Max(n => accessor.GetEnd(n.Item)) : DateTime.Today.AddDays(30);
+            _rangeStart = minDate;
+            _rangeEnd = maxDate;
+            var totalDays = (maxDate - minDate).TotalDays;
+            if (totalDays <= 0) totalDays = 1;
+            _totalTimelineWidth = totalDays * DayWidth;
+            _slots = new List<TimelineSlot>();
+            _mainHeaders = new List<TimelineHeader>();
+        }
+    }
+
+    private static DateTime ComputeDataMin(GanttFieldAccessor<TItem> accessor, List<GanttNode<TItem>> visible)
+        => visible.Count > 0 ? visible.Min(n => accessor.GetStart(n.Item)) : DateTime.Today;
+
+    private static DateTime ComputeDataMax(GanttFieldAccessor<TItem> accessor, List<GanttNode<TItem>> visible)
+        => visible.Count > 0 ? visible.Max(n => accessor.GetEnd(n.Item)) : DateTime.Today.AddDays(30);
+
+    private static DateTime AlignToSlotStart(DateTime date, GanttView view) => view switch
+    {
+        GanttView.Day => date.Date,
+        GanttView.Week => StartOfWeek(date),
+        GanttView.Month => StartOfWeek(new DateTime(date.Year, date.Month, 1)),
+        GanttView.Year => new DateTime(date.Year, date.Month, 1),
+        _ => date
+    };
+
+    private static DateTime AlignToSlotEnd(DateTime date, GanttView view) => view switch
+    {
+        GanttView.Day => date.Date.AddDays(1),
+        GanttView.Week => StartOfWeek(date).AddDays(7),
+        GanttView.Month => StartOfWeek(new DateTime(date.Year, date.Month, 1).AddMonths(1)),
+        GanttView.Year => new DateTime(date.Year, date.Month, 1).AddMonths(1),
+        _ => date
+    };
+
+    private static DateTime StartOfWeek(DateTime date)
+    {
+        var diff = ((int)date.DayOfWeek - (int)DayOfWeek.Monday + 7) % 7;
+        return date.Date.AddDays(-diff);
+    }
+
+    internal List<TimelineSlot> GenerateSlots(DateTime rangeStart, DateTime rangeEnd, GanttView view)
+    {
+        var slots = new List<TimelineSlot>();
+        switch (view)
+        {
+            case GanttView.Day:
+                // Each slot = 1 hour
+                var hourCursor = rangeStart;
+                while (hourCursor < rangeEnd)
+                {
+                    var next = hourCursor.AddHours(1);
+                    slots.Add(new TimelineSlot(hourCursor, next, hourCursor.ToString("HH:00")));
+                    hourCursor = next;
+                }
+                break;
+
+            case GanttView.Week:
+                // Each slot = 1 day
+                var dayCursor = rangeStart.Date;
+                while (dayCursor < rangeEnd.Date)
+                {
+                    var next = dayCursor.AddDays(1);
+                    slots.Add(new TimelineSlot(dayCursor, next, dayCursor.ToString("ddd")));
+                    dayCursor = next;
+                }
+                break;
+
+            case GanttView.Month:
+                // Each slot = 1 week (starting Monday)
+                var weekCursor = StartOfWeek(rangeStart);
+                while (weekCursor < rangeEnd)
+                {
+                    var next = weekCursor.AddDays(7);
+                    var weekNum = ISOWeek.GetWeekOfYear(weekCursor);
+                    slots.Add(new TimelineSlot(weekCursor, next, $"W{weekNum}"));
+                    weekCursor = next;
+                }
+                break;
+
+            case GanttView.Year:
+                // Each slot = 1 month
+                var monthCursor = new DateTime(rangeStart.Year, rangeStart.Month, 1);
+                while (monthCursor < rangeEnd)
+                {
+                    var next = monthCursor.AddMonths(1);
+                    slots.Add(new TimelineSlot(monthCursor, next, monthCursor.ToString("MMM")));
+                    monthCursor = next;
+                }
+                break;
+        }
+        return slots;
+    }
+
+    internal List<TimelineHeader> GenerateMainHeaders(List<TimelineSlot> slots, GanttView view)
+    {
+        var headers = new List<TimelineHeader>();
+        if (slots.Count == 0) return headers;
+
+        switch (view)
+        {
+            case GanttView.Day:
+                // Main headers = days, grouping hourly slots
+                GroupSlots(slots, s => s.Start.Date, s => s.Start.ToString("ddd, MMM d"), headers);
+                break;
+
+            case GanttView.Week:
+                // Main headers = weeks (Mon DD - Sun DD)
+                GroupSlots(slots, s => StartOfWeek(s.Start),
+                    s =>
+                    {
+                        var ws = StartOfWeek(s.Start);
+                        var we = ws.AddDays(6);
+                        return $"{ws:MMM d} - {we:MMM d}";
+                    }, headers);
+                break;
+
+            case GanttView.Month:
+                // Main headers = months, grouping weekly slots
+                GroupSlots(slots, s => new DateTime(s.Start.Year, s.Start.Month, 1),
+                    s => s.Start.ToString("MMMM yyyy"), headers);
+                break;
+
+            case GanttView.Year:
+                // Main headers = years, grouping monthly slots
+                GroupSlots(slots, s => new DateTime(s.Start.Year, 1, 1),
+                    s => s.Start.Year.ToString(), headers);
+                break;
+        }
+        return headers;
+    }
+
+    private static void GroupSlots(
+        List<TimelineSlot> slots,
+        Func<TimelineSlot, DateTime> groupKey,
+        Func<TimelineSlot, string> labelFn,
+        List<TimelineHeader> headers)
+    {
+        var i = 0;
+        while (i < slots.Count)
+        {
+            var key = groupKey(slots[i]);
+            var label = labelFn(slots[i]);
+            var start = slots[i].Start;
+            var spanCount = 0;
+            while (i < slots.Count && groupKey(slots[i]) == key)
+            {
+                spanCount++;
+                i++;
+            }
+            var end = i < slots.Count ? slots[i].Start : slots[i - 1].End;
+            headers.Add(new TimelineHeader(start, end, label, spanCount));
+        }
+    }
+
+    /// <summary>
+    /// Gets the pixel offset from the range start for a given date, based on the active view.
+    /// For WeekView (slot = 1 day), a date 7 days after RangeStart returns 7 * SlotWidth.
+    /// </summary>
+    internal double GetPixelOffset(DateTime date)
+    {
+        if (!UseViewEngine)
+        {
+            // Legacy: pixel offset based on DayWidth
+            return (date - _rangeStart).TotalDays * DayWidth;
+        }
+
+        var view = ActiveView!;
+        var slotWidth = view.SlotWidth;
+
+        return View switch
+        {
+            GanttView.Day => (date - _rangeStart).TotalHours * slotWidth,
+            GanttView.Week => (date - _rangeStart).TotalDays * slotWidth,
+            GanttView.Month => (date - _rangeStart).TotalDays / 7.0 * slotWidth,
+            GanttView.Year => GetMonthFractionalOffset(date, _rangeStart) * slotWidth,
+            _ => 0
+        };
+    }
+
+    /// <summary>
+    /// Computes fractional month offset between two dates for YearView pixel mapping.
+    /// </summary>
+    private static double GetMonthFractionalOffset(DateTime date, DateTime rangeStart)
+    {
+        var wholeMonths = (date.Year - rangeStart.Year) * 12 + (date.Month - rangeStart.Month);
+        // Add fractional part based on day position within the month
+        var daysInStartMonth = DateTime.DaysInMonth(rangeStart.Year, rangeStart.Month);
+        var startDayFraction = (rangeStart.Day - 1.0) / daysInStartMonth;
+
+        var daysInTargetMonth = DateTime.DaysInMonth(date.Year, date.Month);
+        var targetDayFraction = (date.Day - 1.0) / daysInTargetMonth;
+
+        return wholeMonths - startDayFraction + targetDayFraction;
+    }
+
+    /// <summary>
+    /// Gets the bar width in pixels for a task spanning from start to end.
+    /// Clamped to minimum 4px.
+    /// </summary>
+    internal double GetBarWidth(DateTime start, DateTime end)
+        => Math.Max(GetPixelOffset(end) - GetPixelOffset(start), 4);
+
+    // ── Lifecycle ──────────────────────────────────────────────────────
+
     protected override void OnParametersSet()
     {
         var prevKey = _accessorKey;
@@ -90,6 +365,7 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IAsyncDisposable
             }
         }
         _visibleColumnsCache = null;
+        ComputeTimeline();
         base.OnParametersSet();
     }
 
@@ -102,6 +378,7 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IAsyncDisposable
         RebuildFlatVisible();
         _lastData = Data;
         _lastDataCount = (Data ?? Enumerable.Empty<TItem>()).Count();
+        ComputeTimeline();
         await InvokeAsync(StateHasChanged);
     }
 

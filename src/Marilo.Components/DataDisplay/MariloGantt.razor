@@ -4,10 +4,6 @@
 @{
     var accessor = _accessor!;
     var visible = _flatVisible;
-    var minDate = visible.Count > 0 ? visible.Min(n => accessor.GetStart(n.Item)) : DateTime.Today;
-    var maxDate = visible.Count > 0 ? visible.Max(n => accessor.GetEnd(n.Item)) : DateTime.Today.AddDays(30);
-    var totalDays = (maxDate - minDate).TotalDays;
-    if (totalDays <= 0) totalDays = 1;
 
     var containerStyle = new System.Text.StringBuilder();
     if (!string.IsNullOrEmpty(Width)) containerStyle.Append($"width:{Width};");
@@ -20,6 +16,11 @@
 @* Column definitions (hidden, just registers via CascadingValue) *@
 <CascadingValue Value="this" IsFixed="true">
     @GanttColumns
+</CascadingValue>
+
+@* View definitions (hidden, registers via IGanttViewHost cascade) *@
+<CascadingValue Value="(IGanttViewHost)this" IsFixed="true">
+    @GanttViews
 </CascadingValue>
 
 <div class="@CombineClasses("mar-gantt")"
@@ -134,42 +135,94 @@
 
         @* Timeline *@
         <div class="mar-gantt__timeline" style="overflow-x: auto;">
-            <div class="mar-gantt__timeline-header" style="width: @((int)(totalDays * DayWidth))px;">
-                @{
-                    var d = minDate;
-                    while (d <= maxDate)
-                    {
-                        <span class="mar-gantt__date-label" style="width: @(DayWidth)px;">
-                            @d.ToString("M/d")
-                        </span>
-                        d = d.AddDays(1);
-                    }
-                }
-            </div>
-
-            <div class="mar-gantt__bars" style="width: @((int)(totalDays * DayWidth))px;">
-                @foreach (var node in visible)
-                {
-                    var n = node;
-                    var start = accessor.GetStart(n.Item);
-                    var end = accessor.GetEnd(n.Item);
-                    var pct = accessor.GetPercentComplete(n.Item);
-                    var startOffset = (start - minDate).TotalDays * DayWidth;
-                    var barWidth = Math.Max((end - start).TotalDays * DayWidth, 4);
-                    var progressWidth = barWidth * (pct / 100.0);
-
-                    <div class="mar-gantt__bar-row">
-                        <div class="mar-gantt__bar"
-                             style="left: @((int)startOffset)px; width: @((int)barWidth)px;"
-                             @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
-                            @if (pct > 0)
-                            {
-                                <div class="mar-gantt__bar-progress" style="width: @((int)progressWidth)px;"></div>
-                            }
-                        </div>
+            @if (UseViewEngine && _slots.Count > 0)
+            {
+                @* View-driven timeline with main + secondary headers *@
+                <div class="mar-gantt__timeline-headers" style="width: @((int)_totalTimelineWidth)px;">
+                    <div class="mar-gantt__timeline-header mar-gantt__timeline-header--main">
+                        @foreach (var header in _mainHeaders)
+                        {
+                            var hw = (int)(header.SpanSlots * ActiveView!.SlotWidth);
+                            <span class="mar-gantt__date-label mar-gantt__date-label--main" style="width: @(hw)px;">
+                                @header.Label
+                            </span>
+                        }
                     </div>
-                }
-            </div>
+                    <div class="mar-gantt__timeline-header mar-gantt__timeline-header--secondary">
+                        @foreach (var slot in _slots)
+                        {
+                            var sw = (int)ActiveView!.SlotWidth;
+                            <span class="mar-gantt__date-label" style="width: @(sw)px;">
+                                @slot.Label
+                            </span>
+                        }
+                    </div>
+                </div>
+
+                <div class="mar-gantt__bars" style="width: @((int)_totalTimelineWidth)px;">
+                    @foreach (var node in visible)
+                    {
+                        var n = node;
+                        var start = accessor.GetStart(n.Item);
+                        var end = accessor.GetEnd(n.Item);
+                        var pct = accessor.GetPercentComplete(n.Item);
+                        var startOffset = GetPixelOffset(start);
+                        var barWidth = GetBarWidth(start, end);
+                        var progressWidth = barWidth * (pct / 100.0);
+
+                        <div class="mar-gantt__bar-row">
+                            <div class="mar-gantt__bar"
+                                 style="left: @((int)startOffset)px; width: @((int)barWidth)px;"
+                                 @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
+                                @if (pct > 0)
+                                {
+                                    <div class="mar-gantt__bar-progress" style="width: @((int)progressWidth)px;"></div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                @* Legacy DayWidth-based fallback *@
+                <div class="mar-gantt__timeline-header" style="width: @((int)_totalTimelineWidth)px;">
+                    @{
+                        var d = _rangeStart;
+                        while (d <= _rangeEnd)
+                        {
+                            <span class="mar-gantt__date-label" style="width: @(DayWidth)px;">
+                                @d.ToString("M/d")
+                            </span>
+                            d = d.AddDays(1);
+                        }
+                    }
+                </div>
+
+                <div class="mar-gantt__bars" style="width: @((int)_totalTimelineWidth)px;">
+                    @foreach (var node in visible)
+                    {
+                        var n = node;
+                        var start = accessor.GetStart(n.Item);
+                        var end = accessor.GetEnd(n.Item);
+                        var pct = accessor.GetPercentComplete(n.Item);
+                        var startOffset = GetPixelOffset(start);
+                        var barWidth = GetBarWidth(start, end);
+                        var progressWidth = barWidth * (pct / 100.0);
+
+                        <div class="mar-gantt__bar-row">
+                            <div class="mar-gantt__bar"
+                                 style="left: @((int)startOffset)px; width: @((int)barWidth)px;"
+                                 @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
+                                @if (pct > 0)
+                                {
+                                    <div class="mar-gantt__bar-progress" style="width: @((int)progressWidth)px;"></div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
         </div>
     </div>
 </div>
