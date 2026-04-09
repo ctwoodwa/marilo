@@ -1,20 +1,23 @@
-/* MariloAccountMenu — GitHub-style account dropdown menu
-   Scoped via Blazor CSS isolation. Positioned above its trigger. */
+/* ══════════════════════════════════════════════════════════════
+   MariloAccountMenu — Perplexity-inspired account dropdown
+   Scoped via Blazor CSS isolation.
+   ══════════════════════════════════════════════════════════════ */
 
 .mar-account-menu {
     --mam-bg: var(--marilo-color-surface, #ffffff);
-    --mam-border: color-mix(in srgb, var(--marilo-color-text, #1f2328) 8%, transparent);
+    --mam-border: color-mix(in srgb, var(--marilo-color-text, #1f2328) 10%, transparent);
     --mam-text: var(--marilo-color-text, #1f2328);
-    --mam-text-muted: color-mix(in srgb, var(--marilo-color-text, #1f2328) 50%, transparent);
+    --mam-text-muted: color-mix(in srgb, var(--marilo-color-text, #1f2328) 55%, transparent);
     --mam-primary: var(--marilo-color-primary, #5b6cff);
-    --mam-hover: color-mix(in srgb, var(--marilo-color-text, #1f2328) 6%, transparent);
+    --mam-hover: color-mix(in srgb, var(--marilo-color-text, #1f2328) 5%, transparent);
+    --mam-active: color-mix(in srgb, var(--marilo-color-text, #1f2328) 8%, transparent);
     --mam-radius: var(--marilo-radius-md, 8px);
-    --mam-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
-    --mam-width: 300px;
-    --mam-row-h: 38px;
-    --mam-icon-w: 20px;
+    --mam-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.06);
+    --mam-width: 280px;
+    --mam-row-h: 36px;
+    --mam-icon-size: 18px;
+    --mam-font-size: 13.5px;
 
-    /* Disabled state tokens */
     --mam-disabled-content-opacity: 0.38;
     --mam-disabled-text: color-mix(
         in srgb,
@@ -23,41 +26,53 @@
     );
 
     position: relative;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 /* ── Dark Mode ── */
 :global([data-marilo-theme="dark"]) .mar-account-menu {
-    --mam-shadow: 0 4px 24px rgba(0, 0, 0, 0.28);
+    --mam-shadow: 0 8px 32px rgba(0, 0, 0, 0.32), 0 2px 8px rgba(0, 0, 0, 0.16);
 }
 
-/* ── Trigger ── */
+/* ══════════════════════════════════════════════════════════════
+   TRIGGER
+   ══════════════════════════════════════════════════════════════ */
 
 .mar-account-menu__trigger {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 4px 10px;
+    padding: 6px 10px 6px 6px;
     background: transparent;
     border: none;
     border-radius: var(--mam-radius);
     color: var(--mam-text);
-    font-size: 13.5px;
+    font-size: var(--mam-font-size);
     font-weight: 500;
+    font-family: inherit;
     cursor: pointer;
-    line-height: 1;
+    line-height: 1.2;
+    transition: background-color 0.15s ease;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .mar-account-menu__trigger:hover {
     background: var(--mam-hover);
 }
 
+.mar-account-menu__trigger:active {
+    background: var(--mam-active);
+}
+
 .mar-account-menu__trigger:focus-visible {
     outline: 2px solid var(--mam-primary);
-    outline-offset: -2px;
+    outline-offset: 2px;
+    border-radius: var(--mam-radius);
 }
 
 .mar-account-menu__trigger--compact {
     padding: 4px;
+    gap: 0;
 }
 
 .mar-account-menu__trigger-wrap {
@@ -68,34 +83,37 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 120px;
+    max-width: 130px;
 }
 
 /* ── Trigger Avatar ── */
 
 .mar-account-menu__avatar {
     flex-shrink: 0;
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     background: var(--mam-primary);
     color: #fff;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    letter-spacing: 0.02em;
 }
 
 .mar-account-menu__avatar-img {
     flex-shrink: 0;
-    width: 28px;
-    height: 28px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     object-fit: cover;
 }
 
-/* ── Scrim (click-outside overlay) ── */
+/* ══════════════════════════════════════════════════════════════
+   SCRIM (click-outside overlay)
+   ══════════════════════════════════════════════════════════════ */
 
 .mar-account-menu__scrim {
     position: fixed;
@@ -104,11 +122,13 @@
     z-index: 999;
 }
 
-/* ── Panel ── */
+/* ══════════════════════════════════════════════════════════════
+   PANEL
+   ══════════════════════════════════════════════════════════════ */
 
 .mar-account-menu__panel {
     position: absolute;
-    bottom: 100%;
+    bottom: calc(100% + 8px);
     left: 0;
     z-index: 1000;
     width: var(--mam-width);
@@ -117,43 +137,68 @@
     border-radius: 12px;
     box-shadow: var(--mam-shadow);
     color: var(--mam-text);
-    padding: 6px;
+    padding: 4px;
     max-height: 80vh;
     overflow-y: auto;
     overflow-x: hidden;
+    animation: mam-panel-in 0.15s ease-out;
+}
+
+@keyframes mam-panel-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Scrollbar styling */
+.mar-account-menu__panel::-webkit-scrollbar {
+    width: 6px;
+}
+
+.mar-account-menu__panel::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--marilo-color-text, #1f2328) 15%, transparent);
+    border-radius: 3px;
 }
 
 .mar-account-menu__panel--submenu {
-    /* Instant content swap for MVP — no slide transition */
+    /* Reserved for submenu transition if needed */
 }
 
-/* ── Header ── */
+/* ══════════════════════════════════════════════════════════════
+   HEADER (avatar + identity)
+   ══════════════════════════════════════════════════════════════ */
 
 .mar-account-menu__header {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 12px 10px;
+    gap: 12px;
+    padding: 12px 12px 10px;
 }
 
 .mar-account-menu__header-avatar {
     flex-shrink: 0;
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: var(--mam-primary);
     color: #fff;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    letter-spacing: 0.02em;
 }
 
 .mar-account-menu__header-avatar-img {
     flex-shrink: 0;
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     object-fit: cover;
 }
@@ -172,18 +217,22 @@
     display: flex;
     align-items: center;
     gap: 6px;
+    line-height: 1.3;
 }
 
 .mar-account-menu__header-badge {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
     background: var(--mam-primary);
     color: #fff;
     font-size: 10px;
-    font-weight: 600;
+    font-weight: 700;
     border-radius: 4px;
-    padding: 1px 6px;
+    padding: 1px 5px;
     line-height: 1.4;
+    letter-spacing: 0.03em;
     flex-shrink: 0;
+    text-transform: uppercase;
 }
 
 .mar-account-menu__header-email {
@@ -192,46 +241,60 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-top: 1px;
+    margin-top: 2px;
+    line-height: 1.3;
 }
 
-/* ── Separator ── */
+/* ══════════════════════════════════════════════════════════════
+   SEPARATOR
+   ══════════════════════════════════════════════════════════════ */
 
 .mar-account-menu__separator {
     height: 1px;
     background: var(--mam-border);
-    margin: 4px 6px;
+    margin: 4px 8px;
 }
 
-/* ── Group ── */
+/* ══════════════════════════════════════════════════════════════
+   GROUP
+   ══════════════════════════════════════════════════════════════ */
 
 .mar-account-menu__group {
     display: flex;
     flex-direction: column;
+    padding: 2px 0;
 }
 
-/* ── Row (menu item) ── */
+/* ══════════════════════════════════════════════════════════════
+   ROW (menu item)
+   ══════════════════════════════════════════════════════════════ */
 
 .mar-account-menu__row {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     width: 100%;
-    height: var(--mam-row-h);
-    padding: 0 10px;
+    min-height: var(--mam-row-h);
+    padding: 0 12px;
     background: transparent;
     border: none;
     border-radius: 8px;
     color: var(--mam-text);
-    font-size: 13.5px;
+    font-size: var(--mam-font-size);
     text-align: left;
     cursor: pointer;
-    line-height: 1;
+    line-height: 1.2;
     font-family: inherit;
+    transition: background-color 0.12s ease;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .mar-account-menu__row:hover {
     background: var(--mam-hover);
+}
+
+.mar-account-menu__row:active {
+    background: var(--mam-active);
 }
 
 .mar-account-menu__row.is-focused {
@@ -249,22 +312,30 @@
 
 .mar-account-menu__row--back {
     font-weight: 600;
+    gap: 8px;
 }
 
 .mar-account-menu__row--destructive {
-    /* Sign out uses standard color per spec — no destructive red treatment */
     color: var(--mam-text);
 }
 
 .mar-account-menu__row.is-selected {
     color: var(--mam-primary);
+    font-weight: 500;
 }
 
-/* ── Row Children ── */
+.mar-account-menu__row.is-selected .mar-account-menu__row-icon {
+    color: var(--mam-primary);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ROW CHILDREN
+   ══════════════════════════════════════════════════════════════ */
 
 .mar-account-menu__row-icon {
     flex-shrink: 0;
-    width: var(--mam-icon-w);
+    width: var(--mam-icon-size);
+    height: var(--mam-icon-size);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -282,17 +353,22 @@
 .mar-account-menu__row-value {
     flex-shrink: 0;
     color: var(--mam-text-muted);
-    font-size: 12.5px;
+    font-size: 12px;
     margin-left: auto;
 }
 
 .mar-account-menu__row-chevron {
     flex-shrink: 0;
-    width: 16px;
-    color: var(--mam-text-muted);
-    opacity: 0.6;
+    width: 14px;
     display: flex;
     align-items: center;
+    color: var(--mam-text-muted);
+    opacity: 0.5;
+}
+
+.mar-account-menu__row-chevron .mar-account-menu__icon {
+    width: 14px;
+    height: 14px;
 }
 
 .mar-account-menu__row-check {
@@ -300,20 +376,32 @@
     color: var(--mam-primary);
     display: flex;
     align-items: center;
+    margin-left: auto;
 }
 
-/* ── Icon ── */
+.mar-account-menu__row-check .mar-account-menu__icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   ICON (SVG sprite element)
+   ══════════════════════════════════════════════════════════════ */
 
 .mar-account-menu__icon {
     display: block;
-    width: 20px;
-    height: 20px;
+    width: var(--mam-icon-size);
+    height: var(--mam-icon-size);
     fill: none;
     stroke: currentColor;
-    stroke-width: 1.5;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
-/* ── Disabled State ── */
+/* ══════════════════════════════════════════════════════════════
+   DISABLED STATE
+   ══════════════════════════════════════════════════════════════ */
 
 .mar-account-menu__row.is-disabled {
     color: var(--mam-disabled-text);
@@ -321,22 +409,31 @@
     cursor: default;
 }
 
-.mar-account-menu__row.is-disabled .mar-account-menu__row-icon {
-    color: var(--mam-disabled-text);
-}
-
-.mar-account-menu__row.is-disabled .mar-account-menu__row-chevron {
-    color: var(--mam-disabled-text);
-}
-
+.mar-account-menu__row.is-disabled .mar-account-menu__row-icon,
+.mar-account-menu__row.is-disabled .mar-account-menu__row-chevron,
 .mar-account-menu__row.is-disabled .mar-account-menu__row-value {
     color: var(--mam-disabled-text);
 }
 
-/* ── Footer ── */
+/* ══════════════════════════════════════════════════════════════
+   FOOTER
+   ══════════════════════════════════════════════════════════════ */
 
 .mar-account-menu__footer {
-    padding: 8px;
+    padding: 8px 12px;
     font-size: 12px;
     color: var(--mam-text-muted);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 640px) {
+    .mar-account-menu__panel {
+        --mam-width: calc(100vw - 32px);
+        left: auto;
+        right: 0;
+        max-width: 320px;
+    }
 }

@@ -393,6 +393,59 @@
     padding: 16px;
 }
 
+/* ── Tablet auto-collapse (769–1024 px) ─────────────────────────────── */
+/* When viewport is narrow but not mobile, force sidebar to collapsed rail
+   regardless of the is-expanded Blazor state. */
+
+@media (min-width: 769px) and (max-width: 1024px) {
+    .mar-appshell:not(.is-collapsed) {
+        grid-template-columns: var(--mas-sidebar-collapsed-w) 1fr;
+    }
+    .mar-appshell:not(.is-collapsed):has(.mar-appshell__context) {
+        grid-template-columns: var(--mas-sidebar-collapsed-w) 1fr 280px;
+    }
+    /* Hide labels / badges — mirror collapsed rules */
+    .mar-appshell:not(.is-collapsed) .mar-appshell__brand-fallback,
+    .mar-appshell:not(.is-collapsed) ::deep .mar-appshell__brand > *:not(.mar-appshell__collapse-btn) {
+        opacity: 0;
+        pointer-events: none;
+        width: 0;
+    }
+    .mar-appshell:not(.is-collapsed) ::deep .mar-appshell__nav-group-title {
+        visibility: hidden;
+        height: 8px;
+        padding: 0;
+    }
+    .mar-appshell:not(.is-collapsed) ::deep .mar-appshell__nav-link {
+        justify-content: center;
+        padding: 10px 0;
+    }
+    .mar-appshell:not(.is-collapsed) ::deep .mar-appshell__nav-link-label,
+    .mar-appshell:not(.is-collapsed) ::deep .mar-appshell__nav-link-badge {
+        display: none;
+    }
+    .mar-appshell:not(.is-collapsed) .mar-appshell__nav {
+        overflow: hidden;
+    }
+    /* Collapse footer */
+    .mar-appshell:not(.is-collapsed) .mar-appshell__footer ::deep .mar-appshell__user-group {
+        justify-content: center;
+        border: none;
+        background: transparent;
+    }
+    .mar-appshell:not(.is-collapsed) .mar-appshell__footer ::deep .mar-appshell__avatar-btn {
+        flex: 0 0 auto;
+        padding: 4px;
+        gap: 0;
+    }
+    .mar-appshell:not(.is-collapsed) .mar-appshell__footer ::deep .mar-appshell__identity { display: none; }
+    .mar-appshell:not(.is-collapsed) .mar-appshell__footer ::deep .mar-appshell__notif-btn { display: none; }
+    .mar-appshell:not(.is-collapsed) .mar-appshell__footer {
+        padding: 8px 4px;
+        overflow: visible;
+    }
+}
+
 /* ── Mobile / drawer ────────────────────────────────────────────────── */
 
 .mar-appshell__scrim {

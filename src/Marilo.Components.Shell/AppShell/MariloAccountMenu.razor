@@ -86,7 +86,20 @@
                 {
                     <div class="mar-account-menu__separator"></div>
                     <div class="mar-account-menu__group" role="group" aria-label="Settings">
-                        @RenderMenuItems(_group1)
+                        @foreach (var item in _group1)
+                        {
+                            if (!item.IsVisible) continue;
+                            var idx = _flatVisibleItems.IndexOf(item);
+                            <button type="button"
+                                    class="mar-account-menu__row @(idx == _focusedIndex ? "is-focused" : "") @(item.IsDisabled ? "is-disabled" : "")"
+                                    role="menuitem"
+                                    aria-disabled="@(item.IsDisabled ? "true" : null)"
+                                    data-testid="@item.TestId"
+                                    @onclick="() => HandleItemClick(item)">
+                                <span class="mar-account-menu__row-icon">@RenderIcon(item.Icon)</span>
+                                <span class="mar-account-menu__row-label">@item.Label</span>
+                            </button>
+                        }
                     </div>
                     @if (AfterSettingsSection is not null)
                     {
@@ -99,7 +112,20 @@
                 {
                     <div class="mar-account-menu__separator"></div>
                     <div class="mar-account-menu__group" role="group" aria-label="Upgrade">
-                        @RenderMenuItems(_group2)
+                        @foreach (var item in _group2)
+                        {
+                            if (!item.IsVisible) continue;
+                            var idx = _flatVisibleItems.IndexOf(item);
+                            <button type="button"
+                                    class="mar-account-menu__row @(idx == _focusedIndex ? "is-focused" : "") @(item.IsDisabled ? "is-disabled" : "")"
+                                    role="menuitem"
+                                    aria-disabled="@(item.IsDisabled ? "true" : null)"
+                                    data-testid="@item.TestId"
+                                    @onclick="() => HandleItemClick(item)">
+                                <span class="mar-account-menu__row-icon">@RenderIcon(item.Icon)</span>
+                                <span class="mar-account-menu__row-label">@item.Label</span>
+                            </button>
+                        }
                     </div>
                     @if (AfterUpgradeSection is not null)
                     {
@@ -112,7 +138,20 @@
                 {
                     <div class="mar-account-menu__separator"></div>
                     <div class="mar-account-menu__group" role="group" aria-label="Install">
-                        @RenderMenuItems(_group3)
+                        @foreach (var item in _group3)
+                        {
+                            if (!item.IsVisible) continue;
+                            var idx = _flatVisibleItems.IndexOf(item);
+                            <button type="button"
+                                    class="mar-account-menu__row @(idx == _focusedIndex ? "is-focused" : "") @(item.IsDisabled ? "is-disabled" : "")"
+                                    role="menuitem"
+                                    aria-disabled="@(item.IsDisabled ? "true" : null)"
+                                    data-testid="@item.TestId"
+                                    @onclick="() => HandleItemClick(item)">
+                                <span class="mar-account-menu__row-icon">@RenderIcon(item.Icon)</span>
+                                <span class="mar-account-menu__row-label">@item.Label</span>
+                            </button>
+                        }
                     </div>
                     @if (AfterInstallSection is not null)
                     {
@@ -158,7 +197,20 @@
                         @BeforeSignOutSection
                     }
                     <div class="mar-account-menu__group" role="group" aria-label="Sign out">
-                        @RenderMenuItems(_group5)
+                        @foreach (var item in _group5)
+                        {
+                            if (!item.IsVisible) continue;
+                            var idx = _flatVisibleItems.IndexOf(item);
+                            <button type="button"
+                                    class="mar-account-menu__row @(idx == _focusedIndex ? "is-focused" : "") @(item.IsDisabled ? "is-disabled" : "")"
+                                    role="menuitem"
+                                    aria-disabled="@(item.IsDisabled ? "true" : null)"
+                                    data-testid="@item.TestId"
+                                    @onclick="() => HandleItemClick(item)">
+                                <span class="mar-account-menu__row-icon">@RenderIcon(item.Icon)</span>
+                                <span class="mar-account-menu__row-label">@item.Label</span>
+                            </button>
+                        }
                     </div>
                 }
 
@@ -769,40 +821,4 @@
         _ => RenderIcon("sun"),
     };
 
-    // ── Shared Markup Rendering for Standard (non-submenu) Items ──
-
-    private RenderFragment RenderMenuItems(List<AccountMenuItemModel> items) => builder =>
-    {
-        foreach (var item in items)
-        {
-            if (!item.IsVisible) continue;
-
-            var idx = _flatVisibleItems.IndexOf(item);
-
-            builder.OpenElement(0, "button");
-            builder.AddAttribute(1, "type", "button");
-            builder.AddAttribute(2, "class",
-                $"mar-account-menu__row{(idx == _focusedIndex ? " is-focused" : "")}{(item.IsDisabled ? " is-disabled" : "")}{(item.IsDestructive ? " mar-account-menu__row--destructive" : "")}");
-            builder.AddAttribute(3, "role", "menuitem");
-            if (item.IsDisabled)
-                builder.AddAttribute(4, "aria-disabled", "true");
-            if (!string.IsNullOrEmpty(item.TestId))
-                builder.AddAttribute(5, "data-testid", item.TestId);
-            builder.AddAttribute(6, "onclick", EventCallback.Factory.Create(this, () => HandleItemClick(item)));
-
-            // Icon
-            builder.OpenElement(10, "span");
-            builder.AddAttribute(11, "class", "mar-account-menu__row-icon");
-            builder.AddContent(12, RenderIcon(item.Icon));
-            builder.CloseElement();
-
-            // Label
-            builder.OpenElement(20, "span");
-            builder.AddAttribute(21, "class", "mar-account-menu__row-label");
-            builder.AddContent(22, item.Label);
-            builder.CloseElement();
-
-            builder.CloseElement(); // button
-        }
-    };
 }
