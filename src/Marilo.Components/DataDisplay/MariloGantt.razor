@@ -95,6 +95,7 @@
     private GanttFieldAccessor<TItem>? _accessor;
     private string? _accessorKey;
     private IEnumerable<TItem>? _lastData;
+    private int _lastDataCount = -1;
     private readonly List<GanttNode<TItem>> _roots = new();
     private List<GanttNode<TItem>> _flatVisible = new();
     private readonly HashSet<object> _expandedIds = new();
@@ -123,9 +124,14 @@
     {
         var prevKey = _accessorKey;
         _accessor = GetAccessor();
-        if (!ReferenceEquals(_lastData, Data) || prevKey != _accessorKey)
+        var newCount = (Data ?? Enumerable.Empty<TItem>()).Count();
+        var keyChanged = prevKey != _accessorKey;
+        var refChanged = !ReferenceEquals(_lastData, Data);
+        var skipEmpty = !keyChanged && newCount == 0 && _lastDataCount == 0;
+        if ((refChanged || keyChanged) && !skipEmpty)
         {
             _lastData = Data;
+            _lastDataCount = newCount;
             BuildTree();
             RebuildFlatVisible();
         }
@@ -167,9 +173,14 @@
             }
         }
 
+        // Prune stale expanded ids from deleted nodes so reappearing ids get default-expanded treatment
+        _expandedIds.IntersectWith(byId.Keys);
+
         foreach (var node in ordered)
         {
-            if (node.ParentId is not null && byId.TryGetValue(node.ParentId, out var parent))
+            if (node.ParentId is not null
+                && byId.TryGetValue(node.ParentId, out var parent)
+                && !WouldCreateCycle(node, parent))
             {
                 parent.Children.Add(node);
                 node.Parent = parent;
@@ -207,25 +218,40 @@
         }
     }
 
+    private static bool WouldCreateCycle(GanttNode<TItem> candidateChild, GanttNode<TItem> candidateParent)
+    {
+        var cursor = candidateParent;
+        while (cursor is not null)
+        {
+            if (ReferenceEquals(cursor, candidateChild)) return true;
+            cursor = cursor.Parent;
+        }
+        return false;
+    }
+
     private bool IsExpanded(GanttNode<TItem> node)
         => node.Id is null || _expandedIds.Contains(node.Id);
 
     private void RebuildFlatVisible()
     {
         var list = new List<GanttNode<TItem>>();
-        void Walk(GanttNode<TItem> node)
+        var visited = new HashSet<GanttNode<TItem>>();
+        var stack = new Stack<GanttNode<TItem>>();
+        for (int i = _roots.Count - 1; i >= 0; i--) stack.Push(_roots[i]);
+        while (stack.Count > 0)
         {
-            list.Add(node);
-            if (node.Children.Count > 0 && IsExpanded(node))
+            var n = stack.Pop();
+            if (!visited.Add(n)) continue;
+            list.Add(n);
+            if (IsExpanded(n))
             {
-                foreach (var c in node.Children) Walk(c);
+                for (int i = n.Children.Count - 1; i >= 0; i--) stack.Push(n.Children[i]);
             }
         }
-        foreach (var r in _roots) Walk(r);
         _flatVisible = list;
     }
 
-    private void ToggleExpanded(GanttNode<TItem> node)
+    private async Task ToggleExpanded(GanttNode<TItem> node)
     {
         if (node.Id is null) return;
         if (!_expandedIds.Add(node.Id))
@@ -233,6 +259,6 @@
             _expandedIds.Remove(node.Id);
         }
         RebuildFlatVisible();
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 }
