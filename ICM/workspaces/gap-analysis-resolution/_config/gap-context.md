@@ -89,6 +89,8 @@ All implementations are independent (no Telerik dependency), use MIT/Apache-2.0-
 | t4-pickers-batch8a | 23 | 23/23 ✅ | Stage 06 closed (2026-04-09); 6/6 resolved (DRP PopupClass/ShowWeekNumbers/Size/Rounded/FillMode/DebounceDelay/Title/HeaderTemplate + DTP ValidateOn); 726/726 full suite |
 | t4-pickers-batch8b | 13 | 13/13 ✅ | Stage 06 closed (2026-04-09); 4/4 resolved (TP InputMode/ValidateOn/OnChange-on-blur/CSS provider); 726/726 full suite |
 | t4-pickers-batch8c | 12 | 12/12 ✅ | Stage 06 closed (2026-04-09); 3/3 resolved (FU template context/CSS provider + UPL UploadChunkSettings); 726/726 full suite |
+| colorpicker-standalone | 18 | 18/18 ✅ | Stage 06 closed (2026-04-09); 5/5 CPICK gaps resolved (Gradient, Palette, FlatPicker, Views API, CSS provider); subagent-driven dev |
+| drp-multiview | 5 | 5/5 ✅ | Stage 06 closed (2026-04-09); 2/2 DRP gaps resolved (Year/Decade calendar views, FocusAsync methods) |
 | datagrid-cdw | 0 | 0 | Per-feature checklist ready for CDW handoff (2026-04-03) |
 
 Canonical test evidence: `stages/06-validate/output/gap-*-closure-report.md`

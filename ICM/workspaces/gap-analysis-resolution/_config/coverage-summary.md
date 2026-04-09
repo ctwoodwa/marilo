@@ -18,7 +18,7 @@
 | Wizard | 0 | 0 | 18 resolved | 0 | **06-validate** | 27 | Stage 06 closure report complete; runtime test pending |
 | Chart | 2 remaining | 0 | 13 (B1+B2) | 2 deferred | **06-validate (B2)** | 27 | Batch 1+2 closed; 4 pre-existing, 9 implemented; drilldown+demos deferred |
 | Editor | ~5 remaining | 0 | 7 (B1+B2a) | 0 | **06-validate (B2a)** | 22 (14+8) | Batch 1+2a closed; B2a adds Markdig import/export; 675/675 runtime validated |
-| FileManager | 14 | 0 | 22 (A+B+C) | 0 | 05-implement (Phase C) | 74 | Phases A+B+C complete; generic TItem, events, selection, toolbar, breadcrumb, search; 800/800 full suite |
+| FileManager | 0 | 0 | 36 (A-F) | 0 | **06-validate** | 151 | **COMPLETE** — all 36 gaps resolved across 6 phases; full rewrite from 170-line scaffold; 877/877 suite |
 | Scheduler | ~25-40 | 0 | 0 | 0 | 01-intake | 0 | Recommend dedicated CDW |
 | Gantt | 0 | 0 | 20 | 0 | **06-validate** | 31 | Full rewrite complete; 20/20 gaps resolved; subagent-driven dev |
 | TreeList | ~35-55 | 0 | 0 | 0 | 01-intake | 0 | Recommend dedicated CDW |
@@ -50,9 +50,11 @@
 | T4 Pickers B8A | `stages/03-resolution-design/output/gap-t4-picker-batch8a-resolutions.md` | `stages/05-implement/output/gap-t4-picker-batch8a-implementation-log.md` | `stages/06-validate/output/gap-t4-picker-batch8a-closure-report.md` | 2026-04-09 |
 | T4 Pickers B8B | `stages/03-resolution-design/output/gap-t4-picker-batch8b-resolutions.md` | `stages/05-implement/output/gap-t4-picker-batch8b-implementation-log.md` | `stages/06-validate/output/gap-t4-picker-batch8b-closure-report.md` | 2026-04-09 |
 | T4 Pickers B8C | `stages/03-resolution-design/output/gap-t4-picker-batch8c-resolutions.md` | `stages/05-implement/output/gap-t4-picker-batch8c-implementation-log.md` | `stages/06-validate/output/gap-t4-picker-batch8c-closure-report.md` | 2026-04-09 |
+| ColorPicker+DRP | — | — (9 commits on `colorpicker-standalone` branch) | `stages/06-validate/output/gap-colorpicker-standalone-closure-report.md` | 2026-04-09 |
 
 ## Recent Movement
 
+- ColorPicker standalone + DRP multi-view (2026-04-09): 3 new standalone color components (MariloColorGradient, MariloColorPalette, MariloFlatColorPicker) + ColorPickerViews child-tag API + CSS provider. DateRangePicker Year/Decade drill-down calendar views + FocusStartAsync/FocusEndAsync. 7 gaps resolved, 23 bUnit tests. Branch: `colorpicker-standalone`.
 - T4 Pickers Batch 8 (2026-04-09): Final C# polish across 5 components. 8A: DateRangePicker PopupClass bug fix, ShowWeekNumbers render, Size/Rounded/FillMode, DebounceDelay/Title, HeaderTemplate + DateTimePicker ValidateOn (6 gaps, 23 tests). 8B: TimePicker InputMode, ValidateOn, OnChange-on-blur, CSS provider integration (4 gaps, 13 tests). 8C: FileUpload template context type fix + CSS provider + Upload UploadChunkSettings nested tag (3 gaps, 12 tests). Subagent-driven dev (3 parallel agents). 726/726 full suite.
 - Gantt full rewrite (2026-04-09): Complete generic rewrite of MariloGantt from 95-line scaffold to full-featured component. 20/20 gaps resolved across 5 phases (A: Foundation, B: Child Components, C: Features, D: JS Interop, E: Tests+Demos). 24 commits, 31 bUnit tests, 5 demo pages. Executed via subagent-driven development with two-stage review. Branch: `gantt-rewrite`.
 - Editor Batch 2a (2026-04-09): MariloEditor import/export with Markdig (MIT) + plaintext adapters; IEditorFormatConverter interface + DI registration; 8 bUnit tests; 675/675 full suite runtime validated. Closes GAP-EDITOR-005. First third-party NuGet on Marilo.Components.

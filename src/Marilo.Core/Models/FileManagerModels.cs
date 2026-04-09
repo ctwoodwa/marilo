@@ -47,6 +47,30 @@ public enum FileManagerViewType
     Grid
 }
 
+// ── Upload Settings ──────────────────────────────────────────────────────────
+
+/// <summary>
+/// Configures upload behaviour for <see cref="MariloFileManager{TItem}"/>.
+/// Assign to the <c>UploadSettings</c> parameter to enable the Upload button.
+/// </summary>
+public class FileManagerUploadSettings
+{
+    /// <summary>The server URL that accepts uploaded files (e.g. "/api/upload").</summary>
+    public string? SaveUrl { get; set; }
+
+    /// <summary>
+    /// Allowed file extensions (e.g. <c>new[] { ".jpg", ".png" }</c>).
+    /// When null or empty, all extensions are accepted.
+    /// </summary>
+    public string[]? AllowedExtensions { get; set; }
+
+    /// <summary>Maximum file size in bytes. Zero means no limit.</summary>
+    public long MaxFileSize { get; set; }
+
+    /// <summary>When true (default), the file input accepts multiple files.</summary>
+    public bool Multiple { get; set; } = true;
+}
+
 // ── EventArgs ────────────────────────────────────────────────────────────────
 
 /// <summary>

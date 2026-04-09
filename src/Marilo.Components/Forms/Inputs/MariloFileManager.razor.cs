@@ -20,6 +20,32 @@ public partial class MariloFileManager<TItem> : MariloComponentBase
     private CancellationTokenSource? _readCts;
     private string _searchFilter = string.Empty;
 
+    // Phase F: sort state
+    internal string _sortField = "Name";
+    internal bool _sortAscending = true;
+
+    // Phase F: loading state
+    internal bool _isLoading;
+
+    // Phase D: context menu state
+    private TItem? _contextMenuItem;
+    private bool _contextMenuVisible;
+    private double _contextMenuX;
+    private double _contextMenuY;
+
+    // Phase D: inline rename state
+    private TItem? _renamingItem;
+    internal string _renameText = string.Empty;
+
+    // Phase D: delete confirmation state
+    private TItem? _deleteConfirmItem;
+
+    // Phase E: preview pane state
+    internal bool _previewPaneVisible;
+
+    // Phase E: upload dialog state
+    internal bool _uploadDialogVisible;
+
     // ── Parameters: Data ────────────────────────────────────────────────────────
 
     /// <summary>
@@ -107,8 +133,38 @@ public partial class MariloFileManager<TItem> : MariloComponentBase
     /// <summary>Optional height (e.g. "400px", "60vh"). Applied as inline style.</summary>
     [Parameter] public string? Height { get; set; }
 
+    /// <summary>Optional width (e.g. "800px", "100%"). Applied as inline style.</summary>
+    [Parameter] public string? Width { get; set; }
+
+    /// <summary>
+    /// When true, a loading overlay is rendered over the file list while data is being fetched.
+    /// </summary>
+    [Parameter] public bool EnableLoaderContainer { get; set; }
+
     /// <summary>When true, displays the folder-tree sidebar.</summary>
     [Parameter] public bool ShowFolderTree { get; set; } = true;
+
+    // ── Parameters: Upload (Phase E) ─────────────────────────────────────────────
+
+    /// <summary>
+    /// Optional child configuration fragment (e.g. <c>&lt;FileManagerSettings&gt;</c>).
+    /// When provided the component wraps its content in a settings cascade.
+    /// </summary>
+    [Parameter] public RenderFragment? FileManagerSettings { get; set; }
+
+    /// <summary>
+    /// Upload settings. When non-null, an Upload button appears in the default toolbar.
+    /// See <see cref="FileManagerUploadSettings"/> for configuration options.
+    /// </summary>
+    [Parameter] public FileManagerUploadSettings? UploadSettings { get; set; }
+
+    // ── Parameters: Preview pane (Phase E) ───────────────────────────────────────
+
+    /// <summary>
+    /// When true the Details toggle button is visible in the default toolbar and
+    /// the preview pane can be opened. Defaults to false.
+    /// </summary>
+    [Parameter] public bool ShowPreviewPane { get; set; }
 
     // ── Parameters: Permissions ─────────────────────────────────────────────────
 
@@ -164,6 +220,9 @@ public partial class MariloFileManager<TItem> : MariloComponentBase
 
     internal bool CanNavigateUp => Path != "/" && Path.Contains('/');
 
+    /// <summary>Returns the first selected item (or null when nothing is selected).</summary>
+    internal TItem? SelectedItem => _selectedItems.Count > 0 ? _selectedItems[0] : default;
+
     // ── PropertyInfo cache ──────────────────────────────────────────────────────
 
     private readonly Dictionary<string, PropertyInfo?> _propCache = new();
@@ -195,6 +254,7 @@ public partial class MariloFileManager<TItem> : MariloComponentBase
     internal bool GetIsDirectory(TItem item) => GetFieldValue<bool>(item, IsDirectoryField);
     internal long GetSize(TItem item) => GetFieldValue<long>(item, SizeField);
     internal DateTime? GetDateModified(TItem item) => GetFieldValue<DateTime?>(item, DateModifiedField);
+    internal DateTime? GetDateCreated(TItem item) => GetFieldValue<DateTime?>(item, DateCreatedField);
     internal string? GetExtension(TItem item) => GetFieldValue<string>(item, ExtensionField);
 
     // ── Lifecycle ───────────────────────────────────────────────────────────────
@@ -230,6 +290,9 @@ public partial class MariloFileManager<TItem> : MariloComponentBase
             _readCts?.Cancel();
             _readCts = new CancellationTokenSource();
 
+            _isLoading = true;
+            await InvokeAsync(StateHasChanged);
+
             var args = new FileManagerReadEventArgs
             {
                 Path = Path,
@@ -237,6 +300,8 @@ public partial class MariloFileManager<TItem> : MariloComponentBase
             };
 
             await OnRead.InvokeAsync(args);
+
+            _isLoading = false;
 
             if (!_readCts.Token.IsCancellationRequested && args.Data is not null)
             {
@@ -254,13 +319,32 @@ public partial class MariloFileManager<TItem> : MariloComponentBase
 
     internal IEnumerable<TItem> GetCurrentItems()
     {
-        IEnumerable<TItem> items = _resolvedItems
-            .Where(i => GetParentPath(GetPath(i)) == Path.TrimEnd('/'))
-            .OrderByDescending(GetIsDirectory)
-            .ThenBy(GetName);
+        // Directories always float to the top regardless of sort field
+        var filtered = _resolvedItems
+            .Where(i => GetParentPath(GetPath(i)) == Path.TrimEnd('/'));
 
         if (!string.IsNullOrWhiteSpace(_searchFilter))
-            items = items.Where(i => GetName(i).Contains(_searchFilter, StringComparison.OrdinalIgnoreCase));
+            filtered = filtered.Where(i => GetName(i).Contains(_searchFilter, StringComparison.OrdinalIgnoreCase));
+
+        // Apply sort: directories first, then by selected field + direction
+        IEnumerable<TItem> items = _sortField switch
+        {
+            "Size" => _sortAscending
+                ? filtered.OrderByDescending(GetIsDirectory).ThenBy(GetSize)
+                : filtered.OrderByDescending(GetIsDirectory).ThenByDescending(GetSize),
+            "DateModified" => _sortAscending
+                ? filtered.OrderByDescending(GetIsDirectory).ThenBy(GetDateModified)
+                : filtered.OrderByDescending(GetIsDirectory).ThenByDescending(GetDateModified),
+            "Extension" => _sortAscending
+                ? filtered.OrderByDescending(GetIsDirectory).ThenBy(GetExtension)
+                : filtered.OrderByDescending(GetIsDirectory).ThenByDescending(GetExtension),
+            "Type" => _sortAscending
+                ? filtered.OrderBy(GetIsDirectory).ThenBy(GetName)
+                : filtered.OrderByDescending(GetIsDirectory).ThenBy(GetName),
+            _ => _sortAscending
+                ? filtered.OrderByDescending(GetIsDirectory).ThenBy(GetName)
+                : filtered.OrderByDescending(GetIsDirectory).ThenByDescending(GetName),
+        };
 
         return items;
     }
@@ -392,6 +476,35 @@ public partial class MariloFileManager<TItem> : MariloComponentBase
         }
     }
 
+    // ── Phase E: Preview pane ────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Toggles the preview pane open or closed.
+    /// Only functional when <see cref="ShowPreviewPane"/> is true.
+    /// </summary>
+    internal void TogglePreviewPane()
+    {
+        _previewPaneVisible = !_previewPaneVisible;
+        StateHasChanged();
+    }
+
+    // ── Phase E: Upload dialog ───────────────────────────────────────────────────
+
+    /// <summary>Opens the upload dialog. No-op when <see cref="UploadSettings"/> is null.</summary>
+    internal void ShowUploadDialog()
+    {
+        if (UploadSettings is null) return;
+        _uploadDialogVisible = true;
+        StateHasChanged();
+    }
+
+    /// <summary>Closes the upload dialog.</summary>
+    internal void CloseUploadDialog()
+    {
+        _uploadDialogVisible = false;
+        StateHasChanged();
+    }
+
     // ── Helpers ─────────────────────────────────────────────────────────────────
 
     internal bool IsSelected(TItem item) => _selectedItems.Contains(item);
@@ -406,6 +519,132 @@ public partial class MariloFileManager<TItem> : MariloComponentBase
     internal string GetHeightStyle()
     {
         return string.IsNullOrEmpty(Height) ? "" : $"height:{Height};";
+    }
+
+    internal string GetWidthStyle()
+    {
+        return string.IsNullOrEmpty(Width) ? "" : $"width:{Width};";
+    }
+
+    /// <summary>Returns combined height + width inline styles for the root element.</summary>
+    internal string GetContainerStyle()
+    {
+        return GetHeightStyle() + GetWidthStyle();
+    }
+
+    // ── Phase F: Sort controls ──────────────────────────────────────────────────
+
+    internal void SetSortField(string field)
+    {
+        _sortField = field;
+        StateHasChanged();
+    }
+
+    internal void HandleSortFieldChange(Microsoft.AspNetCore.Components.ChangeEventArgs e)
+    {
+        SetSortField(e.Value?.ToString() ?? "Name");
+    }
+
+    internal void ToggleSortDirection()
+    {
+        _sortAscending = !_sortAscending;
+        StateHasChanged();
+    }
+
+    // ── Phase D: Context menu ───────────────────────────────────────────────────
+
+    internal async Task ShowContextMenu(TItem item, Microsoft.AspNetCore.Components.Web.MouseEventArgs e)
+    {
+        _contextMenuItem = item;
+        _contextMenuX = e.ClientX;
+        _contextMenuY = e.ClientY;
+        _contextMenuVisible = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    internal async Task CloseContextMenu()
+    {
+        _contextMenuVisible = false;
+        _contextMenuItem = default;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    // ── Phase D: Rename ─────────────────────────────────────────────────────────
+
+    internal async Task StartRename(TItem item)
+    {
+        if (!AllowRename) return;
+        _contextMenuVisible = false;
+        _renamingItem = item;
+        _renameText = GetName(item);
+        await EditItem(item);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    internal async Task CommitRename()
+    {
+        if (_renamingItem is null) return;
+        var item = _renamingItem;
+        // Write the new name back via reflection if the property is settable
+        var nameProp = GetProp(NameField);
+        if (nameProp is not null && nameProp.CanWrite)
+            nameProp.SetValue(item, _renameText);
+        _renamingItem = default;
+        await UpdateItem(item);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    internal async Task CancelRename()
+    {
+        _renamingItem = default;
+        _renameText = string.Empty;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    internal bool IsRenaming(TItem item) =>
+        _renamingItem is not null && ReferenceEquals(_renamingItem, item);
+
+    internal async Task HandleRenameKeyDown(Microsoft.AspNetCore.Components.Web.KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+            await CommitRename();
+        else if (e.Key == "Escape")
+            await CancelRename();
+    }
+
+    internal void UpdateRenameText(string value) => _renameText = value;
+
+    internal async Task ContextMenuDownload()
+    {
+        if (_contextMenuItem is null) return;
+        var item = _contextMenuItem!;
+        await CloseContextMenu();
+        await DownloadItem(item);
+    }
+
+    // ── Phase D: Delete confirmation ────────────────────────────────────────────
+
+    internal async Task ConfirmDelete(TItem item)
+    {
+        if (!AllowDelete) return;
+        _contextMenuVisible = false;
+        _deleteConfirmItem = item;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    internal async Task ExecuteDelete()
+    {
+        if (_deleteConfirmItem is null) return;
+        var item = _deleteConfirmItem;
+        _deleteConfirmItem = default;
+        await DeleteItem(item);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    internal async Task CancelDelete()
+    {
+        _deleteConfirmItem = default;
+        await InvokeAsync(StateHasChanged);
     }
 
     // ── IDisposable ─────────────────────────────────────────────────────────────

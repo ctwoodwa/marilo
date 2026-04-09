@@ -12,7 +12,7 @@
 |-------|-------|
 | Workspace | gap-analysis-resolution |
 | Last updated | 2026-04-09 |
-| Current phase | **T4 Batch 8 complete (13 gaps, 48 tests).** Stage 06 complete (DataGrid Ph1+Ph2+Ph3 partial + splitter + wizard + T4 B1-B8 + chart B1+B2 + editor B1+B2a + Gantt full rewrite). 726/726 full suite. |
+| Current phase | **FileManager full rewrite complete (36/36 gaps, 151 tests).** Stage 06 complete (DataGrid Ph1-3 + splitter + wizard + T4 B1-B8 + chart B1+B2 + editor B1+B2a + Gantt rewrite + ColorPicker standalone + DRP multi-view + **FileManager A-F**). 877/877 full suite. |
 
 ## Pipeline Status
 
@@ -76,14 +76,18 @@
 - [x] 03-resolution through 06-validate (full generic rewrite via subagent-driven dev; 24 commits, 31 bUnit tests)
 - Closure report: `stages/06-validate/output/gap-gantt-closure-report.md`
 
+**ColorPicker standalone + DRP multi-view (7 gaps: 5 CPICK + 2 DRP)** -- COMPLETE
+
+- [x] 03-resolution through 06-validate (subagent-driven dev; 9 commits, 23 bUnit tests)
+- Closure report: `stages/06-validate/output/gap-colorpicker-standalone-closure-report.md`
+
 ## Next Actions
 
-1. **ColorPicker standalone components** (FlatColorPicker, ColorGradient, ColorPalette) — significant new component work, may need own batch/CDW.
-2. **DateRangePicker multi-view calendar** (Year/Decade views) — large feature, separate batch.
-3. Editor Batch 2 remainder: Adaptive toolbar (JS), table/image resize (JS).
-4. DataGrid Phase 3 remaining: Frozen columns (JS), Row drag-drop (JS).
-5. Chart: Drilldown feature (separate scope / CDW).
-6. FileManager: Stage 02 prioritization ready (intake complete).
+1. Editor Batch 2 remainder: Adaptive toolbar (JS), table/image resize (JS).
+2. DataGrid Phase 3 remaining: Frozen columns (JS), Row drag-drop (JS).
+3. **FileManager: COMPLETE** (36/36 gaps, 151 tests, full rewrite).
+4. Chart: Drilldown feature (separate scope / CDW).
+5. Scheduler / TreeList: Recommend dedicated CDW.
 
 ## Human Decisions Resolved (2026-04-09)
 

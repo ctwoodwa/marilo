@@ -37,10 +37,10 @@
 |-------|--------|--------|
 | 01-intake | complete | `filemanager-delivery/stages/01-spec-review/output/filemanager-spec-gap-list.md` |
 | 02-prioritize | complete | `output/stage-02/filemanager-prioritized-backlog.md` |
-| 03-resolution-design | Phases A+B+C complete | `output/stage-03/filemanager-phase-{a,b,c}-resolutions.md` |
+| 03-resolution-design | complete | `output/stage-03/filemanager-phase-{a,b,c,d,e,f}-resolutions.md` |
 | 04-remediation-plan | skipped (batched) | — |
-| 05-implement | Phases A+B+C complete (22/36 gaps) | `output/stage-05/filemanager-phase-{a,b,c}-implementation-log.md` |
-| 06-validate | Phases A+B+C complete | `output/stage-06/filemanager-phase-{a,b,c}-closure-report.md` |
+| 05-implement | complete (36/36 gaps) | `output/stage-05/filemanager-phase-{a,b,c,d,e,f}-implementation-log.md` |
+| 06-validate | complete | `output/stage-06/filemanager-phase-{a,b,c,d,e,f}-closure-report.md` |
 
 ## Test Coverage Rollup
 
