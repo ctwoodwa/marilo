@@ -331,7 +331,7 @@ Use `GoBack` when the correct behavior is to return to the root menu. Use `Close
 ### Rules
 - Default rendering works when no templates are supplied.
 - Templates replace only their target area, not surrounding structure.
-- Injected content must not break separators, layout rhythm, keyboard behavior, or close behavior. Templates may close the root menu via `ctx.CloseMenu()`.
+- Injected content must not break separators, layout rhythm, keyboard behavior, or close behavior.
 - Templates and Options work together — a consumer can set `Options.Appearance.CurrentValue` and also provide `AppearanceTemplate`.
 
 ---
@@ -512,7 +512,7 @@ Internal state:
 | `_currentAppearance` | `string` | Selected appearance mode |
 | `_currentLanguage` | `string` | Selected language |
 
-Custom templates interact through context callbacks (`SelectMode`, `SelectLanguage`, `GoBack`, `CloseMenu`, etc.) rather than mutating internal state directly.
+Custom templates interact through context callbacks (`SelectMode`, `SelectLanguage`, `GoBack`, etc.) rather than mutating internal state directly.
 
 ---
 
@@ -563,13 +563,3 @@ The component handles collapsed/expanded trigger layout, popup rendering, theme 
 | TriggerTemplate | Included in V1 | Single RenderFragment, trivial to implement, needed escape hatch |
 | Telemetry metadata | TestId only in V1 | Zero cost, immediately useful; analytics keys can be added later |
 | Submenu style | Slide/swap (not flyout) | Contained within fixed-width popup; flyouts would overflow sidebar bounds |
-
----
-
-## Resolved Decisions
-
-The following items were open at spec approval (2026-04-09) and resolved during implementation planning.
-
-- [x] Trigger aria-label: use "Account menu for {UserName}" when UserName is set; fall back to "Account menu". See ARIA Model.
-- [x] Disabled item opacity: 0.38 for content (text + icons), 0.12 for container backgrounds, via `--mam-disabled-content-opacity` token. See Styling / Disabled State Tokens.
-- [x] Templates closing root menu: Yes — `CloseMenu` added to all three typed context records. See Render Fragment Slots / Template Context Types.

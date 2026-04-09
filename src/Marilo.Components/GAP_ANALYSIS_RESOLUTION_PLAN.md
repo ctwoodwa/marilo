@@ -1047,7 +1047,7 @@ Initial gap analysis intake completed for 12 complex components (excluding DataG
 | MariloEditor      | Yes          | 18         | 15-25     | Reconstructed | T2                  | JS interop test fixes needed                                            |
 | MariloFileManager | Yes          | 15         | 20-30     | Reconstructed | T2                  | Complex file browser UX                                                 |
 | MariloScheduler   | Yes          | 25         | 25-40     | Reconstructed | T3 (needs CDW)      | Recommend dedicated workspace                                           |
-| MariloGantt       | Yes          | 44         | 30-50     | Reconstructed | **COMPLETE**  | 20/20 gaps resolved; 31 tests; full rewrite on `gantt-rewrite` branch |
+| MariloGantt       | Yes          | 44         | 30-50     | Reconstructed | **Pass 3 COMPLETE**  | Pass 3: E9–E17 (9 gaps, +52 tests → 700 total). Pass 4 pending: drag interop impl, dependency SVG, anchor popup |
 | MariloTreeList    | Yes          | 55         | 35-55     | Reconstructed | T3                  | Recommend dedicated workspace                                           |
 | MariloDiagram     | **No** | 6          | 15-25     | Standard      | T4 (no source)      | Architecture decision needed                                            |
 | MariloDockManager | **No** | 6          | 15-25     | Standard      | T4                  | Architecture decision needed                                            |
