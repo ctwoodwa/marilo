@@ -135,11 +135,9 @@
 
     private async Task HandleDeleteAllRead()
     {
+        // The bell is presentation-only; the parent owns the underlying store and is
+        // responsible for actually removing read items in response to this event.
         _moreOpen = false;
-        if (Items is not null)
-        {
-            Items.RemoveAll(i => i.IsRead);
-        }
         await OnDeleteAllRead.InvokeAsync();
     }
 

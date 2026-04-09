@@ -69,6 +69,10 @@ All implementations are independent (no Telerik dependency), use MIT/Apache-2.0-
 | t4-pickers-batch1 | 17 | 17 | Stage 06 closed (2026-04-03); 7 resolved, 3 partially resolved |
 | t4-pickers-batch2 | 9 | pending | Stage 06 closed (2026-04-04); 4/4 resolved; runtime test pending |
 | t4-pickers-batch3 | 17 | 17 | Stage 06 closed (2026-04-05); 12 resolved, 1 won't fix; 547/547 full suite |
+| t4-pickers-batch4 | 12 | pending | Stage 06 closed (2026-04-08); 2/2 resolved (MSEL-003 GroupField + DTP-002 tumbler steps); runtime test pending |
+| t4-pickers-batch5 | 12 | pending | Stage 06 closed (2026-04-08); 2/2 resolved (MSEL-006 OnRead/Rebind/ValueMapper + DTP-003 typed input); also closes OnRead portion of GAP-MSEL-001; runtime test pending |
+| t4-pickers-batch6 | 11 | pending | Stage 06 closed (2026-04-08); 2/2 resolved (MSEL-001 final OnChange/OnItemRender + MSEL-007 ItemHeight/PageSize); MSEL-007 ScrollMode deferred; runtime test pending |
+| t4-pickers-batch7 | 7 | pending | Stage 06 closed (2026-04-08); 1/1 resolved (MSEL-005 MultiSelectSettings + MultiSelectPopupSettings child API); subagent-driven dev mode; also fixed Batch 6 SetParametersAndRender→Render bUnit v2 build break; runtime test pending |
 | readonly-guards | 6 | 6 | Stage 06 closed (2026-04-03) |
 | expandall-lazyload | 6 | 6 | Stage 06 closed (2026-04-03) |
 

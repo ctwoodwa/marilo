@@ -452,4 +452,223 @@ public class DateTimePickerTests : MariloTestBase
 
         Assert.Contains("custom-popup", cut.Find(".mar-datetime-picker__popup").GetAttribute("class"));
     }
+
+    // ── Tumbler step parameters (GAP-DTP-002 / RES-T4B4-02) ─────────
+
+    [Fact]
+    public void HourStep_IncrementJumpsByConfiguredAmount()
+    {
+        var dt = new DateTime(2026, 4, 10, 10, 0, 0);
+
+        var cut = Render<MariloDateTimePicker>(p => p
+            .Add(x => x.Value, dt)
+            .Add(x => x.HourStep, 3));
+
+        cut.Find("input").Click();
+        cut.Find("[aria-label='Increase hour']").Click();
+
+        var hourValue = cut.FindAll(".mar-datetime-picker__tumbler-value")[0].TextContent;
+        Assert.Equal("13", hourValue);
+    }
+
+    [Fact]
+    public void HourStep_DecrementJumpsByConfiguredAmount()
+    {
+        var dt = new DateTime(2026, 4, 10, 10, 0, 0);
+
+        var cut = Render<MariloDateTimePicker>(p => p
+            .Add(x => x.Value, dt)
+            .Add(x => x.HourStep, 4));
+
+        cut.Find("input").Click();
+        cut.Find("[aria-label='Decrease hour']").Click();
+
+        var hourValue = cut.FindAll(".mar-datetime-picker__tumbler-value")[0].TextContent;
+        Assert.Equal("06", hourValue);
+    }
+
+    [Fact]
+    public void MinuteStep_IncrementJumpsByConfiguredAmount()
+    {
+        var dt = new DateTime(2026, 4, 10, 10, 0, 0);
+
+        var cut = Render<MariloDateTimePicker>(p => p
+            .Add(x => x.Value, dt)
+            .Add(x => x.MinuteStep, 15));
+
+        cut.Find("input").Click();
+        cut.Find("[aria-label='Increase minute']").Click();
+
+        var minuteValue = cut.FindAll(".mar-datetime-picker__tumbler-value")[1].TextContent;
+        Assert.Equal("15", minuteValue);
+    }
+
+    [Fact]
+    public void MinuteStep_DecrementJumpsByConfiguredAmountWithWrap()
+    {
+        var dt = new DateTime(2026, 4, 10, 10, 5, 0);
+
+        var cut = Render<MariloDateTimePicker>(p => p
+            .Add(x => x.Value, dt)
+            .Add(x => x.MinuteStep, 10));
+
+        cut.Find("input").Click();
+        cut.Find("[aria-label='Decrease minute']").Click();
+
+        // 5 - 10 wraps to 55
+        var minuteValue = cut.FindAll(".mar-datetime-picker__tumbler-value")[1].TextContent;
+        Assert.Equal("55", minuteValue);
+    }
+
+    [Fact]
+    public void SecondStep_IncrementJumpsByConfiguredAmount()
+    {
+        var dt = new DateTime(2026, 4, 10, 10, 0, 0);
+
+        var cut = Render<MariloDateTimePicker>(p => p
+            .Add(x => x.Value, dt)
+            .Add(x => x.ShowSeconds, true)
+            .Add(x => x.SecondStep, 30));
+
+        cut.Find("input").Click();
+        cut.Find("[aria-label='Increase second']").Click();
+
+        var secondValue = cut.FindAll(".mar-datetime-picker__tumbler-value")[2].TextContent;
+        Assert.Equal("30", secondValue);
+    }
+
+    [Fact]
+    public void StepDefaults_IncrementByOneWhenNotConfigured()
+    {
+        var dt = new DateTime(2026, 4, 10, 10, 30, 0);
+
+        var cut = Render<MariloDateTimePicker>(p => p
+            .Add(x => x.Value, dt));
+
+        cut.Find("input").Click();
+        cut.Find("[aria-label='Increase minute']").Click();
+
+        var minuteValue = cut.FindAll(".mar-datetime-picker__tumbler-value")[1].TextContent;
+        Assert.Equal("31", minuteValue);
+    }
+
+    [Fact]
+    public void HourStep_ZeroIsClampedToOne()
+    {
+        var dt = new DateTime(2026, 4, 10, 10, 0, 0);
+
+        var cut = Render<MariloDateTimePicker>(p => p
+            .Add(x => x.Value, dt)
+            .Add(x => x.HourStep, 0));
+
+        cut.Find("input").Click();
+        cut.Find("[aria-label='Increase hour']").Click();
+
+        // Zero step would have frozen the tumbler; clamp to 1 means it advances
+        var hourValue = cut.FindAll(".mar-datetime-picker__tumbler-value")[0].TextContent;
+        Assert.Equal("11", hourValue);
+    }
+
+    // ── Typed input parsing (GAP-DTP-003 / RES-T4B5-02) ─────────────
+
+    [Fact]
+    public void Input_IsNotReadOnlyByDefault()
+    {
+        var cut = Render<MariloDateTimePicker>();
+
+        // Blazor omits bool-false attributes — readonly should be absent when ReadOnly=false
+        Assert.False(cut.Find("input").HasAttribute("readonly"));
+    }
+
+    [Fact]
+    public void Input_RespectsReadOnlyParameter()
+    {
+        var cut = Render<MariloDateTimePicker>(p => p
+            .Add(x => x.ReadOnly, true));
+
+        // When ReadOnly=true, the readonly attribute is present
+        Assert.True(cut.Find("input").HasAttribute("readonly"));
+    }
+
+    [Fact]
+    public void TypedValidDate_UpdatesValue()
+    {
+        DateTime? captured = null;
+
+        var cut = Render<MariloDateTimePicker>(p => p
+            .Add(x => x.Format, "yyyy-MM-dd HH:mm")
+            .Add(x => x.ValueChanged, v => captured = v));
+
+        cut.Find("input").Input("2026-05-20 14:30");
+
+        Assert.NotNull(captured);
+        Assert.Equal(new DateTime(2026, 5, 20, 14, 30, 0), captured);
+    }
+
+    [Fact]
+    public void TypedInvalidDate_LeavesValueUnchanged()
+    {
+        DateTime? captured = new DateTime(2026, 1, 1, 0, 0, 0);
+        var changeCount = 0;
+
+        var cut = Render<MariloDateTimePicker>(p => p
+            .Add(x => x.Value, captured)
+            .Add(x => x.Format, "yyyy-MM-dd HH:mm")
+            .Add(x => x.ValueChanged, v => { changeCount++; captured = v; }));
+
+        cut.Find("input").Input("not-a-date");
+
+        // No ValueChanged fired for invalid input
+        Assert.Equal(0, changeCount);
+        Assert.Equal(new DateTime(2026, 1, 1, 0, 0, 0), captured);
+    }
+
+    [Fact]
+    public void TypedDate_ClampedToMin()
+    {
+        DateTime? captured = null;
+
+        var cut = Render<MariloDateTimePicker>(p => p
+            .Add(x => x.Format, "yyyy-MM-dd HH:mm")
+            .Add(x => x.Min, new DateTime(2026, 1, 1, 0, 0, 0))
+            .Add(x => x.ValueChanged, v => captured = v));
+
+        cut.Find("input").Input("2025-01-01 00:00");
+
+        Assert.NotNull(captured);
+        Assert.Equal(new DateTime(2026, 1, 1, 0, 0, 0), captured);
+    }
+
+    [Fact]
+    public void TypedDate_ClampedToMax()
+    {
+        DateTime? captured = null;
+
+        var cut = Render<MariloDateTimePicker>(p => p
+            .Add(x => x.Format, "yyyy-MM-dd HH:mm")
+            .Add(x => x.Max, new DateTime(2026, 12, 31, 23, 59, 59))
+            .Add(x => x.ValueChanged, v => captured = v));
+
+        cut.Find("input").Input("2030-06-15 12:00");
+
+        Assert.NotNull(captured);
+        Assert.Equal(new DateTime(2026, 12, 31, 23, 59, 59), captured);
+    }
+
+    [Fact]
+    public void ClearingInput_ClearsValue()
+    {
+        DateTime? captured = new DateTime(2026, 5, 20, 14, 30, 0);
+        var changeCount = 0;
+
+        var cut = Render<MariloDateTimePicker>(p => p
+            .Add(x => x.Value, captured)
+            .Add(x => x.Format, "yyyy-MM-dd HH:mm")
+            .Add(x => x.ValueChanged, v => { changeCount++; captured = v; }));
+
+        cut.Find("input").Input("");
+
+        Assert.Equal(1, changeCount);
+        Assert.Null(captured);
+    }
 }

@@ -1,6 +1,7 @@
 @inherits MariloComponentBase
 @typeparam TItem
 @typeparam TValue
+@implements IMultiSelectSettingsSink
 
 <div class="@CombineClasses(CssProvider.MultiSelectClass(_isOpen, !IsEnabled, IsInvalid))"
      style="@CombineStyles(_widthStyle)"
@@ -119,9 +120,10 @@
     @* Dropdown popup *@
     @if (_isOpen)
     {
-        <div class="@CssProvider.MultiSelectPopupClass() @PopupClass"
+        <div class="@CssProvider.MultiSelectPopupClass() @EffectivePopupClass"
              id="@_listboxId"
              role="listbox"
+             style="@(EffectivePopupWidth is not null ? $"width:{EffectivePopupWidth};" : null)"
              aria-multiselectable="true"
              aria-label="@(Placeholder ?? "Options")"
              @onclick:stopPropagation="true">
@@ -133,20 +135,26 @@
 
             @if (EnableVirtualization)
             {
-                <div class="mar-multiselect__virtual-container" style="height:@(PopupHeight ?? "200px"); overflow-y:auto;">
+                <div class="mar-multiselect__virtual-container" style="height:@(EffectivePopupHeight ?? "200px"); overflow-y:auto;">
                     <Microsoft.AspNetCore.Components.Web.Virtualization.Virtualize Items="@_filteredItems"
                                                                                     Context="item"
-                                                                                    ItemSize="32">
+                                                                                    ItemSize="@ItemHeight"
+                                                                                    OverscanCount="@PageSize">
                         @{
                             var idx = _filteredItems.IndexOf(item);
                             var isHighlighted = idx == _highlightedIndex;
                             var itemValue = GetValue(item);
                             var isSelected = itemValue is not null && _selectedValues.Contains(itemValue);
+                            MultiSelectItemRenderEventArgs<TItem>? renderArgs = null;
+                            if (item is not null) _itemRenderCache.TryGetValue(item, out renderArgs);
+                            var extraClass = renderArgs?.CssClass;
+                            var itemDisabled = renderArgs?.IsDisabled ?? false;
                         }
                         <div id="@(_listboxId)-opt-@idx"
-                             class="@CssProvider.MultiSelectItemClass(isHighlighted, isSelected)"
+                             class="@CssProvider.MultiSelectItemClass(isHighlighted, isSelected) @extraClass"
                              role="option"
                              aria-selected="@isSelected.ToString().ToLowerInvariant()"
+                             aria-disabled="@itemDisabled.ToString().ToLowerInvariant()"
                              @onclick="() => ToggleItem(item)"
                              @onclick:stopPropagation="true"
                              @onmouseover="() => _highlightedIndex = idx">
@@ -154,6 +162,7 @@
                                    checked="@isSelected"
                                    tabindex="-1"
                                    aria-hidden="true"
+                                   disabled="@itemDisabled"
                                    @onclick:stopPropagation="true"
                                    @onclick:preventDefault="true" />
                             @if (ItemTemplate is not null)
@@ -171,18 +180,55 @@
             else
             {
                 <div class="mar-multiselect__list-container" style="@(_popupMaxHeightStyle)">
-                    @for (int i = 0; i < _filteredItems.Count; i++)
+                    @{
+                        // When GroupField is set, sort filtered indices by group key first so
+                        // a single linear pass can emit a sticky group header each time the
+                        // group key changes. Indices stay tied to _filteredItems so
+                        // _highlightedIndex / aria-activedescendant remain valid.
+                        // Note: the virtualized path above ignores GroupField — sticky group
+                        // headers under <Virtualize> need a separate overlay approach.
+                        var grouped = !string.IsNullOrEmpty(GroupField);
+                        var orderedIndices = grouped
+                            ? Enumerable.Range(0, _filteredItems.Count)
+                                .OrderBy(idx => GetGroupKey(_filteredItems[idx]) ?? string.Empty,
+                                         StringComparer.CurrentCultureIgnoreCase)
+                                .ToList()
+                            : Enumerable.Range(0, _filteredItems.Count).ToList();
+                        string? lastGroupKey = null;
+                    }
+                    @foreach (var index in orderedIndices)
                     {
-                        var index = i;
-                        var item = _filteredItems[i];
+                        var item = _filteredItems[index];
                         var isHighlighted = index == _highlightedIndex;
                         var itemValue = GetValue(item);
                         var isSelected = itemValue is not null && _selectedValues.Contains(itemValue);
+                        MultiSelectItemRenderEventArgs<TItem>? renderArgs = null;
+                        if (item is not null) _itemRenderCache.TryGetValue(item, out renderArgs);
+                        var extraClass = renderArgs?.CssClass;
+                        var itemDisabled = renderArgs?.IsDisabled ?? false;
+
+                        @if (grouped)
+                        {
+                            var groupKey = GetGroupKey(item) ?? string.Empty;
+                            if (groupKey != lastGroupKey)
+                            {
+                                lastGroupKey = groupKey;
+                                if (!string.IsNullOrEmpty(groupKey))
+                                {
+                                    <div class="mar-multiselect__group-header"
+                                         role="presentation"
+                                         style="position:sticky;top:0;z-index:1;background:inherit;">
+                                        @groupKey
+                                    </div>
+                                }
+                            }
+                        }
 
                         <div id="@(_listboxId)-opt-@index"
-                             class="@CssProvider.MultiSelectItemClass(isHighlighted, isSelected)"
+                             class="@CssProvider.MultiSelectItemClass(isHighlighted, isSelected) @extraClass"
                              role="option"
                              aria-selected="@isSelected.ToString().ToLowerInvariant()"
+                             aria-disabled="@itemDisabled.ToString().ToLowerInvariant()"
                              @onclick="() => ToggleItem(item)"
                              @onclick:stopPropagation="true"
                              @onmouseover="() => _highlightedIndex = index">
@@ -190,6 +236,7 @@
                                    checked="@isSelected"
                                    tabindex="-1"
                                    aria-hidden="true"
+                                   disabled="@itemDisabled"
                                    @onclick:stopPropagation="true"
                                    @onclick:preventDefault="true" />
                             @if (ItemTemplate is not null)
@@ -234,6 +281,17 @@
 
         @* Click-away overlay *@
         <div class="mar-multiselect__overlay" @onclick="CloseDropdown"></div>
+    }
+
+    @* Settings child components: non-visible cascade region. MultiSelectSettings and
+       MultiSelectPopupSettings register themselves through the IMultiSelectSettingsSink
+       cascade and produce no DOM. Cast to interface so the generic TItem/TValue type
+       parameters do not leak into the non-generic children. *@
+    @if (ChildContent != null)
+    {
+        <CascadingValue Value="(IMultiSelectSettingsSink)this" IsFixed="true">
+            @ChildContent
+        </CascadingValue>
     }
 </div>
 
@@ -293,14 +351,72 @@
     [Parameter] public RenderFragment? FooterTemplate { get; set; }
     [Parameter] public RenderFragment? NoDataTemplate { get; set; }
 
+    /// <summary>
+    /// Declarative child content for the Telerik-shaped settings API. Accepts
+    /// <see cref="MultiSelectSettings"/> and <see cref="MultiSelectPopupSettings"/>
+    /// child components which register via an internal cascade and override the
+    /// corresponding top-level parameters. The cascade region produces no visible DOM.
+    /// </summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
     // Custom entry
     [Parameter] public bool AllowCustom { get; set; }
+
+    /// <summary>
+    /// Property name on TItem used to group items in the dropdown. When set, items
+    /// are grouped alphabetically by the property value and a sticky group header
+    /// is rendered above each group. Ignored when EnableVirtualization is true.
+    /// </summary>
+    [Parameter] public string? GroupField { get; set; }
 
     // Events
     [Parameter] public EventCallback<string> OnFilter { get; set; }
     [Parameter] public EventCallback<PopupEventArgs> OnOpen { get; set; }
     [Parameter] public EventCallback<PopupEventArgs> OnClose { get; set; }
     [Parameter] public EventCallback OnBlur { get; set; }
+
+    /// <summary>
+    /// Server-side data callback. When bound, the component invokes this on Open,
+    /// Filter changes, and Rebind() instead of paging the local Data parameter.
+    /// The handler must set Data and Total on the args.
+    /// </summary>
+    [Parameter] public EventCallback<MultiSelectReadEventArgs<TItem>> OnRead { get; set; }
+
+    /// <summary>
+    /// Async resolver invoked when Value contains entries that are not present in the
+    /// current Data window. Returns the matching TItems so the component can render
+    /// the tag chips for pre-selected remote values.
+    /// </summary>
+    [Parameter] public Func<IEnumerable<TValue>, Task<IEnumerable<TItem>>>? ValueMapper { get; set; }
+
+    /// <summary>
+    /// Fires after the selected values change in response to a user-driven action
+    /// (toggle, remove, clear, custom add). Receives the new value list. Does NOT
+    /// fire when the consumer sets Value externally via parameter binding.
+    /// </summary>
+    [Parameter] public EventCallback<List<TValue>> OnChange { get; set; }
+
+    /// <summary>
+    /// Fires for each filtered item once per cache rebuild (i.e., when the filter
+    /// or data window changes), allowing the consumer to modify per-item rendering
+    /// attributes such as CSS class or disabled state.
+    /// </summary>
+    [Parameter] public EventCallback<MultiSelectItemRenderEventArgs<TItem>> OnItemRender { get; set; }
+
+    // Virtualization configuration
+
+    /// <summary>
+    /// Pixel height of each virtualized item. Defaults to 32. Only used when
+    /// EnableVirtualization is true.
+    /// </summary>
+    [Parameter] public int ItemHeight { get; set; } = 32;
+
+    /// <summary>
+    /// Number of items to render outside the visible viewport (overscan count)
+    /// when virtualization is enabled. Defaults to 3. Maps to Blazor's
+    /// Virtualize.OverscanCount.
+    /// </summary>
+    [Parameter] public int PageSize { get; set; } = 3;
 
     // ── Private state ────────────────────────────────────────────────────────
     private bool _isOpen;
@@ -311,22 +427,110 @@
     private List<TItem> _selectedItems = new();
     private HashSet<TValue> _selectedValues = new();
     private CancellationTokenSource? _filterDebounce;
+    private CancellationTokenSource? _readCts;
+    private bool _initialReadDone;
+    private Dictionary<TItem, MultiSelectItemRenderEventArgs<TItem>> _itemRenderCache = new();
+
+    // Settings child component registrations (Telerik-shaped child API). Populated
+    // via the IMultiSelectSettingsSink cascade from MultiSelectSettings /
+    // MultiSelectPopupSettings child components in ChildContent.
+    private MultiSelectSettings? _registeredSettings;
+    private MultiSelectPopupSettings? _registeredPopupSettings;
 
     private readonly string _listboxId = $"ms-{Guid.NewGuid():N}";
     private string _widthStyle => Width is not null ? $"width:{Width}" : string.Empty;
-    private string _popupMaxHeightStyle => (PopupMaxHeight ?? PopupHeight) is string mh ? $"max-height:{mh};overflow-y:auto;" : string.Empty;
+    private string _popupMaxHeightStyle => (EffectivePopupMaxHeight ?? EffectivePopupHeight) is string mh ? $"max-height:{mh};overflow-y:auto;" : string.Empty;
+
+    // Effective settings: child override (when a settings child component registered)
+    // wins over the parent parameter; null child falls through to the parent value.
+
+    /// <summary>
+    /// Shipped as plumbing for the future Adaptive rendering work; this value is not currently
+    /// consumed by the component template.
+    /// </summary>
+    internal AdaptiveMode EffectiveAdaptiveMode =>
+        _registeredSettings?.AdaptiveMode ?? AdaptiveMode;
+
+    internal string? EffectivePopupHeight =>
+        _registeredPopupSettings?.Height ?? PopupHeight;
+
+    internal string? EffectivePopupMaxHeight =>
+        _registeredPopupSettings?.MaxHeight ?? PopupMaxHeight;
+
+    internal string? EffectivePopupWidth =>
+        _registeredPopupSettings?.Width;
+
+    internal string? EffectivePopupClass =>
+        _registeredPopupSettings?.Class ?? PopupClass;
 
     private bool IsEnabled => Enabled && !Disabled;
 
+    // ── IMultiSelectSettingsSink ─────────────────────────────────────────────
+    // Registration callbacks invoked by MultiSelectSettings / MultiSelectPopupSettings
+    // via the cascading parameter. Use InvokeAsync(StateHasChanged) so register/
+    // unregister from OnInitialized / Dispose is dispatcher-safe.
+
+    void IMultiSelectSettingsSink.RegisterSettings(MultiSelectSettings s)
+    {
+        _registeredSettings = s;
+        InvokeAsync(StateHasChanged);
+    }
+
+    void IMultiSelectSettingsSink.UnregisterSettings(MultiSelectSettings s)
+    {
+        if (ReferenceEquals(_registeredSettings, s)) _registeredSettings = null;
+        InvokeAsync(StateHasChanged);
+    }
+
+    void IMultiSelectSettingsSink.RegisterPopupSettings(MultiSelectPopupSettings s)
+    {
+        _registeredPopupSettings = s;
+        InvokeAsync(StateHasChanged);
+    }
+
+    void IMultiSelectSettingsSink.UnregisterPopupSettings(MultiSelectPopupSettings s)
+    {
+        if (ReferenceEquals(_registeredPopupSettings, s)) _registeredPopupSettings = null;
+        InvokeAsync(StateHasChanged);
+    }
+
     // ── Lifecycle ────────────────────────────────────────────────────────────
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         _allItems = Data?.ToList() ?? new List<TItem>();
         _selectedValues = new HashSet<TValue>(Value ?? Enumerable.Empty<TValue>());
         _selectedItems = _allItems
             .Where(item => { var v = GetValue(item); return v is not null && _selectedValues.Contains(v); })
             .ToList();
+
+        // ValueMapper resolution: any selected values not present in _allItems get
+        // resolved via the consumer-provided async mapper. This is the remote-data
+        // pre-selection path — Value contains TValues whose TItems live on the server.
+        if (ValueMapper is not null && _selectedValues.Count > _selectedItems.Count)
+        {
+            var resolvedValues = new HashSet<TValue>(
+                _selectedItems.Select(GetValue).Where(v => v is not null).Cast<TValue>());
+            var unresolved = _selectedValues.Where(v => !resolvedValues.Contains(v)).ToList();
+            if (unresolved.Count > 0)
+            {
+                var mapped = await ValueMapper(unresolved);
+                if (mapped is not null)
+                {
+                    foreach (var item in mapped)
+                    {
+                        var v = GetValue(item);
+                        if (v is not null && _selectedValues.Contains(v) && !resolvedValues.Contains(v))
+                        {
+                            _selectedItems.Add(item);
+                            resolvedValues.Add(v);
+                        }
+                    }
+                }
+            }
+        }
+
         ApplyFilter();
+        await RebuildItemRenderCacheAsync();
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
@@ -344,6 +548,12 @@
         var propValue = typeof(TItem).GetProperty(ValueField)?.GetValue(item);
         if (propValue is null) return default;
         return (TValue?)Convert.ChangeType(propValue, typeof(TValue));
+    }
+
+    private string? GetGroupKey(TItem item)
+    {
+        if (item is null || string.IsNullOrEmpty(GroupField)) return null;
+        return typeof(TItem).GetProperty(GroupField)?.GetValue(item)?.ToString();
     }
 
     private void ApplyFilter()
@@ -369,6 +579,25 @@
             .ToList();
     }
 
+    /// <summary>
+    /// Rebuilds the per-item render cache by invoking <see cref="OnItemRender"/> once
+    /// per filtered item. Mirrors the <c>_cellRenderCache</c> pattern in MariloDateTimePicker.
+    /// Cheap when OnItemRender is not bound (early-returns after clearing).
+    /// </summary>
+    private async Task RebuildItemRenderCacheAsync()
+    {
+        _itemRenderCache.Clear();
+        if (!OnItemRender.HasDelegate) return;
+
+        foreach (var item in _filteredItems)
+        {
+            if (item is null) continue;
+            var args = new MultiSelectItemRenderEventArgs<TItem> { Item = item };
+            await OnItemRender.InvokeAsync(args);
+            _itemRenderCache[item] = args;
+        }
+    }
+
     // ── Dropdown control ─────────────────────────────────────────────────────
     private async Task OnInputAreaClick()
     {
@@ -390,9 +619,20 @@
         if (args.IsCancelled) return;
 
         _filterText = string.Empty;
-        ApplyFilter();
         _highlightedIndex = -1;
         _isOpen = true;
+
+        // Lazy initial server read on first open when OnRead is bound and no data yet.
+        if (OnRead.HasDelegate && !_initialReadDone)
+        {
+            await LoadServerDataAsync();
+            _initialReadDone = true;
+        }
+        else
+        {
+            ApplyFilter();
+            await RebuildItemRenderCacheAsync();
+        }
     }
 
     private async Task CloseDropdown()
@@ -410,6 +650,9 @@
     private async Task ToggleItem(TItem item)
     {
         if (!IsEnabled || ReadOnly) return;
+
+        // Guard against selecting items the consumer marked disabled via OnItemRender.
+        if (_itemRenderCache.TryGetValue(item, out var renderArgs) && renderArgs.IsDisabled) return;
 
         var value = GetValue(item);
         if (value is null) return;
@@ -462,6 +705,8 @@
         var list = _selectedValues.ToList();
         Value = list;
         await ValueChanged.InvokeAsync(list);
+        if (OnChange.HasDelegate)
+            await OnChange.InvokeAsync(list);
     }
 
     // ── Custom entry ─────────────────────────────────────────────────────────
@@ -502,7 +747,17 @@
             return;
         }
 
-        ApplyFilter();
+        // Remote-data path: invoke OnRead with the new filter text.
+        // Local-data path: apply local filter against _allItems.
+        if (OnRead.HasDelegate)
+        {
+            await LoadServerDataAsync();
+        }
+        else
+        {
+            ApplyFilter();
+            await RebuildItemRenderCacheAsync();
+        }
         _highlightedIndex = _filteredItems.Count > 0 ? 0 : -1;
 
         if (OnFilter.HasDelegate)
@@ -510,6 +765,51 @@
 
         if (!_isOpen && _filteredItems.Count > 0)
             await OpenDropdown();
+    }
+
+    // ── Server-side data loading ─────────────────────────────────────────────
+    private async Task LoadServerDataAsync()
+    {
+        if (!OnRead.HasDelegate) return;
+
+        // Cancel any in-flight read so handlers can abort cleanly.
+        _readCts?.Cancel();
+        _readCts = new CancellationTokenSource();
+
+        var args = new MultiSelectReadEventArgs<TItem>
+        {
+            Filter = _filterText,
+            CancellationToken = _readCts.Token
+        };
+
+        await OnRead.InvokeAsync(args);
+
+        if (_readCts.IsCancellationRequested) return;
+
+        _allItems = args.Data?.ToList() ?? new List<TItem>();
+        // Total is informational for the consumer's handler — reserved for future
+        // virtual-scroll page-fetch cycles. Not currently consumed by the component.
+        _filteredItems = _allItems.ToList();
+        await RebuildItemRenderCacheAsync();
+
+        // Recompute selected items against the new server data window so tags
+        // for selected items already in this window stay rendered.
+        var fromWindow = _allItems
+            .Where(item => { var v = GetValue(item); return v is not null && _selectedValues.Contains(v); })
+            .ToList();
+        // Preserve any tags resolved earlier (e.g., via ValueMapper) whose items
+        // are not in the current window — they remain in _selectedItems.
+        var existingValues = new HashSet<TValue>(
+            _selectedItems.Select(GetValue).Where(v => v is not null).Cast<TValue>());
+        foreach (var item in fromWindow)
+        {
+            var v = GetValue(item);
+            if (v is not null && !existingValues.Contains(v))
+            {
+                _selectedItems.Add(item);
+                existingValues.Add(v);
+            }
+        }
     }
 
     // ── Keyboard navigation ───────────────────────────────────────────────────
@@ -595,9 +895,30 @@
         StateHasChanged();
     }
 
+    /// <summary>
+    /// Forces a fresh data read. When OnRead is bound, invokes the callback again
+    /// with the current filter text. Otherwise re-syncs from the local Data parameter.
+    /// </summary>
+    public async Task Rebind()
+    {
+        if (OnRead.HasDelegate)
+        {
+            await LoadServerDataAsync();
+            await InvokeAsync(StateHasChanged);
+        }
+        else
+        {
+            Refresh();
+        }
+    }
+
     protected override void Dispose(bool disposing)
     {
-        if (disposing) _filterDebounce?.Dispose();
+        if (disposing)
+        {
+            _filterDebounce?.Dispose();
+            _readCts?.Dispose();
+        }
         base.Dispose(disposing);
     }
 }

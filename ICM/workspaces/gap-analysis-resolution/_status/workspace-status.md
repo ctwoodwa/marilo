@@ -11,8 +11,8 @@
 | Field | Value |
 |-------|-------|
 | Workspace | gap-analysis-resolution |
-| Last updated | 2026-04-05 |
-| Current phase | Stage 06 complete (DataGrid Ph1+Ph2 + splitter + wizard + T4 B1-B3 + chart B1+B2 + editor B1) |
+| Last updated | 2026-04-08 |
+| Current phase | Stage 06 complete (DataGrid Ph1+Ph2+Ph3 partial + splitter + wizard + T4 B1-B4 + chart B1+B2 + editor B1) |
 
 ## Pipeline Status
 
@@ -39,10 +39,14 @@
 - [x] 05-implement (completed 2026-04-04)
 - [x] **06-validate** (closure report 2026-04-04; 27 tests written, runtime pending)
 
-**t4-pickers / readonly-guards / expandall-lazyload** -- BATCH 1+2+3 CLOSED
+**t4-pickers / readonly-guards / expandall-lazyload** -- BATCH 1+2+3+4+5+6+7 CLOSED
 - [x] 01-intake through 06-validate (Batch 1 complete: 7 resolved, 3 partial; 17 tests)
 - [x] 01-intake through 06-validate (Batch 2 complete: 4 resolved; 9 tests)
 - [x] 03-resolution through 06-validate (Batch 3: AdaptiveMode 7 pickers, ARIA combobox, CSS provider; 17 tests, 547/547 full suite)
+- [x] 03-resolution through 06-validate (Batch 4: MultiSelect GroupField + DateTimePicker tumbler steps; 12 tests pending runtime)
+- [x] 03-resolution through 06-validate (Batch 5: MultiSelect OnRead/Rebind/ValueMapper + DateTimePicker typed input; 12 tests pending runtime)
+- [x] 03-resolution through 06-validate (Batch 6: MultiSelect OnChange/OnItemRender + ItemHeight/PageSize virtual config; 11 tests pending runtime; GAP-MSEL-001 fully closed)
+- [x] 03-resolution through 06-validate (Batch 7: MultiSelect Settings/PopupSettings child component API; 7 tests pending runtime; subagent-driven dev mode; GAP-MSEL-005 closed; pre-existing Batch 6 build break also fixed)
 
 **Chart batch (16 gaps: 13 resolved B1+B2, 2 deferred, 1 partial)** -- BATCH 2 CLOSED
 - [x] 01-intake through 06-validate (Batch 1: wrappers, subtitle, CSS vars, 16 tests)
@@ -67,9 +71,9 @@
 ## Next Actions
 
 1. Editor Batch 2: Adaptive toolbar (JS), table/image resize (JS), import/export (needs Markdig decision).
-2. T4 Pickers remaining: GroupField (MultiSelect), DateTimePickerSteps.
-3. DataGrid Phase 3 remaining: Frozen columns (JS), Row drag-drop (JS).
-4. Chart: Drilldown feature (separate scope / CDW).
+2. DataGrid Phase 3 remaining: Frozen columns (JS), Row drag-drop (JS).
+3. Chart: Drilldown feature (separate scope / CDW).
+4. **MariloMultiSelect is feature-complete.** Only GAP-MSEL-007 ScrollMode (deferred — requires custom virtualization rebuild) and GAP-MSEL-008 MaxVisibleTags naming (Won't Fix) remain.
 
 ## Blockers
 

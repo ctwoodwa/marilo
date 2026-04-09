@@ -70,8 +70,17 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddCors();
 builder.Services.AddAuthorization();
 
-// Marilo component services (FluentUI provider + theme service)
+// Marilo component services (FluentUI provider + theme service + toast notification host)
 builder.Services.AddMarilo().UseFluentUI();
+
+// PM Demo canonical notification pipeline. Single source of truth for all
+// user-facing notifications (bell, inbox, toast). The canonical service owns
+// lifecycle; IMariloNotificationService is a downstream toast presentation channel
+// reached via the IUserNotificationToastForwarder adapter.
+builder.Services.AddScoped<Marilo.PmDemo.Client.Notifications.IUserNotificationToastForwarder,
+                            Marilo.PmDemo.Client.Notifications.MariloToastUserNotificationForwarder>();
+builder.Services.AddScoped<Marilo.PmDemo.Client.Notifications.IUserNotificationService,
+                            Marilo.PmDemo.Client.Notifications.InMemoryUserNotificationService>();
 
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();

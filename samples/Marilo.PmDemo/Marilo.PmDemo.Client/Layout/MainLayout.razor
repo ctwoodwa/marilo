@@ -1,10 +1,14 @@
 @inherits LayoutComponentBase
+@implements IDisposable
 @inject NavigationManager Nav
+@inject IUserNotificationService UserNotifications
+@using Marilo.PmDemo.Client.Notifications
+@using Marilo.Components.Feedback
 
 <MariloAppShell @bind-SidebarCollapsed="_collapsed"
                 BrandText="Marilo PM"
                 UserName="Avery Chen"
-                NotificationCount="3">
+                NotificationCount="@UserNotifications.UnreadCount">
     <SidebarBrand>
         <span style="display:inline-flex;align-items:center;gap:10px;">
             <span style="width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#5b6cff,#9b6bff);display:inline-block;"></span>
@@ -46,6 +50,7 @@
 
     <ChildContent>
         @Body
+        <MariloSnackbarHost />
     </ChildContent>
 
     <SidebarFooter>
@@ -72,9 +77,9 @@
                           fill="none" stroke="currentColor" stroke-width="1.5"
                           stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
-                @if (_notifs.Count(n => !n.IsRead) > 0)
+                @if (UserNotifications.UnreadCount > 0)
                 {
-                    <span class="mar-appshell__badge">@_notifs.Count(n => !n.IsRead)</span>
+                    <span class="mar-appshell__badge">@UserNotifications.UnreadCount</span>
                 }
             </button>
 
@@ -84,7 +89,10 @@
                             Items="_menuItems" />
 
             <MariloNotificationBell @bind-Open="_bellOpen"
-                                    Items="_notifs"
+                                    Items="_feedItems"
+                                    OnItemClick="HandleItemClick"
+                                    OnMarkAllRead="HandleMarkAllRead"
+                                    OnDeleteAllRead="HandleDeleteAllRead"
                                     OnSettingsClick="GoToNotificationSettings" />
         </div>
     </SidebarFooter>
@@ -111,14 +119,50 @@
         new() { Label = "Sign out" },
     };
 
-    private List<NotificationItem> _notifs = new()
+    // Bell view shape — projected from the canonical store on every change. The bell
+    // never owns notification state; this list is rebuilt from UserNotifications.All.
+    private List<NotificationItem> _feedItems = new();
+
+    protected override void OnInitialized()
     {
-        new() { Title = "Sprint 14",  Message = "Planning completed",            Timestamp = DateTimeOffset.Now.AddMinutes(-12) },
-        new() { Title = "Risk R-203", Message = "Escalated to High",             Timestamp = DateTimeOffset.Now.AddHours(-2) },
-        new() { Title = "Budget",     Message = "Threshold reached on Phase 2",  Timestamp = DateTimeOffset.Now.AddHours(-26), IsRead = false },
-    };
+        UserNotifications.Changed += OnNotificationsChanged;
+        RefreshFeed();
+    }
+
+    private void OnNotificationsChanged()
+    {
+        RefreshFeed();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void RefreshFeed()
+    {
+        _feedItems = UserNotifications.All
+            .Select(NotificationFeedProjection.ToFeedItem)
+            .ToList();
+    }
+
+    private async Task HandleItemClick(NotificationItem item)
+    {
+        await UserNotifications.MarkReadAsync(item.Id);
+    }
+
+    private async Task HandleMarkAllRead()
+    {
+        await UserNotifications.MarkAllReadAsync();
+    }
+
+    private async Task HandleDeleteAllRead()
+    {
+        await UserNotifications.DeleteAllReadAsync();
+    }
 
     private void GoToNotificationSettings() => Nav.NavigateTo("/account/details");
+
+    public void Dispose()
+    {
+        UserNotifications.Changed -= OnNotificationsChanged;
+    }
 
     private RenderFragment Svg(string path) => __builder =>
     {

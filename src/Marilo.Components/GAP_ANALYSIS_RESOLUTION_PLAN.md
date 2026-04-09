@@ -1111,6 +1111,79 @@ This section routes the "Recommended Next Actions" from the executive report int
 | GAP-UPL-001 | MariloUpload | 3 template slots (SelectFilesButton, File, FileInfo) | 03→05→06 | **Resolved** ✅ |
 | GAP-UPL-002 | MariloUpload | WithCredentials fix (SetBrowserRequestCredentials) | 03→05→06 | **Resolved** ✅ |
 
+### T4 Picker Batch 4 — Implementation Tracking (2026-04-08)
+
+**Scope:** 2 remaining post-Batch-3 gaps across 2 components (MariloMultiSelect, MariloDateTimePicker)
+**Records:** [Resolution Design](../workspaces/gap-analysis-resolution/stages/03-resolution-design/output/gap-t4-picker-batch4-resolutions.md) | [Implementation](../workspaces/gap-analysis-resolution/stages/05-implement/output/gap-t4-picker-batch4-implementation-log.md) | [Closure](../workspaces/gap-analysis-resolution/stages/06-validate/output/gap-t4-picker-batch4-closure-report.md)
+
+| Gap Slug | Component | Description | Stage | Status |
+|----------|-----------|-------------|-------|--------|
+| GAP-MSEL-003 | MariloMultiSelect | GroupField parameter — sticky group headers in dropdown | 03→05→06 | **Resolved** ✅ (5 bUnit tests) |
+| GAP-DTP-002 | MariloDateTimePicker | Configurable tumbler increments — flat HourStep/MinuteStep/SecondStep params (matches MariloTimePicker) | 03→05→06 | **Resolved** ✅ (7 bUnit tests) |
+
+**Decision:** DateTimePickerSteps implemented as flat parameters (RES-T4B4-02 §Decision) rather than a child component, mirroring `MariloTimePicker.razor:222-224` and avoiding new cascading-parameter wiring (cf. Wizard CascadingValue bug class in cerebrum). Total: 12 new bUnit tests, runtime pending (.NET SDK unavailable in workspace).
+
+### T4 Picker Batch 5 — Implementation Tracking (2026-04-08)
+
+**Scope:** Remote-data + typed-input gaps across 2 components (MariloMultiSelect, MariloDateTimePicker)
+**Records:** [Resolution Design](../workspaces/gap-analysis-resolution/stages/03-resolution-design/output/gap-t4-picker-batch5-resolutions.md) | [Implementation](../workspaces/gap-analysis-resolution/stages/05-implement/output/gap-t4-picker-batch5-implementation-log.md) | [Closure](../workspaces/gap-analysis-resolution/stages/06-validate/output/gap-t4-picker-batch5-closure-report.md)
+
+| Gap Slug | Component | Description | Stage | Status |
+|----------|-----------|-------------|-------|--------|
+| GAP-MSEL-006 | MariloMultiSelect | OnRead callback + Rebind() public method + ValueMapper async resolver (remote data trio) | 03→05→06 | **Resolved** ✅ (5 bUnit tests) |
+| GAP-MSEL-001 (partial) | MariloMultiSelect | OnRead portion of "core events missing" — closes the deferred Batch 1 portion. OnChange + OnItemRender remain open. | 03→05→06 | **Partially resolved** (OnRead now ✅; OnChange/OnItemRender still open) |
+| GAP-DTP-003 | MariloDateTimePicker | Typed input parsing — removes hardcoded `readonly="true"`, adds two-stage parser (TryParseExact → TryParse), Min/Max clamp, click-to-open | 03→05→06 | **Resolved** ✅ (7 bUnit tests) |
+
+**Decisions:**
+- Remote-data trio (OnRead + Rebind + ValueMapper) implemented as one coordinated batch — they form an indivisible feature set per RES-T4B5-01 §Decision.
+- New `MultiSelectReadEventArgs<TItem>` type in `Marilo.Components.Forms.Inputs` mirrors the existing `GridReadEventArgs<TItem>` shape from MariloDataGrid.
+- DateTimePicker `_inputText` field decoupled from `Value` so partial typing is preserved across re-renders, matching the existing `MariloTimePicker._inputText` pattern.
+- `@onfocus="OpenPopup"` removed from DateTimePicker input — Tab focus no longer steals focus from the input. Click still opens. No existing test uses Focus(); verified via grep.
+
+Total: 12 new bUnit tests, runtime pending (.NET SDK unavailable in workspace).
+
+### T4 Picker Batch 6 — Implementation Tracking (2026-04-08)
+
+**Scope:** GAP-MSEL-001 final closure (OnChange + OnItemRender) + GAP-MSEL-007 ItemHeight/PageSize virtual scroll config
+**Records:** [Resolution Design](../workspaces/gap-analysis-resolution/stages/03-resolution-design/output/gap-t4-picker-batch6-resolutions.md) | [Implementation](../workspaces/gap-analysis-resolution/stages/05-implement/output/gap-t4-picker-batch6-implementation-log.md) | [Closure](../workspaces/gap-analysis-resolution/stages/06-validate/output/gap-t4-picker-batch6-closure-report.md)
+
+| Gap Slug | Component | Description | Stage | Status |
+|----------|-----------|-------------|-------|--------|
+| GAP-MSEL-001 (final) | MariloMultiSelect | OnChange (single-fire-per-mutation) + OnItemRender (cached args, CssClass + IsDisabled). Closes the final two sub-items across B1+B5+B6. | 03→05→06 | **Resolved** ✅ (7 bUnit tests) — GAP-MSEL-001 now fully closed |
+| GAP-MSEL-007 | MariloMultiSelect | ItemHeight + PageSize parameters wired through to `<Virtualize>` element. ScrollMode deferred (Blazor `<Virtualize>` lacks the primitive). | 03→05→06 | **Resolved** ✅ (4 bUnit tests; ScrollMode deferred with rationale) |
+
+**Decisions:**
+- OnItemRender uses a `_itemRenderCache` dictionary mirroring `MariloDateTimePicker._cellRenderCache` — rebuilt only when `_filteredItems` changes (in `OnParametersSetAsync` / `OpenDropdown` / `LoadServerDataAsync` / `OnFilterInput`), not on every render.
+- OnChange fires from `EmitValueChanged`, the existing single mutation choke-point — no risk of duplicate or missed fires across Toggle/Remove/Clear/custom-add paths.
+- IsDisabled blocks selection via early return in `ToggleItem` and emits `aria-disabled="true"` + `disabled` on the inner checkbox.
+- `ScrollMode` deferred with explicit rationale rather than implemented as a no-op parameter — Blazor `<Virtualize>` does not expose a scroll-mode primitive; supporting Virtual/Endless/Scrollable would require a custom virtualization rebuild.
+- After this batch, GAP-MSEL-001 is **fully resolved** (OnOpen/OnClose/OnBlur in B1, OnRead in B5, OnChange/OnItemRender in B6).
+
+Total: 11 new bUnit tests, runtime pending (.NET SDK unavailable in workspace).
+
+### T4 Picker Batch 7 — Implementation Tracking (2026-04-08, subagent-driven)
+
+**Scope:** GAP-MSEL-005 — `<MultiSelectSettings>` and `<MultiSelectPopupSettings>` child component API for Telerik-shaped declarative settings tags
+**Records:** [Resolution Design](../workspaces/gap-analysis-resolution/stages/03-resolution-design/output/gap-t4-picker-batch7-resolutions.md) | [Implementation](../workspaces/gap-analysis-resolution/stages/05-implement/output/gap-t4-picker-batch7-implementation-log.md) | [Closure](../workspaces/gap-analysis-resolution/stages/06-validate/output/gap-t4-picker-batch7-closure-report.md)
+
+| Gap Slug | Component | Description | Stage | Status |
+|----------|-----------|-------------|-------|--------|
+| GAP-MSEL-005 | MariloMultiSelect | Non-generic `MultiSelectSettings` (AdaptiveMode override) + `MultiSelectPopupSettings` (Height/MaxHeight/Width/Class overrides) child components, registered through internal `IMultiSelectSettingsSink` cascade. New `MultiSelectSettings.cs` file. New `ChildContent` parameter. Five `Effective*` computed properties. Canonical `<CascadingValue Value="(IMultiSelectSettingsSink)this" IsFixed="true">` wrap. | 03→05→06 | **Resolved** ✅ (7 bUnit tests) — MariloMultiSelect now feature-complete for medium+ gaps |
+
+**Decisions:**
+- **Execution mode:** subagent-driven development via `superpowers:subagent-driven-development` skill — implementer subagent + spec compliance reviewer subagent + code quality reviewer subagent + fix-and-re-review loop. Two-stage review caught 3 important issues that solo controller work would have missed (a test that would always pass with the dropdown closed, a misleading test name, and unconsumed-plumbing documentation).
+- **Pattern:** mirrors the canonical `MariloDataGrid` ↔ `MariloGridColumn` cascading pattern at `MariloDataGrid.razor:36-39`, `MariloGridColumn.razor:5,83-92`, `MariloDataGrid.razor.cs:253-269`. Single-instance registration (settings tags are singletons, not collections like grid columns).
+- **MariloWizard CascadingValue bug class avoided:** the cascade value is `(IMultiSelectSettingsSink)this` cast to interface (NOT just `this`). Interface decoupling lets the non-generic children attach to the generic `MariloMultiSelect<TItem, TValue>` parent. Verified by both reviewers.
+- **Dispatcher safety:** all four `IMultiSelectSettingsSink` register/unregister methods use `InvokeAsync(StateHasChanged)` per the cerebrum learning at `[2026-04-04] Public state APIs should be dispatcher-safe`.
+- **Defensive unregister:** `ReferenceEquals` guards on both unregister methods prevent a stale Dispose from a previously-disposed child nulling a newer registration.
+- **Backward compatible:** existing flat parameters (`PopupHeight`, `PopupMaxHeight`, `PopupClass`, `AdaptiveMode`) remain in place and are used as fall-throughs when no settings child is registered.
+- **`Width` is a new capability** — no parent-parameter equivalent. Only available through `<MultiSelectPopupSettings Width="...">`.
+- **Bonus fix:** caught a pre-existing build break in Batch 6's `OnChange_DoesNotFireOnExternalValueSet` test (called `cut.SetParametersAndRender(...)` which doesn't exist on bUnit v2's `IRenderedComponent<T>`). Fixed in this batch by switching to bUnit v2's `cut.Render(parameters => ...)` rebind API with full parameter re-supply (v2 rebind does not merge).
+
+After Batch 7, **MariloMultiSelect is feature-complete** for all medium-and-higher-priority gaps. Only `GAP-MSEL-007 ScrollMode` (deferred — requires custom virtualization rebuild) and `GAP-MSEL-008 MaxVisibleTags naming` (Won't Fix) remain.
+
+Total: 7 new bUnit tests + 1 Batch 6 fix; runtime pending (.NET SDK unavailable in workspace).
+
 **Resolution records:** `stages/03-resolution-design/output/gap-t4-picker-batch1-resolutions.md`
 **Implementation log:** `stages/05-implement/output/gap-t4-picker-batch1-implementation-log.md`
 **Closure report:** `stages/06-validate/output/gap-t4-picker-batch1-closure-report.md`
