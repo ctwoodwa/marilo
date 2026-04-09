@@ -2,12 +2,12 @@
    Place inside a positioned parent (e.g. the appshell footer button group). */
 
 .mar-notifbell {
-    --mnb-bg: var(--marilo-color-popup, #f7f7f3);
-    --mnb-border: var(--marilo-color-popup-border, #e5e5e0);
+    --mnb-bg: var(--marilo-color-background, #f7f7f3);
+    --mnb-border: var(--marilo-color-border, #e5e5e0);
     --mnb-radius: 12px;
     --mnb-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
-    --mnb-text: #1f2328;
-    --mnb-muted: #888880;
+    --mnb-text: var(--marilo-color-text, #1f2328);
+    --mnb-muted: var(--marilo-color-text-secondary, #888880);
     --mnb-hover: rgba(0, 0, 0, 0.045);
     --mnb-primary: var(--marilo-color-primary, #5b6cff);
     --mnb-width: 340px;
@@ -16,14 +16,13 @@
     display: contents;
 }
 
-@media (prefers-color-scheme: dark) {
-    .mar-notifbell {
-        --mnb-bg: #1f1f1d;
-        --mnb-border: #2e2e2c;
-        --mnb-text: #f3f3ef;
-        --mnb-muted: #9a9a92;
-        --mnb-hover: rgba(255, 255, 255, 0.06);
-    }
+:global([data-marilo-theme="dark"]) .mar-notifbell {
+    --mnb-bg: var(--marilo-color-background, #1f1f1d);
+    --mnb-border: var(--marilo-color-border, #2e2e2c);
+    --mnb-text: var(--marilo-color-text, #f3f3ef);
+    --mnb-muted: var(--marilo-color-text-secondary, #9a9a92);
+    --mnb-hover: rgba(255, 255, 255, 0.06);
+    --mnb-shadow: 0 4px 24px rgba(0, 0, 0, 0.28);
 }
 
 .mar-notifbell__scrim {

@@ -196,8 +196,9 @@
     padding: 10px;
 }
 
-/* Button group container — bordered row: [ avatar + name + email | bell ] */
-.mar-appshell__user-group {
+/* Button group container — bordered row: [ avatar + name + email | bell ]
+   Uses ::deep so styles apply to custom <SidebarFooter> RenderFragment content. */
+.mar-appshell__footer ::deep .mar-appshell__user-group {
     position: relative;
     display: flex;
     align-items: stretch;
@@ -208,7 +209,7 @@
 }
 
 /* Avatar / identity side — takes remaining width */
-.mar-appshell__avatar-btn {
+.mar-appshell__footer ::deep .mar-appshell__avatar-btn {
     flex: 1 1 auto;
     min-width: 0;
     display: flex;
@@ -223,16 +224,16 @@
     font-size: 14px;
     text-align: left;
 }
-.mar-appshell__avatar-btn:hover { background: var(--mas-hover-bg); }
+.mar-appshell__footer ::deep .mar-appshell__avatar-btn:hover { background: var(--mas-hover-bg); }
 
-.mar-appshell__identity {
+.mar-appshell__footer ::deep .mar-appshell__identity {
     flex: 1 1 auto;
     min-width: 0;
     display: flex;
     flex-direction: column;
     line-height: 1.2;
 }
-.mar-appshell__avatar-email {
+.mar-appshell__footer ::deep .mar-appshell__avatar-email {
     font-size: 12px;
     color: var(--mas-text-muted);
     white-space: nowrap;
@@ -240,7 +241,7 @@
     text-overflow: ellipsis;
 }
 
-.mar-appshell__avatar {
+.mar-appshell__footer ::deep .mar-appshell__avatar {
     position: relative;
     flex: 0 0 36px;
     width: 36px;
@@ -255,14 +256,14 @@
     justify-content: center;
     overflow: visible;
 }
-.mar-appshell__avatar img {
+.mar-appshell__footer ::deep .mar-appshell__avatar img {
     width: 100%;
     height: 100%;
     border-radius: 50%;
     object-fit: cover;
     display: block;
 }
-.mar-appshell__avatar-badge {
+.mar-appshell__footer ::deep .mar-appshell__avatar-badge {
     position: absolute;
     bottom: -2px;
     left: 50%;
@@ -277,7 +278,7 @@
     border: 2px solid var(--mas-sidebar-bg);
     letter-spacing: 0.02em;
 }
-.mar-appshell__avatar-name {
+.mar-appshell__footer ::deep .mar-appshell__avatar-name {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -286,7 +287,7 @@
 }
 
 /* Notification bell — right side of the bordered button group */
-.mar-appshell__notif-btn {
+.mar-appshell__footer ::deep .mar-appshell__notif-btn {
     flex: 0 0 44px;
     width: 44px;
     display: inline-flex;
@@ -300,12 +301,12 @@
     cursor: pointer;
     position: relative;
 }
-.mar-appshell__notif-btn:hover {
+.mar-appshell__footer ::deep .mar-appshell__notif-btn:hover {
     background: var(--mas-hover-bg);
     color: var(--mas-text);
 }
 
-.mar-appshell__badge {
+.mar-appshell__footer ::deep .mar-appshell__badge {
     position: absolute;
     top: 2px;
     right: 2px;
@@ -321,17 +322,17 @@
 }
 
 /* Collapsed: show only the avatar centred; hide name, caret, bell */
-.is-collapsed .mar-appshell__user-group {
+.is-collapsed .mar-appshell__footer ::deep .mar-appshell__user-group {
     justify-content: center;
 }
-.is-collapsed .mar-appshell__avatar-btn {
+.is-collapsed .mar-appshell__footer ::deep .mar-appshell__avatar-btn {
     flex: 0 0 auto;
     padding: 4px;
     gap: 0;
 }
-.is-collapsed .mar-appshell__user-group { border: none; background: transparent; }
-.is-collapsed .mar-appshell__identity { display: none; }
-.is-collapsed .mar-appshell__notif-btn { display: none; }
+.is-collapsed .mar-appshell__footer ::deep .mar-appshell__user-group { border: none; background: transparent; }
+.is-collapsed .mar-appshell__footer ::deep .mar-appshell__identity { display: none; }
+.is-collapsed .mar-appshell__footer ::deep .mar-appshell__notif-btn { display: none; }
 
 /* ── Main ───────────────────────────────────────────────────────────── */
 
@@ -426,18 +427,18 @@
         display: inline;
     }
     /* Restore full user group on mobile even when sidebar is "collapsed" */
-    .is-collapsed .mar-appshell__user-group {
+    .is-collapsed .mar-appshell__footer ::deep .mar-appshell__user-group {
         border: 1px solid var(--mas-border);
         background: var(--mas-surface);
         justify-content: flex-start;
     }
-    .is-collapsed .mar-appshell__avatar-btn {
+    .is-collapsed .mar-appshell__footer ::deep .mar-appshell__avatar-btn {
         flex: 1 1 auto;
         padding: 8px 10px;
         gap: 10px;
     }
-    .is-collapsed .mar-appshell__identity { display: flex; }
-    .is-collapsed .mar-appshell__notif-btn { display: inline-flex; }
+    .is-collapsed .mar-appshell__footer ::deep .mar-appshell__identity { display: flex; }
+    .is-collapsed .mar-appshell__footer ::deep .mar-appshell__notif-btn { display: inline-flex; }
 }
 
 /* ── Slide-over ─────────────────────────────────────────────────────── */

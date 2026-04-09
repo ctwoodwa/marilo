@@ -2,13 +2,13 @@
    Anchored relative to its trigger; render this component inside a positioned parent. */
 
 .mar-usermenu {
-    --mum-bg: var(--marilo-color-popup, #f7f7f3);
-    --mum-border: var(--marilo-color-popup-border, #e5e5e0);
+    --mum-bg: var(--marilo-color-background, #f7f7f3);
+    --mum-border: var(--marilo-color-border, #e5e5e0);
     --mum-radius: 12px;
     --mum-shadow: 0 4px 24px rgba(0, 0, 0, 0.10);
     --mum-row-h: 38px;
-    --mum-muted: #888880;
-    --mum-text: #1f2328;
+    --mum-muted: var(--marilo-color-text-secondary, #888880);
+    --mum-text: var(--marilo-color-text, #1f2328);
     --mum-hover: rgba(0, 0, 0, 0.045);
     --mum-avatar-size: 32px;
     --mum-width: 248px;
@@ -17,14 +17,13 @@
     display: contents;
 }
 
-@media (prefers-color-scheme: dark) {
-    .mar-usermenu {
-        --mum-bg: #1f1f1d;
-        --mum-border: #2e2e2c;
-        --mum-text: #f3f3ef;
-        --mum-muted: #9a9a92;
-        --mum-hover: rgba(255, 255, 255, 0.06);
-    }
+:global([data-marilo-theme="dark"]) .mar-usermenu {
+    --mum-bg: var(--marilo-color-background, #1f1f1d);
+    --mum-border: var(--marilo-color-border, #2e2e2c);
+    --mum-text: var(--marilo-color-text, #f3f3ef);
+    --mum-muted: var(--marilo-color-text-secondary, #9a9a92);
+    --mum-hover: rgba(255, 255, 255, 0.06);
+    --mum-shadow: 0 4px 24px rgba(0, 0, 0, 0.28);
 }
 
 .mar-usermenu__scrim {
