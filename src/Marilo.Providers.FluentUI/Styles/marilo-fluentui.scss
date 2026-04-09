@@ -7,6 +7,7 @@
 @forward 'signalr-status';
 @forward 'allocation-scheduler';
 @forward 'resizable-container';
+@forward 'gantt';
 
 // DataGrid uses semantic <table> markup. Ensure legacy flex row rules do not override table layout.
 .mar-datagrid table tr.mar-datagrid-header,
