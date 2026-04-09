@@ -214,7 +214,7 @@
                     </div>
                 </div>
 
-                <div class="mar-gantt__bars" style="width: @((int)_totalTimelineWidth)px;">
+                <div class="mar-gantt__bars" style="width: @((int)_totalTimelineWidth)px; position: relative;">
                     @foreach (var node in visible)
                     {
                         var n = node;
@@ -252,6 +252,23 @@
                                 </div>
                             }
                         </div>
+                    }
+                    @if (_dependencyLines.Count > 0)
+                    {
+                        <svg class="mar-gantt__dependency-svg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;">
+                            <defs>
+                                <marker id="@($"gantt-arrow-{_instanceId}")" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
+                                    <path d="M0,0 L10,4 L0,8 Z" fill="#999" />
+                                </marker>
+                            </defs>
+                            @foreach (var dep in _dependencyLines)
+                            {
+                                <line x1="@dep.X1.ToString("F1")" y1="@dep.Y1.ToString("F1")"
+                                      x2="@dep.X2.ToString("F1")" y2="@dep.Y2.ToString("F1")"
+                                      stroke="#999" stroke-width="1.5"
+                                      marker-end="@($"url(#gantt-arrow-{_instanceId})")" />
+                            }
+                        </svg>
                     }
                 </div>
             }
@@ -271,7 +288,7 @@
                     }
                 </div>
 
-                <div class="mar-gantt__bars" style="width: @((int)_totalTimelineWidth)px;">
+                <div class="mar-gantt__bars" style="width: @((int)_totalTimelineWidth)px; position: relative;">
                     @foreach (var node in visible)
                     {
                         var n = node;
@@ -309,6 +326,23 @@
                                 </div>
                             }
                         </div>
+                    }
+                    @if (_dependencyLines.Count > 0)
+                    {
+                        <svg class="mar-gantt__dependency-svg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;">
+                            <defs>
+                                <marker id="@($"gantt-arrow-{_instanceId}")" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
+                                    <path d="M0,0 L10,4 L0,8 Z" fill="#999" />
+                                </marker>
+                            </defs>
+                            @foreach (var dep in _dependencyLines)
+                            {
+                                <line x1="@dep.X1.ToString("F1")" y1="@dep.Y1.ToString("F1")"
+                                      x2="@dep.X2.ToString("F1")" y2="@dep.Y2.ToString("F1")"
+                                      stroke="#999" stroke-width="1.5"
+                                      marker-end="@($"url(#gantt-arrow-{_instanceId})")" />
+                            }
+                        </svg>
                     }
                 </div>
             }

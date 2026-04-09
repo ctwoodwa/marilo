@@ -18,6 +18,11 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     private List<GanttNode<TItem>> _flatVisible = new();
     private readonly HashSet<object> _expandedIds = new();
 
+    // ── Dependency rendering ──────────────────────────────────────────
+    private record DependencyLine(double X1, double Y1, double X2, double Y2);
+    private List<DependencyLine> _dependencyLines = new();
+    private readonly string _instanceId = Guid.NewGuid().ToString("N")[..8];
+
     // ── Filter state ──────────────────────────────────────────────────
     private readonly Dictionary<string, string> _filterValues = new();
     /// <summary>Ids that were auto-expanded by the filter so we can restore state when cleared.</summary>
@@ -197,6 +202,7 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         }
 
         _timelineComputed = true;
+        ComputeDependencyLines();
     }
 
     private static DateTime ComputeDataMin(GanttFieldAccessor<TItem> accessor, List<GanttNode<TItem>> visible)
@@ -754,6 +760,38 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
             }
         }
         _flatVisible = list;
+    }
+
+    private void ComputeDependencyLines()
+    {
+        _dependencyLines.Clear();
+        var accessor = _accessor;
+        if (accessor is null) return;
+
+        for (int i = 0; i < _flatVisible.Count; i++)
+        {
+            var node = _flatVisible[i];
+            var deps = accessor.GetDependsOn(node.Item);
+            if (deps is null) continue;
+
+            foreach (var depId in deps)
+            {
+                // Find the dependency source node in _flatVisible
+                var srcIdx = _flatVisible.FindIndex(n => Equals(n.Id, depId));
+                if (srcIdx < 0) continue;
+                var srcNode = _flatVisible[srcIdx];
+
+                // Line from end of source bar to start of dependent bar
+                var srcEnd = accessor.GetEnd(srcNode.Item);
+                var nodeStart = accessor.GetStart(node.Item);
+                var x1 = GetPixelOffset(srcEnd);
+                var y1 = srcIdx * RowHeight + RowHeight / 2.0;
+                var x2 = GetPixelOffset(nodeStart);
+                var y2 = i * RowHeight + RowHeight / 2.0;
+
+                _dependencyLines.Add(new DependencyLine(x1, y1, x2, y2));
+            }
+        }
     }
 
     private async Task ToggleExpanded(GanttNode<TItem> node)
