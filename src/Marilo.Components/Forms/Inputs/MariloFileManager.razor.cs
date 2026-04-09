@@ -340,7 +340,7 @@ public partial class MariloFileManager<TItem> : MariloComponentBase
                 : filtered.OrderByDescending(GetIsDirectory).ThenByDescending(GetExtension),
             "Type" => _sortAscending
                 ? filtered.OrderBy(GetIsDirectory).ThenBy(GetName)
-                : filtered.OrderByDescending(GetIsDirectory).ThenBy(GetName),
+                : filtered.OrderByDescending(GetIsDirectory).ThenByDescending(GetName),
             _ => _sortAscending
                 ? filtered.OrderByDescending(GetIsDirectory).ThenBy(GetName)
                 : filtered.OrderByDescending(GetIsDirectory).ThenByDescending(GetName),

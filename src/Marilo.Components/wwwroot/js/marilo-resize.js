@@ -79,7 +79,7 @@ function onPointerMove(e) {
 
     activeResize.dotNetRef.invokeMethodAsync(options.updateMethod, {
         width: w, height: h, top, left, activeHandle: handle
-    });
+    }).catch(() => {});
 }
 
 function onPointerUp(e) {
@@ -98,7 +98,7 @@ function onPointerUp(e) {
         top: rect.top,
         left: rect.left,
         activeHandle: handle
-    });
+    }).catch(() => {});
 
     activeResize = null;
 }
