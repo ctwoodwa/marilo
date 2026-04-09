@@ -57,17 +57,12 @@
     </ChildContent>
 
     <SidebarFooter>
-        <div style="position:relative;">
-            <MariloAccountMenu UserName="Avery Chen"
-                               UserEmail="avery.chen@example.com"
-                               CompactTrigger="@_collapsed"
-                               OnSignOut="HandleSignOut"
-                               OnAppearanceChange="HandleAppearance" />
-
+        <div class="sidebar-footer @(_collapsed ? "sidebar-footer--collapsed" : "sidebar-footer--expanded")">
             @if (_collapsed)
             {
+                @* Collapsed: bell above, avatar below, centered *@
                 <button type="button"
-                        class="footer-icon-button footer-bell-button"
+                        class="sidebar-footer__bell"
                         title="Notifications"
                         aria-label="Notifications"
                         aria-haspopup="dialog"
@@ -83,26 +78,41 @@
                         <span class="mar-appshell__badge">@UserNotifications.UnreadCount</span>
                     }
                 </button>
+
+                <MariloAccountMenu UserName="Avery Chen"
+                                   UserEmail="avery.chen@example.com"
+                                   CompactTrigger="true"
+                                   OnSignOut="HandleSignOut"
+                                   OnAppearanceChange="HandleAppearance" />
             }
             else
             {
-                <button type="button"
-                        class="mar-appshell__notif-btn"
-                        title="Notifications"
-                        aria-label="Notifications"
-                        aria-haspopup="dialog"
-                        aria-expanded="@_bellOpen.ToString().ToLowerInvariant()"
-                        @onclick="() => _bellOpen = !_bellOpen">
-                    <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
-                        <path d="M10 2a5 5 0 0 0-5 5v3l-1.5 2.5h13L15 10V7a5 5 0 0 0-5-5zm-2 13a2 2 0 0 0 4 0"
-                              fill="none" stroke="currentColor" stroke-width="1.5"
-                              stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    @if (UserNotifications.UnreadCount > 0)
-                    {
-                        <span class="mar-appshell__badge">@UserNotifications.UnreadCount</span>
-                    }
-                </button>
+                @* Expanded: button group row — [ avatar + name | bell ] *@
+                <div class="sidebar-footer__group">
+                    <MariloAccountMenu UserName="Avery Chen"
+                                       UserEmail="avery.chen@example.com"
+                                       CompactTrigger="false"
+                                       OnSignOut="HandleSignOut"
+                                       OnAppearanceChange="HandleAppearance" />
+
+                    <button type="button"
+                            class="sidebar-footer__bell sidebar-footer__bell--grouped"
+                            title="Notifications"
+                            aria-label="Notifications"
+                            aria-haspopup="dialog"
+                            aria-expanded="@_bellOpen.ToString().ToLowerInvariant()"
+                            @onclick="() => _bellOpen = !_bellOpen">
+                        <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+                            <path d="M10 2a5 5 0 0 0-5 5v3l-1.5 2.5h13L15 10V7a5 5 0 0 0-5-5zm-2 13a2 2 0 0 0 4 0"
+                                  fill="none" stroke="currentColor" stroke-width="1.5"
+                                  stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        @if (UserNotifications.UnreadCount > 0)
+                        {
+                            <span class="mar-appshell__badge">@UserNotifications.UnreadCount</span>
+                        }
+                    </button>
+                </div>
             }
 
             <MariloNotificationBell @bind-Open="_bellOpen"
