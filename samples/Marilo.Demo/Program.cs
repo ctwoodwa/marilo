@@ -1,3 +1,4 @@
+using Marilo.Components.Internal.Interop;
 using Marilo.Core.Contracts;
 using Marilo.Core.Extensions;
 using Marilo.Demo.Data;
@@ -28,7 +29,8 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 // Register core Marilo services (theme service, notifications, etc.)
-builder.Services.AddMarilo().AddMariloCoreServices();
+// and shared JS interop infrastructure for complex components.
+builder.Services.AddMarilo().AddMariloCoreServices().AddMariloInteropServices();
 
 // For standalone apps (without provider switching), use:
 //   builder.Services.AddMariloIconsTabler();   // Tabler Icons (recommended)

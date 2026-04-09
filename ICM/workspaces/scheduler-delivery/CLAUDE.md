@@ -11,6 +11,8 @@ scheduler-delivery/
 ├── CONTEXT.md                         (start here for task routing)
 ├── _config/
 │   └── delivery-context.md            (component paths, state tracking, gate status)
+├── _status/
+│   └── workspace-status.md            (Layer 0 orientation snapshot)
 ├── stages/
 │   ├── 01-spec-review/                (audit API spec vs. implementation)
 │   │   └── output/                    (spec gap list)
@@ -23,6 +25,11 @@ scheduler-delivery/
 └── shared/
     └── spec-coverage-format.md        (gap record format for spec audits)
 ```
+
+## Cold Start
+
+Load `_status/workspace-status.md` first for pipeline orientation (Layer 0 snapshot -- not authoritative).
+Then load `_config/delivery-context.md` for full component paths and gate status.
 
 ## Triggers
 
@@ -54,22 +61,32 @@ Pipeline Status: scheduler-delivery
 | Audit and update the Example UX | stages/02-example-ux/CONTEXT.md |
 | Confirm all three artifacts are in sync | stages/03-sync-check/CONTEXT.md |
 | Read delivery configuration | _config/delivery-context.md |
-| Read gap-analysis workspace for this component | /workspaces/Marilo/workspaces/scheduler-gap-analysis/CLAUDE.md |
+| Read gap-analysis workspace for this component | ../scheduler-gap-analysis/CLAUDE.md |
+| Read global gap resolution plan (read-only) | /workspaces/Marilo/src/Marilo.Components/GAP_ANALYSIS_RESOLUTION_PLAN.md |
+
+## External Dependencies
+
+| Dependency | Path | Access |
+|------------|------|--------|
+| GAP_ANALYSIS_RESOLUTION_PLAN.md | /workspaces/Marilo/src/Marilo.Components/GAP_ANALYSIS_RESOLUTION_PLAN.md | Read-only reference |
+| Scheduler gap workspace | ../scheduler-gap-analysis/ | Raise gaps; read closure reports |
+
+This workspace never edits `src/` directly. It coordinates and raises gaps to `scheduler-gap-analysis`.
 
 ## What to Load
 
 | Task | Load These | Do NOT Load |
 |------|-----------|-------------|
-| Spec review | _config/delivery-context.md, stages/01-spec-review/CONTEXT.md | Stages 02-03 files (not needed for spec audit) |
-| Example UX work | _config/delivery-context.md, stages/02-example-ux/CONTEXT.md | Stages 01, 03 files (spec output loaded only via stage 02 inputs) |
-| Sync check | All three stage outputs, stages/03-sync-check/shared/delivery-checklist.md | Reference files (heavy; stage outputs summarize them) |
-| Any task | _config/delivery-context.md always | Other component CDWs (scoped to this component only) |
+| Spec review | _config/delivery-context.md, stages/01-spec-review/CONTEXT.md | Stages 02-03 files |
+| Example UX work | _config/delivery-context.md, stages/02-example-ux/CONTEXT.md | Stages 01, 03 files |
+| Sync check | All three stage outputs, stages/03-sync-check/shared/delivery-checklist.md | Reference files |
+| Any task | _config/delivery-context.md always | Other component CDWs |
 
 ## Stage Handoffs
 
-Each stage writes its output to its own `output/` folder. The next stage reads from there. If you edit an output file, the next stage picks up your edits.
+Each stage writes its output to its own `output/` folder. The next stage reads from there.
 
 <!-- CDW owns: spec accuracy, Example UX completeness.
      CDW delegates: source changes and test writing to
-     /workspaces/Marilo/workspaces/scheduler-gap-analysis/.
+     ../scheduler-gap-analysis/.
      Never modify component source files directly from this workspace. -->
