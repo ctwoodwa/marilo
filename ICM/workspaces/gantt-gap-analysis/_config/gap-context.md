@@ -6,7 +6,7 @@
 |-------|-------|
 | Component | MariloGantt |
 | Scope | systematic |
-| Active phase | Stage 06 complete — closure report written |
+| Active phase | Stage 05 Pass 4 complete — InsertedItem/ParentItem wired, dependency API enriched, +19 tests |
 | Total gaps identified | ~107 unique (134 raw across 8 areas) |
 | Total gaps resolved | ~80 (Tier 1+2 spec, Phase B+C+D+E code) |
 | Test coverage status | Not started |
