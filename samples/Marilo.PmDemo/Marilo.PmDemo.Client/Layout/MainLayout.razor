@@ -54,47 +54,94 @@
     </ChildContent>
 
     <SidebarFooter>
-        <div class="mar-appshell__user-group" style="position:relative;">
-            <button type="button"
-                    class="mar-appshell__avatar-btn"
-                    title="Avery Chen"
-                    aria-label="Account"
-                    aria-haspopup="menu"
-                    aria-expanded="@_menuOpen.ToString().ToLowerInvariant()"
-                    @onclick="() => _menuOpen = !_menuOpen">
-                <span class="mar-appshell__avatar">AC</span>
-                <span class="mar-appshell__avatar-name">Avery Chen</span>
-            </button>
-            <button type="button"
-                    class="mar-appshell__notif-btn"
-                    title="Notifications"
-                    aria-label="Notifications"
-                    aria-haspopup="dialog"
-                    aria-expanded="@_bellOpen.ToString().ToLowerInvariant()"
-                    @onclick="() => _bellOpen = !_bellOpen">
-                <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
-                    <path d="M10 2a5 5 0 0 0-5 5v3l-1.5 2.5h13L15 10V7a5 5 0 0 0-5-5zm-2 13a2 2 0 0 0 4 0"
-                          fill="none" stroke="currentColor" stroke-width="1.5"
-                          stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                @if (UserNotifications.UnreadCount > 0)
-                {
-                    <span class="mar-appshell__badge">@UserNotifications.UnreadCount</span>
-                }
-            </button>
+        @if (_collapsed)
+        {
+            <div class="sidebar-footer sidebar-footer--collapsed" style="position:relative;">
+                <button type="button"
+                        class="footer-icon-button footer-bell-button"
+                        title="Notifications"
+                        aria-label="Notifications"
+                        aria-haspopup="dialog"
+                        aria-expanded="@_bellOpen.ToString().ToLowerInvariant()"
+                        @onclick="() => _bellOpen = !_bellOpen">
+                    <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+                        <path d="M10 2a5 5 0 0 0-5 5v3l-1.5 2.5h13L15 10V7a5 5 0 0 0-5-5zm-2 13a2 2 0 0 0 4 0"
+                              fill="none" stroke="currentColor" stroke-width="1.5"
+                              stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    @if (UserNotifications.UnreadCount > 0)
+                    {
+                        <span class="mar-appshell__badge">@UserNotifications.UnreadCount</span>
+                    }
+                </button>
 
-            <MariloUserMenu @bind-Open="_menuOpen"
-                            UserName="Avery Chen"
-                            UserEmail="avery.chen@example.com"
-                            Items="_menuItems" />
+                <button type="button"
+                        class="footer-avatar-button"
+                        title="Avery Chen"
+                        aria-label="Account"
+                        aria-haspopup="menu"
+                        aria-expanded="@_menuOpen.ToString().ToLowerInvariant()"
+                        @onclick="() => _menuOpen = !_menuOpen">
+                    <span class="mar-appshell__avatar">AC</span>
+                </button>
 
-            <MariloNotificationBell @bind-Open="_bellOpen"
-                                    Items="_feedItems"
-                                    OnItemClick="HandleItemClick"
-                                    OnMarkAllRead="HandleMarkAllRead"
-                                    OnDeleteAllRead="HandleDeleteAllRead"
-                                    OnSettingsClick="GoToNotificationSettings" />
-        </div>
+                <MariloUserMenu @bind-Open="_menuOpen"
+                                UserName="Avery Chen"
+                                UserEmail="avery.chen@example.com"
+                                Items="_menuItems" />
+
+                <MariloNotificationBell @bind-Open="_bellOpen"
+                                        Items="_feedItems"
+                                        OnItemClick="HandleItemClick"
+                                        OnMarkAllRead="HandleMarkAllRead"
+                                        OnDeleteAllRead="HandleDeleteAllRead"
+                                        OnSettingsClick="GoToNotificationSettings" />
+            </div>
+        }
+        else
+        {
+            <div class="mar-appshell__user-group" style="position:relative;">
+                <button type="button"
+                        class="mar-appshell__avatar-btn"
+                        title="Avery Chen"
+                        aria-label="Account"
+                        aria-haspopup="menu"
+                        aria-expanded="@_menuOpen.ToString().ToLowerInvariant()"
+                        @onclick="() => _menuOpen = !_menuOpen">
+                    <span class="mar-appshell__avatar">AC</span>
+                    <span class="mar-appshell__avatar-name">Avery Chen</span>
+                </button>
+                <button type="button"
+                        class="mar-appshell__notif-btn"
+                        title="Notifications"
+                        aria-label="Notifications"
+                        aria-haspopup="dialog"
+                        aria-expanded="@_bellOpen.ToString().ToLowerInvariant()"
+                        @onclick="() => _bellOpen = !_bellOpen">
+                    <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+                        <path d="M10 2a5 5 0 0 0-5 5v3l-1.5 2.5h13L15 10V7a5 5 0 0 0-5-5zm-2 13a2 2 0 0 0 4 0"
+                              fill="none" stroke="currentColor" stroke-width="1.5"
+                              stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    @if (UserNotifications.UnreadCount > 0)
+                    {
+                        <span class="mar-appshell__badge">@UserNotifications.UnreadCount</span>
+                    }
+                </button>
+
+                <MariloUserMenu @bind-Open="_menuOpen"
+                                UserName="Avery Chen"
+                                UserEmail="avery.chen@example.com"
+                                Items="_menuItems" />
+
+                <MariloNotificationBell @bind-Open="_bellOpen"
+                                        Items="_feedItems"
+                                        OnItemClick="HandleItemClick"
+                                        OnMarkAllRead="HandleMarkAllRead"
+                                        OnDeleteAllRead="HandleDeleteAllRead"
+                                        OnSettingsClick="GoToNotificationSettings" />
+            </div>
+        }
     </SidebarFooter>
 </MariloAppShell>
 

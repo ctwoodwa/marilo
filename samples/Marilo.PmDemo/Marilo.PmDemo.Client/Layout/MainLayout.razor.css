@@ -1,3 +1,53 @@
+/* ── Collapsed sidebar footer — vertical bell + avatar stack ─────────── */
+
+.sidebar-footer--collapsed {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 8px;
+}
+
+.footer-icon-button,
+.footer-avatar-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--marilo-color-text-muted, #6b7280);
+}
+
+.footer-icon-button:hover,
+.footer-avatar-button:hover {
+    background: color-mix(in srgb, var(--marilo-color-text, #1f2328) 8%, transparent);
+    color: var(--marilo-color-text, #1f2328);
+}
+
+.footer-icon-button:focus-visible,
+.footer-avatar-button:focus-visible {
+    outline: 2px solid var(--marilo-color-primary, #5b6cff);
+    outline-offset: 2px;
+}
+
+.footer-bell-button ::deep .mar-appshell__badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+}
+
+.footer-avatar-button ::deep .mar-appshell__avatar {
+    width: 36px;
+    height: 36px;
+}
+
+/* ── Blazor error UI ───────────────────────────────────────────────── */
+
 #blazor-error-ui {
     color-scheme: light only;
     background: lightyellow;

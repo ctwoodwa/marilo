@@ -45,7 +45,7 @@
     min-height: 0;
     background: var(--mas-sidebar-bg);
     border-right: 1px solid var(--mas-border);
-    overflow: hidden;
+    overflow: visible;
 }
 
 .mar-appshell__brand {
@@ -321,18 +321,27 @@
     text-align: center;
 }
 
-/* Collapsed: show only the avatar centred; hide name, caret, bell */
+/* Collapsed: the default footer shows only the avatar centred; hide name, caret, bell.
+   When consumers provide custom <SidebarFooter> with separate collapsed markup,
+   these rules apply only to the default user-group (not custom classes). */
 .is-collapsed .mar-appshell__footer ::deep .mar-appshell__user-group {
     justify-content: center;
+    border: none;
+    background: transparent;
 }
 .is-collapsed .mar-appshell__footer ::deep .mar-appshell__avatar-btn {
     flex: 0 0 auto;
     padding: 4px;
     gap: 0;
 }
-.is-collapsed .mar-appshell__footer ::deep .mar-appshell__user-group { border: none; background: transparent; }
 .is-collapsed .mar-appshell__footer ::deep .mar-appshell__identity { display: none; }
 .is-collapsed .mar-appshell__footer ::deep .mar-appshell__notif-btn { display: none; }
+
+/* Collapsed footer: ensure the container does not constrain custom collapsed layouts */
+.is-collapsed .mar-appshell__footer {
+    padding: 8px 4px;
+    overflow: visible;
+}
 
 /* ── Main ───────────────────────────────────────────────────────────── */
 

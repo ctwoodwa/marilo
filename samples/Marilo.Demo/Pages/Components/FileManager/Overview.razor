@@ -1,16 +1,12 @@
 @page "/components/filemanager"
 @page "/components/filemanager/overview"
+@using Marilo.Demo.Pages.Components.FileManager
 @layout ComponentDemoLayout
 
 <PageSection Title="Overview">
-    <DemoSection Title="Basic Usage" Description="FileManager provides a file browser interface with navigation, upload, and management." Code="@_basicCode">
+    <DemoSection Title="Basic Usage" Description="FileManager provides a file browser interface with navigation, upload, and management.">
         <div class="demo-row">
-            <MariloFileManager Style="height:400px;" />
+            <MariloFileManager TItem="FileManagerEntry" Style="height:400px;" />
         </div>
     </DemoSection>
 </PageSection>
-
-@code {
-    private const string _basicCode =
-        "<MariloFileManager Style=\"height:400px;\" />";
-}
