@@ -128,14 +128,19 @@
 
                 @if (useColumns)
                 {
-                    <div class="@rowClass"
+                    var isEditing = _editingRowIndex == rowIdx;
+                    var editRowClass = rowClass + (isEditing ? " mar-gantt__task-row--editing" : "");
+
+                    <div class="@editRowClass"
                          role="row"
                          aria-level="@(n.Depth + 1)"
                          aria-setsize="@siblingCount"
                          aria-posinset="@posInSiblings"
                          aria-expanded="@(hasChildren ? (expanded ? "true" : "false") : null)"
                          tabindex="@(isFocused ? 0 : -1)"
-                         @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
+                         @onclick="() => OnTaskClick.InvokeAsync(n.Item)"
+                         @ondblclick="() => BeginEdit(rowIdx)"
+                         @ondblclick:stopPropagation="true">
                         @foreach (var col in cols)
                         {
                             var cellStyle = "";
@@ -143,7 +148,42 @@
                             if (!string.IsNullOrEmpty(col.TextAlign)) cellStyle += $"text-align:{col.TextAlign};";
 
                             <div class="mar-gantt__task-cell" role="gridcell" style="@cellStyle">
-                                @if (col.Expandable)
+                                @if (isEditing && col.Editable && !string.IsNullOrEmpty(col.Field))
+                                {
+                                    @* Editing mode: render input *@
+                                    var editField = col.Field;
+                                    var inputType = GetInputType(editField);
+                                    if (col.Expandable)
+                                    {
+                                        var pad = (int)(n.Depth * 16 + (hasChildren ? 0 : 16));
+                                        <span style="padding-left: @(pad)px; display: inline-flex; align-items: center;">
+                                            @if (hasChildren)
+                                            {
+                                                <button type="button"
+                                                        class="mar-gantt__chevron"
+                                                        aria-expanded="@(expanded ? "true" : "false")"
+                                                        @onclick:stopPropagation="true"
+                                                        @onclick="() => ToggleExpanded(n)">
+                                                    @(expanded ? "▼" : "▶")
+                                                </button>
+                                            }
+                                            <input type="@inputType"
+                                                   value="@FormatEditValue(editField, _editValues.GetValueOrDefault(editField))"
+                                                   @onchange="(e) => _editValues[editField] = ParseValue(editField, e.Value?.ToString())"
+                                                   @onclick:stopPropagation="true"
+                                                   class="mar-gantt__edit-input" />
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <input type="@inputType"
+                                               value="@FormatEditValue(editField, _editValues.GetValueOrDefault(editField))"
+                                               @onchange="(e) => _editValues[editField] = ParseValue(editField, e.Value?.ToString())"
+                                               @onclick:stopPropagation="true"
+                                               class="mar-gantt__edit-input" />
+                                    }
+                                }
+                                else if (col.Expandable)
                                 {
                                     var pad = (int)(n.Depth * 16 + (hasChildren ? 0 : 16));
                                     <span style="padding-left: @(pad)px; display: inline-flex; align-items: center;">
@@ -179,6 +219,21 @@
                                         @col.GetDisplayValue(n.Item)
                                     }
                                 }
+                            </div>
+                        }
+                        @if (isEditing)
+                        {
+                            <div class="mar-gantt__edit-actions">
+                                <button type="button"
+                                        class="mar-gantt__edit-btn mar-gantt__edit-btn--save"
+                                        title="Save"
+                                        @onclick="CommitEdit"
+                                        @onclick:stopPropagation="true">&#x2713;</button>
+                                <button type="button"
+                                        class="mar-gantt__edit-btn mar-gantt__edit-btn--cancel"
+                                        title="Cancel"
+                                        @onclick="() => CancelEdit()"
+                                        @onclick:stopPropagation="true">&#x2717;</button>
                             </div>
                         }
                     </div>

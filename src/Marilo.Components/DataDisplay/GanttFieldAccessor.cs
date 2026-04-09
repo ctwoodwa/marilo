@@ -61,6 +61,19 @@ internal sealed class GanttFieldAccessor<TItem> where TItem : class
     public void SetEnd(TItem item, DateTime value) => Write(item, EndField, value);
     public void SetPercentComplete(TItem item, double value) => Write(item, PercentCompleteField, value);
 
+    /// <summary>
+    /// Sets an arbitrary field value on the item using reflection.
+    /// Handles nullable types and type conversion via Convert.ChangeType.
+    /// </summary>
+    public void SetFieldValue(TItem item, string field, object? value)
+    {
+        var prop = GetProp(field);
+        if (prop?.CanWrite != true) return;
+        var targetType = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+        var converted = value is null ? null : Convert.ChangeType(value, targetType);
+        prop.SetValue(item, converted);
+    }
+
     /// <summary>Public cached field lookup for use by GanttColumn.</summary>
     public object? GetFieldValue(TItem item, string fieldName)
     {

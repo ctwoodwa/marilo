@@ -32,6 +32,10 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     /// <summary>Ids that were auto-expanded by the filter so we can restore state when cleared.</summary>
     private readonly HashSet<object> _filterExpandedIds = new();
 
+    // ── Edit state ─────────────────────────────────────────────────────
+    private int _editingRowIndex = -1;
+    private Dictionary<string, object?> _editValues = new();
+
     // ── Sort state ────────────────────────────────────────────────────
     private string? _sortField;
     private bool _sortAscending = true;
@@ -846,6 +850,23 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     {
         if (_flatVisible.Count == 0) return;
 
+        // When in edit mode, Enter commits and Escape cancels
+        if (_editingRowIndex >= 0)
+        {
+            switch (e.Key)
+            {
+                case "Enter":
+                    await CommitEdit();
+                    return;
+                case "Escape":
+                    CancelEdit();
+                    await InvokeAsync(StateHasChanged);
+                    return;
+                default:
+                    return; // Let inputs handle other keys normally
+            }
+        }
+
         switch (e.Key)
         {
             case "ArrowDown":
@@ -973,6 +994,105 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
 
         await OnUpdate.InvokeAsync(new GanttUpdateEventArgs { Item = node.Item });
         await InvokeAsync(StateHasChanged);
+    }
+
+    // ── Inline editing ─────────────────────────────────────────────────
+
+    /// <summary>Enters edit mode for the specified row, populating _editValues from current field values.</summary>
+    private void BeginEdit(int rowIndex)
+    {
+        if (rowIndex < 0 || rowIndex >= _flatVisible.Count) return;
+        _editingRowIndex = rowIndex;
+        _editValues.Clear();
+        var node = _flatVisible[rowIndex];
+        var cols = VisibleColumns;
+        foreach (var col in cols)
+        {
+            if (col.Editable && !string.IsNullOrEmpty(col.Field))
+            {
+                _editValues[col.Field] = _accessor!.GetFieldValue(node.Item, col.Field);
+            }
+        }
+    }
+
+    /// <summary>Writes edited values back to the item and fires OnUpdate.</summary>
+    private async Task CommitEdit()
+    {
+        if (_editingRowIndex < 0 || _editingRowIndex >= _flatVisible.Count) return;
+        var node = _flatVisible[_editingRowIndex];
+        foreach (var (field, value) in _editValues)
+            _accessor!.SetFieldValue(node.Item, field, value);
+        _editingRowIndex = -1;
+        _editValues.Clear();
+        ComputeTimeline();
+        await OnUpdate.InvokeAsync(new GanttUpdateEventArgs { Item = node.Item });
+        await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>Discards edits and exits edit mode.</summary>
+    private void CancelEdit()
+    {
+        _editingRowIndex = -1;
+        _editValues.Clear();
+    }
+
+    /// <summary>Returns the HTML input type for a given field based on its property type.</summary>
+    private string GetInputType(string field)
+    {
+        var prop = typeof(TItem).GetProperty(field);
+        if (prop is null) return "text";
+        var type = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+        if (type == typeof(DateTime) || type == typeof(DateTimeOffset))
+            return "date";
+        if (type == typeof(double) || type == typeof(float) || type == typeof(decimal)
+            || type == typeof(int) || type == typeof(long) || type == typeof(short)
+            || type == typeof(byte))
+            return "number";
+        if (type == typeof(bool))
+            return "checkbox";
+        return "text";
+    }
+
+    /// <summary>Parses a string value from an input element back to the correct property type.</summary>
+    private object? ParseValue(string field, string? raw)
+    {
+        if (raw is null) return null;
+        var prop = typeof(TItem).GetProperty(field);
+        if (prop is null) return raw;
+        var type = Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType;
+        if (type == typeof(DateTime) && DateTime.TryParse(raw, out var dt))
+            return dt;
+        if (type == typeof(DateTimeOffset) && DateTimeOffset.TryParse(raw, out var dto))
+            return dto;
+        if (type == typeof(double) && double.TryParse(raw, CultureInfo.InvariantCulture, out var dbl))
+            return dbl;
+        if (type == typeof(float) && float.TryParse(raw, CultureInfo.InvariantCulture, out var flt))
+            return flt;
+        if (type == typeof(decimal) && decimal.TryParse(raw, CultureInfo.InvariantCulture, out var dec))
+            return dec;
+        if (type == typeof(int) && int.TryParse(raw, out var i32))
+            return i32;
+        if (type == typeof(long) && long.TryParse(raw, out var i64))
+            return i64;
+        if (type == typeof(short) && short.TryParse(raw, out var i16))
+            return i16;
+        if (type == typeof(byte) && byte.TryParse(raw, out var b))
+            return b;
+        if (type == typeof(bool))
+            return raw == "true" || raw == "True" || raw == "on";
+        return raw;
+    }
+
+    /// <summary>Formats a value for display in an input element's value attribute.</summary>
+    private string FormatEditValue(string field, object? value)
+    {
+        if (value is null) return string.Empty;
+        var inputType = GetInputType(field);
+        if (inputType == "date" && value is DateTime dtVal)
+            return dtVal.ToString("yyyy-MM-dd");
+        if (inputType == "date" && value is DateTimeOffset dtoVal)
+            return dtoVal.ToString("yyyy-MM-dd");
+        return value.ToString() ?? string.Empty;
     }
 
     public async ValueTask DisposeAsync()
