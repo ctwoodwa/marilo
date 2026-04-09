@@ -329,6 +329,7 @@
     private int _focusedIndex;
     private string _currentAppearance = "System";
     private string _currentLanguage = "Default";
+    private bool _initialized;
 
     // ── Effective Options & Computed Groups ──
     private AccountMenuOptions _effectiveOptions = new();
@@ -345,8 +346,13 @@
     protected override void OnParametersSet()
     {
         _effectiveOptions = Options ?? new AccountMenuOptions();
-        _currentAppearance = _effectiveOptions.DefaultAppearanceMode;
-        _currentLanguage = _effectiveOptions.DefaultLanguage;
+
+        if (!_initialized)
+        {
+            _currentAppearance = _effectiveOptions.DefaultAppearanceMode;
+            _currentLanguage = _effectiveOptions.DefaultLanguage;
+            _initialized = true;
+        }
 
         BuildGroups();
         BuildFlatVisibleItems();
@@ -461,7 +467,7 @@
     {
         _isOpen = true;
         _activeSubmenu = null;
-        _focusedIndex = -1;
+        _focusedIndex = FindNextFocusable(-1, 1);
     }
 
     private void CloseMenu()
@@ -523,13 +529,18 @@
     private void OpenSubmenu(string submenuId)
     {
         _activeSubmenu = submenuId;
-        _focusedIndex = -1;
+        _focusedIndex = 0; // Focus first submenu item (back button)
     }
 
     private Task GoBackToRoot()
     {
+        var parentId = _activeSubmenu;
         _activeSubmenu = null;
-        _focusedIndex = -1;
+        // Focus the submenu parent row in the root menu
+        _focusedIndex = parentId is not null
+            ? _flatVisibleItems.FindIndex(i => i.Id == parentId)
+            : -1;
+        if (_focusedIndex < 0) _focusedIndex = 0;
         StateHasChanged();
         return Task.CompletedTask;
     }
@@ -598,19 +609,19 @@
         switch (e.Key)
         {
             case "ArrowDown":
-                _focusedIndex = (_focusedIndex + 1) % visibleCount;
+                _focusedIndex = FindNextFocusable(_focusedIndex, 1);
                 break;
 
             case "ArrowUp":
-                _focusedIndex = _focusedIndex <= 0 ? visibleCount - 1 : _focusedIndex - 1;
+                _focusedIndex = FindNextFocusable(_focusedIndex, -1);
                 break;
 
             case "Home":
-                _focusedIndex = 0;
+                _focusedIndex = FindNextFocusable(-1, 1);
                 break;
 
             case "End":
-                _focusedIndex = visibleCount - 1;
+                _focusedIndex = FindNextFocusable(visibleCount, -1);
                 break;
 
             case "Enter":
@@ -719,6 +730,22 @@
 
     private static bool IsGroupVisible(List<AccountMenuItemModel> group) =>
         group.Any(i => i.IsVisible);
+
+    private int FindNextFocusable(int current, int direction)
+    {
+        var count = _flatVisibleItems.Count;
+        if (count == 0) return -1;
+        var next = current;
+        for (var i = 0; i < count; i++)
+        {
+            next += direction;
+            if (next >= count) next = 0;
+            if (next < 0) next = count - 1;
+            if (!_flatVisibleItems[next].IsDisabled)
+                return next;
+        }
+        return current; // all disabled
+    }
 
     private string GetInitials()
     {
