@@ -1,40 +1,51 @@
-# Gap Analysis -- MariloScheduler
+<!-- Target: ~800 tokens. Trim if longer. -->
+# Component Gap-Analysis Workspace -- MariloScheduler
 
-**Status:** STUB -- no gap phases started
-
-Run intake (Stage 01) via ../scheduler-delivery/ to begin gap analysis. Feature areas tracked in ../scheduler-delivery/_config/delivery-context.md.
+Structured gap tracking and resolution for MariloScheduler.
+This workspace owns Scheduler-specific gaps only.
 
 ## Folder Map
 
 ```
 scheduler-gap-analysis/
-├── CLAUDE.md              (you are here)
+├── CLAUDE.md                          (you are here)
+├── CONTEXT.md                         (start here for task routing)
 ├── _config/
-│   ├── gap-context.md     (scope, target project, resolution tracking)
-│   └── coverage-summary.md (test coverage state)
-└── output/
-    ├── stage-01/          (intake output)
-    ├── stage-02/          (prioritization output)
-    ├── stage-03/          (resolution design output)
-    ├── stage-04/          (remediation plan output)
-    ├── stage-05/          (implementation output)
-    └── stage-06/          (validation output)
+│   ├── gap-context.md                 (component paths, resolution tracking)
+│   └── coverage-summary.md            (test coverage rollup)
+├── _status/
+│   └── workspace-status.md            (Layer 0 orientation snapshot)
+├── stages/
+│   ├── 01-intake/                     (import or assess gaps)
+│   │   └── output/
+│   ├── 02-prioritize/                 (score and sequence gaps)
+│   │   └── output/
+│   ├── 03-resolution-design/          (design fix for each gap)
+│   │   └── output/
+│   ├── 04-remediation-plan/           (break into atomic tasks)
+│   │   └── output/
+│   ├── 05-implement/                  (execute changes)
+│   │   └── output/
+│   └── 06-validate/                   (verify and close gaps)
+│       └── output/
+└── shared/
+    └── gap-record-format.md           (normalized gap shape)
 ```
 
 ## Entry Paths
 
-| Path | When | Start At | Stages |
-|------|------|----------|--------|
-| **Existing analysis** | Gap analysis files already exist | Stage 01 (import mode) | 01 through 06 |
-| **Fresh analysis** | No gap analysis yet; start from target state definition | Stage 01 (assess mode) | 01 through 06 |
+| Starting from... | Begin at |
+|-------------------|----------|
+| Existing gap list (from delivery spec review) | stages/01-intake/CONTEXT.md (import mode) |
+| Fresh component (no prior gap work) | stages/01-intake/CONTEXT.md (assess mode) |
 
-## Gap Scope Routing
+Gaps are created when scheduler-delivery Stage 01 or Stage 03 detects spec/source/demo/test mismatches.
+The pipeline follows the same 6-stage pattern as the main gap-analysis-resolution workspace.
 
-| Scope | Description | Stages |
-|-------|-------------|--------|
-| `single` | One isolated gap, one component/module | 01 > 03 > 05 > 06 (skip prioritize and plan) |
-| `batch` | Related gaps in one area | 01 > 02 > 03 > 05 > 06 (skip formal plan) |
-| `systematic` | Cross-cutting gaps across multiple areas | 01 > 02 > 03 > 04 > 05 > 06 (full pipeline) |
+## Cold Start
+
+Load `_status/workspace-status.md` first for pipeline orientation.
+Then load `_config/gap-context.md` for full component paths and resolution state.
 
 ## Triggers
 
@@ -42,17 +53,69 @@ scheduler-gap-analysis/
 |---------|--------|
 | `setup` | Run onboarding questionnaire |
 | `status` | Show pipeline completion for all stages |
-| `ingest` | Fast path: paste/point to gap analysis file, jump to Stage 01 import mode |
-| `resolve` | Start or continue resolution design (Stage 03) |
-| `close` | Jump to validation (Stage 06) for a specific gap |
+| `ingest` | Enter stages/01-intake/CONTEXT.md |
+| `prioritize` | Enter stages/02-prioritize/CONTEXT.md |
+| `resolve` | Enter stages/03-resolution-design/CONTEXT.md |
+| `plan` | Enter stages/04-remediation-plan/CONTEXT.md |
+| `implement` | Enter stages/05-implement/CONTEXT.md |
+| `close` | Enter stages/06-validate/CONTEXT.md |
+
+### How `status` works
+
+Scan `stages/*/output/` folders. For each stage, if the output folder contains files (other than .gitkeep), the stage is COMPLETE. Otherwise PENDING. Render:
+
+```
+Pipeline Status: scheduler-gap-analysis
+
+  [01-intake] --> [02-prioritize] --> [03-resolution-design] --> [04-remediation-plan] --> [05-implement] --> [06-validate]
+    STATUS           STATUS                STATUS                     STATUS                  STATUS           STATUS
+```
 
 ## Routing
 
-| Task | Go To |
-|------|-------|
-| Import or create a gap analysis | output/stage-01/ |
-| Prioritize and sequence gaps | output/stage-02/ |
-| Design a resolution for a gap | output/stage-03/ |
-| Plan remediation tasks and phases | output/stage-04/ |
-| Implement changes | output/stage-05/ |
-| Validate closure and enforce | output/stage-06/ |
+| You want to... | Go to |
+|----------------|-------|
+| Import or discover gaps | stages/01-intake/CONTEXT.md |
+| Score and sequence gaps | stages/02-prioritize/CONTEXT.md |
+| Design resolution for each gap | stages/03-resolution-design/CONTEXT.md |
+| Break resolutions into tasks | stages/04-remediation-plan/CONTEXT.md |
+| Execute implementation | stages/05-implement/CONTEXT.md |
+| Verify and close gaps | stages/06-validate/CONTEXT.md |
+| Read gap configuration | _config/gap-context.md |
+| Read delivery workspace | ../scheduler-delivery/CLAUDE.md |
+
+## External Dependencies
+
+| Dependency | Path | Access |
+|------------|------|--------|
+| GAP_ANALYSIS_RESOLUTION_PLAN.md | /workspaces/Marilo/src/Marilo.Components/GAP_ANALYSIS_RESOLUTION_PLAN.md | Read-only reference |
+| Delivery workspace | ../scheduler-delivery/ | Receives gap triggers from Stages 01/03 |
+
+New Scheduler gaps are tracked locally in this workspace. Optionally mirror into the global plan if needed.
+
+## What to Load
+
+| Task | Load These | Do NOT Load |
+|------|-----------|-------------|
+| Intake | _config/gap-context.md, stages/01-intake/CONTEXT.md | Stages 02-06 |
+| Prioritize | _config/gap-context.md, stages/01-intake/output/, stages/02-prioritize/CONTEXT.md | Stages 03-06 |
+| Resolution design | stages/02-prioritize/output/, stages/03-resolution-design/CONTEXT.md | Stages 01, 04-06 |
+| Remediation plan | stages/03-resolution-design/output/, stages/04-remediation-plan/CONTEXT.md | Stages 01-02, 05-06 |
+| Implement | stages/04-remediation-plan/output/, stages/05-implement/CONTEXT.md | Stages 01-03, 06 |
+| Validate | stages/05-implement/output/, stages/06-validate/CONTEXT.md, shared/gap-record-format.md | Stages 01-04 |
+| Any task | _config/gap-context.md always | Other component workspaces |
+
+## Stage Handoffs
+
+Each stage writes its output to its own `output/` folder. The next stage reads from there.
+
+## Global Constraints
+
+1. **Traceability:** Every resolution must trace back to a gap ID from Stage 01.
+2. **Code-first:** Read actual source before designing resolutions; never resolve from spec alone.
+3. **Append-only records:** Gap records are never deleted, only status-updated.
+4. **One-gap-one-decision:** Each gap gets exactly one resolution decision (even if batched for implementation).
+
+<!-- Gap workspace owns: gap discovery, resolution design, implementation.
+     Delivery workspace owns: spec accuracy, Example UX completeness.
+     Never modify spec or demo files from this workspace. -->
