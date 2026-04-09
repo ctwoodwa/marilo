@@ -167,6 +167,7 @@
 
     // Text input format toggle
     private ColorFormat _textFormat;
+    private ColorFormat _lastFormat;
     private bool _hasHexFormat = true;
     private bool _hasRgbFormat = true;
 
@@ -177,6 +178,7 @@
     private ElementReference _canvasRef;
     private ElementReference _rootRef;
     private IJSObjectReference? _jsModule;
+    private DotNetObjectReference<MariloColorGradient>? _dotNetRef;
     private bool _canvasInitialized;
 
     // ── Unique IDs for accessibility ────────────────────────────────────
@@ -205,7 +207,11 @@
             _hasRgbFormat = true;
         }
 
-        _textFormat = Format;
+        if (Format != _lastFormat)
+        {
+            _textFormat = Format;
+            _lastFormat = Format;
+        }
 
         // Parse the incoming Value when it changes
         if (!string.Equals(Value, _lastParsedValue, StringComparison.OrdinalIgnoreCase))
@@ -239,8 +245,10 @@
             {
                 if (!_canvasInitialized)
                 {
+                    _dotNetRef?.Dispose();
+                    _dotNetRef = DotNetObjectReference.Create(this);
                     await _jsModule.InvokeVoidAsync("initCanvas", _canvasRef,
-                        DotNetObjectReference.Create(this), _hue, _sat, _val);
+                        _dotNetRef, _hue, _sat, _val);
                     _canvasInitialized = true;
                 }
                 else
@@ -330,7 +338,7 @@
         _thumbY = thumbY;
         SyncTextInputs();
         await EmitValueAsync();
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
     }
 
     // ── Canvas keyboard navigation ──────────────────────────────────────
@@ -413,9 +421,10 @@
 
     private string BuildHex()
     {
-        if (_alpha >= 1.0)
+        var alpha = ShowOpacityEditor ? _alpha : 1.0;
+        if (alpha >= 1.0)
             return $"#{_r:X2}{_g:X2}{_b:X2}";
-        return $"#{_r:X2}{_g:X2}{_b:X2}{(int)(_alpha * 255):X2}";
+        return $"#{_r:X2}{_g:X2}{_b:X2}{(int)(alpha * 255):X2}";
     }
 
     private string BuildOutputColor()
@@ -424,9 +433,10 @@
             return BuildHex();
 
         // RGB / RGBA
-        if (_alpha >= 1.0)
+        var alpha = ShowOpacityEditor ? _alpha : 1.0;
+        if (alpha >= 1.0)
             return $"rgb({_r}, {_g}, {_b})";
-        return $"rgba({_r}, {_g}, {_b}, {_alpha:F2})";
+        return $"rgba({_r}, {_g}, {_b}, {alpha:F2})";
     }
 
     /// <summary>Returns an rgb() CSS string for the pure hue at full S/V — used by the opacity slider gradient.</summary>
@@ -595,5 +605,6 @@
             try { await _jsModule.InvokeVoidAsync("dispose"); } catch { }
             await _jsModule.DisposeAsync();
         }
+        _dotNetRef?.Dispose();
     }
 }
