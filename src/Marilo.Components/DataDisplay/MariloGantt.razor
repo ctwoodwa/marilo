@@ -211,11 +211,28 @@
                             <div class="mar-gantt__bar"
                                  style="left: @((int)startOffset)px; width: @((int)barWidth)px;"
                                  @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
-                                @if (pct > 0)
+                                @if (TaskTemplate is not null)
+                                {
+                                    @TaskTemplate(n.Item)
+                                }
+                                else if (pct > 0)
                                 {
                                     <div class="mar-gantt__bar-progress" style="width: @((int)progressWidth)px;"></div>
                                 }
                             </div>
+                            @if (TooltipTemplate is not null)
+                            {
+                                <div class="mar-gantt__tooltip" style="left: @((int)startOffset)px;">
+                                    @TooltipTemplate(n.Item)
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="mar-gantt__tooltip" style="left: @((int)startOffset)px;">
+                                    <strong>@accessor.GetTitle(n.Item)</strong><br />
+                                    @start.ToString("M/d/yyyy") &ndash; @end.ToString("M/d/yyyy")
+                                </div>
+                            }
                         </div>
                     }
                 </div>
@@ -251,11 +268,28 @@
                             <div class="mar-gantt__bar"
                                  style="left: @((int)startOffset)px; width: @((int)barWidth)px;"
                                  @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
-                                @if (pct > 0)
+                                @if (TaskTemplate is not null)
+                                {
+                                    @TaskTemplate(n.Item)
+                                }
+                                else if (pct > 0)
                                 {
                                     <div class="mar-gantt__bar-progress" style="width: @((int)progressWidth)px;"></div>
                                 }
                             </div>
+                            @if (TooltipTemplate is not null)
+                            {
+                                <div class="mar-gantt__tooltip" style="left: @((int)startOffset)px;">
+                                    @TooltipTemplate(n.Item)
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="mar-gantt__tooltip" style="left: @((int)startOffset)px;">
+                                    <strong>@accessor.GetTitle(n.Item)</strong><br />
+                                    @start.ToString("M/d/yyyy") &ndash; @end.ToString("M/d/yyyy")
+                                </div>
+                            }
                         </div>
                     }
                 </div>

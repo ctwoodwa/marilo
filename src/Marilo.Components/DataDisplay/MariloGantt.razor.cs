@@ -51,6 +51,12 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     [Parameter] public int DayWidth { get; set; } = 30;
     [Parameter] public int RowHeight { get; set; } = 36;
 
+    /// <summary>Custom template for the inner content of timeline bars. Replaces the default progress fill. Receives the task item as context.</summary>
+    [Parameter] public RenderFragment<TItem>? TaskTemplate { get; set; }
+
+    /// <summary>Custom tooltip template shown on bar hover. Receives the task item as context. When null, a default tooltip with title + dates is shown.</summary>
+    [Parameter] public RenderFragment<TItem>? TooltipTemplate { get; set; }
+
     [Parameter] public EventCallback<TItem> OnTaskClick { get; set; }
     [Parameter] public EventCallback<TItem> OnTaskEdit { get; set; }
 
