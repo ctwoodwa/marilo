@@ -178,6 +178,10 @@
     text-align: center;
 }
 
+.is-collapsed .mar-appshell__nav {
+    overflow: hidden;
+}
+
 .is-collapsed ::deep .mar-appshell__nav-link {
     justify-content: center;
     padding: 10px 0;

@@ -2,6 +2,7 @@
 @implements IDisposable
 @inject NavigationManager Nav
 @inject IUserNotificationService UserNotifications
+@inject Marilo.Core.Services.IMariloThemeService ThemeService
 @using Marilo.PmDemo.Client.Notifications
 @using Marilo.Components.Feedback
 
@@ -156,15 +157,7 @@
     private bool _menuOpen;
     private bool _bellOpen;
 
-    private List<PopupMenuItem> _menuItems = new()
-    {
-        new() { Label = "Profile",   Shortcut = "⇧P" },
-        new() { Label = "Settings",  Shortcut = "⌘," },
-        new() { Label = "Theme",     IsExpandable = true, CurrentValue = "System", IsDividerAfter = true },
-        new() { Label = "Help & docs" },
-        new() { Label = "Keyboard shortcuts", Shortcut = "?", IsDividerAfter = true },
-        new() { Label = "Sign out" },
-    };
+    private List<PopupMenuItem> _menuItems = new();
 
     // Bell view shape — projected from the canonical store on every change. The bell
     // never owns notification state; this list is rebuilt from UserNotifications.All.
@@ -172,8 +165,26 @@
 
     protected override void OnInitialized()
     {
+        _menuItems = new()
+        {
+            new() { Label = "Profile",   Shortcut = "⇧P", OnClick = () => Nav.NavigateTo("/account/details") },
+            new() { Label = "Settings",  Shortcut = "⌘,", OnClick = () => Nav.NavigateTo("/account/preferences") },
+            new() { Label = "Theme",     IsExpandable = true, CurrentValue = ThemeService.IsDarkMode ? "Dark" : "Light", IsDividerAfter = true, OnClick = () => ToggleTheme() },
+            new() { Label = "Help & docs", OnClick = () => Nav.NavigateTo("/docs") },
+            new() { Label = "Keyboard shortcuts", Shortcut = "?", IsDividerAfter = true, OnClick = () => Nav.NavigateTo("/account/shortcuts") },
+            new() { Label = "Sign out", OnClick = () => Nav.NavigateTo("/") },
+        };
+
         UserNotifications.Changed += OnNotificationsChanged;
         RefreshFeed();
+    }
+
+    private void ToggleTheme()
+    {
+        _ = ThemeService.ToggleDarkModeAsync();
+        var themeItem = _menuItems.Find(i => i.Label == "Theme");
+        if (themeItem is not null)
+            themeItem.CurrentValue = ThemeService.IsDarkMode ? "Dark" : "Light";
     }
 
     private void OnNotificationsChanged()
