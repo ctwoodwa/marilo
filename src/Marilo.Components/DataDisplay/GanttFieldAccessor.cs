@@ -49,6 +49,14 @@ internal sealed class GanttFieldAccessor<TItem> where TItem : class
     private object? Read(TItem item, string name)
         => item is null ? null : GetProp(name)?.GetValue(item);
 
+    /// <summary>Public cached field lookup for use by GanttColumn.</summary>
+    public object? GetFieldValue(TItem item, string fieldName)
+    {
+        if (item is null || string.IsNullOrEmpty(fieldName)) return null;
+        var prop = GetProp(fieldName);
+        return prop?.GetValue(item);
+    }
+
     public object? GetId(TItem item) => Read(item, IdField);
     public object? GetParentId(TItem item) => Read(item, ParentIdField);
 

@@ -50,6 +50,8 @@
     internal object? GetValue(TItem item)
     {
         if (item is null || string.IsNullOrEmpty(Field)) return null;
+        if (ParentGantt?._accessor is { } acc)
+            return acc.GetFieldValue(item, Field);
         return typeof(TItem).GetProperty(Field)?.GetValue(item);
     }
 

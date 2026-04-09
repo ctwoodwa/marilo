@@ -9,7 +9,7 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IAsyncDisposable
 {
     [Inject] private IJSRuntime JS { get; set; } = default!;
 
-    private GanttFieldAccessor<TItem>? _accessor;
+    internal GanttFieldAccessor<TItem>? _accessor;
     private string? _accessorKey;
     private IEnumerable<TItem>? _lastData;
     private int _lastDataCount = -1;
@@ -47,20 +47,29 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IAsyncDisposable
 
     // Column management
     private readonly List<GanttColumn<TItem>> _columns = new();
+    private List<GanttColumn<TItem>>? _visibleColumnsCache;
+
     internal void RegisterColumn(GanttColumn<TItem> column)
     {
         if (!_columns.Contains(column))
         {
             _columns.Add(column);
-            StateHasChanged();
+            _visibleColumnsCache = null;
+            _ = InvokeAsync(StateHasChanged);
         }
     }
+
     internal void UnregisterColumn(GanttColumn<TItem> column)
     {
-        _columns.Remove(column);
-        StateHasChanged();
+        if (_columns.Remove(column))
+        {
+            _visibleColumnsCache = null;
+            _ = InvokeAsync(StateHasChanged);
+        }
     }
-    internal List<GanttColumn<TItem>> VisibleColumns => _columns.Where(c => c.Visible).ToList();
+
+    internal List<GanttColumn<TItem>> VisibleColumns
+        => _visibleColumnsCache ??= _columns.Where(c => c.Visible).ToList();
 
     protected override void OnParametersSet()
     {
@@ -80,6 +89,7 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IAsyncDisposable
                 RebuildFlatVisible();
             }
         }
+        _visibleColumnsCache = null;
         base.OnParametersSet();
     }
 
