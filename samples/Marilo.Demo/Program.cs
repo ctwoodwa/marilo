@@ -7,6 +7,8 @@ using Marilo.Providers.Bootstrap;
 using Marilo.Providers.Bootstrap.Extensions;
 using Marilo.Providers.FluentUI;
 using Marilo.Providers.FluentUI.Extensions;
+using Marilo.Providers.Material;
+using Marilo.Providers.Material.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,15 +38,19 @@ builder.Services.AddMarilo().AddMariloCoreServices().AddMariloInteropServices();
 //   builder.Services.AddMariloIconsTabler();   // Tabler Icons (recommended)
 // The demo uses ProviderSwitcher below which delegates to design-specific providers.
 
-// Register both provider implementations as concrete types
+// Register all provider implementations as concrete types
 builder.Services.AddSingleton(new FluentUIOptions());
 builder.Services.AddSingleton(new BootstrapOptions());
+builder.Services.AddSingleton(new MaterialOptions());
 builder.Services.AddScoped<FluentUICssProvider>();
 builder.Services.AddScoped<FluentUIIconProvider>();
 builder.Services.AddScoped<FluentUIJsInterop>();
 builder.Services.AddScoped<BootstrapCssProvider>();
 builder.Services.AddScoped<BootstrapIconProvider>();
 builder.Services.AddScoped<BootstrapJsInterop>();
+builder.Services.AddScoped<MaterialCssProvider>();
+builder.Services.AddScoped<MaterialIconProvider>();
+builder.Services.AddScoped<MaterialJsInterop>();
 
 // Register the switcher as the implementation for all three interfaces
 builder.Services.AddScoped<ProviderSwitcher>();

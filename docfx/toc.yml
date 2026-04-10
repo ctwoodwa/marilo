@@ -2,11 +2,21 @@
   href: articles/getting-started/
 - name: Components
   href: https://localhost:5301/components
-- name: Component Specs
-  href: ../docs/component-specs/toc.yml
 - name: Theming
   href: articles/theming/
-- name: Icons
-  href: articles/icons.md
+- name: Accessibility
+  href: articles/accessibility/
+- name: Common Features
+  href: articles/common-features/
+- name: Security
+  href: articles/security/
+- name: Testing
+  href: articles/testing/
+- name: Globalization
+  href: articles/globalization/
+- name: Troubleshooting
+  href: articles/troubleshooting/
+- name: Component Specs
+  href: ../docs/component-specs/toc.yml
 - name: API Reference
   href: api/

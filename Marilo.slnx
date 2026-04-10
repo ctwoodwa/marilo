@@ -7,6 +7,7 @@
     <Project Path="src/Marilo.Icons.Tabler/Marilo.Icons.Tabler.csproj" />
     <Project Path="src/Marilo.Providers.FluentUI/Marilo.Providers.FluentUI.csproj" />
     <Project Path="src/Marilo.Providers.Bootstrap/Marilo.Providers.Bootstrap.csproj" />
+    <Project Path="src/Marilo.Providers.Material/Marilo.Providers.Material.csproj" />
   </Folder>
   <Folder Name="/samples/">
     <Project Path="samples/Marilo.Demo/Marilo.Demo.csproj" />

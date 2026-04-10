@@ -3,7 +3,7 @@ using Marilo.Core.Enums;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace Marilo.Demo.Services;
+namespace Marilo.PmDemo.Client.Services;
 
 public enum DesignProvider { FluentUI, Bootstrap, Material }
 
