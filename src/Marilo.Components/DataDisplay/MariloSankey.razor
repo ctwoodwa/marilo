@@ -45,12 +45,14 @@
                 }
                 else
                 {
-                    <text x="@(nodeInfo.Column == 0 ? nodeInfo.X + NodeWidth + 6 : nodeInfo.X - 6)"
-                          y="@(nodeInfo.Y + nodeInfo.Height / 2 + 4)"
-                          text-anchor="@(nodeInfo.Column == 0 ? "start" : "end")"
-                          font-size="12" fill="#333">
-                        @(nodeInfo.Node.Label ?? nodeInfo.Node.Id)
-                    </text>
+                    <g>
+                        <text x="@(nodeInfo.Column == 0 ? nodeInfo.X + NodeWidth + 6 : nodeInfo.X - 6)"
+                              y="@(nodeInfo.Y + nodeInfo.Height / 2 + 4)"
+                              text-anchor="@(nodeInfo.Column == 0 ? "start" : "end")"
+                              font-size="12" fill="#333">
+                            @(nodeInfo.Node.Label ?? nodeInfo.Node.Id)
+                        </text>
+                    </g>
                 }
             }
         </svg>

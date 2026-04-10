@@ -10,7 +10,7 @@
     <DemoSection Title="Phone Number Mask" Description="Use the Mask parameter to define the expected input pattern. The placeholder shows the mask format when no custom Placeholder is set." Code="@_phoneCode">
         <MariloMaskedInput @bind-Value="_phoneValue"
                            Mask="(000) 000-0000"
-                           Prompt='_'
+                           Prompt="@('_')"
                            AriaLabel="Phone number" />
         <p style="margin-top:8px;">Value: <strong>@_phoneValue</strong></p>
     </DemoSection>
@@ -27,7 +27,7 @@
         <MariloMaskedInput @bind-Value="_ssnValue"
                            Mask="000-00-0000"
                            IncludeLiterals="true"
-                           Prompt='_'
+                           Prompt="@('_')"
                            AriaLabel="SSN" />
         <p style="margin-top:8px;">Value (with literals): <strong>@_ssnValue</strong></p>
     </DemoSection>

@@ -108,8 +108,9 @@
 <PageSection Title="Configuration">
     <DemoSection Title="Title & Subtitle" Description="Charts support a main title and subtitle using child components.">
         <MariloChart Height="300px">
-            <ChartTitle Text="Quarterly Performance" />
-            <ChartSubtitle Text="January through June 2026" />
+            <ChartTitle Text="Quarterly Performance">
+                <ChartSubtitle Text="January through June 2026" />
+            </ChartTitle>
             <MariloChartSeries Name="Revenue"
                                Data="_salesData"
                                Field="Revenue"

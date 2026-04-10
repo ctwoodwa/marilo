@@ -1,6 +1,9 @@
 @page "/components/filter"
 @page "/components/filter/overview"
 @layout ComponentDemoLayout
+@using FilterOperator = Marilo.Core.Models.FilterOperator
+@using FilterDescriptor = Marilo.Core.Models.FilterDescriptor
+@using CompositeFilterDescriptor = Marilo.Core.Models.CompositeFilterDescriptor
 
 <PageSection Title="Overview">
     <DemoSection Title="Basic Usage" Description="A composable filter builder for constructing query expressions with add, remove, and apply." Code="@_basicCode">
