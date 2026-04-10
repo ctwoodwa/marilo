@@ -2,10 +2,81 @@
 @page "/components/chunkprogressbar/overview"
 @layout ComponentDemoLayout
 
-<PageSection Title="Chunk Progress Bar">
-    <div class="demo-coming-soon">
-        <MariloAlert Severity="AlertSeverity.Info">
-            <strong>Chunk Progress Bar</strong> — Coming soon. Segmented progress indicator with distinct chunks.
-        </MariloAlert>
-    </div>
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Description="A chunk progress bar displays progress as discrete filled segments." Code="@_basicCode">
+        <div style="margin-bottom: 16px;">
+            <p>Progress: @_progress%</p>
+            <MariloChunkProgressBar Value="@_progress" />
+        </div>
+        <div class="demo-row">
+            <MariloButton Size="ButtonSize.Small" OnClick="@(() => _progress = Math.Max(0, _progress - 10))">-10</MariloButton>
+            <MariloButton Size="ButtonSize.Small" OnClick="@(() => _progress = Math.Min(100, _progress + 10))">+10</MariloButton>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="With Label" Description="Provide a label to describe what the progress represents." Code="@_labelCode">
+        <MariloChunkProgressBar Value="60" Label="Uploading files..." />
+    </DemoSection>
 </PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="Chunk Counts" Description="Adjust the number of visual chunks to change the granularity of the progress display." Code="@_chunksCode">
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <div>
+                <p style="font-size: 0.875em;">3 chunks (Value=50)</p>
+                <MariloChunkProgressBar Value="50" ChunkCount="3" />
+            </div>
+            <div>
+                <p style="font-size: 0.875em;">5 chunks (Value=50)</p>
+                <MariloChunkProgressBar Value="50" ChunkCount="5" />
+            </div>
+            <div>
+                <p style="font-size: 0.875em;">10 chunks (Value=50)</p>
+                <MariloChunkProgressBar Value="50" ChunkCount="10" />
+            </div>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Indeterminate" Description="An indeterminate chunk progress bar indicates an ongoing process without a known duration." Code="@_indeterminateCode">
+        <MariloChunkProgressBar Indeterminate="true" />
+    </DemoSection>
+
+    <DemoSection Title="Vertical Orientation" Description="Display the chunk progress bar vertically." Code="@_verticalCode">
+        <div style="height: 200px;">
+            <MariloChunkProgressBar Value="70" Orientation="SliderOrientation.Vertical" ChunkCount="8" />
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Disabled" Description="A disabled chunk progress bar appears dimmed and non-interactive." Code="@_disabledCode">
+        <MariloChunkProgressBar Value="40" Enabled="false" Label="Disabled" />
+    </DemoSection>
+</PageSection>
+
+@code {
+    private double _progress = 40;
+
+    private const string _basicCode =
+        "<MariloChunkProgressBar Value=\"@_progress\" />\n\n" +
+        "<MariloButton Size=\"ButtonSize.Small\" OnClick=\"@(() => _progress = Math.Max(0, _progress - 10))\">-10</MariloButton>\n" +
+        "<MariloButton Size=\"ButtonSize.Small\" OnClick=\"@(() => _progress = Math.Min(100, _progress + 10))\">+10</MariloButton>\n\n" +
+        "@code { private double _progress = 40; }";
+
+    private const string _labelCode =
+        "<MariloChunkProgressBar Value=\"60\" Label=\"Uploading files...\" />";
+
+    private const string _chunksCode =
+        "<MariloChunkProgressBar Value=\"50\" ChunkCount=\"3\" />\n" +
+        "<MariloChunkProgressBar Value=\"50\" ChunkCount=\"5\" />\n" +
+        "<MariloChunkProgressBar Value=\"50\" ChunkCount=\"10\" />";
+
+    private const string _indeterminateCode =
+        "<MariloChunkProgressBar Indeterminate=\"true\" />";
+
+    private const string _verticalCode =
+        "<div style=\"height: 200px;\">\n" +
+        "    <MariloChunkProgressBar Value=\"70\" Orientation=\"SliderOrientation.Vertical\" ChunkCount=\"8\" />\n" +
+        "</div>";
+
+    private const string _disabledCode =
+        "<MariloChunkProgressBar Value=\"40\" Enabled=\"false\" Label=\"Disabled\" />";
+}

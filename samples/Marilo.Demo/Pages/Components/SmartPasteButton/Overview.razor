@@ -2,10 +2,86 @@
 @page "/components/smartpastebutton/overview"
 @layout ComponentDemoLayout
 
-<PageSection Title="Smart Paste Button">
-    <div class="demo-coming-soon">
-        <MariloAlert Severity="AlertSeverity.Info">
-            <strong>Smart Paste Button</strong> — Coming soon. AI-assisted paste that fills form fields from clipboard.
-        </MariloAlert>
-    </div>
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Description="Smart Paste Button provides a one-click action to trigger AI-assisted paste from clipboard into form fields." Code="@_basicCode">
+        <MariloSmartPasteButton OnClick="HandleSmartPaste" />
+    </DemoSection>
+
+    <DemoSection Title="Button Variants" Description="Smart Paste Button supports different visual variants to match your design." Code="@_variantsCode">
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <MariloSmartPasteButton Variant="ButtonVariant.Primary" OnClick="HandleSmartPaste" />
+            <MariloSmartPasteButton Variant="ButtonVariant.Secondary" OnClick="HandleSmartPaste" />
+            <MariloSmartPasteButton Variant="ButtonVariant.Tertiary" OnClick="HandleSmartPaste" />
+        </div>
+    </DemoSection>
 </PageSection>
+
+<PageSection Title="Features">
+    <DemoSection Title="Custom Label" Description="Override the default button label with custom content." Code="@_customLabelCode">
+        <MariloSmartPasteButton OnClick="HandleSmartPaste" Variant="ButtonVariant.Primary">
+            Auto-fill from Clipboard
+        </MariloSmartPasteButton>
+    </DemoSection>
+
+    <DemoSection Title="In a Form Context" Description="Use Smart Paste alongside form fields to demonstrate the paste workflow." Code="@_formCode">
+        <div style="max-width:400px;display:flex;flex-direction:column;gap:12px;">
+            <div>
+                <label style="font-size:13px;font-weight:600;">Name</label>
+                <input type="text" @bind="_name" style="width:100%;padding:6px;border:1px solid #ccc;border-radius:4px;" />
+            </div>
+            <div>
+                <label style="font-size:13px;font-weight:600;">Email</label>
+                <input type="text" @bind="_email" style="width:100%;padding:6px;border:1px solid #ccc;border-radius:4px;" />
+            </div>
+            <div>
+                <label style="font-size:13px;font-weight:600;">Phone</label>
+                <input type="text" @bind="_phone" style="width:100%;padding:6px;border:1px solid #ccc;border-radius:4px;" />
+            </div>
+            <MariloSmartPasteButton OnClick="HandleFormPaste" Variant="ButtonVariant.Primary" Size="ButtonSize.Small" />
+            @if (_pasteTriggered)
+            {
+                <MariloAlert Severity="AlertSeverity.Info">Smart Paste triggered. In production, this would parse clipboard content and fill the fields.</MariloAlert>
+            }
+        </div>
+    </DemoSection>
+</PageSection>
+
+@code {
+    private string _name = "";
+    private string _email = "";
+    private string _phone = "";
+    private bool _pasteTriggered;
+
+    private Task HandleSmartPaste()
+    {
+        return Task.CompletedTask;
+    }
+
+    private async Task HandleFormPaste()
+    {
+        _pasteTriggered = true;
+        StateHasChanged();
+        await Task.Delay(3000);
+        _pasteTriggered = false;
+    }
+
+    private const string _basicCode =
+        "<MariloSmartPasteButton OnClick=\"HandleSmartPaste\" />";
+
+    private const string _variantsCode =
+        "<MariloSmartPasteButton Variant=\"ButtonVariant.Primary\" OnClick=\"HandleSmartPaste\" />\n" +
+        "<MariloSmartPasteButton Variant=\"ButtonVariant.Secondary\" OnClick=\"HandleSmartPaste\" />\n" +
+        "<MariloSmartPasteButton Variant=\"ButtonVariant.Tertiary\" OnClick=\"HandleSmartPaste\" />";
+
+    private const string _customLabelCode =
+        "<MariloSmartPasteButton OnClick=\"HandleSmartPaste\" Variant=\"ButtonVariant.Primary\">\n" +
+        "    Auto-fill from Clipboard\n" +
+        "</MariloSmartPasteButton>";
+
+    private const string _formCode =
+        "<div style=\"display:flex;flex-direction:column;gap:12px;\">\n" +
+        "    <input type=\"text\" @bind=\"_name\" placeholder=\"Name\" />\n" +
+        "    <input type=\"text\" @bind=\"_email\" placeholder=\"Email\" />\n" +
+        "    <MariloSmartPasteButton OnClick=\"HandleFormPaste\" />\n" +
+        "</div>";
+}

@@ -4,6 +4,84 @@ This document defines the resolution strategy for all 87 Marilo Blazor component
 
 ---
 
+## Prototype API Completion Pass (2026-04-10)
+
+**Goal:** Make APIs compile-first, behavior-second, demo-always — give every component in the demo registry a prototype-usable public API surface and a real demo example.
+
+**Scope delta vs. the original 87-component plan:** the demo registry (ComponentRegistry.cs, 119 entries) includes 32 additional components that lived as "coming soon" demo stubs without source implementations. This pass closes the API/demo holes for all 39 placeholder demo pages.
+
+**Results:**
+
+- **24 new prototype component stubs** created across Forms.Inputs, Feedback, DataDisplay, DataGrid, Editors, Layout, and Buttons (see "API Completion Pass — Component Additions" below).
+- **2 new enum files** (`LoaderEnums.cs`, `ListBoxEnums.cs`).
+- **8 new model files** (`FilterModels`, `ChatModels`, `DiagramModels`, `MapModels`, `SankeyModels`, `SpreadsheetModels`, `PivotGridModels`, `DropZoneEventArgs`).
+- **39 placeholder demo pages** replaced with real interactive demos using the real components.
+- **Placeholder scan** after pass: zero "coming soon" / "TBD" / "placeholder" strings remain in demo UX.
+
+**Status classification (all 39 in-scope components):**
+
+| Classification | Count | Meaning |
+| --- | --- | --- |
+| `API_COMPLETE` | 39 | Prototype-ready public surface: parameters, events, templates, state |
+| `DEMO_PRESENT` or `DEMO_PRESENT_PARTIAL_BEHAVIOR_NOTED` | 39 | Real component example in demo site |
+| `BEHAVIOR_BASELINE` | 15 | Full functional behavior (e.g., Calendar, Loader, ListBox, Filter) |
+| `BEHAVIOR_PARTIAL` | 24 | Honest prototype rendering with deferred advanced behavior |
+
+**Behavior-parity follow-ups** (tracked separately, not blocking this pass): Map tile rendering, Spreadsheet formula engine, PdfViewer full PDF.js integration, Diagram drag/edit, Sankey layout optimization, PivotGrid OLAP drill-down, DockManager true dock zones, Chat real-time transport, AI provider wiring, SmartPaste clipboard parsing, SpeechToText Web Speech API wiring.
+
+### API Completion Pass — Component Additions
+
+| Component | Path | API | Demo | Notes |
+| --- | --- | --- | --- | --- |
+| MariloDateInput | Forms/Inputs | COMPLETE | PRESENT | Baseline keyboard-driven date input |
+| MariloDropDownTree | Forms/Inputs | COMPLETE | PRESENT | Tree dropdown with reflection-based field access |
+| MariloDropZone | Forms/Inputs | COMPLETE | PRESENT | Drag-and-drop file zone |
+| MariloFilter | Forms/Inputs | COMPLETE | PRESENT | Composite filter builder with AND/OR logic |
+| MariloListBox | Forms/Inputs | COMPLETE | PRESENT | Single/multi-select scrollable list |
+| MariloMultiColumnComboBox | Forms/Inputs | COMPLETE | PRESENT | Tabular dropdown combo box |
+| MariloChunkProgressBar | Feedback | COMPLETE | PRESENT | Segmented progress bar (horizontal/vertical) |
+| MariloLoader | Feedback | COMPLETE | PRESENT | Overlay loading indicator |
+| MariloLoaderContainer | Feedback | COMPLETE | PRESENT | Container with loading overlay |
+| MariloPromptBox | Feedback | COMPLETE | PRESENT | Modal text input dialog |
+| MariloChat | Feedback | COMPLETE | PRESENT | Chat message panel with input |
+| MariloAIPrompt | Feedback | COMPLETE | PRESENT_PARTIAL | AI prompt panel; provider wiring deferred |
+| MariloInlineAIPrompt | Feedback | COMPLETE | PRESENT_PARTIAL | Inline AI prompt; provider wiring deferred |
+| MariloSmartPasteButton | Buttons | COMPLETE | PRESENT_PARTIAL | Smart paste button; clipboard parsing deferred |
+| MariloSpeechToTextButton | Buttons | COMPLETE | PRESENT_PARTIAL | STT button; Web Speech API wiring deferred |
+| MariloCalendar | DataDisplay | COMPLETE | PRESENT | Month/Year/Decade calendar |
+| MariloDiagram | DataDisplay | COMPLETE | PRESENT_PARTIAL | SVG node/edge diagram; interactive editing deferred |
+| MariloMap | DataDisplay | COMPLETE | PRESENT_PARTIAL | Map with markers; tile provider deferred |
+| MariloSankey | DataDisplay | COMPLETE | PRESENT_PARTIAL | SVG Sankey diagram |
+| MariloPdfViewer | DataDisplay | COMPLETE | PRESENT_PARTIAL | PDF viewer via iframe; PDF.js wiring deferred |
+| MariloDockManager | Layout | COMPLETE | PRESENT_PARTIAL | Tabbed dock layout; true dock zones deferred |
+| MariloDockPane | Layout | COMPLETE | PRESENT | Child pane registration |
+| MariloPivotGrid | DataGrid | COMPLETE | PRESENT_PARTIAL | Pivot table with Sum/Count/Avg/Min/Max |
+| MariloSpreadsheet | Editors | COMPLETE | PRESENT_PARTIAL | Editable grid; formula engine deferred |
+
+### API Completion Pass — Group A (demo rewrites for existing components)
+
+These 15 demo pages had placeholder text but the source component already existed; each was rewritten to use the real component with full interactive examples:
+
+| Demo Page | Backing Component |
+| --- | --- |
+| ChipList | MariloChipSet |
+| ColorGradient | MariloColorGradient |
+| ColorPalette | MariloColorPalette |
+| FlatColorPicker | MariloFlatColorPicker |
+| FloatingActionButton | MariloFab |
+| Gauges | MariloArcGauge, MariloCircularGauge, MariloLinearGauge, MariloRadialGauge |
+| DropDownButton | MariloSplitButton |
+| MaskedTextBox | MariloMaskedInput |
+| Notification | MariloToast + MariloSnackbar |
+| NumericTextBox | MariloNumericInput |
+| Pager | MariloPagination |
+| PanelBar | MariloAccordion + MariloAccordionItem |
+| Popup | MariloPopup |
+| RootComponent | MariloThemeProvider |
+| StackLayout | MariloStack |
+
+---
+
 ## 1. Resolution Priority Order
 
 ### Priority Criteria

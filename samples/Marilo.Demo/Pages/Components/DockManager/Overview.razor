@@ -2,10 +2,91 @@
 @page "/components/dockmanager/overview"
 @layout ComponentDemoLayout
 
-<PageSection Title="Dock Manager">
-    <div class="demo-coming-soon">
-        <MariloAlert Severity="AlertSeverity.Info">
-            <strong>Dock Manager</strong> — Coming soon. Dockable panel layout manager for complex application shells.
-        </MariloAlert>
-    </div>
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Description="Dock Manager provides a tabbed panel layout with pin, float, and close actions for each pane." Code="@_basicCode">
+        <MariloDockManager Height="300px" Width="100%"
+                           OnPaneClose="HandleClose"
+                           OnPanePin="HandlePin"
+                           OnPaneFloat="HandleFloat">
+            <MariloDockPane Id="explorer" Title="Explorer">
+                <div style="padding:12px;">
+                    <p style="font-weight:600;">Project Explorer</p>
+                    <ul style="list-style:none;padding:0;margin:8px 0;">
+                        <li>📁 src/</li>
+                        <li>📁 tests/</li>
+                        <li>📄 README.md</li>
+                    </ul>
+                </div>
+            </MariloDockPane>
+            <MariloDockPane Id="properties" Title="Properties">
+                <div style="padding:12px;">
+                    <p style="font-weight:600;">Properties Panel</p>
+                    <p>Select an item to view its properties.</p>
+                </div>
+            </MariloDockPane>
+            <MariloDockPane Id="output" Title="Output">
+                <div style="padding:12px;">
+                    <p style="font-weight:600;">Output Console</p>
+                    <pre style="background:#f5f5f5;padding:8px;border-radius:4px;font-size:12px;">Build succeeded.
+    0 Warning(s)
+    0 Error(s)</pre>
+                </div>
+            </MariloDockPane>
+        </MariloDockManager>
+    </DemoSection>
 </PageSection>
+
+<PageSection Title="Features">
+    <DemoSection Title="Non-Closable Panes" Description="Set Closable to false to prevent a pane from being closed." Code="@_nonClosableCode">
+        <MariloDockManager Height="250px">
+            <MariloDockPane Id="main" Title="Main Editor" Closable="false">
+                <div style="padding:12px;">
+                    <p>This pane cannot be closed.</p>
+                </div>
+            </MariloDockPane>
+            <MariloDockPane Id="tools" Title="Tools">
+                <div style="padding:12px;">
+                    <p>This pane can be closed.</p>
+                </div>
+            </MariloDockPane>
+        </MariloDockManager>
+    </DemoSection>
+</PageSection>
+
+@if (!string.IsNullOrEmpty(_lastAction))
+{
+    <div style="margin-top:12px;padding:8px;background:#f5f5f5;border-radius:4px;font-size:13px;">
+        Last action: @_lastAction
+    </div>
+}
+
+@code {
+    private string _lastAction = "";
+
+    private Task HandleClose(string id) { _lastAction = $"Closed pane: {id}"; return Task.CompletedTask; }
+    private Task HandlePin(string id) { _lastAction = $"Pinned pane: {id}"; return Task.CompletedTask; }
+    private Task HandleFloat(string id) { _lastAction = $"Floated pane: {id}"; return Task.CompletedTask; }
+
+    private const string _basicCode =
+        "<MariloDockManager Height=\"300px\">\n" +
+        "    <MariloDockPane Id=\"explorer\" Title=\"Explorer\">\n" +
+        "        <p>Project Explorer content</p>\n" +
+        "    </MariloDockPane>\n" +
+        "    <MariloDockPane Id=\"properties\" Title=\"Properties\">\n" +
+        "        <p>Properties content</p>\n" +
+        "    </MariloDockPane>\n" +
+        "    <MariloDockPane Id=\"output\" Title=\"Output\">\n" +
+        "        <p>Output console content</p>\n" +
+        "    </MariloDockPane>\n" +
+        "</MariloDockManager>";
+
+    private const string _nonClosableCode =
+        "<MariloDockManager Height=\"250px\">\n" +
+        "    <MariloDockPane Id=\"main\" Title=\"Main Editor\" Closable=\"false\">\n" +
+        "        <p>This pane cannot be closed.</p>\n" +
+        "    </MariloDockPane>\n" +
+        "    <MariloDockPane Id=\"tools\" Title=\"Tools\">\n" +
+        "        <p>This pane can be closed.</p>\n" +
+        "    </MariloDockPane>\n" +
+        "</MariloDockManager>";
+}
