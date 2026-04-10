@@ -51,6 +51,10 @@
     <div class="mar-datagrid-content" style="@ContentContainerStyle">
         <table style="width:100%;table-layout:fixed;">
             <colgroup>
+                @if (RowDraggable)
+                {
+                    <col style="width:40px;" />
+                }
                 @if (DetailTemplate != null)
                 {
                     <col style="width:40px;" />
@@ -72,6 +76,10 @@
             @* Header row *@
             <thead>
                 <tr class="@CssProvider.DataGridHeaderClass()" role="row">
+                    @if (RowDraggable)
+                    {
+                        <th class="mar-datagrid-drag-header" role="columnheader" style="width:40px;"></th>
+                    }
                     @if (DetailTemplate != null)
                     {
                         <th class="mar-datagrid-detail-cell" role="columnheader" style="width:40px;"></th>
@@ -94,7 +102,9 @@
                         var isSorted = _state.SortDescriptors.Any(s => s.Field == column.Field);
                         var sortDir = _state.SortDescriptors.FirstOrDefault(s => s.Field == column.Field);
                         var headerCellClass = CssProvider.DataGridHeaderCellClass(isSortable, isSorted);
-                        var combinedStyle = GetColumnCellStyle(column);
+                        if (column.Locked) headerCellClass = $"{headerCellClass} mar-datagrid-col--locked";
+                        var frozenHeaderStyle = GetFrozenCellStyle(column, isHeader: true);
+                        var combinedStyle = GetColumnCellStyle(column, frozenHeaderStyle);
 
                         <th class="@headerCellClass"
                             role="columnheader"
@@ -177,6 +187,10 @@
                 @if (FilterMode == GridFilterMode.FilterRow)
                 {
                     <tr class="@CssProvider.DataGridFilterRowClass()" role="row">
+                        @if (RowDraggable)
+                        {
+                            <td class="@CssProvider.DataGridFilterCellClass()" role="gridcell"></td>
+                        }
                         @if (DetailTemplate != null)
                         {
                             <td class="@CssProvider.DataGridFilterCellClass()" role="gridcell"></td>
@@ -187,7 +201,8 @@
                         }
                         @foreach (var column in _visibleColumns)
                         {
-                            var filterCellCombinedStyle = GetColumnCellStyle(column);
+                            var frozenFilterStyle = GetFrozenCellStyle(column);
+                            var filterCellCombinedStyle = GetColumnCellStyle(column, frozenFilterStyle);
                                 <td class="@CssProvider.DataGridFilterCellClass()" role="gridcell" style="@(string.IsNullOrEmpty(filterCellCombinedStyle) ? null : filterCellCombinedStyle)">
                                 @if (column.Filterable)
                                 {
@@ -272,6 +287,10 @@
             {
                 <tfoot>
                     <tr class="mar-datagrid-footer-row" role="row">
+                        @if (RowDraggable)
+                        {
+                            <td role="gridcell"></td>
+                        }
                         @if (DetailTemplate != null)
                         {
                             <td role="gridcell"></td>
@@ -282,7 +301,8 @@
                         }
                         @foreach (var column in _visibleColumns)
                         {
-                            var footerCombinedStyle = GetColumnCellStyle(column);
+                            var frozenFooterStyle = GetFrozenCellStyle(column);
+                            var footerCombinedStyle = GetColumnCellStyle(column, frozenFooterStyle);
                                 <td class="mar-datagrid-footer-cell" role="gridcell"
                                         style="@(string.IsNullOrEmpty(footerCombinedStyle) ? null : footerCombinedStyle)">
                                 @if (column.FooterTemplate != null)

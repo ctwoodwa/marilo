@@ -3,14 +3,14 @@
 ## Snapshot
 - Date: 2026-04-09T00:00:00Z
 - Branch: workInProgress
-- Scope touched this run: JS Interop Batch 1 (DropZoneId for FileUpload+Upload + Editor Adaptive Toolbar). 3 gaps resolved across 3 components. 18 new bUnit tests. 1067/1067 full suite. Subagent-driven development with two-stage review.
+- Scope touched this run: JS Interop Batch 1+2 (DropZoneId + Editor Adaptive + DataGrid frozen cols + row drag-drop). 5 gaps resolved across 4 components. 33 new bUnit tests. 1083/1083 full suite. Subagent-driven development with two-stage review.
 - Plan source: `src/Marilo.Components/GAP_ANALYSIS_RESOLUTION_PLAN.md`
 
 ## Component Status
 | Area | Open | In Progress | Completed | Blocked | Stage Focus | Tests Written | Notes |
 |------|------|-------------|-----------|---------|-------------|---------------|-------|
 | TreeView | 0 | 0 | 21 | 1 (virtualization deferred) | 06-validate | 67/67 | Full closure report complete |
-| DataGrid | ~33-48 | 0 | 17 (Ph1+Ph2+Ph3) | 3 (expand args, frozen cols, drag-drop) | **06-validate** | 47 | Phase 1+2+3 closed (17/71); 2 JS deferred |
+| DataGrid | ~33-48 | 0 | 19 (Ph1+Ph2+Ph3+JS-B2) | 1 (expand args deferred) | **06-validate (JS-B2)** | 62 (47+15) | Phase 1+2+3+JS-B2 closed; frozen cols + row drag-drop resolved; 1083/1083 suite |
 | DataSheet | 0 | 0 | 0 | 1 (architecture decision) | — | 0 | Blocked: MariloSpreadsheet vs MariloDataSheet |
 | Forms | ~60 | 0 | 22+12+4+4 | 6 deferred | 03-resolution | 20/20 | Resolution design done; awaiting implementation |
 | T4 Pickers | ~3 | 0 | 43 (B1-B8) | 1 partial (MSEL-007 ScrollMode deferred) + 1 won't fix (MSEL-008 naming) | **06-validate (B8)** | 133 (17+9+17+12+12+11+7+23+13+12) | Batch 1–8 closed; B8: DRP/TP/FU/UPL final polish; **runtime validated 2026-04-09: 726/726 full suite** |
@@ -52,9 +52,11 @@
 | T4 Pickers B8C | `stages/03-resolution-design/output/gap-t4-picker-batch8c-resolutions.md` | `stages/05-implement/output/gap-t4-picker-batch8c-implementation-log.md` | `stages/06-validate/output/gap-t4-picker-batch8c-closure-report.md` | 2026-04-09 |
 | ColorPicker+DRP | — | — (9 commits on `colorpicker-standalone` branch) | `stages/06-validate/output/gap-colorpicker-standalone-closure-report.md` | 2026-04-09 |
 | JS Interop B1 | `stages/03-resolution-design/output/gap-dropzone-js-interop-resolutions.md`, `gap-editor-adaptive-toolbar-resolution.md` | `stages/05-implement/output/gap-js-interop-batch1-implementation-log.md` | `stages/06-validate/output/gap-js-interop-batch1-closure-report.md` | 2026-04-09 |
+| JS Interop B2 | `stages/03-resolution-design/output/gap-datagrid-frozen-columns-resolution.md`, `gap-datagrid-row-dragdrop-resolution.md` | `stages/05-implement/output/gap-js-interop-batch2-implementation-log.md` | `stages/06-validate/output/gap-js-interop-batch2-closure-report.md` | 2026-04-09 |
 
 ## Recent Movement
 
+- JS Interop Batch 2 (2026-04-09): DataGrid frozen/locked columns (Locked+FrozenPosition params, sticky CSS, FixedWidthProvider offset computation) + row drag-drop reorder (RowDraggable+OnRowDrop, HTML5 DnD IIFE, drag handle column). 2 gaps resolved (DG-P3-01, DG-P3-03). 15 bUnit tests. DataGrid Phase 3 fully closed. 1083/1083 full suite.
 - JS Interop Batch 1 (2026-04-09): DropZoneId wired for MariloFileUpload + MariloUpload (new marilo-dropzone.js ES module + IDropZoneService); Editor Adaptive toolbar via IResizeObserverService + overflow popup with focusout dismissal. 3 gaps resolved (GAP-FU-001, GAP-UPL-003, GAP-EDITOR-002). 18 bUnit tests. Subagent-driven dev with two-stage review. 1067/1067 full suite.
 - ColorPicker standalone + DRP multi-view (2026-04-09): 3 new standalone color components (MariloColorGradient, MariloColorPalette, MariloFlatColorPicker) + ColorPickerViews child-tag API + CSS provider. DateRangePicker Year/Decade drill-down calendar views + FocusStartAsync/FocusEndAsync. 7 gaps resolved, 23 bUnit tests. Branch: `colorpicker-standalone`.
 - T4 Pickers Batch 8 (2026-04-09): Final C# polish across 5 components. 8A: DateRangePicker PopupClass bug fix, ShowWeekNumbers render, Size/Rounded/FillMode, DebounceDelay/Title, HeaderTemplate + DateTimePicker ValidateOn (6 gaps, 23 tests). 8B: TimePicker InputMode, ValidateOn, OnChange-on-blur, CSS provider integration (4 gaps, 13 tests). 8C: FileUpload template context type fix + CSS provider + Upload UploadChunkSettings nested tag (3 gaps, 12 tests). Subagent-driven dev (3 parallel agents). 726/726 full suite.

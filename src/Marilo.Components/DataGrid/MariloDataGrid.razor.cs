@@ -248,6 +248,12 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
     /// <summary>Whether to export all pages or only the current page. Defaults to true.</summary>
     [Parameter] public bool ExportAllPages { get; set; } = true;
 
+    /// <summary>When true, rows show a drag handle and can be reordered via drag-and-drop.</summary>
+    [Parameter] public bool RowDraggable { get; set; }
+
+    /// <summary>Fires when a row is dropped to a new position.</summary>
+    [Parameter] public EventCallback<GridRowDropEventArgs<TItem>> OnRowDrop { get; set; }
+
     // ── Column Registry ─────────────────────────────────────────────────
 
     internal void RegisterColumn(MariloGridColumn<TItem> column)
@@ -274,6 +280,7 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
 
     internal int TotalColumnCount =>
         _visibleColumns.Count
+        + (RowDraggable ? 1 : 0)
         + (ShowCheckboxColumn ? 1 : 0)
         + (DetailTemplate != null ? 1 : 0)
         + (EditMode != GridEditMode.None && EditMode != GridEditMode.InCell ? 1 : 0);
@@ -360,7 +367,9 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
                 column.EffectiveWidth,
                 50,
                 null,
-                column.TextAlign));
+                column.TextAlign,
+                column.Locked,
+                column.FrozenPosition));
         }
 
         _layoutContract = _widthProvider.Resolve(entries);
@@ -387,6 +396,17 @@ public partial class MariloDataGrid<TItem> : MariloComponentBase
         var widthStyle = GetColumnWidthStyle(column);
         var textAlignStyle = column.TextAlign != null ? $"text-align:{column.TextAlign};" : null;
         return string.Join("", new[] { widthStyle, textAlignStyle, extraStyle }.Where(s => !string.IsNullOrEmpty(s)));
+    }
+
+    internal string? GetFrozenCellStyle(MariloGridColumn<TItem> column, bool isHeader = false)
+    {
+        if (!column.Locked) return null;
+        if (!_columnSizingIds.TryGetValue(column, out var id)) return null;
+        if (!_layoutContract.FrozenOffsets.TryGetValue(id, out var offset)) return null;
+
+        var side = column.FrozenPosition == GridColumnFrozenPosition.Start ? "left" : "right";
+        var zIndex = isHeader ? 3 : 2;
+        return $"position:sticky;{side}:{offset}px;z-index:{zIndex};background:var(--marilo-color-surface,#fff);";
     }
 
     private void GenerateColumnsFromModel()

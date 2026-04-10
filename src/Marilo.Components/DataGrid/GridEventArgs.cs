@@ -180,3 +180,33 @@ public class GridExportEventArgs
     /// <summary>The number of rows exported.</summary>
     public int RowCount { get; set; }
 }
+
+/// <summary>Event arguments for row drag-and-drop reorder.</summary>
+/// <typeparam name="TItem">The row data type.</typeparam>
+public class GridRowDropEventArgs<TItem>
+{
+    /// <summary>The item being dragged.</summary>
+    public TItem Item { get; init; } = default!;
+
+    /// <summary>The item at the drop destination.</summary>
+    public TItem? DestinationItem { get; init; }
+
+    /// <summary>Index in the displayed data where the row was dropped.</summary>
+    public int DestinationIndex { get; init; }
+
+    /// <summary>Whether dropped before or after the destination item.</summary>
+    public GridRowDropPosition DropPosition { get; init; }
+
+    /// <summary>Set to true to cancel the drop.</summary>
+    public bool IsCancelled { get; set; }
+}
+
+/// <summary>Whether a row was dropped before or after the destination item.</summary>
+public enum GridRowDropPosition
+{
+    /// <summary>Dropped before the destination item.</summary>
+    Before,
+
+    /// <summary>Dropped after the destination item.</summary>
+    After
+}

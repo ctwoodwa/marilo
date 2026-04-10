@@ -33,22 +33,34 @@ public partial class MariloDataGrid<TItem>
         builder.AddAttribute(6, "ondblclick", EventCallback.Factory.Create<MouseEventArgs>(this, (e) => HandleRowDoubleClick(item, e)));
         builder.AddAttribute(7, "oncontextmenu", EventCallback.Factory.Create<MouseEventArgs>(this, (e) => HandleRowContextMenu(item, e)));
 
+        // Drag handle cell
+        if (RowDraggable)
+        {
+            builder.OpenElement(8, "td");
+            builder.AddAttribute(9, "class", "mar-datagrid-drag-cell");
+            builder.AddAttribute(10, "role", "gridcell");
+            builder.AddAttribute(11, "draggable", "true");
+            builder.AddAttribute(12, "data-row-index", index.ToString());
+            builder.AddContent(13, "\u2807");
+            builder.CloseElement(); // td
+        }
+
         // Detail expand/collapse button
         if (DetailTemplate != null)
         {
             var detailItem = item;
             var isExpanded = _expandedDetailItems.Contains(item);
-            builder.OpenElement(10, "td");
-            builder.AddAttribute(11, "class", "mar-datagrid-detail-cell");
-            builder.AddAttribute(12, "role", "gridcell");
-            builder.OpenElement(13, "button");
-            builder.AddAttribute(14, "type", "button");
-            builder.AddAttribute(15, "class", "mar-datagrid-detail-btn");
-            builder.AddAttribute(16, "aria-label", isExpanded ? "Collapse detail" : "Expand detail");
-            builder.AddAttribute(17, "aria-expanded", isExpanded.ToString().ToLower());
-            builder.AddAttribute(18, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, async (_) => await ToggleDetailRow(detailItem)));
-            builder.AddEventStopPropagationAttribute(19, "onclick", true);
-            builder.AddContent(20, isExpanded ? "\u25BC" : "\u25B6");
+            builder.OpenElement(20, "td");
+            builder.AddAttribute(21, "class", "mar-datagrid-detail-cell");
+            builder.AddAttribute(22, "role", "gridcell");
+            builder.OpenElement(23, "button");
+            builder.AddAttribute(24, "type", "button");
+            builder.AddAttribute(25, "class", "mar-datagrid-detail-btn");
+            builder.AddAttribute(26, "aria-label", isExpanded ? "Collapse detail" : "Expand detail");
+            builder.AddAttribute(27, "aria-expanded", isExpanded.ToString().ToLower());
+            builder.AddAttribute(28, "onclick", EventCallback.Factory.Create<MouseEventArgs>(this, async (_) => await ToggleDetailRow(detailItem)));
+            builder.AddEventStopPropagationAttribute(29, "onclick", true);
+            builder.AddContent(30, isExpanded ? "\u25BC" : "\u25B6");
             builder.CloseElement(); // button
             builder.CloseElement(); // td
         }
@@ -76,7 +88,9 @@ public partial class MariloDataGrid<TItem>
             var cellClass = CssProvider.DataGridCellClass();
             if (cellRenderArgs?.Class != null) cellClass = $"{cellClass} {cellRenderArgs.Class}";
             if (IsCellSelected(index, column.Field)) cellClass = $"{cellClass} mar-datagrid-cell--selected";
-            var finalCellStyle = GetColumnCellStyle(column, cellRenderArgs?.Style);
+            var frozenCellStyle = GetFrozenCellStyle(column);
+            var combinedExtra = string.Join("", new[] { cellRenderArgs?.Style, frozenCellStyle }.Where(s => !string.IsNullOrEmpty(s)));
+            var finalCellStyle = GetColumnCellStyle(column, string.IsNullOrEmpty(combinedExtra) ? null : combinedExtra);
 
             builder.OpenElement(50, "td");
             builder.AddAttribute(51, "class", cellClass);
@@ -202,6 +216,13 @@ public partial class MariloDataGrid<TItem>
         builder.AddAttribute(1, "class", "mar-datagrid-row--editing mar-datagrid-row--new");
         builder.AddAttribute(2, "role", "row");
 
+        if (RowDraggable)
+        {
+            builder.OpenElement(3, "td");
+            builder.AddAttribute(4, "role", "gridcell");
+            builder.CloseElement();
+        }
+
         if (DetailTemplate != null)
         {
             builder.OpenElement(3, "td");
@@ -221,7 +242,8 @@ public partial class MariloDataGrid<TItem>
             builder.OpenElement(10, "td");
             builder.AddAttribute(11, "class", CssProvider.DataGridCellClass());
             builder.AddAttribute(12, "role", "gridcell");
-            var editRowCombinedStyle = GetColumnCellStyle(column);
+            var frozenStyle = GetFrozenCellStyle(column);
+            var editRowCombinedStyle = GetColumnCellStyle(column, frozenStyle);
             if (!string.IsNullOrEmpty(editRowCombinedStyle)) builder.AddAttribute(13, "style", editRowCombinedStyle);
             if (column.EditorTemplate != null)
             {
