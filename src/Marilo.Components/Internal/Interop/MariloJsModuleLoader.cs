@@ -6,7 +6,7 @@ namespace Marilo.Components.Internal.Interop;
 /// <summary>
 /// Lazily imports and caches JS ES modules from the Marilo.Components static content path.
 /// </summary>
-internal sealed class MariloJsModuleLoader : IMariloJsModuleLoader
+internal sealed class MariloJsModuleLoader : IMariloJsModuleLoader, IDisposable
 {
     private const string ContentPrefix = "./_content/Marilo.Components/";
     private readonly IJSRuntime _jsRuntime;
@@ -27,6 +27,13 @@ internal sealed class MariloJsModuleLoader : IMariloJsModuleLoader
             _jsRuntime.InvokeAsync<IJSObjectReference>("import", cancellationToken, path).AsTask());
 
         return await task;
+    }
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _disposed = true;
+        _modules.Clear();
     }
 
     public async ValueTask DisposeAsync()

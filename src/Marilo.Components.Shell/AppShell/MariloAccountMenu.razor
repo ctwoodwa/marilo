@@ -802,18 +802,10 @@
     private int FindNextSubmenuFocusable(int current, int direction, int itemCount)
     {
         if (itemCount == 0) return -1;
-        var next = current;
-        for (var i = 0; i < itemCount; i++)
-        {
-            next += direction;
-            if (next >= itemCount) next = 0;
-            if (next < 0) next = itemCount - 1;
-            // Index 0 is the back button (always focusable).
-            // Submenu items don't currently have disabled state, but this
-            // mirrors FindNextFocusable so disabled support can be added later.
-            return next;
-        }
-        return current;
+        var next = current + direction;
+        if (next >= itemCount) next = 0;
+        if (next < 0) next = itemCount - 1;
+        return next;
     }
 
     private string GetInitials()

@@ -42,7 +42,10 @@ public class JsModulePathTests
     {
         var path = Path.Combine(JsRoot, fileName);
         var content = File.ReadAllText(path);
-        Assert.Contains($"export function {functionName}", content);
+        Assert.True(
+            content.Contains($"export function {functionName}") ||
+            content.Contains($"export async function {functionName}"),
+            $"Expected 'export [async] function {functionName}' in {fileName}");
     }
 
     [Theory]

@@ -19,6 +19,9 @@
     /// <summary>Whether this column is visible. Defaults to true.</summary>
     [Parameter] public bool Visible { get; set; } = true;
 
+    /// <summary>Sets visibility from the parent Gantt without triggering BL0005.</summary>
+    internal void SetVisible(bool value) => Visible = value;
+
     /// <summary>Composite format string for display (e.g. "{0:d}"). Takes precedence over Format.</summary>
     [Parameter] public string? DisplayFormat { get; set; }
 

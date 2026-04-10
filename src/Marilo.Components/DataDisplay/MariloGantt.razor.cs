@@ -206,7 +206,7 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
 
     private async Task ToggleColumnVisibility(GanttColumn<TItem> column)
     {
-        column.Visible = !column.Visible;
+        column.SetVisible(!column.Visible);
         _visibleColumnsCache = null;
         await FireStateChanged("VisibleColumns");
         await InvokeAsync(StateHasChanged);
@@ -1767,7 +1767,7 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         {
             var visibleSet = new HashSet<string>(visibleCols, StringComparer.OrdinalIgnoreCase);
             foreach (var col in _columns)
-                col.Visible = visibleSet.Contains(col.Field ?? "");
+                col.SetVisible(visibleSet.Contains(col.Field ?? ""));
             _visibleColumnsCache = null;
         }
 

@@ -20,101 +20,101 @@ public class SharedInteropServiceTests
     }
 
     [Fact]
-    public void AddMariloInteropServices_Registers_ModuleLoader()
+    public async Task AddMariloInteropServices_Registers_ModuleLoader()
     {
-        using var provider = BuildProvider();
-        using var scope = provider.CreateScope();
+        await using var provider = BuildProvider();
+        await using var scope = provider.CreateAsyncScope();
         var loader = scope.ServiceProvider.GetService<IMariloJsModuleLoader>();
         Assert.NotNull(loader);
     }
 
     [Fact]
-    public void AddMariloInteropServices_Registers_ElementMeasurementService()
+    public async Task AddMariloInteropServices_Registers_ElementMeasurementService()
     {
-        using var provider = BuildProvider();
-        using var scope = provider.CreateScope();
+        await using var provider = BuildProvider();
+        await using var scope = provider.CreateAsyncScope();
         var svc = scope.ServiceProvider.GetService<IElementMeasurementService>();
         Assert.NotNull(svc);
     }
 
     [Fact]
-    public void AddMariloInteropServices_Registers_ResizeObserverService()
+    public async Task AddMariloInteropServices_Registers_ResizeObserverService()
     {
-        using var provider = BuildProvider();
-        using var scope = provider.CreateScope();
+        await using var provider = BuildProvider();
+        await using var scope = provider.CreateAsyncScope();
         var svc = scope.ServiceProvider.GetService<IResizeObserverService>();
         Assert.NotNull(svc);
     }
 
     [Fact]
-    public void AddMariloInteropServices_Registers_IntersectionObserverService()
+    public async Task AddMariloInteropServices_Registers_IntersectionObserverService()
     {
-        using var provider = BuildProvider();
-        using var scope = provider.CreateScope();
+        await using var provider = BuildProvider();
+        await using var scope = provider.CreateAsyncScope();
         var svc = scope.ServiceProvider.GetService<IIntersectionObserverService>();
         Assert.NotNull(svc);
     }
 
     [Fact]
-    public void AddMariloInteropServices_Registers_PopupPositionService()
+    public async Task AddMariloInteropServices_Registers_PopupPositionService()
     {
-        using var provider = BuildProvider();
-        using var scope = provider.CreateScope();
+        await using var provider = BuildProvider();
+        await using var scope = provider.CreateAsyncScope();
         var svc = scope.ServiceProvider.GetService<IPopupPositionService>();
         Assert.NotNull(svc);
     }
 
     [Fact]
-    public void AddMariloInteropServices_Registers_DragService()
+    public async Task AddMariloInteropServices_Registers_DragService()
     {
-        using var provider = BuildProvider();
-        using var scope = provider.CreateScope();
+        await using var provider = BuildProvider();
+        await using var scope = provider.CreateAsyncScope();
         var svc = scope.ServiceProvider.GetService<IDragService>();
         Assert.NotNull(svc);
     }
 
     [Fact]
-    public void AddMariloInteropServices_Registers_ResizeInteractionService()
+    public async Task AddMariloInteropServices_Registers_ResizeInteractionService()
     {
-        using var provider = BuildProvider();
-        using var scope = provider.CreateScope();
+        await using var provider = BuildProvider();
+        await using var scope = provider.CreateAsyncScope();
         var svc = scope.ServiceProvider.GetService<IResizeInteractionService>();
         Assert.NotNull(svc);
     }
 
     [Fact]
-    public void AddMariloInteropServices_Registers_ClipboardService()
+    public async Task AddMariloInteropServices_Registers_ClipboardService()
     {
-        using var provider = BuildProvider();
-        using var scope = provider.CreateScope();
+        await using var provider = BuildProvider();
+        await using var scope = provider.CreateAsyncScope();
         var svc = scope.ServiceProvider.GetService<IClipboardService>();
         Assert.NotNull(svc);
     }
 
     [Fact]
-    public void AddMariloInteropServices_Registers_DownloadService()
+    public async Task AddMariloInteropServices_Registers_DownloadService()
     {
-        using var provider = BuildProvider();
-        using var scope = provider.CreateScope();
+        await using var provider = BuildProvider();
+        await using var scope = provider.CreateAsyncScope();
         var svc = scope.ServiceProvider.GetService<IDownloadService>();
         Assert.NotNull(svc);
     }
 
     [Fact]
-    public void AddMariloInteropServices_Registers_GraphicsInteropService()
+    public async Task AddMariloInteropServices_Registers_GraphicsInteropService()
     {
-        using var provider = BuildProvider();
-        using var scope = provider.CreateScope();
+        await using var provider = BuildProvider();
+        await using var scope = provider.CreateAsyncScope();
         var svc = scope.ServiceProvider.GetService<IGraphicsInteropService>();
         Assert.NotNull(svc);
     }
 
     [Fact]
-    public void ModuleLoader_Is_Scoped_Different_Scopes_Get_Different_Instances()
+    public async Task ModuleLoader_Is_Scoped_Different_Scopes_Get_Different_Instances()
     {
-        using var provider = BuildProvider();
-        using var scope1 = provider.CreateScope();
-        using var scope2 = provider.CreateScope();
+        await using var provider = BuildProvider();
+        await using var scope1 = provider.CreateAsyncScope();
+        await using var scope2 = provider.CreateAsyncScope();
         var loader1 = scope1.ServiceProvider.GetService<IMariloJsModuleLoader>();
         var loader2 = scope2.ServiceProvider.GetService<IMariloJsModuleLoader>();
         Assert.NotSame(loader1, loader2);
@@ -123,8 +123,8 @@ public class SharedInteropServiceTests
     [Fact]
     public async Task ModuleLoader_DisposeAsync_Does_Not_Throw()
     {
-        using var provider = BuildProvider();
-        using var scope = provider.CreateScope();
+        await using var provider = BuildProvider();
+        await using var scope = provider.CreateAsyncScope();
         var loader = scope.ServiceProvider.GetRequiredService<IMariloJsModuleLoader>();
         // Dispose should be safe even with no modules imported
         await loader.DisposeAsync();

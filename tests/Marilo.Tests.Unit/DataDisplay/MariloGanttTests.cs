@@ -643,8 +643,6 @@ public class MariloGanttTests : MariloTestBase
             new() { Id = 1, PredecessorId = 1, SuccessorId = 2 },
         };
 
-        MariloGantt<TaskModel>? ganttRef = null;
-
         RenderFragment depsSlot = builder =>
         {
             builder.OpenComponent<MariloGanttDependencies<TaskModel>>(0);
@@ -669,8 +667,6 @@ public class MariloGanttTests : MariloTestBase
             new() { Id = 10, PredecessorId = 1, SuccessorId = 2, Type = GanttDependencyType.StartToStart },
             new() { Id = 11, PredecessorId = 2, SuccessorId = 3, Type = GanttDependencyType.FinishToFinish },
         };
-
-        MariloGanttDependencies<TaskModel>? depsComponent = null;
 
         RenderFragment depsSlot = builder =>
         {
@@ -1541,7 +1537,7 @@ public class MariloGanttTests : MariloTestBase
 
         // Hide the Start column directly via the instance
         var col = cut.Instance.VisibleColumns.First(c => c.Field == "Start");
-        col.Visible = false;
+        col.SetVisible(false);
 
         var state = cut.Instance.GetState();
 
@@ -1830,10 +1826,9 @@ public class MariloGanttTests : MariloTestBase
         var filterBtns = cut.FindAll(".mar-gantt__filter-btn");
         filterBtns[^1].Click();
 
-        // Uncheck Closed and Pending
-        var checkboxes = cut.FindAll(".mar-gantt__checkbox-filter-item input[type='checkbox']");
-        checkboxes[1].Change(false); // Uncheck "Closed"
-        checkboxes[2].Change(false); // Uncheck "Pending"
+        // Uncheck Closed and Pending (re-find after each change to avoid stale handlers)
+        cut.FindAll(".mar-gantt__checkbox-filter-item input[type='checkbox']")[1].Change(false); // Uncheck "Closed"
+        cut.FindAll(".mar-gantt__checkbox-filter-item input[type='checkbox']")[2].Change(false); // Uncheck "Pending"
 
         var applyBtn = cut.Find(".mar-gantt__checkbox-filter-actions .mar-gantt__filter-menu-btn");
         applyBtn.Click();
