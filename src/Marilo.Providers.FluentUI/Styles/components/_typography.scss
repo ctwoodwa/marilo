@@ -1,0 +1,22 @@
+// =============================================================================
+// Component: Typography
+// =============================================================================
+
+.mar-typography {
+    font-family: var(--marilo-font-family);
+    color: var(--marilo-color-on-background);
+    margin: 0;
+}
+
+.mar-typography--h1 { font-size: 2.5rem; font-weight: var(--marilo-font-weight-bold); line-height: 1.2; margin: 0 0 var(--marilo-space-md); }
+.mar-typography--h2 { font-size: 2rem; font-weight: var(--marilo-font-weight-bold); line-height: 1.25; margin: 0 0 var(--marilo-space-md); }
+.mar-typography--h3 { font-size: 1.75rem; font-weight: var(--marilo-font-weight-semibold); line-height: 1.3; margin: 0 0 var(--marilo-space-sm); }
+.mar-typography--h4 { font-size: 1.5rem; font-weight: var(--marilo-font-weight-semibold); line-height: 1.35; margin: 0 0 var(--marilo-space-sm); }
+.mar-typography--h5 { font-size: 1.25rem; font-weight: var(--marilo-font-weight-semibold); line-height: 1.4; margin: 0 0 var(--marilo-space-sm); }
+.mar-typography--h6 { font-size: 1rem; font-weight: var(--marilo-font-weight-semibold); line-height: 1.5; margin: 0 0 var(--marilo-space-xs); }
+.mar-typography--subtitle1 { font-size: 1rem; font-weight: var(--marilo-font-weight-semibold); line-height: 1.5; color: var(--marilo-color-text-secondary); margin: 0; }
+.mar-typography--subtitle2 { font-size: 0.875rem; font-weight: var(--marilo-font-weight-semibold); line-height: 1.5; color: var(--marilo-color-text-secondary); margin: 0; }
+.mar-typography--body1 { font-size: var(--marilo-font-size-base); line-height: 1.5; margin: 0 0 var(--marilo-space-sm); }
+.mar-typography--body2 { font-size: var(--marilo-font-size-sm); line-height: 1.5; margin: 0 0 var(--marilo-space-sm); }
+.mar-typography--caption { font-size: var(--marilo-font-size-xs); line-height: 1.4; color: var(--marilo-color-text-secondary); }
+.mar-typography--overline { font-size: var(--marilo-font-size-xs); line-height: 1.4; text-transform: uppercase; letter-spacing: 0.08em; color: var(--marilo-color-text-secondary); margin: 0; }

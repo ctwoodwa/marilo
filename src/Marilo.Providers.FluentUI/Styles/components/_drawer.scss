@@ -1,0 +1,44 @@
+// =============================================================================
+// Component: Drawer
+// =============================================================================
+
+.mar-drawer-overlay { position: fixed; inset: 0; background: var(--marilo-color-overlay); z-index: var(--marilo-z-modal-overlay); }
+
+.mar-drawer {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    background: var(--marilo-color-background);
+    box-shadow: var(--marilo-shadow-xl);
+    z-index: var(--marilo-z-modal);
+    transition: transform var(--marilo-transition-normal);
+    overflow-y: auto;
+}
+
+.mar-drawer--left {
+    left: 0;
+    inset: 0 auto 0 0;
+    width: 320px;
+    transform: translateX(-100%);
+}
+
+.mar-drawer--right {
+    right: 0;
+    inset: 0 0 0 auto;
+    width: 320px;
+    transform: translateX(100%);
+}
+
+.mar-drawer--top {
+    inset: 0 0 auto 0;
+    height: 320px;
+    transform: translateY(-100%);
+}
+
+.mar-drawer--bottom {
+    inset: auto 0 0 0;
+    height: 320px;
+    transform: translateY(100%);
+}
+
+.mar-drawer--open { transform: translate(0) translateX(0); }

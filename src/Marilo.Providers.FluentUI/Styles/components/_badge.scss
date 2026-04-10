@@ -1,0 +1,39 @@
+// =============================================================================
+// Component: Badge
+// =============================================================================
+
+.mar-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1px 8px;
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-sm);
+    font-weight: var(--marilo-font-weight-semibold);
+    border-radius: var(--marilo-radius-full);
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+.mar-badge--default { background: var(--marilo-color-surface); color: var(--marilo-color-on-surface); }
+.mar-badge--primary { background: var(--marilo-color-primary); color: var(--marilo-color-on-primary); }
+.mar-badge--secondary { background: var(--marilo-color-surface); color: var(--marilo-color-on-surface); border: 1px solid var(--marilo-color-border-strong); }
+.mar-badge--danger { background: var(--marilo-color-danger); color: var(--marilo-color-on-danger); }
+.mar-badge--warning { background: var(--marilo-color-warning); color: var(--marilo-color-on-warning); }
+.mar-badge--info { background: var(--marilo-color-info); color: var(--marilo-color-on-info); }
+.mar-badge--success { background: var(--marilo-color-success); color: var(--marilo-color-on-success); }
+
+// Environment Badge (Phase 3)
+.mar-env-badge {
+    margin-left: var(--marilo-space-sm);
+    font-size: var(--marilo-font-size-xs);
+    letter-spacing: 0.5px;
+    font-weight: var(--marilo-font-weight-semibold);
+    text-transform: uppercase;
+    padding: 1px 6px;
+    border-radius: var(--marilo-radius-sm);
+}
+
+.mar-env-badge--dev        { background: var(--marilo-color-warning-light); color: var(--marilo-color-on-warning); }
+.mar-env-badge--staging    { background: var(--marilo-color-info-light);    color: var(--marilo-color-on-info); }
+.mar-env-badge--production { background: var(--marilo-color-danger-light);  color: var(--marilo-color-on-danger); }

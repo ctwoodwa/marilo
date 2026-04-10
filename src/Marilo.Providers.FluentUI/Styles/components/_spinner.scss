@@ -1,0 +1,26 @@
+// =============================================================================
+// Component: Spinner & Skeleton
+// =============================================================================
+
+.mar-spinner {
+    display: inline-block;
+    border: 2px solid var(--marilo-color-surface);
+    border-top-color: var(--marilo-color-primary);
+    border-radius: var(--marilo-radius-full);
+    animation: marilo-spin 0.8s linear infinite;
+}
+
+.mar-spinner--small { width: 16px; height: 16px; }
+.mar-spinner--medium { width: 24px; height: 24px; }
+.mar-spinner--large { width: 40px; height: 40px; border-width: 3px; }
+
+// Skeleton
+.mar-skeleton {
+    background: var(--marilo-color-surface);
+    animation: marilo-pulse 1.5s ease-in-out infinite;
+}
+
+.mar-skeleton--text { height: 1em; border-radius: var(--marilo-radius-sm); width: 100%; }
+.mar-skeleton--rectangular { height: 120px; border-radius: var(--marilo-radius-md); }
+.mar-skeleton--circular { border-radius: var(--marilo-radius-full); width: 40px; height: 40px; }
+.mar-skeleton--rounded { height: 120px; border-radius: var(--marilo-radius-lg); }

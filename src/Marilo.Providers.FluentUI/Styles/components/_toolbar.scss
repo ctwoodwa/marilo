@@ -1,0 +1,72 @@
+// =============================================================================
+// Component: Toolbar
+// =============================================================================
+
+.mar-toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--marilo-space-sm);
+    padding: var(--marilo-space-sm);
+    background: var(--marilo-color-surface);
+    border-radius: var(--marilo-radius-md);
+}
+
+.mar-toolbar-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    background: var(--marilo-color-surface, #f3f2f1);
+    border: 1px solid var(--marilo-color-border, #e1dfdd);
+    border-radius: var(--marilo-radius-lg);
+    padding: 3px;
+    flex-shrink: 0;
+}
+
+.mar-toolbar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--marilo-space-xs);
+    padding: 5px 14px;
+    border: none;
+    border-radius: var(--marilo-radius-md);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    font-family: var(--marilo-font-family);
+    line-height: 1.5;
+    cursor: pointer;
+    color: var(--marilo-color-text-secondary, #605e5c);
+    background: transparent;
+    transition: background var(--marilo-transition-fast), color var(--marilo-transition-fast), box-shadow var(--marilo-transition-fast);
+    white-space: nowrap;
+    user-select: none;
+}
+
+.mar-toolbar-btn:hover:not(.mar-toolbar-btn--disabled):not(.mar-toolbar-btn--active) {
+    background: var(--marilo-color-surface-hover, #edebe9);
+    color: var(--marilo-color-on-background, #323130);
+}
+
+.mar-toolbar-btn--active {
+    background: var(--marilo-color-background, #ffffff);
+    color: var(--marilo-color-primary, #0078d4);
+    box-shadow: var(--marilo-shadow-sm);
+}
+
+.mar-toolbar-btn--disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.mar-toolbar-btn:focus-visible {
+    outline: none;
+    box-shadow: var(--marilo-focus-ring);
+}
+
+.mar-toolbar-sep {
+    width: 1px;
+    align-self: stretch;
+    background: var(--marilo-color-border, #e1dfdd);
+    margin: 2px var(--marilo-space-xs);
+    flex-shrink: 0;
+}

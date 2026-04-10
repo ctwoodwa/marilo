@@ -1,0 +1,33 @@
+// =============================================================================
+// Component: Progress Bar & Progress Circle
+// =============================================================================
+
+.mar-progress-bar {
+    width: 100%;
+    height: 4px;
+    background: var(--marilo-color-surface);
+    border-radius: var(--marilo-radius-full);
+    overflow: hidden;
+}
+
+.mar-progress-bar > div {
+    height: 100%;
+    background: var(--marilo-color-primary);
+    border-radius: var(--marilo-radius-full);
+    transition: width var(--marilo-transition-normal);
+}
+
+// Progress Circle
+.mar-progress-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+// Phase 2 extended
+.mar-progress-circle { display: inline-block; }
+.mar-progress-circle svg { transform: rotate(-90deg); }
+.mar-progress-circle__track { fill: none; stroke: var(--marilo-color-surface); }
+.mar-progress-circle__fill { fill: none; stroke: var(--marilo-color-primary); stroke-linecap: round; transition: stroke-dashoffset var(--marilo-transition-normal); }
+.mar-progress-circle--indeterminate svg { animation: marilo-spin 1.4s linear infinite; }

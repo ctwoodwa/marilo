@@ -1,0 +1,19 @@
+// =============================================================================
+// Component: Divider
+// =============================================================================
+
+.mar-divider {
+    border: 0;
+    border-top: 1px solid var(--marilo-color-border);
+    margin-block: var(--marilo-space-md);
+}
+
+.mar-divider--vertical {
+    border-top: 0;
+    border-inline-start: 1px solid var(--marilo-color-border);
+    margin-block: 0;
+    margin-inline: var(--marilo-space-md);
+    align-self: stretch;
+    height: auto;
+    min-height: 1em;
+}

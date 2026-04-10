@@ -1,0 +1,11 @@
+// =============================================================================
+// Foundation: Motion
+// Transition/animation CSS custom properties
+// =============================================================================
+
+:root {
+    /* Transitions */
+    --marilo-transition-fast: 120ms ease;
+    --marilo-transition-normal: 200ms ease;
+    --marilo-transition-slow: 300ms ease;
+}

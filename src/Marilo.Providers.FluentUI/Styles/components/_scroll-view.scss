@@ -1,0 +1,14 @@
+// =============================================================================
+// Component: ScrollView
+// =============================================================================
+
+.mar-scrollview {
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--marilo-color-border-strong) transparent;
+}
+
+.mar-scrollview::-webkit-scrollbar { width: 6px; height: 6px; }
+.mar-scrollview::-webkit-scrollbar-track { background: transparent; }
+.mar-scrollview::-webkit-scrollbar-thumb { background: var(--marilo-color-border-strong); border-radius: var(--marilo-radius-full); }
+.mar-scrollview::-webkit-scrollbar-thumb:hover { background: var(--marilo-color-text-secondary); }

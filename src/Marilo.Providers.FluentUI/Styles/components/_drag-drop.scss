@@ -1,0 +1,21 @@
+// =============================================================================
+// Component: Drag & Drop / Drop Zone
+// =============================================================================
+
+.mar-dragdrop {
+    position: relative;
+}
+
+.mar-dropzone {
+    padding: var(--marilo-space-xl);
+    border: 2px dashed var(--marilo-color-border-strong);
+    border-radius: var(--marilo-radius-md);
+    background: var(--marilo-color-surface);
+    transition: border-color var(--marilo-transition-fast), background var(--marilo-transition-fast);
+    text-align: center;
+}
+
+.mar-dropzone--active {
+    border-color: var(--marilo-color-primary);
+    background: var(--marilo-color-primary-light);
+}

@@ -1,0 +1,45 @@
+// =============================================================================
+// Foundation: Elevation — Material 3 Elevation System
+// Source: https://m3.material.io/styles/elevation/tokens
+//
+// M3 uses two mechanisms for elevation:
+//   1. Box shadows (dp shadows, adjusted for dark mode)
+//   2. Surface tint — a primary-colored overlay at increasing opacity
+//
+// Named levels: 0 (flat) → 5 (highest).
+// Levels 1–4 map to Marilo's sm/md/lg/xl shadow tokens.
+// =============================================================================
+
+:root {
+  // Marilo shadow aliases
+  --marilo-shadow-sm:  0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);    // Level 1
+  --marilo-shadow-md:  0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px 2px rgba(0, 0, 0, 0.15);    // Level 2
+  --marilo-shadow-lg:  0 4px 8px 3px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.3);    // Level 3
+  --marilo-shadow-xl:  0 6px 10px 4px rgba(0, 0, 0, 0.15), 0 2px 3px rgba(0, 0, 0, 0.3);   // Level 4
+
+  // M3 elevation level aliases
+  --marilo-elevation-0: none;
+  --marilo-elevation-1: var(--marilo-shadow-sm);
+  --marilo-elevation-2: var(--marilo-shadow-md);
+  --marilo-elevation-3: var(--marilo-shadow-lg);
+  --marilo-elevation-4: var(--marilo-shadow-xl);
+  --marilo-elevation-5: 0 8px 12px 6px rgba(0, 0, 0, 0.15), 0 4px 4px rgba(0, 0, 0, 0.3); // Level 5
+
+  // M3 surface tint — primary color overlaid at increasing opacity per level
+  // Apply as: background-color with color-mix or pseudo-element
+  --marilo-surface-tint:              var(--marilo-color-primary);
+  --marilo-surface-tint-opacity-1:    0.05;
+  --marilo-surface-tint-opacity-2:    0.08;
+  --marilo-surface-tint-opacity-3:    0.11;
+  --marilo-surface-tint-opacity-4:    0.12;
+  --marilo-surface-tint-opacity-5:    0.14;
+}
+
+// Dark mode — M3 shadows are stronger in dark (less ambient, more key)
+[data-marilo-theme="dark"] {
+  --marilo-shadow-sm:  0 1px 3px 1px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.5);
+  --marilo-shadow-md:  0 2px 6px 2px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.5);
+  --marilo-shadow-lg:  0 4px 8px 3px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.5);
+  --marilo-shadow-xl:  0 6px 10px 4px rgba(0, 0, 0, 0.4), 0 2px 3px rgba(0, 0, 0, 0.5);
+  --marilo-elevation-5: 0 8px 12px 6px rgba(0, 0, 0, 0.4), 0 4px 4px rgba(0, 0, 0, 0.5);
+}

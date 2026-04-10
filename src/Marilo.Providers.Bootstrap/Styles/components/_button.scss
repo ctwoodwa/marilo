@@ -1,0 +1,67 @@
+// =================================================================
+// Marilo Bootstrap Provider — Button / Split Button / Tonal Variants
+// =================================================================
+// From _bridge-buttons.scss: .mar-bs-split-button, .mar-bs-fab,
+//   tonal button @each loop
+// =================================================================
+
+.mar-bs-split-button {
+  .btn:first-child {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .btn:last-child {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+.mar-bs-fab {
+  width: 56px;
+  height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--marilo-shadow-md);
+  border: 0;
+  transition: box-shadow var(--marilo-transition-normal);
+
+  &:hover {
+    box-shadow: var(--marilo-shadow-lg);
+  }
+
+  &--mini {
+    width: 40px;
+    height: 40px;
+    font-size: var(--marilo-font-size-sm);
+  }
+
+  &--small {
+    width: 48px;
+    height: 48px;
+  }
+
+  &--large {
+    width: 72px;
+    height: 72px;
+    font-size: var(--marilo-font-size-lg);
+  }
+}
+
+// Tonal button variant — uses $theme-colors map with Sass color values
+@each $color, $value in $theme-colors {
+  .mar-bs-btn--tonal-#{$color} {
+    background-color: rgba($value, 0.15);
+    color: $value;
+    border-color: transparent;
+    text-decoration: none;
+
+    &:hover {
+      background-color: rgba($value, 0.25);
+      color: shade-color($value, 10%);
+    }
+  }
+}

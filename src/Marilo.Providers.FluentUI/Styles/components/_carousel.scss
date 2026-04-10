@@ -1,0 +1,17 @@
+// =============================================================================
+// Component: Carousel
+// =============================================================================
+
+.mar-carousel {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--marilo-radius-lg);
+}
+
+.mar-carousel__track { display: flex; transition: transform var(--marilo-transition-slow); }
+.mar-carousel__prev, .mar-carousel__next { position: absolute; top: 50%; transform: translateY(-50%); background: var(--marilo-color-background); border: 1px solid var(--marilo-color-border); border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--marilo-shadow-sm); z-index: 1; }
+.mar-carousel__prev { left: var(--marilo-space-sm); }
+.mar-carousel__next { right: var(--marilo-space-sm); }
+.mar-carousel__dots { display: flex; justify-content: center; gap: var(--marilo-space-xs); padding: var(--marilo-space-sm); }
+.mar-carousel__dot { width: 8px; height: 8px; border-radius: 50%; background: var(--marilo-color-border); border: none; cursor: pointer; padding: 0; }
+.mar-carousel__dot--active { background: var(--marilo-color-primary); }

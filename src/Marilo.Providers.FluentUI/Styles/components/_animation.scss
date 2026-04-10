@@ -1,0 +1,23 @@
+// =============================================================================
+// Component: Animation Keyframes & Utilities
+// =============================================================================
+
+@keyframes marilo-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes marilo-slide-in {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes marilo-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes marilo-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}

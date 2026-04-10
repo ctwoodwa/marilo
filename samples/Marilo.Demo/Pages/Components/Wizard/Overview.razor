@@ -160,15 +160,17 @@
 
     <DemoSection Title="Custom Buttons" Description="Use the WizardButtons template to replace the default navigation with custom controls.">
         <MariloWizard @bind-Value="_customBtnStep">
-            <WizardStep Label="Start">
-                <div style="padding:16px;">Custom button template replaces default navigation.</div>
-            </WizardStep>
-            <WizardStep Label="Middle">
-                <div style="padding:16px;">The template receives the current step index as context.</div>
-            </WizardStep>
-            <WizardStep Label="End">
-                <div style="padding:16px;">You control all navigation logic.</div>
-            </WizardStep>
+            <ChildContent>
+                <WizardStep Label="Start">
+                    <div style="padding:16px;">Custom button template replaces default navigation.</div>
+                </WizardStep>
+                <WizardStep Label="Middle">
+                    <div style="padding:16px;">The template receives the current step index as context.</div>
+                </WizardStep>
+                <WizardStep Label="End">
+                    <div style="padding:16px;">You control all navigation logic.</div>
+                </WizardStep>
+            </ChildContent>
             <WizardButtons>
                 <div style="display:flex;gap:8px;justify-content:flex-end;padding:8px 16px;">
                     @if (context > 0)

@@ -1,0 +1,47 @@
+// =============================================================================
+// Component: Window
+// =============================================================================
+
+.mar-window {
+    position: fixed;
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    background: var(--marilo-color-background);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-lg);
+    box-shadow: var(--marilo-elevation-lg);
+    overflow: hidden;
+
+    &--modal { z-index: 1060; }
+}
+
+.mar-window-titlebar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--marilo-space-sm) var(--marilo-space-md);
+    background: var(--marilo-color-surface);
+    border-bottom: 1px solid var(--marilo-color-border);
+    font-weight: var(--marilo-font-weight-semibold);
+    user-select: none;
+}
+
+.mar-window-content {
+    flex: 1;
+    overflow: auto;
+    padding: var(--marilo-space-md);
+}
+
+.mar-window-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--marilo-space-xxs);
+}
+
+.mar-window-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1055;
+    background: var(--marilo-color-overlay);
+}

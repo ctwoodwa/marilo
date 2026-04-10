@@ -1,0 +1,272 @@
+// =============================================================================
+// Foundation: Colors — Material 3 Color System
+// Two-layer architecture:
+//   Layer 1: $material-ref-palette — raw reference palette (Sass maps)
+//   Layer 2: CSS custom properties — semantic roles mapped from reference tokens
+// =============================================================================
+
+@use 'sass:map';
+
+// ----------------------------------------------------------------------------
+// Layer 1: Reference / Raw Token Layer
+// Source: Material Design 3 baseline palette
+// ----------------------------------------------------------------------------
+
+$material-ref-palette: (
+  primary: (
+    0:   #000000,
+    10:  #21005D,
+    20:  #381E72,
+    30:  #4F378B,
+    40:  #6750A4,    // M3 default primary
+    50:  #7F67BE,
+    60:  #9A82DB,
+    70:  #B69DF8,
+    80:  #D0BCFF,
+    90:  #EADDFF,
+    95:  #F6EDFF,
+    99:  #FFFBFE,
+    100: #FFFFFF,
+  ),
+  secondary: (
+    0:   #000000,
+    10:  #1D192B,
+    20:  #332D41,
+    30:  #4A4458,
+    40:  #625B71,
+    50:  #7A7289,
+    60:  #958DA5,
+    70:  #B0A7C0,
+    80:  #CCC2DC,
+    90:  #E8DEF8,
+    95:  #F6EDFF,
+    99:  #FFFBFE,
+    100: #FFFFFF,
+  ),
+  tertiary: (
+    0:   #000000,
+    10:  #31111D,
+    20:  #492532,
+    30:  #633B48,
+    40:  #7D5260,
+    50:  #986977,
+    60:  #B58392,
+    70:  #D29DAC,
+    80:  #EFB8C8,
+    90:  #FFD8E4,
+    95:  #FFECF1,
+    99:  #FFFBFA,
+    100: #FFFFFF,
+  ),
+  neutral: (
+    0:   #000000,
+    4:   #0F0D13,
+    6:   #141218,
+    10:  #1D1B20,
+    12:  #211F26,
+    17:  #2B2930,
+    20:  #322F35,
+    22:  #36343B,
+    24:  #3B383E,
+    30:  #48464C,
+    40:  #605D64,
+    50:  #79767D,
+    60:  #938F96,
+    70:  #AEA9B1,
+    80:  #CAC5CD,
+    87:  #DBD6DE,
+    90:  #E6E0E9,
+    92:  #ECE6F0,
+    94:  #F3EDF7,
+    95:  #F5EFF7,
+    96:  #F7F2FA,
+    98:  #FEF7FF,
+    99:  #FFFBFE,
+    100: #FFFFFF,
+  ),
+  neutral-variant: (
+    0:   #000000,
+    10:  #1D1A22,
+    20:  #322F37,
+    30:  #49454F,
+    40:  #605D66,
+    50:  #79747E,
+    60:  #938F99,
+    70:  #AEA9B4,
+    80:  #CAC4D0,
+    90:  #E7E0EC,
+    95:  #F5EEFA,
+    99:  #FFFBFE,
+    100: #FFFFFF,
+  ),
+  error: (
+    0:   #000000,
+    10:  #410E0B,
+    20:  #601410,
+    30:  #8C1D18,
+    40:  #B3261E,
+    50:  #DC362E,
+    60:  #E46962,
+    70:  #EC928E,
+    80:  #F2B8B5,
+    90:  #F9DEDC,
+    95:  #FCEEEE,
+    99:  #FFFBF9,
+    100: #FFFFFF,
+  ),
+);
+
+// ----------------------------------------------------------------------------
+// Layer 2: Semantic / System Token Layer — Light Theme
+// Maps reference tokens to M3 semantic roles as CSS custom properties
+// ----------------------------------------------------------------------------
+
+:root {
+  // M3 Key Colors — Primary
+  --marilo-color-primary:                   #{map.get(map.get($material-ref-palette, primary), 40)};
+  --marilo-color-on-primary:                #FFFFFF;
+  --marilo-color-primary-container:         #{map.get(map.get($material-ref-palette, primary), 90)};
+  --marilo-color-on-primary-container:      #{map.get(map.get($material-ref-palette, primary), 10)};
+
+  // M3 Key Colors — Secondary
+  --marilo-color-secondary:                 #{map.get(map.get($material-ref-palette, secondary), 40)};
+  --marilo-color-on-secondary:              #FFFFFF;
+  --marilo-color-secondary-container:       #{map.get(map.get($material-ref-palette, secondary), 90)};
+  --marilo-color-on-secondary-container:    #{map.get(map.get($material-ref-palette, secondary), 10)};
+
+  // M3 Key Colors — Tertiary
+  --marilo-color-tertiary:                  #{map.get(map.get($material-ref-palette, tertiary), 40)};
+  --marilo-color-on-tertiary:               #FFFFFF;
+  --marilo-color-tertiary-container:        #{map.get(map.get($material-ref-palette, tertiary), 90)};
+  --marilo-color-on-tertiary-container:     #{map.get(map.get($material-ref-palette, tertiary), 10)};
+
+  // M3 Error
+  --marilo-color-error:                     #{map.get(map.get($material-ref-palette, error), 40)};
+  --marilo-color-on-error:                  #FFFFFF;
+  --marilo-color-error-container:           #{map.get(map.get($material-ref-palette, error), 90)};
+  --marilo-color-on-error-container:        #{map.get(map.get($material-ref-palette, error), 10)};
+
+  // M3 Surface system
+  --marilo-color-surface:                   #{map.get(map.get($material-ref-palette, neutral), 98)};
+  --marilo-color-on-surface:                #{map.get(map.get($material-ref-palette, neutral), 10)};
+  --marilo-color-surface-variant:           #{map.get(map.get($material-ref-palette, neutral-variant), 90)};
+  --marilo-color-on-surface-variant:        #{map.get(map.get($material-ref-palette, neutral-variant), 30)};
+  --marilo-color-surface-container-lowest:  #{map.get(map.get($material-ref-palette, neutral), 100)};
+  --marilo-color-surface-container-low:     #{map.get(map.get($material-ref-palette, neutral), 96)};
+  --marilo-color-surface-container:         #{map.get(map.get($material-ref-palette, neutral), 94)};
+  --marilo-color-surface-container-high:    #{map.get(map.get($material-ref-palette, neutral), 92)};
+  --marilo-color-surface-container-highest: #{map.get(map.get($material-ref-palette, neutral), 90)};
+  --marilo-color-inverse-surface:           #{map.get(map.get($material-ref-palette, neutral), 20)};
+  --marilo-color-inverse-on-surface:        #{map.get(map.get($material-ref-palette, neutral), 95)};
+  --marilo-color-inverse-primary:           #{map.get(map.get($material-ref-palette, primary), 80)};
+
+  // M3 Outline
+  --marilo-color-outline:                   #{map.get(map.get($material-ref-palette, neutral-variant), 50)};
+  --marilo-color-outline-variant:           #{map.get(map.get($material-ref-palette, neutral-variant), 80)};
+
+  // M3 Background (alias of surface)
+  --marilo-color-background:                var(--marilo-color-surface);
+  --marilo-color-on-background:             var(--marilo-color-on-surface);
+
+  // M3 Scrim / Shadow
+  --marilo-color-scrim:                     #000000;
+  --marilo-color-shadow:                    #000000;
+
+  // -------------------------------------------------------------------------
+  // Marilo semantic aliases (for cross-provider compatibility)
+  // -------------------------------------------------------------------------
+  --marilo-color-primary-hover:             #{map.get(map.get($material-ref-palette, primary), 30)};
+  --marilo-color-primary-active:            #{map.get(map.get($material-ref-palette, primary), 20)};
+  --marilo-color-primary-light:             var(--marilo-color-primary-container);
+
+  --marilo-color-success:                   #2E7D32;
+  --marilo-color-success-light:             #E8F5E9;
+  --marilo-color-on-success:                #FFFFFF;
+
+  --marilo-color-warning:                   #ED6C02;
+  --marilo-color-warning-light:             #FFF3E0;
+  --marilo-color-on-warning:                #FFFFFF;
+
+  --marilo-color-danger:                    var(--marilo-color-error);
+  --marilo-color-danger-light:              var(--marilo-color-error-container);
+  --marilo-color-on-danger:                 var(--marilo-color-on-error);
+
+  --marilo-color-info:                      #0288D1;
+  --marilo-color-info-light:                #E1F5FE;
+  --marilo-color-on-info:                   #FFFFFF;
+
+  --marilo-color-text:                      var(--marilo-color-on-surface);
+  --marilo-color-text-secondary:            var(--marilo-color-on-surface-variant);
+  --marilo-color-text-disabled:             #{map.get(map.get($material-ref-palette, neutral), 60)};
+
+  --marilo-color-border:                    var(--marilo-color-outline-variant);
+  --marilo-color-border-strong:             var(--marilo-color-outline);
+
+  --marilo-color-overlay:                   rgba(0, 0, 0, 0.32);
+}
+
+// ----------------------------------------------------------------------------
+// Layer 2: Semantic / System Token Layer — Dark Theme
+// Follows M3 dark scheme: uses higher palette steps for on-colors,
+// lower steps for containers, and the 6-step neutral for surface.
+// ----------------------------------------------------------------------------
+
+[data-marilo-theme="dark"] {
+  // M3 Primary — dark
+  --marilo-color-primary:                   #{map.get(map.get($material-ref-palette, primary), 80)};
+  --marilo-color-on-primary:                #{map.get(map.get($material-ref-palette, primary), 20)};
+  --marilo-color-primary-container:         #{map.get(map.get($material-ref-palette, primary), 30)};
+  --marilo-color-on-primary-container:      #{map.get(map.get($material-ref-palette, primary), 90)};
+
+  // M3 Secondary — dark
+  --marilo-color-secondary:                 #{map.get(map.get($material-ref-palette, secondary), 80)};
+  --marilo-color-on-secondary:              #{map.get(map.get($material-ref-palette, secondary), 20)};
+  --marilo-color-secondary-container:       #{map.get(map.get($material-ref-palette, secondary), 30)};
+  --marilo-color-on-secondary-container:    #{map.get(map.get($material-ref-palette, secondary), 90)};
+
+  // M3 Tertiary — dark
+  --marilo-color-tertiary:                  #{map.get(map.get($material-ref-palette, tertiary), 80)};
+  --marilo-color-on-tertiary:               #{map.get(map.get($material-ref-palette, tertiary), 20)};
+  --marilo-color-tertiary-container:        #{map.get(map.get($material-ref-palette, tertiary), 30)};
+  --marilo-color-on-tertiary-container:     #{map.get(map.get($material-ref-palette, tertiary), 90)};
+
+  // M3 Error — dark
+  --marilo-color-error:                     #{map.get(map.get($material-ref-palette, error), 80)};
+  --marilo-color-on-error:                  #{map.get(map.get($material-ref-palette, error), 20)};
+  --marilo-color-error-container:           #{map.get(map.get($material-ref-palette, error), 30)};
+  --marilo-color-on-error-container:        #{map.get(map.get($material-ref-palette, error), 90)};
+
+  // M3 Surface — dark (neutral-6 for deepest background)
+  --marilo-color-surface:                   #{map.get(map.get($material-ref-palette, neutral), 6)};
+  --marilo-color-on-surface:                #{map.get(map.get($material-ref-palette, neutral), 90)};
+  --marilo-color-surface-variant:           #{map.get(map.get($material-ref-palette, neutral-variant), 30)};
+  --marilo-color-on-surface-variant:        #{map.get(map.get($material-ref-palette, neutral-variant), 80)};
+  --marilo-color-surface-container-lowest:  #{map.get(map.get($material-ref-palette, neutral), 4)};
+  --marilo-color-surface-container-low:     #{map.get(map.get($material-ref-palette, neutral), 10)};
+  --marilo-color-surface-container:         #{map.get(map.get($material-ref-palette, neutral), 12)};
+  --marilo-color-surface-container-high:    #{map.get(map.get($material-ref-palette, neutral), 17)};
+  --marilo-color-surface-container-highest: #{map.get(map.get($material-ref-palette, neutral), 22)};
+  --marilo-color-inverse-surface:           #{map.get(map.get($material-ref-palette, neutral), 90)};
+  --marilo-color-inverse-on-surface:        #{map.get(map.get($material-ref-palette, neutral), 20)};
+  --marilo-color-inverse-primary:           #{map.get(map.get($material-ref-palette, primary), 40)};
+
+  // M3 Outline — dark
+  --marilo-color-outline:                   #{map.get(map.get($material-ref-palette, neutral-variant), 60)};
+  --marilo-color-outline-variant:           #{map.get(map.get($material-ref-palette, neutral-variant), 30)};
+
+  // Marilo semantic aliases — dark overrides
+  --marilo-color-primary-hover:             #{map.get(map.get($material-ref-palette, primary), 70)};
+  --marilo-color-primary-active:            #{map.get(map.get($material-ref-palette, primary), 60)};
+  --marilo-color-text-disabled:             #{map.get(map.get($material-ref-palette, neutral), 40)};
+
+  // State colors in dark
+  --marilo-color-success:                   #66BB6A;
+  --marilo-color-success-light:             #1B5E20;
+  --marilo-color-warning:                   #FFA726;
+  --marilo-color-warning-light:             #4E2600;
+  --marilo-color-info:                      #29B6F6;
+  --marilo-color-info-light:                #01294E;
+
+  // Scrim stays black at all times
+  --marilo-color-overlay:                   rgba(0, 0, 0, 0.52);
+}

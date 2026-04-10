@@ -1,0 +1,11 @@
+// =================================================================
+// Marilo Bootstrap Provider — Radio / Radio Group
+// =================================================================
+// From _bridge-forms.scss: .mar-bs-radio-group
+// =================================================================
+
+.mar-bs-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--marilo-space-sm);
+}

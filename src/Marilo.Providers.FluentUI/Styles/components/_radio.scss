@@ -1,0 +1,21 @@
+// =============================================================================
+// Component: Radio
+// =============================================================================
+
+.mar-radio {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--marilo-space-sm);
+    cursor: pointer;
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-base);
+    user-select: none;
+}
+
+.mar-radio--selected { color: var(--marilo-color-primary); }
+
+.mar-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--marilo-space-sm);
+}

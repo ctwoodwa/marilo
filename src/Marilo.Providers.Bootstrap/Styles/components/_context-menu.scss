@@ -1,0 +1,10 @@
+// =================================================================
+// Marilo Bootstrap Provider — Context Menu
+// =================================================================
+// From _bridge-layout.scss: .mar-bs-context-menu
+// =================================================================
+
+.mar-bs-context-menu {
+  position: absolute;
+  z-index: var(--marilo-z-dropdown);
+}

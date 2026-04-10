@@ -1,0 +1,10 @@
+// =============================================================================
+// Component: Panel
+// =============================================================================
+
+.mar-panel {
+    background: var(--marilo-color-background);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-md);
+    padding: var(--marilo-space-lg);
+}

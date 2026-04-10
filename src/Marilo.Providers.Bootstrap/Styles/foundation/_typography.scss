@@ -1,0 +1,17 @@
+// =================================================================
+// Marilo Bootstrap Provider — Typography Tokens
+// =================================================================
+// Derived from Bootstrap's $font-family-base and $font-size-* Sass variables.
+// =================================================================
+
+:root {
+  --marilo-font-family: #{inspect($font-family-base)};
+  --marilo-font-size-xs: #{$font-size-base * 0.75};
+  --marilo-font-size-sm: #{$font-size-sm};
+  --marilo-font-size-base: #{$font-size-base};
+  --marilo-font-size-md: #{$font-size-base * 1.125};
+  --marilo-font-size-lg: #{$font-size-lg};
+  --marilo-font-size-xl: #{$h4-font-size};
+  --marilo-font-size-2xl: #{$h3-font-size};
+  --marilo-font-size-3xl: #{$h2-font-size};
+}

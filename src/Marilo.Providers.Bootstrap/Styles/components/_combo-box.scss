@@ -1,0 +1,18 @@
+// =================================================================
+// Marilo Bootstrap Provider — Combo Box
+// =================================================================
+// From _bridge-utility.scss: .mar-bs-combobox
+// =================================================================
+
+.mar-bs-combobox {
+  position: relative;
+
+  .form-control,
+  .form-select {
+    cursor: pointer;
+  }
+
+  &--open .dropdown-menu {
+    display: block;
+  }
+}

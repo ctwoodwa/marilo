@@ -1,0 +1,20 @@
+// =================================================================
+// Marilo Bootstrap Provider — Upload / File Upload
+// =================================================================
+// From _bridge-overlays.scss: .mar-bs-upload
+// From _bridge-utility.scss: .mar-bs-file-upload-list
+// =================================================================
+
+.mar-bs-upload {
+  .mar-bs-upload-dropzone {
+    transition: border-color var(--marilo-transition-normal),
+                background-color var(--marilo-transition-normal);
+    cursor: pointer;
+  }
+}
+
+.mar-bs-file-upload-list {
+  .list-group-item {
+    font-size: var(--marilo-font-size-sm);
+  }
+}

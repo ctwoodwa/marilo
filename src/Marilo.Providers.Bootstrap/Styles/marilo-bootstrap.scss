@@ -63,19 +63,5 @@
 @import "bootstrap/scss/utilities";
 @import "bootstrap/scss/utilities/api";
 
-// ── Step 7: Marilo design tokens (derived from BS Sass vars) ─────
-@import "tokens";
-@import "tokens-dark";
-
-// ── Step 8: Marilo bridge styles ─────────────────────────────────
-@import "bridge-layout";
-@import "bridge-buttons";
-@import "bridge-forms";
-@import "bridge-data";
-@import "bridge-feedback";
-@import "bridge-overlays";
-@import "bridge-utility";
-@import "bridge-signalr-status";
-@import "bridge-allocation-scheduler";
-@import "bridge-resizable-container";
-@import "bridge-gantt";
+// ── Step 7: Marilo styles (tokens + components via structured index) ─
+@import "index";

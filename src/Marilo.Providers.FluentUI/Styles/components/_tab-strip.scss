@@ -1,0 +1,22 @@
+// =============================================================================
+// Component: Tab Strip (Tabs)
+// =============================================================================
+
+.mar-tabs {
+    display: flex;
+    flex-direction: column;
+}
+
+.mar-tab-panel {
+    display: none;
+    padding: var(--marilo-space-lg) 0;
+}
+
+.mar-tab-panel--active { display: block; }
+
+// Phase 2 extended
+.mar-tabs__list { display: flex; border-bottom: 1px solid var(--marilo-color-border); gap: 0; }
+.mar-tab { padding: var(--marilo-space-sm) var(--marilo-space-lg); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; font-family: var(--marilo-font-family); font-size: var(--marilo-font-size-base); color: var(--marilo-color-text-secondary); transition: all var(--marilo-transition-fast); }
+.mar-tab:hover { color: var(--marilo-color-on-background); background: var(--marilo-color-surface); }
+.mar-tab--active { color: var(--marilo-color-primary); border-bottom-color: var(--marilo-color-primary); font-weight: var(--marilo-font-weight-semibold); }
+.mar-tabs__content { padding: var(--marilo-space-lg) 0; }

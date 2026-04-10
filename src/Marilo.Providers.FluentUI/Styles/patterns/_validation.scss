@@ -1,0 +1,16 @@
+// =============================================================================
+// Patterns: Validation
+// Validation visual styles (form validation states)
+// =============================================================================
+
+.mar-validation-message {
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--marilo-space-xs);
+}
+
+.mar-validation-message--info { color: var(--marilo-color-info); }
+.mar-validation-message--warning { color: #986400; }
+.mar-validation-message--error { color: var(--marilo-color-danger); }

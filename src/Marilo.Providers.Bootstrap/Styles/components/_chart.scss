@@ -1,0 +1,20 @@
+// =================================================================
+// Marilo Bootstrap Provider — Chart
+// =================================================================
+// From _bridge-utility.scss: .mar-bs-chart-container, .mar-bs-gauge
+// =================================================================
+
+.mar-bs-chart-container {
+  position: relative;
+  width: 100%;
+
+  svg {
+    width: 100%;
+    height: auto;
+  }
+}
+
+.mar-bs-gauge {
+  display: inline-block;
+  position: relative;
+}

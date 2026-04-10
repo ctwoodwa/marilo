@@ -1,0 +1,33 @@
+// =============================================================================
+// Component: Chart
+// =============================================================================
+
+.mar-chart-container {
+    position: relative;
+    width: 100%;
+    min-height: 200px;
+}
+
+.mar-gauge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+// Scheduling
+.mar-calendar {
+    font-family: var(--marilo-font-family);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-md);
+    padding: var(--marilo-space-md);
+    background: var(--marilo-color-background);
+}
+
+.mar-scheduler {
+    font-family: var(--marilo-font-family);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-md);
+    background: var(--marilo-color-background);
+    overflow: auto;
+}

@@ -1,0 +1,25 @@
+// =============================================================================
+// Component: Table
+// =============================================================================
+
+.mar-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-base);
+}
+
+.mar-table th,
+.mar-table td {
+    padding: var(--marilo-space-sm) var(--marilo-space-md);
+    text-align: start;
+    border-bottom: 1px solid var(--marilo-color-border);
+}
+
+.mar-table th {
+    font-weight: var(--marilo-font-weight-semibold);
+    color: var(--marilo-color-text-secondary);
+    background: var(--marilo-color-surface);
+}
+
+.mar-table tbody tr:hover { background: var(--marilo-color-surface); }

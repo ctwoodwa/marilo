@@ -1,0 +1,10 @@
+// =================================================================
+// Marilo Bootstrap Provider — Popover
+// =================================================================
+// From _bridge-data.scss: .mar-bs-popover
+// =================================================================
+
+.mar-bs-popover {
+  position: absolute;
+  z-index: var(--marilo-z-popover);
+}

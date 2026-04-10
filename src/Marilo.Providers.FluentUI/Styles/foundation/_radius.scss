@@ -1,0 +1,17 @@
+// =============================================================================
+// Foundation: Radius
+// Border radius CSS custom properties + Fluent corner radius tokens
+// =============================================================================
+
+:root {
+    /* Shape */
+    --marilo-radius-sm: 2px;
+    --marilo-radius-md: 4px;
+    --marilo-radius-lg: 8px;
+    --marilo-radius-xl: 12px;
+    --marilo-radius-full: 9999px;
+
+    /* Fluent Corner Radius */
+    --control-corner-radius: 4;
+    --layer-corner-radius: 8;
+}

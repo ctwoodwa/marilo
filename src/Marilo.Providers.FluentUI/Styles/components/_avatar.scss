@@ -1,0 +1,23 @@
+// =============================================================================
+// Component: Avatar
+// =============================================================================
+
+.mar-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--marilo-radius-full);
+    background: var(--marilo-color-primary);
+    color: var(--marilo-color-on-primary);
+    font-family: var(--marilo-font-family);
+    font-weight: var(--marilo-font-weight-semibold);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.mar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.mar-avatar--extrasmall { width: 20px; height: 20px; font-size: var(--marilo-font-size-xs); }
+.mar-avatar--small { width: 28px; height: 28px; font-size: var(--marilo-font-size-sm); }
+.mar-avatar--medium { width: 36px; height: 36px; font-size: var(--marilo-font-size-base); }
+.mar-avatar--large { width: 48px; height: 48px; font-size: var(--marilo-font-size-lg); }
+.mar-avatar--extralarge { width: 72px; height: 72px; font-size: var(--marilo-font-size-2xl); }

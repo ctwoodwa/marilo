@@ -1,0 +1,14 @@
+// =============================================================================
+// Patterns: Overlay
+// Overlay shell rules shared by Dialog, Drawer, Popover, Tooltip, Modal
+// =============================================================================
+
+// Overlay backdrop — shared by dialog and modal
+.mar-dialog-overlay,
+.mar-modal-overlay,
+.mar-drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--marilo-color-overlay);
+    z-index: var(--marilo-z-modal-overlay);
+}

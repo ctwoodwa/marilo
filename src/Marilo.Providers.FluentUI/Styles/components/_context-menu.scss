@@ -1,0 +1,17 @@
+// =============================================================================
+// Component: Context Menu
+// =============================================================================
+
+// Context menu shares styles with the menu component.
+// See _menu.scss for .mar-menu and .mar-menu-item rules.
+
+.mar-context-menu {
+    position: absolute;
+    min-width: 180px;
+    background: var(--marilo-color-background);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-md);
+    box-shadow: var(--marilo-shadow-lg);
+    padding: var(--marilo-space-xs) 0;
+    z-index: var(--marilo-z-dropdown);
+}

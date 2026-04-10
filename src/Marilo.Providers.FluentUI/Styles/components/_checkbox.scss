@@ -1,0 +1,17 @@
+// =============================================================================
+// Component: Checkbox
+// =============================================================================
+
+.mar-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--marilo-space-sm);
+    cursor: pointer;
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-base);
+    user-select: none;
+}
+
+.mar-checkbox--checked {
+    color: var(--marilo-color-primary);
+}

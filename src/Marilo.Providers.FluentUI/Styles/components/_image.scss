@@ -1,0 +1,7 @@
+// =============================================================================
+// Component: Image
+// =============================================================================
+
+.mar-image { display: inline-block; }
+.mar-image img { display: block; max-width: 100%; height: auto; }
+.mar-image--rounded img { border-radius: var(--marilo-radius-full); }

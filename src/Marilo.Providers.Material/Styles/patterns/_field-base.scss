@@ -1,0 +1,36 @@
+// =============================================================================
+// Patterns: Field Base — Shared input chrome for Material 3
+// M3 defines two field variants: Filled and Outlined.
+// This file establishes the shared chrome tokens and base class.
+// =============================================================================
+
+// TODO: Placeholder — full Material 3 field-base styles not yet defined.
+// Scaffold below establishes the token contract for filled/outlined fields.
+
+:root {
+  // Field dimensions
+  --marilo-field-height:              56px;   // M3 standard text field height
+  --marilo-field-height-dense:        40px;
+  --marilo-field-border-radius:       var(--marilo-radius-sm);   // 4px top corners (filled)
+  --marilo-field-border-radius-outlined: var(--marilo-radius-sm);
+
+  // Indicator line (filled variant)
+  --marilo-field-indicator-color:     var(--marilo-color-outline);
+  --marilo-field-indicator-width:     1px;
+  --marilo-field-indicator-width-focus: 2px;
+  --marilo-field-indicator-color-focus: var(--marilo-color-primary);
+  --marilo-field-indicator-color-error: var(--marilo-color-error);
+
+  // Fill (filled variant)
+  --marilo-field-fill:                var(--marilo-color-surface-variant);
+  --marilo-field-fill-hover:          color-mix(in srgb, var(--marilo-color-on-surface) 8%, var(--marilo-color-surface-variant));
+
+  // Label
+  --marilo-field-label-color:         var(--marilo-color-on-surface-variant);
+  --marilo-field-label-color-focus:   var(--marilo-color-primary);
+  --marilo-field-label-color-error:   var(--marilo-color-error);
+
+  // Supporting text
+  --marilo-field-supporting-color:    var(--marilo-color-on-surface-variant);
+  --marilo-field-supporting-color-error: var(--marilo-color-error);
+}
