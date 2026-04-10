@@ -3,18 +3,18 @@
 @layout ComponentDemoLayout
 
 <PageSection Title="Overview">
-    <DemoSection Title="Basic Editor" Description="A rich-text editor with default tools and live preview." Code="@_basicCode">
+    <DemoSection Title="Basic Editor" Description="A rich-text editor with default tools and live HTML preview.">
         <MariloEditor @bind-Value="_editorContent"
                       Placeholder="Type some HTML here..."
                       Height="200px" />
 
         <div style="margin-top:16px">
             <strong>Current Value:</strong>
-            <pre style="background:#f5f5f5;padding:8px;border-radius:4px;overflow-x:auto">@_editorContent</pre>
+            <pre style="background:#f5f5f5;padding:8px;border-radius:4px;overflow-x:auto;max-height:120px;">@_editorContent</pre>
         </div>
     </DemoSection>
 
-    <DemoSection Title="Limited Tools" Description="An editor with a limited set of formatting tools." Code="@_limitedCode">
+    <DemoSection Title="Limited Tools" Description="An editor with only basic formatting tools.">
         <MariloEditor @bind-Value="_limitedContent"
                       Tools="_limitedTools"
                       Placeholder="Only basic formatting available..."
@@ -22,35 +22,244 @@
     </DemoSection>
 </PageSection>
 
+<PageSection Title="Edit Modes">
+    <DemoSection Title="Edit / Source / Preview" Description="Switch between WYSIWYG editing, raw HTML source, and rendered preview modes.">
+        <div class="demo-controls">
+            <label>
+                <input type="radio" name="editMode" checked="@(_editMode == EditorEditMode.Edit)"
+                       @onchange="@(() => SetEditMode(EditorEditMode.Edit))" /> Edit (WYSIWYG)
+            </label>
+            <label style="margin-left:16px;">
+                <input type="radio" name="editMode" checked="@(_editMode == EditorEditMode.Source)"
+                       @onchange="@(() => SetEditMode(EditorEditMode.Source))" /> Source (HTML)
+            </label>
+            <label style="margin-left:16px;">
+                <input type="radio" name="editMode" checked="@(_editMode == EditorEditMode.Preview)"
+                       @onchange="@(() => SetEditMode(EditorEditMode.Preview))" /> Preview
+            </label>
+        </div>
+        <MariloEditor @ref="_modeEditor"
+                      @bind-Value="_modeContent"
+                      EditMode="@_editMode"
+                      Height="200px" />
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="State & Appearance">
+    <DemoSection Title="ReadOnly & Disabled" Description="Toggle ReadOnly and Disabled states. ReadOnly hides the toolbar; Disabled greys out the entire editor.">
+        <div class="demo-controls">
+            <label><input type="checkbox" @bind="_isReadOnly" /> ReadOnly</label>
+            <label style="margin-left:16px;"><input type="checkbox" @bind="_isDisabled" /> Disabled</label>
+        </div>
+        <MariloEditor Value="@("<p>This content cannot be modified when ReadOnly or Disabled.</p>")"
+                      ReadOnly="@_isReadOnly"
+                      Disabled="@_isDisabled"
+                      Height="150px" />
+    </DemoSection>
+
+    <DemoSection Title="Custom Size" Description="Set custom Width and Height for the editor.">
+        <MariloEditor @bind-Value="_sizedContent"
+                      Placeholder="A wider, taller editor..."
+                      Width="600px"
+                      Height="300px" />
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Toolbar">
+    <DemoSection Title="Custom Tools" Description="Add custom tool buttons to the toolbar alongside built-in tools.">
+        <MariloEditor @bind-Value="_customToolContent"
+                      Tools="@_allTools"
+                      CustomTools="@_customTools"
+                      Height="180px" />
+        <p class="demo-info">Last custom action: <strong>@_lastCustomAction</strong></p>
+    </DemoSection>
+
+    <DemoSection Title="Adaptive Toolbar" Description="When Adaptive is true, the toolbar automatically collapses overflow items into a popup when too narrow.">
+        <div style="max-width:400px;border:1px solid var(--marilo-color-border,#ddd);border-radius:4px;">
+            <MariloEditor @bind-Value="_adaptiveContent"
+                          Adaptive="true"
+                          Height="150px" />
+        </div>
+        <p class="demo-info">Resize the container above to see tools overflow into a "More" popup.</p>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Content Features">
+    <DemoSection Title="Table Insertion & Resize" Description="Insert a table via the Table tool. Hover on column/row borders to resize. Drag cell edges to adjust widths and heights.">
+        <MariloEditor @bind-Value="_tableContent"
+                      Tools="@_tableTools"
+                      Height="250px" />
+    </DemoSection>
+
+    <DemoSection Title="Import / Export" Description="Import Markdown or plain text into the editor, and export the current content back.">
+        <MariloEditor @ref="_importExportEditor"
+                      @bind-Value="_importExportContent"
+                      Height="200px" />
+        <div class="demo-controls" style="margin-top:8px;">
+            <button type="button" class="mar-btn mar-btn--sm" @onclick="ImportMarkdown">Import Markdown</button>
+            <button type="button" class="mar-btn mar-btn--sm" style="margin-left:8px;" @onclick="ExportMarkdown">Export as Markdown</button>
+            <button type="button" class="mar-btn mar-btn--sm" style="margin-left:8px;" @onclick="ExportPlainText">Export as Plain Text</button>
+        </div>
+        @if (!string.IsNullOrEmpty(_exportedText))
+        {
+            <pre style="background:#f5f5f5;padding:8px;border-radius:4px;margin-top:8px;max-height:120px;overflow:auto;">@_exportedText</pre>
+        }
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Events">
+    <DemoSection Title="OnChange & OnCommand" Description="Events fire when content changes (after debounce) and when a toolbar command is executed.">
+        <MariloEditor @bind-Value="_eventContent"
+                      OnChange="@OnEditorChanged"
+                      OnCommand="@OnEditorCommand"
+                      DebounceDelay="300"
+                      Height="150px" />
+        <p class="demo-info">Change count: <strong>@_changeCount</strong> | Last command: <strong>@(_lastCommand ?? "(none)")</strong></p>
+    </DemoSection>
+
+    <DemoSection Title="Paste Settings" Description="Configure paste cleanup: strip MS Office classes, remove styles, or strip specific tags.">
+        <MariloEditor @bind-Value="_pasteContent"
+                      Height="180px">
+            <EditorPasteSettings RemoveHtmlComments="true"
+                                 RemoveMsClasses="true"
+                                 RemoveMsStyles="true"
+                                 StripTags="meta,link,style" />
+        </MariloEditor>
+        <p class="demo-info">Paste content from Word or a website — MS Office formatting will be cleaned automatically.</p>
+    </DemoSection>
+</PageSection>
+
 @code {
+    // ── Basic & Limited ──────────────────────────────────────────────
     private string? _editorContent = "<p>Hello, <strong>world</strong>!</p>";
     private string? _limitedContent;
 
     private static readonly EditorTool[] _limitedTools =
     [
-        EditorTool.Bold,
-        EditorTool.Italic,
-        EditorTool.Underline,
-        EditorTool.Link,
-        EditorTool.OrderedList,
-        EditorTool.UnorderedList,
+        EditorTool.Bold, EditorTool.Italic, EditorTool.Underline,
+        EditorTool.Link, EditorTool.OrderedList, EditorTool.UnorderedList,
     ];
 
-    private const string _basicCode =
-        "<MariloEditor @bind-Value=\"_editorContent\"\n" +
-        "              Placeholder=\"Type some HTML here...\"\n" +
-        "              Height=\"200px\" />";
+    // ── Edit Modes ───────────────────────────────────────────────────
+    private MariloEditor? _modeEditor;
+    private EditorEditMode _editMode = EditorEditMode.Edit;
+    private string? _modeContent = "<p>Switch between <em>Edit</em>, <strong>Source</strong>, and Preview modes.</p>";
 
-    private const string _limitedCode =
-        "<MariloEditor @bind-Value=\"_limitedContent\"\n" +
-        "              Tools=\"_limitedTools\"\n" +
-        "              Height=\"150px\" />\n\n" +
-        "@code {\n" +
-        "    private static readonly EditorTool[] _limitedTools =\n" +
-        "    [\n" +
-        "        EditorTool.Bold,\n" +
-        "        EditorTool.Italic,\n" +
-        "        EditorTool.Underline,\n" +
-        "    ];\n" +
-        "}";
+    private async Task SetEditMode(EditorEditMode mode)
+    {
+        if (_modeEditor != null)
+            await _modeEditor.SetModeAsync(mode);
+        _editMode = mode;
+    }
+
+    // ── ReadOnly & Disabled ──────────────────────────────────────────
+    private bool _isReadOnly;
+    private bool _isDisabled;
+
+    // ── Sizing ───────────────────────────────────────────────────────
+    private string? _sizedContent = "<p>A larger editing area for longer content.</p>";
+
+    // ── Custom Tools ─────────────────────────────────────────────────
+    private string? _customToolContent = "<p>Try the custom toolbar buttons.</p>";
+    private string _lastCustomAction = "(none)";
+
+    private static readonly EditorTool[] _allTools =
+    [
+        EditorTool.Bold, EditorTool.Italic, EditorTool.Underline,
+        EditorTool.OrderedList, EditorTool.UnorderedList,
+        EditorTool.Link, EditorTool.Image, EditorTool.Table,
+        EditorTool.Undo, EditorTool.Redo,
+    ];
+
+    private EditorCustomTool[] _customTools => new[]
+    {
+        new EditorCustomTool
+        {
+            Name = "Timestamp",
+            Tooltip = "Insert current timestamp",
+            OnClick = async () => _lastCustomAction = $"Inserted timestamp: {DateTime.Now:HH:mm:ss}"
+        },
+        new EditorCustomTool
+        {
+            Name = "Clear",
+            Tooltip = "Clear all content",
+            OnClick = async () => { _customToolContent = ""; _lastCustomAction = "Content cleared"; }
+        }
+    };
+
+    // ── Adaptive ─────────────────────────────────────────────────────
+    private string? _adaptiveContent = "<p>This editor is in a narrow container.</p>";
+
+    // ── Table ────────────────────────────────────────────────────────
+    private string? _tableContent = "<p>Click the Table button to insert a table, then drag column/row borders to resize.</p>";
+
+    private static readonly EditorTool[] _tableTools =
+    [
+        EditorTool.Bold, EditorTool.Italic, EditorTool.Table,
+        EditorTool.AlignLeft, EditorTool.AlignCenter, EditorTool.AlignRight,
+        EditorTool.Undo, EditorTool.Redo,
+    ];
+
+    // ── Import / Export ──────────────────────────────────────────────
+    private MariloEditor? _importExportEditor;
+    private string? _importExportContent;
+    private string? _exportedText;
+
+    private async Task ImportMarkdown()
+    {
+        if (_importExportEditor == null) return;
+        var markdown = "# Hello\n\nThis is **bold** and *italic* text.\n\n- Item 1\n- Item 2\n- Item 3\n";
+        try
+        {
+            await _importExportEditor.ImportAsync(markdown, "markdown");
+        }
+        catch (InvalidOperationException)
+        {
+            _exportedText = "⚠ Markdown converter not registered. Call services.AddMariloEditorMarkdownSupport() in Program.cs.";
+        }
+    }
+
+    private async Task ExportMarkdown()
+    {
+        if (_importExportEditor == null) return;
+        try
+        {
+            _exportedText = await _importExportEditor.ExportAsync("markdown");
+        }
+        catch (InvalidOperationException)
+        {
+            _exportedText = "⚠ Markdown converter not registered.";
+        }
+    }
+
+    private async Task ExportPlainText()
+    {
+        if (_importExportEditor == null) return;
+        try
+        {
+            _exportedText = await _importExportEditor.ExportAsync("plaintext");
+        }
+        catch (InvalidOperationException)
+        {
+            _exportedText = "⚠ Plain text converter not registered. Call services.AddMariloEditorPlainTextSupport() in Program.cs.";
+        }
+    }
+
+    // ── Events ───────────────────────────────────────────────────────
+    private string? _eventContent = "<p>Edit this content and watch the event counters.</p>";
+    private int _changeCount;
+    private string? _lastCommand;
+
+    private void OnEditorChanged(string html)
+    {
+        _changeCount++;
+    }
+
+    private void OnEditorCommand(string command)
+    {
+        _lastCommand = command;
+    }
+
+    // ── Paste Settings ───────────────────────────────────────────────
+    private string? _pasteContent;
 }

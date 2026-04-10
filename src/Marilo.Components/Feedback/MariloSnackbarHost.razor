@@ -3,10 +3,16 @@
 @using Marilo.Core.Services
 @inherits MariloComponentBase
 
-<div class="@CombineClasses(CssProvider.SnackbarClass(VerticalPosition, HorizontalPosition))"
+@{
+    var notifications = GetVisibleNotifications();
+    var hostClass = CssProvider.SnackbarClass(VerticalPosition, HorizontalPosition)
+        + (notifications.Count == 0 ? " mar-snackbar--empty" : "");
+}
+
+<div class="@CombineClasses(hostClass)"
      style="@CombineStyles()"
      @attributes="AdditionalAttributes">
-    @foreach (var notification in GetVisibleNotifications())
+    @foreach (var notification in notifications)
     {
         var id = notification.Id;
         var animClass = GetAnimationClass(notification);
@@ -132,7 +138,7 @@
 
     private string GetNotificationClass(NotificationModel notification)
     {
-        return $"{CssProvider.SnackbarClass()} {CssProvider.ToastClass(notification.Severity)}";
+        return $"mar-snackbar-item {CssProvider.ToastClass(notification.Severity)}";
     }
 
     protected override void Dispose(bool disposing)

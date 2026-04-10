@@ -3,7 +3,7 @@
 @layout ComponentDemoLayout
 
 <PageSection Title="Overview">
-    <DemoSection Title="Line Chart" Description="A simple line chart showing monthly revenue and profit." Code="@_lineCode">
+    <DemoSection Title="Line Chart" Description="A line chart with two series showing monthly revenue and profit.">
         <MariloChart Title="Monthly Revenue" Height="350px">
             <MariloChartSeries Name="Revenue"
                                Data="_salesData"
@@ -20,7 +20,7 @@
         </MariloChart>
     </DemoSection>
 
-    <DemoSection Title="Column Chart" Description="A column chart comparing revenue across months." Code="@_columnCode">
+    <DemoSection Title="Column Chart" Description="A column chart comparing revenue across months with two series side by side.">
         <MariloChart Title="Revenue vs Profit" Height="350px">
             <MariloChartSeries Name="Revenue"
                                Data="_salesData"
@@ -38,7 +38,151 @@
     </DemoSection>
 </PageSection>
 
+<PageSection Title="Chart Types">
+    <DemoSection Title="Area Chart" Description="An area chart with filled regions beneath the lines.">
+        <MariloChart Title="Sales Trend" Height="300px">
+            <MariloChartSeries Name="Revenue"
+                               Data="_salesData"
+                               Field="Revenue"
+                               CategoryField="Month"
+                               Type="ChartSeriesType.Area"
+                               Color="#76b7b2" />
+        </MariloChart>
+    </DemoSection>
+
+    <DemoSection Title="Bar Chart" Description="A horizontal bar chart — same data as Column but rotated.">
+        <MariloChart Title="Revenue by Month" Height="350px">
+            <MariloChartSeries Name="Revenue"
+                               Data="_salesData"
+                               Field="Revenue"
+                               CategoryField="Month"
+                               Type="ChartSeriesType.Bar"
+                               Color="#b07aa1" />
+        </MariloChart>
+    </DemoSection>
+
+    <DemoSection Title="Pie Chart" Description="A pie chart showing revenue distribution across months.">
+        <MariloChart Title="Revenue Distribution" Height="350px">
+            <MariloChartSeries Name="Revenue"
+                               Data="_salesData"
+                               Field="Revenue"
+                               CategoryField="Month"
+                               Type="ChartSeriesType.Pie" />
+        </MariloChart>
+    </DemoSection>
+
+    <DemoSection Title="Donut Chart" Description="A donut chart with a hole in the center.">
+        <MariloChart Title="Profit Distribution" Height="350px">
+            <MariloChartSeries Name="Profit"
+                               Data="_salesData"
+                               Field="Profit"
+                               CategoryField="Month"
+                               Type="ChartSeriesType.Donut" />
+        </MariloChart>
+    </DemoSection>
+
+    <DemoSection Title="Scatter Chart" Description="A scatter plot using X/Y field bindings for correlation analysis.">
+        <MariloChart Title="Revenue vs Profit Correlation" Height="350px">
+            <MariloChartSeries Name="Months"
+                               Data="_salesData"
+                               XField="Revenue"
+                               YField="Profit"
+                               Type="ChartSeriesType.Scatter"
+                               Color="#ff9da7" />
+        </MariloChart>
+    </DemoSection>
+
+    <DemoSection Title="Bubble Chart" Description="A bubble chart where size encodes a third dimension.">
+        <MariloChart Title="Market Analysis" Height="350px">
+            <MariloChartSeries Name="Products"
+                               Data="_bubbleData"
+                               XField="Price"
+                               YField="Sales"
+                               SizeField="MarketShare"
+                               Type="ChartSeriesType.Bubble"
+                               Color="#86bcb6" />
+        </MariloChart>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Configuration">
+    <DemoSection Title="Title & Subtitle" Description="Charts support a main title and subtitle using child components.">
+        <MariloChart Height="300px">
+            <ChartTitle Text="Quarterly Performance" />
+            <ChartSubtitle Text="January through June 2026" />
+            <MariloChartSeries Name="Revenue"
+                               Data="_salesData"
+                               Field="Revenue"
+                               CategoryField="Month"
+                               Type="ChartSeriesType.Column"
+                               Color="#4e79a7" />
+        </MariloChart>
+    </DemoSection>
+
+    <DemoSection Title="Legend & Tooltips" Description="Toggle legend visibility and tooltip display. Hover over data points to see tooltips.">
+        <div class="demo-controls">
+            <label><input type="checkbox" @bind="_showLegend" /> Show Legend</label>
+            <label style="margin-left:16px;"><input type="checkbox" @bind="_showTooltips" /> Show Tooltips</label>
+        </div>
+        <MariloChart Title="Interactive Chart" Height="350px"
+                     ShowLegend="@_showLegend"
+                     ShowTooltips="@_showTooltips">
+            <MariloChartSeries Name="Revenue"
+                               Data="_salesData"
+                               Field="Revenue"
+                               CategoryField="Month"
+                               Type="ChartSeriesType.Line"
+                               Color="#4e79a7" />
+            <MariloChartSeries Name="Profit"
+                               Data="_salesData"
+                               Field="Profit"
+                               CategoryField="Month"
+                               Type="ChartSeriesType.Line"
+                               Color="#e15759" />
+        </MariloChart>
+    </DemoSection>
+
+    <DemoSection Title="Series Visibility" Description="Toggle individual series on and off using the Visible parameter.">
+        <div class="demo-controls">
+            <label><input type="checkbox" @bind="_showRevenue" /> Revenue</label>
+            <label style="margin-left:16px;"><input type="checkbox" @bind="_showProfit" /> Profit</label>
+        </div>
+        <MariloChart Title="Toggle Series" Height="300px">
+            <MariloChartSeries Name="Revenue"
+                               Data="_salesData"
+                               Field="Revenue"
+                               CategoryField="Month"
+                               Type="ChartSeriesType.Column"
+                               Visible="@_showRevenue"
+                               Color="#4e79a7" />
+            <MariloChartSeries Name="Profit"
+                               Data="_salesData"
+                               Field="Profit"
+                               CategoryField="Month"
+                               Type="ChartSeriesType.Column"
+                               Visible="@_showProfit"
+                               Color="#59a14f" />
+        </MariloChart>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Events">
+    <DemoSection Title="Click Events" Description="Click on a data point to see the event details.">
+        <MariloChart Title="Click a Data Point" Height="300px"
+                     OnSeriesClick="@OnChartClick">
+            <MariloChartSeries Name="Revenue"
+                               Data="_salesData"
+                               Field="Revenue"
+                               CategoryField="Month"
+                               Type="ChartSeriesType.Column"
+                               Color="#4e79a7" />
+        </MariloChart>
+        <p class="demo-info">Last click: <strong>@(_lastClickInfo ?? "(none)")</strong></p>
+    </DemoSection>
+</PageSection>
+
 @code {
+    // ── Sample Data ──────────────────────────────────────────────────
     private record SalesData(string Month, double Revenue, double Profit);
 
     private readonly List<SalesData> _salesData =
@@ -51,21 +195,30 @@
         new("Jun", 21000, 7000),
     ];
 
-    private const string _lineCode =
-        "<MariloChart Title=\"Monthly Revenue\" Height=\"350px\">\n" +
-        "    <MariloChartSeries Name=\"Revenue\"\n" +
-        "                       Data=\"_salesData\"\n" +
-        "                       Field=\"Revenue\"\n" +
-        "                       CategoryField=\"Month\"\n" +
-        "                       Type=\"ChartSeriesType.Line\" />\n" +
-        "</MariloChart>";
+    private record BubbleItem(double Price, double Sales, double MarketShare);
 
-    private const string _columnCode =
-        "<MariloChart Title=\"Revenue vs Profit\" Height=\"350px\">\n" +
-        "    <MariloChartSeries Name=\"Revenue\"\n" +
-        "                       Data=\"_salesData\"\n" +
-        "                       Field=\"Revenue\"\n" +
-        "                       CategoryField=\"Month\"\n" +
-        "                       Type=\"ChartSeriesType.Column\" />\n" +
-        "</MariloChart>";
+    private readonly List<BubbleItem> _bubbleData =
+    [
+        new(29.99, 1200, 15),
+        new(49.99, 800, 22),
+        new(19.99, 2000, 8),
+        new(79.99, 400, 35),
+        new(39.99, 1500, 18),
+    ];
+
+    // ── Legend & Tooltips ────────────────────────────────────────────
+    private bool _showLegend = true;
+    private bool _showTooltips = true;
+
+    // ── Series Visibility ───────────────────────────────────────────
+    private bool _showRevenue = true;
+    private bool _showProfit = true;
+
+    // ── Events ──────────────────────────────────────────────────────
+    private string? _lastClickInfo;
+
+    private void OnChartClick(ChartSeriesClickEventArgs args)
+    {
+        _lastClickInfo = $"Series: {args.SeriesName}, Category: {args.Category}, Value: {args.Value:N0}";
+    }
 }

@@ -11,8 +11,8 @@
 | Field | Value |
 |-------|-------|
 | Workspace | gap-analysis-resolution |
-| Last updated | 2026-04-09 |
-| Current phase | **JS Interop Batch 2 complete (2 DataGrid gaps: frozen cols + row drag-drop).** Stage 06 complete (all prior + JS Interop B1+B2). 1083/1083 full suite. 1 JS interop gap remaining (Editor table/image resize). DataGrid Phase 3 fully closed. |
+| Last updated | 2026-04-10 |
+| Current phase | **ALL JS Interop batches complete (B1+B2+B3).** Stage 06 complete for all gaps. 1097/1097 full suite. Zero remaining gaps in this workspace. |
 
 ## Pipeline Status
 
@@ -89,9 +89,13 @@
 
 - [x] 03-resolution through 06-validate (subagent-driven dev; Locked/FrozenPosition on GridColumn, sticky CSS offsets, RowDraggable+OnRowDrop, HTML5 DnD IIFE extension; 15 bUnit tests; 1083/1083 full suite)
 
-## Remaining (JS Interop — Future Batch 3)
+**JS Interop Batch 3 (1 gap: Editor table/image resize)** -- COMPLETE
 
-1. Editor: Table/image resize (drag handles in contenteditable).
+- [x] 03-resolution through 06-validate (table column/row resize + image resize drag handles; 14 bUnit tests; 1097/1097 full suite)
+
+## Remaining
+
+None — all gaps in this workspace are resolved.
 
 ## Routed to Other Workspaces
 
