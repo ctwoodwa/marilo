@@ -12,7 +12,7 @@
 |-------|-------|
 | Workspace | gap-analysis-resolution |
 | Last updated | 2026-04-09 |
-| Current phase | **FileManager full rewrite complete (36/36 gaps, 151 tests).** Stage 06 complete (DataGrid Ph1-3 + splitter + wizard + T4 B1-B8 + chart B1+B2 + editor B1+B2a + Gantt rewrite + ColorPicker standalone + DRP multi-view + **FileManager A-F**). 877/877 full suite. |
+| Current phase | **JS Interop Batch 1 complete (3 gaps: DropZoneId + Editor Adaptive).** Stage 06 complete (all prior + JS Interop B1). 1067/1067 full suite. 3 JS interop gaps remaining (Editor table/image resize, DataGrid frozen cols, DataGrid row drag-drop). |
 
 ## Pipeline Status
 
@@ -81,15 +81,13 @@
 - [x] 03-resolution through 06-validate (subagent-driven dev; 9 commits, 23 bUnit tests)
 - Closure report: `stages/06-validate/output/gap-colorpicker-standalone-closure-report.md`
 
-## Pipeline Pause — All C# Work Complete
+**JS Interop Batch 1 (3 gaps: DropZoneId + Editor Adaptive)** -- COMPLETE
+- [x] 03-resolution through 06-validate (subagent-driven dev; DropZoneId JS module + IDropZoneService for FileUpload+Upload; Editor Adaptive via ResizeObserver + overflow popup; 18 bUnit tests; 1067/1067 full suite)
 
-All pure C# gaps in this workspace are resolved. Remaining items require JS interop or belong to dedicated delivery workspaces.
+## Remaining (JS Interop — Future Batch 2)
 
-## Remaining (JS Interop — Future Batch)
-
-1. Editor: Adaptive toolbar (ResizeObserver), table/image resize (drag handles).
+1. Editor: Table/image resize (drag handles in contenteditable).
 2. DataGrid: Frozen columns (JS sticky), Row drag-drop (JS events).
-3. FileUpload/Upload: DropZoneId (external drop zone JS wiring).
 
 ## Routed to Other Workspaces
 

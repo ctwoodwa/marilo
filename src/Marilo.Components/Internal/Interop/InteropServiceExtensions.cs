@@ -39,6 +39,9 @@ public static class InteropServiceExtensions
         // Graphics (charts, diagrams, maps)
         services.AddScoped<IGraphicsInteropService, GraphicsInteropService>();
 
+        // Drop zones (FileUpload, Upload)
+        services.AddScoped<IDropZoneService, DropZoneService>();
+
         return builder;
     }
 }

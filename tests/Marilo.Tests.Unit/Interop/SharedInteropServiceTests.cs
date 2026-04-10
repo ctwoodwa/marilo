@@ -110,6 +110,15 @@ public class SharedInteropServiceTests
     }
 
     [Fact]
+    public async Task AddMariloInteropServices_Registers_DropZoneService()
+    {
+        await using var provider = BuildProvider();
+        await using var scope = provider.CreateAsyncScope();
+        var svc = scope.ServiceProvider.GetService<IDropZoneService>();
+        Assert.NotNull(svc);
+    }
+
+    [Fact]
     public async Task ModuleLoader_Is_Scoped_Different_Scopes_Get_Different_Instances()
     {
         await using var provider = BuildProvider();

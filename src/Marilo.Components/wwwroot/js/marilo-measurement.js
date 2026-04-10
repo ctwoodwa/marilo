@@ -26,6 +26,16 @@ export function getViewport() {
 }
 
 /**
+ * Gets the widths of all direct children of the given element.
+ * @param {HTMLElement} element
+ * @returns {number[]}
+ */
+export function getChildWidths(element) {
+    if (!element) return [];
+    return Array.from(element.children).map(c => c.getBoundingClientRect().width);
+}
+
+/**
  * Focuses the element with the given ID.
  * @param {string} elementId - The DOM element ID to focus
  */

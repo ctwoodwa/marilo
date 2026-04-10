@@ -1,3 +1,4 @@
+using Marilo.Components.Internal.Interop;
 using Marilo.Core.Base;
 using Marilo.Core.Enums;
 using Microsoft.AspNetCore.Components;
@@ -16,6 +17,7 @@ public partial class MariloUpload : MariloComponentBase, IUploadChunkSettingsSin
 {
     [Inject] private HttpClient Http { get; set; } = default!;
     [Inject] private IJSRuntime JS { get; set; } = default!;
+    [Inject] private IDropZoneService DropZoneService { get; set; } = default!;
 
     // ── Parameters: Endpoints ────────────────────────────────────────────────
 
@@ -163,6 +165,9 @@ public partial class MariloUpload : MariloComponentBase, IUploadChunkSettingsSin
     private bool _filesParamInitialized;
     private string InputId => Id ?? $"mar-upload-{_componentId}";
     private readonly string _componentId = Guid.NewGuid().ToString("N")[..8];
+    private int _dropZoneHandleId = -1;
+    private string? _previousDropZoneId;
+    private bool _dropZoneRegistrationPending;
 
     // ── Lifecycle ─────────────────────────────────────────────────────────────
 
@@ -181,6 +186,51 @@ public partial class MariloUpload : MariloComponentBase, IUploadChunkSettingsSin
                 }
             }
             _filesParamInitialized = true;
+        }
+
+        // Track DropZoneId changes for re-registration
+        if (DropZoneId != _previousDropZoneId)
+        {
+            _dropZoneRegistrationPending = true;
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !string.IsNullOrEmpty(DropZoneId))
+        {
+            _previousDropZoneId = DropZoneId;
+            _dropZoneHandleId = await DropZoneService.RegisterAsync(DropZoneId, InputId);
+            _dropZoneRegistrationPending = false;
+        }
+        else if (_dropZoneRegistrationPending)
+        {
+            // Unregister old drop zone if active
+            if (_dropZoneHandleId >= 0)
+            {
+                try { await DropZoneService.UnregisterAsync(_dropZoneHandleId); }
+                catch (JSDisconnectedException) { }
+                _dropZoneHandleId = -1;
+            }
+
+            // Register new drop zone if set
+            if (!string.IsNullOrEmpty(DropZoneId))
+            {
+                _dropZoneHandleId = await DropZoneService.RegisterAsync(DropZoneId, InputId);
+            }
+
+            _previousDropZoneId = DropZoneId;
+            _dropZoneRegistrationPending = false;
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_dropZoneHandleId >= 0)
+        {
+            try { await DropZoneService.UnregisterAsync(_dropZoneHandleId); }
+            catch (JSDisconnectedException) { }
+            _dropZoneHandleId = -1;
         }
     }
 

@@ -1,6 +1,8 @@
 @inherits MariloComponentBase
 @implements IAsyncDisposable
 @inject IJSRuntime JS
+@inject Marilo.Components.Internal.Interop.IResizeObserverService ResizeObserverService
+@inject Marilo.Components.Internal.Interop.IElementMeasurementService MeasurementService
 
 <div class="@CombineClasses(CssProvider.EditorClass())"
      style="@CombineStyles(WidthStyle)"
@@ -15,47 +17,47 @@
     @* Toolbar *@
     @if (!ReadOnly && !Disabled && EditMode != EditorEditMode.Source)
     {
-        <div class="@CssProvider.EditorToolbarClass()" role="toolbar" aria-label="Editor formatting">
+        <div class="@CssProvider.EditorToolbarClass()" role="toolbar" aria-label="Editor formatting" @ref="_toolbarRef">
             @if (ToolbarTemplate != null)
             {
                 @ToolbarTemplate
             }
             else
             {
-                @foreach (var tool in ActiveTools)
+                var allItems = GetAllToolbarItems();
+                var visibleItems = GetVisibleItems(allItems);
+                var overflowItems = GetOverflowItems(allItems);
+
+                foreach (var item in visibleItems)
                 {
-                    <button type="button"
-                            class="mar-editor-tool-btn @(IsToolActive(tool) ? "mar-editor-tool-btn--active" : "")"
-                            title="@GetToolLabel(tool)"
-                            aria-label="@GetToolLabel(tool)"
-                            aria-pressed="@(IsToolActive(tool) ? "true" : "false")"
-                            disabled="@Disabled"
-                            @onclick="() => ExecuteToolAsync(tool)">
-                        @GetToolLabel(tool)
-                    </button>
+                    @RenderToolbarItem(item)
                 }
-                @if (CustomTools != null)
+
+                if (overflowItems.Count > 0)
                 {
-                    @foreach (var customTool in CustomTools)
-                    {
-                        @if (customTool.Template != null)
+                    <div style="position:relative;display:inline-block;">
+                        <button type="button"
+                                class="mar-editor-tool-btn mar-editor-tool-btn--more"
+                                title="More tools"
+                                aria-label="More tools"
+                                aria-expanded="@(_showOverflowPopup ? "true" : "false")"
+                                @onclick="ToggleOverflowPopup">
+                            ⋯
+                        </button>
+                        @if (_showOverflowPopup)
                         {
-                            @customTool.Template
-                        }
-                        else
-                        {
-                            <button type="button"
-                                    class="mar-editor__tool-button"
-                                    title="@customTool.Tooltip"
-                                    @onclick="@(async () => { if (customTool.OnClick != null) await customTool.OnClick(); })">
-                                @if (!string.IsNullOrEmpty(customTool.Icon))
+                            <div class="mar-editor-overflow-popup"
+                                 role="menu"
+                                 tabindex="-1"
+                                 style="position:absolute;top:100%;left:0;z-index:10;background:var(--marilo-color-surface,#fff);border:1px solid var(--marilo-color-border,#ccc);box-shadow:0 2px 8px rgba(0,0,0,.15);padding:4px;display:flex;flex-wrap:wrap;gap:2px;"
+                                 @onfocusout="HandleOverflowFocusOut">
+                                @foreach (var item in overflowItems)
                                 {
-                                    <span class="@customTool.Icon"></span>
+                                    @RenderToolbarItem(item)
                                 }
-                                @customTool.Name
-                            </button>
+                            </div>
                         }
-                    }
+                    </div>
                 }
             }
         </div>
@@ -106,6 +108,7 @@
 @code {
     private ElementReference _editorRef;
     private ElementReference _previewRef;
+    private ElementReference _toolbarRef;
     private IJSObjectReference? _jsModule;
     private DotNetObjectReference<MariloEditor>? _dotNetRef;
     private EditorPasteSettings? _pasteSettings;
@@ -113,6 +116,12 @@
     private System.Timers.Timer? _debounceTimer;
 #pragma warning restore CS0649
     private HashSet<string> _activeFormats = new();
+
+    // ── Adaptive toolbar state ─────────────────────────────────────────
+    private IAsyncDisposable? _resizeObserverHandle;
+    private int _overflowStartIndex = -1; // -1 means no overflow
+    private bool _showOverflowPopup;
+    private double _toolbarWidth;
 
     // ── Validation integration ────────────────────────────────────────
 
@@ -168,6 +177,9 @@
 
     /// <summary>Custom tools rendered after built-in tools in the toolbar.</summary>
     [Parameter] public IEnumerable<EditorCustomTool>? CustomTools { get; set; }
+
+    /// <summary>When true, the toolbar automatically overflows items into a popup when too narrow.</summary>
+    [Parameter] public bool Adaptive { get; set; }
 
     // ── Events ─────────────────────────────────────────────────────────
 
@@ -511,6 +523,19 @@
         {
             await _jsModule.InvokeVoidAsync("setContent", Value);
         }
+
+        if (Adaptive && _resizeObserverHandle is null && _toolbarRef.Id is not null)
+        {
+            _resizeObserverHandle = await ResizeObserverService.ObserveAsync(_toolbarRef, OnToolbarResized);
+            // Initial measurement to avoid layout flash before the first ResizeObserver callback fires
+            var rect = await MeasurementService.GetBoundingClientRectAsync(_toolbarRef);
+            if (rect is not null)
+            {
+                _toolbarWidth = rect.Width;
+                await RecalculateOverflow();
+                StateHasChanged();
+            }
+        }
     }
 
     private async Task InitJsModule()
@@ -726,6 +751,134 @@
         return SanitizeHtml(html);
     }
 
+    // ── Adaptive toolbar helpers ──────────────────────────────────────
+
+    private record struct ToolbarItem(EditorTool? Tool, EditorCustomTool? CustomTool)
+    {
+        public bool IsBuiltIn => Tool.HasValue;
+    }
+
+    private List<ToolbarItem> GetAllToolbarItems()
+    {
+        var items = new List<ToolbarItem>();
+        foreach (var tool in ActiveTools)
+            items.Add(new ToolbarItem(tool, null));
+        if (CustomTools != null)
+            foreach (var ct in CustomTools)
+                items.Add(new ToolbarItem(null, ct));
+        return items;
+    }
+
+    private List<ToolbarItem> GetVisibleItems(List<ToolbarItem> allItems)
+    {
+        if (!Adaptive || _overflowStartIndex < 0 || _overflowStartIndex >= allItems.Count)
+            return allItems;
+        return allItems.Take(_overflowStartIndex).ToList();
+    }
+
+    private List<ToolbarItem> GetOverflowItems(List<ToolbarItem> allItems)
+    {
+        if (!Adaptive || _overflowStartIndex < 0 || _overflowStartIndex >= allItems.Count)
+            return new List<ToolbarItem>();
+        return allItems.Skip(_overflowStartIndex).ToList();
+    }
+
+    private void ToggleOverflowPopup()
+    {
+        _showOverflowPopup = !_showOverflowPopup;
+    }
+
+    private async Task OnToolbarResized(Marilo.Components.Internal.Interop.ElementRect rect)
+    {
+        _toolbarWidth = rect.Width;
+        await RecalculateOverflow();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task RecalculateOverflow()
+    {
+        if (!Adaptive) { _overflowStartIndex = -1; return; }
+
+        var allChildWidths = await MeasurementService.GetChildWidthsAsync(_toolbarRef);
+        if (allChildWidths is null || allChildWidths.Length == 0) { _overflowStartIndex = -1; return; }
+
+        // When overflow is active, the last child is the "More" button — exclude it from item widths
+        var allItems = GetAllToolbarItems();
+        var itemCount = allItems.Count;
+        var childWidths = allChildWidths.Length > itemCount
+            ? allChildWidths.AsSpan(0, itemCount).ToArray()
+            : allChildWidths;
+
+        // First check: do all items fit without any reservation?
+        double totalWidth = childWidths.Sum();
+        if (totalWidth <= _toolbarWidth)
+        {
+            _overflowStartIndex = -1; // Everything fits, no More button needed
+            return;
+        }
+
+        // Items don't all fit — reserve space for the More button
+        const double moreButtonWidth = 40;
+        double available = _toolbarWidth - moreButtonWidth;
+        double cumulative = 0;
+
+        for (int i = 0; i < childWidths.Length; i++)
+        {
+            cumulative += childWidths[i];
+            if (cumulative > available)
+            {
+                _overflowStartIndex = i;
+                return;
+            }
+        }
+
+        _overflowStartIndex = -1;
+    }
+
+    private void HandleOverflowFocusOut(FocusEventArgs e)
+    {
+        // Close overflow popup when focus leaves the popup container
+        _showOverflowPopup = false;
+    }
+
+    private RenderFragment RenderToolbarItem(ToolbarItem item) => builder =>
+    {
+        if (item.IsBuiltIn)
+        {
+            builder.OpenElement(0, "button");
+            builder.AddAttribute(1, "type", "button");
+            builder.AddAttribute(2, "class", $"mar-editor-tool-btn {(IsToolActive(item.Tool!.Value) ? "mar-editor-tool-btn--active" : "")}");
+            builder.AddAttribute(3, "title", GetToolLabel(item.Tool!.Value));
+            builder.AddAttribute(4, "aria-label", GetToolLabel(item.Tool!.Value));
+            builder.AddAttribute(5, "aria-pressed", IsToolActive(item.Tool!.Value) ? "true" : "false");
+            builder.AddAttribute(6, "disabled", Disabled);
+            builder.AddAttribute(7, "onclick", EventCallback.Factory.Create(this, () => ExecuteToolAsync(item.Tool!.Value)));
+            builder.AddContent(8, GetToolLabel(item.Tool!.Value));
+            builder.CloseElement();
+        }
+        else if (item.CustomTool?.Template != null)
+        {
+            builder.AddContent(0, item.CustomTool.Template);
+        }
+        else if (item.CustomTool != null)
+        {
+            builder.OpenElement(0, "button");
+            builder.AddAttribute(1, "type", "button");
+            builder.AddAttribute(2, "class", "mar-editor__tool-button");
+            builder.AddAttribute(3, "title", item.CustomTool.Tooltip);
+            var ct = item.CustomTool;
+            builder.AddAttribute(4, "onclick", EventCallback.Factory.Create(this, async () => { if (ct.OnClick != null) await ct.OnClick(); }));
+            if (!string.IsNullOrEmpty(item.CustomTool.Icon))
+            {
+                builder.OpenElement(5, "span");
+                builder.AddAttribute(6, "class", item.CustomTool.Icon);
+                builder.CloseElement();
+            }
+            builder.AddContent(7, item.CustomTool.Name);
+            builder.CloseElement();
+        }
+    };
+
     // ── Labels ─────────────────────────────────────────────────────────
 
     private static string GetToolLabel(EditorTool tool) => tool switch
@@ -765,6 +918,12 @@
 
     public async ValueTask DisposeAsync()
     {
+        if (_resizeObserverHandle is not null)
+        {
+            try { await _resizeObserverHandle.DisposeAsync(); }
+            catch (JSDisconnectedException) { }
+            _resizeObserverHandle = null;
+        }
         if (_jsModule is not null)
         {
             try
