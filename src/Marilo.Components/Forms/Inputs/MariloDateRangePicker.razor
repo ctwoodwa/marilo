@@ -1,5 +1,6 @@
 @inherits MariloComponentBase
 @inject IJSRuntime JS
+@inject Marilo.Components.Internal.Interop.IMariloJsModuleLoader JsModuleLoader
 
 <div class="@CombineClasses(CssProvider.DatePickerClass()) mar-date-range-picker @(_isPopupOpen ? "mar-date-range-picker--open" : "") @SizeClass @RoundedClass @FillModeClass"
      style="@CombineStyles()"
@@ -293,10 +294,16 @@
     public void Refresh() => StateHasChanged();
 
     /// <summary>Programmatically focuses the start-date input element via JS interop.</summary>
-    public async Task FocusStartAsync() => await JS.InvokeVoidAsync("eval", $"document.getElementById('{_startInputId}')?.focus()");
+    public async Task FocusStartAsync() => await FocusElementByIdAsync(_startInputId);
 
     /// <summary>Programmatically focuses the end-date input element via JS interop.</summary>
-    public async Task FocusEndAsync() => await JS.InvokeVoidAsync("eval", $"document.getElementById('{_endInputId}')?.focus()");
+    public async Task FocusEndAsync() => await FocusElementByIdAsync(_endInputId);
+
+    private async Task FocusElementByIdAsync(string elementId)
+    {
+        var module = await JsModuleLoader.ImportAsync("js/marilo-measurement.js");
+        await module.InvokeVoidAsync("focusById", elementId);
+    }
 
     // ─── Popup Handling ───────────────────────────────────────────────────────
 
@@ -339,10 +346,9 @@
         await SetViewAndNotify(nextView);
     }
 
-    /// <summary>Whether the header is clickable to drill up (constrained by BottomView).</summary>
+    /// <summary>Whether the header is clickable to drill up.</summary>
     private bool CanDrillUp(CalendarView currentView)
     {
-        // Can always drill up unless already at Decade
         return currentView < CalendarView.Decade;
     }
 
@@ -508,7 +514,7 @@
         if (start > end && AllowReverse) (start, end) = (end, start);
         var monthStart = new DateTime(year, month, 1);
         var monthEnd = monthStart.AddMonths(1).AddDays(-1);
-        return monthStart > start && monthEnd < end;
+        return !(monthEnd < start || monthStart > end);
     }
 
     private bool IsMonthRangeStart(int year, int month)

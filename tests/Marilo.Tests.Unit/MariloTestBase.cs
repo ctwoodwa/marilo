@@ -1,7 +1,9 @@
 using Bunit;
+using Marilo.Components.Internal.Interop;
 using Marilo.Core.Configuration;
 using Marilo.Core.Contracts;
 using Marilo.Core.Enums;
+using Marilo.Core.Extensions;
 using Marilo.Core.Models;
 using Marilo.Core.Services;
 using Marilo.Providers.FluentUI;
@@ -23,6 +25,7 @@ public abstract class MariloTestBase : BunitContext
         Services.AddSingleton<IMariloThemeService, TestThemeService>();
         Services.AddSingleton<IMariloIconProvider, TestIconProvider>();
         Services.AddSingleton<IMariloNotificationService, MariloNotificationService>();
+        Services.AddMarilo().AddMariloInteropServices();
 
         // Components use JS.InvokeAsync<IJSObjectReference>("eval", ...) to
         // create inline JS modules. Use loose mode so unhandled JS calls

@@ -17,5 +17,6 @@ internal interface IMariloJsModuleLoader : IAsyncDisposable
     /// Path relative to the package wwwroot, e.g., "js/marilo-measurement.js".
     /// The loader prepends the correct static content prefix.
     /// </param>
+    /// <param name="cancellationToken">Cancellation token for the import operation.</param>
     ValueTask<IJSObjectReference> ImportAsync(string modulePath, CancellationToken cancellationToken = default);
 }

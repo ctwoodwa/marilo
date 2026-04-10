@@ -1,3 +1,5 @@
+using Microsoft.JSInterop;
+
 namespace Marilo.Components.Internal.Interop;
 
 internal sealed class ClipboardService : IClipboardService

@@ -206,7 +206,7 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
 
     private async Task ToggleColumnVisibility(GanttColumn<TItem> column)
     {
-        column.Visible = !column.Visible;
+        column.SetVisible(!column.Visible);
         _visibleColumnsCache = null;
         await FireStateChanged("VisibleColumns");
         await InvokeAsync(StateHasChanged);
@@ -1592,9 +1592,15 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         var newItem = Activator.CreateInstance<TItem>();
         _insertedItem = newItem;
         _parentItem = null;
-        await OnCreate.InvokeAsync(new GanttCreateEventArgs { Item = newItem });
-        _insertedItem = null;
-        _parentItem = null;
+        try
+        {
+            await OnCreate.InvokeAsync(new GanttCreateEventArgs { Item = newItem });
+        }
+        finally
+        {
+            _insertedItem = null;
+            _parentItem = null;
+        }
     }
 
     /// <summary>Returns the HTML input type for a given field based on its property type, with optional column EditorType override.</summary>
@@ -1761,7 +1767,7 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         {
             var visibleSet = new HashSet<string>(visibleCols, StringComparer.OrdinalIgnoreCase);
             foreach (var col in _columns)
-                col.Visible = visibleSet.Contains(col.Field ?? "");
+                col.SetVisible(visibleSet.Contains(col.Field ?? ""));
             _visibleColumnsCache = null;
         }
 

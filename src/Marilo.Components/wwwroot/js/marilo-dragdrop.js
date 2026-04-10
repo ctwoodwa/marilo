@@ -49,7 +49,7 @@ function onPointerMove(e) {
         clientY: e.clientY,
         deltaX: dx,
         deltaY: dy
-    });
+    }).catch(() => {});
 }
 
 function onPointerUp(e) {
@@ -66,7 +66,7 @@ function onPointerUp(e) {
         totalDeltaX: dx,
         totalDeltaY: dy,
         wasCancelled: false
-    });
+    }).catch(() => {});
 
     activeDrag = null;
 }
@@ -83,7 +83,7 @@ function onPointerCancel() {
         totalDeltaX: 0,
         totalDeltaY: 0,
         wasCancelled: true
-    });
+    }).catch(() => {});
 
     activeDrag = null;
 }
