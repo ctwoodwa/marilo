@@ -17,7 +17,9 @@
     "watch": "run-p scss:watch:fluentui scss:watch:bootstrap",
     "docs:patch-links": "node scripts/patch-site-links.js",
     "docs:build": "npm run icons:generate && npm run docs:patch-links && dotnet docfx docfx/docfx.json",
-    "docs:serve": "npm run icons:generate && npm run docs:patch-links && dotnet docfx docfx/docfx.json --serve"
+    "docs:serve": "npm run icons:generate && npm run docs:patch-links && dotnet docfx docfx/docfx.json --serve",
+    "test:visual": "npx playwright test --config tests/visual-parity/playwright.config.ts",
+    "test:visual:update": "npx playwright test --config tests/visual-parity/playwright.config.ts --update-snapshots"
   },
   "devDependencies": {
     "bootstrap": "^5.3.3",
