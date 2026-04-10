@@ -2,10 +2,87 @@
 @page "/components/pivotgrid/overview"
 @layout ComponentDemoLayout
 
-<PageSection Title="Pivot Grid">
-    <div class="demo-coming-soon">
-        <MariloAlert Severity="AlertSeverity.Info">
-            <strong>Pivot Grid</strong> — Coming soon. Pivot table for multidimensional data analysis.
-        </MariloAlert>
-    </div>
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Description="Pivot Grid displays data in a cross-tabulated format with row and column grouping and aggregate values." Code="@_basicCode">
+        <MariloPivotGrid Data="_salesData"
+                         RowFields="_rowFields"
+                         ColumnFields="_columnFields"
+                         MeasureFields="_measureFields"
+                         AggregateFunction="PivotGridAggregateFunction.Sum"
+                         Height="300px" />
+    </DemoSection>
 </PageSection>
+
+<PageSection Title="Aggregate Functions">
+    <DemoSection Title="Count Aggregation" Description="Switch between aggregate functions such as Sum, Count, Average, Min, and Max." Code="@_countCode">
+        <div style="display:flex;gap:8px;margin-bottom:12px;">
+            <button @onclick='() => _selectedAgg = PivotGridAggregateFunction.Sum' style="@BtnStyle(PivotGridAggregateFunction.Sum)">Sum</button>
+            <button @onclick='() => _selectedAgg = PivotGridAggregateFunction.Count' style="@BtnStyle(PivotGridAggregateFunction.Count)">Count</button>
+            <button @onclick='() => _selectedAgg = PivotGridAggregateFunction.Average' style="@BtnStyle(PivotGridAggregateFunction.Average)">Average</button>
+            <button @onclick='() => _selectedAgg = PivotGridAggregateFunction.Min' style="@BtnStyle(PivotGridAggregateFunction.Min)">Min</button>
+            <button @onclick='() => _selectedAgg = PivotGridAggregateFunction.Max' style="@BtnStyle(PivotGridAggregateFunction.Max)">Max</button>
+        </div>
+        <MariloPivotGrid Data="_salesData"
+                         RowFields="_rowFields"
+                         ColumnFields="_columnFields"
+                         MeasureFields="_measureFields"
+                         AggregateFunction="_selectedAgg"
+                         Sortable="true"
+                         Height="300px" />
+    </DemoSection>
+</PageSection>
+
+@code {
+    private PivotGridAggregateFunction _selectedAgg = PivotGridAggregateFunction.Sum;
+
+    private string BtnStyle(PivotGridAggregateFunction fn) =>
+        $"padding:4px 12px;border:1px solid #ccc;border-radius:4px;cursor:pointer;background:{(fn == _selectedAgg ? "#1976d2" : "white")};color:{(fn == _selectedAgg ? "white" : "#333")};";
+
+    private List<PivotGridField> _rowFields = new()
+    {
+        new PivotGridField { Name = "Region", Title = "Region" }
+    };
+
+    private List<PivotGridField> _columnFields = new()
+    {
+        new PivotGridField { Name = "Product", Title = "Product" }
+    };
+
+    private List<PivotGridField> _measureFields = new()
+    {
+        new PivotGridField { Name = "Revenue", Title = "Revenue" }
+    };
+
+    private List<object> _salesData = new()
+    {
+        new SalesRecord("North", "Widget A", 1200),
+        new SalesRecord("North", "Widget B", 800),
+        new SalesRecord("South", "Widget A", 950),
+        new SalesRecord("South", "Widget B", 1100),
+        new SalesRecord("East", "Widget A", 700),
+        new SalesRecord("East", "Widget B", 1500),
+        new SalesRecord("West", "Widget A", 1300),
+        new SalesRecord("West", "Widget B", 600),
+        new SalesRecord("North", "Widget A", 400),
+        new SalesRecord("South", "Widget B", 350),
+    };
+
+    private record SalesRecord(string Region, string Product, double Revenue);
+
+    private const string _basicCode =
+        "<MariloPivotGrid Data=\"_salesData\"\n" +
+        "                 RowFields=\"_rowFields\"\n" +
+        "                 ColumnFields=\"_columnFields\"\n" +
+        "                 MeasureFields=\"_measureFields\"\n" +
+        "                 AggregateFunction=\"PivotGridAggregateFunction.Sum\"\n" +
+        "                 Height=\"300px\" />";
+
+    private const string _countCode =
+        "<MariloPivotGrid Data=\"_salesData\"\n" +
+        "                 RowFields=\"_rowFields\"\n" +
+        "                 ColumnFields=\"_columnFields\"\n" +
+        "                 MeasureFields=\"_measureFields\"\n" +
+        "                 AggregateFunction=\"_selectedAgg\"\n" +
+        "                 Sortable=\"true\"\n" +
+        "                 Height=\"300px\" />";
+}

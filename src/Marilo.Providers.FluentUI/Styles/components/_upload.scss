@@ -1,0 +1,43 @@
+// =============================================================================
+// Component: Upload
+// =============================================================================
+
+.mar-upload {
+    display: flex;
+    flex-direction: column;
+    gap: var(--marilo-space-sm);
+}
+
+.mar-upload-dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--marilo-space-sm);
+    min-height: 120px;
+    border: 2px dashed var(--marilo-color-border);
+    border-radius: var(--marilo-radius-md);
+    padding: var(--marilo-space-lg);
+    text-align: center;
+    color: var(--marilo-color-text-secondary);
+    transition: border-color 0.15s ease, background 0.15s ease;
+
+    &:hover { border-color: var(--marilo-color-border-strong); }
+    &--active { border-color: var(--marilo-color-primary); background: var(--marilo-color-primary-light); }
+}
+
+.mar-upload-file-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--marilo-space-xs);
+}
+
+.mar-upload-file-item {
+    display: flex;
+    align-items: center;
+    gap: var(--marilo-space-sm);
+    padding: var(--marilo-space-xs) var(--marilo-space-sm);
+    background: var(--marilo-color-surface);
+    border-radius: var(--marilo-radius-sm);
+    font-size: var(--marilo-font-size-sm);
+}

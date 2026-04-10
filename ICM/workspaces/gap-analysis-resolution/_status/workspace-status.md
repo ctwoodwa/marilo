@@ -11,8 +11,8 @@
 | Field | Value |
 |-------|-------|
 | Workspace | gap-analysis-resolution |
-| Last updated | 2026-04-09 |
-| Current phase | **FileManager full rewrite complete (36/36 gaps, 151 tests).** Stage 06 complete (DataGrid Ph1-3 + splitter + wizard + T4 B1-B8 + chart B1+B2 + editor B1+B2a + Gantt rewrite + ColorPicker standalone + DRP multi-view + **FileManager A-F**). 877/877 full suite. |
+| Last updated | 2026-04-10 |
+| Current phase | **ALL JS Interop batches complete (B1+B2+B3).** Stage 06 complete for all gaps. 1097/1097 full suite. Zero remaining gaps in this workspace. |
 
 ## Pipeline Status
 
@@ -81,15 +81,21 @@
 - [x] 03-resolution through 06-validate (subagent-driven dev; 9 commits, 23 bUnit tests)
 - Closure report: `stages/06-validate/output/gap-colorpicker-standalone-closure-report.md`
 
-## Pipeline Pause — All C# Work Complete
+**JS Interop Batch 1 (3 gaps: DropZoneId + Editor Adaptive)** -- COMPLETE
 
-All pure C# gaps in this workspace are resolved. Remaining items require JS interop or belong to dedicated delivery workspaces.
+- [x] 03-resolution through 06-validate (subagent-driven dev; DropZoneId JS module + IDropZoneService for FileUpload+Upload; Editor Adaptive via ResizeObserver + overflow popup; 18 bUnit tests; 1067/1067 full suite)
 
-## Remaining (JS Interop — Future Batch)
+**JS Interop Batch 2 (2 gaps: DataGrid frozen cols + row drag-drop)** -- COMPLETE
 
-1. Editor: Adaptive toolbar (ResizeObserver), table/image resize (drag handles).
-2. DataGrid: Frozen columns (JS sticky), Row drag-drop (JS events).
-3. FileUpload/Upload: DropZoneId (external drop zone JS wiring).
+- [x] 03-resolution through 06-validate (subagent-driven dev; Locked/FrozenPosition on GridColumn, sticky CSS offsets, RowDraggable+OnRowDrop, HTML5 DnD IIFE extension; 15 bUnit tests; 1083/1083 full suite)
+
+**JS Interop Batch 3 (1 gap: Editor table/image resize)** -- COMPLETE
+
+- [x] 03-resolution through 06-validate (table column/row resize + image resize drag handles; 14 bUnit tests; 1097/1097 full suite)
+
+## Remaining
+
+None — all gaps in this workspace are resolved.
 
 ## Routed to Other Workspaces
 

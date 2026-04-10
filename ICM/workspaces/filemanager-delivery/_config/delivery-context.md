@@ -32,16 +32,24 @@
 | Field | Value |
 |-------|-------|
 | Demo page(s) | FileManager/Overview.razor |
-| Last demo audit | PENDING |
-| Open demo gaps | PENDING |
+| Last demo audit | 2026-04-10 |
+| Open demo gaps | 0 (12 scenarios implemented, covering all implemented parameters and events) |
+
+## Visual Parity State
+
+| Field | Value |
+|-------|-------|
+| Last parity review | PENDING |
+| Themes reviewed | PENDING |
+| Open parity gaps | PENDING |
 
 ## Delivery Gate
 
 | Field | Value |
 |-------|-------|
-| Last sync check | PENDING |
-| Gate status | PENDING |
-| Blocking items | PENDING |
+| Last sync check | 2026-04-10 |
+| Gate status | AMBER (functional, spec-ahead gaps exist) |
+| Blocking items | 0 (28 spec-ahead are future enhancements, not blockers) |
 
 ## Gap Workspace Link
 

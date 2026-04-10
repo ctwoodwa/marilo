@@ -1,0 +1,9 @@
+// =============================================================================
+// Patterns: Field Base
+// Shared input field chrome used by TextField, TextArea, Select
+// =============================================================================
+
+// The shared input chrome is applied per-component in components/_text-field.scss,
+// components/_text-area.scss, and components/_select.scss.
+// Extraction into a shared mixin is deferred until a second provider (Bootstrap/Material)
+// needs parity — at that point, lift to a @mixin marilo-field-base here.

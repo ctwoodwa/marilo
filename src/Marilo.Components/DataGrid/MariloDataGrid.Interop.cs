@@ -40,14 +40,15 @@ public partial class MariloDataGrid<TItem> : IAsyncDisposable
             _resizable = Resizable;
             _reorderable = Reorderable;
 
-            if (_resizable || _reorderable || Navigable)
+            if (_resizable || _reorderable || Navigable || RowDraggable)
             {
                 _jsModule = await JS.InvokeAsync<IJSObjectReference>("eval", GetGridScript());
                 await _jsModule.InvokeVoidAsync("init", _gridId, _dotNetRef, new
                 {
                     resizable = _resizable,
                     reorderable = _reorderable,
-                    navigable = Navigable
+                    navigable = Navigable,
+                    rowDraggable = RowDraggable
                 });
             }
         }
@@ -103,6 +104,28 @@ public partial class MariloDataGrid<TItem> : IAsyncDisposable
         // Can be used for accessibility announcements
     }
 
+    /// <summary>Called from JS when a row is dropped to a new position.</summary>
+    [JSInvokable]
+    public async Task OnRowDropped(int sourceIndex, int destIndex, string dropPosition)
+    {
+        if (sourceIndex < 0 || sourceIndex >= _displayedItems.Count ||
+            destIndex < 0 || destIndex >= _displayedItems.Count)
+            return;
+
+        var args = new GridRowDropEventArgs<TItem>
+        {
+            Item = _displayedItems[sourceIndex],
+            DestinationItem = _displayedItems[destIndex],
+            DestinationIndex = destIndex,
+            DropPosition = string.Equals(dropPosition, "after", StringComparison.OrdinalIgnoreCase)
+                ? GridRowDropPosition.After
+                : GridRowDropPosition.Before
+        };
+
+        if (OnRowDrop.HasDelegate)
+            await OnRowDrop.InvokeAsync(args);
+    }
+
     public async ValueTask DisposeAsync()
     {
         if (_jsModule != null)
@@ -133,6 +156,7 @@ public partial class MariloDataGrid<TItem> : IAsyncDisposable
             if (options.resizable) initResize();
             if (options.reorderable) initReorder();
             if (options.navigable) initKeyboardNav();
+            if (options.rowDraggable) initRowDrag();
         },
         dispose() {
             grid = null;
@@ -188,7 +212,8 @@ public partial class MariloDataGrid<TItem> : IAsyncDisposable
         headers.forEach((th) => {
             if (th.classList.contains('mar-datagrid-detail-cell') ||
                 th.classList.contains('mar-datagrid-checkbox-cell') ||
-                th.classList.contains('mar-datagrid-command-header')) return;
+                th.classList.contains('mar-datagrid-command-header') ||
+                th.classList.contains('mar-datagrid-col--locked')) return;
 
             th.setAttribute('draggable', 'true');
 
@@ -279,9 +304,72 @@ public partial class MariloDataGrid<TItem> : IAsyncDisposable
         });
     }
 
+    function initRowDrag() {
+        const tbody = grid.querySelector('tbody');
+        if (!tbody) return;
+
+        let dragSourceIndex = -1;
+
+        tbody.addEventListener('dragstart', (e) => {
+            const cell = e.target.closest('.mar-datagrid-drag-cell');
+            if (!cell) return;
+            e.stopPropagation();
+            dragSourceIndex = parseInt(cell.dataset.rowIndex, 10);
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', dragSourceIndex.toString());
+            cell.closest('tr')?.classList.add('mar-datagrid-row--dragging');
+        });
+
+        tbody.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            const tr = e.target.closest('tr');
+            if (!tr) return;
+            const rect = tr.getBoundingClientRect();
+            const midY = rect.top + rect.height / 2;
+            tbody.querySelectorAll('.mar-datagrid-row--drop-before, .mar-datagrid-row--drop-after')
+                .forEach(el => el.classList.remove('mar-datagrid-row--drop-before', 'mar-datagrid-row--drop-after'));
+            tr.classList.add(e.clientY < midY ? 'mar-datagrid-row--drop-before' : 'mar-datagrid-row--drop-after');
+        });
+
+        tbody.addEventListener('dragleave', (e) => {
+            const tr = e.target.closest('tr');
+            if (tr) {
+                tr.classList.remove('mar-datagrid-row--drop-before', 'mar-datagrid-row--drop-after');
+            }
+        });
+
+        tbody.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const tr = e.target.closest('tr');
+            if (!tr || dragSourceIndex < 0) return;
+
+            const destCell = tr.querySelector('.mar-datagrid-drag-cell');
+            const destIndex = destCell ? parseInt(destCell.dataset.rowIndex, 10) : -1;
+
+            const rect = tr.getBoundingClientRect();
+            const dropPosition = e.clientY < (rect.top + rect.height / 2) ? 'before' : 'after';
+
+            tbody.querySelectorAll('.mar-datagrid-row--drop-before, .mar-datagrid-row--drop-after, .mar-datagrid-row--dragging')
+                .forEach(el => el.classList.remove('mar-datagrid-row--drop-before', 'mar-datagrid-row--drop-after', 'mar-datagrid-row--dragging'));
+
+            if (destIndex >= 0 && destIndex !== dragSourceIndex) {
+                dotNetRef.invokeMethodAsync('OnRowDropped', dragSourceIndex, destIndex, dropPosition);
+            }
+            dragSourceIndex = -1;
+        });
+
+        tbody.addEventListener('dragend', () => {
+            tbody.querySelectorAll('.mar-datagrid-row--drop-before, .mar-datagrid-row--drop-after, .mar-datagrid-row--dragging')
+                .forEach(el => el.classList.remove('mar-datagrid-row--drop-before', 'mar-datagrid-row--drop-after', 'mar-datagrid-row--dragging'));
+            dragSourceIndex = -1;
+        });
+    }
+
     function getDataColumnIndex(th) {
         const allTh = Array.from(grid.querySelectorAll('thead tr:first-child th'));
         const dataTh = allTh.filter(h =>
+            !h.classList.contains('mar-datagrid-drag-header') &&
             !h.classList.contains('mar-datagrid-detail-cell') &&
             !h.classList.contains('mar-datagrid-checkbox-cell') &&
             !h.classList.contains('mar-datagrid-command-header'));

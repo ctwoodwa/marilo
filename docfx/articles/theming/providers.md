@@ -89,7 +89,54 @@ public static MariloBuilder UseFluentUI(this MariloBuilder builder, Action<Fluen
 
 This pattern makes it straightforward to create a new provider: implement the three interfaces, register them in an extension method, and every Marilo component picks them up automatically.
 
+## Bootstrap provider
+
+Register Bootstrap 5.3 as the active provider:
+
+```csharp
+// Program.cs
+builder.Services.AddMarilo().UseBootstrap();
+```
+
+Reference the stylesheet in `App.razor`:
+
+```html
+<link rel="stylesheet" href="_content/Marilo.Providers.Bootstrap/css/marilo-bootstrap.css" />
+```
+
+The Bootstrap provider maps Marilo component state to native Bootstrap 5.3 utility classes wherever a direct equivalent exists, and falls back to BEM-style `mar-bs-*` classes for component-specific structure that Bootstrap does not cover. Bootstrap's own Sass variables remain globally available inside the provider's SCSS so `$primary`, `$border-color`, and similar variables are always in scope without `@use`.
+
+## Material 3 provider
+
+Register Material Design 3 as the active provider:
+
+```csharp
+// Program.cs
+builder.Services.AddMarilo().UseMaterial();
+```
+
+Reference the stylesheet in `App.razor`:
+
+```html
+<link rel="stylesheet" href="_content/Marilo.Providers.Material/css/marilo-material.css" />
+```
+
+The Material 3 provider uses a two-layer token architecture. A `$material-ref-palette` Sass map holds the raw 13-stop palette; the SCSS then emits semantic role custom properties (`--md-sys-color-primary`, etc.) from that map. Marilo's `--marilo-*` tokens are mapped to the M3 role tokens so all built-in components stay consistent with Material You color expectations.
+
+## Built-in providers
+
+| Provider | Extension | CSS prefix | Design system | Dark mode |
+| --- | --- | --- | --- | --- |
+| FluentUI | `UseFluentUI()` | `mar-` | Fluent UI 2 | `[data-marilo-theme="dark"]` |
+| Bootstrap | `UseBootstrap()` | `mar-bs-` | Bootstrap 5.3 | `[data-marilo-theme="dark"]` + Bootstrap color-mode |
+| Material 3 | `UseMaterial()` | `mar-` | Material Design 3 | `[data-marilo-theme="dark"]` |
+
+All three providers implement the same `IMariloCssProvider`, `IMariloIconProvider`, and `IMariloJsInterop` contracts, so switching between them requires only changing the extension method call and the stylesheet `<link>` in `App.razor`.
+
 ## See also
 
 - [Theming Overview](xref:theming-overview) -- configure colors, typography, and shape.
+- [Token Reference](xref:theming-token-reference) -- complete `--marilo-*` CSS custom property reference.
+- [Dark Mode](xref:theming-dark-mode) -- enabling and toggling dark mode.
+- [Runtime Provider Switching](xref:theming-runtime-switching) -- swap providers at runtime without a page reload.
 - [Creating a Custom Provider](xref:theming-custom-provider) -- step-by-step guide.

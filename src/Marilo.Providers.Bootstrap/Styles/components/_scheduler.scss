@@ -1,0 +1,17 @@
+// =================================================================
+// Marilo Bootstrap Provider — Scheduler (Calendar Scheduler)
+// =================================================================
+// From _bridge-utility.scss: .mar-bs-calendar, .mar-bs-scheduler
+// Note: MariloAllocationScheduler has its own dedicated file.
+// =================================================================
+
+.mar-bs-calendar {
+  border: 1px solid var(--marilo-color-border);
+  border-radius: var(--marilo-radius-md);
+  padding: var(--marilo-space-md);
+}
+
+.mar-bs-scheduler {
+  border: 1px solid var(--marilo-color-border);
+  border-radius: var(--marilo-radius-md);
+}

@@ -1,0 +1,14 @@
+// =============================================================================
+// Component: Popover
+// =============================================================================
+
+// .mar-popover is the inline host wrapper; .mar-popover__content is the floating layer
+.mar-popover {
+    position: relative;
+    display: inline-block;
+}
+.mar-popover__content { position: absolute; z-index: var(--marilo-z-popover); background: var(--marilo-color-background); border: 1px solid var(--marilo-color-border); border-radius: var(--marilo-radius-md); box-shadow: var(--marilo-shadow-lg); padding: var(--marilo-space-md); min-width: 200px; }
+.mar-popover__content--top { bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: var(--marilo-space-sm); }
+.mar-popover__content--bottom { top: 100%; left: 50%; transform: translateX(-50%); margin-top: var(--marilo-space-sm); }
+.mar-popover__content--left { right: 100%; top: 50%; transform: translateY(-50%); margin-right: var(--marilo-space-sm); }
+.mar-popover__content--right { left: 100%; top: 50%; transform: translateY(-50%); margin-left: var(--marilo-space-sm); }

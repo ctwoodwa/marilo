@@ -1,0 +1,65 @@
+// =============================================================================
+// Foundation: Motion — Material 3 Motion System
+// Source: https://m3.material.io/styles/motion/easing-and-duration
+//
+// M3 emphasizes "emphasized" easing (decelerate into position) for most
+// transitions. Standard and linear easings are used for simple state changes.
+// =============================================================================
+
+:root {
+  // -------------------------------------------------------------------------
+  // M3 Easing curves
+  // -------------------------------------------------------------------------
+  --marilo-motion-easing-emphasized:          cubic-bezier(0.2, 0, 0, 1);
+  --marilo-motion-easing-emphasized-decel:    cubic-bezier(0.05, 0.7, 0.1, 1.0);
+  --marilo-motion-easing-emphasized-accel:    cubic-bezier(0.3, 0, 0.8, 0.15);
+  --marilo-motion-easing-standard:            cubic-bezier(0.2, 0, 0, 1);
+  --marilo-motion-easing-standard-decel:      cubic-bezier(0, 0, 0, 1);
+  --marilo-motion-easing-standard-accel:      cubic-bezier(0.3, 0, 1, 1);
+  --marilo-motion-easing-linear:              cubic-bezier(0, 0, 1, 1);
+
+  // -------------------------------------------------------------------------
+  // M3 Duration tokens
+  // -------------------------------------------------------------------------
+  --marilo-motion-duration-short1:    50ms;
+  --marilo-motion-duration-short2:    100ms;
+  --marilo-motion-duration-short3:    150ms;
+  --marilo-motion-duration-short4:    200ms;
+  --marilo-motion-duration-medium1:   250ms;
+  --marilo-motion-duration-medium2:   300ms;
+  --marilo-motion-duration-medium3:   350ms;
+  --marilo-motion-duration-medium4:   400ms;
+  --marilo-motion-duration-long1:     450ms;
+  --marilo-motion-duration-long2:     500ms;
+  --marilo-motion-duration-long3:     550ms;
+  --marilo-motion-duration-long4:     600ms;
+  --marilo-motion-duration-extra-long1: 700ms;
+  --marilo-motion-duration-extra-long2: 800ms;
+  --marilo-motion-duration-extra-long3: 900ms;
+  --marilo-motion-duration-extra-long4: 1000ms;
+
+  // -------------------------------------------------------------------------
+  // Marilo composite transition tokens (shorthand for common use)
+  // Uses M3-recommended easing curve
+  // -------------------------------------------------------------------------
+  --marilo-transition-fast:    100ms cubic-bezier(0.2, 0, 0, 1);
+  --marilo-transition-normal:  200ms cubic-bezier(0.2, 0, 0, 1);
+  --marilo-transition-slow:    400ms cubic-bezier(0.2, 0, 0, 1);
+
+  // Named duration aliases (for components that need explicit names)
+  --marilo-motion-duration-short:  200ms;
+  --marilo-motion-duration-medium: 400ms;
+  --marilo-motion-duration-long:   700ms;
+}
+
+// Respect user reduced-motion preference
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --marilo-transition-fast:    0ms;
+    --marilo-transition-normal:  0ms;
+    --marilo-transition-slow:    0ms;
+    --marilo-motion-duration-short:  0ms;
+    --marilo-motion-duration-medium: 0ms;
+    --marilo-motion-duration-long:   0ms;
+  }
+}

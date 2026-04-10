@@ -2,10 +2,40 @@
 @page "/components/colorgradient/overview"
 @layout ComponentDemoLayout
 
-<PageSection Title="Color Gradient">
-    <div class="demo-coming-soon">
-        <MariloAlert Severity="AlertSeverity.Info">
-            <strong>Color Gradient</strong> — Coming soon. Gradient color picker for selecting smooth color transitions.
-        </MariloAlert>
-    </div>
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Description="MariloColorGradient provides an HSV canvas, hue slider, and opacity slider for precise color selection. The selected color is returned as an RGB or Hex string." Code="@_basicCode">
+        <MariloColorGradient @bind-Value="_color1" />
+        <p style="margin-top:8px;">Selected: <strong>@_color1</strong></p>
+    </DemoSection>
+
+    <DemoSection Title="Hex Output" Description="Set ValueFormat to Hex to receive the color as a hex string instead of RGB." Code="@_hexCode">
+        <MariloColorGradient @bind-Value="_color2" ValueFormat="ColorFormat.Hex" Format="ColorFormat.Hex" />
+        <p style="margin-top:8px;">Selected: <strong>@_color2</strong></p>
+    </DemoSection>
+
+    <DemoSection Title="Without Opacity" Description="Set ShowOpacityEditor to false to hide the alpha slider when opacity control is not needed." Code="@_noOpacityCode">
+        <MariloColorGradient @bind-Value="_color3" ShowOpacityEditor="false" />
+        <p style="margin-top:8px;">Selected: <strong>@_color3</strong></p>
+    </DemoSection>
 </PageSection>
+
+@code {
+    private string _color1 = "rgb(25, 118, 210)";
+    private string _color2 = "#1976D2";
+    private string _color3 = "rgb(76, 175, 80)";
+
+    private const string _basicCode =
+        "<MariloColorGradient @bind-Value=\"_color\" />\n\n" +
+        "@code {\n" +
+        "    private string _color = \"rgb(25, 118, 210)\";\n" +
+        "}";
+
+    private const string _hexCode =
+        "<MariloColorGradient @bind-Value=\"_color\"\n" +
+        "                     ValueFormat=\"ColorFormat.Hex\"\n" +
+        "                     Format=\"ColorFormat.Hex\" />";
+
+    private const string _noOpacityCode =
+        "<MariloColorGradient @bind-Value=\"_color\"\n" +
+        "                     ShowOpacityEditor=\"false\" />";
+}

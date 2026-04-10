@@ -1,0 +1,22 @@
+// =============================================================================
+// Component: Accordion
+// =============================================================================
+
+.mar-accordion {
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-md);
+    overflow: hidden;
+}
+
+.mar-accordion-item {
+    border-bottom: 1px solid var(--marilo-color-border);
+}
+
+.mar-accordion-item:last-child { border-bottom: none; }
+.mar-accordion-item--expanded { background: var(--marilo-color-surface); }
+
+.mar-accordion-item__header { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: var(--marilo-space-md) var(--marilo-space-lg); background: none; border: none; cursor: pointer; font-family: var(--marilo-font-family); font-size: var(--marilo-font-size-base); font-weight: var(--marilo-font-weight-semibold); text-align: left; color: var(--marilo-color-on-background); }
+.mar-accordion-item__header:hover { background: var(--marilo-color-surface); }
+.mar-accordion-item__chevron { transition: transform var(--marilo-transition-fast); }
+.mar-accordion-item--expanded .mar-accordion-item__chevron { transform: rotate(180deg); }
+.mar-accordion-item__content { padding: 0 var(--marilo-space-lg) var(--marilo-space-lg); }

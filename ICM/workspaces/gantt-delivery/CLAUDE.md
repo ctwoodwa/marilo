@@ -17,7 +17,10 @@ gantt-delivery/
 │   ├── 02-example-ux/                 (audit and update demo page scenarios)
 │   │   ├── shared/                    (demo scenario format)
 │   │   └── output/                    (demo gap list, updated demo page)
-│   └── 03-sync-check/                 (confirm all three artifacts are in sync)
+│   ├── 03-visual-parity/              (theme-aware visual comparison and gap scoring)
+│   │   ├── shared/                    (capture matrix, rubric, gap format, remediation template)
+│   │   └── output/                    (parity gaps, parity summary)
+│   └── 04-sync-check/                 (confirm all four artifacts are in sync)
 │       ├── shared/                    (delivery checklist)
 │       └── output/                    (delivery report)
 └── shared/
@@ -32,8 +35,9 @@ gantt-delivery/
 | `status` | Show pipeline completion for all stages |
 | `spec` | Enter stages/01-spec-review/CONTEXT.md |
 | `demo` | Enter stages/02-example-ux/CONTEXT.md |
-| `sync` | Enter stages/03-sync-check/CONTEXT.md |
-| `deliver` | Run all three stages in sequence |
+| `parity` | Enter stages/03-visual-parity/CONTEXT.md |
+| `sync` | Enter stages/04-sync-check/CONTEXT.md |
+| `deliver` | Run all four stages in sequence |
 
 ### How `status` works
 
@@ -42,8 +46,8 @@ Scan `stages/*/output/` folders. For each stage, if the output folder contains f
 ```
 Pipeline Status: gantt-delivery
 
-  [01-spec-review]  ------>  [02-example-ux]  ------>  [03-sync-check]
-      STATUS                     STATUS                    STATUS
+  [01-spec-review]  ------>  [02-example-ux]  ------>  [03-visual-parity]  ------>  [04-sync-check]
+      STATUS                     STATUS                     STATUS                    STATUS
 ```
 
 ## Routing
@@ -52,7 +56,8 @@ Pipeline Status: gantt-delivery
 |----------------|-------|
 | Audit the API spec vs. implementation | stages/01-spec-review/CONTEXT.md |
 | Audit and update the Example UX | stages/02-example-ux/CONTEXT.md |
-| Confirm all three artifacts are in sync | stages/03-sync-check/CONTEXT.md |
+| Review visual parity across themes | stages/03-visual-parity/CONTEXT.md |
+| Confirm all four artifacts are in sync | stages/04-sync-check/CONTEXT.md |
 | Read delivery configuration | _config/delivery-context.md |
 | Read gap-analysis workspace for this component | /workspaces/Marilo/workspaces/gantt-gap-analysis/CLAUDE.md |
 
@@ -60,9 +65,10 @@ Pipeline Status: gantt-delivery
 
 | Task | Load These | Do NOT Load |
 |------|-----------|-------------|
-| Spec review | _config/delivery-context.md, stages/01-spec-review/CONTEXT.md | Stages 02-03 files (not needed for spec audit) |
-| Example UX work | _config/delivery-context.md, stages/02-example-ux/CONTEXT.md | Stages 01, 03 files (spec output loaded only via stage 02 inputs) |
-| Sync check | All three stage outputs, stages/03-sync-check/shared/delivery-checklist.md | Reference files (heavy; stage outputs summarize them) |
+| Spec review | _config/delivery-context.md, stages/01-spec-review/CONTEXT.md | Stages 02-04 files (not needed for spec audit) |
+| Example UX work | _config/delivery-context.md, stages/02-example-ux/CONTEXT.md | Stages 01, 03-04 files (spec output loaded only via stage 02 inputs) |
+| Visual parity | _config/delivery-context.md, stages/03-visual-parity/CONTEXT.md, stages/02-example-ux/output/ | Stages 01, 04 files |
+| Sync check | All four stage outputs, stages/04-sync-check/shared/delivery-checklist.md | Reference files (heavy; stage outputs summarize them) |
 | Any task | _config/delivery-context.md always | Other component CDWs (scoped to this component only) |
 
 ## Stage Handoffs

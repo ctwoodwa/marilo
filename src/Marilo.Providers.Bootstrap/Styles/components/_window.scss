@@ -1,0 +1,28 @@
+// =================================================================
+// Marilo Bootstrap Provider — Window
+// =================================================================
+// From _bridge-overlays.scss: .mar-bs-window, .mar-bs-window-titlebar, .mar-bs-window-actions
+// =================================================================
+
+.mar-bs-window {
+  position: fixed;
+  z-index: var(--marilo-z-modal);
+  min-width: 300px;
+  min-height: 200px;
+  resize: both;
+  overflow: hidden;
+
+  &--modal {
+    z-index: calc(var(--marilo-z-modal) + 1);
+  }
+}
+
+.mar-bs-window-titlebar {
+  cursor: move;
+  user-select: none;
+}
+
+.mar-bs-window-actions {
+  display: flex;
+  gap: var(--marilo-space-xs);
+}

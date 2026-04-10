@@ -1,0 +1,18 @@
+// =================================================================
+// Marilo Bootstrap Provider — Dropdown List
+// =================================================================
+// From _bridge-utility.scss: .mar-bs-dropdownlist
+// =================================================================
+
+.mar-bs-dropdownlist {
+  position: relative;
+
+  .form-control,
+  .form-select {
+    cursor: pointer;
+  }
+
+  &--open .dropdown-menu {
+    display: block;
+  }
+}

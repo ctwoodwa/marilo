@@ -1,0 +1,21 @@
+// =================================================================
+// Marilo Bootstrap Provider — Badge / Chip
+// =================================================================
+// From _bridge-buttons.scss: .mar-bs-chip, .mar-bs-chip-set
+// =================================================================
+
+.mar-bs-chip {
+  cursor: pointer;
+  font-size: var(--marilo-font-size-sm);
+  padding: 0.35em 0.65em;
+  transition: opacity var(--marilo-transition-fast);
+
+  &--selected {
+    outline: 2px solid var(--marilo-color-primary);
+    outline-offset: 1px;
+  }
+}
+
+.mar-bs-chip-set {
+  min-height: 2rem;
+}

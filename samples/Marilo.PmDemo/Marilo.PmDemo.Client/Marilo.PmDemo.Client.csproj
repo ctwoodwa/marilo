@@ -16,6 +16,8 @@
     <ProjectReference Include="..\..\..\src\Marilo.Components\Marilo.Components.csproj" />
     <ProjectReference Include="..\..\..\src\Marilo.Components.Shell\Marilo.Components.Shell.csproj" />
     <ProjectReference Include="..\..\..\src\Marilo.Providers.FluentUI\Marilo.Providers.FluentUI.csproj" />
+    <ProjectReference Include="..\..\..\src\Marilo.Providers.Bootstrap\Marilo.Providers.Bootstrap.csproj" />
+    <ProjectReference Include="..\..\..\src\Marilo.Providers.Material\Marilo.Providers.Material.csproj" />
   </ItemGroup>
 
 </Project>

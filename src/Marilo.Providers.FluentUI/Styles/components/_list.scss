@@ -1,0 +1,26 @@
+// =============================================================================
+// Component: List
+// =============================================================================
+
+.mar-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-md);
+    overflow: hidden;
+}
+
+.mar-list-item {
+    display: flex;
+    align-items: center;
+    gap: var(--marilo-space-md);
+    padding: var(--marilo-space-md) var(--marilo-space-lg);
+    border-bottom: 1px solid var(--marilo-color-border);
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-base);
+    transition: background var(--marilo-transition-fast);
+}
+
+.mar-list-item:last-child { border-bottom: none; }
+.mar-list-item:hover { background: var(--marilo-color-surface); }

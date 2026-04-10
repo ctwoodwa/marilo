@@ -1,3 +1,5 @@
+using Marilo.Components.DataGrid;
+
 namespace Marilo.Components.DataGrid.Sizing;
 
 /// <summary>
@@ -8,4 +10,6 @@ public sealed record ColumnSizingEntry(
     string? ExplicitWidth,
     double MinWidth,
     double? MaxWidth,
-    string? TextAlign = null);
+    string? TextAlign = null,
+    bool Locked = false,
+    GridColumnFrozenPosition FrozenPosition = GridColumnFrozenPosition.Start);

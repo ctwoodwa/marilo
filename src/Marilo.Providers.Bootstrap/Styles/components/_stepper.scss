@@ -1,0 +1,33 @@
+// =================================================================
+// Marilo Bootstrap Provider — Stepper
+// =================================================================
+// From _bridge-layout.scss: .mar-bs-stepper, .mar-bs-step
+// =================================================================
+
+.mar-bs-stepper {
+  gap: var(--marilo-space-sm);
+  align-items: center;
+}
+
+.mar-bs-step {
+  display: flex;
+  align-items: center;
+  gap: var(--marilo-space-xs);
+  padding: var(--marilo-space-sm) var(--marilo-space-md);
+  border-radius: var(--marilo-radius-md);
+  font-size: var(--marilo-font-size-sm);
+
+  &--active {
+    font-weight: 600;
+    color: var(--marilo-color-primary);
+    background-color: var(--marilo-color-primary-light);
+  }
+
+  &--completed {
+    color: var(--marilo-color-success);
+  }
+
+  &--error {
+    background-color: var(--marilo-color-danger-light);
+  }
+}

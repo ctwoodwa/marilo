@@ -1,0 +1,15 @@
+// =================================================================
+// Marilo Bootstrap Provider — Link
+// =================================================================
+// From _bridge-utility.scss: .mar-bs-link
+// =================================================================
+
+.mar-bs-link {
+  color: var(--marilo-color-primary);
+  text-decoration: underline;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--marilo-color-primary-hover);
+  }
+}

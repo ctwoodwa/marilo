@@ -31,10 +31,12 @@ Because the component tree and the styling layer are separate, you can:
 ## Current providers
 
 | Provider | Package | Design system |
-|---|---|---|
+| --- | --- | --- |
 | Fluent UI | `Marilo.Providers.FluentUI` | Microsoft Fluent UI 2 |
+| Bootstrap | `Marilo.Providers.Bootstrap` | Bootstrap 5.3 |
+| Material 3 | `Marilo.Providers.Material` | Material Design 3 |
 
-Additional providers are on the roadmap. See [Creating a Custom Provider](xref:theming-custom-provider) if you want to build one today.
+See [Creating a Custom Provider](xref:theming-custom-provider) if you want to build your own.
 
 ## Next steps
 

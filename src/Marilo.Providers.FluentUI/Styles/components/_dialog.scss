@@ -1,0 +1,47 @@
+// =============================================================================
+// Component: Dialog
+// =============================================================================
+
+.mar-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--marilo-color-background);
+    border-radius: var(--marilo-radius-lg);
+    box-shadow: var(--marilo-shadow-xl);
+    padding: var(--marilo-space-xl);
+    min-width: 320px;
+    max-width: 600px;
+    z-index: var(--marilo-z-modal);
+    animation: marilo-fade-in var(--marilo-transition-normal);
+}
+
+.mar-dialog-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--marilo-color-overlay);
+    z-index: var(--marilo-z-modal-overlay);
+    animation: marilo-fade-in var(--marilo-transition-fast);
+}
+
+// Dialog inner structure (Phase 3)
+.marilo-dialog-title {
+    display: flex;
+    align-items: center;
+    gap: var(--marilo-space-md);
+    margin-bottom: var(--marilo-space-lg);
+    font-size: var(--marilo-font-size-lg);
+    font-weight: var(--marilo-font-weight-semibold);
+}
+
+.marilo-dialog-body { margin-bottom: var(--marilo-space-xl); color: var(--marilo-color-text-secondary); }
+.marilo-dialog-body p { margin: 0; }
+
+.marilo-dialog-actions { display: flex; justify-content: flex-end; gap: var(--marilo-space-sm); }
+
+// Draggable dialog (Phase 3)
+.mar-dialog--draggable {
+    .mar-dialog-header { cursor: grab; user-select: none; }
+    .mar-dialog-header:active { cursor: grabbing; }
+}

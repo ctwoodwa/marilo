@@ -1,0 +1,38 @@
+// =============================================================================
+// Component: Pagination
+// =============================================================================
+
+.mar-pagination {
+    display: flex;
+    align-items: center;
+    gap: var(--marilo-space-xs);
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mar-pagination-item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: var(--marilo-space-xs) var(--marilo-space-sm);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-md);
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-base);
+    color: var(--marilo-color-on-background);
+    background: var(--marilo-color-background);
+    cursor: pointer;
+    transition: all var(--marilo-transition-fast);
+}
+
+.mar-pagination-item:hover { background: var(--marilo-color-surface-hover); }
+.mar-pagination-item--active { background: var(--marilo-color-primary); color: var(--marilo-color-on-primary); border-color: var(--marilo-color-primary); }
+
+// Phase 2 pagination aliases
+.mar-pagination__item { min-width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--marilo-color-border); border-radius: var(--marilo-radius-md); background: var(--marilo-color-background); cursor: pointer; font-family: var(--marilo-font-family); font-size: var(--marilo-font-size-sm); color: var(--marilo-color-on-background); transition: all var(--marilo-transition-fast); }
+.mar-pagination__item:hover { background: var(--marilo-color-surface); border-color: var(--marilo-color-primary); }
+.mar-pagination__item--active { background: var(--marilo-color-primary); color: var(--marilo-color-on-primary); border-color: var(--marilo-color-primary); }
+.mar-pagination__item:disabled { opacity: 0.5; cursor: not-allowed; }

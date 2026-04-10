@@ -1,0 +1,149 @@
+// =============================================================================
+// Component: Toast, Snackbar & Data Toast
+// =============================================================================
+
+.mar-toast {
+    display: flex;
+    align-items: center;
+    gap: var(--marilo-space-md);
+    padding: var(--marilo-space-md) var(--marilo-space-lg);
+    border-radius: var(--marilo-radius-md);
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-base);
+    box-shadow: var(--marilo-shadow-lg);
+    min-width: 280px;
+    max-width: 420px;
+    z-index: var(--marilo-z-toast);
+    animation: marilo-slide-in var(--marilo-transition-slow);
+}
+
+.mar-toast--info { background: var(--marilo-color-info); color: var(--marilo-color-on-info); }
+.mar-toast--success { background: var(--marilo-color-success); color: var(--marilo-color-on-success); }
+.mar-toast--warning { background: var(--marilo-color-warning); color: var(--marilo-color-on-warning); }
+.mar-toast--error { background: var(--marilo-color-danger); color: var(--marilo-color-on-danger); }
+
+// Snackbar
+.mar-snackbar {
+    position: fixed;
+    z-index: var(--marilo-z-toast, 1400);
+    display: flex;
+    flex-direction: column;
+    gap: var(--marilo-space-sm);
+    background: transparent;
+    padding: 0;
+    pointer-events: none;
+}
+
+.mar-snackbar--empty { display: none; }
+
+.mar-snackbar-item {
+    pointer-events: all;
+    display: flex;
+    align-items: center;
+    gap: var(--marilo-space-md);
+    padding: var(--marilo-space-md) var(--marilo-space-lg);
+    background: var(--marilo-color-on-background);
+    color: var(--marilo-color-background);
+    border-radius: var(--marilo-radius-md);
+    box-shadow: var(--marilo-shadow-lg);
+    min-width: 288px;
+    max-width: 568px;
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-base);
+    animation: marilo-slide-in var(--marilo-transition-slow);
+}
+
+.mar-snackbar-item__action, .mar-snackbar__action { background: none; border: none; color: var(--marilo-color-primary-light); cursor: pointer; font-weight: var(--marilo-font-weight-semibold); padding: var(--marilo-space-xs) var(--marilo-space-sm); border-radius: var(--marilo-radius-md); }
+.mar-snackbar-item__action:hover, .mar-snackbar__action:hover { background: rgba(255,255,255,0.1); }
+.mar-snackbar-item .mar-snackbar__dismiss, .mar-snackbar__dismiss { background: none; border: none; color: var(--marilo-color-background); cursor: pointer; padding: var(--marilo-space-xs); border-radius: var(--marilo-radius-md); opacity: 0.7; }
+.mar-snackbar-item .mar-snackbar__dismiss:hover, .mar-snackbar__dismiss:hover { opacity: 1; background: rgba(255,255,255,0.1); }
+
+@keyframes mar-slide-up { from { transform: translateX(-50%) translateY(100%); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }
+
+// Snackbar position variants (Phase 3)
+.mar-snackbar--top { top: 0; }
+.mar-snackbar--bottom { bottom: 0; }
+.mar-snackbar--left { left: 0; align-items: flex-start; }
+.mar-snackbar--center { left: 50%; transform: translateX(-50%); align-items: center; }
+.mar-snackbar--right { right: 0; align-items: flex-end; }
+
+// Data Toast (Phase 3)
+@keyframes marilo-slide-in-right {
+    from { transform: translateX(100%); opacity: 0; }
+    to   { transform: translateX(0);    opacity: 1; }
+}
+
+.marilo-data-toast-container {
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    z-index: var(--marilo-z-toast);
+    display: flex;
+    flex-direction: column;
+    gap: var(--marilo-space-sm);
+    max-width: 420px;
+    pointer-events: none;
+}
+
+.marilo-data-toast {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--marilo-space-md);
+    padding: var(--marilo-space-md) var(--marilo-space-lg);
+    background: var(--marilo-color-background);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-lg);
+    box-shadow: var(--marilo-shadow-lg);
+    pointer-events: auto;
+    animation: marilo-slide-in-right var(--marilo-transition-slow);
+    border-left: 3px solid var(--marilo-color-info);
+}
+
+.marilo-data-toast.created { border-left-color: var(--marilo-color-success); }
+.marilo-data-toast.updated { border-left-color: var(--marilo-color-info); }
+.marilo-data-toast.deleted { border-left-color: var(--marilo-color-danger); }
+.marilo-data-toast.toggled { border-left-color: var(--marilo-color-warning); }
+
+.marilo-data-toast-icon    { flex-shrink: 0; margin-top: 2px; }
+.marilo-data-toast-content { flex: 1; min-width: 0; }
+
+.marilo-data-toast-summary {
+    font-size: var(--marilo-font-size-sm);
+    font-weight: var(--marilo-font-weight-semibold);
+    color: var(--marilo-color-on-background);
+    line-height: 1.4;
+}
+
+.marilo-data-toast-meta {
+    display: flex;
+    gap: var(--marilo-space-md);
+    margin-top: var(--marilo-space-xxs);
+    font-size: var(--marilo-font-size-xs);
+    color: var(--marilo-color-text-secondary);
+}
+
+.marilo-data-toast-actions  { display: flex; align-items: center; gap: var(--marilo-space-xs); flex-shrink: 0; }
+
+.marilo-data-toast-overflow {
+    display: flex;
+    justify-content: center;
+    gap: var(--marilo-space-sm);
+    padding: var(--marilo-space-sm) var(--marilo-space-lg);
+    font-size: var(--marilo-font-size-xs);
+    color: var(--marilo-color-text-secondary);
+    border-left: none;
+}
+
+// Data Banner (Phase 3)
+.marilo-data-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--marilo-space-lg);
+    padding: var(--marilo-space-sm) var(--marilo-space-xl);
+    margin-bottom: var(--marilo-space-lg);
+    background: linear-gradient(135deg, rgba(96, 205, 255, 0.08), rgba(96, 205, 255, 0.03));
+    border: 1px solid rgba(96, 205, 255, 0.25);
+    border-radius: var(--marilo-radius-lg);
+    animation: marilo-slide-in var(--marilo-transition-normal);
+}

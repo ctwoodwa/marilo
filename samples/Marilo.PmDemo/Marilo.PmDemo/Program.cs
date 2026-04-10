@@ -1,5 +1,12 @@
+using Marilo.Core.Contracts;
 using Marilo.Core.Extensions;
+using Marilo.Providers.Bootstrap;
+using Marilo.Providers.Bootstrap.Extensions;
+using Marilo.Providers.FluentUI;
 using Marilo.Providers.FluentUI.Extensions;
+using Marilo.Providers.Material;
+using Marilo.Providers.Material.Extensions;
+using Marilo.PmDemo.Client.Services;
 using Marilo.PmDemo.Authorization;
 using Marilo.PmDemo.Components;
 using Marilo.PmDemo.Data;
@@ -70,8 +77,24 @@ if (builder.Environment.IsDevelopment())
 builder.Services.AddCors();
 builder.Services.AddAuthorization();
 
-// Marilo component services (FluentUI provider + theme service + toast notification host)
-builder.Services.AddMarilo().UseFluentUI();
+// Marilo component services with provider switching (FluentUI, Bootstrap, Material)
+builder.Services.AddMarilo().AddMariloCoreServices();
+builder.Services.AddSingleton(new FluentUIOptions());
+builder.Services.AddSingleton(new BootstrapOptions());
+builder.Services.AddSingleton(new MaterialOptions());
+builder.Services.AddScoped<FluentUICssProvider>();
+builder.Services.AddScoped<FluentUIIconProvider>();
+builder.Services.AddScoped<FluentUIJsInterop>();
+builder.Services.AddScoped<BootstrapCssProvider>();
+builder.Services.AddScoped<BootstrapIconProvider>();
+builder.Services.AddScoped<BootstrapJsInterop>();
+builder.Services.AddScoped<MaterialCssProvider>();
+builder.Services.AddScoped<MaterialIconProvider>();
+builder.Services.AddScoped<MaterialJsInterop>();
+builder.Services.AddScoped<ProviderSwitcher>();
+builder.Services.AddScoped<IMariloCssProvider>(sp => sp.GetRequiredService<ProviderSwitcher>());
+builder.Services.AddScoped<IMariloIconProvider>(sp => sp.GetRequiredService<ProviderSwitcher>());
+builder.Services.AddScoped<IMariloJsInterop>(sp => sp.GetRequiredService<ProviderSwitcher>());
 
 // PM Demo canonical notification pipeline. Single source of truth for all
 // user-facing notifications (bell, inbox, toast). The canonical service owns

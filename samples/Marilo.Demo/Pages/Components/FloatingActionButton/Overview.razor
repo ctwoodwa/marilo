@@ -2,10 +2,66 @@
 @page "/components/floatingactionbutton/overview"
 @layout ComponentDemoLayout
 
-<PageSection Title="Floating Action Button">
-    <div class="demo-coming-soon">
-        <MariloAlert Severity="AlertSeverity.Info">
-            <strong>Floating Action Button</strong> — Coming soon. Floating primary action button (see FAB component).
-        </MariloAlert>
-    </div>
+<PageSection Title="Overview">
+    <MariloAlert Severity="AlertSeverity.Info" style="margin-bottom:16px;">
+        The FloatingActionButton (FAB) is provided by the <strong>MariloFab</strong> component.
+    </MariloAlert>
+
+    <DemoSection Title="Basic FAB" Description="MariloFab renders a floating action button. By default it is fixed-positioned at the bottom-right of the viewport. Set PositionMode to static for inline placement in demos." Code="@_basicCode">
+        <div style="position:relative; height:120px; border:1px dashed #ccc; border-radius:8px;">
+            <MariloFab Icon="plus"
+                       PositionMode="absolute"
+                       HorizontalAlign="right"
+                       VerticalAlign="bottom"
+                       HorizontalOffset="16px"
+                       VerticalOffset="16px"
+                       OnClick="@(() => _clickCount++)" />
+        </div>
+        <p style="margin-top:8px;">Click count: <strong>@_clickCount</strong></p>
+    </DemoSection>
+
+    <DemoSection Title="Extended FAB" Description="Add child content to create an extended FAB with a text label alongside the icon." Code="@_extendedCode">
+        <div style="position:relative; height:120px; border:1px dashed #ccc; border-radius:8px;">
+            <MariloFab Icon="plus"
+                       PositionMode="absolute"
+                       HorizontalAlign="right"
+                       VerticalAlign="bottom"
+                       HorizontalOffset="16px"
+                       VerticalOffset="16px">
+                Add Item
+            </MariloFab>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Sizes" Description="MariloFab supports Small, Medium, and Large sizes via the Size parameter." Code="@_sizesCode">
+        <div style="display:flex; gap:16px; align-items:center;">
+            <MariloFab Icon="plus" Size="FabSize.Small" PositionMode="static" />
+            <MariloFab Icon="plus" Size="FabSize.Medium" PositionMode="static" />
+            <MariloFab Icon="plus" Size="FabSize.Large" PositionMode="static" />
+        </div>
+    </DemoSection>
 </PageSection>
+
+@code {
+    private int _clickCount;
+
+    private const string _basicCode =
+        "<MariloFab Icon=\"plus\"\n" +
+        "           PositionMode=\"absolute\"\n" +
+        "           HorizontalAlign=\"right\"\n" +
+        "           VerticalAlign=\"bottom\"\n" +
+        "           OnClick=\"@(() => _clickCount++)\" />";
+
+    private const string _extendedCode =
+        "<MariloFab Icon=\"plus\"\n" +
+        "           PositionMode=\"absolute\"\n" +
+        "           HorizontalAlign=\"right\"\n" +
+        "           VerticalAlign=\"bottom\">\n" +
+        "    Add Item\n" +
+        "</MariloFab>";
+
+    private const string _sizesCode =
+        "<MariloFab Icon=\"plus\" Size=\"FabSize.Small\" PositionMode=\"static\" />\n" +
+        "<MariloFab Icon=\"plus\" Size=\"FabSize.Medium\" PositionMode=\"static\" />\n" +
+        "<MariloFab Icon=\"plus\" Size=\"FabSize.Large\" PositionMode=\"static\" />";
+}

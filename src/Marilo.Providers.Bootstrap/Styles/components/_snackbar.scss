@@ -1,0 +1,13 @@
+// =================================================================
+// Marilo Bootstrap Provider — Snackbar
+// =================================================================
+// From _bridge-feedback.scss: .mar-bs-snackbar
+// =================================================================
+
+.mar-bs-snackbar {
+  &--top    { top: var(--marilo-space-lg); }
+  &--bottom { bottom: var(--marilo-space-lg); }
+  &--start  { left: var(--marilo-space-lg); }
+  &--center { left: 50%; transform: translateX(-50%); }
+  &--end    { right: var(--marilo-space-lg); }
+}

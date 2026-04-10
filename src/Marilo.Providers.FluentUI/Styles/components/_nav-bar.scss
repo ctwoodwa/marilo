@@ -1,0 +1,46 @@
+// =============================================================================
+// Component: NavBar / NavMenu / NavItem
+// =============================================================================
+
+.mar-navbar {
+    display: flex;
+    align-items: center;
+    padding: 0 var(--marilo-space-lg);
+    height: 48px;
+    background: var(--marilo-color-surface);
+    border-bottom: 1px solid var(--marilo-color-border);
+    gap: var(--marilo-space-lg);
+}
+
+.mar-navmenu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--marilo-space-xxs);
+    padding: var(--marilo-space-sm);
+}
+
+.mar-navmenu ul { list-style: none; padding: 0; }
+
+.mar-navitem {
+    display: block;
+    display: flex;
+    align-items: center;
+    gap: var(--marilo-space-sm);
+    padding: var(--marilo-space-sm) var(--marilo-space-md);
+    border-radius: var(--marilo-radius-md);
+    color: var(--marilo-color-on-background);
+    text-decoration: none;
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-base);
+    transition: background var(--marilo-transition-fast), color var(--marilo-transition-fast);
+    cursor: pointer;
+}
+
+.mar-navitem a, .mar-navitem button { display: flex; align-items: center; gap: var(--marilo-space-sm); padding: var(--marilo-space-sm) var(--marilo-space-lg); color: var(--marilo-color-on-surface); text-decoration: none; border: none; background: none; width: 100%; cursor: pointer; font-family: var(--marilo-font-family); font-size: var(--marilo-font-size-base); border-radius: var(--marilo-radius-md); transition: background var(--marilo-transition-fast); }
+.mar-navitem a:hover, .mar-navitem button:hover { background: var(--marilo-color-surface-hover); }
+.mar-navitem--active a, .mar-navitem--active button { color: var(--marilo-color-primary); font-weight: var(--marilo-font-weight-semibold); background: var(--marilo-color-primary-light); }
+.mar-navitem:hover { background: var(--marilo-color-surface-hover); }
+.mar-navitem--active { background: var(--marilo-color-primary-light); color: var(--marilo-color-primary); font-weight: var(--marilo-font-weight-semibold); }

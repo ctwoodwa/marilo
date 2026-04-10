@@ -5,16 +5,19 @@ using Microsoft.JSInterop;
 
 namespace Marilo.Demo.Services;
 
-public enum DesignProvider { FluentUI, Bootstrap }
+public enum DesignProvider { FluentUI, Bootstrap, Material }
 
 public class ProviderSwitcher : IMariloCssProvider, IMariloIconProvider, IMariloJsInterop
 {
     private readonly IMariloCssProvider _fluentCss;
     private readonly IMariloCssProvider _bootstrapCss;
+    private readonly IMariloCssProvider _materialCss;
     private readonly IMariloIconProvider _fluentIcons;
     private readonly IMariloIconProvider _bootstrapIcons;
+    private readonly IMariloIconProvider _materialIcons;
     private readonly IMariloJsInterop _fluentJs;
     private readonly IMariloJsInterop _bootstrapJs;
+    private readonly IMariloJsInterop _materialJs;
 
     public DesignProvider ActiveProvider { get; private set; } = DesignProvider.FluentUI;
 
@@ -23,22 +26,43 @@ public class ProviderSwitcher : IMariloCssProvider, IMariloIconProvider, IMarilo
     public ProviderSwitcher(
         Marilo.Providers.FluentUI.FluentUICssProvider fluentCss,
         Marilo.Providers.Bootstrap.BootstrapCssProvider bootstrapCss,
+        Marilo.Providers.Material.MaterialCssProvider materialCss,
         Marilo.Providers.FluentUI.FluentUIIconProvider fluentIcons,
         Marilo.Providers.Bootstrap.BootstrapIconProvider bootstrapIcons,
+        Marilo.Providers.Material.MaterialIconProvider materialIcons,
         Marilo.Providers.FluentUI.FluentUIJsInterop fluentJs,
-        Marilo.Providers.Bootstrap.BootstrapJsInterop bootstrapJs)
+        Marilo.Providers.Bootstrap.BootstrapJsInterop bootstrapJs,
+        Marilo.Providers.Material.MaterialJsInterop materialJs)
     {
         _fluentCss = fluentCss;
         _bootstrapCss = bootstrapCss;
+        _materialCss = materialCss;
         _fluentIcons = fluentIcons;
         _bootstrapIcons = bootstrapIcons;
+        _materialIcons = materialIcons;
         _fluentJs = fluentJs;
         _bootstrapJs = bootstrapJs;
+        _materialJs = materialJs;
     }
 
-    private IMariloCssProvider Css => ActiveProvider == DesignProvider.FluentUI ? _fluentCss : _bootstrapCss;
-    private IMariloIconProvider Icons => ActiveProvider == DesignProvider.FluentUI ? _fluentIcons : _bootstrapIcons;
-    private IMariloJsInterop JsInterop => ActiveProvider == DesignProvider.FluentUI ? _fluentJs : _bootstrapJs;
+    private IMariloCssProvider Css => ActiveProvider switch
+    {
+        DesignProvider.Bootstrap => _bootstrapCss,
+        DesignProvider.Material => _materialCss,
+        _ => _fluentCss,
+    };
+    private IMariloIconProvider Icons => ActiveProvider switch
+    {
+        DesignProvider.Bootstrap => _bootstrapIcons,
+        DesignProvider.Material => _materialIcons,
+        _ => _fluentIcons,
+    };
+    private IMariloJsInterop JsInterop => ActiveProvider switch
+    {
+        DesignProvider.Bootstrap => _bootstrapJs,
+        DesignProvider.Material => _materialJs,
+        _ => _fluentJs,
+    };
 
     public void SetProvider(DesignProvider provider)
     {

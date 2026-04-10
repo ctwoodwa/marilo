@@ -1,0 +1,41 @@
+// =============================================================================
+// Component: Menu
+// =============================================================================
+
+.mar-menu {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    background: var(--marilo-color-background);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-md);
+    box-shadow: var(--marilo-shadow-lg);
+    padding: var(--marilo-space-xs) 0;
+    min-width: 180px;
+    z-index: var(--marilo-z-dropdown);
+}
+
+.mar-menu-item {
+    display: flex;
+    align-items: center;
+    gap: var(--marilo-space-sm);
+    padding: var(--marilo-space-sm) var(--marilo-space-md);
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-base);
+    color: var(--marilo-color-on-background);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background var(--marilo-transition-fast);
+    text-align: start;
+    width: 100%;
+}
+
+.mar-menu-item:hover { background: var(--marilo-color-surface-hover); }
+.mar-menu-item--disabled { color: var(--marilo-color-text-disabled); pointer-events: none; }
+
+// Phase 2 aliases
+.mar-menuitem { display: flex; align-items: center; gap: var(--marilo-space-sm); width: 100%; padding: var(--marilo-space-sm) var(--marilo-space-md); background: none; border: none; cursor: pointer; font-family: var(--marilo-font-family); font-size: var(--marilo-font-size-base); color: var(--marilo-color-on-background); }
+.mar-menuitem:hover { background: var(--marilo-color-surface); }
+.mar-menuitem--disabled { color: var(--marilo-color-text-disabled); cursor: not-allowed; }
+.mar-menuitem--disabled:hover { background: none; }

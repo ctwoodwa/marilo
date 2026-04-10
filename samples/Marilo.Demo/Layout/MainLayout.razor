@@ -81,6 +81,15 @@
                                     <MariloIcon Name="check" Size="IconSize.Small" Class="theme-picker-check" />
                                 }
                             </button>
+                            <button class="theme-picker-option @(_activeProvider == DesignProvider.Material ? "active" : "")"
+                                    @onclick="() => SwitchProvider(DesignProvider.Material)">
+                                <span class="theme-picker-swatch" style="background: #6750A4;"></span>
+                                <span>Material 3</span>
+                                @if (_activeProvider == DesignProvider.Material)
+                                {
+                                    <MariloIcon Name="check" Size="IconSize.Small" Class="theme-picker-check" />
+                                }
+                            </button>
                             <div class="theme-picker-divider"></div>
                             <div class="theme-picker-section-title">Mode</div>
                             <button class="theme-picker-option @(!_isDark ? "active" : "")"
@@ -331,7 +340,13 @@
         try
         {
             _providerModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/provider-switcher.js");
-            await _providerModule.InvokeVoidAsync("setProvider", provider == DesignProvider.Bootstrap ? "bootstrap" : "fluentui");
+            var key = provider switch
+            {
+                DesignProvider.Bootstrap => "bootstrap",
+                DesignProvider.Material => "material",
+                _ => "fluentui",
+            };
+            await _providerModule.InvokeVoidAsync("setProvider", key);
         }
         catch (TaskCanceledException) { }
         catch (OperationCanceledException) { }
@@ -392,6 +407,12 @@
                 _activeProvider = DesignProvider.Bootstrap;
                 ProviderSwitcher.SetProvider(DesignProvider.Bootstrap);
                 await _providerModule.InvokeVoidAsync("applyProvider", "bootstrap");
+            }
+            else if (storedProvider == "material")
+            {
+                _activeProvider = DesignProvider.Material;
+                ProviderSwitcher.SetProvider(DesignProvider.Material);
+                await _providerModule.InvokeVoidAsync("applyProvider", "material");
             }
 
             var storedTheme = await _providerModule.InvokeAsync<string>("getStoredTheme");

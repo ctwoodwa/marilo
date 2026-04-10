@@ -12,4 +12,7 @@ internal interface IElementMeasurementService
 
     /// <summary>Gets the current viewport dimensions and scroll offsets.</summary>
     ValueTask<ViewportRect> GetViewportAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>Gets the widths of all direct children of the given element.</summary>
+    ValueTask<double[]> GetChildWidthsAsync(ElementReference element, CancellationToken cancellationToken = default);
 }

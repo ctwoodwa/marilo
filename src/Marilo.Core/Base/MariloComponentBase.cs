@@ -59,6 +59,22 @@ public abstract class MariloComponentBase : ComponentBase, IDisposable
     }
 
     /// <summary>
+    /// Combines multiple provider-supplied base CSS classes with any consumer-supplied <see cref="Class"/> value.
+    /// Null/empty entries are skipped.
+    /// </summary>
+    /// <param name="baseClasses">The CSS classes to combine, typically returned by the active <see cref="IMariloCssProvider"/>.</param>
+    /// <returns>A single space-separated class string.</returns>
+    protected string CombineClasses(params string?[] baseClasses)
+    {
+        ClassBuilder.Clear();
+        foreach (var c in baseClasses)
+        {
+            ClassBuilder.AddClass(c);
+        }
+        return ClassBuilder.AddClass(Class).Build();
+    }
+
+    /// <summary>
     /// Combines an optional provider-supplied base style with any consumer-supplied <see cref="Style"/> value.
     /// </summary>
     /// <param name="baseStyle">An optional inline style string to prepend.</param>
@@ -69,6 +85,22 @@ public abstract class MariloComponentBase : ComponentBase, IDisposable
             .AddStyle(baseStyle)
             .AddStyle(Style)
             .Build();
+    }
+
+    /// <summary>
+    /// Combines multiple provider-supplied base styles with any consumer-supplied <see cref="Style"/> value.
+    /// Null/empty entries are skipped.
+    /// </summary>
+    /// <param name="baseStyles">The inline style strings to combine.</param>
+    /// <returns>A semicolon-separated style string.</returns>
+    protected string CombineStyles(params string?[] baseStyles)
+    {
+        StyleBuilder.Clear();
+        foreach (var s in baseStyles)
+        {
+            StyleBuilder.AddStyle(s);
+        }
+        return StyleBuilder.AddStyle(Style).Build();
     }
 
     /// <summary>

@@ -1,0 +1,19 @@
+// =================================================================
+// Marilo Bootstrap Provider — Z-Index & Remaining Tokens
+// =================================================================
+// Z-index hierarchy derived from Bootstrap Sass variables.
+// Color, spacing, typography, radius, elevation, and motion tokens
+// live in their respective foundation partials.
+// =================================================================
+
+:root {
+  // Z-index hierarchy
+  --marilo-z-dropdown: #{$zindex-dropdown};
+  --marilo-z-sticky: #{$zindex-sticky};
+  --marilo-z-fixed: #{$zindex-fixed};
+  --marilo-z-modal-overlay: #{$zindex-modal-backdrop};
+  --marilo-z-modal: #{$zindex-modal};
+  --marilo-z-popover: #{$zindex-popover};
+  --marilo-z-tooltip: #{$zindex-tooltip};
+  --marilo-z-toast: #{$zindex-toast};
+}

@@ -1,0 +1,67 @@
+// =============================================================================
+// Component: TextArea & NumericInput
+// =============================================================================
+
+.mar-textarea {
+    display: flex;
+    flex-direction: column;
+    gap: var(--marilo-space-xs);
+}
+
+.mar-textarea textarea {
+    width: 100%;
+    padding: 6px 10px;
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-base);
+    color: var(--marilo-color-on-background);
+    background: var(--marilo-color-background);
+    border: 1px solid var(--marilo-color-border-strong);
+    border-radius: var(--marilo-radius-md);
+    transition: border-color var(--marilo-transition-fast), box-shadow var(--marilo-transition-fast);
+    outline: none;
+    min-height: 32px;
+    resize: vertical;
+    min-height: 80px;
+}
+
+.mar-textarea textarea:hover {
+    border-color: var(--marilo-color-on-background);
+}
+
+.mar-textarea textarea:focus {
+    border-color: var(--marilo-color-primary);
+    box-shadow: 0 0 0 1px var(--marilo-color-primary);
+}
+
+.mar-textarea--invalid textarea {
+    border-color: var(--marilo-color-danger);
+}
+
+.mar-textarea--invalid textarea:focus {
+    box-shadow: 0 0 0 1px var(--marilo-color-danger);
+}
+
+// NumericInput
+.mar-numeric-input { display: flex; flex-direction: column; gap: var(--marilo-space-xs); }
+.mar-numeric-input input {
+    width: 100%;
+    padding: 6px 10px;
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-base);
+    color: var(--marilo-color-on-background);
+    background: var(--marilo-color-background);
+    border: 1px solid var(--marilo-color-border-strong);
+    border-radius: var(--marilo-radius-md);
+    transition: border-color var(--marilo-transition-fast), box-shadow var(--marilo-transition-fast);
+    outline: none;
+    min-height: 32px;
+}
+
+.mar-numeric-input input:hover { border-color: var(--marilo-color-on-background); }
+.mar-numeric-input input:focus { border-color: var(--marilo-color-primary); box-shadow: 0 0 0 1px var(--marilo-color-primary); }
+
+// Phase 2
+.mar-numeric-input { display: flex; align-items: center; }
+.mar-numeric-input input { flex: 1; }
+.mar-numeric-input__btn { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; background: var(--marilo-color-surface); border: 1px solid var(--marilo-color-border); cursor: pointer; }
+.mar-numeric-input__btn:hover { background: var(--marilo-color-surface-hover); }

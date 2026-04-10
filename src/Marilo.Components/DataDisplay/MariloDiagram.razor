@@ -1,0 +1,128 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses("mar-diagram")"
+     style="@CombineStyles($"width:{Width};height:{Height};position:relative;overflow:hidden")"
+     @attributes="AdditionalAttributes">
+
+    <svg class="mar-diagram__canvas"
+         width="100%" height="100%"
+         style="position:absolute;top:0;left:0">
+
+        <defs>
+            <marker id="mar-diagram-arrow"
+                    viewBox="0 0 10 10"
+                    refX="10" refY="5"
+                    markerWidth="8" markerHeight="8"
+                    orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#666" />
+            </marker>
+        </defs>
+
+        @foreach (var edge in Edges)
+        {
+            var fromNode = Nodes.FirstOrDefault(n => n.Id == edge.FromId);
+            var toNode = Nodes.FirstOrDefault(n => n.Id == edge.ToId);
+            if (fromNode != null && toNode != null)
+            {
+                var x1 = fromNode.X + fromNode.Width / 2;
+                var y1 = fromNode.Y + fromNode.Height / 2;
+                var x2 = toNode.X + toNode.Width / 2;
+                var y2 = toNode.Y + toNode.Height / 2;
+
+                <line x1="@x1" y1="@y1" x2="@x2" y2="@y2"
+                      stroke="#666" stroke-width="2"
+                      marker-end="url(#mar-diagram-arrow)"
+                      style="cursor:pointer"
+                      @onclick="() => HandleEdgeClick(edge)" />
+
+                @if (!string.IsNullOrEmpty(edge.Text))
+                {
+                    <g>
+                        <text x="@((x1 + x2) / 2)" y="@((y1 + y2) / 2 - 8)"
+                              text-anchor="middle"
+                              fill="#666" font-size="12">@edge.Text</text>
+                    </g>
+                }
+            }
+        }
+
+        @foreach (var node in Nodes)
+        {
+            @if (node.Shape == "ellipse")
+            {
+                <ellipse cx="@(node.X + node.Width / 2)" cy="@(node.Y + node.Height / 2)"
+                         rx="@(node.Width / 2)" ry="@(node.Height / 2)"
+                         fill="#e3f2fd" stroke="#1976d2" stroke-width="2"
+                         style="cursor:pointer"
+                         @onclick="() => HandleNodeClick(node)" />
+            }
+            else
+            {
+                <rect x="@node.X" y="@node.Y"
+                      width="@node.Width" height="@node.Height"
+                      rx="4" ry="4"
+                      fill="#e3f2fd" stroke="#1976d2" stroke-width="2"
+                      style="cursor:pointer"
+                      @onclick="() => HandleNodeClick(node)" />
+            }
+
+            @if (NodeTemplate != null)
+            {
+                <foreignObject x="@node.X" y="@node.Y"
+                               width="@node.Width" height="@node.Height">
+                    <div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%">
+                        @NodeTemplate(node)
+                    </div>
+                </foreignObject>
+            }
+            else if (!string.IsNullOrEmpty(node.Text))
+            {
+                <g>
+                    <text x="@(node.X + node.Width / 2)" y="@(node.Y + node.Height / 2 + 5)"
+                          text-anchor="middle"
+                          fill="#333" font-size="14"
+                          style="pointer-events:none">@node.Text</text>
+                </g>
+            }
+        }
+    </svg>
+</div>
+
+@code {
+    /// <summary>Nodes displayed in the diagram.</summary>
+    [Parameter] public List<DiagramNode> Nodes { get; set; } = new();
+
+    /// <summary>Edges connecting nodes.</summary>
+    [Parameter] public List<DiagramEdge> Edges { get; set; } = new();
+
+    /// <summary>CSS width of the diagram canvas.</summary>
+    [Parameter] public string? Width { get; set; } = "100%";
+
+    /// <summary>CSS height of the diagram canvas.</summary>
+    [Parameter] public string? Height { get; set; } = "500px";
+
+    /// <summary>Whether zooming is enabled.</summary>
+    [Parameter] public bool Zoomable { get; set; }
+
+    /// <summary>Whether panning is enabled.</summary>
+    [Parameter] public bool Pannable { get; set; }
+
+    /// <summary>Callback invoked when a node is clicked.</summary>
+    [Parameter] public EventCallback<DiagramNode> OnNodeClick { get; set; }
+
+    /// <summary>Callback invoked when an edge is clicked.</summary>
+    [Parameter] public EventCallback<DiagramEdge> OnEdgeClick { get; set; }
+
+    /// <summary>Custom template for rendering node content.</summary>
+    [Parameter] public RenderFragment<DiagramNode>? NodeTemplate { get; set; }
+
+    private async Task HandleNodeClick(DiagramNode node)
+    {
+        await OnNodeClick.InvokeAsync(node);
+    }
+
+    private async Task HandleEdgeClick(DiagramEdge edge)
+    {
+        await OnEdgeClick.InvokeAsync(edge);
+    }
+}

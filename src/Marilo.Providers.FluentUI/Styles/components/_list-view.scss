@@ -1,0 +1,17 @@
+// =============================================================================
+// Component: ListView
+// =============================================================================
+
+.mar-listview {
+    display: flex;
+    flex-direction: column;
+}
+
+.mar-listview-item {
+    padding: var(--marilo-space-sm) var(--marilo-space-md);
+    border-bottom: 1px solid var(--marilo-color-border);
+    transition: background 0.15s ease;
+
+    &:hover { background: var(--marilo-color-surface-hover); }
+    &--selected { background: var(--marilo-color-primary-light); }
+}

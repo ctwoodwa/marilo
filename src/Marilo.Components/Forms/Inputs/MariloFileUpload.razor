@@ -1,5 +1,6 @@
 @inherits MariloComponentBase
 @using Microsoft.AspNetCore.Components.Forms
+@implements IAsyncDisposable
 
 <div class="@CombineClasses(CssProvider.FileUploadClass())"
      style="@CombineStyles()"

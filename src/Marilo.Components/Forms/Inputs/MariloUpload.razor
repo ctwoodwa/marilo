@@ -1,6 +1,7 @@
 @inherits MariloComponentBase
 @using Microsoft.AspNetCore.Components.Forms
 @implements IUploadChunkSettingsSink
+@implements IAsyncDisposable
 
 <CascadingValue Value="(IUploadChunkSettingsSink)this" IsFixed="true">
 <div class="@CombineClasses(CssProvider.UploadClass())"

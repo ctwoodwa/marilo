@@ -2,10 +2,102 @@
 @page "/components/diagram/overview"
 @layout ComponentDemoLayout
 
-<PageSection Title="Diagram">
-    <div class="demo-coming-soon">
-        <MariloAlert Severity="AlertSeverity.Info">
-            <strong>Diagram</strong> — Coming soon. Interactive node-and-edge diagram for flowcharts and process visualization.
-        </MariloAlert>
-    </div>
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Description="Diagram displays an interactive node-and-edge visualization for flowcharts and process diagrams." Code="@_basicCode">
+        <MariloDiagram Nodes="_basicNodes"
+                       Edges="_basicEdges"
+                       Height="350px"
+                       OnNodeClick="HandleNodeClick" />
+    </DemoSection>
 </PageSection>
+
+<PageSection Title="Features">
+    <DemoSection Title="Shapes" Description="Nodes support different shapes including rectangles and ellipses." Code="@_shapesCode">
+        <MariloDiagram Nodes="_shapeNodes"
+                       Edges="_shapeEdges"
+                       Height="300px"
+                       OnNodeClick="HandleNodeClick" />
+    </DemoSection>
+
+    <DemoSection Title="Custom Node Template" Description="Use NodeTemplate to customize the content rendered inside each node." Code="@_templateCode">
+        <MariloDiagram Nodes="_basicNodes"
+                       Edges="_basicEdges"
+                       Height="350px">
+            <NodeTemplate Context="node">
+                <div style="font-size:11px;text-align:center;">
+                    <strong>@node.Text</strong>
+                    <br /><span style="color:#666;">ID: @node.Id</span>
+                </div>
+            </NodeTemplate>
+        </MariloDiagram>
+    </DemoSection>
+</PageSection>
+
+@if (_selectedNode != null)
+{
+    <div style="margin-top:12px;padding:8px;background:#e3f2fd;border-radius:4px;font-size:13px;">
+        Selected node: <strong>@_selectedNode.Text</strong> (ID: @_selectedNode.Id) at position (@_selectedNode.X, @_selectedNode.Y)
+    </div>
+}
+
+@code {
+    private DiagramNode? _selectedNode;
+
+    private Task HandleNodeClick(DiagramNode node)
+    {
+        _selectedNode = node;
+        return Task.CompletedTask;
+    }
+
+    private List<DiagramNode> _basicNodes = new()
+    {
+        new DiagramNode { Id = "start", Text = "Start", X = 50, Y = 40, Width = 100, Height = 50 },
+        new DiagramNode { Id = "process", Text = "Process Data", X = 220, Y = 40, Width = 120, Height = 50 },
+        new DiagramNode { Id = "decision", Text = "Valid?", X = 410, Y = 40, Width = 100, Height = 50 },
+        new DiagramNode { Id = "success", Text = "Save", X = 330, Y = 160, Width = 100, Height = 50 },
+        new DiagramNode { Id = "error", Text = "Retry", X = 490, Y = 160, Width = 100, Height = 50 },
+    };
+
+    private List<DiagramEdge> _basicEdges = new()
+    {
+        new DiagramEdge { Id = "e1", FromId = "start", ToId = "process", Text = "" },
+        new DiagramEdge { Id = "e2", FromId = "process", ToId = "decision", Text = "" },
+        new DiagramEdge { Id = "e3", FromId = "decision", ToId = "success", Text = "Yes" },
+        new DiagramEdge { Id = "e4", FromId = "decision", ToId = "error", Text = "No" },
+        new DiagramEdge { Id = "e5", FromId = "error", ToId = "process", Text = "" },
+    };
+
+    private List<DiagramNode> _shapeNodes = new()
+    {
+        new DiagramNode { Id = "s1", Text = "Rectangle", X = 50, Y = 80, Width = 120, Height = 60, Shape = "rectangle" },
+        new DiagramNode { Id = "s2", Text = "Ellipse", X = 250, Y = 80, Width = 120, Height = 60, Shape = "ellipse" },
+        new DiagramNode { Id = "s3", Text = "Result", X = 450, Y = 80, Width = 120, Height = 60, Shape = "rectangle" },
+    };
+
+    private List<DiagramEdge> _shapeEdges = new()
+    {
+        new DiagramEdge { Id = "se1", FromId = "s1", ToId = "s2" },
+        new DiagramEdge { Id = "se2", FromId = "s2", ToId = "s3" },
+    };
+
+    private const string _basicCode =
+        "<MariloDiagram Nodes=\"_nodes\"\n" +
+        "               Edges=\"_edges\"\n" +
+        "               Height=\"350px\"\n" +
+        "               OnNodeClick=\"HandleNodeClick\" />";
+
+    private const string _shapesCode =
+        "<MariloDiagram Nodes=\"_shapeNodes\"\n" +
+        "               Edges=\"_shapeEdges\"\n" +
+        "               Height=\"300px\" />\n\n" +
+        "// Nodes with Shape = \"rectangle\" or \"ellipse\"";
+
+    private const string _templateCode =
+        "<MariloDiagram Nodes=\"_nodes\" Edges=\"_edges\" Height=\"350px\">\n" +
+        "    <NodeTemplate Context=\"node\">\n" +
+        "        <div style=\"text-align:center;\">\n" +
+        "            <strong>@node.Text</strong>\n" +
+        "        </div>\n" +
+        "    </NodeTemplate>\n" +
+        "</MariloDiagram>";
+}

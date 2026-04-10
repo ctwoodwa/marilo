@@ -1,0 +1,17 @@
+// =============================================================================
+// Component: Stack
+// =============================================================================
+
+.mar-stack {
+    display: flex;
+    gap: var(--marilo-space-md);
+}
+
+.mar-stack--horizontal { flex-direction: row; }
+.mar-stack--vertical { flex-direction: column; }
+.mar-stack--start { align-items: flex-start; }
+.mar-stack--center { align-items: center; }
+.mar-stack--end { align-items: flex-end; }
+.mar-stack--stretch { align-items: stretch; }
+.mar-stack--spacebetween { justify-content: space-between; }
+.mar-stack--spacearound { justify-content: space-around; }

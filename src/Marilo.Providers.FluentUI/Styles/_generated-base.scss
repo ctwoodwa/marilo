@@ -1695,6 +1695,18 @@
    -------------------------------------------------------------------------- */
 
 .mar-snackbar {
+    position: fixed;
+    z-index: var(--marilo-z-toast, 1400);
+    display: flex;
+    flex-direction: column;
+    gap: var(--marilo-space-sm);
+    background: transparent;
+    padding: 0;
+    pointer-events: none;
+}
+.mar-snackbar--empty { display: none; }
+.mar-snackbar-item {
+    pointer-events: all;
     display: flex;
     align-items: center;
     gap: var(--marilo-space-md);
@@ -1703,9 +1715,10 @@
     color: var(--marilo-color-background);
     border-radius: var(--marilo-radius-md);
     box-shadow: var(--marilo-shadow-lg);
+    min-width: 288px;
+    max-width: 568px;
     font-family: var(--marilo-font-family);
     font-size: var(--marilo-font-size-base);
-    z-index: var(--marilo-z-toast);
     animation: marilo-slide-in var(--marilo-transition-slow);
 }
 
@@ -2415,11 +2428,10 @@
    Feedback: Snackbar
    -------------------------------------------------------------------------- */
 
-.mar-snackbar { position: fixed; bottom: var(--marilo-space-lg); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: var(--marilo-space-md); padding: var(--marilo-space-md) var(--marilo-space-lg); background: var(--marilo-color-on-background); color: var(--marilo-color-background); border-radius: var(--marilo-radius-md); box-shadow: var(--marilo-shadow-lg); z-index: var(--marilo-z-toast); animation: mar-slide-up 200ms ease; min-width: 300px; }
-.mar-snackbar__action { background: none; border: none; color: var(--marilo-color-primary-light); cursor: pointer; font-weight: var(--marilo-font-weight-semibold); padding: var(--marilo-space-xs) var(--marilo-space-sm); border-radius: var(--marilo-radius-md); }
-.mar-snackbar__action:hover { background: rgba(255,255,255,0.1); }
-.mar-snackbar__dismiss { background: none; border: none; color: var(--marilo-color-background); cursor: pointer; padding: var(--marilo-space-xs); border-radius: var(--marilo-radius-md); opacity: 0.7; }
-.mar-snackbar__dismiss:hover { opacity: 1; background: rgba(255,255,255,0.1); }
+.mar-snackbar-item__action, .mar-snackbar__action { background: none; border: none; color: var(--marilo-color-primary-light); cursor: pointer; font-weight: var(--marilo-font-weight-semibold); padding: var(--marilo-space-xs) var(--marilo-space-sm); border-radius: var(--marilo-radius-md); }
+.mar-snackbar-item__action:hover, .mar-snackbar__action:hover { background: rgba(255,255,255,0.1); }
+.mar-snackbar-item .mar-snackbar__dismiss, .mar-snackbar__dismiss { background: none; border: none; color: var(--marilo-color-background); cursor: pointer; padding: var(--marilo-space-xs); border-radius: var(--marilo-radius-md); opacity: 0.7; }
+.mar-snackbar-item .mar-snackbar__dismiss:hover, .mar-snackbar__dismiss:hover { opacity: 1; background: rgba(255,255,255,0.1); }
 @keyframes mar-slide-up { from { transform: translateX(-50%) translateY(100%); opacity: 0; } to { transform: translateX(-50%) translateY(0); opacity: 1; } }
 
 /* --------------------------------------------------------------------------
@@ -2934,17 +2946,7 @@
    Snackbar: Position Variants & Host
    -------------------------------------------------------------------------- */
 
-.mar-snackbar-host {
-    position: fixed;
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    gap: var(--marilo-space-sm);
-    padding: var(--marilo-space-md);
-    pointer-events: none;
-
-    > * { pointer-events: auto; }
-}
+/* .mar-snackbar-host — merged into .mar-snackbar (host container) above */
 
 .mar-snackbar--top { top: 0; }
 .mar-snackbar--bottom { bottom: 0; }

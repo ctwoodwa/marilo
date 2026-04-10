@@ -1,0 +1,11 @@
+// =================================================================
+// Marilo Bootstrap Provider — Elevation (Shadow) Tokens
+// =================================================================
+// Derived from Bootstrap's $box-shadow-* Sass variables.
+// =================================================================
+
+:root {
+  --marilo-shadow-sm: #{$box-shadow-sm};
+  --marilo-shadow-md: #{$box-shadow};
+  --marilo-shadow-lg: #{$box-shadow-lg};
+}

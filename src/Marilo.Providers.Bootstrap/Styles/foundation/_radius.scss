@@ -1,0 +1,13 @@
+// =================================================================
+// Marilo Bootstrap Provider — Radius Tokens
+// =================================================================
+// Derived from Bootstrap's $border-radius-* Sass variables.
+// =================================================================
+
+:root {
+  --marilo-radius-sm: #{$border-radius-sm};
+  --marilo-radius-md: #{$border-radius};
+  --marilo-radius-lg: #{$border-radius-lg};
+  --marilo-radius-xl: #{$border-radius-xl};
+  --marilo-radius-full: 50rem;
+}

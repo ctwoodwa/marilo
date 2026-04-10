@@ -7,7 +7,8 @@
   "scripts": {
     "scss:build:fluentui": "sass src/Marilo.Providers.FluentUI/Styles/marilo-fluentui.scss:src/Marilo.Providers.FluentUI/wwwroot/css/marilo-fluentui.css --style=expanded --no-source-map",
     "scss:build:bootstrap": "sass src/Marilo.Providers.Bootstrap/Styles/marilo-bootstrap.scss:src/Marilo.Providers.Bootstrap/wwwroot/css/marilo-bootstrap.css --style=expanded --no-source-map --load-path=node_modules --silence-deprecation=color-functions --silence-deprecation=import --silence-deprecation=global-builtin --silence-deprecation=if-function",
-    "scss:build": "run-p scss:build:fluentui scss:build:bootstrap",
+    "scss:build:material": "sass src/Marilo.Providers.Material/Styles/marilo-material.scss:src/Marilo.Providers.Material/wwwroot/css/marilo-material.css --style=expanded --no-source-map",
+    "scss:build": "run-p scss:build:fluentui scss:build:bootstrap scss:build:material",
     "scss:watch:fluentui": "sass src/Marilo.Providers.FluentUI/Styles/marilo-fluentui.scss:src/Marilo.Providers.FluentUI/wwwroot/css/marilo-fluentui.css --style=expanded --no-source-map --watch",
     "scss:watch:bootstrap": "sass src/Marilo.Providers.Bootstrap/Styles/marilo-bootstrap.scss:src/Marilo.Providers.Bootstrap/wwwroot/css/marilo-bootstrap.css --style=expanded --no-source-map --load-path=node_modules --silence-deprecation=color-functions --silence-deprecation=import --silence-deprecation=global-builtin --watch",
     "scss:watch": "run-p scss:watch:fluentui scss:watch:bootstrap",
@@ -16,7 +17,9 @@
     "watch": "run-p scss:watch:fluentui scss:watch:bootstrap",
     "docs:patch-links": "node scripts/patch-site-links.js",
     "docs:build": "npm run icons:generate && npm run docs:patch-links && dotnet docfx docfx/docfx.json",
-    "docs:serve": "npm run icons:generate && npm run docs:patch-links && dotnet docfx docfx/docfx.json --serve"
+    "docs:serve": "npm run icons:generate && npm run docs:patch-links && dotnet docfx docfx/docfx.json --serve",
+    "test:visual": "npx playwright test --config tests/visual-parity/playwright.config.ts",
+    "test:visual:update": "npx playwright test --config tests/visual-parity/playwright.config.ts --update-snapshots"
   },
   "devDependencies": {
     "bootstrap": "^5.3.3",

@@ -23,4 +23,10 @@ internal sealed class ElementMeasurementService : IElementMeasurementService
         var module = await _loader.ImportAsync("js/marilo-measurement.js", cancellationToken);
         return await module.InvokeAsync<ViewportRect>("getViewport", cancellationToken);
     }
+
+    public async ValueTask<double[]> GetChildWidthsAsync(ElementReference element, CancellationToken cancellationToken = default)
+    {
+        var module = await _loader.ImportAsync("js/marilo-measurement.js", cancellationToken);
+        return await module.InvokeAsync<double[]>("getChildWidths", cancellationToken, element);
+    }
 }

@@ -92,6 +92,7 @@ All implementations are independent (no Telerik dependency), use MIT/Apache-2.0-
 | colorpicker-standalone | 18 | 18/18 ✅ | Stage 06 closed (2026-04-09); 5/5 CPICK gaps resolved (Gradient, Palette, FlatPicker, Views API, CSS provider); subagent-driven dev |
 | drp-multiview | 5 | 5/5 ✅ | Stage 06 closed (2026-04-09); 2/2 DRP gaps resolved (Year/Decade calendar views, FocusAsync methods) |
 | filemanager | 151 | 151/151 ✅ | Stage 06 closed (2026-04-09); 36/36 gaps resolved (full generic rewrite, Phases A-F); 877/877 full suite runtime validated |
+| js-interop-batch3 | 14 | 14/14 ✅ | Stage 06 closed (2026-04-10); 1/1 resolved (Editor table/image resize); 1097/1097 full suite runtime validated |
 | datagrid-cdw | 0 | 0 | Per-feature checklist ready for CDW handoff (2026-04-03) |
 
 Canonical test evidence: `stages/06-validate/output/gap-*-closure-report.md`

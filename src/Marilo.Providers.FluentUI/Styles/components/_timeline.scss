@@ -1,0 +1,26 @@
+// =============================================================================
+// Component: Timeline
+// =============================================================================
+
+.mar-timeline {
+    position: relative;
+    padding-left: var(--marilo-space-xl);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.mar-timeline::before { content: ''; position: absolute; left: 11px; top: 0; bottom: 0; width: 2px; background: var(--marilo-color-border); }
+
+.mar-timeline-item {
+    position: relative;
+    display: flex;
+    gap: var(--marilo-space-md);
+    padding-bottom: var(--marilo-space-lg);
+}
+
+.mar-timeline-item__dot { position: absolute; left: calc(-1 * var(--marilo-space-xl) + 4px); top: 4px; width: 14px; height: 14px; border-radius: 50%; background: var(--marilo-color-primary); border: 2px solid var(--marilo-color-background); z-index: 1; }
+.mar-timeline-item__title { font-weight: var(--marilo-font-weight-semibold); margin-bottom: var(--marilo-space-xxs); }
+.mar-timeline-item__timestamp { font-size: var(--marilo-font-size-sm); color: var(--marilo-color-text-secondary); margin-bottom: var(--marilo-space-xs); }

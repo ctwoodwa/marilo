@@ -1,0 +1,32 @@
+// =============================================================================
+// Component: Card
+// =============================================================================
+
+.mar-card {
+    background: var(--marilo-color-background);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-lg);
+    box-shadow: var(--marilo-shadow-sm);
+    overflow: hidden;
+    transition: box-shadow var(--marilo-transition-fast);
+}
+
+.mar-card:hover { box-shadow: var(--marilo-shadow-md); }
+
+.mar-card-header {
+    padding: var(--marilo-space-lg);
+    border-bottom: 1px solid var(--marilo-color-border);
+    font-family: var(--marilo-font-family);
+    font-weight: var(--marilo-font-weight-semibold);
+    font-size: var(--marilo-font-size-md);
+}
+
+.mar-card-body { padding: var(--marilo-space-lg); }
+
+.mar-card-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--marilo-space-sm);
+    padding: var(--marilo-space-md) var(--marilo-space-lg);
+    border-top: 1px solid var(--marilo-color-border);
+}

@@ -2,10 +2,97 @@
 @page "/components/listbox/overview"
 @layout ComponentDemoLayout
 
-<PageSection Title="List Box">
-    <div class="demo-coming-soon">
-        <MariloAlert Severity="AlertSeverity.Info">
-            <strong>List Box</strong> — Coming soon. Scrollable selection list with single and multi-select modes.
-        </MariloAlert>
-    </div>
+<PageSection Title="Overview">
+    <DemoSection Title="Basic Usage" Description="A scrollable selection list with single-select mode." Code="@_basicCode">
+        <MariloListBox Data="@_items"
+                       TextField="Name"
+                       ValueField="Id"
+                       @bind-Value="_selected"
+                       Height="180px" />
+        <p><strong>Selected:</strong> @(_selected is not null ? GetName(_selected) : "none")</p>
+    </DemoSection>
+
+    <DemoSection Title="Multiple Selection" Description="Enable multi-select to allow choosing several items." Code="@_multiCode">
+        <MariloListBox Data="@_items"
+                       TextField="Name"
+                       ValueField="Id"
+                       SelectionMode="ListBoxSelectionMode.Multiple"
+                       SelectedItems="@_multiSelected"
+                       SelectedItemsChanged="v => _multiSelected = v"
+                       Height="180px" />
+        <p><strong>Selected count:</strong> @(_multiSelected?.Count() ?? 0)</p>
+    </DemoSection>
 </PageSection>
+
+<PageSection Title="Appearance">
+    <DemoSection Title="Custom Height" Description="Adjust the visible area of the list box." Code="@_heightCode">
+        <MariloListBox Data="@_items"
+                       TextField="Name"
+                       ValueField="Id"
+                       Height="120px" />
+    </DemoSection>
+
+    <DemoSection Title="Disabled" Description="A disabled list box prevents interaction." Code="@_disabledCode">
+        <MariloListBox Data="@_items"
+                       TextField="Name"
+                       ValueField="Id"
+                       Enabled="false"
+                       Height="150px" />
+    </DemoSection>
+</PageSection>
+
+@code {
+    private object? _selected;
+    private IEnumerable<object>? _multiSelected;
+
+    private readonly List<object> _items = new()
+    {
+        new ListItem { Id = "1", Name = "Apples" },
+        new ListItem { Id = "2", Name = "Bananas" },
+        new ListItem { Id = "3", Name = "Cherries" },
+        new ListItem { Id = "4", Name = "Dates" },
+        new ListItem { Id = "5", Name = "Elderberries" },
+        new ListItem { Id = "6", Name = "Figs" },
+        new ListItem { Id = "7", Name = "Grapes" }
+    };
+
+    private string GetName(object item)
+    {
+        return item.GetType().GetProperty("Name")?.GetValue(item)?.ToString() ?? "";
+    }
+
+    private class ListItem
+    {
+        public string Id { get; set; } = "";
+        public string Name { get; set; } = "";
+    }
+
+    private const string _basicCode =
+        "<MariloListBox Data=\"@_items\"\n" +
+        "               TextField=\"Name\"\n" +
+        "               ValueField=\"Id\"\n" +
+        "               @bind-Value=\"_selected\"\n" +
+        "               Height=\"180px\" />\n\n" +
+        "@code {\n" +
+        "    private object? _selected;\n" +
+        "    private List<object> _items = new()\n" +
+        "    {\n" +
+        "        new ListItem { Id = \"1\", Name = \"Apples\" },\n" +
+        "        new ListItem { Id = \"2\", Name = \"Bananas\" },\n" +
+        "    };\n" +
+        "}";
+
+    private const string _multiCode =
+        "<MariloListBox Data=\"@_items\"\n" +
+        "               TextField=\"Name\"\n" +
+        "               ValueField=\"Id\"\n" +
+        "               SelectionMode=\"ListBoxSelectionMode.Multiple\"\n" +
+        "               @bind-SelectedItems=\"_multiSelected\"\n" +
+        "               Height=\"180px\" />";
+
+    private const string _heightCode =
+        "<MariloListBox Data=\"@_items\" TextField=\"Name\" ValueField=\"Id\" Height=\"120px\" />";
+
+    private const string _disabledCode =
+        "<MariloListBox Data=\"@_items\" TextField=\"Name\" ValueField=\"Id\" Enabled=\"false\" />";
+}

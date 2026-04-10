@@ -1,0 +1,59 @@
+// =============================================================================
+// Component: Container
+// =============================================================================
+
+.mar-container {
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: var(--marilo-space-lg);
+}
+
+.mar-container--sm { max-width: 640px; }
+.mar-container--md { max-width: 768px; }
+.mar-container--lg { max-width: 1024px; }
+.mar-container--xl { max-width: 1280px; }
+.mar-container--fluid { max-width: 100%; }
+
+// Grid (12-column)
+.mar-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: var(--marilo-space-lg);
+}
+
+.mar-row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-inline: calc(var(--marilo-space-sm) * -1);
+}
+
+.mar-col {
+    flex: 1 1 0%;
+    padding-inline: var(--marilo-space-sm);
+    min-width: 0;
+}
+
+.mar-col--1 { flex: 0 0 calc(100% / 12 * 1); max-width: calc(100% / 12 * 1); }
+.mar-col--2 { flex: 0 0 calc(100% / 12 * 2); max-width: calc(100% / 12 * 2); }
+.mar-col--3 { flex: 0 0 calc(100% / 12 * 3); max-width: calc(100% / 12 * 3); }
+.mar-col--4 { flex: 0 0 calc(100% / 12 * 4); max-width: calc(100% / 12 * 4); }
+.mar-col--5 { flex: 0 0 calc(100% / 12 * 5); max-width: calc(100% / 12 * 5); }
+.mar-col--6 { flex: 0 0 calc(100% / 12 * 6); max-width: calc(100% / 12 * 6); }
+.mar-col--7 { flex: 0 0 calc(100% / 12 * 7); max-width: calc(100% / 12 * 7); }
+.mar-col--8 { flex: 0 0 calc(100% / 12 * 8); max-width: calc(100% / 12 * 8); }
+.mar-col--9 { flex: 0 0 calc(100% / 12 * 9); max-width: calc(100% / 12 * 9); }
+.mar-col--10 { flex: 0 0 calc(100% / 12 * 10); max-width: calc(100% / 12 * 10); }
+.mar-col--11 { flex: 0 0 calc(100% / 12 * 11); max-width: calc(100% / 12 * 11); }
+.mar-col--12 { flex: 0 0 100%; max-width: 100%; }
+
+.mar-col--offset-1 { margin-inline-start: calc(100% / 12 * 1); }
+.mar-col--offset-2 { margin-inline-start: calc(100% / 12 * 2); }
+.mar-col--offset-3 { margin-inline-start: calc(100% / 12 * 3); }
+.mar-col--offset-4 { margin-inline-start: calc(100% / 12 * 4); }
+.mar-col--offset-5 { margin-inline-start: calc(100% / 12 * 5); }
+.mar-col--offset-6 { margin-inline-start: calc(100% / 12 * 6); }
+.mar-col--offset-7 { margin-inline-start: calc(100% / 12 * 7); }
+.mar-col--offset-8 { margin-inline-start: calc(100% / 12 * 8); }
+.mar-col--offset-9 { margin-inline-start: calc(100% / 12 * 9); }
+.mar-col--offset-10 { margin-inline-start: calc(100% / 12 * 10); }
+.mar-col--offset-11 { margin-inline-start: calc(100% / 12 * 11); }

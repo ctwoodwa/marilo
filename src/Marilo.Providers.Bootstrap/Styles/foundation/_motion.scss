@@ -1,0 +1,9 @@
+// =================================================================
+// Marilo Bootstrap Provider — Motion (Transition) Tokens
+// =================================================================
+
+:root {
+  --marilo-transition-fast: 150ms ease-in-out;
+  --marilo-transition-normal: 200ms ease-in-out;
+  --marilo-transition-slow: 300ms ease-in-out;
+}

@@ -1,0 +1,24 @@
+// =============================================================================
+// Component: Switch
+// =============================================================================
+
+.mar-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--marilo-space-sm);
+    cursor: pointer;
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-base);
+    user-select: none;
+}
+
+.mar-switch--on { color: var(--marilo-color-primary); }
+
+// Slider (related form control)
+.mar-slider { width: 100%; accent-color: var(--marilo-color-primary); }
+.mar-slider--vertical {
+    writing-mode: vertical-lr;
+    direction: rtl;
+    height: 200px;
+    width: auto;
+}

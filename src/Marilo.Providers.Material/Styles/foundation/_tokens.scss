@@ -1,0 +1,44 @@
+// =============================================================================
+// Foundation: Tokens — Base reset, focus ring, z-index scale
+// Aggregator: emits the box-sizing reset plus tokens that depend on
+// color/spacing/etc. already forwarded by _index.scss.
+//
+// Do NOT re-forward foundation partials here — they are imported by _index.scss
+// before this file, preventing duplicate CSS output.
+// =============================================================================
+
+:root {
+  // -------------------------------------------------------------------------
+  // Focus ring — M3-style: 3px offset + 2px solid primary ring
+  // -------------------------------------------------------------------------
+  --marilo-focus-ring: 0 0 0 2px var(--marilo-color-background), 0 0 0 4px var(--marilo-color-primary);
+
+  // -------------------------------------------------------------------------
+  // Z-index scale (shared across all providers)
+  // -------------------------------------------------------------------------
+  --marilo-z-dropdown:      1000;
+  --marilo-z-sticky:        1020;
+  --marilo-z-fixed:         1030;
+  --marilo-z-modal-overlay: 1040;
+  --marilo-z-modal:         1050;
+  --marilo-z-popover:       1060;
+  --marilo-z-tooltip:       1070;
+  --marilo-z-toast:         1080;
+
+  // -------------------------------------------------------------------------
+  // Disabled state opacity
+  // M3 uses 38% for disabled text/icons, 12% for disabled containers
+  // -------------------------------------------------------------------------
+  --marilo-disabled-opacity:            0.38;
+  --marilo-disabled-container-opacity:  0.12;
+}
+
+// -------------------------------------------------------------------------
+// Base / Reset — box-sizing
+// -------------------------------------------------------------------------
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}

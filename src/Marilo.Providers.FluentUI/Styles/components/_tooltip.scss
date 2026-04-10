@@ -1,0 +1,32 @@
+// =============================================================================
+// Component: Tooltip
+// =============================================================================
+
+.mar-tooltip {
+    position: absolute;
+    padding: var(--marilo-space-xs) var(--marilo-space-sm);
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-sm);
+    background: var(--marilo-color-on-background);
+    color: var(--marilo-color-background);
+    border-radius: var(--marilo-radius-md);
+    box-shadow: var(--marilo-shadow-md);
+    white-space: nowrap;
+    z-index: var(--marilo-z-tooltip);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--marilo-transition-fast);
+}
+
+.marilo-tooltip-trigger:hover > .mar-tooltip {
+    opacity: 1;
+}
+
+.mar-tooltip--top { bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: var(--marilo-space-xs); }
+.mar-tooltip--bottom { top: 100%; left: 50%; transform: translateX(-50%); margin-top: var(--marilo-space-xs); }
+.mar-tooltip--left { right: 100%; top: 50%; transform: translateY(-50%); margin-right: var(--marilo-space-xs); }
+.mar-tooltip--right { left: 100%; top: 50%; transform: translateY(-50%); margin-left: var(--marilo-space-xs); }
+
+// Phase 3 ShowOn variants — behavior handled by component JS/Blazor logic
+.mar-tooltip--show-click,
+.mar-tooltip--show-focus { }

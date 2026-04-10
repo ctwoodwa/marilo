@@ -55,6 +55,12 @@
     /// <summary>Whether this column can be used for grouping. Defaults to true.</summary>
     [Parameter] public bool Groupable { get; set; } = true;
 
+    /// <summary>When true, the column is frozen and sticks during horizontal scroll.</summary>
+    [Parameter] public bool Locked { get; set; }
+
+    /// <summary>When Locked=true, the side to pin to. Default: Start (left in LTR).</summary>
+    [Parameter] public GridColumnFrozenPosition FrozenPosition { get; set; } = GridColumnFrozenPosition.Start;
+
     /// <summary>Composite format string for display (e.g. "{0:C2}"). Takes precedence over Format.</summary>
     [Parameter] public string? DisplayFormat { get; set; }
 

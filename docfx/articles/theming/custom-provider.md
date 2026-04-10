@@ -81,6 +81,110 @@ Example `_button.scss`:
 
 Compile the SCSS to `wwwroot/css/marilo-mydesign.css` and mark it as static web asset.
 
+## SCSS Architecture
+
+All built-in providers follow the same folder contract. Your custom provider should too:
+
+```text
+Styles/
+├── foundation/          Design tokens, Sass maps, CSS custom properties
+│   ├── _colors.scss
+│   ├── _spacing.scss
+│   ├── _typography.scss
+│   ├── _radius.scss
+│   ├── _elevation.scss
+│   ├── _motion.scss
+│   ├── _functions.scss
+│   ├── _mixins.scss
+│   └── _tokens.scss
+├── patterns/            Cross-component patterns
+│   ├── _interactive-states.scss
+│   ├── _field-base.scss
+│   ├── _overlay.scss
+│   ├── _validation.scss
+│   └── _density.scss
+├── components/          One file per component
+│   ├── _button.scss
+│   ├── _data-grid.scss
+│   └── ...
+├── _index.scss          Import aggregator
+└── marilo-myprovider.scss  Build entrypoint
+```
+
+Import order in `_index.scss`: Foundation then Patterns then Components (alphabetical within each group).
+
+`_index.scss` uses `@forward` for each partial:
+
+```scss
+// foundation
+@forward 'foundation/colors';
+@forward 'foundation/spacing';
+@forward 'foundation/typography';
+@forward 'foundation/radius';
+@forward 'foundation/elevation';
+@forward 'foundation/motion';
+@forward 'foundation/functions';
+@forward 'foundation/mixins';
+@forward 'foundation/tokens';
+
+// patterns
+@forward 'patterns/interactive-states';
+@forward 'patterns/field-base';
+@forward 'patterns/overlay';
+@forward 'patterns/validation';
+@forward 'patterns/density';
+
+// components (alphabetical)
+@forward 'components/alert';
+@forward 'components/button';
+@forward 'components/card';
+// ...
+```
+
+The build entrypoint `marilo-myprovider.scss` simply re-exports the aggregator:
+
+```scss
+@forward 'index';
+```
+
+### Color tokens
+
+`foundation/_colors.scss` must emit both the light token block and the dark override block. Co-locating them keeps light/dark pairs together and avoids split-file confusion:
+
+```scss
+:root {
+  --marilo-color-primary:    #your-primary;
+  --marilo-color-surface:    #ffffff;
+  --marilo-color-text:       #1a1a1a;
+  // ...
+}
+
+[data-marilo-theme="dark"] {
+  --marilo-color-primary:    #your-primary-dark-variant;
+  --marilo-color-surface:    #1e1e1e;
+  --marilo-color-text:       #f0f0f0;
+  // ...
+}
+```
+
+See [Token Reference](xref:theming-token-reference) for the full list of `--marilo-*` tokens your provider should define.
+
+### Interactive state tints
+
+When computing hover/selected/active tints with `color-mix()`, always use `var(--marilo-color-surface)` as the mix base, never a hard-coded hex. This ensures tints are dark-tinted in dark mode:
+
+```scss
+// Correct
+.mar-button:hover {
+  background: color-mix(in srgb, var(--marilo-color-primary) 10%, var(--marilo-color-surface));
+}
+
+// Wrong -- produces light tint even in dark mode
+.mar-button:hover {
+  background: color-mix(in srgb, var(--marilo-color-primary) 10%, #ffffff);
+}
+```
+
 ## 4. Implement IMariloIconProvider
 
 ```csharp

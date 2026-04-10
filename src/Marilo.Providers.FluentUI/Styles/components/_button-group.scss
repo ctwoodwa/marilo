@@ -1,0 +1,23 @@
+// =============================================================================
+// Component: Button Group & Split Button
+// =============================================================================
+
+/* Button Group */
+.mar-button-group {
+    display: inline-flex;
+}
+
+.mar-button-group > .mar-button { border-radius: 0; }
+.mar-button-group > .mar-button:first-child { border-start-start-radius: var(--marilo-radius-md); border-end-start-radius: var(--marilo-radius-md); }
+.mar-button-group > .mar-button:last-child { border-start-end-radius: var(--marilo-radius-md); border-end-end-radius: var(--marilo-radius-md); }
+.mar-button-group > .mar-button + .mar-button { margin-inline-start: -1px; }
+
+/* Split Button */
+.mar-split-button {
+    display: inline-flex;
+    border-radius: var(--marilo-radius-md);
+}
+
+.mar-split-button__main { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.mar-split-button__trigger { border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: 1px solid rgba(255,255,255,0.2); padding: var(--marilo-space-sm); min-width: auto; }
+.mar-split-button__dropdown { position: absolute; top: 100%; left: 0; margin-top: var(--marilo-space-xxs); }

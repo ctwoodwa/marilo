@@ -2,10 +2,107 @@
 @page "/components/gauges/overview"
 @layout ComponentDemoLayout
 
-<PageSection Title="Gauges">
-    <div class="demo-coming-soon">
-        <MariloAlert Severity="AlertSeverity.Info">
-            <strong>Gauges</strong> — Coming soon. Arc, circular, linear, and radial gauge visualizations.
-        </MariloAlert>
-    </div>
+<PageSection Title="Overview">
+    <DemoSection Title="Arc Gauge" Description="MariloArcGauge renders a partial arc from StartAngle to EndAngle with an optional center label. Supports color ranges for conditional styling." Code="@_arcCode">
+        <div style="display:flex; gap:24px; align-items:center; flex-wrap:wrap;">
+            <MariloArcGauge Value="72" Min="0" Max="100" Size="180" StrokeWidth="14" ShowLabel="true" Color="#1976d2" />
+            <MariloArcGauge Value="45" Min="0" Max="100" Size="180" StrokeWidth="14" ShowLabel="true"
+                            Ranges="@_arcRanges" />
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Circular Gauge" Description="MariloCircularGauge draws a full-circle progress ring, ideal for percentage displays." Code="@_circularCode">
+        <div style="display:flex; gap:24px; align-items:center; flex-wrap:wrap;">
+            <MariloCircularGauge Value="85" Min="0" Max="100" Size="160" StrokeWidth="12" ShowLabel="true" Color="#4caf50" />
+            <MariloCircularGauge Value="30" Min="0" Max="100" Size="160" StrokeWidth="12" ShowLabel="true" Color="#ff9800" />
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Linear Gauge" Description="MariloLinearGauge renders a horizontal or vertical bar with an optional pointer and scale." Code="@_linearCode">
+        <div style="max-width:400px;">
+            <MariloLinearGauge Value="62" Min="0" Max="100" ShowPointer="true" ShowScale="true" ShowLabel="true" />
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Radial Gauge" Description="MariloRadialGauge renders a classic dial with a needle pointer and colored range arcs." Code="@_radialCode">
+        <MariloRadialGauge Value="68" Min="0" Max="100" Size="220" ShowLabel="true"
+                           Ranges="@_radialRanges" />
+    </DemoSection>
 </PageSection>
+
+<PageSection Title="Interactive">
+    <DemoSection Title="Adjust Value" Description="Use the slider to change the gauge value interactively." Code="@_interactiveCode">
+        <div style="display:flex; gap:24px; align-items:center; flex-wrap:wrap;">
+            <MariloArcGauge Value="@_interactiveValue" Min="0" Max="100" Size="160" StrokeWidth="12" ShowLabel="true" Color="#1976d2" />
+            <MariloCircularGauge Value="@_interactiveValue" Min="0" Max="100" Size="160" StrokeWidth="12" ShowLabel="true" Color="#4caf50" />
+            <MariloRadialGauge Value="@_interactiveValue" Min="0" Max="100" Size="180" ShowLabel="true" Ranges="@_radialRanges" />
+        </div>
+        <div style="margin-top:12px; max-width:300px;">
+            <input type="range" min="0" max="100" value="@_interactiveValue"
+                   @oninput="@(e => _interactiveValue = double.Parse(e.Value?.ToString() ?? "0"))"
+                   style="width:100%;" />
+            <p>Value: <strong>@_interactiveValue.ToString("F0")</strong></p>
+        </div>
+    </DemoSection>
+</PageSection>
+
+@code {
+    private double _interactiveValue = 50;
+
+    private readonly List<GaugeRange> _arcRanges =
+    [
+        new() { From = 0, To = 33, Color = "#4caf50" },
+        new() { From = 33, To = 66, Color = "#ff9800" },
+        new() { From = 66, To = 100, Color = "#f44336" },
+    ];
+
+    private readonly List<GaugeRange> _radialRanges =
+    [
+        new() { From = 0, To = 40, Color = "#4caf50" },
+        new() { From = 40, To = 70, Color = "#ff9800" },
+        new() { From = 70, To = 100, Color = "#f44336" },
+    ];
+
+    private const string _arcCode =
+        "<MariloArcGauge Value=\"72\"\n" +
+        "                Min=\"0\" Max=\"100\"\n" +
+        "                Size=\"180\"\n" +
+        "                StrokeWidth=\"14\"\n" +
+        "                ShowLabel=\"true\"\n" +
+        "                Color=\"#1976d2\" />";
+
+    private const string _circularCode =
+        "<MariloCircularGauge Value=\"85\"\n" +
+        "                     Min=\"0\" Max=\"100\"\n" +
+        "                     Size=\"160\"\n" +
+        "                     StrokeWidth=\"12\"\n" +
+        "                     ShowLabel=\"true\"\n" +
+        "                     Color=\"#4caf50\" />";
+
+    private const string _linearCode =
+        "<MariloLinearGauge Value=\"62\"\n" +
+        "                   Min=\"0\" Max=\"100\"\n" +
+        "                   ShowPointer=\"true\"\n" +
+        "                   ShowScale=\"true\"\n" +
+        "                   ShowLabel=\"true\" />";
+
+    private const string _radialCode =
+        "<MariloRadialGauge Value=\"68\"\n" +
+        "                   Min=\"0\" Max=\"100\"\n" +
+        "                   Size=\"220\"\n" +
+        "                   ShowLabel=\"true\"\n" +
+        "                   Ranges=\"@_ranges\" />\n\n" +
+        "@code {\n" +
+        "    private List<GaugeRange> _ranges = [\n" +
+        "        new() { From = 0, To = 40, Color = \"#4caf50\" },\n" +
+        "        new() { From = 40, To = 70, Color = \"#ff9800\" },\n" +
+        "        new() { From = 70, To = 100, Color = \"#f44336\" },\n" +
+        "    ];\n" +
+        "}";
+
+    private const string _interactiveCode =
+        "<MariloArcGauge Value=\"@_value\" Min=\"0\" Max=\"100\" Size=\"160\" />\n" +
+        "<MariloCircularGauge Value=\"@_value\" Min=\"0\" Max=\"100\" Size=\"160\" />\n" +
+        "<MariloRadialGauge Value=\"@_value\" Min=\"0\" Max=\"100\" Size=\"180\" />\n\n" +
+        "<input type=\"range\" min=\"0\" max=\"100\" @oninput=\"...\" />";
+}

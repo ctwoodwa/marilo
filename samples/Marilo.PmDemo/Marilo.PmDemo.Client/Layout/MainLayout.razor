@@ -3,8 +3,11 @@
 @inject NavigationManager Nav
 @inject IUserNotificationService UserNotifications
 @inject Marilo.Core.Services.IMariloThemeService ThemeService
+@inject ProviderSwitcher ProviderSwitcher
+@inject IJSRuntime JS
 @using Marilo.PmDemo.Client.Notifications
 @using Marilo.PmDemo.Client.Data
+@using Marilo.PmDemo.Client.Services
 @using Marilo.Components.Feedback
 
 <MariloThemeProvider Theme="@_selectedPreset.Theme">
@@ -48,6 +51,13 @@
             <MariloAppShellNavLink Href="/risk" Label="Risk Register" Badge="!">
                 <Icon><MariloIcon Name="alert-triangle" Size="IconSize.Small" /></Icon>
             </MariloAppShellNavLink>
+        </MariloAppShellNavGroup>
+        <MariloAppShellNavGroup Title="Design System">
+            <div style="padding: 4px 12px; display: flex; flex-direction: column; gap: 4px;">
+                <button type="button" class="mar-btn mar-btn--sm @(_activeProvider == DesignProvider.FluentUI ? "mar-btn--primary" : "mar-btn--flat")" style="width:100%;justify-content:flex-start;" @onclick="() => SwitchProvider(DesignProvider.FluentUI)">Fluent UI</button>
+                <button type="button" class="mar-btn mar-btn--sm @(_activeProvider == DesignProvider.Bootstrap ? "mar-btn--primary" : "mar-btn--flat")" style="width:100%;justify-content:flex-start;" @onclick="() => SwitchProvider(DesignProvider.Bootstrap)">Bootstrap</button>
+                <button type="button" class="mar-btn mar-btn--sm @(_activeProvider == DesignProvider.Material ? "mar-btn--primary" : "mar-btn--flat")" style="width:100%;justify-content:flex-start;" @onclick="() => SwitchProvider(DesignProvider.Material)">Material 3</button>
+            </div>
         </MariloAppShellNavGroup>
     </SidebarContent>
 
@@ -128,6 +138,8 @@
     private bool _collapsed;
     private bool _bellOpen;
     private bool _isDark;
+    private DesignProvider _activeProvider = DesignProvider.FluentUI;
+    private IJSObjectReference? _providerModule;
     private ThemePresets.ThemePreset _selectedPreset = ThemePresets.All[0];
 
     // Bell view shape — projected from the canonical store on every change. The bell
@@ -188,6 +200,46 @@
     }
 
     private void GoToNotificationSettings() => Nav.NavigateTo("/account/notifications");
+
+    private async Task SwitchProvider(DesignProvider provider)
+    {
+        if (_activeProvider == provider) return;
+        try
+        {
+            _providerModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/provider-switcher.js");
+            var key = provider switch
+            {
+                DesignProvider.Bootstrap => "bootstrap",
+                DesignProvider.Material => "material",
+                _ => "fluentui",
+            };
+            await _providerModule.InvokeVoidAsync("setProvider", key);
+        }
+        catch (TaskCanceledException) { }
+        catch (OperationCanceledException) { }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _providerModule ??= await JS.InvokeAsync<IJSObjectReference>("import", "./js/provider-switcher.js");
+            var storedProvider = await _providerModule.InvokeAsync<string>("getStoredProvider");
+            if (storedProvider == "bootstrap")
+            {
+                _activeProvider = DesignProvider.Bootstrap;
+                ProviderSwitcher.SetProvider(DesignProvider.Bootstrap);
+                await _providerModule.InvokeVoidAsync("applyProvider", "bootstrap");
+            }
+            else if (storedProvider == "material")
+            {
+                _activeProvider = DesignProvider.Material;
+                ProviderSwitcher.SetProvider(DesignProvider.Material);
+                await _providerModule.InvokeVoidAsync("applyProvider", "material");
+            }
+            StateHasChanged();
+        }
+    }
 
     public void Dispose()
     {

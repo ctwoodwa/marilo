@@ -1,0 +1,30 @@
+// =============================================================================
+// Component: TreeView
+// =============================================================================
+
+.mar-treeview {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.mar-treeview ul { list-style: none; padding-left: var(--marilo-space-lg); margin: 0; }
+
+.mar-tree-item {
+    padding: var(--marilo-space-xs) var(--marilo-space-sm);
+    border-radius: var(--marilo-radius-md);
+    cursor: pointer;
+    transition: background var(--marilo-transition-fast);
+}
+
+.mar-tree-item:hover { background: var(--marilo-color-surface-hover); }
+.mar-tree-item--selected { background: var(--marilo-color-primary-light); color: var(--marilo-color-primary); }
+.mar-tree-item--expanded {}
+
+// Phase 2 extended
+.mar-treeitem { }
+.mar-treeitem__row { display: flex; align-items: center; gap: var(--marilo-space-xs); padding: var(--marilo-space-xxs) var(--marilo-space-sm); border-radius: var(--marilo-radius-md); cursor: pointer; }
+.mar-treeitem__row:hover { background: var(--marilo-color-surface); }
+.mar-treeitem--selected > .mar-treeitem__row { background: var(--marilo-color-primary-light); color: var(--marilo-color-primary); }
+.mar-treeitem__toggle { display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; background: none; border: none; cursor: pointer; padding: 0; transition: transform var(--marilo-transition-fast); }
+.mar-treeitem--expanded > .mar-treeitem__row .mar-treeitem__toggle { transform: rotate(90deg); }

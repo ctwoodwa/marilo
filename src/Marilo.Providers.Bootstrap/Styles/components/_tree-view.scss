@@ -1,0 +1,22 @@
+// =================================================================
+// Marilo Bootstrap Provider — Tree View
+// =================================================================
+// From _bridge-data.scss: .mar-bs-treeview
+// =================================================================
+
+.mar-bs-treeview {
+  .mar-bs-tree-item--expanded > .mar-bs-tree-children {
+    display: block;
+  }
+
+  .mar-bs-tree-children {
+    display: none;
+    padding-left: var(--marilo-space-lg);
+  }
+
+  .list-group-item {
+    border-left: 0;
+    border-right: 0;
+    cursor: pointer;
+  }
+}

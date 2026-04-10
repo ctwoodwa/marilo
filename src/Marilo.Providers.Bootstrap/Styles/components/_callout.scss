@@ -1,0 +1,19 @@
+// =================================================================
+// Marilo Bootstrap Provider — Callout
+// =================================================================
+// From _bridge-feedback.scss: .mar-bs-callout
+// =================================================================
+
+.mar-bs-callout {
+  padding: var(--marilo-space-md) var(--marilo-space-lg);
+  margin-bottom: var(--marilo-space-md);
+  border-left: 4px solid;
+  border-radius: var(--marilo-radius-sm);
+  background-color: var(--marilo-color-surface);
+
+  &--info    { border-left-color: var(--marilo-color-info); }
+  &--warning { border-left-color: var(--marilo-color-warning); }
+  &--danger  { border-left-color: var(--marilo-color-danger); }
+  &--success { border-left-color: var(--marilo-color-success); }
+  &--note    { border-left-color: var(--marilo-color-secondary); }
+}

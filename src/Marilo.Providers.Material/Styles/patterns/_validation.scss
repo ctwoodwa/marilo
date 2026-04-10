@@ -1,0 +1,30 @@
+// =============================================================================
+// Patterns: Validation — Material 3 validation visual patterns
+// M3 uses error color role + supporting text for validation feedback.
+// =============================================================================
+
+// TODO: Placeholder — full Material 3 validation styles not yet defined.
+
+// Validation token aliases (consumed by field components)
+:root {
+  --marilo-validation-error-color:    var(--marilo-color-error);
+  --marilo-validation-success-color:  var(--marilo-color-success);
+  --marilo-validation-warning-color:  var(--marilo-color-warning);
+}
+
+// Supporting text — appears below fields for hints or error messages
+.mar-field-support {
+  font-size:      var(--marilo-font-size-xs);   // label-small
+  line-height:    1rem;
+  letter-spacing: 0.03125rem;
+  color:          var(--marilo-color-on-surface-variant);
+  padding-top:    var(--marilo-space-xxs);
+}
+
+.mar-field-support--error {
+  color: var(--marilo-color-error);
+}
+
+.mar-field-support--success {
+  color: var(--marilo-color-success);
+}
