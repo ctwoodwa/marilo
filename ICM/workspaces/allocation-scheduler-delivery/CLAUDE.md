@@ -16,7 +16,10 @@ allocation-scheduler-delivery/
 │   ├── 02-example-ux/                 (audit and update demo page scenarios)
 │   │   ├── shared/                    (demo scenario format)
 │   │   └── output/                    (demo gap list, updated demo page)
-│   └── 03-sync-check/                 (confirm all three artifacts are in sync)
+│   ├── 03-visual-parity/              (theme-aware visual comparison and gap scoring)
+│   │   ├── shared/                    (capture matrix, rubric, gap format, remediation template)
+│   │   └── output/                    (parity gaps, parity summary)
+│   └── 04-sync-check/                 (confirm all four artifacts are in sync)
 │       ├── shared/                    (delivery checklist)
 │       └── output/                    (delivery report)
 └── shared/
@@ -30,7 +33,8 @@ allocation-scheduler-delivery/
 | `status` | Show pipeline completion for all stages |
 | `spec` | Enter stages/01-spec-review/CONTEXT.md |
 | `demo` | Enter stages/02-example-ux/CONTEXT.md |
-| `sync` | Enter stages/03-sync-check/CONTEXT.md |
+| `parity` | Enter stages/03-visual-parity/CONTEXT.md |
+| `sync` | Enter stages/04-sync-check/CONTEXT.md |
 
 ## Routing
 
@@ -38,7 +42,8 @@ allocation-scheduler-delivery/
 |----------------|-------|
 | Audit the API spec vs. implementation | stages/01-spec-review/CONTEXT.md |
 | Audit and update the Example UX | stages/02-example-ux/CONTEXT.md |
-| Confirm all three artifacts are in sync | stages/03-sync-check/CONTEXT.md |
+| Review visual parity across themes | stages/03-visual-parity/CONTEXT.md |
+| Confirm all four artifacts are in sync | stages/04-sync-check/CONTEXT.md |
 
 ## IMPORTANT
 

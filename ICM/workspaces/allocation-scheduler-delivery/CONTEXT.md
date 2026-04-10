@@ -8,4 +8,5 @@ Coordinate spec accuracy, Example UX completeness, and source+tests alignment fo
 |-----------|-------|-------------|
 | Spec review | `stages/01-spec-review/CONTEXT.md` | Audit API spec vs. implementation |
 | Example UX | `stages/02-example-ux/CONTEXT.md` | Audit and update demo page scenarios |
-| Sync check | `stages/03-sync-check/CONTEXT.md` | Confirm all three artifacts are in sync |
+| Visual parity | `stages/03-visual-parity/CONTEXT.md` | Review visual parity across themes |
+| Sync check | `stages/04-sync-check/CONTEXT.md` | Confirm all four artifacts are in sync |

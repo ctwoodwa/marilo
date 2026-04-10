@@ -35,6 +35,15 @@
 | Last demo audit | PENDING |
 | Open demo gaps | PENDING |
 
+## Visual Parity State
+
+| Field | Value |
+|-------|-------|
+| Themes to review | Fluent, Bootstrap, Material |
+| Modes to review | Light, Dark |
+| Last parity audit | PENDING |
+| Open parity gaps | PENDING |
+
 ## Delivery Gate
 
 | Field | Value |

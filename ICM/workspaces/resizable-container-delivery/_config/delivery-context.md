@@ -35,6 +35,14 @@
 | Last demo audit | not yet run |
 | Open demo gaps | not yet run |
 
+## Visual Parity State
+
+| Field | Value |
+|-------|-------|
+| Last parity review | PENDING |
+| Themes reviewed | PENDING |
+| Open parity gaps | PENDING |
+
 ## Delivery Gate
 
 | Field | Value |

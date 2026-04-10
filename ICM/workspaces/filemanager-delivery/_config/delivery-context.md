@@ -35,6 +35,14 @@
 | Last demo audit | 2026-04-10 |
 | Open demo gaps | 0 (12 scenarios implemented, covering all implemented parameters and events) |
 
+## Visual Parity State
+
+| Field | Value |
+|-------|-------|
+| Last parity review | PENDING |
+| Themes reviewed | PENDING |
+| Open parity gaps | PENDING |
+
 ## Delivery Gate
 
 | Field | Value |

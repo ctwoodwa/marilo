@@ -26,8 +26,12 @@
 | Open spec gaps | 0 |
 | Last example UX audit | 2026-04-05 |
 | Open demo gaps | 0 |
+| Last parity review | PENDING |
+| Themes reviewed | PENDING |
+| Open parity gaps | PENDING |
 | Last sync check | 2026-04-05 |
 | Last gap-analysis closure | 2026-04-05 |
 | Gate status | CLEAR |
 | Blocking items | 0 |
 | Findings fixed during sync | 2 (CellEditedArgs/RangeEditedArgs type mismatch, stale code sample) |
+
