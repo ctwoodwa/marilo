@@ -2,10 +2,90 @@
 @page "/components/notification/overview"
 @layout ComponentDemoLayout
 
-<PageSection Title="Notification">
-    <div class="demo-coming-soon">
-        <MariloAlert Severity="AlertSeverity.Info">
-            <strong>Notification</strong> — Coming soon. Toast and banner notification system.
-        </MariloAlert>
-    </div>
+<PageSection Title="Overview">
+    <MariloAlert Severity="AlertSeverity.Info" style="margin-bottom:16px;">
+        The Notification system is provided by <strong>MariloToast</strong> (persistent alert-style notifications) and <strong>MariloSnackbar</strong> (brief auto-dismissing messages).
+    </MariloAlert>
+
+    <DemoSection Title="Toast Notifications" Description="MariloToast renders an inline notification with severity, title, and message. Use ShowCloseButton and OnDismiss for dismissible toasts." Code="@_toastCode">
+        <div style="display:flex; flex-direction:column; gap:12px;">
+            <MariloToast Severity="ToastSeverity.Info" Title="Info" Message="This is an informational toast message." />
+            <MariloToast Severity="ToastSeverity.Success" Title="Success" Message="Operation completed successfully." />
+            <MariloToast Severity="ToastSeverity.Warning" Title="Warning" Message="Please check your input before proceeding." />
+            <MariloToast Severity="ToastSeverity.Error" Title="Error" Message="An error occurred while saving." />
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Dismissible Toast" Description="Toasts can be dismissed by the user when ShowCloseButton is true." Code="@_dismissibleToastCode">
+        @if (_showToast)
+        {
+            <MariloToast Severity="ToastSeverity.Success"
+                         Title="Saved"
+                         Message="Your changes have been saved."
+                         ShowCloseButton="true"
+                         OnDismiss="@(() => _showToast = false)" />
+        }
+        else
+        {
+            <button @onclick="@(() => _showToast = true)">Show Toast</button>
+        }
+    </DemoSection>
 </PageSection>
+
+<PageSection Title="Snackbar">
+    <DemoSection Title="Snackbar" Description="MariloSnackbar is a brief notification that appears temporarily and auto-dismisses after a configurable duration. It supports an optional action button." Code="@_snackbarCode">
+        <button @onclick="@(() => _showSnackbar = true)">Show Snackbar</button>
+        <MariloSnackbar Message="Item deleted."
+                        IsOpen="@_showSnackbar"
+                        ActionText="Undo"
+                        OnAction="@(() => _snackbarAction = "Undo clicked")"
+                        OnDismiss="@(() => _showSnackbar = false)"
+                        DurationMs="5000" />
+        <p style="margin-top:8px;">Action: <strong>@_snackbarAction</strong></p>
+    </DemoSection>
+
+    <DemoSection Title="Snackbar Without Auto-Dismiss" Description="Set DurationMs to 0 to keep the snackbar visible until the user explicitly dismisses it." Code="@_persistentSnackbarCode">
+        <button @onclick="@(() => _showPersistent = true)">Show Persistent Snackbar</button>
+        <MariloSnackbar Message="This snackbar stays until dismissed."
+                        IsOpen="@_showPersistent"
+                        DurationMs="0"
+                        OnDismiss="@(() => _showPersistent = false)" />
+    </DemoSection>
+</PageSection>
+
+@code {
+    private bool _showToast = true;
+    private bool _showSnackbar;
+    private bool _showPersistent;
+    private string _snackbarAction = "(none)";
+
+    private const string _toastCode =
+        "<MariloToast Severity=\"ToastSeverity.Info\"\n" +
+        "             Title=\"Info\"\n" +
+        "             Message=\"This is an informational toast message.\" />\n\n" +
+        "<MariloToast Severity=\"ToastSeverity.Success\"\n" +
+        "             Title=\"Success\"\n" +
+        "             Message=\"Operation completed successfully.\" />";
+
+    private const string _dismissibleToastCode =
+        "<MariloToast Severity=\"ToastSeverity.Success\"\n" +
+        "             Title=\"Saved\"\n" +
+        "             Message=\"Your changes have been saved.\"\n" +
+        "             ShowCloseButton=\"true\"\n" +
+        "             OnDismiss=\"@(() => _showToast = false)\" />";
+
+    private const string _snackbarCode =
+        "<button @onclick=\"@(() => _show = true)\">Show Snackbar</button>\n\n" +
+        "<MariloSnackbar Message=\"Item deleted.\"\n" +
+        "                IsOpen=\"@_show\"\n" +
+        "                ActionText=\"Undo\"\n" +
+        "                OnAction=\"@HandleUndo\"\n" +
+        "                OnDismiss=\"@(() => _show = false)\"\n" +
+        "                DurationMs=\"5000\" />";
+
+    private const string _persistentSnackbarCode =
+        "<MariloSnackbar Message=\"This snackbar stays until dismissed.\"\n" +
+        "                IsOpen=\"@_show\"\n" +
+        "                DurationMs=\"0\"\n" +
+        "                OnDismiss=\"@(() => _show = false)\" />";
+}

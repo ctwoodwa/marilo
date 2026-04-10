@@ -1,0 +1,101 @@
+@inherits MariloComponentBase
+
+<div class="@CombineClasses("mar-dockmanager")"
+     style="@CombineStyles(HeightStyle(), WidthStyle())"
+     @attributes="AdditionalAttributes">
+
+    <div class="mar-dockmanager__tabs">
+        @foreach (var pane in _panes)
+        {
+            <div class="mar-dockmanager__tab @(pane.Id == _activeId ? "mar-dockmanager__tab--active" : "")"
+                 @onclick="() => SetActive(pane.Id)">
+                <span class="mar-dockmanager__tab-title">@(pane.Title ?? pane.Id)</span>
+                <span class="mar-dockmanager__tab-actions">
+                    <button type="button" class="mar-dockmanager__action" title="Pin" @onclick:stopPropagation="true" @onclick="() => PinPane(pane.Id)">&#128204;</button>
+                    <button type="button" class="mar-dockmanager__action" title="Float" @onclick:stopPropagation="true" @onclick="() => FloatPane(pane.Id)">&#8599;</button>
+                    @if (pane.Closable)
+                    {
+                        <button type="button" class="mar-dockmanager__action" title="Close" @onclick:stopPropagation="true" @onclick="() => ClosePane(pane.Id)">&times;</button>
+                    }
+                </span>
+            </div>
+        }
+    </div>
+
+    <div class="mar-dockmanager__content">
+        <CascadingValue Value="this">
+            @ChildContent
+        </CascadingValue>
+    </div>
+</div>
+
+@code {
+    /// <summary>Child content containing <c>MariloDockPane</c> declarations.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>CSS height of the dock manager container.</summary>
+    [Parameter] public string? Height { get; set; } = "500px";
+
+    /// <summary>CSS width of the dock manager container.</summary>
+    [Parameter] public string? Width { get; set; }
+
+    /// <summary>Callback invoked when a pane is closed.</summary>
+    [Parameter] public EventCallback<string> OnPaneClose { get; set; }
+
+    /// <summary>Callback invoked when a pane is pinned.</summary>
+    [Parameter] public EventCallback<string> OnPanePin { get; set; }
+
+    /// <summary>Callback invoked when a pane is floated.</summary>
+    [Parameter] public EventCallback<string> OnPaneFloat { get; set; }
+
+    private readonly List<MariloDockPane> _panes = new();
+    private string? _activeId;
+
+    private string HeightStyle() => Height != null ? $"height:{Height}" : "";
+    private string WidthStyle() => Width != null ? $"width:{Width}" : "";
+
+    internal void RegisterPane(MariloDockPane pane)
+    {
+        if (!_panes.Contains(pane))
+        {
+            _panes.Add(pane);
+            _activeId ??= pane.Id ?? pane.Title ?? _panes.Count.ToString();
+            StateHasChanged();
+        }
+    }
+
+    internal void UnregisterPane(MariloDockPane pane)
+    {
+        _panes.Remove(pane);
+        if (_activeId == (pane.Id ?? pane.Title))
+        {
+            _activeId = _panes.FirstOrDefault()?.Id ?? _panes.FirstOrDefault()?.Title;
+        }
+        StateHasChanged();
+    }
+
+    internal bool IsPaneActive(MariloDockPane pane)
+    {
+        var id = pane.Id ?? pane.Title ?? "";
+        return id == _activeId;
+    }
+
+    private void SetActive(string? id) => _activeId = id;
+
+    private async Task ClosePane(string? id)
+    {
+        var pane = _panes.FirstOrDefault(p => (p.Id ?? p.Title) == id);
+        if (pane != null) UnregisterPane(pane);
+        if (id != null) await OnPaneClose.InvokeAsync(id);
+    }
+
+    private async Task PinPane(string? id)
+    {
+        if (id != null) await OnPanePin.InvokeAsync(id);
+    }
+
+    private async Task FloatPane(string? id)
+    {
+        if (id != null) await OnPaneFloat.InvokeAsync(id);
+    }
+}

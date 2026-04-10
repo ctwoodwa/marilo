@@ -2,10 +2,75 @@
 @page "/components/dropdownbutton/overview"
 @layout ComponentDemoLayout
 
-<PageSection Title="Dropdown Button">
-    <div class="demo-coming-soon">
-        <MariloAlert Severity="AlertSeverity.Info">
-            <strong>Dropdown Button</strong> — Coming soon. Button with an attached dropdown menu for secondary actions.
-        </MariloAlert>
-    </div>
+<PageSection Title="Overview">
+    <MariloAlert Severity="AlertSeverity.Info" style="margin-bottom:16px;">
+        The DropDownButton functionality is provided by the <strong>MariloSplitButton</strong> component, which combines a primary action button with a dropdown menu for secondary actions.
+    </MariloAlert>
+
+    <DemoSection Title="Basic Split Button" Description="MariloSplitButton shows a primary action button alongside a dropdown chevron that reveals additional menu items." Code="@_basicCode">
+        <MariloSplitButton OnClick="@(() => _lastAction = "Primary clicked")">
+            <ChildContent>Save</ChildContent>
+            <MenuContent>
+                <div role="menuitem" style="padding:8px 16px; cursor:pointer;" @onclick="@(() => _lastAction = "Save as Draft")">Save as Draft</div>
+                <div role="menuitem" style="padding:8px 16px; cursor:pointer;" @onclick="@(() => _lastAction = "Save and Close")">Save and Close</div>
+                <div role="menuitem" style="padding:8px 16px; cursor:pointer;" @onclick="@(() => _lastAction = "Save and New")">Save and New</div>
+            </MenuContent>
+        </MariloSplitButton>
+        <p style="margin-top:8px;">Last action: <strong>@_lastAction</strong></p>
+    </DemoSection>
+
+    <DemoSection Title="Variants and Sizes" Description="Customize the visual style and size of the split button using Variant and Size parameters." Code="@_variantsCode">
+        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+            <MariloSplitButton Variant="ButtonVariant.Primary" Size="ButtonSize.Small">
+                <ChildContent>Primary Small</ChildContent>
+                <MenuContent>
+                    <div role="menuitem" style="padding:8px 16px;">Option A</div>
+                </MenuContent>
+            </MariloSplitButton>
+            <MariloSplitButton Variant="ButtonVariant.Secondary" Size="ButtonSize.Medium">
+                <ChildContent>Secondary Medium</ChildContent>
+                <MenuContent>
+                    <div role="menuitem" style="padding:8px 16px;">Option B</div>
+                </MenuContent>
+            </MariloSplitButton>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Disabled" Description="Set Enabled to false to disable both the primary button and the dropdown toggle." Code="@_disabledCode">
+        <MariloSplitButton Enabled="false">
+            <ChildContent>Disabled</ChildContent>
+            <MenuContent>
+                <div role="menuitem" style="padding:8px 16px;">Unreachable</div>
+            </MenuContent>
+        </MariloSplitButton>
+    </DemoSection>
 </PageSection>
+
+@code {
+    private string _lastAction = "(none)";
+
+    private const string _basicCode =
+        "<MariloSplitButton OnClick=\"@(() => _action = \\\"Primary clicked\\\")\">\n" +
+        "    <ChildContent>Save</ChildContent>\n" +
+        "    <MenuContent>\n" +
+        "        <div role=\"menuitem\">Save as Draft</div>\n" +
+        "        <div role=\"menuitem\">Save and Close</div>\n" +
+        "    </MenuContent>\n" +
+        "</MariloSplitButton>";
+
+    private const string _variantsCode =
+        "<MariloSplitButton Variant=\"ButtonVariant.Primary\" Size=\"ButtonSize.Small\">\n" +
+        "    <ChildContent>Primary Small</ChildContent>\n" +
+        "    <MenuContent>...</MenuContent>\n" +
+        "</MariloSplitButton>\n\n" +
+        "<MariloSplitButton Variant=\"ButtonVariant.Secondary\" Size=\"ButtonSize.Medium\">\n" +
+        "    <ChildContent>Secondary Medium</ChildContent>\n" +
+        "    <MenuContent>...</MenuContent>\n" +
+        "</MariloSplitButton>";
+
+    private const string _disabledCode =
+        "<MariloSplitButton Enabled=\"false\">\n" +
+        "    <ChildContent>Disabled</ChildContent>\n" +
+        "    <MenuContent>...</MenuContent>\n" +
+        "</MariloSplitButton>";
+}

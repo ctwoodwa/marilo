@@ -1,0 +1,35 @@
+@implements IDisposable
+
+@if (DockManager != null && DockManager.IsPaneActive(this))
+{
+    <div class="mar-dockpane">
+        @ChildContent
+    </div>
+}
+
+@code {
+    /// <summary>Display title for the pane tab.</summary>
+    [Parameter] public string? Title { get; set; }
+
+    /// <summary>Unique identifier for the pane.</summary>
+    [Parameter] public string? Id { get; set; }
+
+    /// <summary>Content rendered inside the pane.</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Whether the pane can be closed. Defaults to true.</summary>
+    [Parameter] public bool Closable { get; set; } = true;
+
+    /// <summary>Parent dock manager provided via cascading value.</summary>
+    [CascadingParameter] public MariloDockManager? DockManager { get; set; }
+
+    protected override void OnInitialized()
+    {
+        DockManager?.RegisterPane(this);
+    }
+
+    public void Dispose()
+    {
+        DockManager?.UnregisterPane(this);
+    }
+}
