@@ -17,15 +17,22 @@
 
 ---
 
-## Critical Observation: Spec-Implementation Architecture Mismatch
+## Blocker Resolution
 
-The spec documents a **full Excel-like Spreadsheet** (`MariloSpreadsheet`) with XLSX file import/export, cell-level styling, formulas, named ranges, images, links, and a toolbar with formatting tools.
+The prior Stage 01 run (2026-04-03) flagged a **blocking architecture mismatch**
+between the spec (`spreadsheet/`, XLSX-based Excel clone) and the source
+(`MariloDataSheet<TItem>`, strongly-typed editable grid). **That blocker is
+resolved.**
 
-The implementation (`MariloDataSheet<TItem>`) is a **strongly-typed editable data grid** with column definitions, cell-level dirty tracking, bulk save, and paste support. It works with `IEnumerable<TItem>` data, not XLSX byte arrays.
-
-**These are fundamentally different components.** The spec describes an Excel clone; the implementation is an inline-editing DataGrid variant. This mismatch must be resolved at a design level before detailed spec alignment can proceed.
-
-**Decision needed:** Is MariloDataSheet intended to eventually become the full Spreadsheet from spec, or is it a deliberately simpler component that needs its own spec?
+A new spec directory `docs/component-specs/datasheet/` now documents the
+actual implementation with nine feature-area files (overview,
+columns-and-schema, editing-and-validation, selection-and-ranges,
+bulk-paste-and-clipboard, bulk-operations-and-saveall,
+virtualization-and-performance, keyboard-and-accessibility,
+theming-and-css-provider). The legacy `spreadsheet/` directory is now stale
+and should be either deleted or explicitly marked as the (separate) future
+Spreadsheet component. That cleanup is out of scope for this spec review and
+is flagged as a follow-up.
 
 ---
 
@@ -33,131 +40,104 @@ The implementation (`MariloDataSheet<TItem>`) is a **strongly-typed editable dat
 
 | Type | Count |
 |------|-------|
-| Architecture mismatch (spec ≠ implementation) | 1 (blocking) |
-| Spec-ahead (documented, not implemented) | ~25 |
-| Undocumented (implemented, not in spec) | ~12 |
-| **Total** | **~38** |
+| Implemented but not documented | 0 |
+| Documented but not implemented | 0 |
+| Documented and implemented but mismatched | 0 |
+| ICM metadata drift (stale paths) | 3 |
+| Cross-branch drift (missing from this worktree) | 2 |
+| **Total actionable items** | **5** |
 
 | Severity | Count |
 |----------|-------|
-| Blocking | 1 (architecture decision) |
-| Important | ~15 |
-| Nice-to-have | ~22 |
+| Blocking | 0 |
+| Important | 2 |
+| Nice-to-have | 3 |
 
 ---
 
-## (A) Implemented API Surface (from source)
+## (A) Implemented API Surface — Spec Alignment Check
 
-### Parameters (MariloDataSheet.razor.cs)
-| Parameter | Type | Default | In Spec? |
-|-----------|------|---------|----------|
-| Data | IEnumerable<TItem>? | null | Mismatch (spec: byte[]) |
-| KeyField | string | "Id" | No |
-| OnSaveAll | EventCallback<DataSheetSaveArgs<TItem>> | — | No |
-| OnRowChanged | EventCallback<DataSheetRowChangedArgs<TItem>> | — | No |
-| OnValidate | EventCallback<DataSheetValidateArgs<TItem>> | — | No |
-| IsSaving | bool | false | No |
-| AllowAddRow | bool | false | No |
-| AllowDeleteRow | bool | false | No |
-| AllowBulkPaste | bool | true | No |
-| EmptyStateMessage | string | "No data." | No |
-| Height | string? | null | Yes (different semantics) |
-| IsLoading | bool | false | Partial (EnableLoaderContainer in spec) |
-| EnableVirtualization | bool | true | No |
-| AriaLabel | string | "Editable data grid" | No |
-| ChildContent | RenderFragment? | null | No (spec uses Data byte[]) |
-| ToolbarTemplate | RenderFragment? | null | Partial (spec uses SpreadsheetToolSet) |
+All nine public methods listed in `datasheet/overview.md` are present in
+source:
 
-### Methods
-| Method | In Spec? |
-|--------|----------|
-| GetDirtyRows() | No |
-| SetDataAsync(IEnumerable<TItem>) | No |
+| Spec method | Source location | Match |
+|---|---|---|
+| `ResetAsync()` | `MariloDataSheet.Data.cs:205` | Yes |
+| `ValidateAllAsync()` | `MariloDataSheet.Data.cs:108` | Yes |
+| `GetDirtyRows()` | `MariloDataSheet.razor.cs:120` | Yes |
+| `SetDataAsync(IEnumerable<TItem>)` | `MariloDataSheet.razor.cs:129` | Yes |
+| `ScrollToRowAsync(object)` | `MariloDataSheet.Interop.cs:38` | Yes |
+| `CommitCellEdit(TItem, string, object?)` | `MariloDataSheet.Data.cs:38` | Yes |
+| `EnterEditMode(TItem, string)` | `MariloDataSheet.Editing.cs:34` | Yes |
+| `IsCellEditing(TItem, string)` | `MariloDataSheet.Editing.cs:63` | Yes |
+| `SaveAllAsync()` | `MariloDataSheet.Data.cs:142` | Yes |
 
-### Partial Files
-| File | Purpose |
-|------|---------|
-| MariloDataSheet.Data.cs | Dirty tracking, row key resolution |
-| MariloDataSheet.Editing.cs | Cell editing, paste handling |
-| MariloDataSheet.Interop.cs | JS interop (clipboard) |
-| MariloDataSheet.Rendering.cs | RenderTreeBuilder logic |
+All 17 parameters listed in `datasheet/overview.md` (Data, KeyField, OnSaveAll,
+OnRowChanged, OnValidate, IsSaving, AllowAddRow, AllowDeleteRow,
+AllowBulkPaste, EmptyStateMessage, Height, IsLoading, EnableVirtualization,
+AriaLabel, ChildContent, ToolbarTemplate, Class, Style) are present in source
+(`Class`, `Style` inherited from `MariloComponentBase`). No parameter gaps.
 
-### Column Component: MariloDataSheetColumn<TItem>
-Provides column definitions with field binding, header text, width, editability, and cell templates.
+All 12 MariloDataSheetColumn parameters match source. No gaps.
+
+All event arg types (`DataSheetSaveArgs`, `DataSheetRowChangedArgs`,
+`DataSheetValidateArgs`, `DataSheetValidationError`, `DataSheetCellContext`,
+`DataSheetSelectOption`) match. Both enums (`DataSheetColumnType`, `CellState`)
+match.
 
 ---
 
-## (B) Spec-Ahead Features (in spec, not in implementation)
+## (B) Cross-Branch Drift (NOT spec gaps — branch state)
 
-### Core Configuration (from spec overview.md)
-| Parameter | Spec Type | Severity | Notes |
-|-----------|-----------|----------|-------|
-| Data | byte[] (XLSX) | **Blocking** | Spec: Excel file bytes. Code: IEnumerable<TItem> |
-| ColumnsCount | int (50) | Important | Dynamic column count |
-| RowsCount | int (200) | Important | Dynamic row count |
-| ColumnWidth | double (64) | Important | Default column width |
-| RowHeight | double (20) | Important | Default row height |
-| ColumnHeaderHeight | double (20) | Nice-to-have | Header height |
-| RowHeaderWidth | double (32) | Nice-to-have | Row header width |
-| EnableLoaderContainer | bool | Nice-to-have | Loading state |
-| Width | string | Nice-to-have | Root width |
-| Tools | SpreadsheetToolSet | Important | Toolbar configuration |
+Two items referenced in the task prompt were introduced on the `workInProgress`
+branch at `ca71e0a` but are NOT reachable from this worktree's HEAD
+(`32e064c`, merge of PR #55). Both would need to be cherry-picked or re-done
+in a separate change; reapplying them from within spec-review is out of
+scope and flagged as coordinator escalation.
 
-### Functions & Formulas (from spec functions-formulas.md)
-| Feature | Severity | Notes |
-|---------|----------|-------|
-| Cell formulas (=SUM, =AVERAGE, etc.) | Important | ~200+ Excel functions documented |
-| Named ranges | Nice-to-have | |
-| Cross-sheet references | Nice-to-have | |
-
-### Tools (from spec tools.md)
-| Feature | Severity | Notes |
-|---------|----------|-------|
-| Built-in toolbar tabs (Home, Insert, Data, View) | Important | |
-| Cell formatting (bold, italic, borders, fill) | Important | |
-| Number formatting | Important | |
-| Merge/unmerge cells | Nice-to-have | |
-| Image insertion | Nice-to-have | |
-| Link insertion | Nice-to-have | |
-| Custom tool support | Nice-to-have | |
-
-### Events (from spec events.md)
-| Event | Severity | Notes |
-|-------|----------|-------|
-| OnCellSelect | Important | Cell selection callback |
-| OnCellEdit | Important | Cell edit callback |
-| OnSheetRename | Nice-to-have | Sheet management |
-| OnDataExport | Important | Export callback |
-
-### Accessibility (from spec accessibility/wai-aria-support.md)
-| Feature | Severity | Notes |
-|---------|----------|-------|
-| Full WAI-ARIA grid pattern | Important | role=grid, role=gridcell, aria-rowindex, etc. |
-| Screen reader announcements | Important | Cell navigation announcements |
-| Keyboard shortcuts (Ctrl+C, Ctrl+V, Tab, Enter) | Important | Excel-like keyboard model |
+1. **ComponentRegistry `DataSheet` entry — missing here.** (`Important`)
+   `samples/Marilo.Demo/Data/ComponentRegistry.cs` has no DataSheet entry or
+   `DataSheetSubPages` array. Consequence: `ComponentDemoLayout.ParseRoute()`
+   cannot render breadcrumb/header for DataSheet demo pages. Consistent with
+   the *intent* of the new spec (which assumes the 4 sub-pages), but absent
+   from current source.
+2. **ResetAsync / RestoreEntryOrRemoveNewRow doc remarks — missing here.**
+   (`Nice-to-have`) This worktree's `MariloDataSheet.Data.cs` is 287 lines
+   (older); the referenced helper and `IsNewlyAdded` tracking do not exist.
+   The current `ResetAsync` implementation is simpler and has no combined
+   `IsNewlyAdded && IsDeleted` edge case to document. Spec does not claim
+   any edge-case behavior, so spec is consistent with current source as-is.
 
 ---
 
-## (C) Spec Ambiguities Requiring Human Clarification
+## (C) ICM Metadata Drift (fixed in this pass)
 
-1. **Architecture direction:** Is MariloDataSheet meant to become the full Spreadsheet from spec (XLSX-based), or is it intentionally a different, simpler component?
-   - If yes: the gap set is ~50+ items and requires a formula engine, XLSX parser, cell styling system.
-   - If no: the spec needs to be rewritten for the actual MariloDataSheet API surface.
-
-2. **Naming:** Spec calls it "MariloSpreadsheet"; code calls it "MariloDataSheet". Are these the same component?
-
-3. **Data model:** Spec uses `byte[]` (XLSX file); code uses `IEnumerable<TItem>` (strongly typed). These serve fundamentally different use cases.
+1. `_config/delivery-context.md` listed `API spec` as `spreadsheet/` — updated
+   to point at `datasheet/`. `Spec Feature Areas` table replaced with the
+   nine `datasheet/` files.
+2. `_config/delivery-context.md` still read "Open spec gaps: ~38 (1 blocking)"
+   — updated to reflect the resolved state.
+3. `_status/workspace-status.md` showed Stage 01 as "COMPLETE (blocked)" —
+   updated to "COMPLETE (unblocked)".
 
 ---
 
-## Gaps Raised in Gap Workspace
+## (D) Demo-page Drift (NOT a spec gap — branch state)
 
-Given the architecture mismatch, no individual gaps were raised in the gap workspace. The blocking decision (architecture direction) must be resolved first.
+The new spec's "Feature Areas" section references eight feature pages and the
+ComponentRegistry entry (on the other branch) assumes four demo razor files:
+Overview, BulkOperations, Editing-and-Validation, Keyboard-and-Accessibility.
+This worktree contains only `Overview.razor` — the other three exist on the
+`workInProgress` branch and are not yet merged here. Noted as a Stage 02
+prerequisite, not a Stage 01 gap.
 
 ---
 
 ## Next Recommended Trigger
 
-1. **Human decision:** Resolve the architecture question (Spreadsheet vs DataSheet).
-2. If DataSheet is its own component: write a new spec for its actual API surface, then re-run Stage 01.
-3. If DataSheet should become Spreadsheet: plan the phased implementation in gap-analysis-resolution with XLSX engine as Phase 1.
+1. **Coordinator:** decide how to land `workInProgress`-branch items
+   (`ca71e0a` ComponentRegistry entry, demo pages) into the mainline
+   delivery path. This is outside the scope of a per-component worktree.
+2. Once merged, re-run Stage 02 (`demo`) against the four demo pages.
+3. Delete or explicitly deprecate the legacy
+   `docs/component-specs/spreadsheet/` directory (separate workspace task).
