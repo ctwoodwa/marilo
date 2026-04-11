@@ -94,3 +94,4 @@ coverage/
 !.claude/orchestration/_orchestrator/results/.gitkeep
 !.claude/orchestration/_orchestrator/reviews/.gitkeep
 !.claude/orchestration/_memory/workers/.gitkeep
+/.claude/orchestration/_handoffs
