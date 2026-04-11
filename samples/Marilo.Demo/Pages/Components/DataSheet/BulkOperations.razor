@@ -130,15 +130,15 @@
     <DemoSection Title="Ctrl+V Paste from TSV"
                  Description="Copy the tab-separated block below, click a cell in the first row of the grid to activate it, then press Ctrl+V. Valid values commit as dirty cells. Unparseable values (like 'abc' for a number or 'invalid-date' for a date) commit in the Invalid cell state and are highlighted.">
         <p><strong>Copy this block:</strong></p>
-        <pre class="ds-demo-tsv">Widget A	100	2026-03-15
-Widget B	abc	2026-04-01
+        <pre class="ds-demo-tsv">Widget A	100	2025-03-15
+Widget B	abc	2025-04-01
 Widget C	50	invalid-date</pre>
 
         <ol class="ds-demo-steps">
             <li>Click the <em>Product Name</em> cell on row 1 to activate it.</li>
             <li>Select and copy the TSV block above (Ctrl+C).</li>
             <li>Press Ctrl+V to paste.</li>
-            <li>Observe: row 2's Qty cell and row 3's Date cell turn red (invalid). Other cells show the dirty border.</li>
+            <li>Observe: row 2's Qty cell and row 3's Order Date cell turn red (invalid). Other cells show the dirty border.</li>
         </ol>
 
         <MariloDataSheet @ref="_pasteSheet"
@@ -151,9 +151,9 @@ Widget C	50	invalid-date</pre>
                                    Editable="true" Width="240px" />
             <MariloDataSheetColumn TItem="PasteRow"
                                    Field="Quantity" Title="Qty" ColumnType="DataSheetColumnType.Number"
-                                   Editable="true" Width="120px" />
+                                   Editable="true" Required="true" Width="120px" />
             <MariloDataSheetColumn TItem="PasteRow"
-                                   Field="Date" Title="Date" ColumnType="DataSheetColumnType.Date"
+                                   Field="OrderDate" Title="Order Date" ColumnType="DataSheetColumnType.Date"
                                    Editable="true" Width="160px" />
         </MariloDataSheet>
     </DemoSection>
@@ -168,7 +168,7 @@ Widget C	50	invalid-date</pre>
                 <MariloDataSheet TItem="MetricRow"
                                  Data="@_smallRows"
                                  KeyField="Id"
-                                 Height="300px"
+                                 Height="400px"
                                  EnableVirtualization="false">
                     <MariloDataSheetColumn TItem="MetricRow"
                                            Field="Id" Title="Id" ColumnType="DataSheetColumnType.Text"
@@ -187,7 +187,7 @@ Widget C	50	invalid-date</pre>
                 <MariloDataSheet TItem="MetricRow"
                                  Data="@_largeRows"
                                  KeyField="Id"
-                                 Height="300px"
+                                 Height="400px"
                                  EnableVirtualization="true">
                     <MariloDataSheetColumn TItem="MetricRow"
                                            Field="Id" Title="Id" ColumnType="DataSheetColumnType.Text"
@@ -431,7 +431,7 @@ Widget C	50	invalid-date</pre>
         public Guid Id { get; init; } = Guid.NewGuid();
         public string ProductName { get; set; } = "";
         public decimal Quantity { get; set; }
-        public DateTime? Date { get; set; }
+        public DateTime? OrderDate { get; set; }
     }
 
     public record MetricRow
