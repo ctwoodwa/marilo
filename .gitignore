@@ -95,3 +95,4 @@ coverage/
 !.claude/orchestration/_orchestrator/reviews/.gitkeep
 !.claude/orchestration/_memory/workers/.gitkeep
 /.claude/orchestration/_handoffs
+.claude/orchestration/_orchestrator/log.jsonl
