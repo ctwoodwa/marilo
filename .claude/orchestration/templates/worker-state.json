@@ -24,6 +24,13 @@
   "allow_overlap": false,
   "overlap_authorized_by": null,
   "required_sync_areas": ["source", "spec"],
+  "required_skills": [
+    "test-driven-development",
+    "verification-before-completion",
+    "systematic-debugging",
+    "requesting-code-review",
+    "receiving-code-review"
+  ],
   "next_atomic_task": "Read MariloDataGrid.Data.cs lines 200-400 and cross-reference the GridSelectionUnit.Cell handler against selection/cells.md",
   "blockers": [],
   "tmux_session": "marilo-w-datagrid-spec-review",

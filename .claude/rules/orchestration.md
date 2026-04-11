@@ -107,6 +107,31 @@ A worker MUST NOT:
 - Start other workers or dispatch subagents without orchestrator approval
 - Make architectural decisions — escalate instead
 
+### Worker Execution Discipline (skill-backed)
+
+Inside a worker turn, the worker MUST use the following vendored skills (see [.claude/skills/NOTICE.md](../skills/NOTICE.md)) as the execution discipline layer. These skills operate *inside* the dispatch/review machinery — they do not replace it.
+
+**Mandatory when the worker's `files_owned` includes source or tests:**
+
+- **`test-driven-development`** — Red-Green-Refactor on every source edit. A worker that writes `src/**/*.cs` without first writing a failing test in `tests/**/*.cs` fails the review gate automatically. Applies to bUnit tests under `tests/Marilo.Tests.Unit/` and visual-parity under `tests/visual-parity/`.
+- **`verification-before-completion`** — Before a worker sets its own status to `review-pending`, it MUST have run `dotnet build Marilo.slnx` (exit 0) and `dotnet test` scoped to its component (0 failures) in the current turn, and cite the output in its result file. Stale output from a prior turn does not count.
+
+**Mandatory when the worker hits any test failure, build error, or unexpected behavior:**
+
+- **`systematic-debugging`** — Four-phase RCA (root cause → pattern → hypothesis → fix). A worker that attempts 3+ fixes without resolving the issue MUST stop and escalate with type `architecture-question` instead of attempting fix #4.
+
+**Mandatory in the review-gate protocol:**
+
+- **`requesting-code-review`** — The format a worker writes to `_orchestrator/results/<worker-id>-<ts>.md` follows the skill's template: WHAT_WAS_IMPLEMENTED, PLAN_OR_REQUIREMENTS, BASE_SHA, HEAD_SHA, DESCRIPTION. This gives the orchestrator a consistent shape to review.
+- **`receiving-code-review`** — When the orchestrator writes FAIL feedback to `_orchestrator/inbox/<worker-id>.md`, the worker handles it per this skill: verify before implementing, push back with technical reasoning if the reviewer is wrong, no performative agreement.
+
+**Orchestrator-only (dispatch-layer skills):**
+
+- **`subagent-driven-development`** — Reference pattern for the orchestrator's per-task dispatch loop. Marilo's orchestration layer is the authoritative version; this skill is kept as a cross-reference for the two-stage review idea (spec-compliance, then code-quality) which the orchestrator's review record SHOULD apply.
+- **`dispatching-parallel-agents`** — Reference pattern for Wave fan-out. Marilo's Lane Patterns (A/B/C/D in `GUIDE.md`) are the authoritative version; this skill documents the general principles (independent domains, focused scope, specific output format).
+
+**Workers do not auto-invoke any skill.** They load the skill's `SKILL.md` content when its trigger condition (described in the skill frontmatter) applies during the current turn. If a worker skips a mandatory skill when its condition applied, that is a review-gate FAIL reason recorded as `execution-discipline-violation`.
+
 ### Normal Mode
 
 No orchestration session is active. Normal Claude Code operation. All existing Marilo rules apply. This file does nothing.

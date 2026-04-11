@@ -185,6 +185,25 @@ Workers never push to remote, never run full-repo builds, never touch shared man
 - Orchestrator's own entries are prefixed `[orchestrator]`.
 - Cerebrum learnings from worker runs are applied at **review time**, not during the worker's turn, so they benefit from orchestrator judgment.
 
+## Worker execution discipline (vendored Superpowers skills)
+
+Workers that edit source/tests MUST apply these skills during their turn. Full rules: [.claude/rules/orchestration.md](../rules/orchestration.md) → "Worker Execution Discipline". Quick reference:
+
+| Skill | Trigger | What it enforces |
+|---|---|---|
+| `test-driven-development` | Before writing any `src/**` code | Write failing test in `tests/**` first, watch it fail, write minimal code, verify pass |
+| `verification-before-completion` | Before setting status to `review-pending` | `dotnet build Marilo.slnx` exit 0 + `dotnet test --filter <Component>` 0 failures, fresh output cited in result file |
+| `systematic-debugging` | Any test failure, build error, or unexpected behavior | Four-phase RCA; escalate after 3 failed fixes instead of attempting fix #4 |
+| `requesting-code-review` | When writing result file | Required fields: WHAT_WAS_IMPLEMENTED / PLAN_OR_REQUIREMENTS / BASE_SHA / HEAD_SHA / DESCRIPTION |
+| `receiving-code-review` | When reading FAIL feedback from orchestrator inbox | Verify before implementing; push back with technical reasoning; no performative agreement |
+
+The orchestrator's review gate checks the "Execution Discipline Check" section in `templates/review-record.md`. Skipping a mandatory skill when its trigger applied = automatic FAIL with reason `execution-discipline-violation`.
+
+Reference-only skills (orchestrator-side patterns, not enforced on workers):
+
+- `subagent-driven-development` — two-stage review pattern (spec-compliance then code-quality)
+- `dispatching-parallel-agents` — fan-out prompt structure for Wave dispatch
+
 ## Non-goals
 
 - **Not a daemon.** Nothing in this layer runs as a background process. Every update is driven by Claude Code turns in one of the tmux sessions.
