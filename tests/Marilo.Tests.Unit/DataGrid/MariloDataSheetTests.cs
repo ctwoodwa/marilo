@@ -816,4 +816,141 @@ public class MariloDataSheetTests : MariloTestBase
         public string Name { get; set; } = "";
         public DateTime When { get; set; }
     }
+
+    // ── Additional Batch F3 coverage per spec ──────────────────────────
+
+    [Fact]
+    public void Paste_WithLoneCrLineEndings_NormalizesCorrectly()
+    {
+        // Old Mac / legacy TSV: single \r between rows.
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(10);
+                builder.AddAttribute(11, "Field", "Amount");
+                builder.AddAttribute(12, "Title", "Amount");
+                builder.AddAttribute(13, "ColumnType", DataSheetColumnType.Number);
+                builder.CloseComponent();
+            }));
+
+        cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "Name"));
+        cut.InvokeAsync(() => cut.Instance.PasteFromClipboard("A\t1\rB\t2"));
+
+        Assert.Equal("A", data[0].Name);
+        Assert.Equal(1m, data[0].Amount);
+        Assert.Equal("B", data[1].Name);
+        Assert.Equal(2m, data[1].Amount);
+    }
+
+    [Fact]
+    public void Paste_ValidNumber_DoesNotProduceError()
+    {
+        // Regression guard: a valid number commits cleanly (no leftover
+        // ValidationErrors entry from the V04.2 plumbing).
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Amount");
+                builder.AddAttribute(2, "Title", "Amount");
+                builder.AddAttribute(3, "ColumnType", DataSheetColumnType.Number);
+                builder.CloseComponent();
+            }));
+
+        cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "Amount"));
+        cut.InvokeAsync(() => cut.Instance.PasteFromClipboard("42"));
+
+        Assert.Equal(42m, data[0].Amount);
+        Assert.Null(cut.Instance.GetCellError(data[0], "Amount"));
+        Assert.NotEqual(CellState.Invalid, cut.Instance.GetCellState(data[0], "Amount"));
+    }
+
+    [Fact]
+    public void Paste_SelectValueNotInOptions_SetsInvalidCellStateWithMessage()
+    {
+        var data = new List<SelectRow>
+        {
+            new() { Name = "Row0", Status = "new" }
+        };
+        var options = new List<DataSheetSelectOption>
+        {
+            new() { Value = "new", Label = "New" },
+            new() { Value = "active", Label = "Active" },
+            new() { Value = "done", Label = "Done" },
+        };
+
+        var cut = Render<MariloDataSheet<SelectRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<SelectRow>>(0);
+                builder.AddAttribute(1, "Field", "Status");
+                builder.AddAttribute(2, "Title", "Status");
+                builder.AddAttribute(3, "ColumnType", DataSheetColumnType.Select);
+                builder.AddAttribute(4, "Options", (IEnumerable<DataSheetSelectOption>)options);
+                builder.CloseComponent();
+            }));
+
+        cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "Status"));
+        cut.InvokeAsync(() => cut.Instance.PasteFromClipboard("bogus"));
+
+        // Raw string not written to the model.
+        Assert.Equal("new", data[0].Status);
+        Assert.Equal(CellState.Invalid, cut.Instance.GetCellState(data[0], "Status"));
+        var error = cut.Instance.GetCellError(data[0], "Status");
+        Assert.NotNull(error);
+        Assert.Contains("Value not in options", error!);
+    }
+
+    [Fact]
+    public void Paste_AllDeletedRows_NoOp()
+    {
+        var data = new List<TestRow>
+        {
+            new() { Name = "Row0", Amount = 1m, IsActive = true },
+            new() { Name = "Row1", Amount = 2m, IsActive = true },
+        };
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.AllowDeleteRow, true)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        cut.InvokeAsync(() => cut.Instance.MarkRowDeleted(data[0]));
+        cut.InvokeAsync(() => cut.Instance.MarkRowDeleted(data[1]));
+
+        cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "Name"));
+        cut.InvokeAsync(() => cut.Instance.PasteFromClipboard("A\nB"));
+
+        // Both rows untouched — the row cursor walks off the end without
+        // landing on any live row.
+        Assert.Equal("Row0", data[0].Name);
+        Assert.Equal("Row1", data[1].Name);
+    }
+
+    private record SelectRow
+    {
+        public Guid Id { get; init; } = Guid.NewGuid();
+        public string Name { get; set; } = "";
+        public string Status { get; set; } = "";
+    }
 }
