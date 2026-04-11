@@ -229,6 +229,7 @@ public partial class MariloDataSheet<TItem>
     /// Triggers the Save All flow: validate, then fire OnSaveAll.
     /// </summary>
     /// <remarks>
+    /// <para>
     /// F2.M3 — On success this method calls <c>GridReflectionHelper.DeepClone</c>
     /// on each non-deleted dirty row so a subsequent edit that reverts to the
     /// just-saved value is still correctly detected as Dirty. <typeparamref name="TItem"/>
@@ -237,6 +238,21 @@ public partial class MariloDataSheet<TItem>
     /// that hold non-serializable members (streams, connections, delegates)
     /// should either expose a shallow-clone constructor or avoid being used
     /// as <see cref="MariloDataSheet{TItem}"/> row types.
+    /// </para>
+    /// <para>
+    /// <b>Warning:</b> Do NOT call <see cref="ResetAsync"/>, <c>BulkResetAsync</c>,
+    /// or any other state-clearing method from within your <see cref="OnSaveAll"/>
+    /// handler. The component automatically removes deleted rows and clears dirty
+    /// state after your handler returns (Step 6/7 below). Calling reset methods
+    /// from inside the handler would clobber this cleanup and silently drop
+    /// pending deletions, because the subsequent cleanup step recomputes deleted
+    /// keys from the now-empty dirty dictionary and removes nothing.
+    /// </para>
+    /// <para>
+    /// If you need to react to the save result (e.g., show a toast notification
+    /// or log an audit event), do so using simple statements in the handler —
+    /// the component handles all state cleanup automatically.
+    /// </para>
     /// </remarks>
     public async Task SaveAllAsync()
     {
@@ -315,6 +331,10 @@ public partial class MariloDataSheet<TItem>
                     .Select(e => e.Current)
                     .ToList();
 
+                // Consumers must not mutate dirty/deleted state from within
+                // the handler (no ResetAsync/BulkResetAsync calls). Step 6
+                // below relies on _dirtyRows still containing deletion
+                // markers so it can remove the deleted rows from _displayRows.
                 await OnSaveAll.InvokeAsync(new DataSheetSaveArgs<TItem>
                 {
                     DirtyRows = dirtyRowsList,

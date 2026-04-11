@@ -1219,6 +1219,66 @@ public class MariloDataSheetTests : MariloTestBase
         Assert.DoesNotContain(targetRow, cut.Instance._displayRows);
     }
 
+    // ── Regression: Iteration 8 — ResetAsync-in-OnSaveAll footgun ────────
+    // The Overview demo used to call ResetAsync() from inside its OnSaveAll
+    // handler. Because SaveAllAsync awaits OnSaveAll BEFORE running its
+    // Step 6 cleanup (which removes deleted rows from _displayRows), the
+    // handler's ResetAsync call cleared _dirtyRows early — so Step 6
+    // recomputed deletedKeys from an empty dictionary and silently dropped
+    // the pending deletion. This test locks in the correct post-save state
+    // when a well-behaved handler simply returns. See
+    // datasheet-delivery workspace status iteration 8 and the warning
+    // XML doc on SaveAllAsync.
+    [Fact]
+    public async Task SaveAll_WithDeletedRows_RemovesThemFromDisplayRowsAfterHandler()
+    {
+        var data = SeedData();
+        var handlerInvoked = false;
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.AllowDeleteRow, true)
+            .Add(x => x.OnSaveAll, (DataSheetSaveArgs<TestRow> _) =>
+            {
+                // Well-behaved handler: no state mutation, no ResetAsync.
+                handlerInvoked = true;
+            })
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        cut.Instance._savedStateDurationMs = 0;
+
+        var alpha = data[0];
+        var beta = data[1];
+        var gamma = data[2];
+
+        await cut.InvokeAsync(() => cut.Instance.MarkRowDeleted(beta));
+        Assert.True(cut.Instance.IsRowDeleted(beta));
+        Assert.Equal(3, cut.Instance._displayRows.Count);
+
+        await cut.InvokeAsync(() => cut.Instance.SaveAllAsync());
+
+        Assert.True(handlerInvoked);
+
+        // Step 6 cleanup must have removed the deleted row from _displayRows.
+        Assert.DoesNotContain(beta, cut.Instance._displayRows);
+
+        // Remaining rows are the exact correct ones, in order.
+        Assert.Equal(2, cut.Instance._displayRows.Count);
+        Assert.Same(alpha, cut.Instance._displayRows[0]);
+        Assert.Same(gamma, cut.Instance._displayRows[1]);
+
+        // Step 7 cleanup must have cleared all dirty tracking.
+        Assert.Empty(cut.Instance.GetDirtyRows());
+        Assert.False(cut.Instance.IsRowDeleted(beta));
+    }
+
     [Fact]
     public async Task SaveAll_UpdatesOriginalSnapshot_SoRevertToPreSaveValueIsDetectedAsDirty()
     {
