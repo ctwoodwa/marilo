@@ -137,6 +137,13 @@ export const COMPONENTS: Record<string, ComponentEntry> = {
     slug: 'datasheet',
     route: '/components/DataSheet/overview',
     rootSelector: '.mar-datasheet',
+    selectors: {
+      headerCell: '.mar-datasheet__header-cell',
+      row: '.mar-datasheet__row',
+      cell: '.mar-datasheet__cell',
+      activeCell: '.mar-datasheet__cell--active',
+      editingCell: '.mar-datasheet__editor-input',
+    },
     referenceStrategy: 'internal',
   },
 
