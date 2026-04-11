@@ -1,6 +1,6 @@
 # MariloGantt -- Stage 01 Spec Review: Gap List
 
-**Audit date:** 2026-04-10
+**Audit date:** 2026-04-10 (re-verified 2026-04-11: source inventory, spec paths, and shared-primitive scan unchanged)
 **Source files:**
 - `src/Marilo.Components/DataDisplay/MariloGantt.razor.cs` (main component)
 - `src/Marilo.Components/DataDisplay/MariloGantt.razor` (markup)

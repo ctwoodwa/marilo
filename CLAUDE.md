@@ -30,7 +30,7 @@ This project uses OpenWolf for context management.
 - Components live under `src/Marilo.Components`, following the ICM workspace pattern.
 - Complex/enterprise components use CDW workspaces under `/workspaces/Marilo/workspaces/`.
 - Providers, styles, and themes: `src/Marilo.Providers.*` with SCSS-based theming.
-- Component specs live in `src/Marilo.Components/component-specs/`.
+- Component specs live in `docs/component-specs/<slug>/` (one nested folder per component, e.g. `docs/component-specs/datagrid/`, `docs/component-specs/chart/tooltip/`). Slugs are lowercase.
 - Component mapping is in `src/Marilo.Components/component-mapping.json`.
 - Gap analysis and roadmap: `src/Marilo.Components/GAP_ANALYSIS_RESOLUTION_PLAN.md`.
 
@@ -44,7 +44,7 @@ When in doubt:
 # How to work in this repo
 
 Before significant work:
-- Read `CONTEXT.md` and the relevant component spec under `component-specs/`.
+- Read `CONTEXT.md` and the relevant component spec under `docs/component-specs/<slug>/`.
 - For complex components (DataGrid, Scheduler, AllocationScheduler, etc.), also check the CDW workspace under `/workspaces/Marilo/workspaces/<component>/`.
 
 General rules:
@@ -84,7 +84,7 @@ Coding:
 
 Docs & demos:
 - Each public component should have:
-  - A spec in `component-specs`.
+  - A spec folder under `docs/component-specs/<slug>/`.
   - At least one representative demo.
   - XML doc comments for all public APIs.
 - When changing behavior, update spec + docs + demos in the same change set.

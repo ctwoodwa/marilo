@@ -1,10 +1,19 @@
 # DataSheet Spec Gap List
 
-**Audit Date:** 2026-04-11 (re-run)
-**Component:** `MariloDataSheet<TItem>`
-**Spec Directory (authoritative):** `docs/component-specs/datasheet/`
-**Legacy Spec (stale, superseded):** `docs/component-specs/spreadsheet/`
-**Source Directory:** `src/Marilo.Components/DataGrid/MariloDataSheet*.cs`
+> ⚠ **SUPERSEDED AS OF 2026-04-10** — this audit is against the **wrong spec**.
+>
+> This file audits `MariloDataSheet<TItem>` against `docs/component-specs/spreadsheet/` (the MariloSpreadsheet Excel-clone spec). The 2026-04-09 architecture decision ruled that `MariloDataSheet` is a **distinct component** from `MariloSpreadsheet` and has its own new spec at `docs/component-specs/datasheet/` (9 files).
+>
+> **This file should be superseded by a new Stage 01 audit** pairing `MariloDataSheet*` source against `docs/component-specs/datasheet/`. See `_status/workspace-status.md` "Stage 01 — Spec Review" for the re-run plan.
+>
+> **Retained for historical value:** The "(A) Implemented API Surface" section below remains accurate for the DataSheet source as of 2026-04-03 and is useful as a starting reference for the re-run. The "(B) Spec-Ahead Features" and "(C) Undocumented Features" sections apply to the Spreadsheet/DataSheet mis-pairing and should be discarded by the re-run.
+
+---
+
+**Audit Date:** 2026-04-03 (superseded 2026-04-10)
+**Component:** MariloDataSheet<TItem>
+**Spec Directory Audited:** `/workspaces/Marilo/docs/component-specs/spreadsheet/` ⚠ **WRONG — should be** `/workspaces/Marilo/docs/component-specs/datasheet/`
+**Source Directory:** /workspaces/Marilo/src/Marilo.Components/DataGrid/MariloDataSheet*.cs
 
 ---
 

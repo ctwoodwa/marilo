@@ -123,8 +123,11 @@
         _isSaving = false;
         AddLogEntry($"Saved {args.DirtyRows.Count} rows, deleted {args.DeletedRows.Count} rows");
 
-        // Clear dirty state after save
-        await _grid!.ResetAsync();
+        // Note: do NOT call ResetAsync() here — MariloDataSheet.SaveAllAsync
+        // cleans up dirty state automatically after this handler returns
+        // (see Step 6/7 in SaveAllAsync). Calling ResetAsync() from within
+        // the handler would clobber the component's deletion cleanup and
+        // silently drop pending deletions.
     }
 
     private void HandleRowChanged(DataSheetRowChangedArgs<PositionRow> args)

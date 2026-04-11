@@ -68,6 +68,17 @@ export function registerKeydownHandler(gridId, dotNetRef) {
         const ctrl = e.ctrlKey || e.metaKey;
         const shift = e.shiftKey;
 
+        // Are we currently focused inside an editor input? The .NET side
+        // tracks _isEditMode, but JS needs its own proxy so it can decide
+        // whether to preventDefault for printable characters. When focus
+        // sits inside any input/select/textarea descendant of the grid,
+        // we're in edit mode and must let the key reach the editor.
+        const activeEl = document.activeElement;
+        const isInEditor = activeEl
+            && activeEl !== grid
+            && grid.contains(activeEl)
+            && /^(INPUT|SELECT|TEXTAREA)$/.test(activeEl.tagName);
+
         // Prevent default for grid-handled shortcuts
         if (ctrl && (key === 's' || key === 'z' || key === 'c' || key === 'v' || key === 'd')) {
             e.preventDefault();
@@ -77,11 +88,29 @@ export function registerKeydownHandler(gridId, dotNetRef) {
             e.preventDefault();
         }
 
+        // V07.3 — Space toggles checkboxes when not in an editor. Also
+        // suppressed to prevent page scroll when the grid has focus.
+        if (key === ' ' && !isInEditor) {
+            e.preventDefault();
+        }
+
+        // V07.2 — Printable characters begin edit mode on the active cell.
+        // Only suppress default when NOT already inside an editor, so the
+        // user can still type into open cell editors normally.
+        if (!ctrl && !isInEditor && key.length === 1 && key !== ' ') {
+            e.preventDefault();
+        }
+
         // Handle Ctrl+C in JS (needs clipboard API access)
         if (ctrl && key === 'c') {
             const activeCell = grid.querySelector('.mar-datasheet__cell--active');
             if (activeCell) {
-                const text = activeCell.textContent?.trim() || '';
+                // V04.4 — Prefer data-raw-value when present (columns with a
+                // Format delegate set this attribute so copy yields the raw
+                // property value rather than the formatted display string).
+                // Fall back to textContent when no raw value is available.
+                const rawValue = activeCell.getAttribute('data-raw-value');
+                const text = (rawValue ?? activeCell.textContent ?? '').trim();
                 await copyToClipboard(text);
             }
             return;

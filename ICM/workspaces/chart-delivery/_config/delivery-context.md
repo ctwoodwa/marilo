@@ -24,8 +24,8 @@
 | Field | Value |
 |-------|-------|
 | Spec version | unversioned |
-| Last spec audit | PENDING |
-| Open spec gaps | PENDING |
+| Last spec audit | 2026-04-11 (re-verified; series/data-bind contract unchanged) |
+| Open spec gaps | 52 (U:7, S:38, M:7; P2:17, P3:35, P1:0) |
 
 ## Example UX State
 

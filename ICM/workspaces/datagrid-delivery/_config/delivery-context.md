@@ -24,8 +24,8 @@
 | Field | Value |
 |-------|-------|
 | Spec version | unversioned |
-| Last spec audit | 2026-04-03 (overview-level) |
-| Open spec gaps | ~35-50 estimated (on top of 44 already resolved) |
+| Last spec audit | 2026-04-11 (full-surface refresh; see stages/01-spec-review/output/datagrid-spec-gap-list.md) |
+| Open spec gaps | 40 (4 P1 blocking, 22 P2, 14 P3). 6 previously-blocking source gaps now closed (SetStateAsync, cell selection, frozen columns, DisplayFormat, ConfirmDelete, row drag). |
 
 ## Example UX State
 

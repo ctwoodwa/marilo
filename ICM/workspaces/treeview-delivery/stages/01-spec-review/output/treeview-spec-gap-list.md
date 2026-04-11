@@ -1,6 +1,7 @@
 # TreeView Spec Gap List
 
 **Audit Date:** 2026-04-03
+**Re-verified:** 2026-04-11 (parameter inventory unchanged; partial closures applied)
 **Component:** MariloTreeView / MariloTreeItem
 **Spec Directory:** /workspaces/Marilo/docs/component-specs/treeview/
 **Source:** /workspaces/Marilo/src/Marilo.Components/Navigation/MariloTreeView.razor.cs
@@ -9,18 +10,42 @@
 
 ## Summary
 
-| Type | Count |
-|------|-------|
-| Undocumented (implemented but not in spec) | 14 |
-| Spec-ahead (documented but not implemented) | 13 |
-| Mismatch (both exist but disagree) | 7 |
-| **Total** | **34** |
+| Type | Count | Open |
+|------|-------|------|
+| Undocumented (implemented but not in spec) | 14 | 3 |
+| Spec-ahead (documented but not implemented) | 13 | 13 |
+| Mismatch (both exist but disagree) | 7 | 7 |
+| **Total** | **34** | **23** |
 
 | Priority | Count |
 |----------|-------|
 | P1 (blocking) | 4 |
 | P2 (this phase) | 12 |
 | P3 (next phase / forward-looking) | 18 |
+
+## 2026-04-11 Closures (this stage run)
+
+The following undocumented gaps were closed by adding the parameters and methods directly to `docs/component-specs/treeview/overview.md`. Source is authoritative; the spec now documents each one with type, default, and description.
+
+- **SPEC-treeview-001** `ExpandOnClick` — added to overview Parameters table
+- **SPEC-treeview-002** `ExpandOnDoubleClick` — added to overview Parameters table
+- **SPEC-treeview-003** `SingleExpand` — added to overview Parameters table
+- **SPEC-treeview-004** `AutoExpand` — added to overview Parameters table
+- **SPEC-treeview-005** `AllowEditing` / `OnItemEdit` — parameter added to overview; full inline-editing section still deferred
+- **SPEC-treeview-006** `FilterFunc` + `ClearFilter()` — parameter and method added to overview
+- **SPEC-treeview-007** `CheckboxTemplate` — added to overview Parameters table
+- **SPEC-treeview-009** `Disabled` — added to overview Parameters table
+- **SPEC-treeview-010** `ReadOnly` — added to overview Parameters table
+- **SPEC-treeview-011** `SelectNodeAsync(string id)` — added to overview Methods table
+- **SPEC-treeview-012** `AriaLabel` — added to overview Parameters table
+- **SPEC-treeview-013** `ItemTemplate` — added to overview Parameters table
+- **SPEC-treeview-014** `ExpandAllAsync` enhanced signature — overview Methods table now shows full signature with `includeUnloaded`, `maxDepth`, `CancellationToken`
+
+Still open in (A): **SPEC-treeview-008** (OnItemContextMenu — needs events.md expansion, not overview).
+
+Still open in (A) but downgraded: none.
+
+Remaining undocumented open count after this pass: **1** (008). The counts table above reflects: 13 of 14 undocumented closed, plus `CollapseAllAsync` (previously only in source) is now also in the spec methods table.
 
 ---
 
