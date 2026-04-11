@@ -1,6 +1,6 @@
 import { test } from '@playwright/test';
 import { COMPONENTS } from '../config/component-registry';
-import { FIRST_PASS_THEMES, type ThemeConfig } from '../config/themes';
+import { ALL_THEMES, type ThemeConfig } from '../config/themes';
 import { applyTheme, openComponentPage, locateComponent, locateDemoPreview, scrollToDemoSection } from '../helpers/page-setup';
 import { captureElement } from '../helpers/capture';
 import { type SnapshotDimensions } from '../helpers/snapshot-name';
@@ -34,11 +34,15 @@ import { type SnapshotDimensions } from '../helpers/snapshot-name';
  *                         the Editing-and-Validation scenario D demo
  *                         (IsLoading skeleton grid starts empty).
  *
+ * Theme matrix: ALL_THEMES (6 combinations — fluent/bootstrap/material × light/dark)
+ * → 7 scenarios × 6 themes = 42 tests total. Baselines generated manually via
+ * `playwright test --update-snapshots --grep datasheet` against a live
+ * `dotnet run --project samples/Marilo.Demo` server (port 5301).
+ *
  * Out of scope (tracked in the Stage 03 plan, iteration 15 resolutions):
  *   - Frozen rows/columns (NOT IMPLEMENTED in DataSheet)
  *   - Cell range selection (V03 feature, deferred)
  *   - Formula bar / sheet tabs (NOT IMPLEMENTED)
- *   - Theme matrix expansion beyond FIRST_PASS_THEMES
  *   - 03c scoring against the baseline
  *   - 03d parity handoff artifacts
  */
@@ -46,7 +50,7 @@ import { type SnapshotDimensions } from '../helpers/snapshot-name';
 const component = COMPONENTS.datasheet;
 const viewport = 'desktop';
 
-for (const theme of FIRST_PASS_THEMES) {
+for (const theme of ALL_THEMES) {
   test.describe(`datasheet · ${theme.slug}`, () => {
     test.beforeEach(async ({ page }) => {
       await openComponentPage(page, component, theme);
