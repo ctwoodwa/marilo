@@ -45,7 +45,38 @@ Tmux sessions:
 
 ## Starting an orchestration session
 
-The following is a **pattern**, not an enforced script. Adapt to your tmux flavour (iTerm, Windows Terminal, tmux-on-Linux).
+### Option A — Slash command (recommended for most runs)
+
+```
+/start-multi-agent-work datagrid,datasheet,gantt
+```
+
+This invokes the `start-multi-agent-work` skill (see [.claude/skills/start-multi-agent-work/SKILL.md](../skills/start-multi-agent-work/SKILL.md)), which performs one idempotent orchestrator tick:
+
+1. **Preflight** — validates slugs, reads session state + all worker states, checks `git status`.
+2. **Process escalations** — resolves scope/ownership issues autonomously, surfaces architectural decisions to the user.
+3. **Review pending results** — fills out `review-record.md` per worker; PASS integrates, FAIL feedbacks the worker with `receiving-code-review` instructions.
+4. **Dispatch new work** — one `Agent` subagent per component, **all in parallel in a single assistant message**. Workers boot from their inbox files with no session-context inheritance.
+5. **Advance or park** — workers that pass review get queued for the next stage; the wave only closes when all workers in scope pass.
+6. **Update session state** — writes `session.json` heartbeat, appends `log.jsonl`, writes a `wave-<N>-tick-<ts>.md` summary to `_orchestrator/reviews/`.
+7. **Surface summary inline** — the user sees the wave summary in the assistant response without opening files.
+
+Each tick is idempotent. Invoke manually between waves, or wrap with the `loop` skill for automated ticks:
+
+```
+/loop 10m /start-multi-agent-work datagrid,datasheet,gantt
+```
+
+Arguments:
+- **Required:** comma-separated component slugs (lowercase kebab)
+- **Optional:** workflow type (`delivery` | `gap-analysis` | `gap-resolve` | `spec-review` | `example-ux` | `visual-parity` | `sync-check`) — default `delivery`
+- **Optional:** wave number override
+
+The skill stops the tick and asks for user input when: a slug is invalid, an escalation needs a human decision (architecture, review-retry-loop), uncommitted changes exist outside any worker's `files_owned`, 3+ escalations pile up in one tick, or all components in scope are `complete`.
+
+### Option B — tmux multi-window (legacy, manual)
+
+Use this when you want true parallel Claude Code windows per worker instead of in-process parallel subagents. The following is a **pattern**, not an enforced script. Adapt to your tmux flavour (iTerm, Windows Terminal, tmux-on-Linux).
 
 ### 1. Orchestrator setup
 

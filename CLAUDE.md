@@ -132,6 +132,7 @@ Marilo supports an optional tmux orchestration layer for parallel multi-componen
 - Worker memory: `.claude/orchestration/_memory/workers/*.json`
 - Templates: `.claude/orchestration/templates/*`
 - Worker execution-discipline skills (vendored from [obra/superpowers](https://github.com/obra/superpowers), MIT): see `.claude/skills/NOTICE.md` — `test-driven-development`, `verification-before-completion`, `systematic-debugging`, `requesting-code-review`, `receiving-code-review`. These are enforced at the orchestrator review gate.
+- **Entry point:** `/start-multi-agent-work <component1,component2,...> [workflow]` — idempotent orchestrator tick. Dispatches one worker per component in parallel, processes escalations and reviews, writes an inline wave summary. Wrap with `/loop 10m /start-multi-agent-work ...` for automated ticks.
 
 When `_orchestrator/session.json` has `status: "active"`, Claude operates in orchestrator mode or worker mode (role determined by tmux session / env vars). When `status: "inactive"` (default), normal single-session operation applies and orchestration rules do nothing.
 
