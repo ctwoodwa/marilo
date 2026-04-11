@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Skill(gap-analysis-resolution)",
-      "Skill(gap-analysis-resolution:*)"
+      "Skill(gap-analysis-resolution:*)",
+      "Edit(.claude/orchestration/**)",
+      "Write(.claude/orchestration/**)",
+      "MultiEdit(.claude/orchestration/**)"
     ]
   }
 }

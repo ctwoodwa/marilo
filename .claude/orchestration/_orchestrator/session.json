@@ -1,14 +1,21 @@
 {
   "schema_version": "1.0",
-  "session_id": null,
-  "status": "inactive",
-  "shared_goal": null,
-  "started_at": null,
-  "last_heartbeat": null,
-  "orchestrator_tmux_session": null,
+  "session_id": "marilo-grid-pipeline-2026-04-11-1200",
+  "status": "active",
+  "shared_goal": "Parallel ICM delivery pipeline across datagrid, datasheet, gantt, scheduler, allocation-scheduler — 4 waves, review gate between waves, orchestrator integrates.",
+  "started_at": "2026-04-11T12:00:00Z",
+  "last_heartbeat": "2026-04-11T12:00:00Z",
+  "orchestrator_tmux_session": "marilo-orchestrator",
   "integration_owner": "orchestrator",
-  "active_workers": [],
+  "wave": 1,
+  "active_workers": [
+    { "worker_id": "w-datagrid-delivery", "status": "idle", "icm_stage": "01-spec-review" },
+    { "worker_id": "w-datasheet-delivery", "status": "idle", "icm_stage": "01-spec-review" },
+    { "worker_id": "w-gantt-delivery", "status": "idle", "icm_stage": "01-spec-review" },
+    { "worker_id": "w-scheduler-delivery", "status": "idle", "icm_stage": "01-spec-review" },
+    { "worker_id": "w-allocation-scheduler-delivery", "status": "idle", "icm_stage": "01-spec-review" }
+  ],
   "review_queue": [],
   "blocked_queue": [],
-  "notes": "Status 'inactive' means no orchestration session is running. When inactive, Claude Code operates in normal single-session mode and orchestration rules do NOT apply. To start a session, set status to 'active' and populate session_id + shared_goal + started_at."
+  "notes": "First orchestrator run. 4-wave parallel delivery pipeline across 5 grid-based components. Dynamic /loop mode — orchestrator self-paces wakeups. Datagrid spec folder is docs/component-specs/grid/ (not datagrid/) — known repo quirk per cerebrum."
 }

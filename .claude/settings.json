@@ -1,4 +1,11 @@
 {
+  "permissions": {
+    "allow": [
+      "Edit(.claude/orchestration/**)",
+      "Write(.claude/orchestration/**)",
+      "MultiEdit(.claude/orchestration/**)"
+    ]
+  },
   "hooks": {
     "SessionStart": [
       {
