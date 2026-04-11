@@ -53,14 +53,14 @@ You can sort this grid on the different columns to see the results. The `Name` c
 
 ### Multi Column Sorting
 
-To allow sorting on more than one column at a time, set the `SortMode` parameter of the grid to `Marilo.Blazor.SortMode.Multiple`.
+To allow sorting on more than one column at a time, set the `SortMode` parameter of the grid to `GridSortMode.Multiple`. The `SortMode` parameter is of type `GridSortMode` (defined in `Marilo.Core.Enums`) and accepts the values `GridSortMode.Single` (only one column can be sorted at a time) and `GridSortMode.Multiple` (multiple columns can be sorted simultaneously via Ctrl+Click). The default is `GridSortMode.Multiple`.
 
 >caption Enable multi column sorting
 
 ````RAZOR
 @* Try sorting by Team, then by Name to see how the multiple sorts apply *@
 
-<MariloGrid Data=@GridData Sortable="true" SortMode="@SortMode.Multiple"
+<MariloGrid Data=@GridData Sortable="true" SortMode="@GridSortMode.Multiple"
              Pageable="true" Height="400px">
     <GridColumns>
         <GridColumn Field=@nameof(Employee.Name) />
