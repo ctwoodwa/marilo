@@ -386,10 +386,16 @@ The following table lists the FileManager parameters. Also check the [FileManage
 
 | Parameter | Type and &nbsp; DefaultValue | Description |
 | --- | --- | --- |
-| `Data` | `IEnumerable<TItem>` | Allows providing data source to the component. See [data bindnig](slug:filemanager-data-binding-overview).
-| `EnableLoaderContainer` | `bool` |  Specifies if loader container should be shown on slow async operations
-| `Path` | `string` | The current path. Updated when the user navigates. Two-way bindale. Handle the [`PathChanged`](slug:filemanager-events#pathchanged) event if you need to react to the user navigation.
+| `Data` | `IEnumerable<TItem>` | Allows providing data source to the component. See [data binding](slug:filemanager-data-binding-overview).
+| `EnableLoaderContainer` | `bool` <br /> (`false`) | Specifies if a loader container should be shown on slow async operations.
+| `Path` | `string` <br /> (`"/"`) | The current path. Updated when the user navigates. Two-way bindable. Handle the [`PathChanged`](slug:filemanager-events#pathchanged) event if you need to react to user navigation.
 | `View` | `FileManagerViewType` enum <br /> (`ListView`) | The layout of the FileManager main section. It can [show the files and folders as table rows or as thumbnails](slug:filemanager-views). |
+| `ShowFolderTree` | `bool` <br /> (`true`) | Controls visibility of the left folder-tree (TreeView) sidebar. Set to `false` to hide the tree and show only the main file list. |
+| `ShowPreviewPane` | `bool` <br /> (`false`) | Gates the preview pane and its toggle button in the toolbar. When `false`, the preview pane is unavailable. See [Preview Pane](slug:filemanager-preview-pane). |
+| `AllowCreate` | `bool` <br /> (`false`) | Enables the New Folder button in the default toolbar. When `false`, new-folder creation is suppressed. Fires [`OnCreate`](slug:filemanager-events#oncreate). |
+| `AllowDelete` | `bool` <br /> (`false`) | Enables the Delete command in the [context menu](slug:filemanager-context-menu) and the delete-confirmation dialog. When `false`, delete is suppressed. Fires [`OnDelete`](slug:filemanager-events#ondelete). |
+| `AllowRename` | `bool` <br /> (`false`) | Enables the Rename command in the [context menu](slug:filemanager-context-menu) and the inline-rename input. When `false`, rename is suppressed. Fires [`OnEdit`](slug:filemanager-events#onedit) and [`OnUpdate`](slug:filemanager-events#onupdate). |
+| `ToolBarTemplate` | `RenderFragment?` <br /> (`null`) | When non-null, replaces the default toolbar content. Use to customize or extend the built-in toolbar. See [Toolbar](slug:filemanager-toolbar). |
 
 ### Styling and Appearance
 

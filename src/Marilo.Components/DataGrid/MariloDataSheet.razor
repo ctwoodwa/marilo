@@ -10,7 +10,7 @@
      aria-label="@AriaLabel"
      aria-rowcount="@_displayRows.Count"
      aria-colcount="@_columns.Count"
-     aria-busy="@(IsLoading ? "true" : null)"
+     aria-busy="@((IsLoading || IsSaving) ? "true" : null)"
      @attributes="AdditionalAttributes">
 
     @* Toolbar *@
@@ -95,10 +95,16 @@
             <table>
                 @* Header *@
                 <thead>
-                    <tr role="row">
+                    @{
+                        var headerColIndex = 1;
+                    }
+                    <tr role="row" aria-rowindex="1">
                         @if (AllowDeleteRow)
                         {
-                            <th class="mar-datasheet__select-header" role="columnheader" style="width:40px;">
+                            <th class="mar-datasheet__select-header"
+                                role="columnheader"
+                                aria-colindex="@(headerColIndex++)"
+                                style="width:40px;">
                                 <input type="checkbox"
                                        checked="@(_selectedRows.Count > 0 && _selectedRows.Count == _displayRows.Count)"
                                        aria-label="Select all rows"
@@ -111,6 +117,7 @@
                                            column.MinWidth.HasValue ? $"min-width:{column.MinWidth}px;" : null;
                             <th class="@CssProvider.DataSheetHeaderCellClass(false)"
                                 role="columnheader"
+                                aria-colindex="@(headerColIndex++)"
                                 style="@colStyle"
                                 aria-label="@column.DisplayTitle">
                                 @column.DisplayTitle
@@ -118,7 +125,10 @@
                         }
                         @if (AllowDeleteRow)
                         {
-                            <th class="mar-datasheet__actions-header" role="columnheader" style="width:60px;"></th>
+                            <th class="mar-datasheet__actions-header"
+                                role="columnheader"
+                                aria-colindex="@(headerColIndex++)"
+                                style="width:60px;"></th>
                         }
                     </tr>
                 </thead>

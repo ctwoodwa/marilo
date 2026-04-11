@@ -1,0 +1,3 @@
+# Messages TO workers (from orchestrator): <worker-id>.md
+# Messages TO orchestrator (from workers): <orchestrator-id>-escalation-<ts>.json
+# Files here are transient — once consumed, move to ../results/ or ../reviews/

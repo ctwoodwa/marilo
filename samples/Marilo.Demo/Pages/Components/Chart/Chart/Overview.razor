@@ -3,7 +3,7 @@
 @layout ComponentDemoLayout
 
 <PageSection Title="Overview">
-    <DemoSection Title="Line Chart" Description="A line chart with two series showing monthly revenue and profit.">
+    <DemoSection Title="Line Chart" Description="A line chart with two series showing monthly revenue and profit." Code="@_lineCode">
         <MariloChart Title="Monthly Revenue" Height="350px">
             <MariloChartSeries Name="Revenue"
                                Data="_salesData"
@@ -20,7 +20,7 @@
         </MariloChart>
     </DemoSection>
 
-    <DemoSection Title="Column Chart" Description="A column chart comparing revenue across months with two series side by side.">
+    <DemoSection Title="Column Chart" Description="A column chart comparing revenue across months with two series side by side." Code="@_columnCode">
         <MariloChart Title="Revenue vs Profit" Height="350px">
             <MariloChartSeries Name="Revenue"
                                Data="_salesData"
@@ -39,7 +39,7 @@
 </PageSection>
 
 <PageSection Title="Chart Types">
-    <DemoSection Title="Area Chart" Description="An area chart with filled regions beneath the lines.">
+    <DemoSection Title="Area Chart" Description="An area chart with filled regions beneath the lines." Code="@_areaCode">
         <MariloChart Title="Sales Trend" Height="300px">
             <MariloChartSeries Name="Revenue"
                                Data="_salesData"
@@ -50,7 +50,7 @@
         </MariloChart>
     </DemoSection>
 
-    <DemoSection Title="Bar Chart" Description="A horizontal bar chart — same data as Column but rotated.">
+    <DemoSection Title="Bar Chart" Description="A horizontal bar chart — same data as Column but rotated." Code="@_barCode">
         <MariloChart Title="Revenue by Month" Height="350px">
             <MariloChartSeries Name="Revenue"
                                Data="_salesData"
@@ -61,7 +61,7 @@
         </MariloChart>
     </DemoSection>
 
-    <DemoSection Title="Pie Chart" Description="A pie chart showing revenue distribution across months.">
+    <DemoSection Title="Pie Chart" Description="A pie chart showing revenue distribution across months." Code="@_pieCode">
         <MariloChart Title="Revenue Distribution" Height="350px">
             <MariloChartSeries Name="Revenue"
                                Data="_salesData"
@@ -71,7 +71,7 @@
         </MariloChart>
     </DemoSection>
 
-    <DemoSection Title="Donut Chart" Description="A donut chart with a hole in the center.">
+    <DemoSection Title="Donut Chart" Description="A donut chart with a hole in the center." Code="@_donutCode">
         <MariloChart Title="Profit Distribution" Height="350px">
             <MariloChartSeries Name="Profit"
                                Data="_salesData"
@@ -81,7 +81,7 @@
         </MariloChart>
     </DemoSection>
 
-    <DemoSection Title="Scatter Chart" Description="A scatter plot using X/Y field bindings for correlation analysis.">
+    <DemoSection Title="Scatter Chart" Description="A scatter plot using X/Y field bindings for correlation analysis." Code="@_scatterCode">
         <MariloChart Title="Revenue vs Profit Correlation" Height="350px">
             <MariloChartSeries Name="Months"
                                Data="_salesData"
@@ -92,7 +92,7 @@
         </MariloChart>
     </DemoSection>
 
-    <DemoSection Title="Bubble Chart" Description="A bubble chart where size encodes a third dimension.">
+    <DemoSection Title="Bubble Chart" Description="A bubble chart where size encodes a third dimension." Code="@_bubbleCode">
         <MariloChart Title="Market Analysis" Height="350px">
             <MariloChartSeries Name="Products"
                                Data="_bubbleData"
@@ -106,7 +106,7 @@
 </PageSection>
 
 <PageSection Title="Configuration">
-    <DemoSection Title="Title & Subtitle" Description="Charts support a main title and subtitle using child components.">
+    <DemoSection Title="Title & Subtitle" Description="Charts support a main title and subtitle using child components." Code="@_titleSubtitleCode">
         <MariloChart Height="300px">
             <ChartTitle Text="Quarterly Performance">
                 <ChartSubtitle Text="January through June 2026" />
@@ -120,7 +120,7 @@
         </MariloChart>
     </DemoSection>
 
-    <DemoSection Title="Legend & Tooltips" Description="Toggle legend visibility and tooltip display. Hover over data points to see tooltips.">
+    <DemoSection Title="Legend & Tooltips" Description="Toggle legend visibility and tooltip display. Hover over data points to see tooltips." Code="@_legendTooltipsCode">
         <div class="demo-controls">
             <label><input type="checkbox" @bind="_showLegend" /> Show Legend</label>
             <label style="margin-left:16px;"><input type="checkbox" @bind="_showTooltips" /> Show Tooltips</label>
@@ -143,7 +143,7 @@
         </MariloChart>
     </DemoSection>
 
-    <DemoSection Title="Series Visibility" Description="Toggle individual series on and off using the Visible parameter.">
+    <DemoSection Title="Series Visibility" Description="Toggle individual series on and off using the Visible parameter." Code="@_visibilityCode">
         <div class="demo-controls">
             <label><input type="checkbox" @bind="_showRevenue" /> Revenue</label>
             <label style="margin-left:16px;"><input type="checkbox" @bind="_showProfit" /> Profit</label>
@@ -168,7 +168,7 @@
 </PageSection>
 
 <PageSection Title="Events">
-    <DemoSection Title="Click Events" Description="Click on a data point to see the event details.">
+    <DemoSection Title="Click Events" Description="Click on a data point to see the event details." Code="@_clickCode">
         <MariloChart Title="Click a Data Point" Height="300px"
                      OnSeriesClick="@OnChartClick">
             <MariloChartSeries Name="Revenue"
@@ -222,4 +222,163 @@
     {
         _lastClickInfo = $"Series: {args.SeriesName}, Category: {args.Category}, Value: {args.Value:N0}";
     }
+
+    // ── View-Source Snippets ─────────────────────────────────────────
+    private const string _lineCode =
+        "<MariloChart Title=\"Monthly Revenue\" Height=\"350px\">\n" +
+        "    <MariloChartSeries Name=\"Revenue\"\n" +
+        "                       Data=\"_salesData\"\n" +
+        "                       Field=\"Revenue\"\n" +
+        "                       CategoryField=\"Month\"\n" +
+        "                       Type=\"ChartSeriesType.Line\"\n" +
+        "                       Color=\"#4e79a7\" />\n" +
+        "    <MariloChartSeries Name=\"Profit\"\n" +
+        "                       Data=\"_salesData\"\n" +
+        "                       Field=\"Profit\"\n" +
+        "                       CategoryField=\"Month\"\n" +
+        "                       Type=\"ChartSeriesType.Line\"\n" +
+        "                       Color=\"#e15759\" />\n" +
+        "</MariloChart>";
+
+    private const string _columnCode =
+        "<MariloChart Title=\"Revenue vs Profit\" Height=\"350px\">\n" +
+        "    <MariloChartSeries Name=\"Revenue\"\n" +
+        "                       Data=\"_salesData\"\n" +
+        "                       Field=\"Revenue\"\n" +
+        "                       CategoryField=\"Month\"\n" +
+        "                       Type=\"ChartSeriesType.Column\"\n" +
+        "                       Color=\"#4e79a7\" />\n" +
+        "    <MariloChartSeries Name=\"Profit\"\n" +
+        "                       Data=\"_salesData\"\n" +
+        "                       Field=\"Profit\"\n" +
+        "                       CategoryField=\"Month\"\n" +
+        "                       Type=\"ChartSeriesType.Column\"\n" +
+        "                       Color=\"#59a14f\" />\n" +
+        "</MariloChart>";
+
+    private const string _areaCode =
+        "<MariloChart Title=\"Sales Trend\" Height=\"300px\">\n" +
+        "    <MariloChartSeries Name=\"Revenue\"\n" +
+        "                       Data=\"_salesData\"\n" +
+        "                       Field=\"Revenue\"\n" +
+        "                       CategoryField=\"Month\"\n" +
+        "                       Type=\"ChartSeriesType.Area\"\n" +
+        "                       Color=\"#76b7b2\" />\n" +
+        "</MariloChart>";
+
+    private const string _barCode =
+        "<MariloChart Title=\"Revenue by Month\" Height=\"350px\">\n" +
+        "    <MariloChartSeries Name=\"Revenue\"\n" +
+        "                       Data=\"_salesData\"\n" +
+        "                       Field=\"Revenue\"\n" +
+        "                       CategoryField=\"Month\"\n" +
+        "                       Type=\"ChartSeriesType.Bar\"\n" +
+        "                       Color=\"#b07aa1\" />\n" +
+        "</MariloChart>";
+
+    private const string _pieCode =
+        "<MariloChart Title=\"Revenue Distribution\" Height=\"350px\">\n" +
+        "    <MariloChartSeries Name=\"Revenue\"\n" +
+        "                       Data=\"_salesData\"\n" +
+        "                       Field=\"Revenue\"\n" +
+        "                       CategoryField=\"Month\"\n" +
+        "                       Type=\"ChartSeriesType.Pie\" />\n" +
+        "</MariloChart>";
+
+    private const string _donutCode =
+        "<MariloChart Title=\"Profit Distribution\" Height=\"350px\">\n" +
+        "    <MariloChartSeries Name=\"Profit\"\n" +
+        "                       Data=\"_salesData\"\n" +
+        "                       Field=\"Profit\"\n" +
+        "                       CategoryField=\"Month\"\n" +
+        "                       Type=\"ChartSeriesType.Donut\" />\n" +
+        "</MariloChart>";
+
+    private const string _scatterCode =
+        "<MariloChart Title=\"Revenue vs Profit Correlation\" Height=\"350px\">\n" +
+        "    <MariloChartSeries Name=\"Months\"\n" +
+        "                       Data=\"_salesData\"\n" +
+        "                       XField=\"Revenue\"\n" +
+        "                       YField=\"Profit\"\n" +
+        "                       Type=\"ChartSeriesType.Scatter\"\n" +
+        "                       Color=\"#ff9da7\" />\n" +
+        "</MariloChart>";
+
+    private const string _bubbleCode =
+        "<MariloChart Title=\"Market Analysis\" Height=\"350px\">\n" +
+        "    <MariloChartSeries Name=\"Products\"\n" +
+        "                       Data=\"_bubbleData\"\n" +
+        "                       XField=\"Price\"\n" +
+        "                       YField=\"Sales\"\n" +
+        "                       SizeField=\"MarketShare\"\n" +
+        "                       Type=\"ChartSeriesType.Bubble\"\n" +
+        "                       Color=\"#86bcb6\" />\n" +
+        "</MariloChart>";
+
+    private const string _titleSubtitleCode =
+        "<MariloChart Height=\"300px\">\n" +
+        "    <ChartTitle Text=\"Quarterly Performance\">\n" +
+        "        <ChartSubtitle Text=\"January through June 2026\" />\n" +
+        "    </ChartTitle>\n" +
+        "    <MariloChartSeries Name=\"Revenue\"\n" +
+        "                       Data=\"_salesData\"\n" +
+        "                       Field=\"Revenue\"\n" +
+        "                       CategoryField=\"Month\"\n" +
+        "                       Type=\"ChartSeriesType.Column\"\n" +
+        "                       Color=\"#4e79a7\" />\n" +
+        "</MariloChart>";
+
+    private const string _legendTooltipsCode =
+        "<MariloChart Title=\"Interactive Chart\" Height=\"350px\"\n" +
+        "             ShowLegend=\"@_showLegend\"\n" +
+        "             ShowTooltips=\"@_showTooltips\">\n" +
+        "    <MariloChartSeries Name=\"Revenue\"\n" +
+        "                       Data=\"_salesData\"\n" +
+        "                       Field=\"Revenue\"\n" +
+        "                       CategoryField=\"Month\"\n" +
+        "                       Type=\"ChartSeriesType.Line\"\n" +
+        "                       Color=\"#4e79a7\" />\n" +
+        "    <MariloChartSeries Name=\"Profit\"\n" +
+        "                       Data=\"_salesData\"\n" +
+        "                       Field=\"Profit\"\n" +
+        "                       CategoryField=\"Month\"\n" +
+        "                       Type=\"ChartSeriesType.Line\"\n" +
+        "                       Color=\"#e15759\" />\n" +
+        "</MariloChart>";
+
+    private const string _visibilityCode =
+        "<MariloChart Title=\"Toggle Series\" Height=\"300px\">\n" +
+        "    <MariloChartSeries Name=\"Revenue\"\n" +
+        "                       Data=\"_salesData\"\n" +
+        "                       Field=\"Revenue\"\n" +
+        "                       CategoryField=\"Month\"\n" +
+        "                       Type=\"ChartSeriesType.Column\"\n" +
+        "                       Visible=\"@_showRevenue\"\n" +
+        "                       Color=\"#4e79a7\" />\n" +
+        "    <MariloChartSeries Name=\"Profit\"\n" +
+        "                       Data=\"_salesData\"\n" +
+        "                       Field=\"Profit\"\n" +
+        "                       CategoryField=\"Month\"\n" +
+        "                       Type=\"ChartSeriesType.Column\"\n" +
+        "                       Visible=\"@_showProfit\"\n" +
+        "                       Color=\"#59a14f\" />\n" +
+        "</MariloChart>";
+
+    private const string _clickCode =
+        "<MariloChart Title=\"Click a Data Point\" Height=\"300px\"\n" +
+        "             OnSeriesClick=\"@OnChartClick\">\n" +
+        "    <MariloChartSeries Name=\"Revenue\"\n" +
+        "                       Data=\"_salesData\"\n" +
+        "                       Field=\"Revenue\"\n" +
+        "                       CategoryField=\"Month\"\n" +
+        "                       Type=\"ChartSeriesType.Column\"\n" +
+        "                       Color=\"#4e79a7\" />\n" +
+        "</MariloChart>\n\n" +
+        "@code {\n" +
+        "    private string? _lastClickInfo;\n" +
+        "    private void OnChartClick(ChartSeriesClickEventArgs args)\n" +
+        "    {\n" +
+        "        _lastClickInfo = $\"Series: {args.SeriesName}, Category: {args.Category}, Value: {args.Value:N0}\";\n" +
+        "    }\n" +
+        "}";
 }

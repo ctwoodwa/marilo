@@ -1,3 +1,4 @@
+using System.Globalization;
 using Marilo.Core.Enums;
 using Marilo.Core.Helpers;
 using Marilo.Core.Models.DataSheet;
@@ -22,11 +23,25 @@ public partial class MariloDataSheet<TItem>
         var rowKey = GetRowKey(row);
         var rowClass = CssProvider.DataSheetRowClass(isDirty, isSelected, isDeleted);
 
+        // V07.5 — aria-rowindex is 1-based and includes the header row, so
+        // data rows start at 2. IndexOf is O(n) but acceptable for grid sizes
+        // that don't already need Virtualize; the virtualized path pays the
+        // same cost per rendered row regardless.
+        var dataRowPosition = _displayRows.IndexOf(row);
+        var ariaRowIndex = dataRowPosition >= 0 ? dataRowPosition + 2 : 2;
+
         builder.OpenElement(0, "tr");
         builder.AddAttribute(1, "class", rowClass);
         builder.AddAttribute(2, "role", "row");
-        if (rowKey != null) builder.AddAttribute(3, "data-row-key", rowKey.ToString());
-        if (isDeleted) builder.AddAttribute(4, "aria-hidden", "true");
+        builder.AddAttribute(3, "aria-rowindex", ariaRowIndex);
+        if (rowKey != null) builder.AddAttribute(4, "data-row-key", rowKey.ToString());
+        if (isDeleted) builder.AddAttribute(5, "aria-hidden", "true");
+
+        // V07.6 — aria-colindex is 1-based. When AllowDeleteRow adds a
+        // leading select checkbox column, that column occupies colindex 1
+        // and the first data column starts at 2; otherwise the first data
+        // column is colindex 1.
+        var nextAriaColIndex = 1;
 
         // Checkbox column
         if (AllowDeleteRow)
@@ -34,12 +49,13 @@ public partial class MariloDataSheet<TItem>
             var cbRow = row;
             builder.OpenElement(10, "td");
             builder.AddAttribute(11, "role", "gridcell");
-            builder.AddAttribute(12, "class", "mar-datasheet__select-cell");
-            builder.OpenElement(13, "input");
-            builder.AddAttribute(14, "type", "checkbox");
-            builder.AddAttribute(15, "checked", isSelected);
-            builder.AddAttribute(16, "aria-label", "Select row");
-            builder.AddAttribute(17, "onchange", EventCallback.Factory.Create(this, () => ToggleRowSelection(cbRow)));
+            builder.AddAttribute(12, "aria-colindex", nextAriaColIndex++);
+            builder.AddAttribute(13, "class", "mar-datasheet__select-cell");
+            builder.OpenElement(14, "input");
+            builder.AddAttribute(15, "type", "checkbox");
+            builder.AddAttribute(16, "checked", isSelected);
+            builder.AddAttribute(17, "aria-label", "Select row");
+            builder.AddAttribute(18, "onchange", EventCallback.Factory.Create(this, () => ToggleRowSelection(cbRow)));
             builder.CloseElement(); // input
             builder.CloseElement(); // td
         }
@@ -57,20 +73,53 @@ public partial class MariloDataSheet<TItem>
             var cellWidth = column.Width != null ? $"width:{column.Width};" :
                             column.MinWidth.HasValue ? $"min-width:{column.MinWidth}px;" : null;
 
+            // V07.7 — Screen readers need a programmatic link between the
+            // cell and its validation error, not just a `title` tooltip.
+            // Emit a visually-hidden span with a deterministic ID and point
+            // aria-describedby at it when the cell is invalid.
+            //
+            // V07.7 polish — rowKey is user-supplied and may contain spaces,
+            // quotes, `#`, or other characters that are invalid in an HTML
+            // `id` attribute or CSS id selector. Sanitize it so the id and
+            // the cell's aria-describedby both produce the same safe value.
+            // _gridId is a GUID ("N") and column.Field is a C# identifier;
+            // neither needs sanitization.
+            var cellErrorId = cellError != null && rowKey != null
+                ? $"{_gridId}-err-{SanitizeIdPart(rowKey)}-{column.Field}"
+                : null;
+
             builder.OpenElement(20, "td");
             builder.AddAttribute(21, "class", cellClass);
             builder.AddAttribute(22, "role", "gridcell");
-            if (cellWidth != null) builder.AddAttribute(23, "style", cellWidth);
+            builder.AddAttribute(23, "aria-colindex", nextAriaColIndex++);
+            if (cellWidth != null) builder.AddAttribute(24, "style", cellWidth);
             if (!column.Editable || column.ColumnType == DataSheetColumnType.Computed)
-                builder.AddAttribute(24, "aria-readonly", "true");
+                builder.AddAttribute(25, "aria-readonly", "true");
             if (cellState == CellState.Invalid)
-                builder.AddAttribute(25, "aria-invalid", "true");
+                builder.AddAttribute(26, "aria-invalid", "true");
             if (cellError != null)
-                builder.AddAttribute(26, "title", cellError);
-            builder.AddAttribute(27, "data-field", column.Field);
+                builder.AddAttribute(27, "title", cellError);
+            if (cellErrorId != null)
+                builder.AddAttribute(28, "aria-describedby", cellErrorId);
+            builder.AddAttribute(29, "data-field", column.Field);
+
+            // V04.4 — When the column defines a Format delegate, the cell's
+            // textContent is the formatted display string (e.g. "$42.00"),
+            // which would round-trip poorly through copy/paste. Emit
+            // data-raw-value carrying the underlying property value formatted
+            // via InvariantCulture so the JS copy handler can read the raw
+            // value instead of the display string. When Format is null,
+            // textContent already equals the raw value and the attribute is
+            // omitted to avoid DOM bloat on every cell.
+            if (column.Format != null && column.ColumnType != DataSheetColumnType.Computed)
+            {
+                var rawValue = GridReflectionHelper.GetValue(row, column.Field);
+                var rawValueAttr = Convert.ToString(rawValue, CultureInfo.InvariantCulture) ?? "";
+                builder.AddAttribute(30, "data-raw-value", rawValueAttr);
+            }
 
             // Click handler
-            builder.AddAttribute(28, "onclick",
+            builder.AddAttribute(31, "onclick",
                 EventCallback.Factory.Create<MouseEventArgs>(this, (_) => OnCellClick(cellRow, cellField)));
 
             // Cell content
@@ -85,7 +134,7 @@ public partial class MariloDataSheet<TItem>
                     IsDirty = cellState == CellState.Dirty,
                     ValidationError = cellError
                 };
-                builder.AddContent(30, column.CellTemplate(context));
+                builder.AddContent(32, column.CellTemplate(context));
             }
             else if (isEditing)
             {
@@ -94,6 +143,21 @@ public partial class MariloDataSheet<TItem>
             else
             {
                 RenderCellDisplay(builder, row, column);
+            }
+
+            // V07.7 — Render the error message in a visually-hidden span
+            // inside the cell. The span's ID is the target of the cell's
+            // aria-describedby attribute so screen readers associate the
+            // error with the cell without requiring mouse hover.
+            if (cellErrorId != null)
+            {
+                builder.OpenElement(33, "span");
+                builder.AddAttribute(34, "id", cellErrorId);
+                builder.AddAttribute(35, "class", "mar-datasheet__sr-only");
+                builder.AddAttribute(36, "style",
+                    "position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;");
+                builder.AddContent(37, cellError);
+                builder.CloseElement(); // span
             }
 
             builder.CloseElement(); // td
@@ -105,14 +169,15 @@ public partial class MariloDataSheet<TItem>
             var delRow = row;
             builder.OpenElement(90, "td");
             builder.AddAttribute(91, "role", "gridcell");
-            builder.AddAttribute(92, "class", "mar-datasheet__actions-cell");
-            builder.OpenElement(93, "button");
-            builder.AddAttribute(94, "type", "button");
-            builder.AddAttribute(95, "class", "mar-datasheet__delete-btn");
-            builder.AddAttribute(96, "aria-label", "Delete row");
-            builder.AddAttribute(97, "onclick",
+            builder.AddAttribute(92, "aria-colindex", nextAriaColIndex++);
+            builder.AddAttribute(93, "class", "mar-datasheet__actions-cell");
+            builder.OpenElement(100, "button");
+            builder.AddAttribute(101, "type", "button");
+            builder.AddAttribute(102, "class", "mar-datasheet__delete-btn");
+            builder.AddAttribute(103, "aria-label", "Delete row");
+            builder.AddAttribute(104, "onclick",
                 EventCallback.Factory.Create<MouseEventArgs>(this, (_) => MarkRowDeleted(delRow)));
-            builder.AddContent(98, "\u2715"); // X symbol
+            builder.AddContent(105, "\u2715"); // X symbol
             builder.CloseElement(); // button
             builder.CloseElement(); // td
         }
@@ -175,6 +240,8 @@ public partial class MariloDataSheet<TItem>
                 break;
 
             case DataSheetColumnType.Number:
+                var numberTargetType = typeof(TItem).GetProperty(column.Field)?.PropertyType
+                                       ?? typeof(decimal);
                 builder.OpenElement(50, "input");
                 builder.AddAttribute(51, "type", "number");
                 builder.AddAttribute(52, "class", "mar-datasheet__editor-input");
@@ -185,8 +252,8 @@ public partial class MariloDataSheet<TItem>
                     EventCallback.Factory.Create<ChangeEventArgs>(this,
                         (e) =>
                         {
-                            decimal.TryParse(e.Value?.ToString(), out var d);
-                            return OnCellValueCommit(editRow, editField, d);
+                            var (_, parsed) = ParseNumericValue(e.Value?.ToString(), numberTargetType);
+                            return OnCellValueCommit(editRow, editField, parsed);
                         }));
                 builder.CloseElement();
                 break;
@@ -240,5 +307,35 @@ public partial class MariloDataSheet<TItem>
                 builder.CloseElement();
                 break;
         }
+    }
+
+    // ── ID Sanitization ────────────────────────────────────────────────
+
+    /// <summary>
+    /// Sanitizes a value for safe inclusion in an HTML <c>id</c> attribute
+    /// and CSS id selector. Any character outside <c>[A-Za-z0-9_-]</c> is
+    /// replaced with <c>_</c>. Null becomes <c>"null"</c> and empty becomes
+    /// <c>"empty"</c> so the result is always non-empty. Used to sanitize
+    /// user-supplied row keys when building <c>aria-describedby</c> targets
+    /// for invalid cells (V07.7 polish).
+    /// </summary>
+    private static string SanitizeIdPart(object? value)
+    {
+        if (value is null) return "null";
+        var s = value.ToString();
+        if (string.IsNullOrEmpty(s)) return "empty";
+
+        var buffer = new char[s.Length];
+        for (var i = 0; i < s.Length; i++)
+        {
+            var c = s[i];
+            var isSafe = (c >= 'A' && c <= 'Z')
+                      || (c >= 'a' && c <= 'z')
+                      || (c >= '0' && c <= '9')
+                      || c == '_'
+                      || c == '-';
+            buffer[i] = isSafe ? c : '_';
+        }
+        return new string(buffer);
     }
 }

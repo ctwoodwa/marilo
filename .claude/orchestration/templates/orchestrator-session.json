@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0",
+  "session_id": "marilo-orchestration-2026-04-11-1000",
+  "status": "active",
+  "shared_goal": "Parallel spec-review pass across DataGrid, Gantt, Scheduler, and AllocationScheduler. Each worker audits one component's selection/keyboard/refresh/editing docs against source. Orchestrator integrates gap lists into a consolidated delivery report.",
+  "started_at": "2026-04-11T10:00:00Z",
+  "last_heartbeat": "2026-04-11T11:30:00Z",
+  "orchestrator_tmux_session": "marilo-orchestrator",
+  "integration_owner": "orchestrator",
+  "active_workers": [
+    {
+      "worker_id": "w-datagrid-spec-review",
+      "component_slug": "datagrid",
+      "workflow_type": "spec-review",
+      "status": "working",
+      "started_at": "2026-04-11T10:05:00Z",
+      "last_activity": "2026-04-11T11:30:00Z"
+    },
+    {
+      "worker_id": "w-gantt-spec-review",
+      "component_slug": "gantt",
+      "workflow_type": "spec-review",
+      "status": "working",
+      "started_at": "2026-04-11T10:05:00Z",
+      "last_activity": "2026-04-11T11:28:00Z"
+    },
+    {
+      "worker_id": "w-scheduler-spec-review",
+      "component_slug": "scheduler",
+      "workflow_type": "spec-review",
+      "status": "review-pending",
+      "started_at": "2026-04-11T10:05:00Z",
+      "last_activity": "2026-04-11T11:15:00Z"
+    },
+    {
+      "worker_id": "w-allocation-scheduler-spec-review",
+      "component_slug": "allocation-scheduler",
+      "workflow_type": "spec-review",
+      "status": "blocked",
+      "started_at": "2026-04-11T10:05:00Z",
+      "last_activity": "2026-04-11T11:22:00Z",
+      "blocker_summary": "Spec mentions OnRead parameter that does not exist in source — needs orchestrator decision"
+    }
+  ],
+  "review_queue": [
+    {
+      "worker_id": "w-scheduler-spec-review",
+      "result_path": "_orchestrator/results/w-scheduler-spec-review-2026-04-11-1115.md",
+      "submitted_at": "2026-04-11T11:15:00Z",
+      "priority": "normal"
+    }
+  ],
+  "blocked_queue": [
+    {
+      "worker_id": "w-allocation-scheduler-spec-review",
+      "escalation_path": "_orchestrator/inbox/marilo-orchestrator-escalation-2026-04-11-1122.json",
+      "raised_at": "2026-04-11T11:22:00Z",
+      "awaiting": "orchestrator-decision"
+    }
+  ],
+  "notes": "Template file — illustrative only. A real session is kept in _orchestrator/session.json, not here. Copy the structure when kicking off a new session."
+}

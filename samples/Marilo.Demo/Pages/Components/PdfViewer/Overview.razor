@@ -4,7 +4,7 @@
 
 <PageSection Title="Overview">
     <DemoSection Title="Basic Usage" Description="PDF Viewer displays PDF documents with toolbar controls for page navigation and zoom. Uses browser native PDF support." Code="@_basicCode">
-        <MariloPdfViewer Height="500px" />
+        <MariloPdfViewer Url="demo.pdf" Height="500px" />
     </DemoSection>
 </PageSection>
 
@@ -24,19 +24,21 @@
     </DemoSection>
 
     <DemoSection Title="Without Toolbar" Description="Hide the toolbar for a clean embedded view." Code="@_noToolbarCode">
-        <MariloPdfViewer ShowToolbar="false"
+        <MariloPdfViewer Url="demo.pdf"
+                         ShowToolbar="false"
                          Height="300px" />
     </DemoSection>
 
     <DemoSection Title="Custom Size" Description="Control the width and height of the viewer to fit different layouts." Code="@_customSizeCode">
-        <MariloPdfViewer Width="600px"
+        <MariloPdfViewer Url="demo.pdf"
+                         Width="600px"
                          Height="400px" />
     </DemoSection>
 </PageSection>
 
 @code {
-    private string _pdfUrl = "";
-    private string? _activePdfUrl;
+    private string _pdfUrl = "demo.pdf";
+    private string? _activePdfUrl = "demo.pdf";
     private int _currentPage = 1;
     private double _currentZoom = 1.0;
 
@@ -58,7 +60,7 @@
     }
 
     private const string _basicCode =
-        "<MariloPdfViewer Height=\"500px\" />";
+        "<MariloPdfViewer Url=\"demo.pdf\" Height=\"500px\" />";
 
     private const string _urlCode =
         "<MariloPdfViewer Url=\"@_pdfUrl\"\n" +
@@ -69,10 +71,12 @@
         "                 ZoomChanged=\"ZoomChanged\" />";
 
     private const string _noToolbarCode =
-        "<MariloPdfViewer ShowToolbar=\"false\"\n" +
+        "<MariloPdfViewer Url=\"demo.pdf\"\n" +
+        "                 ShowToolbar=\"false\"\n" +
         "                 Height=\"300px\" />";
 
     private const string _customSizeCode =
-        "<MariloPdfViewer Width=\"600px\"\n" +
+        "<MariloPdfViewer Url=\"demo.pdf\"\n" +
+        "                 Width=\"600px\"\n" +
         "                 Height=\"400px\" />";
 }

@@ -10,7 +10,16 @@ components: ["grid"]
 ---
 # Column Display Format
 
+The `MariloGridColumn` exposes two parameters for formatting cell values: `DisplayFormat` (the preferred modern form, using composite format strings) and `Format` (a legacy simple format string retained for backwards compatibility). If both are set, `DisplayFormat` takes precedence.
 
+## Parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `DisplayFormat` | `string?` | Composite format string for display (e.g. `"{0:C2}"`, `"{0:dd MMM yy}"`). Takes precedence over `Format`. This is the preferred modern form for new code. |
+| `Format` | `string?` | Simple format string for displaying the cell value (e.g. `"C2"`, `"yyyy-MM-dd"`). Applied via `IFormattable.ToString(format, null)`. Legacy — retained for backwards compatibility with older demos and markup. |
+
+>note Which to use: prefer `DisplayFormat` for new code — composite format syntax is more flexible and matches the `DisplayFormatAttribute.DataFormatString` convention. Use `Format` only when maintaining compatibility with existing demos or markup that already relies on the simple-format form.
 
 ## Example
 

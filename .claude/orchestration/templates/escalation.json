@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0",
+  "escalation_id": "esc-w-allocation-scheduler-spec-review-001",
+  "worker_id": "w-allocation-scheduler-spec-review",
+  "component_slug": "allocation-scheduler",
+  "workflow_type": "spec-review",
+  "timestamp": "2026-04-11T11:22:00Z",
+  "severity": "blocker",
+  "type": "public-api-change",
+  "valid_types": [
+    "file-ownership-conflict",
+    "architecture-decision",
+    "public-api-change",
+    "provider-contract-change",
+    "missing-context",
+    "dependency-blocker",
+    "sync-area-violation",
+    "cross-worker-coordination",
+    "review-fail-retry-loop",
+    "other"
+  ],
+  "summary": "refresh-data.md documents an OnRead EventCallback that does not exist in MariloAllocationScheduler source. Worker is unsure whether to (a) remove the doc, (b) flag as source-ahead gap, or (c) escalate for orchestrator decision since adding OnRead would be a public API change.",
+  "details": "The spec at docs/component-specs/allocation-scheduler/refresh-data.md (line 112-140) describes `OnRead : EventCallback<AllocationSchedulerReadEventArgs<TResource>>` with Filter/CancellationToken/Data/Total properties. Source (MariloAllocationScheduler.razor.cs line 584-600) has Rebind() and Refresh() but no OnRead. Adding OnRead would require a new EventArgs type and changes to Data.cs — this is a new feature, not a gap closure. Worker does not have authorization to propose public API additions.",
+  "files_involved": [
+    "docs/component-specs/allocation-scheduler/refresh-data.md",
+    "src/Marilo.Components/DataDisplay/AllocationScheduler/MariloAllocationScheduler.razor.cs",
+    "src/Marilo.Core/Models/AllocationSchedulerModels.cs"
+  ],
+  "proposed_options": [
+    {
+      "option": "A",
+      "description": "Remove OnRead section from spec; mark as deferred with a FUTURE-FEATURE marker pointing at datagrid parity",
+      "risk": "low",
+      "effort": "5 minutes",
+      "scope_change": "none"
+    },
+    {
+      "option": "B",
+      "description": "Log as spec-ahead gap (gap id: GAP-ALLOCSCHED-REFRESH-001), leave spec as aspirational, do not modify docs",
+      "risk": "low",
+      "effort": "5 minutes",
+      "scope_change": "none"
+    },
+    {
+      "option": "C",
+      "description": "Escalate for orchestrator to authorize OnRead implementation as a new public API addition — would require a new lane (w-allocation-scheduler-api-expansion) outside this spec-review session",
+      "risk": "medium",
+      "effort": "separate orchestrated effort, not resolvable in this worker",
+      "scope_change": "adds new worker lane"
+    }
+  ],
+  "awaiting": "orchestrator-decision",
+  "awaiting_since": "2026-04-11T11:22:00Z",
+  "auto_unblock_on_decision": true,
+  "recommendation": "Option B — spec is explicit about the feature being not-yet-implemented so leaving it aspirational is honest and keeps the spec-review pass in scope."
+}

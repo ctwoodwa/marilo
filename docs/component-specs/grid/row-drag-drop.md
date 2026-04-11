@@ -42,17 +42,15 @@ The `OnRowDrop` event fires when the user drops a row into a new location. It al
 
 ### Event Arguments
 
-The `OnRowDrop` event provides an object of type `GridRowDropEventArgs<T>` to its event handler which exposes the following fields:
+The `OnRowDrop` event provides an object of type `GridRowDropEventArgs<TItem>` to its event handler which exposes the following fields:
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `Item` | `object` | Represents the dragged row. You can cast this object to your model class. |
-| `DestinationItem` | `object` | Represents the row over which the `Item` is dropped. You can cast this object to your model class. |
-| `Items` | `object` | Represents the dragged row. You can cast this object to your model class. |
-| `DropPosition` | `enum` | Its members allow you to determine the exact position of the dropped item relative to the position of the `DestinationItem`. |
-| `DestinationGrid` | `object` | The reference of the Grid in which the row is dropped. This is applicable when you drag and drop rows between different grids. |
-| `DestinationIndex` | `string` | The index where the drop will happen in the second component. |
-| `DestinationComponentId` | `string` | The `Id` of the second component in which the drop will happen. |
+| `Item` | `TItem` | Represents the dragged row. |
+| `DestinationItem` | `TItem?` | Represents the row over which the `Item` is dropped. |
+| `DestinationIndex` | `int` | Index in the displayed data where the row was dropped. |
+| `DropPosition` | `GridRowDropPosition` | Its members (`Before`, `After`) allow you to determine the exact position of the dropped item relative to the position of the `DestinationItem`. |
+| `IsCancelled` | `bool` | Set to `true` to cancel the drop. |
 
 ## GridRowDraggableSettings
 

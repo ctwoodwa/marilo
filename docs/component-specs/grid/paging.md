@@ -95,6 +95,33 @@ The Grid exposes several relevant events. You can find related examples in the [
 * `PageSizeChanged` - fires when the user changes the page size via the pager DropDownList.
 * `OnRead` - you can use this to perform the read operation yourself on demand, instead of providing the entire data source at once. You can read more about this in the [Manual Data Source Operations](slug:components/grid/manual-operations) article.
 
+## Root-level PagerButtonCount Parameter
+
+In addition to the nested `GridPagerSettings` approach shown below, `MariloGrid` exposes a simpler root-level `PagerButtonCount` parameter that controls the maximum number of page buttons rendered in the pager without requiring any `GridSettings` configuration. This is the currently-implemented pager button count parameter on `MariloGrid` directly.
+
+### Parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `PagerButtonCount` | `int` | The maximum number of page buttons to show in the pager. Defaults to `5`. |
+
+>caption Set the root-level PagerButtonCount on MariloGrid
+
+````RAZOR
+<MariloGrid Data="@GridData" Pageable="true" PageSize="5" PagerButtonCount="7">
+    <GridColumns>
+        <GridColumn Field="ID"></GridColumn>
+        <GridColumn Field="TheName" Title="Employee Name"></GridColumn>
+    </GridColumns>
+</MariloGrid>
+
+@code {
+    public IEnumerable<object> GridData = Enumerable.Range(1, 100).Select(x => new { ID = x, TheName = "name " + x });
+}
+````
+
+>note This root-level parameter is additive to the nested `GridPagerSettings` approach shown below. Use whichever fits your pager configuration.
+
 ## Pager Settings  
 
 In addition to `Page` and `PageSize`, the Grid provides advanced pager configuration options via the `GridPagerSettings` tag, which is nested inside `GridSettings`. These configuration attributes include:

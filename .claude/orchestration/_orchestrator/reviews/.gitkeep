@@ -1,0 +1,3 @@
+# Review records: <worker-id>-<ts>.md
+# One per result reviewed. Format: templates/review-record.md
+# Integration (merging approved work) only happens after a PASS review record exists.

@@ -82,6 +82,30 @@ When the grid is grouped, the top row above the group provides information about
 
 ![Blazor Grid Group Header Template](images/group-header-template.png)
 
+## GridGroupHeaderContext Type
+
+The `@context` object inside `<GroupHeaderTemplate>` and `<GroupFooterTemplate>` is an instance of `GridGroupHeaderContext<TItem>`, where `TItem` is the grid's row model type (the element type of the grid's `Data` source). It exposes information about the current group, plus aggregate helpers for computing totals over the group's items.
+
+### Properties
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `Field` | `string` | The field name being grouped. |
+| `Value` | `object?` | The group key value. |
+| `Items` | `IReadOnlyList<TItem>` | The items in this group. |
+| `Count` | `int` | Number of items in this group. |
+| `Depth` | `int` | The nesting depth (`0` = top-level). |
+| `IsCollapsed` | `bool` | Whether this group is collapsed. |
+
+### Aggregate helper methods
+
+* `Sum(Func<TItem, decimal> selector)` — computes the sum of a `decimal` property across items in this group.
+* `Average(Func<TItem, decimal> selector)` — computes the average of a `decimal` property across items in this group.
+* `Sum(Func<TItem, int> selector)` — computes the sum of an `int` property across items in this group.
+* `Average(Func<TItem, int> selector)` — computes the average of an `int` property across items in this group.
+* `Min<TResult>(Func<TItem, TResult> selector)` — gets the minimum value of a property across items in this group.
+* `Max<TResult>(Func<TItem, TResult> selector)` — gets the maximum value of a property across items in this group.
+
 ## See Also
 
  * [Live Demo: Grid Templates](https://demos.marilo.com/blazor-ui/grid/templates)

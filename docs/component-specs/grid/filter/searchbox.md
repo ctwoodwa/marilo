@@ -82,6 +82,42 @@ The following example shows the first option in action, while the [customization
 }
 ````
 
+## Root-level SearchBox Parameter
+
+In addition to the toolbar-tool approach shown above, `MariloGrid` exposes a simpler root-level `ShowSearchBox` toggle that renders a built-in search input above the grid without requiring any toolbar configuration. Typing in the input performs a filter across all visible columns.
+
+### Parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `ShowSearchBox` | `bool` | Whether to show a built-in search box above the grid. Searches across all visible columns. Defaults to `false`. |
+| `SearchBoxPlaceholder` | `string` | Placeholder text for the search box. Defaults to `"Search..."`. |
+
+>caption Enable the root-level SearchBox on MariloGrid
+
+````RAZOR
+<MariloGrid Data="@GridData"
+             ShowSearchBox="true"
+             SearchBoxPlaceholder="Search employees...">
+    <GridColumns>
+        <GridColumn Field="@nameof(Employee.Name)" />
+        <GridColumn Field="@nameof(Employee.Department)" />
+    </GridColumns>
+</MariloGrid>
+
+@code {
+    private List<Employee> GridData { get; set; } = new();
+
+    public class Employee
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Department { get; set; } = string.Empty;
+    }
+}
+````
+
+>note This root-level parameter is additive to the toolbar-tool approach shown above. Use whichever fits your toolbar configuration.
+
 ## Search From Code
 
 You can set or remove the search filters programmatically through the `SearchFilter` property of the [Grid state](slug:grid-state).

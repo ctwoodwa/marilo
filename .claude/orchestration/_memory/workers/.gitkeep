@@ -1,0 +1,3 @@
+# Authoritative worker state: <worker-id>.json
+# Each active worker writes its own file here.
+# Schema: templates/worker-state.json

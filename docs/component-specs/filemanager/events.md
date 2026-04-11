@@ -19,7 +19,9 @@ This article explains the events available in the Marilo FileManager for Blazor.
     * [OnUpdate](#onupdate)
 * [OnDownload](#ondownload)
 * [OnModelInit](#onmodelinit)
+* [OnOpen](#onopen)
 * [OnRead Event](#onread) - event related to obtaining data.
+* [OnSelect](#onselect)
 * [PathChanged](#pathchanged)
 * [SelectedItemsChanged](#selecteditemschanged)
 * [ViewChanged](#viewchanged)
@@ -88,6 +90,14 @@ Use the `OnRead` event if you want to load chunks of FileManager data on demand.
 * `OnRead` event
 
 For more information, refer to [How to Load FileManager File Data on Demand](slug:filemanager-kb-load-file-data-on-demand).
+
+## OnOpen
+
+The `OnOpen` event fires when the user double-clicks a **file** (non-directory) in the main pane. The event handler receives the opened `TItem` as an argument. Double-clicking a folder is treated as navigation and fires [`PathChanged`](#pathchanged) instead of `OnOpen`. Use `OnOpen` to implement application-specific file-open behavior (e.g. opening a preview modal) that is distinct from downloading via [`OnDownload`](#ondownload).
+
+## OnSelect
+
+The `OnSelect` event fires when the user single-clicks a file or folder in the main pane. The event handler receives the clicked `TItem` directly. This event is complementary to [`SelectedItemsChanged`](#selecteditemschanged), which fires with the full selection set — use `OnSelect` when you only need the item the user just clicked.
 
 ## PathChanged
 

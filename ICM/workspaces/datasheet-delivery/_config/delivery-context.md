@@ -13,9 +13,9 @@
 
 | Field | Value |
 |-------|-------|
-| API spec | /workspaces/Marilo/docs/component-specs/spreadsheet/ |
+| API spec | /workspaces/Marilo/docs/component-specs/datasheet/ |
 | Example UX | /workspaces/Marilo/samples/Marilo.Demo/Pages/Components/DataSheet/ |
-| Component source | /workspaces/Marilo/src/Marilo.Components/DataGrid/ |
+| Component source | /workspaces/Marilo/src/Marilo.Components/DataGrid/ (MariloDataSheet*.cs) |
 | Test files | /workspaces/Marilo/tests/Marilo.Tests.Unit/DataGrid/MariloDataSheetTests.cs |
 | Gap workspace | /workspaces/Marilo/workspaces/datasheet-gap-analysis/ |
 
@@ -24,8 +24,8 @@
 | Field | Value |
 |-------|-------|
 | Spec version | unversioned |
-| Last spec audit | 2026-04-03 |
-| Open spec gaps | ~38 (1 blocking architecture mismatch) |
+| Last spec audit | 2026-04-11 |
+| Open spec gaps | 0 (prior blocker resolved by new datasheet/ spec; 2 cross-branch drift items escalated) |
 
 ## Example UX State
 
@@ -62,11 +62,15 @@
 
 | Feature Area | Spec Path | Status |
 |---|---|---|
-| overview | docs/component-specs/spreadsheet/overview.md | PENDING |
-| events | docs/component-specs/spreadsheet/events.md | PENDING |
-| functions-formulas | docs/component-specs/spreadsheet/functions-formulas.md | PENDING |
-| tools | docs/component-specs/spreadsheet/tools.md | PENDING |
-| accessibility | docs/component-specs/spreadsheet/accessibility/ | PENDING |
+| overview | docs/component-specs/datasheet/overview.md | COMPLETE |
+| columns-and-schema | docs/component-specs/datasheet/columns-and-schema.md | COMPLETE |
+| editing-and-validation | docs/component-specs/datasheet/editing-and-validation.md | COMPLETE |
+| selection-and-ranges | docs/component-specs/datasheet/selection-and-ranges.md | COMPLETE |
+| bulk-paste-and-clipboard | docs/component-specs/datasheet/bulk-paste-and-clipboard.md | COMPLETE |
+| bulk-operations-and-saveall | docs/component-specs/datasheet/bulk-operations-and-saveall.md | COMPLETE |
+| virtualization-and-performance | docs/component-specs/datasheet/virtualization-and-performance.md | COMPLETE |
+| keyboard-and-accessibility | docs/component-specs/datasheet/keyboard-and-accessibility.md | COMPLETE |
+| theming-and-css-provider | docs/component-specs/datasheet/theming-and-css-provider.md | COMPLETE |
 
 Stage 01 processes one feature area at a time.
 Update status to IN PROGRESS / COMPLETE per area as work proceeds.

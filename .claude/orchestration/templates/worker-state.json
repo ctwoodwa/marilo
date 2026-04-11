@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0",
+  "worker_id": "w-<component-slug>-<workflow-type>",
+  "component_slug": "datagrid",
+  "workflow_type": "spec-review",
+  "icm_stage": "01-spec-review",
+  "icm_workspace": "ICM/workspaces/datagrid-delivery",
+  "status": "idle",
+  "status_history": [
+    { "ts": "2026-04-11T10:00:00Z", "status": "idle", "note": "Worker created, awaiting scope" }
+  ],
+  "scope": "Audit docs/component-specs/datagrid/selection/*.md against MariloDataGrid.razor.cs and MariloDataGrid.Data.cs. Report spec-ahead and source-ahead gaps.",
+  "files_owned": [
+    "docs/component-specs/datagrid/selection/overview.md",
+    "docs/component-specs/datagrid/selection/rows.md",
+    "docs/component-specs/datagrid/selection/cells.md",
+    "ICM/workspaces/datagrid-delivery/stages/01-spec-review/output/datagrid-spec-gap-list.md"
+  ],
+  "files_read_only": [
+    "src/Marilo.Components/DataGrid/MariloDataGrid.razor.cs",
+    "src/Marilo.Components/DataGrid/MariloDataGrid.Data.cs",
+    "src/Marilo.Components/DataGrid/MariloGridColumn.razor"
+  ],
+  "allow_overlap": false,
+  "overlap_authorized_by": null,
+  "required_sync_areas": ["source", "spec"],
+  "required_skills": [
+    "test-driven-development",
+    "verification-before-completion",
+    "systematic-debugging",
+    "requesting-code-review",
+    "receiving-code-review"
+  ],
+  "next_atomic_task": "Read MariloDataGrid.Data.cs lines 200-400 and cross-reference the GridSelectionUnit.Cell handler against selection/cells.md",
+  "blockers": [],
+  "tmux_session": "marilo-w-datagrid-spec-review",
+  "started_at": "2026-04-11T10:00:00Z",
+  "last_activity": "2026-04-11T10:00:00Z",
+  "last_handoff": null,
+  "pending_review": false,
+  "review_record": null,
+  "escalations": [],
+  "notes": "This template is illustrative. When creating a real worker, copy this file to _memory/workers/<worker-id>.json and replace every example value. Worker-id must be unique within an active session and must match the tmux session name pattern (marilo-<worker-id>)."
+}

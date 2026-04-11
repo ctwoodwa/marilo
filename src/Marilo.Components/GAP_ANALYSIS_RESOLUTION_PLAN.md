@@ -1145,7 +1145,7 @@ This section routes the "Recommended Next Actions" from the executive report int
 | Area                      | Next Action                                                                                                                         | Blocked?                        | Owning Workspace                             | Status                                                        |
 | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | -------------------------------------------- | ------------------------------------------------------------- |
 | TreeView Delivery         | Stage 02 demo scope approval (24 gaps: 6 P1, 12 P2, 6 P3)                                                                           | **Yes** — human decision | `treeview-delivery`                        | Awaiting approval                                             |
-| DataSheet                 | Architecture decision: MariloSpreadsheet vs MariloDataSheet\<TItem\> vs both                                                        | **Yes** — human decision | `gap-analysis-resolution` + future CDW     | Awaiting decision                                             |
+| DataSheet                 | Stage 02 Example UX landed; V03 cell range selection deferred; Stage 03 visual parity next                                          | Partial — V03 deferred (~3.5d, 27 tests), Stage 03 needs Playwright | `datasheet-delivery` CDW                   | **Stage 02 COMPLETE** — all cron-tractable work done (F1+F3+F2+Polish+F4+F2p+RowKey+Cleanup feature batches + Stage 02a/02b demo pages: Editing-and-Validation, BulkOperations, Keyboard-and-Accessibility); 4 demo pages, 1490 LOC, 1160/1160 suite |
 | T4 Pickers Batch 1        | Implement + test 10 high-severity core API gaps across 5 components                                                                 | No                              | `gap-analysis-resolution` Stage 03→05→06 | **Complete** (7 resolved, 3 partial; 17 tests)          |
 | T4 Pickers Batch 2        | Template slots + API completeness for MultiSelect, Upload                                                                           | No                              | `gap-analysis-resolution` Stage 03→05→06 | **Complete** (4/4 resolved; 9 tests)                    |
 | T2 Splitter               | Full pipeline: intake through validation                                                                                            | No                              | `gap-analysis-resolution` Stage 01→06     | **Complete** (8/10 resolved, 1 demo deferred; 17 tests) |
@@ -1167,15 +1167,11 @@ This section routes the "Recommended Next Actions" from the executive report int
 - **Action needed:** Approve P1/P2/P3 priority assignments and confirm demo scope
 - **Workspace:** `workspaces/treeview-delivery/`
 
-#### Decision 2: DataSheet Architecture Direction
+#### Decision 2: DataSheet Architecture Direction — **RESOLVED 2026-04-09**
 
-- **Context:** Spec documents `MariloSpreadsheet` (XLSX Excel clone). Implementation is `MariloDataSheet<TItem>` (typed editable grid). Fundamentally different component models.
-- **Options:**
-  - **A.** Keep `MariloDataSheet<TItem>` only — typed grid, no XLSX
-  - **B.** Build `MariloSpreadsheet` only — XLSX clone, remove typed grid
-  - **C.** Support both — maintain DataSheet + build Spreadsheet separately
-- **Impact:** Determines resolution of ~38 gaps. High-severity blocker.
-- **Workspace:** `workspaces/datasheet-delivery/` (blocked)
+- **Resolution:** Option C — support both as distinct components. `MariloDataSheet<TItem>` = typed editable grid (owned by `datasheet-delivery` CDW). `MariloSpreadsheet` = XLSX-clone direction (tracked in the main plan's API Completion Pass table; formula engine deferred).
+- **Follow-on (2026-04-10):** Stage 01 re-audit against the correct `docs/component-specs/datasheet/` spec confirmed broad-surface alignment excellent (53/53 API elements present). Stage 01b verification of 10 sub-tasks (V01–V10) complete: 4 clean (V06/V08/V09/V10), 23 discrete gaps across V01/V02/V04/V05/V07, plus V03 large-feature gap (cell range selection, Stage 03 design ready). Batch F1 landed (V01.1 + V01.2 + V02.1, commit `6794644`, 9 tests, 1106/1106 suite).
+- **Next:** Batches F2 (Save/Reset lifecycle), F3 (Paste hardening), F4 (Accessibility), and V03 implementation per the Stage 03 resolution design at `ICM/workspaces/datasheet-gap-analysis/stages/03-resolution-design/output/gap-datasheet-v03-selection-ranges-resolution.md`.
 
 #### Decision 3: No-Source Component Strategy (T4)
 
@@ -1322,7 +1318,7 @@ Total: 7 new bUnit tests + 1 Batch 6 fix; runtime pending (.NET SDK unavailable 
 - ~~ColorPicker: FlatColorPicker, ColorGradient, ColorPalette standalone components + ColorPickerViews child tags~~ → **RESOLVED** in `colorpicker-standalone` batch (5/5 CPICK gaps, 18 tests)
 - ~~DateRangePicker: Multi-view calendar navigation~~ → **RESOLVED** in `drp-multiview` batch (DRP-001, 3 tests)
 - ~~DateRangePicker: FocusStartAsync/FocusEndAsync~~ → **RESOLVED** in `drp-multiview` batch (DRP-004, 2 tests)
-- FileUpload/Upload: DropZoneId — **DEFERRED** (JS interop needed)
+- ~~FileUpload/Upload: DropZoneId~~ → **RESOLVED** in `js-interop-batch1` (GAP-FU-001 + GAP-UPL-003, 2 gaps; `marilo-dropzone.js` ES module + `IDropZoneService`; portion of the 18-test JS-B1 batch)
 
 ### T1 Splitter/Wizard — Full Pipeline Tracking
 

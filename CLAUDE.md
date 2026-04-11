@@ -30,7 +30,7 @@ This project uses OpenWolf for context management.
 - Components live under `src/Marilo.Components`, following the ICM workspace pattern.
 - Complex/enterprise components use CDW workspaces under `/workspaces/Marilo/workspaces/`.
 - Providers, styles, and themes: `src/Marilo.Providers.*` with SCSS-based theming.
-- Component specs live in `src/Marilo.Components/component-specs/`.
+- Component specs live in `docs/component-specs/<slug>/` (one nested folder per component, e.g. `docs/component-specs/datagrid/`, `docs/component-specs/chart/tooltip/`). Slugs are lowercase.
 - Component mapping is in `src/Marilo.Components/component-mapping.json`.
 - Gap analysis and roadmap: `src/Marilo.Components/GAP_ANALYSIS_RESOLUTION_PLAN.md`.
 
@@ -44,7 +44,7 @@ When in doubt:
 # How to work in this repo
 
 Before significant work:
-- Read `CONTEXT.md` and the relevant component spec under `component-specs/`.
+- Read `CONTEXT.md` and the relevant component spec under `docs/component-specs/<slug>/`.
 - For complex components (DataGrid, Scheduler, AllocationScheduler, etc.), also check the CDW workspace under `/workspaces/Marilo/workspaces/<component>/`.
 
 General rules:
@@ -84,7 +84,7 @@ Coding:
 
 Docs & demos:
 - Each public component should have:
-  - A spec in `component-specs`.
+  - A spec folder under `docs/component-specs/<slug>/`.
   - At least one representative demo.
   - XML doc comments for all public APIs.
 - When changing behavior, update spec + docs + demos in the same change set.
@@ -119,6 +119,30 @@ These are high-cost mistakes. Do not do them without explicit instruction in the
 - Do not bypass or delete gap-analysis notes in `GAP_ANALYSIS_RESOLUTION_PLAN.md` when closing gaps.
 - Do not introduce secrets, credentials, or environment-specific config into the repo.
 - Do not add new build pipelines, external services, or global dependencies without explicit guidance in this workspace.
+
+---
+
+# Orchestration (tmux parallel workers)
+
+Marilo supports an optional tmux orchestration layer for parallel multi-component Claude Code work. It is **off by default** — if you are not running a session, nothing changes.
+
+- Entry rules: `.claude/rules/orchestration.md`
+- Operational guide: `.claude/orchestration/GUIDE.md`
+- Session state: `.claude/orchestration/_orchestrator/session.json`
+- Worker memory: `.claude/orchestration/_memory/workers/*.json`
+- Templates: `.claude/orchestration/templates/*`
+- Worker execution-discipline skills (vendored from [obra/superpowers](https://github.com/obra/superpowers), MIT): see `.claude/skills/NOTICE.md` — `test-driven-development`, `verification-before-completion`, `systematic-debugging`, `requesting-code-review`, `receiving-code-review`. These are enforced at the orchestrator review gate.
+- **Entry point:** `/start-multi-agent-work <component1,component2,...> [workflow]` — idempotent orchestrator tick. Dispatches one worker per component in parallel, processes escalations and reviews, writes an inline wave summary. Wrap with `/loop 10m /start-multi-agent-work ...` for automated ticks.
+
+When `_orchestrator/session.json` has `status: "active"`, Claude operates in orchestrator mode or worker mode (role determined by tmux session / env vars). When `status: "inactive"` (default), normal single-session operation applies and orchestration rules do nothing.
+
+Use orchestration only when:
+
+- Work spans 2+ components with disjoint file ownership
+- A phase is large enough to benefit from wall-clock parallelism
+- You would otherwise want to run multiple Claude Code windows side-by-side
+
+Architecture changes, public API changes, and provider contract changes remain orchestrator-only even inside a session — workers escalate instead of making them.
 
 ---
 
