@@ -4,18 +4,48 @@
   "status": "active",
   "shared_goal": "Parallel ICM delivery pipeline across datagrid, datasheet, gantt, scheduler, allocation-scheduler — 4 waves, review gate between waves, orchestrator integrates.",
   "started_at": "2026-04-11T12:00:00Z",
-  "last_heartbeat": "2026-04-11T16:14:00Z",
+  "last_heartbeat": "2026-04-11T17:00:00Z",
   "orchestrator_tmux_session": "marilo-orchestrator",
   "integration_owner": "orchestrator",
-  "wave": 1,
+  "wave": 2,
   "active_workers": [
-    { "worker_id": "w-datagrid-delivery", "status": "working", "icm_stage": "01-spec-review" },
-    { "worker_id": "w-datasheet-delivery", "status": "working", "icm_stage": "01-spec-review" },
-    { "worker_id": "w-gantt-delivery", "status": "working", "icm_stage": "01-spec-review" },
-    { "worker_id": "w-scheduler-delivery", "status": "working", "icm_stage": "01-spec-review" },
-    { "worker_id": "w-allocation-scheduler-delivery", "status": "working", "icm_stage": "01-spec-review" }
+    { "worker_id": "w-datagrid-delivery", "status": "working", "icm_stage": "02-example-ux" },
+    { "worker_id": "w-datasheet-delivery", "status": "working", "icm_stage": "02-example-ux" },
+    { "worker_id": "w-gantt-delivery", "status": "working", "icm_stage": "02-example-ux" },
+    { "worker_id": "w-scheduler-delivery", "status": "working", "icm_stage": "02-example-ux" },
+    { "worker_id": "w-allocation-scheduler-delivery", "status": "working", "icm_stage": "02-example-ux" }
   ],
   "review_queue": [],
   "blocked_queue": [],
-  "notes": "First orchestrator run. 4-wave parallel delivery pipeline across 5 grid-based components. Dynamic /loop mode. TICK 2 (2026-04-11T16:14Z): User authorized pivot from tmux-parallel design to subagent-driven dispatch. Orchestrator dispatching 5 general-purpose subagents in parallel for Wave 1 spec-review. Each subagent operates under its worker_id scope with files_owned enforcement via prompt. On return, orchestrator processes reviews in the same tick. Datagrid spec folder is docs/component-specs/grid/ (not datagrid/) per cerebrum."
+  "user_attention_items": [
+    {
+      "source": "w-gantt-delivery Wave 1 review",
+      "type": "public-api-decision",
+      "ids": ["NM-01", "NM-02", "SA-01", "SA-02"],
+      "summary": "GanttState<TItem> public-API shape mismatch — spec uses SortDescriptors/FilterDescriptors (plural Lists from Marilo.DataSource.*), source uses singular GanttSortDescriptor + FilterValues (Dictionary). Spec example will not compile. Decision needed: change source (breaking) or rewrite spec (preserves source).",
+      "raised_at": "2026-04-11T17:00:00Z"
+    },
+    {
+      "source": "w-scheduler-delivery Wave 1 review",
+      "type": "structural-scoping",
+      "ids": ["scheduler-wave-3-reframe"],
+      "summary": "MariloScheduler source is stub-level (~181 LOC) vs 25-file spec surface. Wave 3 visual-parity against spec is unachievable. Options: (a) defer Wave 3 until implementation lands, (b) rescope to parity of the 3 existing views only. Decision blocks Wave 3 planning.",
+      "raised_at": "2026-04-11T17:00:00Z"
+    },
+    {
+      "source": "w-scheduler-delivery Wave 1 review",
+      "type": "public-api-decision",
+      "ids": ["NM-SCHED-001", "NM-SCHED-003"],
+      "summary": "Scheduler naming/shape decisions: (1) rename source CurrentDate → Date for spec consistency (breaking), OR update spec to CurrentDate; (2) generic TItem + field mapping (spec) vs closed SchedulerAppointment DTO (source) — this is an architectural rewrite, not a rename.",
+      "raised_at": "2026-04-11T17:00:00Z"
+    },
+    {
+      "source": "w-scheduler-delivery Wave 1 review",
+      "type": "spec-scope-policy",
+      "ids": ["scheduler-manual-operations-published-false", "scheduler-gap-enumeration-policy"],
+      "summary": "Scheduler manual-operations.md has front matter published:false — in-scope or exclude? Also: current gap list consolidates per-topic (16 SA rows); per-parameter enumeration would produce ~150+ rows — which policy?",
+      "raised_at": "2026-04-11T17:00:00Z"
+    }
+  ],
+  "notes": "TICK 3 (2026-04-11T17:00Z): Wave 1 review gate processed. All 5 workers PASS. Worker state files updated with Wave 1 review record references, advanced to Wave 2 working. 5 user-attention items surfaced from gantt + scheduler reviews (public-API decisions + Wave 3 scoping). Wave 2 inbox messages written with explicit mandate to write result/handoff/state (address Wave 1 metadata gap on datasheet + allocation-scheduler). Orchestrator about to dispatch 5 Wave 2 subagents in parallel (general-purpose, per user's explicit wave-parallel directive — overrides auto-memory serial preference)."
 }
