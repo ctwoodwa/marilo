@@ -170,6 +170,14 @@ public partial class MariloDataSheet<TItem> : MariloComponentBase
 
     internal async Task BulkResetAsync()
     {
+        // V02.2 / V05.1 — Re-entrancy guard. BulkResetAsync mutates the
+        // same _dirtyRows dictionary that SaveAllAsync walks during its
+        // Step 7 Saved-indicator window; interleaving the two would stomp
+        // on rows the user is in the middle of saving. If a save is in
+        // progress, drop the reset silently — the caller can retry once
+        // the save settles.
+        if (_isSaving) return;
+
         // V05.5 — Restore each selected row's dirty fields to their
         // original values before dropping the dirty entry. The previous
         // implementation removed the entry from _dirtyRows but left the

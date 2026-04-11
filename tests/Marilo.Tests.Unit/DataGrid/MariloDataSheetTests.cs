@@ -1034,6 +1034,123 @@ public class MariloDataSheetTests : MariloTestBase
         Assert.Single(cut.Instance.GetDirtyRows());
     }
 
+    // ── Fix V02.2 / V05.1: Re-entrancy guard on SaveAllAsync ─────────────
+    // Regression guard: a second SaveAllAsync call that lands during the
+    // Saved-indicator Task.Delay window of the first call must be a no-op.
+    // Before the guard, the first call's Step 7 cleanup would _dirtyRows.
+    // Remove(key) rows that the second call had just re-dirtied, silently
+    // losing edits.
+    [Fact]
+    public async Task SaveAll_ReentrantCall_IsNoOp()
+    {
+        var data = SeedData();
+        var onSaveAllCallCount = 0;
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.OnSaveAll, (DataSheetSaveArgs<TestRow> args) =>
+            {
+                onSaveAllCallCount++;
+            })
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        // Keep the Saved-indicator window open long enough to start a second
+        // SaveAllAsync call while the first is still parked in Task.Delay.
+        cut.Instance._savedStateDurationMs = 200;
+
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Edited"));
+
+        Task? firstCall = null;
+        await cut.InvokeAsync(() =>
+        {
+            // Kick off the first SaveAllAsync without awaiting it so we can
+            // observe the _isSaving window from the caller's perspective.
+            firstCall = cut.Instance.SaveAllAsync();
+        });
+
+        // Second call lands while the first is still inside Task.Delay.
+        // The re-entrancy guard must short-circuit it before OnSaveAll fires.
+        await cut.InvokeAsync(() => cut.Instance.SaveAllAsync());
+
+        // Let the first call finish its Saved-indicator window.
+        if (firstCall != null)
+        {
+            await cut.InvokeAsync(() => firstCall);
+        }
+
+        // OnSaveAll was invoked exactly once — the second call was a no-op.
+        Assert.Equal(1, onSaveAllCallCount);
+        // The first call completed successfully, so the row is clean.
+        Assert.Empty(cut.Instance.GetDirtyRows());
+    }
+
+    // ── Fix V02.2 / V05.1: BulkResetAsync guarded while save in flight ───
+    // Regression guard: BulkResetAsync mutates the same _dirtyRows
+    // dictionary that SaveAllAsync walks during its Step 7 cleanup. If a
+    // user clicks Reset Selected during the Saved-indicator window the
+    // reset must drop silently — stomping on rows that are mid-save would
+    // corrupt the dirty-tracking state.
+    [Fact]
+    public async Task BulkResetAsync_WhileSaveInFlight_IsNoOp()
+    {
+        var data = SeedData();
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.OnSaveAll, (DataSheetSaveArgs<TestRow> args) => { })
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        // Non-zero Saved-indicator window so BulkResetAsync can land while
+        // SaveAllAsync is parked in Task.Delay.
+        cut.Instance._savedStateDurationMs = 200;
+
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Edited"));
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[1], "Name", "AlsoEdited"));
+        cut.Instance._selectedRows.Add(data[1]);
+
+        Task? saveCall = null;
+        await cut.InvokeAsync(() =>
+        {
+            saveCall = cut.Instance.SaveAllAsync();
+        });
+
+        // BulkResetAsync lands while SaveAllAsync is in its Task.Delay window.
+        // The guard must drop the reset without touching _selectedRows or
+        // _dirtyRows so the save completes cleanly.
+        await cut.InvokeAsync(() => cut.Instance.BulkResetAsync());
+
+        // The reset should have been a no-op: row[1] stays selected and its
+        // edited value survives the reset attempt.
+        Assert.Contains(data[1], cut.Instance._selectedRows);
+        Assert.Equal("AlsoEdited", data[1].Name);
+
+        // Let the save complete.
+        if (saveCall != null)
+        {
+            await cut.InvokeAsync(() => saveCall);
+        }
+
+        // After save completes both rows are clean (BulkResetAsync was a
+        // no-op so it did not interfere with the Step 7 cleanup).
+        Assert.Empty(cut.Instance.GetDirtyRows());
+        Assert.Equal("Edited", data[0].Name);
+        Assert.Equal("AlsoEdited", data[1].Name);
+    }
+
     [Fact]
     public async Task SaveAll_NonDirtyFields_StayPristineDuringSave()
     {
