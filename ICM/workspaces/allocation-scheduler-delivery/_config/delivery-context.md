@@ -21,17 +21,17 @@
 
 | Metric | Value |
 |--------|-------|
-| Last spec audit | 2026-04-05 |
-| Last spec gap resolution | 2026-04-05 |
-| Open spec gaps | 0 |
-| Last example UX audit | 2026-04-05 |
-| Open demo gaps | 0 |
-| Last parity review | PENDING |
-| Themes reviewed | PENDING |
-| Open parity gaps | PENDING |
-| Last sync check | 2026-04-05 |
+| Last spec audit | 2026-04-11 (Wave 1 orchestrator) |
+| Last spec gap resolution | 2026-04-05 (9 original gaps); 2026-04-11 raised 12 new |
+| Open spec gaps | 12 (3 P1, 6 P2, 3 P3) — all spec-update-only |
+| Last example UX audit | 2026-04-11 (Wave 2 orchestrator) |
+| Open demo gaps | 2 P1 Missing topics (accessibility, theming) + 4 secondary |
+| Last parity review | 2026-04-11 (Wave 3 orchestrator) |
+| Themes reviewed | Fluent L/D, Bootstrap L/D, Material L/D (Material blocked on runtime) |
+| Open parity gaps | 20 records (allocation-scheduler-visual-parity-gaps.md) |
+| Last sync check | 2026-04-11 (Wave 4 orchestrator) |
 | Last gap-analysis closure | 2026-04-05 |
-| Gate status | CLEAR |
-| Blocking items | 0 |
-| Findings fixed during sync | 2 (CellEditedArgs/RangeEditedArgs type mismatch, stale code sample) |
+| Gate status | AMBER |
+| Blocking items | 0 (Material escalated as cross-workspace concern, not a blocking item at this workspace) |
+| Findings fixed during sync | 0 this wave (findings tracked, not fixed) |
 

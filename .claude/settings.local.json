@@ -68,5 +68,8 @@
       "mcp__github__list_pull_requests",
       "mcp__github__get_file_contents"
     ]
+  },
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   }
 }
