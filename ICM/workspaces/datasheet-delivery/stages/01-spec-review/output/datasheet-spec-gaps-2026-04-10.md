@@ -43,67 +43,70 @@ This is **dramatically smaller** than the Scheduler (32 gaps) or TreeList (43 ga
 
 These are not "missing features" — they are **verification sub-tasks** to audit the 8 feature-area detail spec files against the corresponding source partials. Each represents an independent sub-audit that can be done in a small session.
 
-### GAP-DATASHEET-V01: Verify `columns-and-schema.md` coverage
+### GAP-DATASHEET-V01: ~~Verify `columns-and-schema.md` coverage~~ → **COMPLETE 2026-04-10** — 1 confirmed-pending gap + 8 re-verify
 **Area:** Columns
-**Severity:** Medium
-**Source:** `docs/component-specs/datasheet/columns-and-schema.md` (not yet audited); `MariloDataSheetColumn.razor` + `MariloDataSheet.Rendering.cs`
+**Severity:** ~~Medium~~ → **High** (V01-01 is a likely Tab-navigation bug)
+**Findings:** [datasheet-v01-columns-findings.md](./datasheet-v01-columns-findings.md)
 
-**Work:** Walk the columns-and-schema spec file line by line and confirm each feature has an implementation touch point. Specifically verify:
-- Default editor behavior for each of the 6 `DataSheetColumnType` values (Text, Number, Date, Select, Checkbox, Computed)
-- `Computed` column exclusion from Save All payloads
-- `Required` enforcement timing (per-cell on edit vs pre-save-all)
-- `Format` lambda invocation in read mode and edit mode
+**Result:** Column-type handling is **substantially present and well-architected**. All 6 `DataSheetColumnType` values dispatched in `.Rendering.cs:129-234` render switch; `Format` delegate invoked at both read mode and computed columns with correct `ToString()` fallback; computed read-only enforced in 4 locations; Required + Validate delegates fire correctly in `.Data.cs:112-131`; `GetDefaultValue` switch provides type-specific defaults for 5 types. **One confirmed-pending gap:** V01-01 — `.Editing.cs:190` has `_columns.Where(c => c.Editable || c.ColumnType == DataSheetColumnType.Computed).ToList()` assigned to a variable named `editableColumns`. If this filter drives Tab navigation (likely given the name), it's a spec-compliance bug because Tab should skip computed cells per spec `keyboard-and-accessibility.md:38`. Needs one-line verification of how `editableColumns` is consumed by the Tab branch at `.Editing.cs:210-236`. 8 targeted re-verification items flagged for correctness details (Required rejecting zero for non-nullable Number, whitespace for Text, default(DateTime) for Date; Select preserving unmatched values; Required error message format; culture-sensitive Number parsing cross-ref V04-R2; GetDefaultValue Computed fallback; Select Value/Label rendering).
 
-**Status:** Open (verification needed)
+**V01-01 integration:** Folds into **Batch A** (Range Selection + Keyboard + A11y) since it touches the same `.Editing.cs:186-236` keyboard handler region as V03-04 / V07-05 / V07-06 / V07-07.
+
+**Status:** ✅ Verification complete; 1 confirmed-pending gap + 8 re-verification items
 
 ---
 
-### GAP-DATASHEET-V02: Verify `editing-and-validation.md` coverage
-**Area:** Editing
-**Severity:** Medium
-**Source:** `docs/component-specs/datasheet/editing-and-validation.md`; `MariloDataSheet.Editing.cs` (294 lines) + `MariloDataSheet.Data.cs` (287 lines)
+### GAP-DATASHEET-V02: ~~Verify `editing-and-validation.md` coverage~~ → **COMPLETE 2026-04-10** — 1 confirmed gap + 7 re-verification items
+**Area:** Editing & Validation
+**Severity:** ~~Medium~~ → **High** (V02-01 is a correctness bug with user-visible consequence)
+**Findings:** [datasheet-v02-editing-validation-findings.md](./datasheet-v02-editing-validation-findings.md)
 
-**Work:** Audit the editing lifecycle spec against `.Editing.cs` and `.Data.cs`. Verify:
-- Per-cell vs per-row vs pre-save validation ordering
-- Dirty tracking at the field level (not just row level)
-- `OnValidate` handler can block Save All by appending errors
-- `CommitCellEdit` updates dirty state atomically
-- Undo/reset semantics
+**Result:** The dirty tracking architecture is **substantially present and well-architected** (`_dirtyRows` Dictionary with `DirtyRowEntry<TItem>` containing DirtyFields/ValidationErrors/IsDeleted, `OverallState` computed property, `ValidateAllAsync` + `SaveAllAsync` flow with OnValidate integration, deleted-row separation, all public query helpers present). **One clear structural gap:** V02-01 — `.razor.cs:107-115` OnParametersSet uses `Data.ToList()` (shallow copy), so there's **no deep-cloned original snapshot** for dirty comparison. This breaks the spec's "edit back to original value → field removed from dirty set" contract (correctness bug with visible user consequence: reverting a cell value doesn't clean it from the save payload). Seven additional items (V02-R2 through V02-R8) flagged for targeted re-verification — each is a small single-method sub-audit, not an independent investigation.
 
-**Status:** Open (verification needed)
+**New Stage 03 batch:** **Batch B — Dirty Tracking Correctness** (V02-01, standalone, 1-2 commits, 5-8 tests, independent of V03+V07's Batch A).
+
+**Status:** ✅ Verification complete; 1 confirmed gap opened + 7 re-verification items + 1 cross-ref to V07-05
 
 ---
 
-### GAP-DATASHEET-V03: Verify `selection-and-ranges.md` coverage
+### GAP-DATASHEET-V03: ~~Verify `selection-and-ranges.md` coverage~~ → **COMPLETE 2026-04-10** — surfaced 8 real gaps
 **Area:** Selection
-**Severity:** Medium
-**Source:** `docs/component-specs/datasheet/selection-and-ranges.md`; `MariloDataSheet.razor.cs:17,140-158` (has `_selectedRows` HashSet, `OnSelectAllChanged`, `ToggleRowSelection`)
+**Severity:** ~~Medium~~ → **High** (4 High + 4 Medium sub-gaps confirmed)
+**Findings:** [datasheet-v03-range-selection-findings.md](./datasheet-v03-range-selection-findings.md)
 
-**Work:** The source has **row selection** (`HashSet<TItem>` + select-all + toggle). Verify the spec's **cell range selection** semantics — does the spec require range creation via shift-click / click-drag / Ctrl-click? The source hasn't been confirmed to implement these. **Possible genuine gap** if the spec requires cell ranges and the source only does row selection. High-value sub-audit.
+**Result:** As predicted, V03 surfaced the highest concentration of real implementation gaps of all the Stage 01b sub-tasks. Source has active-cell tracking and row selection (both working) but **zero cell-range selection**, and the existing `Ctrl+D` Fill Down command uses the wrong scope (row selection instead of cell range — a latent bug). 8 confirmed gaps (V03-01 through V03-08) promoted from verification sub-tasks to Stage 03 implementation work. Recommended as a single "DataSheet cell range selection" batch in 3 sub-phases (Foundation → Input → Operations). Zero human decisions needed — all 8 have clear recommended directions grounded in spec text.
 
-**Status:** Open (verification needed — likely to surface real gaps)
+**Status:** ✅ Verification complete; 8 implementation gaps opened, ready for Stage 03 resolution design
 
 ---
 
-### GAP-DATASHEET-V04: Verify `bulk-paste-and-clipboard.md` coverage
+### GAP-DATASHEET-V04: ~~Verify `bulk-paste-and-clipboard.md` coverage~~ → **COMPLETE 2026-04-10** — 1 confirmed gap + 6 re-verify items
 **Area:** Clipboard
 **Severity:** Medium
-**Source:** `docs/component-specs/datasheet/bulk-paste-and-clipboard.md`; `MariloDataSheet.Interop.cs` (87 lines, has `PasteFromClipboard` `[JSInvokable]` method) + `MariloDataSheet.Editing.cs` (paste handling around line 263)
+**Findings:** [datasheet-v04-clipboard-findings.md](./datasheet-v04-clipboard-findings.md)
 
-**Work:** Verify TSV parsing, type coercion, paste error handling, multi-row paste, paste-past-end-of-data behavior, paste conflict resolution.
+**Result:** JS interop infrastructure is substantially present (`IJSObjectReference` module load from `marilo-datasheet.js`, keydown handler registration, `IAsyncDisposable` cleanup, `ScrollToRowAsync`/`CopyToClipboardAsync`/`FocusCellAsync` bridge methods all present at expected signatures). **One confirmed gap:** V04-01 — `CopyToClipboardAsync` is **orphaned dead code** with no call sites anywhere in the component, because V03-06 confirmed no Ctrl+C keyboard handler AND no "build TSV from range" method exists (blocked by V03-01 range state absence). The copy path is entirely unreachable. **6 re-verification items** flagged for a focused read of the paste method body (`.Editing.cs:246-~320`): TSV parsing with `\r\n` handling, per-`ColumnType` type coercion with culture sensitivity (highest-risk), computed/non-editable column skipping, deleted-row skipping, best-effort error handling ("do not write raw string on coercion failure" — highest-risk), and `IsSaving` gate. All are method-body correctness concerns, not architectural.
 
-**Status:** Open (verification needed)
+**V04-01 integration:** Resolves automatically as a side effect of **Batch A — Range Selection + Keyboard + A11y** (V03+V07 consolidated). No separate batch needed.
+
+**Status:** ✅ Verification complete; 1 confirmed gap (folds into Batch A) + 6 targeted re-verification items for future fire
 
 ---
 
-### GAP-DATASHEET-V05: Verify `bulk-operations-and-saveall.md` coverage
-**Area:** Bulk operations
-**Severity:** Low-Medium
-**Source:** `docs/component-specs/datasheet/bulk-operations-and-saveall.md`; `MariloDataSheet.Data.cs:142-…` (`SaveAllAsync`) + `MariloDataSheet.razor.cs:160-181` (`BulkDeleteAsync`, `BulkResetAsync`, `AddRowAsync`)
+### GAP-DATASHEET-V05: ~~Verify `bulk-operations-and-saveall.md` coverage~~ → **COMPLETE 2026-04-10** — 8 confirmed gaps + invalidates V02-01 + downgrades V07-08
+**Area:** Save All Lifecycle
+**Severity:** ~~Low-Medium~~ → **High** (includes a user-visible state bug + a data-loss risk)
+**Findings:** [datasheet-v05-saveall-findings.md](./datasheet-v05-saveall-findings.md)
 
-**Work:** Verify Save All flow (validate → fire OnSaveAll → apply / roll back), bulk delete semantics, bulk reset semantics, retry guidance.
+**Result:** Save All flow structure is correct (ValidateAllAsync → OnValidate → OnSaveAll), deleted rows correctly separated from DirtyRows, OnValidate errors mapped back to cells — but **8 confirmed gaps in post-save lifecycle**: CellState.Saving never set (V05-01), no post-save state transitions (V05-02), **deleted rows not removed from `_displayRows` after save (V05-03 — user-visible bug)**, original snapshots not refreshed after save (V05-04), AddRowAsync inserts at top instead of end (V05-05), **new row not marked dirty so silently doesn't save (V05-06 — data loss risk)**, AddRowAsync doesn't move active cell (V05-07), ResetAsync doesn't remove added rows (V05-08).
 
-**Status:** Open (verification needed)
+**Major corrections to prior findings:**
+- **V02-01 INVALIDATED (false positive).** The deep-clone snapshot DOES exist — it happens lazily in `CommitCellEdit` at `.Data.cs:49` (`Original = GridReflectionHelper.DeepClone(row)`), not in `OnParametersSet` as my V02 audit expected. The dirty-detection logic at lines 64-72 correctly compares against `entry.Original`. The "edit back to original → remove from dirty set" contract IS implemented. V02 fire #13 grep missed this because my regex didn't include `DeepClone` or `Original = ` patterns.
+- **V07-08 DOWNGRADED.** The `_ariaAnnouncement` field IS wired at `.Data.cs:208/228/252` for "save blocked", "saved successfully", and "reset" messages — 2 of 5 spec-required announcements are present. Still missing: dirty count change, saving start, validation errors appear. Downgraded from "structural wiring absent" to "partially wired (2/5)".
+
+**New Stage 03 batch:** **Batch C — Save All Lifecycle Correctness** (V05-01 through V05-08 = 8 gaps, ~15-20 tests, 4 phases). Batch B (Dirty Tracking Correctness) is **DROPPED** since V02-01 is invalidated.
+
+**Status:** ✅ Verification complete; 8 confirmed gaps + 2 re-verify items; 1 spec-match closed (V05-R3 mutual exclusion of deleted+dirty); 2 prior findings corrected
 
 ---
 
@@ -118,14 +121,14 @@ These are not "missing features" — they are **verification sub-tasks** to audi
 
 ---
 
-### GAP-DATASHEET-V07: Verify `keyboard-and-accessibility.md` coverage
-**Area:** Accessibility
-**Severity:** Medium
-**Source:** `docs/component-specs/datasheet/keyboard-and-accessibility.md`; `MariloDataSheet.Editing.cs` has `HandleKeyDown` `[JSInvokable]` plus key handling around lines 118-180; `AriaLabel` parameter exists at `.razor.cs:66`; `role="grid"` usage unverified
+### GAP-DATASHEET-V07: ~~Verify `keyboard-and-accessibility.md` coverage~~ → **COMPLETE 2026-04-10** — surfaced 6 new gaps (+2 cross-refs)
+**Area:** Accessibility + Keyboard
+**Severity:** ~~Medium~~ → **High** (3 High + 4 Medium + 1 Low sub-gaps confirmed)
+**Findings:** [datasheet-v07-keyboard-a11y-findings.md](./datasheet-v07-keyboard-a11y-findings.md)
 
-**Work:** Map every spec-documented keyboard shortcut to its handler in `.Editing.cs`. Confirm `role="grid"`, `role="row"`, `role="gridcell"`, `aria-rowcount`, `aria-colcount`, `aria-rowindex`, `aria-colindex`, `aria-readonly`, `aria-invalid`, `aria-describedby` all render correctly. Confirm focus trapping and restoration on edit enter/exit.
+**Result:** Root-level ARIA coverage is good (role="grid", aria-label, aria-rowcount, aria-colcount, toolbar landmarks, aria-live regions all present), but **data rows and cells lack `role="row"` and `role="gridcell"`** — a WCAG 2.1 grid-pattern conformance failure. Also found: `aria-busy` only reacts to `IsLoading` not `IsSaving` (one-line fix), missing Ctrl+S shortcut, missing "printable character → edit mode" handler, missing Space-toggles-checkbox, unverified Enter behavior, and the `_ariaAnnouncement` field exists but isn't wired to produce the spec-required screen reader announcements. 6 new sub-gaps + 2 cross-references to V03 (Ctrl+A, Ctrl+C). Consolidated batch layout proposed that combines V03 + V07 into a single "DataSheet Range Selection + Keyboard + A11y" batch across 6 phases. Zero human decisions needed.
 
-**Status:** Open (verification needed — a11y is always worth detailed verification)
+**Status:** ✅ Verification complete; 6 new implementation gaps + 2 cross-refs to V03; combined V03+V07 batch = **14 total confirmed gaps** ready for Stage 03 resolution design
 
 ---
 
@@ -140,25 +143,23 @@ These are not "missing features" — they are **verification sub-tasks** to audi
 
 ---
 
-### GAP-DATASHEET-V09: Verify `DataSheetColumnType` enum values
-**Area:** Enums
-**Severity:** Low
-**Source:** Spec says 6 values: `Text`, `Number`, `Date`, `Select`, `Checkbox`, `Computed` (`overview.md:212-219`). Source file `src/Marilo.Core/Enums/DataSheetColumnType.cs` exists but values not confirmed in this audit.
+### GAP-DATASHEET-V09: ~~Verify `DataSheetColumnType` enum values~~ → ✅ **COMPLETE 2026-04-10 — clean pass, zero gaps**
+**Area:** Enums **Severity:** Low
+**Source:** `src/Marilo.Core/Enums/DataSheetColumnType.cs` (25 lines)
 
-**Work:** Single-file check — open the enum and confirm all 6 values are present and no extras.
+**Result:** All 6 spec-declared values present in exact spec order with matching XML doc comment semantics: `Text` ✓ `Number` ✓ `Date` ✓ `Select` ✓ `Checkbox` ✓ `Computed` ✓. No extras, no renames, no gaps.
 
-**Status:** Open (trivial verification)
+**Status:** ✅ Closed — zero gaps
 
 ---
 
-### GAP-DATASHEET-V10: Verify `CellState` enum values
-**Area:** Enums
-**Severity:** Low
-**Source:** Spec says 5 values: `Pristine`, `Dirty`, `Invalid`, `Saving`, `Saved` (`overview.md:222-232`). Source file `src/Marilo.Core/Enums/CellState.cs` exists but values not confirmed in this audit.
+### GAP-DATASHEET-V10: ~~Verify `CellState` enum values~~ → ✅ **COMPLETE 2026-04-10 — clean pass, zero gaps**
+**Area:** Enums **Severity:** Low
+**Source:** `src/Marilo.Core/Enums/CellState.cs` (23 lines)
 
-**Work:** Single-file check — open the enum and confirm all 5 values are present.
+**Result:** All 5 spec-declared values present in exact spec order with matching XML doc comment semantics: `Pristine` ✓ `Dirty` ✓ `Invalid` ✓ `Saving` ✓ `Saved` ✓. No extras, no renames, no gaps.
 
-**Status:** Open (trivial verification)
+**Status:** ✅ Closed — zero gaps
 
 ---
 

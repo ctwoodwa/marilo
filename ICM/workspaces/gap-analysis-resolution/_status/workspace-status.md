@@ -102,7 +102,7 @@ None — all gaps in this workspace are resolved.
 - Chart drilldown → `chart-delivery` CDW
 - Scheduler → `scheduler-gap-analysis` (Stage 01 intake complete 2026-04-10 — 32 gaps; blocked on 5 human decisions before Stage 02)
 - TreeList → `treelist-gap-analysis` (Stage 01 intake complete 2026-04-10 — 43 gaps; blocked on 7 human decisions before Stage 02; ~51% DataGrid-parity reuse candidates)
-- DataSheet → `datasheet-delivery` CDW (true spreadsheet architecture)
+- DataSheet → `datasheet-delivery` CDW (true spreadsheet architecture; Stage 01b verification + ALL 8 feature/hardening/cleanup batches complete 2026-04-10 — 23 discrete gaps + 2 production-hardening concerns + 11 review nits resolved across commits `6794644`/`3071c39`/`7a40055`/`7b5e217`/`95f7f17`/`6322198`/`d693573`/`0c70a69`/`eab6997`; 1097 → **1159** suite, +62 tests; only V03 cell range selection (~3.5d, 27 tests) remains deferred with Stage 03 design doc complete)
 - No-source components (Diagram, DockManager, Map, PivotGrid) → spec + concept-demo only per human decision
 - TreeView demos → `treeview-delivery` CDW (scenario coverage)
 
