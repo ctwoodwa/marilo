@@ -44,6 +44,13 @@ public partial class MariloDataSheet<TItem>
     // tests can shrink it to zero for deterministic assertions.
     internal int _savedStateDurationMs = 1000;
 
+    // V02.2 / V05.1 — Re-entrancy guard for SaveAllAsync. The Saved
+    // visual-indicator window (Task.Delay(_savedStateDurationMs)) is long
+    // enough that a second SaveAllAsync call during that window could race
+    // the Step 7 cleanup and stomp on rows the user just re-dirtied. Silent
+    // return matches standard UX-control double-click handling.
+    private bool _isSaving;
+
     // ── Key Resolution ─────────────────────────────────────────────────
 
     internal object? GetRowKey(TItem item)
@@ -223,130 +230,168 @@ public partial class MariloDataSheet<TItem>
     {
         if (_dirtyRows.Count == 0) return;
 
-        // Step 1: Validate all
-        var isValid = await ValidateAllAsync();
+        // V02.2 / V05.1 — Re-entrancy guard. A second call during the
+        // Step 7 Saved-indicator window would race the cleanup and stomp
+        // on rows the user may have re-dirtied in the meantime. Silent
+        // return matches standard UX double-click handling.
+        if (_isSaving) return;
+        _isSaving = true;
 
-        // Step 2: Fire OnValidate for consumer-side validation
-        var dirtyRowsList = _dirtyRows.Values
-            .Where(e => e.DirtyFields.Count > 0 && !e.IsDeleted)
-            .Select(e => e.Current)
-            .ToList();
+        // Track entries whose TransientState we set to Saving so the
+        // exception path can roll them back cleanly.
+        List<DirtyRowEntry<TItem>>? savingEntries = null;
 
-        if (OnValidate.HasDelegate)
+        try
         {
-            var validateArgs = new DataSheetValidateArgs<TItem>
-            {
-                DirtyRows = dirtyRowsList
-            };
-            await OnValidate.InvokeAsync(validateArgs);
+            // Step 1: Validate all
+            var isValid = await ValidateAllAsync();
 
-            // Apply consumer errors to entries
-            foreach (var error in validateArgs.Errors)
-            {
-                var errorKey = GetRowKey(error.Row);
-                if (errorKey != null && _dirtyRows.TryGetValue(errorKey, out var entry))
-                {
-                    entry.ValidationErrors[error.Field] = error.Message;
-                    isValid = false;
-                }
-            }
-        }
-
-        // Step 3: Block if invalid
-        if (!isValid)
-        {
-            _ariaAnnouncement = "Save blocked: fix validation errors first.";
-            StateHasChanged();
-            return;
-        }
-
-        // Step 4: Mark non-deleted dirty entries as Saving so the cell state
-        // transitions from Dirty -> Saving before OnSaveAll fires. (V02.2 / V05.1)
-        foreach (var entry in _dirtyRows.Values)
-        {
-            if (!entry.IsDeleted)
-            {
-                entry.TransientState = CellState.Saving;
-            }
-        }
-        StateHasChanged();
-
-        // Step 5: Fire OnSaveAll
-        if (OnSaveAll.HasDelegate)
-        {
-            var deletedRows = _dirtyRows.Values
-                .Where(e => e.IsDeleted)
+            // Step 2: Fire OnValidate for consumer-side validation
+            var dirtyRowsList = _dirtyRows.Values
+                .Where(e => e.DirtyFields.Count > 0 && !e.IsDeleted)
                 .Select(e => e.Current)
                 .ToList();
 
-            await OnSaveAll.InvokeAsync(new DataSheetSaveArgs<TItem>
+            if (OnValidate.HasDelegate)
             {
-                DirtyRows = dirtyRowsList,
-                DeletedRows = deletedRows
-            });
-        }
+                var validateArgs = new DataSheetValidateArgs<TItem>
+                {
+                    DirtyRows = dirtyRowsList
+                };
+                await OnValidate.InvokeAsync(validateArgs);
 
-        // Step 6: On success, remove deleted rows from _displayRows (V05.2),
-        // update original snapshots for saved dirty rows so subsequent edits
-        // that revert to the just-saved value are correctly dirty-tracked,
-        // and mark dirty entries as Saved for a brief visual indicator.
-        var deletedKeys = new HashSet<object>();
-        foreach (var kv in _dirtyRows)
-        {
-            if (kv.Value.IsDeleted)
-            {
-                deletedKeys.Add(kv.Key);
+                // Apply consumer errors to entries
+                foreach (var error in validateArgs.Errors)
+                {
+                    var errorKey = GetRowKey(error.Row);
+                    if (errorKey != null && _dirtyRows.TryGetValue(errorKey, out var entry))
+                    {
+                        entry.ValidationErrors[error.Field] = error.Message;
+                        isValid = false;
+                    }
+                }
             }
-        }
 
-        if (deletedKeys.Count > 0)
-        {
-            _displayRows.RemoveAll(row =>
+            // Step 3: Block if invalid
+            if (!isValid)
             {
-                var k = GetRowKey(row);
-                return k != null && deletedKeys.Contains(k);
-            });
-            foreach (var k in deletedKeys)
-            {
-                _dirtyRows.Remove(k);
+                _ariaAnnouncement = "Save blocked: fix validation errors first.";
+                StateHasChanged();
+                return;
             }
-        }
 
-        // For remaining (non-deleted) dirty entries, update the original
-        // snapshot to reflect the just-saved current values and flip to
-        // CellState.Saved for the brief visual indicator period.
-        var savedKeys = _dirtyRows.Keys.ToList();
-        foreach (var key in savedKeys)
-        {
-            if (_dirtyRows.TryGetValue(key, out var entry))
+            // Step 4: Mark non-deleted dirty entries as Saving so the cell state
+            // transitions from Dirty -> Saving before OnSaveAll fires. (V02.2 / V05.1)
+            savingEntries = new List<DirtyRowEntry<TItem>>();
+            foreach (var entry in _dirtyRows.Values)
             {
-                entry.Original = GridReflectionHelper.DeepClone(entry.Current);
-                entry.IsNewlyAdded = false;
-                entry.TransientState = CellState.Saved;
+                if (!entry.IsDeleted)
+                {
+                    entry.TransientState = CellState.Saving;
+                    savingEntries.Add(entry);
+                }
             }
-        }
+            StateHasChanged();
 
-        _ariaAnnouncement = "Changes saved successfully.";
-        StateHasChanged();
-
-        // Step 7: After a brief visual indicator period, clear the
-        // TransientState and drop the entries so cells report Pristine.
-        if (_savedStateDurationMs > 0)
-        {
-            await Task.Delay(_savedStateDurationMs);
-        }
-
-        foreach (var key in savedKeys)
-        {
-            if (_dirtyRows.TryGetValue(key, out var entry) && entry.TransientState == CellState.Saved)
+            // Step 5: Fire OnSaveAll. If the consumer handler throws, the
+            // catch block below rolls every snapshotted entry back to its
+            // dirty-but-editable state so the user can retry.
+            if (OnSaveAll.HasDelegate)
             {
-                entry.TransientState = null;
-                entry.DirtyFields.Clear();
-                entry.ValidationErrors.Clear();
-                _dirtyRows.Remove(key);
+                var deletedRows = _dirtyRows.Values
+                    .Where(e => e.IsDeleted)
+                    .Select(e => e.Current)
+                    .ToList();
+
+                await OnSaveAll.InvokeAsync(new DataSheetSaveArgs<TItem>
+                {
+                    DirtyRows = dirtyRowsList,
+                    DeletedRows = deletedRows
+                });
             }
+
+            // Step 6: On success, remove deleted rows from _displayRows (V05.2),
+            // update original snapshots for saved dirty rows so subsequent edits
+            // that revert to the just-saved value are correctly dirty-tracked,
+            // and mark dirty entries as Saved for a brief visual indicator.
+            var deletedKeys = new HashSet<object>();
+            foreach (var kv in _dirtyRows)
+            {
+                if (kv.Value.IsDeleted)
+                {
+                    deletedKeys.Add(kv.Key);
+                }
+            }
+
+            if (deletedKeys.Count > 0)
+            {
+                _displayRows.RemoveAll(row =>
+                {
+                    var k = GetRowKey(row);
+                    return k != null && deletedKeys.Contains(k);
+                });
+                foreach (var k in deletedKeys)
+                {
+                    _dirtyRows.Remove(k);
+                }
+            }
+
+            // For remaining (non-deleted) dirty entries, update the original
+            // snapshot to reflect the just-saved current values and flip to
+            // CellState.Saved for the brief visual indicator period.
+            var savedKeys = _dirtyRows.Keys.ToList();
+            foreach (var key in savedKeys)
+            {
+                if (_dirtyRows.TryGetValue(key, out var entry))
+                {
+                    entry.Original = GridReflectionHelper.DeepClone(entry.Current);
+                    entry.IsNewlyAdded = false;
+                    entry.TransientState = CellState.Saved;
+                }
+            }
+
+            _ariaAnnouncement = "Changes saved successfully.";
+            StateHasChanged();
+
+            // Step 7: After a brief visual indicator period, clear the
+            // TransientState and drop the entries so cells report Pristine.
+            if (_savedStateDurationMs > 0)
+            {
+                await Task.Delay(_savedStateDurationMs);
+            }
+
+            foreach (var key in savedKeys)
+            {
+                if (_dirtyRows.TryGetValue(key, out var entry) && entry.TransientState == CellState.Saved)
+                {
+                    entry.TransientState = null;
+                    entry.DirtyFields.Clear();
+                    entry.ValidationErrors.Clear();
+                    _dirtyRows.Remove(key);
+                }
+            }
+            StateHasChanged();
         }
-        StateHasChanged();
+        catch
+        {
+            // Rollback: clear TransientState on every entry we flipped to
+            // Saving so the grid returns to a dirty-but-editable state and
+            // the user can retry. Then re-throw so the caller sees the
+            // original failure.
+            if (savingEntries != null)
+            {
+                foreach (var entry in savingEntries)
+                {
+                    entry.TransientState = null;
+                }
+                StateHasChanged();
+            }
+            throw;
+        }
+        finally
+        {
+            _isSaving = false;
+        }
     }
 
     // ── Reset ──────────────────────────────────────────────────────────

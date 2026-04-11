@@ -550,7 +550,7 @@ public partial class MariloDataSheet<TItem>
             case DataSheetColumnType.Computed:
                 return (true, text, null);
             default:
-                Debug.Assert(false, $"Unknown DataSheetColumnType: {column.ColumnType}");
+                Debug.Fail($"Unknown DataSheetColumnType: {column.ColumnType}");
                 return (true, text, null);
         }
     }
@@ -575,6 +575,12 @@ public partial class MariloDataSheet<TItem>
                 : (false, GetDefaultForType(effectiveType));
         }
 
+        // Numeric parse uses CurrentCulture because user-typed numeric input
+        // respects local formatting (e.g. "3,14" on de-DE). The Date branch in
+        // TryParseCellValue above uses InvariantCulture because pasted dates
+        // come from the V04.4 code-formatted data-raw-value attribute which
+        // is also emitted with InvariantCulture, so paste must round-trip in
+        // that culture regardless of the user's locale.
         if (!decimal.TryParse(input, NumberStyles.Any,
                               CultureInfo.CurrentCulture, out var parsed))
         {

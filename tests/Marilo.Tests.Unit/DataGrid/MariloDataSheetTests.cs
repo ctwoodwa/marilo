@@ -1,3 +1,4 @@
+using System.Globalization;
 using Bunit;
 using Marilo.Components.DataGrid;
 using Marilo.Core.Enums;
@@ -734,7 +735,7 @@ public class MariloDataSheetTests : MariloTestBase
                 builder.AddAttribute(1, "Field", "Amount");
                 builder.AddAttribute(2, "Title", "Amount");
                 builder.AddAttribute(3, "ColumnType", DataSheetColumnType.Number);
-                builder.AddAttribute(4, "Format", (Func<TestRow, string>)(r => r.Amount.ToString("C2", System.Globalization.CultureInfo.InvariantCulture)));
+                builder.AddAttribute(4, "Format", (Func<TestRow, string>)(r => r.Amount.ToString("C2", CultureInfo.InvariantCulture)));
                 builder.CloseComponent();
             }));
 
@@ -991,6 +992,46 @@ public class MariloDataSheetTests : MariloTestBase
         // After Save All completes and the brief Saved window elapses,
         // the cell transitions to Pristine.
         Assert.Equal(CellState.Pristine, cut.Instance.GetCellState(data[0], "Name"));
+    }
+
+    // ── Fix V02.2 / V05.1: OnSaveAll exception rolls back transient state ─
+    // Regression guard: if the consumer OnSaveAll handler throws, every
+    // entry flipped to CellState.Saving must be rolled back to Dirty so the
+    // grid is editable again and the user can retry. Before the fix the
+    // exception left cells stuck in Saving forever with no recovery path.
+    [Fact]
+    public async Task SaveAll_OnSaveAllThrows_ClearsTransientStateAndRethrows()
+    {
+        var data = SeedData();
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.OnSaveAll, (DataSheetSaveArgs<TestRow> args) =>
+            {
+                throw new InvalidOperationException("boom");
+            })
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        cut.Instance._savedStateDurationMs = 0;
+
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Edited"));
+        Assert.Equal(CellState.Dirty, cut.Instance.GetCellState(data[0], "Name"));
+
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            async () => await cut.InvokeAsync(() => cut.Instance.SaveAllAsync()));
+
+        // After the exception the cell must be Dirty (not stuck in Saving)
+        // and the row must still appear in GetDirtyRows() so the user can
+        // retry Save All.
+        Assert.Equal(CellState.Dirty, cut.Instance.GetCellState(data[0], "Name"));
+        Assert.Single(cut.Instance.GetDirtyRows());
     }
 
     [Fact]
@@ -1347,11 +1388,10 @@ public class MariloDataSheetTests : MariloTestBase
     [Fact]
     public async Task Paste_DateInInvariantCulture_ParsesRegardlessOfCurrentCulture()
     {
-        var original = System.Globalization.CultureInfo.CurrentCulture;
+        var original = CultureInfo.CurrentCulture;
         try
         {
-            System.Globalization.CultureInfo.CurrentCulture =
-                new System.Globalization.CultureInfo("de-DE");
+            CultureInfo.CurrentCulture = new CultureInfo("de-DE");
 
             var data = new List<DateRow>
             {
@@ -1383,7 +1423,7 @@ public class MariloDataSheetTests : MariloTestBase
         }
         finally
         {
-            System.Globalization.CultureInfo.CurrentCulture = original;
+            CultureInfo.CurrentCulture = original;
         }
     }
 
