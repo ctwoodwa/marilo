@@ -294,6 +294,59 @@ Automatically include relevant CONDITIONAL sections based on domain (8 domains):
 
 ---
 
+## Parallel Lanes (tmux Orchestration Extension)
+
+UPF plans execute sequentially by default — one phase at a time, one agent at a time. When a plan's phases contain **independent work that can be split by component or file scope**, the plan can be executed in parallel lanes under a tmux orchestration session. This is an execution strategy layered on top of UPF, not a replacement for it.
+
+**When parallel lanes apply:**
+- A phase has scope that cleanly partitions by component (e.g. "audit specs for 4 components") or by sync area (e.g. "source changes go in lane A, test additions in lane B").
+- Lanes have disjoint `files_owned` — no two lanes write to the same file.
+- The phase is large enough (>3 workers worth of work) that serial execution would waste wall-clock time.
+
+**When parallel lanes do NOT apply:**
+- Phase <2 hours total.
+- Phase has tight internal dependencies (step 2 reads step 1's output in the same file).
+- Architectural or public-API phases — these stay orchestrator-only (single hand on the wheel).
+
+**Additions to the standard UPF sections when lanes are used:**
+
+Each **Phase** that runs in lanes gains three sub-fields:
+```
+Phase N: [Name]
+  Scope: [...]
+  Deliverable: [...]
+  Gate: [...]
+  Review: [...]
+  Lanes:
+    - lane_id: w-<component>-<workflow>
+      files_owned: [...]
+      next_atomic_task: [...]
+      required_sync_areas: [source | spec | demo | docs | tests | gap-plan]
+  Wave boundary: [describe what must be true before the next phase starts]
+```
+
+A **review queue** and **blocked queue** are added to the plan's Phases section when any phase uses lanes:
+```
+## Review Queue
+- [worker-id]: [result path] — [PASS/FAIL/PENDING]
+
+## Blocked Queue
+- [worker-id]: [escalation path] — [awaiting orchestrator decision]
+```
+
+**Discipline rules for lane-based execution (do not regress these):**
+1. Every lane has exactly one `next_atomic_task` at a time. No branching within a lane.
+2. Re-read the shared plan + the lane's state JSON **before writing any update**. Never write from stale context.
+3. Ownership is explicit — if two lanes would need to touch the same file, the phase is not lane-eligible. Re-split or run serial.
+4. The review gate between phases (every 2 phases, per UPF) still applies. Parallel lanes do not bypass review checkpoints.
+5. FAILED conditions still apply at the plan level. A lane that hits a FAILED condition triggers replanning for the whole plan, not just the lane.
+6. Replanning protocol still applies. A mid-phase scope change that affects >1 lane triggers Stage-2 meta re-check on the affected phases.
+7. Anti-Pattern #7 (Parallel Without Contracts) and #8 (Blind Delegation Trust) become first-class concerns when lanes are active — the orchestrator review step IS the contract and verification.
+
+**Relation to orchestration rules:** See [orchestration.md](orchestration.md) for the runtime file layout (`_orchestrator/`, `_memory/`, `_handoffs/`), worker state JSON schema, review record format, and escalation protocol. UPF defines *what* to plan; orchestration.md defines *how workers operate inside the plan*.
+
+---
+
 ## When to Activate
 
 **ALWAYS use for:**

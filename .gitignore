@@ -64,15 +64,15 @@ ehthumbs.db
 
 ## AI / Agent tooling
 /.wolf/
-/.claude/*
+/.claude/worktrees
 ## Claude Code
 !/.claude/memory/
 !/.claude/skills/
 !/.claude/rules/
+!/.claude/Orchestration/
 
 ## Test results
 TestResults/
 coverage/
 *.coverage
 *.coveragexml
-

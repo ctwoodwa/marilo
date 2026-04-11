@@ -1,0 +1,3 @@
+# Worker results awaiting review: <worker-id>-<ts>.md
+# A result here means the worker marked its task complete and is waiting for
+# orchestrator review. See ../reviews/ for the review records.

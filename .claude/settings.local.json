@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(gap-analysis-resolution)",
+      "Skill(gap-analysis-resolution:*)"
+    ]
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0",
+  "project_name": "marilo",
+  "project_description": "Enterprise-grade, provider-first Blazor component library for .NET 10",
+  "repo_root_hint": "c:/Projects/Marilo",
+  "active_orchestration_session": null,
+  "known_workers": [],
+  "component_conventions": {
+    "source_root": "src/Marilo.Components/",
+    "spec_root": "docs/component-specs/<slug>/",
+    "slug_format": "lowercase-kebab",
+    "icm_workspaces": "ICM/workspaces/<slug>-delivery/ and ICM/workspaces/<slug>-gap-analysis/",
+    "cdw_workspaces": "workspaces/Marilo/workspaces/<slug>/",
+    "component_mapping": "src/Marilo.Components/component-mapping.json",
+    "gap_plan": "src/Marilo.Components/GAP_ANALYSIS_RESOLUTION_PLAN.md",
+    "gap_plan_upf": "src/Marilo.Components/GAP_ANALYSIS_RESOLUTION_PLAN.upf.md"
+  },
+  "required_sync_areas": [
+    "source",
+    "spec",
+    "demo",
+    "docs",
+    "tests",
+    "gap-plan"
+  ],
+  "sync_area_definitions": {
+    "source": "src/Marilo.Components/**/*.razor, *.razor.cs, *.cs",
+    "spec": "docs/component-specs/<slug>/**/*.md + toc.yml",
+    "demo": "samples/Marilo.Demo/Pages/**/<Component>.razor",
+    "docs": "docfx/articles/**/*.md",
+    "tests": "tests/Marilo.Tests.Unit/**/*.cs + tests/visual-parity/**",
+    "gap-plan": "src/Marilo.Components/GAP_ANALYSIS_RESOLUTION_PLAN.md"
+  },
+  "architecture_constants": {
+    "provider_first": true,
+    "provider_contract": "IMariloProvider / IMariloCssProvider",
+    "primary_provider": "FluentUI",
+    "other_providers": ["Bootstrap", "Material"],
+    "public_api_stability": "additive-only"
+  },
+  "orchestrator_only_changes": [
+    "public API of any IMariloProvider",
+    "public API of MariloComponentBase",
+    "provider contract modifications",
+    "ICM workspace structural changes",
+    "CDW workspace structural changes",
+    "component-mapping.json schema changes",
+    "new top-level folders",
+    "changes to .wolf/OPENWOLF.md or .claude/rules/*.md"
+  ]
+}

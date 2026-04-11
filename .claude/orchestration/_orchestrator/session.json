@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "session_id": null,
+  "status": "inactive",
+  "shared_goal": null,
+  "started_at": null,
+  "last_heartbeat": null,
+  "orchestrator_tmux_session": null,
+  "integration_owner": "orchestrator",
+  "active_workers": [],
+  "review_queue": [],
+  "blocked_queue": [],
+  "notes": "Status 'inactive' means no orchestration session is running. When inactive, Claude Code operates in normal single-session mode and orchestration rules do NOT apply. To start a session, set status to 'active' and populate session_id + shared_goal + started_at."
+}

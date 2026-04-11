@@ -1,0 +1,3 @@
+# Directory reserved for per-worker orchestrator-side tracking files.
+# Orchestrator writes one file per active worker here: <worker-id>.json
+# Worker state authoritative copy lives in ../../_memory/workers/<worker-id>.json

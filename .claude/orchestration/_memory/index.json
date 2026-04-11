@@ -1,0 +1,8 @@
+{
+  "schema_version": "1.0",
+  "projects": {
+    "marilo": "_memory/projects/marilo.json"
+  },
+  "last_updated": "2026-04-11T00:00:00Z",
+  "notes": "Memory index for multi-project orchestration. Marilo is the only project in this repo; other projects may appear if this orchestration layer is copied to monorepos."
+}

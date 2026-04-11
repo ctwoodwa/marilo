@@ -1,0 +1,4 @@
+# Worker handoff records: <worker-id>-<ts>.md
+# Append-only. Each handoff captures what the worker did this turn, what's next,
+# what's blocking, and whether review is needed.
+# Schema: templates/worker-handoff.md

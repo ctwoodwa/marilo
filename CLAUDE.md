@@ -122,6 +122,28 @@ These are high-cost mistakes. Do not do them without explicit instruction in the
 
 ---
 
+# Orchestration (tmux parallel workers)
+
+Marilo supports an optional tmux orchestration layer for parallel multi-component Claude Code work. It is **off by default** — if you are not running a session, nothing changes.
+
+- Entry rules: `.claude/rules/orchestration.md`
+- Operational guide: `.claude/orchestration/GUIDE.md`
+- Session state: `.claude/orchestration/_orchestrator/session.json`
+- Worker memory: `.claude/orchestration/_memory/workers/*.json`
+- Templates: `.claude/orchestration/templates/*`
+
+When `_orchestrator/session.json` has `status: "active"`, Claude operates in orchestrator mode or worker mode (role determined by tmux session / env vars). When `status: "inactive"` (default), normal single-session operation applies and orchestration rules do nothing.
+
+Use orchestration only when:
+
+- Work spans 2+ components with disjoint file ownership
+- A phase is large enough to benefit from wall-clock parallelism
+- You would otherwise want to run multiple Claude Code windows side-by-side
+
+Architecture changes, public API changes, and provider contract changes remain orchestrator-only even inside a session — workers escalate instead of making them.
+
+---
+
 # Local overrides
 
 - Put personal preferences in `CLAUDE.local.md` (gitignored).
