@@ -285,4 +285,220 @@ public class MariloDataSheetTests : MariloTestBase
         Assert.Contains("mar-datasheet__skeleton", cut.Markup);
         Assert.Contains("Loading", cut.Markup);
     }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // Batch F1 — Validation & dirty tracking correctness (GAP-DATASHEET-V01/V02)
+    // ─────────────────────────────────────────────────────────────────────
+
+    private record NumericRow
+    {
+        public Guid Id { get; init; } = Guid.NewGuid();
+        public int IntValue { get; set; }
+        public double DoubleValue { get; set; }
+        public int? NullableInt { get; set; }
+    }
+
+    // ── Fix 1: Checkbox Required enforcement (V01.1) ───────────────────
+
+    [Fact]
+    public void CheckboxRequired_FalseValue_ProducesError()
+    {
+        var data = SeedData();
+        data[0].IsActive = false;
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "IsActive");
+                builder.AddAttribute(2, "Title", "Active");
+                builder.AddAttribute(3, "ColumnType", DataSheetColumnType.Checkbox);
+                builder.AddAttribute(4, "Required", true);
+                builder.CloseComponent();
+            }));
+
+        cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "IsActive", false));
+
+        Assert.Equal(CellState.Invalid, cut.Instance.GetCellState(data[0], "IsActive"));
+        var error = cut.Instance.GetCellError(data[0], "IsActive");
+        Assert.NotNull(error);
+        Assert.Contains("required", error!, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void CheckboxRequired_TrueValue_Passes()
+    {
+        var data = SeedData();
+        data[0].IsActive = false;
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "IsActive");
+                builder.AddAttribute(2, "Title", "Active");
+                builder.AddAttribute(3, "ColumnType", DataSheetColumnType.Checkbox);
+                builder.AddAttribute(4, "Required", true);
+                builder.CloseComponent();
+            }));
+
+        cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "IsActive", true));
+
+        Assert.Null(cut.Instance.GetCellError(data[0], "IsActive"));
+        Assert.NotEqual(CellState.Invalid, cut.Instance.GetCellState(data[0], "IsActive"));
+    }
+
+    [Fact]
+    public void CheckboxNotRequired_FalseValue_Passes()
+    {
+        var data = SeedData();
+        data[0].IsActive = true;
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "IsActive");
+                builder.AddAttribute(2, "Title", "Active");
+                builder.AddAttribute(3, "ColumnType", DataSheetColumnType.Checkbox);
+                builder.AddAttribute(4, "Required", false);
+                builder.CloseComponent();
+            }));
+
+        cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "IsActive", false));
+
+        Assert.Null(cut.Instance.GetCellError(data[0], "IsActive"));
+        Assert.NotEqual(CellState.Invalid, cut.Instance.GetCellState(data[0], "IsActive"));
+    }
+
+    // ── Fix 2: Number parsing fallback for non-decimal types (V01.2) ───
+
+    [Fact]
+    public void NumberColumn_IntProperty_ParsesCorrectly()
+    {
+        var (success, value) = MariloDataSheet<NumericRow>.ParseNumericValue("42", typeof(int));
+
+        Assert.True(success);
+        Assert.IsType<int>(value);
+        Assert.Equal(42, value);
+    }
+
+    [Fact]
+    public void NumberColumn_DoubleProperty_ParsesCorrectly()
+    {
+        var (success, value) = MariloDataSheet<NumericRow>.ParseNumericValue("3.14", typeof(double));
+
+        Assert.True(success);
+        Assert.IsType<double>(value);
+        Assert.Equal(3.14, (double)value!, 5);
+    }
+
+    [Fact]
+    public void NumberColumn_NullableInt_EmptyStringWritesNull()
+    {
+        var (success, value) = MariloDataSheet<NumericRow>.ParseNumericValue("", typeof(int?));
+
+        Assert.True(success);
+        Assert.Null(value);
+    }
+
+    // ── Fix 3: Field-level dirty cleared on revert to original (V02.1) ─
+
+    [Fact]
+    public void CellRevert_RemovesFieldFromDirtySet()
+    {
+        var data = SeedData();
+        var original = data[0].Name; // "Alpha"
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Changed"));
+        Assert.NotEmpty(cut.Instance.GetDirtyRows());
+
+        cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", original));
+
+        Assert.Empty(cut.Instance.GetDirtyRows());
+        Assert.Equal(CellState.Pristine, cut.Instance.GetCellState(data[0], "Name"));
+    }
+
+    [Fact]
+    public void CellRevert_LeavesOtherDirtyFieldsIntact()
+    {
+        var data = SeedData();
+        var originalName = data[0].Name;
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(10);
+                builder.AddAttribute(11, "Field", "Amount");
+                builder.AddAttribute(12, "Title", "Amount");
+                builder.AddAttribute(13, "ColumnType", DataSheetColumnType.Number);
+                builder.CloseComponent();
+            }));
+
+        // Edit two fields on the same row.
+        cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Changed"));
+        cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Amount", 999m));
+
+        // Revert only Name.
+        cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", originalName));
+
+        // Row is still dirty because Amount remains modified.
+        Assert.Single(cut.Instance.GetDirtyRows());
+        Assert.Equal(CellState.Pristine, cut.Instance.GetCellState(data[0], "Name"));
+        Assert.Equal(CellState.Dirty, cut.Instance.GetCellState(data[0], "Amount"));
+    }
+
+    [Fact]
+    public void CellRevert_WithValidationError_StillTracksState()
+    {
+        var data = SeedData();
+        var original = data[0].Name; // "Alpha"
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.AddAttribute(3, "Required", true);
+                builder.CloseComponent();
+            }));
+
+        // Edit to empty string — invalid (required).
+        cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", ""));
+        Assert.Equal(CellState.Invalid, cut.Instance.GetCellState(data[0], "Name"));
+
+        // Revert to original — should be pristine, not invalid.
+        cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", original));
+
+        Assert.Equal(CellState.Pristine, cut.Instance.GetCellState(data[0], "Name"));
+        Assert.Null(cut.Instance.GetCellError(data[0], "Name"));
+        Assert.Empty(cut.Instance.GetDirtyRows());
+    }
 }

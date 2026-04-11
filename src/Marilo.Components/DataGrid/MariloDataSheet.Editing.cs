@@ -282,13 +282,65 @@ public partial class MariloDataSheet<TItem>
 
     private static object? ParseCellValue(MariloDataSheetColumn<TItem> column, string text)
     {
-        return column.ColumnType switch
+        switch (column.ColumnType)
         {
-            DataSheetColumnType.Number when decimal.TryParse(text, out var d) => d,
-            DataSheetColumnType.Date when DateTime.TryParse(text, out var dt) => dt,
-            DataSheetColumnType.Checkbox => text.Equals("true", StringComparison.OrdinalIgnoreCase)
-                                          || text == "1",
-            _ => text
-        };
+            case DataSheetColumnType.Number:
+                {
+                    var targetType = typeof(TItem).GetProperty(column.Field)?.PropertyType
+                                     ?? typeof(decimal);
+                    var (success, value) = ParseNumericValue(text, targetType);
+                    // TODO(V04.2): surface parse failures as CellState.Invalid instead
+                    // of silently falling through to the default value.
+                    return success ? value : GetDefaultValue(column);
+                }
+            case DataSheetColumnType.Date when DateTime.TryParse(text, out var dt):
+                return dt;
+            case DataSheetColumnType.Checkbox:
+                return text.Equals("true", StringComparison.OrdinalIgnoreCase) || text == "1";
+            default:
+                return text;
+        }
+    }
+
+    /// <summary>
+    /// Parses a string into the requested numeric target type, handling all
+    /// primitive numeric types (int, long, short, byte, decimal, double, float)
+    /// and their nullable counterparts. Returns (true, parsedValue) on success,
+    /// (false, defaultOfTarget) on failure. Empty/null input returns
+    /// (true, null) for nullable targets and (false, default) otherwise.
+    /// </summary>
+    internal static (bool Success, object? Value) ParseNumericValue(string? input, Type targetType)
+    {
+        var underlying = Nullable.GetUnderlyingType(targetType);
+        var isNullable = underlying != null;
+        var effectiveType = underlying ?? targetType;
+
+        if (string.IsNullOrEmpty(input))
+        {
+            return isNullable
+                ? (true, null)
+                : (false, GetDefaultForType(effectiveType));
+        }
+
+        if (!decimal.TryParse(input, System.Globalization.NumberStyles.Any,
+                              System.Globalization.CultureInfo.CurrentCulture, out var parsed))
+        {
+            return (false, GetDefaultForType(effectiveType));
+        }
+
+        try
+        {
+            var converted = Convert.ChangeType(parsed, effectiveType);
+            return (true, converted);
+        }
+        catch
+        {
+            return (false, GetDefaultForType(effectiveType));
+        }
+    }
+
+    private static object? GetDefaultForType(Type type)
+    {
+        return type.IsValueType ? Activator.CreateInstance(type) : null;
     }
 }

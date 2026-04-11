@@ -175,6 +175,8 @@ public partial class MariloDataSheet<TItem>
                 break;
 
             case DataSheetColumnType.Number:
+                var numberTargetType = typeof(TItem).GetProperty(column.Field)?.PropertyType
+                                       ?? typeof(decimal);
                 builder.OpenElement(50, "input");
                 builder.AddAttribute(51, "type", "number");
                 builder.AddAttribute(52, "class", "mar-datasheet__editor-input");
@@ -185,8 +187,8 @@ public partial class MariloDataSheet<TItem>
                     EventCallback.Factory.Create<ChangeEventArgs>(this,
                         (e) =>
                         {
-                            decimal.TryParse(e.Value?.ToString(), out var d);
-                            return OnCellValueCommit(editRow, editField, d);
+                            var (_, parsed) = ParseNumericValue(e.Value?.ToString(), numberTargetType);
+                            return OnCellValueCommit(editRow, editField, parsed);
                         }));
                 builder.CloseElement();
                 break;

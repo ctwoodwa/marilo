@@ -41,6 +41,7 @@ public partial class MariloDataSheet<TItem>
         if (key is null) return;
 
         // Get or create dirty entry
+        var entryIsNew = false;
         if (!_dirtyRows.TryGetValue(key, out var entry))
         {
             entry = new DirtyRowEntry<TItem>
@@ -49,13 +50,26 @@ public partial class MariloDataSheet<TItem>
                 Current = row
             };
             _dirtyRows[key] = entry;
+            entryIsNew = true;
         }
 
         var oldValue = GridReflectionHelper.GetValue(row, field);
 
         // Set the new value
         GridReflectionHelper.SetValue(row, field, newValue);
-        entry.DirtyFields.Add(field);
+
+        // Determine whether the new value matches the original snapshot.
+        // If it does, the field is no longer dirty; if the row has no other
+        // dirty fields and is not deleted, drop the entry entirely.
+        var originalValue = GridReflectionHelper.GetValue(entry.Original, field);
+        if (!entryIsNew && object.Equals(newValue, originalValue))
+        {
+            entry.DirtyFields.Remove(field);
+        }
+        else
+        {
+            entry.DirtyFields.Add(field);
+        }
 
         // Run column validation
         var column = _columns.FirstOrDefault(c => c.Field == field);
@@ -66,6 +80,13 @@ public partial class MariloDataSheet<TItem>
                 entry.ValidationErrors[field] = error;
             else
                 entry.ValidationErrors.Remove(field);
+        }
+
+        // If the row has no remaining dirty fields and is not deleted,
+        // remove its entry entirely so state queries report Pristine.
+        if (entry.DirtyFields.Count == 0 && !entry.IsDeleted)
+        {
+            _dirtyRows.Remove(key);
         }
 
         // Fire OnRowChanged
@@ -91,8 +112,17 @@ public partial class MariloDataSheet<TItem>
         if (column.Required)
         {
             var value = GridReflectionHelper.GetValue(row, column.Field);
-            if (value is null || (value is string s && string.IsNullOrWhiteSpace(s)))
+
+            // Checkbox: a required checkbox must be checked (true).
+            if (column.ColumnType == DataSheetColumnType.Checkbox)
+            {
+                if (value is null || value is false)
+                    return $"{column.DisplayTitle} is required.";
+            }
+            else if (value is null || (value is string s && string.IsNullOrWhiteSpace(s)))
+            {
                 return $"{column.DisplayTitle} is required.";
+            }
         }
 
         // Custom validate func
