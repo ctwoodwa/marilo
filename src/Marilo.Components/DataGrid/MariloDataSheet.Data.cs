@@ -20,10 +20,29 @@ public partial class MariloDataSheet<TItem>
         public HashSet<string> DirtyFields { get; } = [];
         public Dictionary<string, string> ValidationErrors { get; } = [];
         public bool IsDeleted { get; set; }
-        public CellState OverallState => ValidationErrors.Count > 0 ? CellState.Invalid
+
+        // V05.3 — Rows created by AddRowAsync are flagged so ResetAsync can
+        // remove them from _displayRows entirely instead of trying to restore
+        // nonexistent "original" values.
+        public bool IsNewlyAdded { get; set; }
+
+        // V02.2 / V05.1 — Transient state override for Save All lifecycle.
+        // When set, GetCellState returns this value instead of the computed
+        // Invalid/Dirty/Pristine state. SaveAllAsync assigns CellState.Saving
+        // before OnSaveAll fires and CellState.Saved after it succeeds, then
+        // clears the override to complete the transition to Pristine.
+        public CellState? TransientState { get; set; }
+
+        public CellState OverallState => TransientState
+                                        ?? (ValidationErrors.Count > 0 ? CellState.Invalid
                                         : DirtyFields.Count > 0 ? CellState.Dirty
-                                        : CellState.Pristine;
+                                        : CellState.Pristine);
     }
+
+    // V02.2 / V05.1 — Duration of the CellState.Saved visual indicator
+    // before cells transition to Pristine. Kept configurable internally so
+    // tests can shrink it to zero for deterministic assertions.
+    internal int _savedStateDurationMs = 1000;
 
     // ── Key Resolution ─────────────────────────────────────────────────
 
@@ -40,9 +59,11 @@ public partial class MariloDataSheet<TItem>
         var key = GetRowKey(row);
         if (key is null) return;
 
-        // Get or create dirty entry
-        var entryIsNew = false;
-        if (!_dirtyRows.TryGetValue(key, out var entry))
+        // Get or create dirty entry. The TryGetValue result doubles as
+        // "is this the first touch on this row?" — on a first touch we
+        // snapshot the current row as Original before any mutation.
+        var hadExistingEntry = _dirtyRows.TryGetValue(key, out var entry);
+        if (!hadExistingEntry)
         {
             entry = new DirtyRowEntry<TItem>
             {
@@ -50,19 +71,25 @@ public partial class MariloDataSheet<TItem>
                 Current = row
             };
             _dirtyRows[key] = entry;
-            entryIsNew = true;
         }
 
         var oldValue = GridReflectionHelper.GetValue(row, field);
+        var originalValue = GridReflectionHelper.GetValue(entry!.Original, field);
 
         // Set the new value
         GridReflectionHelper.SetValue(row, field, newValue);
 
-        // Determine whether the new value matches the original snapshot.
-        // If it does, the field is no longer dirty; if the row has no other
-        // dirty fields and is not deleted, drop the entry entirely.
-        var originalValue = GridReflectionHelper.GetValue(entry.Original, field);
-        if (!entryIsNew && object.Equals(newValue, originalValue))
+        // NOTE: object.Equals uses reference equality for user POCOs that do
+        // not override Equals. For value types and strings this is correct;
+        // for reference-typed cell values the caller must override Equals
+        // or the revert detection will not fire.
+        // V05.3 — Newly-added rows keep their dirty fields regardless of
+        // value comparison: the "original" snapshot is the default TItem,
+        // so a user typing the default value should NOT drop the field.
+        // First-touch edits always add the field too; the very first commit
+        // on a previously-clean row means the cell IS being touched.
+        var revertedToOriginal = object.Equals(newValue, originalValue);
+        if (hadExistingEntry && !entry.IsNewlyAdded && revertedToOriginal)
         {
             entry.DirtyFields.Remove(field);
         }
@@ -82,9 +109,11 @@ public partial class MariloDataSheet<TItem>
                 entry.ValidationErrors.Remove(field);
         }
 
-        // If the row has no remaining dirty fields and is not deleted,
-        // remove its entry entirely so state queries report Pristine.
-        if (entry.DirtyFields.Count == 0 && !entry.IsDeleted)
+        // If the row has no remaining dirty fields and is not deleted or
+        // newly added, remove its entry entirely so state queries report
+        // Pristine. Newly added rows are preserved so SaveAllAsync still
+        // emits them in DataSheetSaveArgs.DirtyRows.
+        if (entry.DirtyFields.Count == 0 && !entry.IsDeleted && !entry.IsNewlyAdded)
         {
             _dirtyRows.Remove(key);
         }
@@ -210,7 +239,18 @@ public partial class MariloDataSheet<TItem>
             return;
         }
 
-        // Step 4: Fire OnSaveAll
+        // Step 4: Mark non-deleted dirty entries as Saving so the cell state
+        // transitions from Dirty -> Saving before OnSaveAll fires. (V02.2 / V05.1)
+        foreach (var entry in _dirtyRows.Values)
+        {
+            if (!entry.IsDeleted)
+            {
+                entry.TransientState = CellState.Saving;
+            }
+        }
+        StateHasChanged();
+
+        // Step 5: Fire OnSaveAll
         if (OnSaveAll.HasDelegate)
         {
             var deletedRows = _dirtyRows.Values
@@ -225,7 +265,66 @@ public partial class MariloDataSheet<TItem>
             });
         }
 
+        // Step 6: On success, remove deleted rows from _displayRows (V05.2),
+        // update original snapshots for saved dirty rows so subsequent edits
+        // that revert to the just-saved value are correctly dirty-tracked,
+        // and mark dirty entries as Saved for a brief visual indicator.
+        var deletedKeys = new HashSet<object>();
+        foreach (var kv in _dirtyRows)
+        {
+            if (kv.Value.IsDeleted)
+            {
+                deletedKeys.Add(kv.Key);
+            }
+        }
+
+        if (deletedKeys.Count > 0)
+        {
+            _displayRows.RemoveAll(row =>
+            {
+                var k = GetRowKey(row);
+                return k != null && deletedKeys.Contains(k);
+            });
+            foreach (var k in deletedKeys)
+            {
+                _dirtyRows.Remove(k);
+            }
+        }
+
+        // For remaining (non-deleted) dirty entries, update the original
+        // snapshot to reflect the just-saved current values and flip to
+        // CellState.Saved for the brief visual indicator period.
+        var savedKeys = _dirtyRows.Keys.ToList();
+        foreach (var key in savedKeys)
+        {
+            if (_dirtyRows.TryGetValue(key, out var entry))
+            {
+                entry.Original = GridReflectionHelper.DeepClone(entry.Current);
+                entry.IsNewlyAdded = false;
+                entry.TransientState = CellState.Saved;
+            }
+        }
+
         _ariaAnnouncement = "Changes saved successfully.";
+        StateHasChanged();
+
+        // Step 7: After a brief visual indicator period, clear the
+        // TransientState and drop the entries so cells report Pristine.
+        if (_savedStateDurationMs > 0)
+        {
+            await Task.Delay(_savedStateDurationMs);
+        }
+
+        foreach (var key in savedKeys)
+        {
+            if (_dirtyRows.TryGetValue(key, out var entry) && entry.TransientState == CellState.Saved)
+            {
+                entry.TransientState = null;
+                entry.DirtyFields.Clear();
+                entry.ValidationErrors.Clear();
+                _dirtyRows.Remove(key);
+            }
+        }
         StateHasChanged();
     }
 
@@ -234,16 +333,35 @@ public partial class MariloDataSheet<TItem>
     /// <summary>Discards all dirty state and restores original values.</summary>
     public Task ResetAsync()
     {
+        // V05.3 — Collect rows created via AddRowAsync so they can be
+        // removed from _displayRows entirely. A newly-added row has no
+        // meaningful Original snapshot and cannot be "restored" to
+        // anything — the spec says added rows are removed on reset.
+        var newlyAddedRows = _dirtyRows.Values
+            .Where(e => e.IsNewlyAdded)
+            .Select(e => e.Current)
+            .ToList();
+
         foreach (var entry in _dirtyRows.Values)
         {
-            if (!entry.IsDeleted)
+            if (entry.IsNewlyAdded || entry.IsDeleted)
             {
-                // Restore original values to the current row object
-                foreach (var field in entry.DirtyFields)
-                {
-                    var originalValue = GridReflectionHelper.GetValue(entry.Original, field);
-                    GridReflectionHelper.SetValue(entry.Current, field, originalValue);
-                }
+                continue;
+            }
+
+            // Restore original values to the current row object
+            foreach (var field in entry.DirtyFields)
+            {
+                var originalValue = GridReflectionHelper.GetValue(entry.Original, field);
+                GridReflectionHelper.SetValue(entry.Current, field, originalValue);
+            }
+        }
+
+        if (newlyAddedRows.Count > 0)
+        {
+            foreach (var row in newlyAddedRows)
+            {
+                _displayRows.Remove(row);
             }
         }
 
@@ -271,7 +389,20 @@ public partial class MariloDataSheet<TItem>
             _dirtyRows[key] = entry;
         }
 
-        entry.IsDeleted = true;
+        // V05.4 — Toggle delete state. Clicking delete again on a row that
+        // is already marked for deletion restores it to its prior editable
+        // state. If the row has no other dirty tracking (no dirty fields,
+        // not newly added), drop the entry entirely so it goes back to
+        // Pristine instead of lingering as an empty entry.
+        entry.IsDeleted = !entry.IsDeleted;
+
+        if (!entry.IsDeleted
+            && !entry.IsNewlyAdded
+            && entry.DirtyFields.Count == 0
+            && entry.ValidationErrors.Count == 0)
+        {
+            _dirtyRows.Remove(key);
+        }
     }
 
     // ── State Queries ──────────────────────────────────────────────────
@@ -281,6 +412,16 @@ public partial class MariloDataSheet<TItem>
         var key = GetRowKey(row);
         if (key is null || !_dirtyRows.TryGetValue(key, out var entry))
             return CellState.Pristine;
+
+        // V02.2 / V05.1 — A transient Save All override applies to every
+        // dirty cell on the row while the save is in flight (Saving) or
+        // briefly after it succeeds (Saved). It wins over the computed
+        // Invalid/Dirty states but only for fields that are actually in
+        // DirtyFields; non-dirty fields on the row remain Pristine.
+        if (entry.TransientState is { } transient && entry.DirtyFields.Contains(field))
+        {
+            return transient;
+        }
 
         if (entry.ValidationErrors.ContainsKey(field))
             return CellState.Invalid;

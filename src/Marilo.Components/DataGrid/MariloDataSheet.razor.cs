@@ -170,10 +170,35 @@ public partial class MariloDataSheet<TItem> : MariloComponentBase
 
     internal async Task BulkResetAsync()
     {
+        // V05.5 — Restore each selected row's dirty fields to their
+        // original values before dropping the dirty entry. The previous
+        // implementation removed the entry from _dirtyRows but left the
+        // edited property values on the live TItem instance, so the UI
+        // reported Pristine while the data still held the edits.
         foreach (var row in _selectedRows.ToList())
         {
             var key = GetRowKey(row);
-            if (key != null) _dirtyRows.Remove(key);
+            if (key == null || !_dirtyRows.TryGetValue(key, out var entry))
+            {
+                continue;
+            }
+
+            if (!entry.IsNewlyAdded)
+            {
+                foreach (var field in entry.DirtyFields)
+                {
+                    var originalValue = Core.Helpers.GridReflectionHelper.GetValue(entry.Original, field);
+                    Core.Helpers.GridReflectionHelper.SetValue(entry.Current, field, originalValue);
+                }
+            }
+            else
+            {
+                // A newly-added row selected and then BulkReset should be
+                // removed entirely, mirroring ResetAsync semantics.
+                _displayRows.Remove(row);
+            }
+
+            _dirtyRows.Remove(key);
         }
         _selectedRows.Clear();
         StateHasChanged();
@@ -185,6 +210,35 @@ public partial class MariloDataSheet<TItem> : MariloComponentBase
         if (!AllowAddRow) return;
         var newItem = Activator.CreateInstance<TItem>();
         _displayRows.Insert(0, newItem);
+
+        // V05.3 — Track the new row as dirty so it survives Save All and
+        // shows up in DataSheetSaveArgs.DirtyRows. Without this, calling
+        // Save All after Add Row loses the new row entirely. The
+        // IsNewlyAdded flag lets ResetAsync distinguish "remove the row"
+        // from "revert the row's fields".
+        var key = GetRowKey(newItem);
+        if (key != null)
+        {
+            var entry = new DirtyRowEntry<TItem>
+            {
+                Original = Core.Helpers.GridReflectionHelper.DeepClone(newItem),
+                Current = newItem,
+                IsNewlyAdded = true
+            };
+
+            // Seed DirtyFields with every editable, non-computed column so
+            // GetDirtyRows()/SaveAllAsync treat the new row as dirty.
+            foreach (var column in _columns)
+            {
+                if (column.Editable && column.ColumnType != DataSheetColumnType.Computed)
+                {
+                    entry.DirtyFields.Add(column.Field);
+                }
+            }
+
+            _dirtyRows[key] = entry;
+        }
+
         StateHasChanged();
         await Task.CompletedTask;
     }

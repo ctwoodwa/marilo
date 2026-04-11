@@ -301,7 +301,7 @@ public class MariloDataSheetTests : MariloTestBase
     // ── Fix 1: Checkbox Required enforcement (V01.1) ───────────────────
 
     [Fact]
-    public void CheckboxRequired_FalseValue_ProducesError()
+    public async Task CheckboxRequired_FalseValue_ProducesError()
     {
         var data = SeedData();
         data[0].IsActive = false;
@@ -319,7 +319,7 @@ public class MariloDataSheetTests : MariloTestBase
                 builder.CloseComponent();
             }));
 
-        cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "IsActive", false));
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "IsActive", false));
 
         Assert.Equal(CellState.Invalid, cut.Instance.GetCellState(data[0], "IsActive"));
         var error = cut.Instance.GetCellError(data[0], "IsActive");
@@ -328,7 +328,7 @@ public class MariloDataSheetTests : MariloTestBase
     }
 
     [Fact]
-    public void CheckboxRequired_TrueValue_Passes()
+    public async Task CheckboxRequired_TrueValue_Passes()
     {
         var data = SeedData();
         data[0].IsActive = false;
@@ -346,14 +346,14 @@ public class MariloDataSheetTests : MariloTestBase
                 builder.CloseComponent();
             }));
 
-        cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "IsActive", true));
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "IsActive", true));
 
         Assert.Null(cut.Instance.GetCellError(data[0], "IsActive"));
         Assert.NotEqual(CellState.Invalid, cut.Instance.GetCellState(data[0], "IsActive"));
     }
 
     [Fact]
-    public void CheckboxNotRequired_FalseValue_Passes()
+    public async Task CheckboxNotRequired_FalseValue_Passes()
     {
         var data = SeedData();
         data[0].IsActive = true;
@@ -371,7 +371,7 @@ public class MariloDataSheetTests : MariloTestBase
                 builder.CloseComponent();
             }));
 
-        cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "IsActive", false));
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "IsActive", false));
 
         Assert.Null(cut.Instance.GetCellError(data[0], "IsActive"));
         Assert.NotEqual(CellState.Invalid, cut.Instance.GetCellState(data[0], "IsActive"));
@@ -411,7 +411,7 @@ public class MariloDataSheetTests : MariloTestBase
     // ── Fix 3: Field-level dirty cleared on revert to original (V02.1) ─
 
     [Fact]
-    public void CellRevert_RemovesFieldFromDirtySet()
+    public async Task CellRevert_RemovesFieldFromDirtySet()
     {
         var data = SeedData();
         var original = data[0].Name; // "Alpha"
@@ -427,17 +427,17 @@ public class MariloDataSheetTests : MariloTestBase
                 builder.CloseComponent();
             }));
 
-        cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Changed"));
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Changed"));
         Assert.NotEmpty(cut.Instance.GetDirtyRows());
 
-        cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", original));
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", original));
 
         Assert.Empty(cut.Instance.GetDirtyRows());
         Assert.Equal(CellState.Pristine, cut.Instance.GetCellState(data[0], "Name"));
     }
 
     [Fact]
-    public void CellRevert_LeavesOtherDirtyFieldsIntact()
+    public async Task CellRevert_LeavesOtherDirtyFieldsIntact()
     {
         var data = SeedData();
         var originalName = data[0].Name;
@@ -460,11 +460,11 @@ public class MariloDataSheetTests : MariloTestBase
             }));
 
         // Edit two fields on the same row.
-        cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Changed"));
-        cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Amount", 999m));
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Changed"));
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Amount", 999m));
 
         // Revert only Name.
-        cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", originalName));
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", originalName));
 
         // Row is still dirty because Amount remains modified.
         Assert.Single(cut.Instance.GetDirtyRows());
@@ -473,7 +473,7 @@ public class MariloDataSheetTests : MariloTestBase
     }
 
     [Fact]
-    public void CellRevert_WithValidationError_StillTracksState()
+    public async Task CellRevert_WithValidationError_StillTracksState()
     {
         var data = SeedData();
         var original = data[0].Name; // "Alpha"
@@ -491,11 +491,11 @@ public class MariloDataSheetTests : MariloTestBase
             }));
 
         // Edit to empty string — invalid (required).
-        cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", ""));
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", ""));
         Assert.Equal(CellState.Invalid, cut.Instance.GetCellState(data[0], "Name"));
 
         // Revert to original — should be pristine, not invalid.
-        cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", original));
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", original));
 
         Assert.Equal(CellState.Pristine, cut.Instance.GetCellState(data[0], "Name"));
         Assert.Null(cut.Instance.GetCellError(data[0], "Name"));
@@ -945,6 +945,392 @@ public class MariloDataSheetTests : MariloTestBase
         // landing on any live row.
         Assert.Equal("Row0", data[0].Name);
         Assert.Equal("Row1", data[1].Name);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // Batch F2 — Save/Reset lifecycle (GAP-DATASHEET-V02.2/V05.1..V05.5)
+    // ─────────────────────────────────────────────────────────────────────
+
+    // ── Fix V02.2 / V05.1: CellState.Saving / CellState.Saved transitions ─
+
+    [Fact]
+    public async Task SaveAll_DirtyCells_TransitionThroughSavingAndSaved()
+    {
+        var data = SeedData();
+        var onSaveAllObservedState = CellState.Pristine;
+        Bunit.IRenderedComponent<MariloDataSheet<TestRow>>? cutRef = null;
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.OnSaveAll, (DataSheetSaveArgs<TestRow> args) =>
+            {
+                // While OnSaveAll is in flight, the cell should be Saving.
+                onSaveAllObservedState = cutRef!.Instance.GetCellState(data[0], "Name");
+            })
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+        cutRef = cut;
+
+        // Shrink the Saved visual-indicator duration so the test runs fast.
+        cut.Instance._savedStateDurationMs = 0;
+
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Edited"));
+        Assert.Equal(CellState.Dirty, cut.Instance.GetCellState(data[0], "Name"));
+
+        await cut.InvokeAsync(() => cut.Instance.SaveAllAsync());
+
+        // OnSaveAll must have observed the cell as Saving.
+        Assert.Equal(CellState.Saving, onSaveAllObservedState);
+
+        // After Save All completes and the brief Saved window elapses,
+        // the cell transitions to Pristine.
+        Assert.Equal(CellState.Pristine, cut.Instance.GetCellState(data[0], "Name"));
+    }
+
+    [Fact]
+    public async Task SaveAll_NonDirtyFields_StayPristineDuringSave()
+    {
+        var data = SeedData();
+        var amountStateDuringSave = CellState.Pristine;
+        var nameStateDuringSave = CellState.Pristine;
+        var onSaveAllFired = false;
+        Bunit.IRenderedComponent<MariloDataSheet<TestRow>>? cutRef = null;
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.OnSaveAll, (DataSheetSaveArgs<TestRow> args) =>
+            {
+                onSaveAllFired = true;
+                nameStateDuringSave = cutRef!.Instance.GetCellState(data[0], "Name");
+                amountStateDuringSave = cutRef!.Instance.GetCellState(data[0], "Amount");
+            })
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(10);
+                builder.AddAttribute(11, "Field", "Amount");
+                builder.AddAttribute(12, "Title", "Amount");
+                builder.AddAttribute(13, "ColumnType", DataSheetColumnType.Number);
+                builder.CloseComponent();
+            }));
+        cutRef = cut;
+        cut.Instance._savedStateDurationMs = 0;
+
+        // Only Name is dirty on row[0]. Amount should not flip to Saving.
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Edited"));
+        await cut.InvokeAsync(() => cut.Instance.SaveAllAsync());
+
+        Assert.True(onSaveAllFired);
+        Assert.Equal(CellState.Saving, nameStateDuringSave);
+        Assert.Equal(CellState.Pristine, amountStateDuringSave);
+    }
+
+    // ── Fix V05.2: Deleted rows removed from _displayRows after save ────
+
+    [Fact]
+    public async Task SaveAll_DeletedRows_AreRemovedFromDisplayRowsAfterSuccess()
+    {
+        var data = SeedData();
+        var captured = new List<TestRow>();
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.AllowDeleteRow, true)
+            .Add(x => x.OnSaveAll, (DataSheetSaveArgs<TestRow> args) =>
+            {
+                captured.AddRange(args.DeletedRows);
+            })
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        cut.Instance._savedStateDurationMs = 0;
+
+        var targetRow = data[1];
+        await cut.InvokeAsync(() => cut.Instance.MarkRowDeleted(targetRow));
+        Assert.True(cut.Instance.IsRowDeleted(targetRow));
+        Assert.Contains(targetRow, cut.Instance._displayRows);
+
+        await cut.InvokeAsync(() => cut.Instance.SaveAllAsync());
+
+        Assert.Single(captured);
+        Assert.Same(targetRow, captured[0]);
+        Assert.DoesNotContain(targetRow, cut.Instance._displayRows);
+    }
+
+    [Fact]
+    public async Task SaveAll_UpdatesOriginalSnapshot_SoRevertToPreSaveValueIsDetectedAsDirty()
+    {
+        var data = SeedData();
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.OnSaveAll, (DataSheetSaveArgs<TestRow> _) => { })
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        cut.Instance._savedStateDurationMs = 0;
+
+        // "Alpha" -> "Beta", save. Then edit back to "Alpha" — which was the
+        // pre-save original. Without V05.2's snapshot update this would
+        // incorrectly register as "reverted to original" and drop dirty.
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Beta"));
+        await cut.InvokeAsync(() => cut.Instance.SaveAllAsync());
+        Assert.Equal(CellState.Pristine, cut.Instance.GetCellState(data[0], "Name"));
+
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Alpha"));
+        Assert.Equal(CellState.Dirty, cut.Instance.GetCellState(data[0], "Name"));
+    }
+
+    // ── Fix V05.3: ResetAsync removes newly-added rows ─────────────────
+
+    [Fact]
+    public async Task AddRow_IsIncludedInDirtyRows()
+    {
+        var data = SeedData();
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.AllowAddRow, true)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        var initialDirty = cut.Instance.GetDirtyRows().Count;
+        Assert.Equal(0, initialDirty);
+
+        await cut.InvokeAsync(() => cut.Instance.AddRowAsync());
+
+        var dirty = cut.Instance.GetDirtyRows();
+        Assert.Single(dirty);
+    }
+
+    [Fact]
+    public async Task ResetAsync_RemovesNewlyAddedRowsFromDisplayRows()
+    {
+        var data = SeedData();
+        var originalCount = data.Count;
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.AllowAddRow, true)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.AddRowAsync());
+        await cut.InvokeAsync(() => cut.Instance.AddRowAsync());
+        Assert.Equal(originalCount + 2, cut.Instance._displayRows.Count);
+
+        await cut.InvokeAsync(() => cut.Instance.ResetAsync());
+
+        Assert.Equal(originalCount, cut.Instance._displayRows.Count);
+        Assert.Empty(cut.Instance.GetDirtyRows());
+    }
+
+    [Fact]
+    public async Task ResetAsync_RevertsEditedRows_AndAlsoRemovesNewlyAddedRows()
+    {
+        var data = SeedData();
+        var originalCount = data.Count;
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.AllowAddRow, true)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Edited"));
+        await cut.InvokeAsync(() => cut.Instance.AddRowAsync());
+
+        Assert.Equal("Edited", data[0].Name);
+        Assert.Equal(originalCount + 1, cut.Instance._displayRows.Count);
+
+        await cut.InvokeAsync(() => cut.Instance.ResetAsync());
+
+        Assert.Equal("Alpha", data[0].Name);
+        Assert.Equal(originalCount, cut.Instance._displayRows.Count);
+        Assert.Empty(cut.Instance.GetDirtyRows());
+    }
+
+    // ── Fix V05.4: Delete toggle (un-delete on re-click) ────────────────
+
+    [Fact]
+    public async Task MarkRowDeleted_CalledTwice_UndeletesTheRow()
+    {
+        var data = SeedData();
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.AllowDeleteRow, true)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.MarkRowDeleted(data[0]));
+        Assert.True(cut.Instance.IsRowDeleted(data[0]));
+
+        await cut.InvokeAsync(() => cut.Instance.MarkRowDeleted(data[0]));
+        Assert.False(cut.Instance.IsRowDeleted(data[0]));
+    }
+
+    [Fact]
+    public async Task MarkRowDeleted_Untoggle_PreservesDirtyFieldEdits()
+    {
+        var data = SeedData();
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.AllowDeleteRow, true)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        // Edit, then delete, then undelete — the edit should survive.
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Edited"));
+        await cut.InvokeAsync(() => cut.Instance.MarkRowDeleted(data[0]));
+        await cut.InvokeAsync(() => cut.Instance.MarkRowDeleted(data[0]));
+
+        Assert.False(cut.Instance.IsRowDeleted(data[0]));
+        Assert.Equal("Edited", data[0].Name);
+        Assert.Equal(CellState.Dirty, cut.Instance.GetCellState(data[0], "Name"));
+    }
+
+    [Fact]
+    public async Task MarkRowDeleted_UntoggleWithoutEdits_ReturnsRowToPristine()
+    {
+        var data = SeedData();
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.AllowDeleteRow, true)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.MarkRowDeleted(data[0]));
+        await cut.InvokeAsync(() => cut.Instance.MarkRowDeleted(data[0]));
+
+        Assert.False(cut.Instance.IsRowDeleted(data[0]));
+        Assert.False(cut.Instance.IsRowDirty(data[0]));
+        Assert.Equal(CellState.Pristine, cut.Instance.GetCellState(data[0], "Name"));
+    }
+
+    // ── Fix V05.5: BulkResetAsync restores original field values ────────
+
+    [Fact]
+    public async Task BulkResetAsync_RestoresFieldValuesOnSelectedRows()
+    {
+        var data = SeedData();
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(10);
+                builder.AddAttribute(11, "Field", "Amount");
+                builder.AddAttribute(12, "Title", "Amount");
+                builder.AddAttribute(13, "ColumnType", DataSheetColumnType.Number);
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Changed"));
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Amount", 999m));
+        Assert.Equal("Changed", data[0].Name);
+        Assert.Equal(999m, data[0].Amount);
+
+        cut.Instance._selectedRows.Add(data[0]);
+        await cut.InvokeAsync(() => cut.Instance.BulkResetAsync());
+
+        Assert.Equal("Alpha", data[0].Name);
+        Assert.Equal(100m, data[0].Amount);
+        Assert.Empty(cut.Instance.GetDirtyRows());
+    }
+
+    [Fact]
+    public async Task BulkResetAsync_OnlyAffectsSelectedRows()
+    {
+        var data = SeedData();
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Edit0"));
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[1], "Name", "Edit1"));
+
+        cut.Instance._selectedRows.Add(data[0]);
+        await cut.InvokeAsync(() => cut.Instance.BulkResetAsync());
+
+        Assert.Equal("Alpha", data[0].Name);
+        Assert.Equal("Edit1", data[1].Name);
+        Assert.Single(cut.Instance.GetDirtyRows());
     }
 
     private record SelectRow
