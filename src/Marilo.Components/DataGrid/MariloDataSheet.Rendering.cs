@@ -1,3 +1,4 @@
+using System.Globalization;
 using Marilo.Core.Enums;
 using Marilo.Core.Helpers;
 using Marilo.Core.Models.DataSheet;
@@ -68,6 +69,21 @@ public partial class MariloDataSheet<TItem>
             if (cellError != null)
                 builder.AddAttribute(26, "title", cellError);
             builder.AddAttribute(27, "data-field", column.Field);
+
+            // V04.4 — When the column defines a Format delegate, the cell's
+            // textContent is the formatted display string (e.g. "$42.00"),
+            // which would round-trip poorly through copy/paste. Emit
+            // data-raw-value carrying the underlying property value formatted
+            // via InvariantCulture so the JS copy handler can read the raw
+            // value instead of the display string. When Format is null,
+            // textContent already equals the raw value and the attribute is
+            // omitted to avoid DOM bloat on every cell.
+            if (column.Format != null && column.ColumnType != DataSheetColumnType.Computed)
+            {
+                var rawValue = GridReflectionHelper.GetValue(row, column.Field);
+                var rawValueAttr = Convert.ToString(rawValue, CultureInfo.InvariantCulture) ?? "";
+                builder.AddAttribute(29, "data-raw-value", rawValueAttr);
+            }
 
             // Click handler
             builder.AddAttribute(28, "onclick",

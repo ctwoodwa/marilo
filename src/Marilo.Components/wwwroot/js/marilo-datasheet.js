@@ -81,7 +81,12 @@ export function registerKeydownHandler(gridId, dotNetRef) {
         if (ctrl && key === 'c') {
             const activeCell = grid.querySelector('.mar-datasheet__cell--active');
             if (activeCell) {
-                const text = activeCell.textContent?.trim() || '';
+                // V04.4 — Prefer data-raw-value when present (columns with a
+                // Format delegate set this attribute so copy yields the raw
+                // property value rather than the formatted display string).
+                // Fall back to textContent when no raw value is available.
+                const rawValue = activeCell.getAttribute('data-raw-value');
+                const text = (rawValue !== null ? rawValue : (activeCell.textContent || '')).trim();
                 await copyToClipboard(text);
             }
             return;

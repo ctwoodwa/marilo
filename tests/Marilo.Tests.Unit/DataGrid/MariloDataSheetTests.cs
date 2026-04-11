@@ -501,4 +501,319 @@ public class MariloDataSheetTests : MariloTestBase
         Assert.Null(cut.Instance.GetCellError(data[0], "Name"));
         Assert.Empty(cut.Instance.GetDirtyRows());
     }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // Batch F3 — Paste hardening (GAP-DATASHEET-V04.1/V04.2/V04.3/V04.4)
+    // ─────────────────────────────────────────────────────────────────────
+
+    // ── Fix V04.1: Normalize \r\n line endings during paste ────────────
+
+    [Fact]
+    public void Paste_WithCrlfLineEndings_ParsesNumberCellsCorrectly()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Amount");
+                builder.AddAttribute(2, "Title", "Amount");
+                builder.AddAttribute(3, "ColumnType", DataSheetColumnType.Number);
+                builder.CloseComponent();
+            }));
+
+        // Activate first cell so PasteFromClipboard has an anchor.
+        cut.InvokeAsync(() => cut.Instance.EnterEditMode(data[0], "Amount"));
+        cut.InvokeAsync(() => cut.Instance.HandleKeyDown("Escape", false, false));
+
+        // TSV with Windows-style CRLF line endings — the trailing "\r" on the
+        // last cell of each row would break decimal.TryParse without V04.1.
+        cut.InvokeAsync(() => cut.Instance.PasteFromClipboard("11.50\r\n22.75\r\n33.00"));
+
+        Assert.Equal(11.50m, data[0].Amount);
+        Assert.Equal(22.75m, data[1].Amount);
+        Assert.Equal(33.00m, data[2].Amount);
+        // No cells should be marked invalid.
+        Assert.Null(cut.Instance.GetCellError(data[0], "Amount"));
+        Assert.Null(cut.Instance.GetCellError(data[1], "Amount"));
+        Assert.Null(cut.Instance.GetCellError(data[2], "Amount"));
+    }
+
+    [Fact]
+    public void Paste_WithCrlfLineEndings_MultiColumn_LastCellNotCorrupted()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(10);
+                builder.AddAttribute(11, "Field", "Amount");
+                builder.AddAttribute(12, "Title", "Amount");
+                builder.AddAttribute(13, "ColumnType", DataSheetColumnType.Number);
+                builder.CloseComponent();
+            }));
+
+        cut.InvokeAsync(() => cut.Instance.EnterEditMode(data[0], "Name"));
+        cut.InvokeAsync(() => cut.Instance.HandleKeyDown("Escape", false, false));
+
+        // Two rows, two columns, CRLF between rows. The numeric cell at the
+        // end of each line must parse cleanly (no trailing "\r").
+        cut.InvokeAsync(() => cut.Instance.PasteFromClipboard("Row1\t10.5\r\nRow2\t20.5"));
+
+        Assert.Equal("Row1", data[0].Name);
+        Assert.Equal(10.5m, data[0].Amount);
+        Assert.Equal("Row2", data[1].Name);
+        Assert.Equal(20.5m, data[1].Amount);
+    }
+
+    // ── Fix V04.2: Parse failures do not write raw string to model ─────
+
+    [Fact]
+    public void Paste_InvalidNumber_MarksCellInvalid_AndPreservesOriginalValue()
+    {
+        var data = SeedData();
+        var originalAmount = data[0].Amount; // 100m
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Amount");
+                builder.AddAttribute(2, "Title", "Amount");
+                builder.AddAttribute(3, "ColumnType", DataSheetColumnType.Number);
+                builder.CloseComponent();
+            }));
+
+        cut.InvokeAsync(() => cut.Instance.EnterEditMode(data[0], "Amount"));
+        cut.InvokeAsync(() => cut.Instance.HandleKeyDown("Escape", false, false));
+
+        cut.InvokeAsync(() => cut.Instance.PasteFromClipboard("abc"));
+
+        // The raw string was NOT written to the model.
+        Assert.Equal(originalAmount, data[0].Amount);
+        // The cell is marked invalid with the spec-required message.
+        Assert.Equal(CellState.Invalid, cut.Instance.GetCellState(data[0], "Amount"));
+        var error = cut.Instance.GetCellError(data[0], "Amount");
+        Assert.NotNull(error);
+        Assert.Contains("Invalid number", error!, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void Paste_InvalidDate_MarksCellInvalid_AndPreservesOriginalValue()
+    {
+        var data = new List<DateRow>
+        {
+            new() { Name = "A", When = new DateTime(2025, 1, 1) },
+            new() { Name = "B", When = new DateTime(2025, 2, 1) },
+        };
+
+        var cut = Render<MariloDataSheet<DateRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<DateRow>>(0);
+                builder.AddAttribute(1, "Field", "When");
+                builder.AddAttribute(2, "Title", "When");
+                builder.AddAttribute(3, "ColumnType", DataSheetColumnType.Date);
+                builder.CloseComponent();
+            }));
+
+        var originalDate = data[0].When;
+
+        cut.InvokeAsync(() => cut.Instance.EnterEditMode(data[0], "When"));
+        cut.InvokeAsync(() => cut.Instance.HandleKeyDown("Escape", false, false));
+
+        cut.InvokeAsync(() => cut.Instance.PasteFromClipboard("not-a-date"));
+
+        Assert.Equal(originalDate, data[0].When);
+        Assert.Equal(CellState.Invalid, cut.Instance.GetCellState(data[0], "When"));
+        var error = cut.Instance.GetCellError(data[0], "When");
+        Assert.NotNull(error);
+        Assert.Contains("Invalid date", error!, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void Paste_MixedValidAndInvalid_CommitsValidAndMarksInvalid()
+    {
+        var data = SeedData();
+        var originalRow1Amount = data[1].Amount; // 200m
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Amount");
+                builder.AddAttribute(2, "Title", "Amount");
+                builder.AddAttribute(3, "ColumnType", DataSheetColumnType.Number);
+                builder.CloseComponent();
+            }));
+
+        cut.InvokeAsync(() => cut.Instance.EnterEditMode(data[0], "Amount"));
+        cut.InvokeAsync(() => cut.Instance.HandleKeyDown("Escape", false, false));
+
+        // Row 0 gets a valid number, row 1 gets garbage.
+        cut.InvokeAsync(() => cut.Instance.PasteFromClipboard("11.5\nbad"));
+
+        Assert.Equal(11.5m, data[0].Amount); // committed
+        Assert.Equal(originalRow1Amount, data[1].Amount); // preserved
+        Assert.Equal(CellState.Dirty, cut.Instance.GetCellState(data[0], "Amount"));
+        Assert.Equal(CellState.Invalid, cut.Instance.GetCellState(data[1], "Amount"));
+    }
+
+    // ── Fix V04.3: Paste skips rows marked for deletion ────────────────
+
+    [Fact]
+    public void Paste_SkipsDeletedRow_AdvancesToNextLiveRow()
+    {
+        var data = new List<TestRow>
+        {
+            new() { Name = "Row0", Amount = 0m, IsActive = true },
+            new() { Name = "Row1", Amount = 0m, IsActive = true },
+            new() { Name = "Row2", Amount = 0m, IsActive = true },
+            new() { Name = "Row3", Amount = 0m, IsActive = true },
+        };
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.AllowDeleteRow, true)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        // Mark row index 1 for deletion.
+        cut.InvokeAsync(() => cut.Instance.MarkRowDeleted(data[1]));
+
+        // Anchor paste at row 0.
+        cut.InvokeAsync(() => cut.Instance.EnterEditMode(data[0], "Name"));
+        cut.InvokeAsync(() => cut.Instance.HandleKeyDown("Escape", false, false));
+
+        // 3 TSV rows. Expected mapping: A→Row0, B→Row2 (skipping deleted Row1), C→Row3.
+        cut.InvokeAsync(() => cut.Instance.PasteFromClipboard("A\nB\nC"));
+
+        Assert.Equal("A", data[0].Name);
+        Assert.Equal("Row1", data[1].Name); // unchanged — still deleted, still original name
+        Assert.Equal("B", data[2].Name);
+        Assert.Equal("C", data[3].Name);
+        Assert.True(cut.Instance.IsRowDeleted(data[1]));
+    }
+
+    // ── Fix V04.4: Copy honors Format via data-raw-value ───────────────
+
+    [Fact]
+    public void DataCell_HasDataRawValueAttribute_WithRawPropertyValue()
+    {
+        var data = new List<TestRow>
+        {
+            new() { Name = "Widget", Amount = 25.99m, IsActive = true }
+        };
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Amount");
+                builder.AddAttribute(2, "Title", "Amount");
+                builder.AddAttribute(3, "ColumnType", DataSheetColumnType.Number);
+                builder.AddAttribute(4, "Format", (Func<TestRow, string>)(r => r.Amount.ToString("C2", System.Globalization.CultureInfo.InvariantCulture)));
+                builder.CloseComponent();
+            }));
+
+        var cells = cut.FindAll("td[data-field='Amount']");
+        Assert.NotEmpty(cells);
+
+        // Raw value attribute contains the untyped/unformatted property value.
+        var rawAttr = cells[0].GetAttribute("data-raw-value");
+        Assert.Equal("25.99", rawAttr);
+
+        // Rendered text shows the Format-delegate output, not the raw value.
+        Assert.Contains("¤25.99", cells[0].TextContent);
+    }
+
+    [Fact]
+    public void ComputedCell_DoesNotEmitDataRawValue_DisplaysFormattedValue()
+    {
+        var data = new List<TestRow>
+        {
+            new() { Name = "Widget", Amount = 10m, IsActive = true }
+        };
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Total");
+                builder.AddAttribute(2, "Title", "Total");
+                builder.AddAttribute(3, "ColumnType", DataSheetColumnType.Computed);
+                builder.AddAttribute(4, "Format", (Func<TestRow, string>)(r => $"[{r.Total}]"));
+                builder.CloseComponent();
+            }));
+
+        var cells = cut.FindAll("td[data-field='Total']");
+        Assert.NotEmpty(cells);
+
+        // Per spec (bulk-paste-and-clipboard.md:36), computed cells copy their
+        // *displayed* (formatted) value. Since the JS copy handler falls back
+        // to textContent when data-raw-value is absent, computed cells deliberately
+        // omit the attribute — their visible text already IS the formatted value.
+        Assert.Null(cells[0].GetAttribute("data-raw-value"));
+        Assert.Contains("[20]", cells[0].TextContent);
+    }
+
+    [Fact]
+    public void DataCell_WithoutFormatDelegate_OmitsDataRawValue()
+    {
+        var data = new List<TestRow>
+        {
+            new() { Name = "Alpha", Amount = 42m, IsActive = true }
+        };
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        var cells = cut.FindAll("td[data-field='Name']");
+        Assert.NotEmpty(cells);
+
+        // When there is no Format delegate, the cell's textContent already equals
+        // the raw value, so the attribute is omitted to avoid per-cell DOM bloat.
+        // JS copy handlers should read data-raw-value with a textContent fallback.
+        Assert.Null(cells[0].GetAttribute("data-raw-value"));
+        Assert.Contains("Alpha", cells[0].TextContent);
+    }
+
+    private record DateRow
+    {
+        public Guid Id { get; init; } = Guid.NewGuid();
+        public string Name { get; set; } = "";
+        public DateTime When { get; set; }
+    }
 }

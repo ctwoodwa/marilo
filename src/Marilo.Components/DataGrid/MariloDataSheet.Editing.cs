@@ -249,20 +249,72 @@ public partial class MariloDataSheet<TItem>
         var startColIdx = _columns.FindIndex(c => c.Field == _activeCellField);
         if (startRowIdx < 0 || startColIdx < 0) return;
 
-        var lines = tsvData.Split('\n', StringSplitOptions.RemoveEmptyEntries);
-        for (var r = 0; r < lines.Length && startRowIdx + r < _displayRows.Count; r++)
+        // V04.1 — Normalize line endings. Windows clipboards produce "\r\n";
+        // splitting on '\n' alone leaves '\r' appended to the last cell of
+        // each row and breaks decimal/DateTime parsing.
+        var normalized = tsvData.Replace("\r\n", "\n").Replace("\r", "\n");
+        var lines = normalized.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+
+        // V04.3 — Skip rows that are marked for deletion. The TSV cursor
+        // advances independently from the display-row cursor so that a
+        // pasted row lands on the next non-deleted row rather than being
+        // silently dropped onto a deleted one.
+        var rowCursor = startRowIdx;
+        for (var r = 0; r < lines.Length; r++)
         {
+            while (rowCursor < _displayRows.Count && IsRowDeleted(_displayRows[rowCursor]))
+            {
+                rowCursor++;
+            }
+            if (rowCursor >= _displayRows.Count) break;
+
+            var row = _displayRows[rowCursor];
             var cells = lines[r].Split('\t');
             for (var c = 0; c < cells.Length && startColIdx + c < _columns.Count; c++)
             {
                 var column = _columns[startColIdx + c];
                 if (!column.Editable || column.ColumnType == DataSheetColumnType.Computed) continue;
 
-                var row = _displayRows[startRowIdx + r];
-                object? parsedValue = ParseCellValue(column, cells[c].Trim());
-                await CommitCellEdit(row, column.Field, parsedValue);
+                var (success, parsedValue, errorMessage) = TryParseCellValue(column, cells[c].Trim());
+                if (success)
+                {
+                    await CommitCellEdit(row, column.Field, parsedValue);
+                }
+                else
+                {
+                    // V04.2 — Do NOT write the raw pasted string to the model.
+                    // Mark the cell invalid with a type-specific message and
+                    // leave the row's property at its pre-paste value.
+                    MarkPasteCellInvalid(row, column.Field, errorMessage!);
+                }
             }
+
+            rowCursor++;
         }
+
+        StateHasChanged();
+    }
+
+    // V04.2 — Records a paste-time coercion failure on the dirty-row entry
+    // without mutating the underlying TItem property. Mirrors the pattern
+    // used by CommitCellEdit's ValidationErrors dictionary so the cell
+    // surfaces CellState.Invalid through the existing GetCellState path.
+    private void MarkPasteCellInvalid(TItem row, string field, string errorMessage)
+    {
+        var key = GetRowKey(row);
+        if (key is null) return;
+
+        if (!_dirtyRows.TryGetValue(key, out var entry))
+        {
+            entry = new DirtyRowEntry<TItem>
+            {
+                Original = GridReflectionHelper.DeepClone(row),
+                Current = row
+            };
+            _dirtyRows[key] = entry;
+        }
+
+        entry.ValidationErrors[field] = errorMessage;
     }
 
     // ── Helpers ─────────────────────────────────────────────────────────
@@ -280,7 +332,13 @@ public partial class MariloDataSheet<TItem>
         };
     }
 
-    private static object? ParseCellValue(MariloDataSheetColumn<TItem> column, string text)
+    // V04.2 — Returns (success, parsedValue, errorMessage). On success the
+    // parsed value is type-correct for the column's CLR property; on
+    // failure the error message matches the spec (bulk-paste-and-clipboard.md
+    // "Type Coercion on Paste" table) and the paste loop will mark the cell
+    // invalid without writing the raw string to the model.
+    private static (bool Success, object? Value, string? Error) TryParseCellValue(
+        MariloDataSheetColumn<TItem> column, string text)
     {
         switch (column.ColumnType)
         {
@@ -289,16 +347,24 @@ public partial class MariloDataSheet<TItem>
                     var targetType = typeof(TItem).GetProperty(column.Field)?.PropertyType
                                      ?? typeof(decimal);
                     var (success, value) = ParseNumericValue(text, targetType);
-                    // TODO(V04.2): surface parse failures as CellState.Invalid instead
-                    // of silently falling through to the default value.
-                    return success ? value : GetDefaultValue(column);
+                    return success
+                        ? (true, value, null)
+                        : (false, null, "Invalid number");
                 }
-            case DataSheetColumnType.Date when DateTime.TryParse(text, out var dt):
-                return dt;
+            case DataSheetColumnType.Date:
+                if (DateTime.TryParse(text, out var dt))
+                    return (true, dt, null);
+                return (false, null, "Invalid date");
             case DataSheetColumnType.Checkbox:
-                return text.Equals("true", StringComparison.OrdinalIgnoreCase) || text == "1";
+                return (true,
+                    text.Equals("true", StringComparison.OrdinalIgnoreCase) || text == "1",
+                    null);
+            case DataSheetColumnType.Select:
+                if (column.Options != null && column.Options.Any(o => o.Value == text))
+                    return (true, text, null);
+                return (false, null, "Value not in options");
             default:
-                return text;
+                return (true, text, null);
         }
     }
 
