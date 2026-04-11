@@ -100,8 +100,8 @@ None — all gaps in this workspace are resolved.
 ## Routed to Other Workspaces
 
 - Chart drilldown → `chart-delivery` CDW
-- Scheduler → `scheduler-gap-analysis` or dedicated CDW
-- TreeList → `treelist-gap-analysis` or dedicated CDW
+- Scheduler → `scheduler-gap-analysis` (Stage 01 intake complete 2026-04-10 — 32 gaps; blocked on 5 human decisions before Stage 02)
+- TreeList → `treelist-gap-analysis` (Stage 01 intake complete 2026-04-10 — 43 gaps; blocked on 7 human decisions before Stage 02; ~51% DataGrid-parity reuse candidates)
 - DataSheet → `datasheet-delivery` CDW (true spreadsheet architecture)
 - No-source components (Diagram, DockManager, Map, PivotGrid) → spec + concept-demo only per human decision
 - TreeView demos → `treeview-delivery` CDW (scenario coverage)

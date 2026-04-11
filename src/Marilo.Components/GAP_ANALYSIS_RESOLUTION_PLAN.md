@@ -1322,7 +1322,7 @@ Total: 7 new bUnit tests + 1 Batch 6 fix; runtime pending (.NET SDK unavailable 
 - ~~ColorPicker: FlatColorPicker, ColorGradient, ColorPalette standalone components + ColorPickerViews child tags~~ → **RESOLVED** in `colorpicker-standalone` batch (5/5 CPICK gaps, 18 tests)
 - ~~DateRangePicker: Multi-view calendar navigation~~ → **RESOLVED** in `drp-multiview` batch (DRP-001, 3 tests)
 - ~~DateRangePicker: FocusStartAsync/FocusEndAsync~~ → **RESOLVED** in `drp-multiview` batch (DRP-004, 2 tests)
-- FileUpload/Upload: DropZoneId — **DEFERRED** (JS interop needed)
+- ~~FileUpload/Upload: DropZoneId~~ → **RESOLVED** in `js-interop-batch1` (GAP-FU-001 + GAP-UPL-003, 2 gaps; `marilo-dropzone.js` ES module + `IDropZoneService`; portion of the 18-test JS-B1 batch)
 
 ### T1 Splitter/Wizard — Full Pipeline Tracking
 

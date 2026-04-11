@@ -19,9 +19,9 @@
 | Chart | 2 remaining | 0 | 13 (B1+B2) | 2 deferred | **06-validate (B2)** | 27 | Batch 1+2 closed; 4 pre-existing, 9 implemented; drilldown+demos deferred |
 | Editor | ~2 remaining | 0 | 8 (B1+B2a+JS-B1) | 0 | **06-validate (JS-B1)** | 29 (14+8+7) | Batch 1+2a+JS-B1 closed; JS-B1: Adaptive toolbar via ResizeObserver; 2 JS gaps remaining: table/image resize |
 | FileManager | 0 | 0 | 36 (A-F) | 0 | **06-validate** | 151 | **COMPLETE** — all 36 gaps resolved across 6 phases; full rewrite from 170-line scaffold; 877/877 suite |
-| Scheduler | ~25-40 | 0 | 0 | 0 | 01-intake | 0 | Recommend dedicated CDW |
+| Scheduler | 32 | 0 | 0 | 0 | **01-intake complete (2026-04-10)** | 0 | Owned by `scheduler-gap-analysis`; 5 Crit / 13 High / 9 Med / 5 Low; blocked on 5 human decisions before Stage 02 |
 | Gantt | 0 | 0 | 20 | 0 | **06-validate** | 31 | Full rewrite complete; 20/20 gaps resolved; subagent-driven dev |
-| TreeList | ~35-55 | 0 | 0 | 0 | 01-intake | 0 | Recommend dedicated CDW |
+| TreeList | 43 | 0 | 0 | 0 | **01-intake complete (2026-04-10)** | 0 | Owned by `treelist-gap-analysis`; 6 Crit / 17 High / 14 Med / 6 Low; ~51% are DataGrid-parity reuse items; blocked on 7 human decisions before Stage 02 |
 | Diagram | ~15-25 | 0 | 0 | 1 (no source) | — | 0 | Architecture decision needed |
 | DockManager | ~15-25 | 0 | 0 | 1 (no source) | — | 0 | Architecture decision needed |
 | Map | ~15-25 | 0 | 0 | 1 (no source) | — | 0 | Architecture decision needed |

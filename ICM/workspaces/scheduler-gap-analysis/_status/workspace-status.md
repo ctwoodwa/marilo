@@ -8,17 +8,15 @@
 
 ## Header
 
-| Field | Value |
-|-------|-------|
-| Workspace | scheduler-gap-analysis |
-| Last updated | 2026-04-09 |
-| Current phase | Pre-run (no stages executed yet) |
+- **Workspace:** scheduler-gap-analysis
+- **Last updated:** 2026-04-10
+- **Current phase:** Stage 01 intake **complete** (assess mode); 32 gaps inventoried; blocked on human decisions before Stage 02
 
 ## Pipeline Status
 
-```
-Stage 01 -- [ ] intake
-Stage 02 -- [ ] prioritize
+```text
+Stage 01 -- [x] intake            (2026-04-10, assess mode, 32 gaps)
+Stage 02 -- [ ] prioritize        (blocked: awaiting human decisions, see below)
 Stage 03 -- [ ] resolution-design
 Stage 04 -- [ ] remediation-plan
 Stage 05 -- [ ] implement
@@ -27,11 +25,13 @@ Stage 06 -- [ ] validate
 
 Key outputs so far:
 
-- None. Workspace scaffolded but no stages run.
+- `stages/01-intake/output/gap-scheduler-inventory.md` — 32 gaps across 9 feature areas (5 Critical / 13 High / 9 Medium / 5 Low); phased rebuild plan A–J
+- `_config/gap-context.md` — scope set to `systematic`, counts populated, critical path identified
 
 ## Next Actions
 
-1. Run Stage 01 (intake) to import gaps from scheduler-delivery spec review or assess component source.
+1. Human review of 5 open decisions (see `_config/gap-context.md` "Open Human Decisions"): branch strategy, obsolete-alias horizon, RRULE library approval, edit-popup ownership, Timeline-view sequencing
+2. After decisions land, run Stage 02 (prioritize) with the phased breakdown from the inventory's "Suggested Phase Breakdown" table as the seed
 
 ## Upstream Dependencies
 

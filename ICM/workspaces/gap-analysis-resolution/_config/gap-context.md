@@ -65,7 +65,7 @@ All implementations are independent (no Telerik dependency), use MIT/Apache-2.0-
 | Batch | Tests written | Tests passing | Coverage notes |
 | ----- | ------------- | ------------- | -------------- |
 | treeview | 45 bUnit (17 Ph1 + 28 Ph2) | 45/45 | Gap 18 (virtualization) deferred; no test coverage for deferred gap |
-| form | 0 | 0 | Awaiting implementation (Stage 05) |
+| form | 20 | 20/20 ✅ | Stage 06 closed (2026-04-02); 35+ resolved (RES-FORM-001/002/003), 11 deferred to Phase 2+; runtime re-validated 2026-04-10 (FormTests 20/20) |
 | t4-pickers-batch1 | 17 | 17 | Stage 06 closed (2026-04-03); 7 resolved, 3 partially resolved |
 | t4-pickers-batch2 | 9 | pending | Stage 06 closed (2026-04-04); 4/4 resolved; runtime test pending |
 | t4-pickers-batch3 | 17 | 17 | Stage 06 closed (2026-04-05); 12 resolved, 1 won't fix; 547/547 full suite |
