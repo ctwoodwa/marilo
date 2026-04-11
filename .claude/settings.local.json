@@ -5,7 +5,13 @@
       "Skill(gap-analysis-resolution:*)",
       "Edit(.claude/orchestration/**)",
       "Write(.claude/orchestration/**)",
-      "MultiEdit(.claude/orchestration/**)"
+      "MultiEdit(.claude/orchestration/**)",
+      "Edit(ICM/workspaces/**)",
+      "Write(ICM/workspaces/**)",
+      "MultiEdit(ICM/workspaces/**)",
+      "Edit(workspaces/Marilo/workspaces/**)",
+      "Write(workspaces/Marilo/workspaces/**)",
+      "MultiEdit(workspaces/Marilo/workspaces/**)"
     ]
   }
 }
