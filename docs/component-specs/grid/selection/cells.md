@@ -21,18 +21,19 @@ You can also select a cell range by holding and dragging the mouse cursor. The d
 
 To enable cell selection:
 
-1. Set the Grid `SelectedCells` parameter to a collection of type `IEnumerable<GridSelectedCellDescriptor>`. The collection must be initialized in advance. See [`GridSelectedCellDescriptor`](#gridselectedcelldescriptor) for infomation about the object properties.
-1. Add a `<GridSelectionSettings>` tag to the `<GridSettings>` tag, and set the `SelectionType` parameter to the `GridSelectionType.Cell`.
+1. Set the Grid `SelectedCells` parameter to a collection of type `IEnumerable<GridCellReference<TItem>>`. The collection must be initialized in advance. See [`GridCellReference`](#gridcellreference) for infomation about the object properties.
+1. Set the `SelectionUnit` parameter on the `<MariloGrid>` to `GridSelectionUnit.Cell`.
 
 >caption Grid multiple cell selection
 
 ````RAZOR
 <MariloGrid Data="@GridData"
              SelectionMode="@GridSelectionMode.Multiple"
+             SelectionUnit="@GridSelectionUnit.Cell"
              @bind-SelectedCells="@SelectedCells"
              Pageable="true">
     <GridSettings>
-        <GridSelectionSettings SelectionType="@GridSelectionType.Cell" DragToSelect="true" />
+        <GridSelectionSettings DragToSelect="true" />
     </GridSettings>
     <GridColumns>
         <GridColumn Field="@nameof(Employee.Name)" />
@@ -43,11 +44,11 @@ To enable cell selection:
 <h3>Selected Cells:</h3>
 
 <ul>
-    @foreach (GridSelectedCellDescriptor cellDescriptor in SelectedCells)
+    @foreach (GridCellReference<Employee> cellDescriptor in SelectedCells)
     {
         <li>
-            Column <code>Field</code>: @cellDescriptor.ColumnField,
-            <code>EmployeeId</code>: @( ((Employee)cellDescriptor.DataItem).EmployeeId )
+            Column <code>Field</code>: @cellDescriptor.Field,
+            <code>EmployeeId</code>: @cellDescriptor.Item.EmployeeId
         </li>
     }
 </ul>
@@ -55,7 +56,7 @@ To enable cell selection:
 @code {
     private List<Employee> GridData { get; set; } = new();
 
-    private IEnumerable<GridSelectedCellDescriptor> SelectedCells { get; set; } = Enumerable.Empty<GridSelectedCellDescriptor>();
+    private IEnumerable<GridCellReference<Employee>> SelectedCells { get; set; } = Enumerable.Empty<GridCellReference<Employee>>();
 
     protected override void OnInitialized()
     {
@@ -69,11 +70,11 @@ To enable cell selection:
             });
         }
 
-        SelectedCells = new List<GridSelectedCellDescriptor>() {
-            new GridSelectedCellDescriptor()
+        SelectedCells = new List<GridCellReference<Employee>>() {
+            new GridCellReference<Employee>()
             {
-                DataItem = GridData.ElementAt(2),
-                ColumnField = nameof(Employee.Name)
+                Item = GridData.ElementAt(2),
+                Field = nameof(Employee.Name)
             }
         };
     }
@@ -89,7 +90,7 @@ To enable cell selection:
 
 ## SelectedCellsChanged Event
 
-You can respond to user selection actions through the `SelectedCellsChanged` event. The event handler receives a collection of type `IEnumerable<GridSelectedCellDescriptor>`. The collection may have multiple, single, or no objects in it, depending on the `SelectionMode` and the last user selection.
+You can respond to user selection actions through the `SelectedCellsChanged` event. The event handler receives a collection of type `IEnumerable<GridCellReference<TItem>>`. The collection may have multiple, single, or no objects in it, depending on the `SelectionMode` and the last user selection.
 
 > The `SelectedCellsChanged` event handler cannot be awaited. To execute asynchronous operations when the user selects rows, use the [`OnRowClick`](slug:grid-events#onrowclick) or [`OnRowDoubleClick`](slug:grid-events#onrowdoubleclick) event instead.
 
@@ -100,11 +101,12 @@ You can respond to user selection actions through the `SelectedCellsChanged` eve
 
 <MariloGrid Data="@GridData"
              SelectionMode="@GridSelectionMode.Multiple"
+             SelectionUnit="@GridSelectionUnit.Cell"
              SelectedCells="@SelectedCells"
-             SelectedCellsChanged="@( (IEnumerable<GridSelectedCellDescriptor> newSelected) => OnCellSelect(newSelected) )"
+             SelectedCellsChanged="@( (IEnumerable<GridCellReference<Employee>> newSelected) => OnCellSelect(newSelected) )"
              Pageable="true">
     <GridSettings>
-        <GridSelectionSettings SelectionType="@GridSelectionType.Cell" DragToSelect="true" />
+        <GridSelectionSettings DragToSelect="true" />
     </GridSettings>
     <GridColumns>
         <GridColumn Field="@nameof(Employee.Name)" />
@@ -117,11 +119,11 @@ You can respond to user selection actions through the `SelectedCellsChanged` eve
 <h3>Selected Cells:</h3>
 
 <ul>
-    @foreach (GridSelectedCellDescriptor cellDescriptor in SelectedCells)
+    @foreach (GridCellReference<Employee> cellDescriptor in SelectedCells)
     {
         <li>
-            Column <code>Field</code>: @cellDescriptor.ColumnField,
-            <code>EmployeeId</code>: @( ((Employee)cellDescriptor.DataItem).EmployeeId )
+            Column <code>Field</code>: @cellDescriptor.Field,
+            <code>EmployeeId</code>: @cellDescriptor.Item.EmployeeId
         </li>
     }
 </ul>
@@ -129,11 +131,11 @@ You can respond to user selection actions through the `SelectedCellsChanged` eve
 @code {
     private List<Employee> GridData { get; set; } = new();
 
-    private IEnumerable<GridSelectedCellDescriptor> SelectedCells { get; set; } = Enumerable.Empty<GridSelectedCellDescriptor>();
+    private IEnumerable<GridCellReference<Employee>> SelectedCells { get; set; } = Enumerable.Empty<GridCellReference<Employee>>();
 
     private string SelectedCellsChangedLog { get; set; } = string.Empty;
 
-    protected void OnCellSelect(IEnumerable<GridSelectedCellDescriptor> cellDescriptors)
+    protected void OnCellSelect(IEnumerable<GridCellReference<Employee>> cellDescriptors)
     {
         // Update the SelectedCells collection manually.
         // When using two-way binding, this happens automatically.
@@ -154,11 +156,11 @@ You can respond to user selection actions through the `SelectedCellsChanged` eve
             });
         }
 
-        SelectedCells = new List<GridSelectedCellDescriptor>() {
-            new GridSelectedCellDescriptor()
+        SelectedCells = new List<GridCellReference<Employee>>() {
+            new GridCellReference<Employee>()
             {
-                DataItem = GridData.ElementAt(2),
-                ColumnField = nameof(Employee.Name)
+                Item = GridData.ElementAt(2),
+                Field = nameof(Employee.Name)
             }
         };
     }
@@ -172,22 +174,23 @@ You can respond to user selection actions through the `SelectedCellsChanged` eve
 }
 ````
 
-## GridSelectedCellDescriptor
+## GridCellReference
 
-The `GridSelectedCellDescriptor` type exposes the following properties:
+The `GridCellReference<TItem>` type exposes the following properties:
 
 
 | Property Name | Type | Description |
 | --- | --- | --- |
-| `ColumnField` | `string` | The value of the [Grid column `Field`](slug:components/grid/columns/bound#data-binding) parameter, if set. |
-| `ColumnId` | `string` | The value of the [Grid column `Id`](slug:components/grid/columns/bound#identification) parameter, if set. |
-| `DataItem` | `object` | The Grid data item instance. Cast it to the actual Grid model type before use. |
+| `Item` | `TItem` | The data item (row) containing this cell. |
+| `Field` | `string` | The field name of the column. |
+| `Value` | `object?` | The value of the cell. |
+| `RowIndex` | `int` | The row index in the current display. |
 
 ## Selection When Data Changes
 
 When the Grid `Data` collection changes, the `SelectedCells` collection has the following behavior:
 
-* When the user updates a selected cell and the item instance is replaced, you have to also replace the `DataItem` object in the `SelectedCells` collection. Do that in the [Grid `OnUpdate` event](slug:grid-editing-overview#events).
+* When the user updates a selected cell and the item instance is replaced, you have to also replace the `Item` value in the `SelectedCells` collection. Do that in the [Grid `OnUpdate` event](slug:grid-editing-overview#events).
 * When the user deletes a row with selected cells, update the `SelectedCells` collection in the the Grid `OnDelete` event handler.
 * To select cells from a new item in the Grid you can use the [`OnCreate` event](slug:grid-editing-overview#events) to update the `SelectedCells` collection.
 
