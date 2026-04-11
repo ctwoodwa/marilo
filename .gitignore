@@ -69,10 +69,28 @@ ehthumbs.db
 !/.claude/memory/
 !/.claude/skills/
 !/.claude/rules/
-!/.claude/Orchestration/
+
 
 ## Test results
 TestResults/
 coverage/
 *.coverage
 *.coveragexml
+
+# Orchestrator runtime state
+.claude/orchestration/_orchestrator/session.json
+.claude/orchestration/_orchestrator/log.jsonl
+
+# Worker/session runtime memory
+.claude/orchestration/_memory/workers/*.json
+
+# Transient orchestration queues and outputs
+.claude/orchestration/_orchestrator/inbox/**
+.claude/orchestration/_orchestrator/results/**
+.claude/orchestration/_orchestrator/reviews/**
+
+# Keep folder structure
+!.claude/orchestration/_orchestrator/inbox/.gitkeep
+!.claude/orchestration/_orchestrator/results/.gitkeep
+!.claude/orchestration/_orchestrator/reviews/.gitkeep
+!.claude/orchestration/_memory/workers/.gitkeep
