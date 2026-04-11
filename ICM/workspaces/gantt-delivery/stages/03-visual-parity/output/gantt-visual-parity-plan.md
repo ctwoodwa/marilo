@@ -66,3 +66,14 @@ Based on component structure and cerebrum learnings:
 2. Set up Playwright capture scripts for automated screenshot collection
 3. Execute first-pass Fluent Light review across P1 scenarios
 4. Document gaps and iterate through remaining themes/modes
+
+## Wave 3 Update (2026-04-11T17:40Z) — Static-Analysis Pass Complete
+
+A **static-analysis** visual-parity audit (source-file based, no runtime screenshots) was executed under `w-gantt-delivery` Wave 3. Outputs:
+
+- `output/gantt-visual-parity-gaps.md` — 16 direct gap records (VP-gantt-01…16) + 2 DEFERRED records (VP-gantt-17 EUX-04, VP-gantt-18 EUX-05).
+- `output/gantt-parity-summary.md` — estimated parity scores (~0.95/3 averaged across non-blocked theme×mode cells), severity breakdown, and remediation order.
+
+**Key headline finding:** the Gantt BEM class scheme is declared in `MariloGantt.razor` but the provider SCSS files never added base rules for several core elements — `.mar-gantt__bar`, `.mar-gantt__tasklist-row`, `.mar-gantt__timeline-header`, selection, hover, focus. This means the dominant parity problem is **structural** ("base rules were never written"), not token-shade or spacing polish. Remediation order in the summary reflects that — the foundation pass (VP-gantt-01, VP-gantt-02, VP-gantt-15) must land before further state scoring is meaningful.
+
+A proper runtime-capture pass (Playwright, all 6 theme×mode combinations) is still required to confirm scores, but is out of scope for this worker's turn and blocked on (a) EUX-04/05 source landing for deferred states and (b) Material runtime project existing for Material cells.

@@ -1,5 +1,6 @@
 {
   "permissions": {
+    "defaultMode": "acceptEdits",
     "allow": [
       "Skill(gap-analysis-resolution)",
       "Skill(gap-analysis-resolution:*)",

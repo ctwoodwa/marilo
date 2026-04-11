@@ -62,3 +62,59 @@ Based on component characteristics:
 2. Set up Playwright capture scripts for automated screenshot collection
 3. Execute first-pass Fluent Light review across P1 scenarios
 4. Document gaps and iterate through remaining themes/modes
+
+---
+
+## 2026-04-11 wave 3 static-analysis pass (w-datasheet-delivery)
+
+A static-analysis pass (no browser capture) was run on 2026-04-11 by
+`w-datasheet-delivery` to populate `datasheet-visual-parity-gaps.md` and
+`datasheet-parity-summary.md`. Findings that inform the remainder of the
+plan:
+
+- **The assumption in step 2 above (set up Playwright capture scripts) is
+  blocked for this component.** Every `mar-datasheet*` BEM class is emitted
+  but no provider SCSS defines any of them. Captures would score browser-
+  default `<table>` in all 6 theme/mode combinations across all 9 target
+  states — the scoring dispersion between themes would be zero. Wave 3
+  therefore produced the gap list from source + provider + SCSS audit
+  instead, which is faster and yields the same critical finding.
+- **Every primary state scored 0 in every theme/mode** (except validation
+  error and focused cell, which scored 1). The root cause is missing
+  `_data-sheet.scss` / `_bridge-data-sheet.scss` in all three providers.
+  This is tracked as the umbrella record `VP-datasheet-01` with per-theme
+  child records `VP-datasheet-02` through `VP-datasheet-12`.
+- **Three scenarios are DEFERRED by inbox instruction** and MUST NOT be
+  re-escalated:
+  - EU-06 theming side-by-side → `DEFERRED-PENDING-ARCHITECTURE`
+    (`datasheet-theming-architecture` user-decision OPEN).
+  - EU-07 rectangular range selection → `DEFERRED-PENDING-SOURCE`
+    (`DataSheetSelection<TItem>` source model does not exist).
+  - 10k-row virtualization capture → `DEFERRED-PENDING-SCOPE`
+    (`datasheet-10k-rows` user-decision OPEN).
+  These are recorded as `VP-datasheet-D01` / `D02` / `D03`.
+- **Review order adjustment for the next capture pass** (when it can run):
+  do not start with Fluent Light alone. The structural gap is identical
+  across providers, so the useful capture pass is "a single theme/mode
+  after `_data-sheet.scss` lands, to verify the fix pattern scales".
+  That sequencing is plan-level guidance for the 04-sync-check stage and
+  the remediation work, not this wave.
+- **Parallelizable remediation lanes** are enumerated in the parity
+  summary's "Primary remediation lanes" section. Five lanes, one per
+  provider / concern, all blocked on the `datasheet-theming-architecture`
+  decision landing first.
+
+## Known blockers (updated 2026-04-11)
+
+- `datasheet-theming-architecture` user-decision OPEN — foundation of every
+  SCSS remediation lane. Do not dispatch remediation workers until
+  resolved.
+- Wave 1 `SA-01` (grid root `tabindex=0`) — source-side prerequisite for
+  VP-datasheet-12 focus-visible styling. Cannot author the focus SCSS
+  until the source DOM has a focus target.
+- Wave 1 `V03` (range selection source model) — source-side prerequisite
+  for VP-datasheet-D02. Deferred until after source lands.
+- `datasheet-10k-rows` user-decision OPEN — demo-dataset cap prerequisite
+  for VP-datasheet-D03.
+- Material runtime provider implementation status — secondary gate on
+  VP-datasheet-11 (Material lane).
