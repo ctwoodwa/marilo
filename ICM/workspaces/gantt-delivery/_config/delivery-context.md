@@ -24,8 +24,8 @@
 | Field | Value |
 |-------|-------|
 | Spec version | unversioned |
-| Last spec audit | 2026-04-09 |
-| Open spec gaps | ~107 unique (see gantt-gap-analysis output/stage-01/) |
+| Last spec audit | 2026-04-11 |
+| Open spec gaps | 33 (CDW stage-01 output); ~107 unique in gantt-gap-analysis output/stage-01/ |
 
 ## Example UX State
 

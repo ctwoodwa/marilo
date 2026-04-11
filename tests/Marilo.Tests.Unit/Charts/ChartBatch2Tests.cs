@@ -276,4 +276,26 @@ public class ChartBatch2Tests : MariloTestBase
         // All data binding parameters are accepted
         Assert.NotNull(cut.Find("svg"));
     }
+
+    // ── Regression: scatter/bubble with complex Data and no Field ────
+    // Previously crashed with InvalidCastException because the primitive
+    // branch short-circuited on empty Field and tried Convert.ToDouble(item).
+    [Fact]
+    public void Scatter_Series_With_ComplexData_And_NoField_Renders()
+    {
+        var cut = Render<MariloChart>(parameters => parameters
+            .Add(p => p.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloChartSeries>(0);
+                builder.AddAttribute(1, nameof(MariloChartSeries.Name), "Scatter");
+                builder.AddAttribute(2, nameof(MariloChartSeries.Data), (IEnumerable<object>)_bubbleData.Cast<object>().ToList());
+                builder.AddAttribute(3, nameof(MariloChartSeries.XField), "Value");
+                builder.AddAttribute(4, nameof(MariloChartSeries.YField), "Size");
+                builder.AddAttribute(5, nameof(MariloChartSeries.Type), ChartSeriesType.Scatter);
+                builder.CloseComponent();
+            }));
+
+        // Should render without throwing InvalidCastException.
+        Assert.NotNull(cut.Find("svg"));
+    }
 }

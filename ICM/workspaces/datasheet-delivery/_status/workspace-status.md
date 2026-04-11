@@ -1,6 +1,6 @@
 # Workspace Status: DataSheet Delivery
 
-**Last updated:** 2026-04-11 (Stage 02 Example UX impl COMPLETE — 02a landed across commits `5abf813`/`6ce6d65`/`1021175`, and **Batch 02b Keyboard-and-Accessibility.razor landed as commit `e48d08f` in Fire #26**; 1160/1160 full suite passing across all four demo pages)
+**Last updated:** 2026-04-11 (Stage 03a-pass2 scaled the datasheet spec to ALL_THEMES in commit `cdd9f50` on top of 03a `0094f93` + 03b `8c51bb0` — `tests/visual-parity/specs/datasheet.spec.ts` now has **7 scenarios × 6 themes = 42 tests** (fluent/bootstrap/material × light/dark); full theme matrix enumerated and type-checked; manual baseline generation still pending; Stage 03c scoring after baselines exist)
 
 ## Pipeline Status
 
@@ -12,6 +12,120 @@
                                V03 large-feature)          + BulkOperations +
                                                            Keyboard-and-Accessibility)
 ```
+
+## Iteration 18 — Stage 03a-pass2 Theme Matrix Scaled to ALL_THEMES (Complete 2026-04-11)
+
+Loop iteration 18 (Fire #69). Commit `cdd9f50` on `workInProgress`. One-line follow-up to Stage 03a + 03b that scales the theme matrix to the full 6-theme coverage per the Stage 03 plan.
+
+**Change:**
+
+`tests/visual-parity/specs/datasheet.spec.ts` — 3-line edit:
+
+- Line 3 (import): `FIRST_PASS_THEMES` → `ALL_THEMES`
+- Line 49 (outer loop): `for (const theme of FIRST_PASS_THEMES)` → `for (const theme of ALL_THEMES)`
+- Lines 41 (docstring): removed "theme matrix expansion beyond FIRST_PASS_THEMES" from out-of-scope; added a theme-matrix note explaining the ALL_THEMES coverage and the manual baseline generation step
+
+**Scale:**
+
+- Before: 7 scenarios × 2 themes (fluent-light + fluent-dark) = **14 tests**
+- After: 7 scenarios × 6 themes (fluent/bootstrap/material × light/dark) = **42 tests**
+
+**Verification:**
+
+- TypeScript: PASS (`npx tsc --noEmit -p tests/visual-parity` clean exit 0)
+- Playwright list: PASS (`npx playwright test --list` reports **42** datasheet tests)
+- All 6 theme slugs enumerated: `bootstrap-dark`, `bootstrap-light`, `fluent-dark`, `fluent-light`, `material-dark`, `material-light`
+
+**Files changed (commit `cdd9f50`):** 1 file. 7 insertions, 3 deletions.
+
+**Why scale now instead of waiting for first baselines:**
+
+Scaling now preempts a one-line follow-up change that would otherwise need to land AFTER the first baseline pass completes for FIRST_PASS_THEMES. By scaling the spec up front, the manual baseline-generation step (`playwright test --update-snapshots --grep datasheet` against a live demo server on port 5301) produces all 42 baselines in a single sweep rather than running against a mid-expansion matrix.
+
+**Stage 03 status update:**
+
+- ✅ Stage 03a (primary scenarios): 3 scenarios spec'd (commit `0094f93`)
+- ✅ Stage 03b (secondary scenarios): 4 scenarios spec'd (commit `8c51bb0`)
+- ✅ Stage 03a-pass2 (full theme matrix): 42 tests enumerated (commit `cdd9f50`)
+- ⏳ **Manual baseline generation** — blocks Stage 03c; requires live demo server + human oversight
+- ⏳ Stage 03c (scoring against rubric): blocked on baselines
+- ⏳ Stage 03d (handoff to gap-analysis): conditional on 03c findings
+
+**Out of scope (still deferred):**
+
+- Frozen rows/cols, range selection, formula bar, sheet tabs (not implemented in DataSheet)
+- Bootstrap/Material baseline validation (requires provider-specific human eyes)
+
+**Next iteration pickup:** Further cron work on Stage 03 is blocked on manual baseline generation. Other cron-tractable workstreams remain blocked on the 5 human-decision items from Fire #27 (TreeView scope, DataGrid naming/virt, Scheduler/TreeList decisions, no-source strategy).
+
+## Iteration 17 — Stage 03b Secondary State Scenarios Landed (Complete 2026-04-11)
+
+Loop iteration 17 (Fire #68). Commit `8c51bb0` on `workInProgress`. Extends Stage 03a's spec with secondary-state scenarios per the Stage 03 plan.
+
+**Deliverables:**
+
+- `tests/visual-parity/specs/datasheet.spec.ts` — extended in-place. **+161 lines, -12 lines**. Original 3 primary scenarios from `0094f93` are byte-identical; 4 new secondary scenarios added inside the same `for (const theme of FIRST_PASS_THEMES)` block:
+  - **header-cells** — captures the grid (header band is always rendered as part of `.mar-datasheet`); dedicated baseline for header regression.
+  - **dirty-row** — Ticker cell on row 2 → click → F2 → `.fill('ZZZZ')` on `.mar-datasheet__editor-input` → Enter to commit. The `.fill()` call clears the existing value first to guarantee the commit differs from the original (vs `keyboard.type` which would just append). Maps to `mar-datasheet__row--dirty` (verified at `FluentUICssProvider.cs:571`) and cell-level `mar-datasheet__cell--dirty` at line 556.
+  - **invalid-cell** — Quantity cell on row 2 → click → F2 → type `-100` → Enter. Column-level `Validate` runs synchronously inside `CommitCellEdit` (`MariloDataSheet.Data.cs:119`), so `mar-datasheet__cell--invalid` (`FluentUICssProvider.cs:557`) attaches immediately on commit — no Save All click needed.
+  - **empty-state** — navigates to `/components/DataSheet/editing-and-validation` (instead of the Overview which always boots with 12 rows), uses `applyTheme` + `locateDemoPreview('IsLoading skeleton rows')` to scope the capture to scenario D's grid before the user clicks "Load Data". Empty state markup: `.mar-datasheet__empty` at `MariloDataSheet.razor:141` with `EmptyStateMessage="No data yet. Click Load Data to fetch."`.
+
+**Theme coverage:** Still `FIRST_PASS_THEMES` (fluent-light + fluent-dark = 2 themes). Total tests now **7 scenarios × 2 themes = 14 tests** (was 6 before this iteration).
+
+**Source verifications (all confirmed against actual files):**
+
+- `mar-datasheet__row--dirty` — `FluentUICssProvider.cs:571`
+- `mar-datasheet__cell--invalid` — `FluentUICssProvider.cs:557`; backed by `aria-invalid="true"` at `MariloDataSheet.Rendering.cs:99`
+- `.mar-datasheet__empty` — `MariloDataSheet.razor:141`; surfaced when `_displayRows.Count == 0`
+- Column-level `Validate` invocation — `MariloDataSheet.Data.cs:119` (inside `CommitCellEdit`, so error attaches on Enter)
+
+**Verification (subagent-internal):**
+
+- TypeScript: PASS (`tsc --noEmit -p .` clean)
+- Playwright list: PASS (`npx playwright test --list` enumerates all 14 expected test names)
+- No baseline PNGs generated — `playwright test --update-snapshots` is still a separate manual step.
+
+**Files changed (commit `8c51bb0`):** 1 file. 161 insertions, 12 deletions. The 12-line delta on the original is from the docstring update (moving 4 scenarios from "Out of scope" to "Scenarios captured" and shrinking the out-of-scope list).
+
+**Out of scope (still deferred to later iterations):**
+
+- 03a-pass2: Expand `FIRST_PASS_THEMES` → `ALL_THEMES` to scale 14 → 42 tests across bootstrap and material themes (one-line spec change, paired with manual baseline generation pass)
+- 03c: Score baselines against rubric, classify gaps, write parity summary (blocked on baselines existing)
+- 03d: Handoff to `datasheet-gap-analysis` workspace (conditional on 03c finding score < 3 gaps)
+- Frozen rows/cols, range selection, formula bar, sheet tabs — not implemented in DataSheet, skipped per Stage 03 plan iteration 15 open-questions resolution
+
+**Next iteration pickup:** Either (a) generate baselines for the 14 fluent-light/dark tests via `playwright test --update-snapshots --grep datasheet` against a live demo server, OR (b) one-line scale-up to ALL_THEMES (42 tests), OR (c) wait for human to drive a baseline pass before Stage 03c becomes cron-tractable.
+
+## Iteration 16 — Stage 03a Playwright Spec Landed (Complete 2026-04-11)
+
+Loop iteration 16 (Fire #67). Commit `0094f93` on `workInProgress`. First implementation iteration of Stage 03 (visual parity).
+
+**Deliverables:**
+
+- `tests/visual-parity/specs/datasheet.spec.ts` (NEW, 100 LOC) — Stage 03a primary-state Playwright spec with 3 scenarios per theme:
+  - **default** — Cell grid at rest on `Overview.razor`, captured via `captureElement(grid, dims)`.
+  - **selected-cell** — Single Ticker cell on row 2 activated by click; uses `.mar-datasheet__row` nth(1) → first `.mar-datasheet__cell`. Maps to `MariloDataSheet.Editing.cs:72-99` (`OnCellClick` → `ActivateCell`).
+  - **cell-editing** — Same cell activated, then `F2` keypress to enter inline edit mode. Maps to `MariloDataSheet.Editing.cs:169-172` (`EnterEditMode` for active cell).
+- `tests/visual-parity/config/component-registry.ts` — DataSheet entry expanded with cell/headerCell/row/activeCell/editingCell selectors verified from `FluentUICssProvider.cs:544-573` and `MariloDataSheet.razor`/`Rendering.cs`.
+
+**Theme coverage:** Iterates `FIRST_PASS_THEMES` (fluent-light + fluent-dark = 2 themes × 3 scenarios = **6 tests**) matching the convention used by sibling specs (`datagrid.spec.ts`, `treeview.spec.ts`, `scheduler.spec.ts`). The Stage 03 plan's "18 screenshots across 6 theme/modes" goal is approached incrementally — first-pass validates the spec works against fluent-light/dark before expanding to bootstrap and material themes in a separate iteration.
+
+**Verification (subagent-internal):**
+
+- TypeScript: PASS (`tsc --noEmit -p tests/visual-parity`, strict mode)
+- Playwright list: PASS (`npx playwright test --list` enumerates all 6 expected test names)
+- No baseline PNGs generated — baselines are produced by `playwright test --update-snapshots` as a separate manual step (out of scope for cron iterations)
+
+**Files changed:** 2 files (1 new, 1 expanded). 107 insertions, 0 deletions. No component source touched, no demo pages touched, no other specs touched.
+
+**Out of scope (later iterations):**
+
+- 03a-pass2: Expand `FIRST_PASS_THEMES` → `ALL_THEMES` to reach the full 18-test target across bootstrap and material themes
+- 03b: Secondary state captures (header cells, frozen rows/cols, range selection, dirty/invalid/empty states)
+- 03c: Score baselines against rubric, classify gaps
+- 03d: Handoff to `datasheet-gap-analysis` workspace if any score < 3
+
+**Next iteration pickup:** Either (a) generate baselines for the 6 fluent tests via `playwright test --update-snapshots` and visually inspect, OR (b) expand to ALL_THEMES with a one-line spec change to scale to the full 18 tests.
 
 ## Iteration 15 — Stage 03a Open Questions Resolved (Complete 2026-04-11)
 

@@ -78,21 +78,11 @@
         {
             var itemType = item.GetType();
 
-            // Check for primitive / numeric data (no Field required)
-            if (string.IsNullOrEmpty(Field) || itemType.IsPrimitive || item is decimal)
+            // XY scatter/bubble mode takes precedence when XField+YField are set,
+            // because scatter/bubble series are defined by X/Y coordinates and typically
+            // leave Field unset.
+            if (!string.IsNullOrEmpty(XField) && !string.IsNullOrEmpty(YField))
             {
-                var numericValue = Convert.ToDouble(item);
-                points.Add(new ChartDataPoint
-                {
-                    Category = index.ToString(),
-                    Value = numericValue,
-                    DataItem = item,
-                    Index = index
-                });
-            }
-            else if (!string.IsNullOrEmpty(XField) && !string.IsNullOrEmpty(YField))
-            {
-                // XY scatter/bubble mode
                 var xProp = itemType.GetProperty(XField);
                 var yProp = itemType.GetProperty(YField);
                 var sizeProp = !string.IsNullOrEmpty(SizeField) ? itemType.GetProperty(SizeField) : null;
@@ -112,7 +102,7 @@
                     Index = index
                 });
             }
-            else
+            else if (!string.IsNullOrEmpty(Field))
             {
                 // Standard field-based data binding
                 var valueProp = itemType.GetProperty(Field);
@@ -132,6 +122,19 @@
                     Index = index
                 });
             }
+            else if (itemType.IsPrimitive || item is decimal)
+            {
+                // Primitive / numeric data with no binding metadata — index-based categories.
+                var numericValue = Convert.ToDouble(item);
+                points.Add(new ChartDataPoint
+                {
+                    Category = index.ToString(),
+                    Value = numericValue,
+                    DataItem = item,
+                    Index = index
+                });
+            }
+            // No binding info and item is not numeric — skip rather than crash.
 
             index++;
         }
