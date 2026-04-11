@@ -4,48 +4,76 @@
   "status": "active",
   "shared_goal": "Parallel ICM delivery pipeline across datagrid, datasheet, gantt, scheduler, allocation-scheduler — 4 waves, review gate between waves, orchestrator integrates.",
   "started_at": "2026-04-11T12:00:00Z",
-  "last_heartbeat": "2026-04-11T17:00:00Z",
+  "last_heartbeat": "2026-04-11T17:20:00Z",
   "orchestrator_tmux_session": "marilo-orchestrator",
   "integration_owner": "orchestrator",
   "wave": 2,
+  "wave_2_status": "complete-pending-decisions",
   "active_workers": [
-    { "worker_id": "w-datagrid-delivery", "status": "working", "icm_stage": "02-example-ux" },
-    { "worker_id": "w-datasheet-delivery", "status": "working", "icm_stage": "02-example-ux" },
-    { "worker_id": "w-gantt-delivery", "status": "working", "icm_stage": "02-example-ux" },
-    { "worker_id": "w-scheduler-delivery", "status": "working", "icm_stage": "02-example-ux" },
-    { "worker_id": "w-allocation-scheduler-delivery", "status": "working", "icm_stage": "02-example-ux" }
+    { "worker_id": "w-datagrid-delivery", "status": "idle", "icm_stage": "02-example-ux-complete", "wave_3_ready": true },
+    { "worker_id": "w-datasheet-delivery", "status": "idle", "icm_stage": "02-example-ux-complete", "wave_3_ready": true },
+    { "worker_id": "w-gantt-delivery", "status": "idle", "icm_stage": "02-example-ux-complete", "wave_3_ready": true },
+    { "worker_id": "w-scheduler-delivery", "status": "idle-blocked", "icm_stage": "02-example-ux-complete", "wave_3_ready": false, "blocked_on": "user-decision: Wave 3 reframe (a) defer or (b) rescope to 3 existing views" },
+    { "worker_id": "w-allocation-scheduler-delivery", "status": "idle", "icm_stage": "02-example-ux-complete", "wave_3_ready": true }
   ],
   "review_queue": [],
-  "blocked_queue": [],
+  "blocked_queue": [
+    { "worker_id": "w-scheduler-delivery", "type": "user-decision", "summary": "Wave 3 reframe — (a) defer Wave 3 until source implementation lands or (b) rescope Wave 3 to visual parity of the 3 existing views (Day/Week/Month) only", "raised_ts": "2026-04-11T17:00:00Z" }
+  ],
   "user_attention_items": [
     {
+      "id": "gantt-state-shape",
       "source": "w-gantt-delivery Wave 1 review",
       "type": "public-api-decision",
       "ids": ["NM-01", "NM-02", "SA-01", "SA-02"],
-      "summary": "GanttState<TItem> public-API shape mismatch — spec uses SortDescriptors/FilterDescriptors (plural Lists from Marilo.DataSource.*), source uses singular GanttSortDescriptor + FilterValues (Dictionary). Spec example will not compile. Decision needed: change source (breaking) or rewrite spec (preserves source).",
-      "raised_at": "2026-04-11T17:00:00Z"
+      "status": "RESOLVED",
+      "resolution": "User directive 2026-04-11T17:20Z: GanttState should match api shape and spec. Source GanttState<TItem> will be changed to use SortDescriptors (List), FilterDescriptors (List<IFilterDescriptor>), and Marilo.DataSource.* descriptor types. This is a breaking source change.",
+      "next_action": "Queue source rewrite into gantt-gap-analysis workspace as a new lane. NOT to be done in this delivery pipeline session per HARD RULE 1 (orchestrator does not edit component source). EUX-04 (Wave 2 GetState/SetStateAsync demo) is unblocked-pending-source-implementation.",
+      "raised_at": "2026-04-11T17:00:00Z",
+      "resolved_at": "2026-04-11T17:20:00Z"
     },
     {
-      "source": "w-scheduler-delivery Wave 1 review",
+      "id": "scheduler-wave-3-reframe",
+      "source": "w-scheduler-delivery Wave 1 + Wave 2",
       "type": "structural-scoping",
-      "ids": ["scheduler-wave-3-reframe"],
-      "summary": "MariloScheduler source is stub-level (~181 LOC) vs 25-file spec surface. Wave 3 visual-parity against spec is unachievable. Options: (a) defer Wave 3 until implementation lands, (b) rescope to parity of the 3 existing views only. Decision blocks Wave 3 planning.",
+      "status": "OPEN",
+      "summary": "MariloScheduler source is stub-level (181 LOC, 1 sub-stub demo file) vs 25-file spec surface. Wave 2 confirmed: 23/25 spec topics are unbuildable as demos because the source API doesn't exist. Wave 3 visual-parity against spec is unachievable. Decide: (a) DEFER Wave 3 until a Scheduler implementation wave lands, OR (b) RESCOPE Wave 3 to 'visual parity of the 3 existing views (Day/Week/Month) at the mar-scheduler__* BEM level only'.",
+      "blocks": ["scheduler Wave 3 dispatch"],
       "raised_at": "2026-04-11T17:00:00Z"
     },
     {
-      "source": "w-scheduler-delivery Wave 1 review",
+      "id": "scheduler-public-api",
+      "source": "w-scheduler-delivery Wave 1",
       "type": "public-api-decision",
+      "status": "OPEN",
       "ids": ["NM-SCHED-001", "NM-SCHED-003"],
-      "summary": "Scheduler naming/shape decisions: (1) rename source CurrentDate → Date for spec consistency (breaking), OR update spec to CurrentDate; (2) generic TItem + field mapping (spec) vs closed SchedulerAppointment DTO (source) — this is an architectural rewrite, not a rename.",
+      "summary": "Scheduler naming/shape decisions: (1) rename source CurrentDate → Date for spec consistency (breaking), OR update spec to CurrentDate; (2) generic TItem + field mapping (spec) vs closed SchedulerAppointment DTO (source) — architectural rewrite, not a rename.",
       "raised_at": "2026-04-11T17:00:00Z"
     },
     {
-      "source": "w-scheduler-delivery Wave 1 review",
+      "id": "scheduler-policy",
+      "source": "w-scheduler-delivery Wave 1",
       "type": "spec-scope-policy",
-      "ids": ["scheduler-manual-operations-published-false", "scheduler-gap-enumeration-policy"],
-      "summary": "Scheduler manual-operations.md has front matter published:false — in-scope or exclude? Also: current gap list consolidates per-topic (16 SA rows); per-parameter enumeration would produce ~150+ rows — which policy?",
+      "status": "OPEN",
+      "summary": "Scheduler manual-operations.md has front matter published:false — in-scope or exclude? Also: gap list consolidates per-topic (16 SA rows); per-parameter enumeration would produce ~150+ rows — which policy?",
       "raised_at": "2026-04-11T17:00:00Z"
+    },
+    {
+      "id": "datasheet-theming-architecture",
+      "source": "w-datasheet-delivery Wave 2 ESC-EU06-SRC02",
+      "type": "architecture-decision",
+      "status": "OPEN",
+      "summary": "DataSheet theming side-by-side demo (Wave 2 EU-06) is architecture-blocked by Wave 1 SRC-02. DataSheet currently hard-codes BEM classes; the spec says all styling is delegated to provider. Decide: extend IMariloCssProvider with DataSheet-specific methods, OR narrow the spec to acknowledge BEM-level theming only.",
+      "raised_at": "2026-04-11T17:15:00Z"
+    },
+    {
+      "id": "datasheet-10k-rows",
+      "source": "w-datasheet-delivery Wave 2 ESC-EU01-10K",
+      "type": "scope-confirmation",
+      "status": "OPEN",
+      "summary": "DataSheet virtualization spec recommends thresholds up to 10k rows. Confirm: can Marilo.Demo absorb a 10k-row in-memory dataset without hurting startup, or should the demo cap at 5k?",
+      "raised_at": "2026-04-11T17:15:00Z"
     }
   ],
-  "notes": "TICK 3 (2026-04-11T17:00Z): Wave 1 review gate processed. All 5 workers PASS. Worker state files updated with Wave 1 review record references, advanced to Wave 2 working. 5 user-attention items surfaced from gantt + scheduler reviews (public-API decisions + Wave 3 scoping). Wave 2 inbox messages written with explicit mandate to write result/handoff/state (address Wave 1 metadata gap on datasheet + allocation-scheduler). Orchestrator about to dispatch 5 Wave 2 subagents in parallel (general-purpose, per user's explicit wave-parallel directive — overrides auto-memory serial preference)."
+  "notes": "TICK 4 (2026-04-11T17:20Z): Wave 2 reviews complete, all 5 PASS. Workers held at idle pending user decisions on (a) scheduler Wave 3 reframe and (b) other open items. User resolved gantt-state-shape during this tick: GanttState source moves to spec shape — queued to gantt-gap-analysis workspace, NOT this session. 4 of 5 workers (datagrid, datasheet, gantt, allocation-scheduler) are wave-3-ready. Scheduler is blocked. Holding wave advancement until user resolves scheduler scope OR explicitly authorizes asymmetric advancement (4 advance, 1 hold)."
 }
