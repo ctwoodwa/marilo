@@ -668,7 +668,7 @@ The `OnRowContextMenu` event handler receives a `GridRowClickEventArgs` argument
 
 The `OnRowExpand` event fires as a response to the user expanding the [`DetailTemplate`](slug:components/grid/features/hierarchy) of the Grid.
 
-The event handler receives a `GridRowExpandEventArgs` object which provides the model of the clicked row in the `Item` field that you can cast to your model type.
+The event handler receives the expanded row's data item directly (typed as `TItem`, which is the model type of your grid's `Data` source).
 
 
 >caption Use the OnRowExpand event to load detailed data on demand. Another approach can be found on our [public github repository](https://github.com/marilo/blazor-ui/tree/master/grid/load-on-demand-hierarchy).
@@ -696,10 +696,8 @@ The event handler receives a `GridRowExpandEventArgs` object which provides the 
 </MariloGrid>
 
 @code {
-    async Task OnRowExpandHandler(GridRowExpandEventArgs args)
+    async Task OnRowExpandHandler(MainModel item)
     {
-        MainModel item = args.Item as MainModel;
-
         if(item.Orders == null)
         {
             item.Orders = await GenerateOrdersData(item.Id);
@@ -757,7 +755,7 @@ The event handler receives a `GridRowExpandEventArgs` object which provides the 
 
 The `OnRowCollapse` event fires as a response to the user collapsing the [`DetailTemplate`](slug:components/grid/features/hierarchy) of the Grid.
 
-The event handler receives a `GridRowCollapseEventArgs` object which provides the model of the clicked row in the `Item` field that you can cast to your model type.
+The event handler receives the collapsed row's data item directly (typed as `TItem`, which is the model type of your grid's `Data` source).
 
 
 >caption Use the OnRowCollapse event to get the Id of the collapsed row from the data model
@@ -789,9 +787,8 @@ The event handler receives a `GridRowCollapseEventArgs` object which provides th
 @logger
 
 @code {
-    void OnRowCollapseHandler(GridRowCollapseEventArgs args)
+    void OnRowCollapseHandler(MainModel item)
     {
-        MainModel item = args.Item as MainModel;
         logger = $"The collapsed row is with id: {item.Id}";
     }
 
