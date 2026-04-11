@@ -5,7 +5,9 @@
       "Skill(gap-analysis-resolution:*)",
       "Edit(.claude/orchestration/**)",
       "Write(.claude/orchestration/**)",
-      "MultiEdit(.claude/orchestration/**)"
+      "MultiEdit(.claude/orchestration/**)",
+      "Skill(workspace-status)",
+      "Skill(workspace-status:*)"
     ]
   }
 }
