@@ -183,6 +183,8 @@ public partial class MariloDataSheet<TItem> : MariloComponentBase
         // implementation removed the entry from _dirtyRows but left the
         // edited property values on the live TItem instance, so the UI
         // reported Pristine while the data still held the edits.
+        // F2.M1 — Restore/remove body shared with ResetAsync via the
+        // RestoreEntryOrRemoveNewRow helper on the Data partial.
         foreach (var row in _selectedRows.ToList())
         {
             var key = GetRowKey(row);
@@ -191,21 +193,7 @@ public partial class MariloDataSheet<TItem> : MariloComponentBase
                 continue;
             }
 
-            if (!entry.IsNewlyAdded)
-            {
-                foreach (var field in entry.DirtyFields)
-                {
-                    var originalValue = Core.Helpers.GridReflectionHelper.GetValue(entry.Original, field);
-                    Core.Helpers.GridReflectionHelper.SetValue(entry.Current, field, originalValue);
-                }
-            }
-            else
-            {
-                // A newly-added row selected and then BulkReset should be
-                // removed entirely, mirroring ResetAsync semantics.
-                _displayRows.Remove(row);
-            }
-
+            RestoreEntryOrRemoveNewRow(entry);
             _dirtyRows.Remove(key);
         }
         _selectedRows.Clear();
@@ -236,6 +224,12 @@ public partial class MariloDataSheet<TItem> : MariloComponentBase
 
             // Seed DirtyFields with every editable, non-computed column so
             // GetDirtyRows()/SaveAllAsync treat the new row as dirty.
+            // F2.M2 — Invariant: this seed is only preserved across subsequent
+            // CommitCellEdit calls because CommitCellEdit guards on
+            // `!entry.IsNewlyAdded` before dropping fields that revert to their
+            // Original snapshot (see MariloDataSheet.Data.cs:106). Without that
+            // guard, the first user edit would see newValue == Original default
+            // and strip the field out, leaving the new row untracked.
             foreach (var column in _columns)
             {
                 if (column.Editable && column.ColumnType != DataSheetColumnType.Computed)

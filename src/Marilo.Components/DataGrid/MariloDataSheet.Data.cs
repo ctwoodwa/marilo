@@ -225,7 +225,19 @@ public partial class MariloDataSheet<TItem>
 
     // ── Save All ───────────────────────────────────────────────────────
 
-    /// <summary>Triggers the Save All flow: validate, then fire OnSaveAll.</summary>
+    /// <summary>
+    /// Triggers the Save All flow: validate, then fire OnSaveAll.
+    /// </summary>
+    /// <remarks>
+    /// F2.M3 — On success this method calls <c>GridReflectionHelper.DeepClone</c>
+    /// on each non-deleted dirty row so a subsequent edit that reverts to the
+    /// just-saved value is still correctly detected as Dirty. <typeparamref name="TItem"/>
+    /// must therefore be deep-cloneable by the project's reflection helper —
+    /// plain POCOs with public settable properties work out of the box. Types
+    /// that hold non-serializable members (streams, connections, delegates)
+    /// should either expose a shallow-clone constructor or avoid being used
+    /// as <see cref="MariloDataSheet{TItem}"/> row types.
+    /// </remarks>
     public async Task SaveAllAsync()
     {
         if (_dirtyRows.Count == 0) return;
@@ -314,14 +326,13 @@ public partial class MariloDataSheet<TItem>
             // update original snapshots for saved dirty rows so subsequent edits
             // that revert to the just-saved value are correctly dirty-tracked,
             // and mark dirty entries as Saved for a brief visual indicator.
-            var deletedKeys = new HashSet<object>();
-            foreach (var kv in _dirtyRows)
-            {
-                if (kv.Value.IsDeleted)
-                {
-                    deletedKeys.Add(kv.Key);
-                }
-            }
+            // F2.M5 — Snapshot the deleted keys in one LINQ pass; subsequent
+            // _displayRows.RemoveAll and _dirtyRows.Remove iterations need the
+            // full set up-front (we cannot mutate _dirtyRows while iterating it).
+            var deletedKeys = _dirtyRows
+                .Where(kv => kv.Value.IsDeleted)
+                .Select(kv => kv.Key)
+                .ToHashSet();
 
             if (deletedKeys.Count > 0)
             {
@@ -400,39 +411,45 @@ public partial class MariloDataSheet<TItem>
 
     // ── Reset ──────────────────────────────────────────────────────────
 
+    // F2.M1 — Shared restore/remove body used by both ResetAsync (whole grid)
+    // and BulkResetAsync (selected rows). A newly-added entry is removed from
+    // _displayRows entirely because its Original snapshot is a default TItem
+    // and there is nothing meaningful to revert to; a regular dirty entry
+    // has its edited fields restored from the Original snapshot. This helper
+    // does NOT drop the dirty-row entry itself — the caller is responsible for
+    // clearing _dirtyRows because the two call sites differ in how they do it
+    // (ResetAsync uses a bulk Clear, BulkResetAsync removes per selected key).
+    internal void RestoreEntryOrRemoveNewRow(DirtyRowEntry<TItem> entry)
+    {
+        if (entry.IsNewlyAdded)
+        {
+            _displayRows.Remove(entry.Current);
+            return;
+        }
+
+        foreach (var field in entry.DirtyFields)
+        {
+            var originalValue = GridReflectionHelper.GetValue(entry.Original, field);
+            GridReflectionHelper.SetValue(entry.Current, field, originalValue);
+        }
+    }
+
     /// <summary>Discards all dirty state and restores original values.</summary>
     public Task ResetAsync()
     {
-        // V05.3 — Collect rows created via AddRowAsync so they can be
-        // removed from _displayRows entirely. A newly-added row has no
-        // meaningful Original snapshot and cannot be "restored" to
-        // anything — the spec says added rows are removed on reset.
-        var newlyAddedRows = _dirtyRows.Values
-            .Where(e => e.IsNewlyAdded)
-            .Select(e => e.Current)
-            .ToList();
-
+        // V05.3 — Newly-added rows have no meaningful Original snapshot and
+        // cannot be "restored" to anything — the spec says added rows are
+        // removed on reset. F2.M1 routes both paths through the shared helper.
         foreach (var entry in _dirtyRows.Values)
         {
-            if (entry.IsNewlyAdded || entry.IsDeleted)
+            if (entry.IsDeleted)
             {
+                // Deleted rows stay in _displayRows (reset un-deletes them)
+                // and their dirty entry is wiped by the Clear below.
                 continue;
             }
 
-            // Restore original values to the current row object
-            foreach (var field in entry.DirtyFields)
-            {
-                var originalValue = GridReflectionHelper.GetValue(entry.Original, field);
-                GridReflectionHelper.SetValue(entry.Current, field, originalValue);
-            }
-        }
-
-        if (newlyAddedRows.Count > 0)
-        {
-            foreach (var row in newlyAddedRows)
-            {
-                _displayRows.Remove(row);
-            }
+            RestoreEntryOrRemoveNewRow(entry);
         }
 
         _dirtyRows.Clear();

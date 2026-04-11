@@ -1492,6 +1492,13 @@ public class MariloDataSheetTests : MariloTestBase
     [Fact]
     public async Task Paste_DateInInvariantCulture_ParsesRegardlessOfCurrentCulture()
     {
+        // P.N2 — Deliberately use ONLY CurrentCulture (thread-local) for
+        // the swap. Setting DefaultThreadCurrentCulture here was attempted
+        // in the F4-polish batch but leaks into other test classes running
+        // in parallel (DatePickerTests hit a de-DE month string). xUnit's
+        // default in-assembly parallelism keeps same-class tests serialised,
+        // so scoping the culture override to CurrentCulture is sufficient
+        // for this single-class regression guard.
         var original = CultureInfo.CurrentCulture;
         try
         {

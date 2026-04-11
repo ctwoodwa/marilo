@@ -314,9 +314,7 @@ public partial class MariloDataSheet<TItem>
 
             if (column.ColumnType == DataSheetColumnType.Number)
             {
-                var targetType = typeof(TItem).GetProperty(column.Field)?.PropertyType
-                                 ?? typeof(decimal);
-                var (success, parsed) = ParseNumericValue(key, targetType);
+                var (success, parsed) = ParseNumberForCell(column, key);
                 if (success)
                 {
                     EnterEditMode(_activeCellRow, _activeCellField);
@@ -521,44 +519,92 @@ public partial class MariloDataSheet<TItem>
     // failure the error message matches the spec (bulk-paste-and-clipboard.md
     // "Type Coercion on Paste" table) and the paste loop will mark the cell
     // invalid without writing the raw string to the model.
+    // F1.N4 — Restored to a switch-expression by extracting per-arm helpers
+    // so every branch fits on a single line.
     private static (bool Success, object? Value, string? Error) TryParseCellValue(
+        MariloDataSheetColumn<TItem> column, string text) => column.ColumnType switch
+    {
+        DataSheetColumnType.Number => TryParseNumberCell(column, text),
+        DataSheetColumnType.Date => TryParseDateCell(text),
+        DataSheetColumnType.Checkbox => TryParseCheckboxCell(text),
+        DataSheetColumnType.Select => TryParseSelectCell(column, text),
+        DataSheetColumnType.Text or DataSheetColumnType.Computed => (true, text, null),
+        _ => UnknownColumnTypeFallback(column.ColumnType, text),
+    };
+
+    // F1.N5 — Centralizes `typeof(TItem).GetProperty(column.Field)?.PropertyType`
+    // for Number columns so V07.2 (printable-char path) and TryParseCellValue
+    // (paste path) share a single lookup surface. Falls back to decimal when
+    // the property is missing so downstream callers can rely on a non-null Type.
+    private static Type GetColumnClrType(MariloDataSheetColumn<TItem> column)
+    {
+        return typeof(TItem).GetProperty(column.Field)?.PropertyType ?? typeof(decimal);
+    }
+
+    // F1.N4 — Number-column parsing extracted so TryParseCellValue and the V07.2
+    // printable-char branch share a single numeric-coercion path. Returns the
+    // (bool Success, object? Value) contract expected by V07.2. Paste callers
+    // use TryParseNumberCell below which wraps the same logic in the three-tuple
+    // paste contract.
+    private static (bool Success, object? Value) ParseNumberForCell(
         MariloDataSheetColumn<TItem> column, string text)
     {
-        switch (column.ColumnType)
+        return ParseNumericValue(text, GetColumnClrType(column));
+    }
+
+    // F1.N4 — Paste-path wrapper around ParseNumberForCell that adds the
+    // spec-required "Invalid number" error string on failure.
+    private static (bool Success, object? Value, string? Error) TryParseNumberCell(
+        MariloDataSheetColumn<TItem> column, string text)
+    {
+        var (success, value) = ParseNumberForCell(column, text);
+        return success ? (true, value, null) : (false, null, "Invalid number");
+    }
+
+    // F1.N4 — Date branch extracted so TryParseCellValue can stay a
+    // switch-expression. V04.4 copy path emits dates via InvariantCulture into
+    // data-raw-value; parsing with the same culture here lets paste round-trip
+    // on non-en-US systems (e.g. de-DE, where default DateTime.TryParse would
+    // misread "4/10/2026" as d.m.y).
+    private static (bool Success, object? Value, string? Error) TryParseDateCell(string text)
+    {
+        return DateTime.TryParse(text, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt)
+            ? (true, dt, null)
+            : (false, null, "Invalid date");
+    }
+
+    // F1.N4 — Checkbox branch extracted so TryParseCellValue's switch
+    // expression stays one line per arm. Matches V04.2 spec: "true"
+    // (case-insensitive) or "1" both coerce to true, everything else false.
+    private static (bool Success, object? Value, string? Error) TryParseCheckboxCell(string text)
+    {
+        return (true,
+                text.Equals("true", StringComparison.OrdinalIgnoreCase) || text == "1",
+                null);
+    }
+
+    // F1.N4 — Select branch extracted. Pasted value must exist in the column's
+    // Options collection (ordinal, case-sensitive) or the cell is marked invalid
+    // with the spec-required "Value not in options" error string.
+    private static (bool Success, object? Value, string? Error) TryParseSelectCell(
+        MariloDataSheetColumn<TItem> column, string text)
+    {
+        if (column.Options != null
+            && column.Options.Any(o => string.Equals(o.Value, text, StringComparison.Ordinal)))
         {
-            case DataSheetColumnType.Number:
-                {
-                    var targetType = typeof(TItem).GetProperty(column.Field)?.PropertyType
-                                     ?? typeof(decimal);
-                    var (success, value) = ParseNumericValue(text, targetType);
-                    return success
-                        ? (true, value, null)
-                        : (false, null, "Invalid number");
-                }
-            case DataSheetColumnType.Date:
-                // V04.4 copy path emits dates via InvariantCulture into
-                // data-raw-value. Parse with the same culture here so paste
-                // round-trips on non-en-US systems (e.g. de-DE, where default
-                // DateTime.TryParse would misread "4/10/2026" as d.m.y).
-                if (DateTime.TryParse(text, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt))
-                    return (true, dt, null);
-                return (false, null, "Invalid date");
-            case DataSheetColumnType.Checkbox:
-                return (true,
-                    text.Equals("true", StringComparison.OrdinalIgnoreCase) || text == "1",
-                    null);
-            case DataSheetColumnType.Select:
-                if (column.Options != null
-                    && column.Options.Any(o => string.Equals(o.Value, text, StringComparison.Ordinal)))
-                    return (true, text, null);
-                return (false, null, "Value not in options");
-            case DataSheetColumnType.Text:
-            case DataSheetColumnType.Computed:
-                return (true, text, null);
-            default:
-                Debug.Fail($"Unknown DataSheetColumnType: {column.ColumnType}");
-                return (true, text, null);
+            return (true, text, null);
         }
+        return (false, null, "Value not in options");
+    }
+
+    // F1.N4 — Default-arm helper for TryParseCellValue's switch expression.
+    // Keeps Debug.Fail on the unreachable branch while letting the switch
+    // stay expression-form.
+    private static (bool Success, object? Value, string? Error) UnknownColumnTypeFallback(
+        DataSheetColumnType columnType, string text)
+    {
+        Debug.Fail($"Unknown DataSheetColumnType: {columnType}");
+        return (true, text, null);
     }
 
     /// <summary>
