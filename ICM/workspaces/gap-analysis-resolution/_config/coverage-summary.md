@@ -11,7 +11,7 @@
 |------|------|-------------|-----------|---------|-------------|---------------|-------|
 | TreeView | 0 | 0 | 21 | 1 (virtualization deferred) | 06-validate | 67/67 | Full closure report complete |
 | DataGrid | ~33-48 | 0 | 19 (Ph1+Ph2+Ph3+JS-B2) | 1 (expand args deferred) | **06-validate (JS-B2)** | 62 (47+15) | Phase 1+2+3+JS-B2 closed; frozen cols + row drag-drop resolved; 1083/1083 suite |
-| DataSheet | 0 | 0 | 0 | 1 (architecture decision) | — | 0 | Blocked: MariloSpreadsheet vs MariloDataSheet |
+| DataSheet | 10 (verification sub-tasks) | 0 | 0 | 0 | **01-spec-review complete (re-audit 2026-04-10)** | 0 | Broad-surface alignment excellent: 53 API elements verified present (18 params + 11 column params + 6 event args + 2 enums + 9 methods + 7 CSS provider methods + real 205-line demo). 0 confirmed missing features. Next step: 10 Stage 01b verification sub-tasks (V01–V10) against detail spec files; highest-value is V03 (cell range selection, likely real gap). Pipeline shortened to `01 → 01b → 03 → 05 → 06` (skip Stage 02 prioritization — too few gaps to warrant it). |
 | Forms | ~60 | 0 | 22+12+4+4 | 6 deferred | 03-resolution | 20/20 | Resolution design done; awaiting implementation |
 | T4 Pickers | ~3 | 0 | 43 (B1-B8) | 1 partial (MSEL-007 ScrollMode deferred) + 1 won't fix (MSEL-008 naming) | **06-validate (B8)** | 133 (17+9+17+12+12+11+7+23+13+12) | Batch 1–8 closed; B8: DRP/TP/FU/UPL final polish; **runtime validated 2026-04-09: 726/726 full suite** |
 | Splitter | 0 | 0 | 8 resolved | 1 demo deferred | **06-validate** | 17 | Stage 06 closure report complete; runtime test pending |
