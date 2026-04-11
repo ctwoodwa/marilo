@@ -86,7 +86,7 @@ export function registerKeydownHandler(gridId, dotNetRef) {
                 // property value rather than the formatted display string).
                 // Fall back to textContent when no raw value is available.
                 const rawValue = activeCell.getAttribute('data-raw-value');
-                const text = (rawValue !== null ? rawValue : (activeCell.textContent || '')).trim();
+                const text = (rawValue ?? activeCell.textContent ?? '').trim();
                 await copyToClipboard(text);
             }
             return;

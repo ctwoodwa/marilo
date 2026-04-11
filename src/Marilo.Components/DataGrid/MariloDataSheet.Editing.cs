@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Globalization;
 using Marilo.Core.Enums;
 using Marilo.Core.Helpers;
 using Microsoft.AspNetCore.Components;
@@ -352,7 +354,11 @@ public partial class MariloDataSheet<TItem>
                         : (false, null, "Invalid number");
                 }
             case DataSheetColumnType.Date:
-                if (DateTime.TryParse(text, out var dt))
+                // V04.4 copy path emits dates via InvariantCulture into
+                // data-raw-value. Parse with the same culture here so paste
+                // round-trips on non-en-US systems (e.g. de-DE, where default
+                // DateTime.TryParse would misread "4/10/2026" as d.m.y).
+                if (DateTime.TryParse(text, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt))
                     return (true, dt, null);
                 return (false, null, "Invalid date");
             case DataSheetColumnType.Checkbox:
@@ -360,10 +366,15 @@ public partial class MariloDataSheet<TItem>
                     text.Equals("true", StringComparison.OrdinalIgnoreCase) || text == "1",
                     null);
             case DataSheetColumnType.Select:
-                if (column.Options != null && column.Options.Any(o => o.Value == text))
+                if (column.Options != null
+                    && column.Options.Any(o => string.Equals(o.Value, text, StringComparison.Ordinal)))
                     return (true, text, null);
                 return (false, null, "Value not in options");
+            case DataSheetColumnType.Text:
+            case DataSheetColumnType.Computed:
+                return (true, text, null);
             default:
+                Debug.Assert(false, $"Unknown DataSheetColumnType: {column.ColumnType}");
                 return (true, text, null);
         }
     }
@@ -388,8 +399,8 @@ public partial class MariloDataSheet<TItem>
                 : (false, GetDefaultForType(effectiveType));
         }
 
-        if (!decimal.TryParse(input, System.Globalization.NumberStyles.Any,
-                              System.Globalization.CultureInfo.CurrentCulture, out var parsed))
+        if (!decimal.TryParse(input, NumberStyles.Any,
+                              CultureInfo.CurrentCulture, out var parsed))
         {
             return (false, GetDefaultForType(effectiveType));
         }
@@ -399,7 +410,7 @@ public partial class MariloDataSheet<TItem>
             var converted = Convert.ChangeType(parsed, effectiveType);
             return (true, converted);
         }
-        catch
+        catch (Exception ex) when (ex is InvalidCastException or FormatException or OverflowException)
         {
             return (false, GetDefaultForType(effectiveType));
         }

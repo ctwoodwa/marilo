@@ -82,11 +82,11 @@ public partial class MariloDataSheet<TItem>
             {
                 var rawValue = GridReflectionHelper.GetValue(row, column.Field);
                 var rawValueAttr = Convert.ToString(rawValue, CultureInfo.InvariantCulture) ?? "";
-                builder.AddAttribute(29, "data-raw-value", rawValueAttr);
+                builder.AddAttribute(28, "data-raw-value", rawValueAttr);
             }
 
             // Click handler
-            builder.AddAttribute(28, "onclick",
+            builder.AddAttribute(29, "onclick",
                 EventCallback.Factory.Create<MouseEventArgs>(this, (_) => OnCellClick(cellRow, cellField)));
 
             // Cell content

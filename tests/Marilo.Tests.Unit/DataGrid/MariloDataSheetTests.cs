@@ -1339,4 +1339,51 @@ public class MariloDataSheetTests : MariloTestBase
         public string Name { get; set; } = "";
         public string Status { get; set; } = "";
     }
+
+    // ── Polish: DateTime paste round-trip under non-en-US culture ──────
+    // Regression guard for the latent bug where V04.4 emits dates via
+    // InvariantCulture into data-raw-value but the paste path parsed with
+    // CurrentCulture. On de-DE this broke copy/paste round-trip.
+    [Fact]
+    public async Task Paste_DateInInvariantCulture_ParsesRegardlessOfCurrentCulture()
+    {
+        var original = System.Globalization.CultureInfo.CurrentCulture;
+        try
+        {
+            System.Globalization.CultureInfo.CurrentCulture =
+                new System.Globalization.CultureInfo("de-DE");
+
+            var data = new List<DateRow>
+            {
+                new() { Name = "A", When = new DateTime(2025, 1, 1) },
+                new() { Name = "B", When = new DateTime(2025, 2, 1) },
+            };
+
+            var cut = Render<MariloDataSheet<DateRow>>(p => p
+                .Add(x => x.Data, data)
+                .Add(x => x.EnableVirtualization, false)
+                .Add(x => x.ChildContent, builder =>
+                {
+                    builder.OpenComponent<MariloDataSheetColumn<DateRow>>(0);
+                    builder.AddAttribute(1, "Field", "When");
+                    builder.AddAttribute(2, "Title", "When");
+                    builder.AddAttribute(3, "ColumnType", DataSheetColumnType.Date);
+                    builder.CloseComponent();
+                }));
+
+            await cut.InvokeAsync(() => cut.Instance.EnterEditMode(data[0], "When"));
+            await cut.InvokeAsync(() => cut.Instance.HandleKeyDown("Escape", false, false));
+
+            // InvariantCulture m/d/y — would be rejected by de-DE d.m.y parser.
+            await cut.InvokeAsync(() => cut.Instance.PasteFromClipboard("4/10/2026"));
+
+            Assert.Equal(new DateTime(2026, 4, 10), data[0].When);
+            Assert.Equal(CellState.Dirty, cut.Instance.GetCellState(data[0], "When"));
+            Assert.Null(cut.Instance.GetCellError(data[0], "When"));
+        }
+        finally
+        {
+            System.Globalization.CultureInfo.CurrentCulture = original;
+        }
+    }
 }
