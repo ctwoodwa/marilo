@@ -44,6 +44,17 @@ Worker audited `docs/component-specs/scheduler/selection/`, `keyboard-navigation
 - Provider contract touched: none ✅
 - New top-level folders: none ✅
 
+## Execution Discipline Check
+
+Verify the worker applied the mandatory skills from `.claude/rules/orchestration.md` → "Worker Execution Discipline":
+
+- [ ] **test-driven-development** — If worker edited `src/**`, did a corresponding test in `tests/**` exist AND fail first? (Red-Green-Refactor evidence in result file or commit history.) N/A if `files_owned` has no source.
+- [ ] **verification-before-completion** — Result file cites fresh `dotnet build Marilo.slnx` exit code + `dotnet test` output from this turn. Stale output = FAIL.
+- [ ] **systematic-debugging** — If worker hit a failing test or build error, did they follow the four-phase RCA (root cause → pattern → hypothesis → fix)? Evidence: hypothesis stated before fix applied, one-variable-at-a-time changes.
+- [ ] **requesting-code-review** format — Result file has the required fields (WHAT_WAS_IMPLEMENTED, PLAN_OR_REQUIREMENTS, BASE_SHA, HEAD_SHA, DESCRIPTION). Missing any = FAIL.
+
+**Discipline verdict:** PASS / FAIL — if FAIL, record reason as `execution-discipline-violation: <which skill was skipped>`.
+
 ## Verdict
 
 - [x] **PASS** — integrate into main pipeline

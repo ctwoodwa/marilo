@@ -45,7 +45,38 @@ Tmux sessions:
 
 ## Starting an orchestration session
 
-The following is a **pattern**, not an enforced script. Adapt to your tmux flavour (iTerm, Windows Terminal, tmux-on-Linux).
+### Option A — Slash command (recommended for most runs)
+
+```
+/start-multi-agent-work datagrid,datasheet,gantt
+```
+
+This invokes the `start-multi-agent-work` skill (see [.claude/skills/start-multi-agent-work/SKILL.md](../skills/start-multi-agent-work/SKILL.md)), which performs one idempotent orchestrator tick:
+
+1. **Preflight** — validates slugs, reads session state + all worker states, checks `git status`.
+2. **Process escalations** — resolves scope/ownership issues autonomously, surfaces architectural decisions to the user.
+3. **Review pending results** — fills out `review-record.md` per worker; PASS integrates, FAIL feedbacks the worker with `receiving-code-review` instructions.
+4. **Dispatch new work** — one `Agent` subagent per component, **all in parallel in a single assistant message**. Workers boot from their inbox files with no session-context inheritance.
+5. **Advance or park** — workers that pass review get queued for the next stage; the wave only closes when all workers in scope pass.
+6. **Update session state** — writes `session.json` heartbeat, appends `log.jsonl`, writes a `wave-<N>-tick-<ts>.md` summary to `_orchestrator/reviews/`.
+7. **Surface summary inline** — the user sees the wave summary in the assistant response without opening files.
+
+Each tick is idempotent. Invoke manually between waves, or wrap with the `loop` skill for automated ticks:
+
+```
+/loop 10m /start-multi-agent-work datagrid,datasheet,gantt
+```
+
+Arguments:
+- **Required:** comma-separated component slugs (lowercase kebab)
+- **Optional:** workflow type (`delivery` | `gap-analysis` | `gap-resolve` | `spec-review` | `example-ux` | `visual-parity` | `sync-check`) — default `delivery`
+- **Optional:** wave number override
+
+The skill stops the tick and asks for user input when: a slug is invalid, an escalation needs a human decision (architecture, review-retry-loop), uncommitted changes exist outside any worker's `files_owned`, 3+ escalations pile up in one tick, or all components in scope are `complete`.
+
+### Option B — tmux multi-window (legacy, manual)
+
+Use this when you want true parallel Claude Code windows per worker instead of in-process parallel subagents. The following is a **pattern**, not an enforced script. Adapt to your tmux flavour (iTerm, Windows Terminal, tmux-on-Linux).
 
 ### 1. Orchestrator setup
 
@@ -184,6 +215,25 @@ Workers never push to remote, never run full-repo builds, never touch shared man
 - Workers should prefix their memory.md entries with `[<worker-id>]` so the activity log is readable.
 - Orchestrator's own entries are prefixed `[orchestrator]`.
 - Cerebrum learnings from worker runs are applied at **review time**, not during the worker's turn, so they benefit from orchestrator judgment.
+
+## Worker execution discipline (vendored Superpowers skills)
+
+Workers that edit source/tests MUST apply these skills during their turn. Full rules: [.claude/rules/orchestration.md](../rules/orchestration.md) → "Worker Execution Discipline". Quick reference:
+
+| Skill | Trigger | What it enforces |
+|---|---|---|
+| `test-driven-development` | Before writing any `src/**` code | Write failing test in `tests/**` first, watch it fail, write minimal code, verify pass |
+| `verification-before-completion` | Before setting status to `review-pending` | `dotnet build Marilo.slnx` exit 0 + `dotnet test --filter <Component>` 0 failures, fresh output cited in result file |
+| `systematic-debugging` | Any test failure, build error, or unexpected behavior | Four-phase RCA; escalate after 3 failed fixes instead of attempting fix #4 |
+| `requesting-code-review` | When writing result file | Required fields: WHAT_WAS_IMPLEMENTED / PLAN_OR_REQUIREMENTS / BASE_SHA / HEAD_SHA / DESCRIPTION |
+| `receiving-code-review` | When reading FAIL feedback from orchestrator inbox | Verify before implementing; push back with technical reasoning; no performative agreement |
+
+The orchestrator's review gate checks the "Execution Discipline Check" section in `templates/review-record.md`. Skipping a mandatory skill when its trigger applied = automatic FAIL with reason `execution-discipline-violation`.
+
+Reference-only skills (orchestrator-side patterns, not enforced on workers):
+
+- `subagent-driven-development` — two-stage review pattern (spec-compliance then code-quality)
+- `dispatching-parallel-agents` — fan-out prompt structure for Wave dispatch
 
 ## Non-goals
 
