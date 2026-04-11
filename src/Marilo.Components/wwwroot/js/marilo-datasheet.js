@@ -68,12 +68,36 @@ export function registerKeydownHandler(gridId, dotNetRef) {
         const ctrl = e.ctrlKey || e.metaKey;
         const shift = e.shiftKey;
 
+        // Are we currently focused inside an editor input? The .NET side
+        // tracks _isEditMode, but JS needs its own proxy so it can decide
+        // whether to preventDefault for printable characters. When focus
+        // sits inside any input/select/textarea descendant of the grid,
+        // we're in edit mode and must let the key reach the editor.
+        const activeEl = document.activeElement;
+        const isInEditor = activeEl
+            && activeEl !== grid
+            && grid.contains(activeEl)
+            && /^(INPUT|SELECT|TEXTAREA)$/.test(activeEl.tagName);
+
         // Prevent default for grid-handled shortcuts
         if (ctrl && (key === 's' || key === 'z' || key === 'c' || key === 'v' || key === 'd')) {
             e.preventDefault();
         }
         if (['Tab', 'Enter', 'Escape', 'F2', 'Delete',
              'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) {
+            e.preventDefault();
+        }
+
+        // V07.3 — Space toggles checkboxes when not in an editor. Also
+        // suppressed to prevent page scroll when the grid has focus.
+        if (key === ' ' && !isInEditor) {
+            e.preventDefault();
+        }
+
+        // V07.2 — Printable characters begin edit mode on the active cell.
+        // Only suppress default when NOT already inside an editor, so the
+        // user can still type into open cell editors normally.
+        if (!ctrl && !isInEditor && key.length === 1 && key !== ' ') {
             e.preventDefault();
         }
 

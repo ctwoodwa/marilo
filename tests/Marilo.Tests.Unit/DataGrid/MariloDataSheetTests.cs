@@ -1386,4 +1386,599 @@ public class MariloDataSheetTests : MariloTestBase
             System.Globalization.CultureInfo.CurrentCulture = original;
         }
     }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // Batch F4 — Keyboard and accessibility (GAP-DATASHEET-V07.1-9 + Tab wrap)
+    // ─────────────────────────────────────────────────────────────────────
+
+    // ── V07.1: Enter key enters edit mode when not already editing ────
+
+    [Fact]
+    public async Task EnterKey_OnInactiveCell_EntersEditMode()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        // Activate a cell but don't enter edit mode.
+        await cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "Name"));
+        Assert.False(cut.Instance.IsCellEditing(data[0], "Name"));
+
+        // Enter key should enter edit mode (V07.1).
+        await cut.InvokeAsync(() => cut.Instance.HandleKeyDown("Enter", false, false));
+
+        Assert.True(cut.Instance.IsCellEditing(data[0], "Name"));
+    }
+
+    [Fact]
+    public async Task EnterKey_InEditMode_CommitsAndMovesDown()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.EnterEditMode(data[0], "Name"));
+        Assert.True(cut.Instance.IsCellEditing(data[0], "Name"));
+
+        // Enter in edit mode commits (exits edit mode) and moves down.
+        await cut.InvokeAsync(() => cut.Instance.HandleKeyDown("Enter", false, false));
+
+        Assert.False(cut.Instance.IsCellEditing(data[0], "Name"));
+        Assert.True(cut.Instance.IsCellActive(data[1], "Name"));
+    }
+
+    // ── V07.3: Space toggles checkbox without edit mode ────────────────
+
+    [Fact]
+    public async Task Space_OnCheckboxCell_TogglesValue()
+    {
+        var data = SeedData();
+        data[0].IsActive = false;
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "IsActive");
+                builder.AddAttribute(2, "Title", "Active");
+                builder.AddAttribute(3, "ColumnType", DataSheetColumnType.Checkbox);
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "IsActive"));
+        await cut.InvokeAsync(() => cut.Instance.HandleKeyDown(" ", false, false));
+
+        Assert.True(data[0].IsActive);
+        Assert.Equal(CellState.Dirty, cut.Instance.GetCellState(data[0], "IsActive"));
+    }
+
+    [Fact]
+    public async Task Space_OnCheckboxCell_TogglesBackAndForth()
+    {
+        var data = SeedData();
+        data[0].IsActive = true;
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "IsActive");
+                builder.AddAttribute(2, "Title", "Active");
+                builder.AddAttribute(3, "ColumnType", DataSheetColumnType.Checkbox);
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "IsActive"));
+        await cut.InvokeAsync(() => cut.Instance.HandleKeyDown(" ", false, false));
+        Assert.False(data[0].IsActive);
+
+        await cut.InvokeAsync(() => cut.Instance.HandleKeyDown(" ", false, false));
+        Assert.True(data[0].IsActive);
+    }
+
+    [Fact]
+    public async Task Space_OnNonCheckboxCell_DoesNotToggle()
+    {
+        var data = SeedData();
+        var originalName = data[0].Name;
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "Name"));
+        await cut.InvokeAsync(() => cut.Instance.HandleKeyDown(" ", false, false));
+
+        // Space on a text cell should not commit anything; value stays.
+        Assert.Equal(originalName, data[0].Name);
+    }
+
+    // ── V07.5 / V07.6: aria-rowindex / aria-colindex ───────────────────
+
+    [Fact]
+    public void DataRows_HaveAriaRowIndex_StartingAtTwo()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        var dataRows = cut.FindAll("tbody tr[role='row']");
+        Assert.Equal(3, dataRows.Count);
+        // Header row is aria-rowindex=1, so first data row is 2.
+        Assert.Equal("2", dataRows[0].GetAttribute("aria-rowindex"));
+        Assert.Equal("3", dataRows[1].GetAttribute("aria-rowindex"));
+        Assert.Equal("4", dataRows[2].GetAttribute("aria-rowindex"));
+    }
+
+    [Fact]
+    public void HeaderRow_HasAriaRowIndexOne()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        var header = cut.Find("thead tr[role='row']");
+        Assert.Equal("1", header.GetAttribute("aria-rowindex"));
+    }
+
+    [Fact]
+    public void DataCells_HaveAriaColIndex_StartingAtOne()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(10);
+                builder.AddAttribute(11, "Field", "Amount");
+                builder.AddAttribute(12, "Title", "Amount");
+                builder.AddAttribute(13, "ColumnType", DataSheetColumnType.Number);
+                builder.CloseComponent();
+            }));
+
+        var firstDataRow = cut.FindAll("tbody tr[role='row']").First();
+        var cells = firstDataRow.QuerySelectorAll("td[role='gridcell']");
+        Assert.Equal(2, cells.Length);
+        Assert.Equal("1", cells[0].GetAttribute("aria-colindex"));
+        Assert.Equal("2", cells[1].GetAttribute("aria-colindex"));
+    }
+
+    // ── V07.7: aria-describedby on invalid cells ───────────────────────
+
+    [Fact]
+    public async Task InvalidCell_HasAriaDescribedBy_PointingToErrorText()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.AddAttribute(3, "Required", true);
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", ""));
+        Assert.Equal(CellState.Invalid, cut.Instance.GetCellState(data[0], "Name"));
+
+        var invalidCell = cut.Find("td[aria-invalid='true']");
+        var describedBy = invalidCell.GetAttribute("aria-describedby");
+        Assert.NotNull(describedBy);
+
+        var errorSpan = cut.Find($"#{describedBy}");
+        Assert.NotNull(errorSpan);
+        Assert.Contains("required", errorSpan.TextContent, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task ValidCell_HasNoAriaDescribedBy()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Changed"));
+        var cell = cut.Find("td[data-field='Name']");
+        Assert.Null(cell.GetAttribute("aria-describedby"));
+    }
+
+    // ── V07.8: aria-busy includes IsSaving ─────────────────────────────
+
+    [Fact]
+    public void AriaBusy_IsTrue_WhenIsSaving()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.IsSaving, true)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        var root = cut.Find("div[role='grid']");
+        Assert.Equal("true", root.GetAttribute("aria-busy"));
+    }
+
+    [Fact]
+    public void AriaBusy_IsTrue_WhenIsLoading()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.IsLoading, true)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        var root = cut.Find("div[role='grid']");
+        Assert.Equal("true", root.GetAttribute("aria-busy"));
+    }
+
+    [Fact]
+    public void AriaBusy_IsNull_WhenIdle()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        var root = cut.Find("div[role='grid']");
+        Assert.Null(root.GetAttribute("aria-busy"));
+    }
+
+    // ── V07.9: aria-live dirty count announcement ──────────────────────
+
+    [Fact]
+    public async Task DirtyCountChange_Announces_RowsModified()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Changed1"));
+        Assert.Equal("1 row modified", cut.Instance._ariaAnnouncement);
+
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[1], "Name", "Changed2"));
+        Assert.Equal("2 rows modified", cut.Instance._ariaAnnouncement);
+    }
+
+    [Fact]
+    public async Task DirtyCountUnchanged_DoesNotReAnnounce()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(10);
+                builder.AddAttribute(11, "Field", "Amount");
+                builder.AddAttribute(12, "Title", "Amount");
+                builder.AddAttribute(13, "ColumnType", DataSheetColumnType.Number);
+                builder.CloseComponent();
+            }));
+
+        // First edit brings row count to 1 and fires an announcement.
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Changed"));
+        Assert.Equal("1 row modified", cut.Instance._ariaAnnouncement);
+
+        // Manually reset the announcement so we can detect a re-fire.
+        cut.Instance._ariaAnnouncement = "SENTINEL";
+
+        // Second edit on the SAME row doesn't change the dirty row count,
+        // so the announcement should NOT re-fire.
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Amount", 999m));
+        Assert.Equal("SENTINEL", cut.Instance._ariaAnnouncement);
+    }
+
+    // ── V07.2: Printable character begins edit mode ────────────────────
+
+    [Fact]
+    public async Task PrintableChar_OnTextCell_EntersEditModeWithChar()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "Name"));
+        await cut.InvokeAsync(() => cut.Instance.HandleKeyDown("x", false, false));
+
+        Assert.True(cut.Instance.IsCellEditing(data[0], "Name"));
+        Assert.Equal("x", data[0].Name);
+    }
+
+    [Fact]
+    public async Task PrintableChar_OnNumberCell_EntersEditModeWithParsedValue()
+    {
+        var data = SeedData();
+        data[0].Amount = 0m;
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Amount");
+                builder.AddAttribute(2, "Title", "Amount");
+                builder.AddAttribute(3, "ColumnType", DataSheetColumnType.Number);
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "Amount"));
+        await cut.InvokeAsync(() => cut.Instance.HandleKeyDown("5", false, false));
+
+        Assert.True(cut.Instance.IsCellEditing(data[0], "Amount"));
+        Assert.Equal(5m, data[0].Amount);
+    }
+
+    [Fact]
+    public async Task PrintableChar_OnComputedCell_DoesNothing()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Total");
+                builder.AddAttribute(2, "Title", "Total");
+                builder.AddAttribute(3, "ColumnType", DataSheetColumnType.Computed);
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "Total"));
+        await cut.InvokeAsync(() => cut.Instance.HandleKeyDown("x", false, false));
+
+        // Computed cells cannot enter edit mode.
+        Assert.False(cut.Instance.IsCellEditing(data[0], "Total"));
+    }
+
+    // ── Tab row wrapping ───────────────────────────────────────────────
+
+    [Fact]
+    public async Task Tab_AtLastEditableColumnOfRow_WrapsToFirstColumnOfNextRow()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(10);
+                builder.AddAttribute(11, "Field", "Amount");
+                builder.AddAttribute(12, "Title", "Amount");
+                builder.AddAttribute(13, "ColumnType", DataSheetColumnType.Number);
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "Amount"));
+        await cut.InvokeAsync(() => cut.Instance.HandleKeyDown("Tab", false, false));
+
+        Assert.True(cut.Instance.IsCellActive(data[1], "Name"));
+    }
+
+    [Fact]
+    public async Task ShiftTab_AtFirstEditableColumnOfRow_WrapsToLastColumnOfPrevRow()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(10);
+                builder.AddAttribute(11, "Field", "Amount");
+                builder.AddAttribute(12, "Title", "Amount");
+                builder.AddAttribute(13, "ColumnType", DataSheetColumnType.Number);
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.ActivateCell(data[1], "Name"));
+        await cut.InvokeAsync(() => cut.Instance.HandleKeyDown("Tab", false, true));
+
+        Assert.True(cut.Instance.IsCellActive(data[0], "Amount"));
+    }
+
+    [Fact]
+    public async Task Tab_OnLastCellOfLastRow_ExitsGrid()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(10);
+                builder.AddAttribute(11, "Field", "Amount");
+                builder.AddAttribute(12, "Title", "Amount");
+                builder.AddAttribute(13, "ColumnType", DataSheetColumnType.Number);
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.ActivateCell(data[2], "Amount"));
+        await cut.InvokeAsync(() => cut.Instance.HandleKeyDown("Tab", false, false));
+
+        // At the last editable cell of the last row, Tab clears the
+        // active cell so browser focus leaves the grid.
+        Assert.Null(cut.Instance._activeCellRow);
+        Assert.Null(cut.Instance._activeCellField);
+    }
+
+    [Fact]
+    public async Task ShiftTab_OnFirstCellOfFirstRow_ExitsGrid()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(10);
+                builder.AddAttribute(11, "Field", "Amount");
+                builder.AddAttribute(12, "Title", "Amount");
+                builder.AddAttribute(13, "ColumnType", DataSheetColumnType.Number);
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "Name"));
+        await cut.InvokeAsync(() => cut.Instance.HandleKeyDown("Tab", false, true));
+
+        Assert.Null(cut.Instance._activeCellRow);
+        Assert.Null(cut.Instance._activeCellField);
+    }
+
+    [Fact]
+    public async Task Tab_SkipsComputedColumns()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(10);
+                builder.AddAttribute(11, "Field", "Total");
+                builder.AddAttribute(12, "Title", "Total");
+                builder.AddAttribute(13, "ColumnType", DataSheetColumnType.Computed);
+                builder.CloseComponent();
+
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(20);
+                builder.AddAttribute(21, "Field", "Amount");
+                builder.AddAttribute(22, "Title", "Amount");
+                builder.AddAttribute(23, "ColumnType", DataSheetColumnType.Number);
+                builder.CloseComponent();
+            }));
+
+        // Activate Name (editable) — Tab should skip Total (computed) and
+        // land directly on Amount.
+        await cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "Name"));
+        await cut.InvokeAsync(() => cut.Instance.HandleKeyDown("Tab", false, false));
+
+        Assert.True(cut.Instance.IsCellActive(data[0], "Amount"));
+    }
 }

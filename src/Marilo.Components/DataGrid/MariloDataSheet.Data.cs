@@ -59,6 +59,13 @@ public partial class MariloDataSheet<TItem>
         var key = GetRowKey(row);
         if (key is null) return;
 
+        // V07.9 — Capture the dirty-row count BEFORE mutating the dirty
+        // state so we can fire a screen-reader announcement only when the
+        // count actually changes. Edits within an already-dirty row must
+        // not spam the aria-live region with a per-keystroke announcement.
+        var priorDirtyRowCount = _dirtyRows.Values
+            .Count(e => e.DirtyFields.Count > 0 && !e.IsDeleted);
+
         // Get or create dirty entry. The TryGetValue result doubles as
         // "is this the first touch on this row?" — on a first touch we
         // snapshot the current row as Original before any mutation.
@@ -128,6 +135,20 @@ public partial class MariloDataSheet<TItem>
                 OldValue = oldValue,
                 NewValue = newValue
             });
+        }
+
+        // V07.9 — Announce dirty count changes to screen readers via the
+        // aria-live region. Spec keyboard-and-accessibility.md:150 —
+        // "{N} rows modified" when the dirty row count changes. Only
+        // fire when the count transitions; per-field edits on an already
+        // dirty row don't re-announce.
+        var newDirtyRowCount = _dirtyRows.Values
+            .Count(e => e.DirtyFields.Count > 0 && !e.IsDeleted);
+        if (newDirtyRowCount != priorDirtyRowCount)
+        {
+            _ariaAnnouncement = newDirtyRowCount == 1
+                ? "1 row modified"
+                : $"{newDirtyRowCount} rows modified";
         }
 
         StateHasChanged();

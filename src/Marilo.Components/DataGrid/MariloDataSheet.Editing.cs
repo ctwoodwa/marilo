@@ -173,6 +173,34 @@ public partial class MariloDataSheet<TItem>
             return;
         }
 
+        // V07.1 — Enter key also enters edit mode when not currently editing.
+        // Spec keyboard-and-accessibility.md:41 — "Enters edit mode on the
+        // active cell (same as F2)." Must sit BEFORE the Tab/Enter edit-mode
+        // navigation branch below so commit-then-move Enter behavior still
+        // runs on the in-edit-mode path.
+        if (key == "Enter" && !_isEditMode && _activeCellRow != null && _activeCellField != null)
+        {
+            EnterEditMode(_activeCellRow, _activeCellField);
+            return;
+        }
+
+        // V07.3 — Space toggles checkbox cells without a separate edit mode.
+        // Spec keyboard-and-accessibility.md:51 — checkbox cells do not have
+        // an edit mode; Space reads the current value and commits the flip.
+        if (key == " " && !_isEditMode && _activeCellRow != null && _activeCellField != null)
+        {
+            var spaceColumn = _columns.FirstOrDefault(c => c.Field == _activeCellField);
+            if (spaceColumn != null
+                && spaceColumn.Editable
+                && spaceColumn.ColumnType == DataSheetColumnType.Checkbox)
+            {
+                var currentValue = GridReflectionHelper.GetValue(_activeCellRow, _activeCellField);
+                var newValue = currentValue is true ? (object)false : (object)true;
+                await CommitCellEdit(_activeCellRow, _activeCellField, newValue);
+                return;
+            }
+        }
+
         // Delete: Clear selected cells
         if (key == "Delete" && _activeCellRow != null && _activeCellField != null)
         {
@@ -189,54 +217,202 @@ public partial class MariloDataSheet<TItem>
         {
             var rowIdx = _displayRows.IndexOf(_activeCellRow);
             var colIdx = _columns.FindIndex(c => c.Field == _activeCellField);
-            var editableColumns = _columns.Where(c => c.Editable || c.ColumnType == DataSheetColumnType.Computed).ToList();
 
             switch (key)
             {
                 case "ArrowDown" when rowIdx < _displayRows.Count - 1:
                     ActivateCell(_displayRows[rowIdx + 1], _activeCellField);
-                    break;
+                    return;
                 case "ArrowUp" when rowIdx > 0:
                     ActivateCell(_displayRows[rowIdx - 1], _activeCellField);
-                    break;
+                    return;
                 case "ArrowRight" when colIdx < _columns.Count - 1:
                     ActivateCell(_activeCellRow, _columns[colIdx + 1].Field);
-                    break;
+                    return;
                 case "ArrowLeft" when colIdx > 0:
                     ActivateCell(_activeCellRow, _columns[colIdx - 1].Field);
-                    break;
+                    return;
             }
         }
 
-        // Tab / Enter: commit and navigate
-        if (_isEditMode && _activeCellRow != null && _activeCellField != null)
+        // Tab navigation — works in both edit and non-edit mode per spec
+        // keyboard-and-accessibility.md:38-39 (Context = "Any"). Implements
+        // row-wrap and grid-exit behavior per spec:100-108.
+        if (key == "Tab" && _activeCellRow != null && _activeCellField != null)
+        {
+            var moved = MoveToNextEditableCell(shift);
+            if (moved && _isEditMode)
+            {
+                _isEditMode = false;
+                StateHasChanged();
+            }
+            else if (!moved)
+            {
+                // At first/last editable cell of the grid — clear active
+                // cell so the next focusable element on the page receives
+                // focus. JS has already called preventDefault for Tab, but
+                // the spec is explicit: at the grid boundary focus leaves
+                // the grid entirely.
+                ClearActiveCell();
+                StateHasChanged();
+            }
+            return;
+        }
+
+        // Enter in edit mode: commit and move down one row, same column.
+        if (key == "Enter" && _isEditMode && _activeCellRow != null && _activeCellField != null)
         {
             var rowIdx = _displayRows.IndexOf(_activeCellRow);
-            var colIdx = _columns.FindIndex(c => c.Field == _activeCellField);
-
-            if (key == "Tab")
-            {
-                if (shift && colIdx > 0)
-                {
-                    _isEditMode = false;
-                    ActivateCell(_activeCellRow, _columns[colIdx - 1].Field);
-                }
-                else if (!shift && colIdx < _columns.Count - 1)
-                {
-                    _isEditMode = false;
-                    ActivateCell(_activeCellRow, _columns[colIdx + 1].Field);
-                }
-                else if (!shift && rowIdx < _displayRows.Count - 1)
-                {
-                    _isEditMode = false;
-                    ActivateCell(_displayRows[rowIdx + 1], _columns[0].Field);
-                }
-            }
-            else if (key == "Enter" && rowIdx < _displayRows.Count - 1)
+            if (rowIdx >= 0 && rowIdx < _displayRows.Count - 1)
             {
                 _isEditMode = false;
                 ActivateCell(_displayRows[rowIdx + 1], _activeCellField);
             }
+            else
+            {
+                // On the last row, commit without moving (spec: "If on the
+                // last row, commits without moving.").
+                _isEditMode = false;
+                StateHasChanged();
+            }
+            return;
+        }
+
+        // V07.2 — Printable character → edit mode with typed char as the
+        // initial value. Spec keyboard-and-accessibility.md:49: "Enters edit
+        // mode and replaces the cell value with the typed character (text
+        // and number columns only)." Must sit after all named-key branches
+        // so "Escape"/"Tab"/etc. aren't misclassified. Space is handled by
+        // the checkbox toggle branch above and is deliberately excluded
+        // here — a leading space is not useful as a cell edit seed.
+        if (!_isEditMode
+            && !ctrl
+            && key.Length == 1
+            && key != " "
+            && _activeCellRow != null
+            && _activeCellField != null)
+        {
+            var column = _columns.FirstOrDefault(c => c.Field == _activeCellField);
+            if (column == null || !column.Editable || column.ColumnType == DataSheetColumnType.Computed)
+            {
+                return;
+            }
+
+            if (column.ColumnType == DataSheetColumnType.Text)
+            {
+                EnterEditMode(_activeCellRow, _activeCellField);
+                GridReflectionHelper.SetValue(_activeCellRow, _activeCellField, key);
+                StateHasChanged();
+                return;
+            }
+
+            if (column.ColumnType == DataSheetColumnType.Number)
+            {
+                var targetType = typeof(TItem).GetProperty(column.Field)?.PropertyType
+                                 ?? typeof(decimal);
+                var (success, parsed) = ParseNumericValue(key, targetType);
+                if (success)
+                {
+                    EnterEditMode(_activeCellRow, _activeCellField);
+                    GridReflectionHelper.SetValue(_activeCellRow, _activeCellField, parsed);
+                    StateHasChanged();
+                }
+                return;
+            }
+        }
+    }
+
+    // V07 Tab wrap — Moves the active cell to the next/previous editable
+    // cell, wrapping across rows per spec keyboard-and-accessibility.md:100-108.
+    // Returns true if the active cell moved to another editable cell; false
+    // if the caller should exit the grid (boundary reached).
+    private bool MoveToNextEditableCell(bool reverse)
+    {
+        if (_activeCellRow is null || _activeCellField is null)
+        {
+            return false;
+        }
+
+        // Build the list of editable (non-computed) column indices. If
+        // nothing is editable, there is no next cell to move to.
+        var editableColIndexes = new List<int>();
+        for (var i = 0; i < _columns.Count; i++)
+        {
+            var c = _columns[i];
+            if (c.Editable && c.ColumnType != DataSheetColumnType.Computed)
+            {
+                editableColIndexes.Add(i);
+            }
+        }
+        if (editableColIndexes.Count == 0)
+        {
+            return false;
+        }
+
+        var rowIdx = _displayRows.IndexOf(_activeCellRow);
+        var colIdx = _columns.FindIndex(c => c.Field == _activeCellField);
+        if (rowIdx < 0 || colIdx < 0)
+        {
+            return false;
+        }
+
+        // Find the current cell's position within the editable-only
+        // traversal sequence, then step forward or backward.
+        var editableColPos = editableColIndexes.IndexOf(colIdx);
+
+        if (!reverse)
+        {
+            // Tab forward: next editable column in same row, else first
+            // editable column of the next row.
+            if (editableColPos >= 0 && editableColPos < editableColIndexes.Count - 1)
+            {
+                ActivateCell(_activeCellRow, _columns[editableColIndexes[editableColPos + 1]].Field);
+                return true;
+            }
+            if (editableColPos < 0)
+            {
+                // Current column is not editable (e.g. user arrow-keyed
+                // onto a Computed cell). Jump to the first editable column
+                // after the current one in the same row; if none, fall to
+                // next row.
+                var nextCol = editableColIndexes.FirstOrDefault(i => i > colIdx, -1);
+                if (nextCol >= 0)
+                {
+                    ActivateCell(_activeCellRow, _columns[nextCol].Field);
+                    return true;
+                }
+            }
+            if (rowIdx < _displayRows.Count - 1)
+            {
+                ActivateCell(_displayRows[rowIdx + 1], _columns[editableColIndexes[0]].Field);
+                return true;
+            }
+            return false; // past last editable cell of the grid
+        }
+        else
+        {
+            // Shift+Tab reverse: previous editable column in same row, else
+            // last editable column of the previous row.
+            if (editableColPos > 0)
+            {
+                ActivateCell(_activeCellRow, _columns[editableColIndexes[editableColPos - 1]].Field);
+                return true;
+            }
+            if (editableColPos < 0)
+            {
+                var prevCol = editableColIndexes.LastOrDefault(i => i < colIdx, -1);
+                if (prevCol >= 0)
+                {
+                    ActivateCell(_activeCellRow, _columns[prevCol].Field);
+                    return true;
+                }
+            }
+            if (rowIdx > 0)
+            {
+                ActivateCell(_displayRows[rowIdx - 1], _columns[editableColIndexes[^1]].Field);
+                return true;
+            }
+            return false; // before first editable cell of the grid
         }
     }
 
