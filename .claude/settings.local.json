@@ -11,7 +11,22 @@
       "MultiEdit(ICM/workspaces/**)",
       "Edit(workspaces/Marilo/workspaces/**)",
       "Write(workspaces/Marilo/workspaces/**)",
-      "MultiEdit(workspaces/Marilo/workspaces/**)"
+      "MultiEdit(workspaces/Marilo/workspaces/**)",
+      "Edit(src/**)",
+      "Write(src/**)",
+      "MultiEdit(src/**)",
+      "Edit(tests/**)",
+      "Write(tests/**)",
+      "MultiEdit(tests/**)",
+      "Edit(samples/**)",
+      "Write(samples/**)",
+      "MultiEdit(samples/**)",
+      "Edit(docs/**)",
+      "Write(docs/**)",
+      "MultiEdit(docs/**)",
+      "Edit(docfx/**)",
+      "Write(docfx/**)",
+      "MultiEdit(docfx/**)"
     ]
   }
 }
