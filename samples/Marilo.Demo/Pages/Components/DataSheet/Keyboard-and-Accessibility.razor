@@ -27,8 +27,7 @@
         </div>
 
         <div @onkeydown="HandleNavKey" tabindex="-1" class="ks-capture">
-            <MariloDataSheet @ref="_navSheet"
-                             TItem="NavRow"
+            <MariloDataSheet TItem="NavRow"
                              Data="@_navRows"
                              KeyField="Id"
                              Height="200px"
@@ -65,8 +64,7 @@
         </div>
 
         <div @onkeydown="HandleEditKey" tabindex="-1" class="ks-capture">
-            <MariloDataSheet @ref="_editSheet"
-                             TItem="EditRow"
+            <MariloDataSheet TItem="EditRow"
                              Data="@_editRows"
                              KeyField="Id"
                              Height="200px"
@@ -158,8 +156,7 @@
             </ul>
         </div>
 
-        <MariloDataSheet @ref="_spaceSheet"
-                         TItem="SpaceRow"
+        <MariloDataSheet TItem="SpaceRow"
                          Data="@_spaceRows"
                          KeyField="Id"
                          Height="180px"
@@ -182,6 +179,10 @@
 </PageSection>
 
 <style>
+    /* ks-* prefix scopes these styles to the Keyboard scenarios so they
+       don't collide with the .ds-demo-log / .ds-demo-* classes used by
+       the sibling DataSheet demo pages (Editing-and-Validation,
+       BulkOperations, Overview). */
     .ks-instructions {
         margin-bottom: 12px;
         padding: 10px 12px;
@@ -219,7 +220,6 @@
 
 @code {
     // ── Scenario A — Navigation keys ──────────────────────────────────
-    private MariloDataSheet<NavRow>? _navSheet;
     private string? _navLastKey;
 
     private List<NavRow> _navRows = new()
@@ -235,7 +235,6 @@
     }
 
     // ── Scenario B — Edit-mode shortcuts ──────────────────────────────
-    private MariloDataSheet<EditRow>? _editSheet;
     private readonly List<string> _editKeyLog = [];
 
     private List<EditRow> _editRows = new()
@@ -277,8 +276,6 @@
     }
 
     // ── Scenario D — Space toggles checkbox ───────────────────────────
-    private MariloDataSheet<SpaceRow>? _spaceSheet;
-
     private List<SpaceRow> _spaceRows = new()
     {
         new() { Label = "Enable notifications", IsActive = true  },
