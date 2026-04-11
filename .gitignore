@@ -65,10 +65,10 @@ ehthumbs.db
 ## AI / Agent tooling
 /.wolf/
 /.claude/*
-!/.claude/skills/
-
 ## Claude Code
-.claude/memory/
+!/.claude/memory/
+!/.claude/skills/
+!/.claude/rules/
 
 ## Test results
 TestResults/
