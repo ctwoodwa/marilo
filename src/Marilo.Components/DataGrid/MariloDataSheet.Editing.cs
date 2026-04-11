@@ -248,11 +248,17 @@ public partial class MariloDataSheet<TItem>
             }
             else if (!moved)
             {
-                // At first/last editable cell of the grid — clear active
-                // cell so the next focusable element on the page receives
-                // focus. JS has already called preventDefault for Tab, but
-                // the spec is explicit: at the grid boundary focus leaves
-                // the grid entirely.
+                // At first/last editable cell of the grid — clear the
+                // active cell so the grid no longer visually indicates a
+                // focused cell. The browser's native Tab handling then
+                // moves focus to the next focusable element outside the
+                // grid (button, link, etc.). Known limitation: if the
+                // upstream JS keydown handler has already called
+                // preventDefault on the event, the user sees the grid
+                // lose its active-cell highlight but focus remains on the
+                // grid's root <div>. The spec is explicit that a
+                // grid-boundary Tab exits the grid, so the interop layer
+                // should NOT preventDefault on Tab at the boundary.
                 ClearActiveCell();
                 StateHasChanged();
             }

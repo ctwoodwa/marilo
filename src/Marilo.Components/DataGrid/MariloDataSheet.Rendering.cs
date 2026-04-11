@@ -77,8 +77,15 @@ public partial class MariloDataSheet<TItem>
             // cell and its validation error, not just a `title` tooltip.
             // Emit a visually-hidden span with a deterministic ID and point
             // aria-describedby at it when the cell is invalid.
+            //
+            // V07.7 polish — rowKey is user-supplied and may contain spaces,
+            // quotes, `#`, or other characters that are invalid in an HTML
+            // `id` attribute or CSS id selector. Sanitize it so the id and
+            // the cell's aria-describedby both produce the same safe value.
+            // _gridId is a GUID ("N") and column.Field is a C# identifier;
+            // neither needs sanitization.
             var cellErrorId = cellError != null && rowKey != null
-                ? $"{_gridId}-err-{rowKey}-{column.Field}"
+                ? $"{_gridId}-err-{SanitizeIdPart(rowKey)}-{column.Field}"
                 : null;
 
             builder.OpenElement(20, "td");
@@ -300,5 +307,35 @@ public partial class MariloDataSheet<TItem>
                 builder.CloseElement();
                 break;
         }
+    }
+
+    // ── ID Sanitization ────────────────────────────────────────────────
+
+    /// <summary>
+    /// Sanitizes a value for safe inclusion in an HTML <c>id</c> attribute
+    /// and CSS id selector. Any character outside <c>[A-Za-z0-9_-]</c> is
+    /// replaced with <c>_</c>. Null becomes <c>"null"</c> and empty becomes
+    /// <c>"empty"</c> so the result is always non-empty. Used to sanitize
+    /// user-supplied row keys when building <c>aria-describedby</c> targets
+    /// for invalid cells (V07.7 polish).
+    /// </summary>
+    private static string SanitizeIdPart(object? value)
+    {
+        if (value is null) return "null";
+        var s = value.ToString();
+        if (string.IsNullOrEmpty(s)) return "empty";
+
+        var buffer = new char[s.Length];
+        for (var i = 0; i < s.Length; i++)
+        {
+            var c = s[i];
+            var isSafe = (c >= 'A' && c <= 'Z')
+                      || (c >= 'a' && c <= 'z')
+                      || (c >= '0' && c <= '9')
+                      || c == '_'
+                      || c == '-';
+            buffer[i] = isSafe ? c : '_';
+        }
+        return new string(buffer);
     }
 }

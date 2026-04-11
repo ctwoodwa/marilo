@@ -378,6 +378,10 @@ public partial class MariloDataSheet<TItem>
             // Saving so the grid returns to a dirty-but-editable state and
             // the user can retry. Then re-throw so the caller sees the
             // original failure.
+            // The null-guard intentionally skips rollback for exceptions
+            // thrown in Steps 1-3 (validate / OnValidate): savingEntries is
+            // only populated in Step 4, so a null value means no entry ever
+            // flipped to CellState.Saving and there is nothing to roll back.
             if (savingEntries != null)
             {
                 foreach (var entry in savingEntries)

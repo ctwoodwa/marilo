@@ -301,13 +301,13 @@ public class MariloDataSheetTests : MariloTestBase
 
     // ── Fix 1: Checkbox Required enforcement (V01.1) ───────────────────
 
-    [Fact]
-    public async Task CheckboxRequired_FalseValue_ProducesError()
+    // F1.N8 — Single-column checkbox sheet helper used by the three V01.1
+    // Required tests below. Each test provides its own `data` list so the
+    // helper does not impose any initial IsActive value.
+    private IRenderedComponent<MariloDataSheet<TestRow>> RenderCheckboxSheet(
+        bool required, List<TestRow> data)
     {
-        var data = SeedData();
-        data[0].IsActive = false;
-
-        var cut = Render<MariloDataSheet<TestRow>>(p => p
+        return Render<MariloDataSheet<TestRow>>(p => p
             .Add(x => x.Data, data)
             .Add(x => x.EnableVirtualization, false)
             .Add(x => x.ChildContent, builder =>
@@ -316,9 +316,18 @@ public class MariloDataSheetTests : MariloTestBase
                 builder.AddAttribute(1, "Field", "IsActive");
                 builder.AddAttribute(2, "Title", "Active");
                 builder.AddAttribute(3, "ColumnType", DataSheetColumnType.Checkbox);
-                builder.AddAttribute(4, "Required", true);
+                builder.AddAttribute(4, "Required", required);
                 builder.CloseComponent();
             }));
+    }
+
+    [Fact]
+    public async Task CheckboxRequired_FalseValue_ProducesError()
+    {
+        var data = SeedData();
+        data[0].IsActive = false;
+
+        var cut = RenderCheckboxSheet(required: true, data);
 
         await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "IsActive", false));
 
@@ -334,18 +343,7 @@ public class MariloDataSheetTests : MariloTestBase
         var data = SeedData();
         data[0].IsActive = false;
 
-        var cut = Render<MariloDataSheet<TestRow>>(p => p
-            .Add(x => x.Data, data)
-            .Add(x => x.EnableVirtualization, false)
-            .Add(x => x.ChildContent, builder =>
-            {
-                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
-                builder.AddAttribute(1, "Field", "IsActive");
-                builder.AddAttribute(2, "Title", "Active");
-                builder.AddAttribute(3, "ColumnType", DataSheetColumnType.Checkbox);
-                builder.AddAttribute(4, "Required", true);
-                builder.CloseComponent();
-            }));
+        var cut = RenderCheckboxSheet(required: true, data);
 
         await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "IsActive", true));
 
@@ -359,18 +357,7 @@ public class MariloDataSheetTests : MariloTestBase
         var data = SeedData();
         data[0].IsActive = true;
 
-        var cut = Render<MariloDataSheet<TestRow>>(p => p
-            .Add(x => x.Data, data)
-            .Add(x => x.EnableVirtualization, false)
-            .Add(x => x.ChildContent, builder =>
-            {
-                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
-                builder.AddAttribute(1, "Field", "IsActive");
-                builder.AddAttribute(2, "Title", "Active");
-                builder.AddAttribute(3, "ColumnType", DataSheetColumnType.Checkbox);
-                builder.AddAttribute(4, "Required", false);
-                builder.CloseComponent();
-            }));
+        var cut = RenderCheckboxSheet(required: false, data);
 
         await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "IsActive", false));
 
@@ -525,9 +512,9 @@ public class MariloDataSheetTests : MariloTestBase
                 builder.CloseComponent();
             }));
 
-        // Activate first cell so PasteFromClipboard has an anchor.
-        cut.InvokeAsync(() => cut.Instance.EnterEditMode(data[0], "Amount"));
-        cut.InvokeAsync(() => cut.Instance.HandleKeyDown("Escape", false, false));
+        // F3.N6 — ActivateCell anchors the paste cursor without the
+        // EnterEditMode+Escape pair the first V04.1 iteration used.
+        cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "Amount"));
 
         // TSV with Windows-style CRLF line endings — the trailing "\r" on the
         // last cell of each row would break decimal.TryParse without V04.1.
@@ -563,8 +550,8 @@ public class MariloDataSheetTests : MariloTestBase
                 builder.CloseComponent();
             }));
 
-        cut.InvokeAsync(() => cut.Instance.EnterEditMode(data[0], "Name"));
-        cut.InvokeAsync(() => cut.Instance.HandleKeyDown("Escape", false, false));
+        // F3.N6 — ActivateCell anchors the paste cursor.
+        cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "Name"));
 
         // Two rows, two columns, CRLF between rows. The numeric cell at the
         // end of each line must parse cleanly (no trailing "\r").
@@ -595,8 +582,8 @@ public class MariloDataSheetTests : MariloTestBase
                 builder.CloseComponent();
             }));
 
-        cut.InvokeAsync(() => cut.Instance.EnterEditMode(data[0], "Amount"));
-        cut.InvokeAsync(() => cut.Instance.HandleKeyDown("Escape", false, false));
+        // F3.N6 — ActivateCell anchors the paste cursor.
+        cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "Amount"));
 
         cut.InvokeAsync(() => cut.Instance.PasteFromClipboard("abc"));
 
@@ -632,8 +619,8 @@ public class MariloDataSheetTests : MariloTestBase
 
         var originalDate = data[0].When;
 
-        cut.InvokeAsync(() => cut.Instance.EnterEditMode(data[0], "When"));
-        cut.InvokeAsync(() => cut.Instance.HandleKeyDown("Escape", false, false));
+        // F3.N6 — ActivateCell anchors the paste cursor.
+        cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "When"));
 
         cut.InvokeAsync(() => cut.Instance.PasteFromClipboard("not-a-date"));
 
@@ -662,8 +649,8 @@ public class MariloDataSheetTests : MariloTestBase
                 builder.CloseComponent();
             }));
 
-        cut.InvokeAsync(() => cut.Instance.EnterEditMode(data[0], "Amount"));
-        cut.InvokeAsync(() => cut.Instance.HandleKeyDown("Escape", false, false));
+        // F3.N6 — ActivateCell anchors the paste cursor.
+        cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "Amount"));
 
         // Row 0 gets a valid number, row 1 gets garbage.
         cut.InvokeAsync(() => cut.Instance.PasteFromClipboard("11.5\nbad"));
@@ -702,9 +689,9 @@ public class MariloDataSheetTests : MariloTestBase
         // Mark row index 1 for deletion.
         cut.InvokeAsync(() => cut.Instance.MarkRowDeleted(data[1]));
 
-        // Anchor paste at row 0.
-        cut.InvokeAsync(() => cut.Instance.EnterEditMode(data[0], "Name"));
-        cut.InvokeAsync(() => cut.Instance.HandleKeyDown("Escape", false, false));
+        // Anchor paste at row 0. F3.N6 — ActivateCell is cleaner than the
+        // EnterEditMode+Escape pair the original V04.3 iteration used.
+        cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "Name"));
 
         // 3 TSV rows. Expected mapping: A→Row0, B→Row2 (skipping deleted Row1), C→Row3.
         cut.InvokeAsync(() => cut.Instance.PasteFromClipboard("A\nB\nC"));
@@ -1551,7 +1538,7 @@ public class MariloDataSheetTests : MariloTestBase
     // ── V07.1: Enter key enters edit mode when not already editing ────
 
     [Fact]
-    public async Task EnterKey_OnInactiveCell_EntersEditMode()
+    public async Task EnterKey_OnActiveNonEditingCell_EntersEditMode()
     {
         var data = SeedData();
         var cut = Render<MariloDataSheet<TestRow>>(p => p
@@ -1797,6 +1784,66 @@ public class MariloDataSheetTests : MariloTestBase
         await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Changed"));
         var cell = cut.Find("td[data-field='Name']");
         Assert.Null(cell.GetAttribute("aria-describedby"));
+    }
+
+    private class KeyedTestRow
+    {
+        public string Key { get; set; } = "";
+        public string Name { get; set; } = "";
+    }
+
+    [Fact]
+    public async Task InvalidCell_WithRowKeyContainingSpecialChars_ProducesValidDescribedbyId()
+    {
+        // V07.7 polish — rowKey.ToString() may contain whitespace, quotes,
+        // `#`, or other characters that are invalid in an HTML id attribute
+        // or CSS id selector. The sanitizer must replace those with '_' so
+        // the cell's aria-describedby and the error span's id match exactly
+        // and form a valid id selector.
+        var data = new List<KeyedTestRow>
+        {
+            new() { Key = "abc def \"#%\"", Name = "Alpha" },
+        };
+
+        var cut = Render<MariloDataSheet<KeyedTestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.KeyField, "Key")
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<KeyedTestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.AddAttribute(3, "Required", true);
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", ""));
+        Assert.Equal(CellState.Invalid, cut.Instance.GetCellState(data[0], "Name"));
+
+        var invalidCell = cut.Find("td[aria-invalid='true']");
+        var describedBy = invalidCell.GetAttribute("aria-describedby");
+        Assert.NotNull(describedBy);
+
+        // The id must contain ONLY [A-Za-z0-9_-] so it is valid in an HTML
+        // id attribute and in a CSS id selector.
+        foreach (var c in describedBy!)
+        {
+            var isSafe = (c >= 'A' && c <= 'Z')
+                      || (c >= 'a' && c <= 'z')
+                      || (c >= '0' && c <= '9')
+                      || c == '_'
+                      || c == '-';
+            Assert.True(
+                isSafe,
+                $"aria-describedby contains unsafe char '{c}' (U+{(int)c:X4}) in value '{describedBy}'.");
+        }
+
+        // The error span's id must match the cell's aria-describedby
+        // exactly so screen readers can locate the described element.
+        var errorSpan = cut.Find($"#{describedBy}");
+        Assert.NotNull(errorSpan);
+        Assert.Contains("required", errorSpan.TextContent, StringComparison.OrdinalIgnoreCase);
     }
 
     // ── V07.8: aria-busy includes IsSaving ─────────────────────────────
