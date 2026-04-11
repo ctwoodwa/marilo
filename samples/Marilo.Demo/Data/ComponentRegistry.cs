@@ -18,6 +18,7 @@ public static class ComponentRegistry
     private static readonly string[] NoEventsSubPages = ["overview", "appearance", "accessibility"];
     private static readonly string[] MinimalSubPages = ["overview", "appearance"];
     private static readonly string[] OverviewOnly = ["overview"];
+    private static readonly string[] DataSheetSubPages = ["overview", "editing-and-validation", "bulk-operations", "keyboard-and-accessibility"];
 
     // API path helpers — builds /api/Marilo.Components.{ns}.Marilo{name}.html
     private static string Api(string ns, string name) => $"/api/Marilo.Components.{ns}.Marilo{name}.html";
@@ -183,6 +184,9 @@ public static class ComponentRegistry
         new("DataGrid", "DataGrid", "Data Display", "data-display",
             "The data grid displays structured data in rows and columns with sorting, filtering, paging, and selection.",
             ApiNs("DataGrid"), FullSubPages),
+        new("DataSheet", "DataSheet", "Data Display", "data-display",
+            "A strongly-typed editable data grid with dirty tracking, validation, bulk paste, and keyboard navigation.",
+            ApiNs("DataGrid"), DataSheetSubPages),
         new("TreeList", "treelist", "Data Display", "data-display",
             "Hierarchical data displayed in a grid with expand/collapse and column definitions.",
             ApiNs("DataGrid"), OverviewOnly),

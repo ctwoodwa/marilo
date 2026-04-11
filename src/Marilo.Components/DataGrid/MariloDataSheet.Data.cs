@@ -439,6 +439,42 @@ public partial class MariloDataSheet<TItem>
     // does NOT drop the dirty-row entry itself — the caller is responsible for
     // clearing _dirtyRows because the two call sites differ in how they do it
     // (ResetAsync uses a bulk Clear, BulkResetAsync removes per selected key).
+    /// <summary>
+    /// Restores a dirty entry's edited fields from its <see cref="DirtyRowEntry{TItem}.Original"/>
+    /// snapshot, or removes newly-added rows from <c>_displayRows</c> entirely.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This helper handles two cases:
+    /// <list type="bullet">
+    /// <item><description><b>Newly-added rows</b> (<see cref="DirtyRowEntry{TItem}.IsNewlyAdded"/> is <c>true</c>):
+    /// removed from <c>_displayRows</c> because their <c>Original</c> snapshot is a default
+    /// <typeparamref name="TItem"/> and there is nothing meaningful to revert to.</description></item>
+    /// <item><description><b>Dirty non-new rows</b>: each dirty field is copied from
+    /// <c>Original</c> back onto <c>Current</c>, un-doing the edit.</description></item>
+    /// </list>
+    /// </para>
+    /// <para>
+    /// <b>Edge case — <c>IsNewlyAdded &amp;&amp; IsDeleted</c>:</b> an entry that is BOTH newly-added
+    /// AND flagged deleted is treated as newly-added here (i.e. removed from <c>_displayRows</c>)
+    /// because the <c>IsNewlyAdded</c> check runs first and returns early. The two public call
+    /// sites differ in whether this branch is ever hit for the combined state:
+    /// <list type="bullet">
+    /// <item><description><see cref="ResetAsync"/> guards on <c>IsDeleted</c> before calling this
+    /// helper, so a <c>new+deleted</c> entry never reaches here via <c>ResetAsync</c> — instead the
+    /// row stays visible and its dirty entry is simply cleared.</description></item>
+    /// <item><description><c>BulkResetAsync</c> does NOT guard on <c>IsDeleted</c> — every selected
+    /// row is routed through this helper, so a <c>new+deleted</c> entry reset via
+    /// <c>BulkResetAsync</c> IS removed from <c>_displayRows</c>.</description></item>
+    /// </list>
+    /// This asymmetry is intentional and safe: in both flows the final visible state is
+    /// consistent with what a user would expect — Reset un-deletes a pure-deleted row and drops
+    /// purely-new rows; Bulk Reset Selected removes new rows from the selection regardless of
+    /// their deletion flag. The helper's remove-on-<c>IsNewlyAdded</c> behavior is the only
+    /// sensible outcome for the combined state if a caller ever reaches it directly, since a
+    /// newly-added row has no prior state to restore.
+    /// </para>
+    /// </remarks>
     internal void RestoreEntryOrRemoveNewRow(DirtyRowEntry<TItem> entry)
     {
         if (entry.IsNewlyAdded)
@@ -466,6 +502,12 @@ public partial class MariloDataSheet<TItem>
             {
                 // Deleted rows stay in _displayRows (reset un-deletes them)
                 // and their dirty entry is wiped by the Clear below.
+                // NOTE: this guard also swallows the rare combined state
+                // IsNewlyAdded && IsDeleted — in ResetAsync such entries skip
+                // the helper and simply have their dirty flag cleared, leaving
+                // the new row visible. BulkResetAsync behaves differently for
+                // that edge case because it does not guard on IsDeleted; see
+                // the remarks on RestoreEntryOrRemoveNewRow for the full story.
                 continue;
             }
 
