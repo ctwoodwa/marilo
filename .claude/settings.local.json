@@ -26,7 +26,9 @@
       "MultiEdit(docs/**)",
       "Edit(docfx/**)",
       "Write(docfx/**)",
-      "MultiEdit(docfx/**)"
+      "MultiEdit(docfx/**)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet test:*)"
     ]
   }
 }
