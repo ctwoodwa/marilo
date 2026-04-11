@@ -1,70 +1,84 @@
-# MariloFileManager — Stage 01 Spec Review: Gap List
+# MariloFileManager — Stage 01 Spec Review: Gap List (Refreshed)
 
-**Audit date:** 2026-04-09
-**Source file:** `src/Marilo.Components/Forms/Inputs/MariloFileManager.razor`
-**Source parameter count:** 10 `[Parameter]` properties + 1 two-way binding pair (see breakdown below)
-**Spec parameter count:** 40+ documented parameters, events, and field-binding strings across all spec files
-**Total gaps:** 36
+**Audit date:** 2026-04-11
+**Previous audit:** 2026-04-09 (36 gaps; all 36 resolved by filemanager-gap-analysis Phases A–F, closure reports dated 2026-04-09)
+**Source file:** `src/Marilo.Components/Forms/Inputs/MariloFileManager.razor.cs`
+**Source parameter count:** 40 `[Parameter]` properties + `Rebind()` public method
+**Spec directory:** `docs/component-specs/filemanager/`
+**Total open gaps:** 8 undocumented + 4 spec-ahead + 3 mismatch = 15
+(12 actionable in this workspace; 3 flagged for coordinator escalation)
 
 | Gap type | Count |
 |----------|-------|
-| Undocumented (in source, not in spec) | 4 |
-| Spec-ahead (in spec, not in source) | 28 |
-| Mismatch (both exist, differ in name/type/behavior) | 4 |
+| Undocumented (in source, not in spec) | 8 |
+| Spec-ahead (in spec, not in source) | 4 |
+| Mismatch (both exist, differ in name/type/behavior) | 3 |
 
 ---
 
-## Source Inventory
+## Source Inventory (current, 2026-04-11)
 
-### Parameters extracted from `MariloFileManager.razor`
+### Parameters on `MariloFileManager<TItem>`
 
 | # | Name | Type | Default |
 |---|------|------|---------|
-| 1 | `Items` | `IEnumerable<FileManagerEntry>` | `Enumerable.Empty<FileManagerEntry>()` |
-| 2 | `CurrentPath` | `string` | `"/"` |
-| 3 | `CurrentPathChanged` | `EventCallback<string>` | — |
-| 4 | `ViewMode` | `FileManagerViewMode` (enum) | `FileManagerViewMode.List` |
-| 5 | `ShowFolderTree` | `bool` | `true` |
-| 6 | `AllowCreate` | `bool` | `false` |
-| 7 | `AllowDelete` | `bool` | `false` |
-| 8 | `AllowRename` | `bool` | `false` |
-| 9 | `OnSelect` | `EventCallback<FileManagerEntry>` | — |
-| 10 | `OnOpen` | `EventCallback<FileManagerEntry>` | — |
-| 11 | `OnCreateFolder` | `EventCallback<string>` | — |
-| 12 | `OnDelete` | `EventCallback<FileManagerEntry>` | — |
+| 1 | `Data` | `IEnumerable<TItem>` | `Enumerable.Empty<TItem>()` |
+| 2 | `OnRead` | `EventCallback<FileManagerReadEventArgs>` | — |
+| 3 | `IdField` | `string` | `"Id"` |
+| 4 | `ParentIdField` | `string` | `"ParentId"` |
+| 5 | `NameField` | `string` | `"Name"` |
+| 6 | `PathField` | `string` | `"Path"` |
+| 7 | `ExtensionField` | `string` | `"Extension"` |
+| 8 | `IsDirectoryField` | `string` | `"IsDirectory"` |
+| 9 | `HasDirectoriesField` | `string` | `"HasDirectories"` |
+| 10 | `SizeField` | `string` | `"Size"` |
+| 11 | `DateCreatedField` | `string` | `"DateCreated"` |
+| 12 | `DateCreatedUtcField` | `string` | `"DateCreatedUtc"` |
+| 13 | `DateModifiedField` | `string` | `"DateModified"` |
+| 14 | `DateModifiedUtcField` | `string` | `"DateModifiedUtc"` |
+| 15 | `DirectoriesField` | `string` | `"Directories"` |
+| 16 | `ItemsField` | `string` | `"Items"` |
+| 17 | `Path` | `string` | `"/"` |
+| 18 | `PathChanged` | `EventCallback<string>` | — |
+| 19 | `View` | `FileManagerViewType` | `FileManagerViewType.ListView` |
+| 20 | `ViewChanged` | `EventCallback<FileManagerViewType>` | — |
+| 21 | `ToolBarTemplate` | `RenderFragment?` | `null` |
+| 22 | `Height` | `string?` | `null` |
+| 23 | `Width` | `string?` | `null` |
+| 24 | `EnableLoaderContainer` | `bool` | `false` |
+| 25 | `ShowFolderTree` | `bool` | `true` |
+| 26 | `FileManagerSettings` | `RenderFragment?` | `null` |
+| 27 | `UploadSettings` | `FileManagerUploadSettings?` | `null` |
+| 28 | `ShowPreviewPane` | `bool` | `false` |
+| 29 | `AllowCreate` | `bool` | `false` |
+| 30 | `AllowDelete` | `bool` | `false` |
+| 31 | `AllowRename` | `bool` | `false` |
+| 32 | `SelectedItems` | `IEnumerable<TItem>` | `Enumerable.Empty<TItem>()` |
+| 33 | `SelectedItemsChanged` | `EventCallback<IEnumerable<TItem>>` | — |
+| 34 | `OnSelect` | `EventCallback<TItem>` | — |
+| 35 | `OnOpen` | `EventCallback<TItem>` | — |
+| 36 | `OnCreate` | `EventCallback<FileManagerCreateEventArgs<TItem>>` | — |
+| 37 | `OnDelete` | `EventCallback<FileManagerDeleteEventArgs<TItem>>` | — |
+| 38 | `OnEdit` | `EventCallback<FileManagerEditEventArgs<TItem>>` | — |
+| 39 | `OnUpdate` | `EventCallback<FileManagerUpdateEventArgs<TItem>>` | — |
+| 40 | `OnDownload` | `EventCallback<FileManagerDownloadEventArgs<TItem>>` | — |
+| 41 | `OnModelInit` | `Func<TItem>?` | `null` |
 
-**Private state (not parameters):** `SelectedItemPath`, `CanNavigateUp`
+Inherited from `MariloComponentBase`:
+- `Class` (`string?`, default `null`)
+
+Public methods:
+- `Rebind()` → `Task` — documented in `overview.md#reference-and-methods`
 
 ---
 
 ## Gap Records
 
----
-
 ### A. Undocumented (in source, missing from spec)
 
 ---
 
-**ID:** SPEC-filemanager-001
-**Type:** undocumented
-**Parameter/Event:** `Items`
-**Priority:** P1 (blocking)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `Data` | `Items` |
-| Type | `IEnumerable<TItem>` (generic) | `IEnumerable<FileManagerEntry>` (concrete class) |
-| Default | missing | `Enumerable.Empty<FileManagerEntry>()` |
-| Description | Data source bound to component | Data source bound to component |
-
-**Note:** This is both an undocumented name AND a mismatch on type. The spec consistently uses `Data` (generic `TItem`); source uses `Items` (concrete `FileManagerEntry`). Recorded here as undocumented because `Items` has no spec entry at all; the canonical spec parameter is `Data` (see SPEC-filemanager-025 mismatch section).
-
-**Recommended action:** Rename source parameter from `Items` to `Data`; make component generic `<TItem>` with field-binding strings.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-002
+**ID:** SPEC-filemanager-101
 **Type:** undocumented
 **Parameter/Event:** `ShowFolderTree`
 **Priority:** P2 (this phase)
@@ -74,14 +88,33 @@
 | Name | missing | `ShowFolderTree` |
 | Type | missing | `bool` |
 | Default | missing | `true` |
-| Description | missing | Controls visibility of the left folder-tree sidebar |
+| Description | missing | Controls visibility of the left folder-tree (TreeView) sidebar |
 
-**Recommended action:** Add `ShowFolderTree` to spec (overview parameters table) with `bool`, default `true`.
-**Delegated to:** spec update only
+**Recommended action:** Add to `overview.md` parameters table; cross-reference `navigation.md`.
+**Delegated to:** spec update only (in-scope)
 
 ---
 
-**ID:** SPEC-filemanager-003
+**ID:** SPEC-filemanager-102
+**Type:** undocumented
+**Parameter/Event:** `ShowPreviewPane`
+**Priority:** P2 (this phase)
+
+| Field | In Spec | In Source |
+|-------|---------|-----------|
+| Name | missing | `ShowPreviewPane` |
+| Type | missing | `bool` |
+| Default | missing | `false` |
+| Description | missing | Gates visibility of the preview-pane toggle button and the preview pane itself |
+
+**Note:** `preview-pane.md` describes the feature but does not mention a parameter to opt-in. Without it the feature is invisible.
+
+**Recommended action:** Add to `overview.md` and `preview-pane.md`; note default `false`.
+**Delegated to:** spec update only (in-scope)
+
+---
+
+**ID:** SPEC-filemanager-103
 **Type:** undocumented
 **Parameter/Event:** `AllowCreate`
 **Priority:** P2 (this phase)
@@ -91,603 +124,234 @@
 | Name | missing | `AllowCreate` |
 | Type | missing | `bool` |
 | Default | missing | `false` |
-| Description | missing | Shows/hides the "New Folder" button in the toolbar |
+| Description | missing | Shows/hides the New Folder button in the default toolbar; gates `OnCreate` |
 
-**Note:** The spec references `OnCreate` event and `FileManagerToolBarNewFolderTool` but has no parameter to gate the button visibility.
-
-**Recommended action:** Add `AllowCreate` to spec parameters table; cross-reference toolbar.md.
-**Delegated to:** spec update only
+**Recommended action:** Add to `overview.md` and `toolbar.md`.
+**Delegated to:** spec update only (in-scope)
 
 ---
 
-**ID:** SPEC-filemanager-004
+**ID:** SPEC-filemanager-104
+**Type:** undocumented
+**Parameter/Event:** `AllowDelete`
+**Priority:** P2 (this phase)
+
+| Field | In Spec | In Source |
+|-------|---------|-----------|
+| Name | missing | `AllowDelete` |
+| Type | missing | `bool` |
+| Default | missing | `false` |
+| Description | missing | Gates the Delete context-menu command and the delete-confirmation dialog |
+
+**Recommended action:** Add to `overview.md` and `context-menu.md` (near Delete).
+**Delegated to:** spec update only (in-scope)
+
+---
+
+**ID:** SPEC-filemanager-105
+**Type:** undocumented
+**Parameter/Event:** `AllowRename`
+**Priority:** P2 (this phase)
+
+| Field | In Spec | In Source |
+|-------|---------|-----------|
+| Name | missing | `AllowRename` |
+| Type | missing | `bool` |
+| Default | missing | `false` |
+| Description | missing | Gates the Rename context-menu command and the inline-rename input |
+
+**Recommended action:** Add to `overview.md` and `context-menu.md` (near Rename).
+**Delegated to:** spec update only (in-scope)
+
+---
+
+**ID:** SPEC-filemanager-106
+**Type:** undocumented
+**Parameter/Event:** `OnSelect`
+**Priority:** P3 (next phase)
+
+| Field | In Spec | In Source |
+|-------|---------|-----------|
+| Name | missing (spec uses only `SelectedItemsChanged`) | `OnSelect` |
+| Type | missing | `EventCallback<TItem>` |
+| Default | — | — |
+| Description | missing | Fires on single-click of an item; passes the clicked item directly. Distinct from `SelectedItemsChanged` (which emits the full selection set) |
+
+**Note:** Both events exist and serve different purposes. Spec should describe both.
+
+**Recommended action:** Add an `OnSelect` section to `events.md` and clarify the relationship with `SelectedItemsChanged`.
+**Delegated to:** spec update only (in-scope)
+
+---
+
+**ID:** SPEC-filemanager-107
 **Type:** undocumented
 **Parameter/Event:** `OnOpen`
-**Priority:** P2 (this phase)
+**Priority:** P3 (next phase)
 
 | Field | In Spec | In Source |
 |-------|---------|-----------|
 | Name | missing | `OnOpen` |
-| Type | missing | `EventCallback<FileManagerEntry>` |
-| Default | missing | — |
-| Description | missing | Fires when a file (non-directory) is double-clicked |
-
-**Note:** The spec's `OnRead` and `OnDownload` cover retrieval; there is no spec event for the raw double-click/open action on a file item. The source `OnOpen` fires from `OpenItem()` when `!entry.IsDirectory`.
-
-**Recommended action:** Add `OnOpen` event to events.md with `FileManagerEntry` arg; clarify relationship to `OnDownload`.
-**Delegated to:** spec update only
-
----
-
-### B. Spec-Ahead (in spec, not implemented in source)
-
----
-
-**ID:** SPEC-filemanager-005
-**Type:** spec-ahead
-**Parameter/Event:** `Data` (generic `TItem`)
-**Priority:** P1 (blocking)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `Data` | missing (source uses `Items`) |
-| Type | `IEnumerable<TItem>` | missing |
-| Default | missing | missing |
-| Description | Generic data source; component is generic `MariloFileManager<TItem>` | missing |
-
-**Recommended action:** Implement generic `TItem` parameter; replace `Items` with `Data`.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-006
-**Type:** spec-ahead
-**Parameter/Event:** `EnableLoaderContainer`
-**Priority:** P3 (next phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `EnableLoaderContainer` | missing |
-| Type | `bool` | missing |
-| Default | missing | missing |
-| Description | Shows a loading overlay on slow async operations | missing |
-
-**Recommended action:** Implement loader overlay on async data loads.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-007
-**Type:** spec-ahead
-**Parameter/Event:** `Height`
-**Priority:** P2 (this phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `Height` | missing |
-| Type | `string` | missing |
-| Default | missing | missing |
-| Description | Height of the component (CSS value) | missing |
-
-**Recommended action:** Add `Height` parameter wired to inline style.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-008
-**Type:** spec-ahead
-**Parameter/Event:** `Width`
-**Priority:** P3 (next phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `Width` | missing |
-| Type | `string` | missing |
-| Default | missing | missing |
-| Description | Width of the component (CSS value) | missing |
-
-**Recommended action:** Add `Width` parameter wired to inline style.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-009
-**Type:** spec-ahead
-**Parameter/Event:** `Class`
-**Priority:** P3 (next phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `Class` | missing |
-| Type | `string` | missing |
-| Default | missing | missing |
-| Description | Additional CSS class on the root element | missing |
-
-**Note:** Source uses `CombineClasses("mar-filemanager")` from `MariloComponentBase`, which likely already handles `Class` via base class — needs verification. Logged as spec-ahead until confirmed.
-
-**Recommended action:** Verify base class provides `Class`; if so, update spec to note it is inherited.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-010
-**Type:** spec-ahead
-**Parameter/Event:** Field-binding strings (13 parameters)
-**Priority:** P1 (blocking)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `NameField`, `SizeField`, `PathField`, `ExtensionField`, `IsDirectoryField`, `DateCreatedField`, `DateCreatedUtcField`, `DateModifiedField`, `DateModifiedUtcField`, `IdField`, `ParentIdField`, `HasDirectoriesField`, `DirectoriesField`, `ItemsField` | missing (all 14) |
-| Type | `string` (each) | missing |
-| Default | `"Name"`, `"Size"`, `"Path"`, `"Extension"`, `"IsDirectory"`, `"DateCreated"`, `"DateCreatedUtc"`, `"DateModified"`, `"DateModifiedUtc"`, `"Id"`, `"ParentId"`, `"HasDirectories"`, `"Directories"`, `"Items"` | missing |
-| Description | Reflection-based field accessor strings enabling TItem model property mapping | missing |
-
-**Note:** The source component uses the concrete `FileManagerEntry` model with hardcoded property names. The spec requires a generic component that resolves fields by name string to support arbitrary model types. This is the core architectural gap that blocks data-binding parity with the spec.
-
-**Recommended action:** Implement all 14 field-binding string parameters alongside the `TItem` generic refactor (SPEC-filemanager-005).
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-011
-**Type:** spec-ahead
-**Parameter/Event:** `OnRead`
-**Priority:** P1 (blocking)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `OnRead` | missing |
-| Type | `EventCallback<FileManagerReadEventArgs>` | missing |
-| Default | — | missing |
-| Description | Alternative data provision via event; fires on init and path change; enables on-demand loading | missing |
-
-**Recommended action:** Implement `OnRead` with `FileManagerReadEventArgs` (Data, Path, CancellationToken) and lazy loading path.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-012
-**Type:** spec-ahead
-**Parameter/Event:** `OnCreate`
-**Priority:** P2 (this phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `OnCreate` | `OnCreateFolder` (see mismatch SPEC-filemanager-033) |
-| Type | `EventCallback<FileManagerCreateEventArgs>` | `EventCallback<string>` |
+| Type | missing | `EventCallback<TItem>` |
 | Default | — | — |
-| Description | Fires when a new folder is created; provides `FileManagerCreateEventArgs` with `Item` | missing |
+| Description | missing | Fires on double-click of a file (non-directory). Folder double-click navigates internally without firing this event |
 
-**Recommended action:** See mismatch SPEC-filemanager-033 — rename `OnCreateFolder` to `OnCreate` and change arg type.
-**Delegated to:** gap-analysis-resolution intake
+**Recommended action:** Add an `OnOpen` section to `events.md`; clarify relationship to `OnDownload`.
+**Delegated to:** spec update only (in-scope)
 
 ---
 
-**ID:** SPEC-filemanager-013
-**Type:** spec-ahead
-**Parameter/Event:** `OnEdit`
+**ID:** SPEC-filemanager-108
+**Type:** undocumented
+**Parameter/Event:** `ToolBarTemplate`
 **Priority:** P2 (this phase)
 
 | Field | In Spec | In Source |
 |-------|---------|-----------|
-| Name | `OnEdit` | missing |
-| Type | `EventCallback<FileManagerEditEventArgs>` | missing |
-| Default | — | missing |
-| Description | Fires when the user begins renaming an item (before `OnUpdate`) | missing |
+| Name | missing (spec describes `<FileManagerToolBar>` child-tag component pattern) | `ToolBarTemplate` |
+| Type | missing | `RenderFragment?` |
+| Default | missing | `null` |
+| Description | missing | When non-null, replaces the default toolbar content. Receives no cascading context (consumers must bind back to the FileManager via `@ref`) |
 
-**Recommended action:** Implement inline rename with `OnEdit` event as the entry point.
-**Delegated to:** gap-analysis-resolution intake
+**Note:** This is both an undocumented parameter AND the source's chosen approach for toolbar customization, which diverges from the spec's `<FileManagerToolBar>` child-tag pattern. See mismatch SPEC-filemanager-203.
 
----
-
-**ID:** SPEC-filemanager-014
-**Type:** spec-ahead
-**Parameter/Event:** `OnUpdate`
-**Priority:** P2 (this phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `OnUpdate` | missing |
-| Type | `EventCallback<FileManagerUpdateEventArgs>` | missing |
-| Default | — | missing |
-| Description | Fires when a rename operation completes; provides `FileManagerUpdateEventArgs` with updated `Item` | missing |
-
-**Recommended action:** Implement as the completion event for the inline rename flow.
-**Delegated to:** gap-analysis-resolution intake
+**Recommended action:** Document `ToolBarTemplate` in `toolbar.md` as the supported extensibility surface; keep `<FileManagerToolBar>` listed as a roadmap item.
+**Delegated to:** spec update only (in-scope); architectural divergence flagged under SPEC-filemanager-203.
 
 ---
 
-**ID:** SPEC-filemanager-015
-**Type:** spec-ahead
-**Parameter/Event:** `OnDownload`
-**Priority:** P2 (this phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `OnDownload` | missing |
-| Type | `EventCallback<FileManagerDownloadEventArgs>` | missing |
-| Default | — | missing |
-| Description | Fires before a file download; consumer must set `args.Stream`, `args.MimeType`; cancellable | missing |
-
-**Recommended action:** Implement download via context menu; fire `OnDownload` with `FileManagerDownloadEventArgs` (Stream, MimeType, FileName, Item).
-**Delegated to:** gap-analysis-resolution intake
+### B. Spec-Ahead (documented but not implemented in source)
 
 ---
 
-**ID:** SPEC-filemanager-016
+**ID:** SPEC-filemanager-201
 **Type:** spec-ahead
-**Parameter/Event:** `OnModelInit`
-**Priority:** P2 (this phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `OnModelInit` | missing |
-| Type | `Func<TItem>` | missing |
-| Default | — | missing |
-| Description | Invoked when a new model instance is needed for folder creation; consumer provides the initial item | missing |
-
-**Recommended action:** Implement `OnModelInit` callback; required for generic `TItem` new-folder creation.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-017
-**Type:** spec-ahead
-**Parameter/Event:** `SelectedItems`
-**Priority:** P2 (this phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `SelectedItems` | missing (source uses private `SelectedItemPath` string) |
-| Type | `IEnumerable<TItem>` | missing |
-| Default | missing | missing |
-| Description | The currently selected files/folders; supports two-way binding | missing |
-
-**Recommended action:** Replace private `SelectedItemPath` string with public `SelectedItems` parameter supporting multi-select.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-018
-**Type:** spec-ahead
-**Parameter/Event:** `SelectedItemsChanged`
-**Priority:** P2 (this phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `SelectedItemsChanged` | missing |
-| Type | `EventCallback<IEnumerable<TItem>>` | missing |
-| Default | — | missing |
-| Description | Fires whenever the user changes selection in the main pane | missing |
-
-**Recommended action:** Implement as counterpart to `SelectedItems` two-way binding.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-019
-**Type:** spec-ahead
-**Parameter/Event:** `ViewChanged`
-**Priority:** P2 (this phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `ViewChanged` | missing |
-| Type | `EventCallback<FileManagerViewType>` | missing |
-| Default | — | missing |
-| Description | Fires when user toggles between Grid and ListView; consumer must update `View` | missing |
-
-**Recommended action:** Implement alongside toolbar view-toggle buttons.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-020
-**Type:** spec-ahead
-**Parameter/Event:** `PathChanged`
-**Priority:** P1 (blocking)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `PathChanged` | `CurrentPathChanged` (mismatch — see SPEC-filemanager-034) |
-| Type | `EventCallback<string>` | `EventCallback<string>` |
-| Default | — | — |
-| Description | Fires when the user navigates to a different folder | spec = `PathChanged` |
-
-**Note:** See mismatch record SPEC-filemanager-034. Logged here as spec-ahead because the canonical spec name `PathChanged` is absent.
-
-**Recommended action:** Rename `CurrentPathChanged` to `PathChanged`.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-021
-**Type:** spec-ahead
-**Parameter/Event:** `Rebind()` method
-**Priority:** P2 (this phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `Rebind` | missing |
-| Type | `void` public method | missing |
-| Default | N/A | missing |
-| Description | Programmatically refreshes FileManager data; requires `@ref` on component | missing |
-
-**Recommended action:** Implement `Rebind()` public method (triggers `OnRead` or re-renders with current `Data`).
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-022
-**Type:** spec-ahead
-**Parameter/Event:** Toolbar child component (`<FileManagerToolBar>`)
-**Priority:** P2 (this phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `FileManagerToolBar` | missing |
-| Type | child component / `RenderFragment` | missing |
-| Default | default built-in toolbar | missing |
-| Description | Optional child tag to customize toolbar tool order and add custom tools | missing |
-
-**Note:** Source renders a hard-coded toolbar with only "Up", path display, and optional "New Folder" button. The spec defines a rich toolbar with 7 built-in tools.
-
-**Recommended action:** Implement `<FileManagerToolBar>` child component pattern with all built-in tool tags.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-023
-**Type:** spec-ahead
-**Parameter/Event:** Built-in toolbar tools (7 tools)
-**Priority:** P2 (this phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `FileManagerToolBarNewFolderTool`, `FileManagerToolBarUploadTool`, `FileManagerToolBarSortDirectionTool`, `FileManagerToolBarSortTool`, `FileManagerToolBarFileViewTool`, `FileManagerToolBarViewDetailsTool`, `FileManagerToolBarSearchTool` | missing |
-| Type | child component tags | missing |
-| Default | all shown by default | missing |
-| Description | Composable toolbar tools for new folder, upload, sort direction, sort-by, view mode, preview pane toggle, and search | missing |
-
-**Recommended action:** Implement each tool tag; wire to respective behaviors.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-024
-**Type:** spec-ahead
-**Parameter/Event:** Breadcrumb navigation
-**Priority:** P2 (this phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | Breadcrumb | missing |
-| Type | embedded `MariloBreadcrumb` | missing |
-| Default | shown by default | missing |
-| Description | Shows current folder path; each segment is clickable to navigate up | missing |
-
-**Note:** Source shows path as a plain `<span class="mar-filemanager__path">@CurrentPath</span>` with no interaction.
-
-**Recommended action:** Replace plain path span with embedded `MariloBreadcrumb` component.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-025
-**Type:** spec-ahead
-**Parameter/Event:** Context menu (Rename, Download, Delete)
-**Priority:** P2 (this phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | Context menu (right-click) | missing |
-| Type | embedded `MariloContextMenu` | missing |
-| Default | shown on right-click | missing |
-| Description | Right-click context menu with Rename, Download, and Delete commands; Delete shows confirmation dialog | missing |
-
-**Recommended action:** Implement right-click context menu using `MariloContextMenu`; wire Rename → `OnEdit`/`OnUpdate`; Download → `OnDownload`; Delete → confirmation dialog → `OnDelete`.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-026
-**Type:** spec-ahead
-**Parameter/Event:** Inline rename UI
-**Priority:** P2 (this phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | Inline rename input | missing |
-| Type | behavior / UI pattern | missing |
-| Default | triggered via context menu Rename | missing |
-| Description | Renders an input over the item name; Enter or blur commits; fires `OnUpdate` | missing |
-
-**Recommended action:** Implement inline-rename UI state management and `OnEdit`/`OnUpdate` event flow.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-027
-**Type:** spec-ahead
-**Parameter/Event:** Delete confirmation dialog
-**Priority:** P2 (this phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | Delete confirmation dialog | missing |
-| Type | behavior / UI pattern | missing |
-| Default | shown before `OnDelete` fires | missing |
-| Description | Opens dialog after Delete context-menu command; OK fires `OnDelete`; Cancel closes without action | missing |
-
-**Recommended action:** Add delete confirmation dialog (use `MariloDialog` or built-in confirm pattern).
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-028
-**Type:** spec-ahead
-**Parameter/Event:** Upload integration (`<FileManagerSettings>` / `<FileManagerUploadSettings>`)
-**Priority:** P2 (this phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `FileManagerSettings`, `FileManagerUploadSettings` | missing |
-| Type | child components | missing |
-| Default | no upload if not configured | missing |
-| Description | Configures the embedded `MariloUpload` shown in a dialog via the Upload toolbar tool | missing |
-
-**Recommended action:** Implement `<FileManagerSettings>` / `<FileManagerUploadSettings>` child tag pattern; wire to Upload toolbar tool.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-029
-**Type:** spec-ahead
-**Parameter/Event:** Preview pane
-**Priority:** P2 (this phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | Preview pane | missing |
-| Type | right-pane panel, toggled via toolbar Switch | missing |
-| Default | hidden by default | missing |
-| Description | Shows thumbnail, file type, size, date created, date modified for selected item; toggled by `FileManagerToolBarViewDetailsTool` | missing |
-
-**Recommended action:** Implement `.mar-filemanager-preview` right pane with item detail display; wire to toolbar switch.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-030
-**Type:** spec-ahead
-**Parameter/Event:** Search (toolbar textbox)
-**Priority:** P2 (this phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | Search | missing |
-| Type | embedded textbox, `FileManagerToolBarSearchTool` | missing |
-| Default | filters current folder items by name | missing |
-| Description | Textbox in toolbar that filters files by name in the current folder | missing |
-
-**Recommended action:** Implement search filter logic and `FileManagerToolBarSearchTool` wired to it.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-031
-**Type:** spec-ahead
-**Parameter/Event:** Sort (toolbar sort-by + direction)
+**Parameter/Event:** `<FileManagerToolBar>` composite child-tag + 7 built-in tool tags
 **Priority:** P3 (next phase)
 
 | Field | In Spec | In Source |
 |-------|---------|-----------|
-| Name | Sort | missing |
-| Type | toolbar tools: `FileManagerToolBarSortTool`, `FileManagerToolBarSortDirectionTool` | missing |
-| Default | not sorted / or by name ascending | missing |
-| Description | Sorts current folder items by Name, Type, Size, Date Created, or Date Modified; Ascending or Descending | missing |
+| Name | `FileManagerToolBar`, `FileManagerToolBarNewFolderTool`, `FileManagerToolBarUploadTool`, `FileManagerToolBarSortDirectionTool`, `FileManagerToolBarSortTool`, `FileManagerToolBarFileViewTool`, `FileManagerToolBarViewDetailsTool`, `FileManagerToolBarSearchTool` | missing |
+| Type | child component tags | missing (source uses `ToolBarTemplate` `RenderFragment` instead) |
+| Default | all shown by default | default toolbar is hard-coded in markup |
+| Description | Composable toolbar tools for new folder, upload, sort direction/by, view toggle, preview-pane toggle, search | source exposes a single `RenderFragment` for full replacement |
 
-**Note:** Source sorts by `IsDirectory desc, Name asc` hardcoded in `GetCurrentItems()` — no user-facing sort control.
-
-**Recommended action:** Expose sort parameters and implement toolbar sort tools.
-**Delegated to:** gap-analysis-resolution intake
+**Recommended action:** Either (a) update the spec to document `ToolBarTemplate` as the canonical extensibility mechanism and mark `<FileManagerToolBar>` tags as roadmap, or (b) implement the composite child-tag pattern in a follow-up phase. Preference is (a) for the current phase.
+**Delegated to:** filemanager-gap-analysis intake (if implementing) OR spec update only (if formalizing `ToolBarTemplate`). Default: spec update.
 
 ---
 
-**ID:** SPEC-filemanager-032
+**ID:** SPEC-filemanager-202
 **Type:** spec-ahead
-**Parameter/Event:** ARIA roles and keyboard navigation
+**Parameter/Event:** Breadcrumb (embedded `MariloBreadcrumb` component)
 **Priority:** P3 (next phase)
 
 | Field | In Spec | In Source |
 |-------|---------|-----------|
-| Name | WAI-ARIA compliance | partial / incomplete |
-| Type | markup attributes | missing |
-| Default | WCAG 2.2 AA | missing |
-| Description | Spec requires: `role="tree"` on TreeView (present), `tabindex=0` on preview pane, full keyboard nav via embedded ToolBar/Splitter/TreeView/Breadcrumb/ListView/Grid ARIA specs | missing |
+| Name | `MariloBreadcrumb` (embedded) | hand-rendered breadcrumb in markup via `GetBreadcrumbSegments()` |
+| Type | child Marilo component | inline HTML segments |
+| Default | shown by default | shown by default |
+| Description | Uses `MariloBreadcrumb` for consistent styling, ARIA, and interaction | Source hand-rolls interactive breadcrumb markup with click handlers |
 
-**Note:** Source has `role="tree"` on the sidebar `<ul>` but lacks: `role="treeitem"` keyboard nav, `tabindex`, focusable preview pane, Splitter ARIA, Breadcrumb ARIA, and all associated keyboard patterns. The embedded composite component ARIA (Toolbar, ListView, Grid) is entirely absent since those components are not yet integrated.
+**Note:** Behaviorally equivalent but not using the shared component. Cross-component consistency gap.
 
-**Recommended action:** After composite component integration (toolbar, breadcrumb, context menu, preview pane), audit ARIA completeness against wai-aria-support.md spec.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-### C. Mismatch (both exist, differ in name / type / behavior)
+**Recommended action:** Refactor source to render `MariloBreadcrumb` (composition). Tracked as future polish.
+**Delegated to:** filemanager-gap-analysis intake (follow-up phase)
 
 ---
 
-**ID:** SPEC-filemanager-033
-**Type:** mismatch
-**Parameter/Event:** `OnCreate` / `OnCreateFolder`
+**ID:** SPEC-filemanager-203
+**Type:** spec-ahead
+**Parameter/Event:** `FileManagerUploadSettings.RemoveUrl`, `OnUpload`, `OnRemove`, `OnSuccess`
 **Priority:** P2 (this phase)
 
 | Field | In Spec | In Source |
 |-------|---------|-----------|
-| Name | `OnCreate` | `OnCreateFolder` |
-| Type | `EventCallback<FileManagerCreateEventArgs>` | `EventCallback<string>` |
+| Name | `SaveUrl`, `RemoveUrl`, `Multiple`, `OnUpload`, `OnRemove`, `OnSuccess` | `SaveUrl`, `AllowedExtensions`, `MaxFileSize`, `Multiple` |
+| Type | POCO / config | POCO |
 | Default | — | — |
-| Description | Fires when a new folder is created | Fires when "New Folder" is clicked; provides current path string |
+| Description | Matches `MariloUpload` API surface with event hooks | Source lacks `RemoveUrl` and all three event callbacks |
 
-**Recommended action:** Rename source `OnCreateFolder` to `OnCreate`; change arg type from `string` to `FileManagerCreateEventArgs` (which carries the new `TItem` model instance). The path is derivable from the event args via the item's properties.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-034
-**Type:** mismatch
-**Parameter/Event:** `Path` / `CurrentPath`
-**Priority:** P1 (blocking)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `Path` | `CurrentPath` |
-| Type | `string` | `string` |
-| Default | (root path string) | `"/"` |
-| Description | Current folder path; two-way bindable (`@bind-Path`) | Two-way bindable via `CurrentPath` + `CurrentPathChanged` |
-
-**Note:** The spec uses `@bind-Path` throughout all documentation examples. Source exposes `CurrentPath` / `CurrentPathChanged`. This naming mismatch means all spec examples will not compile against source without parameter renaming.
-
-**Recommended action:** Rename `CurrentPath` → `Path` and `CurrentPathChanged` → `PathChanged` in source.
-**Delegated to:** gap-analysis-resolution intake
+**Recommended action:** Extend `FileManagerUploadSettings` to expose `RemoveUrl` and `EventCallback<UploadEventArgs>` surface matching `MariloUpload`.
+**Delegated to:** **COORDINATOR ESCALATION** — the `FileManagerUploadSettings` class lives in `src/Marilo.Core/Models/FileManagerModels.cs`, which is outside this worktree's editable scope. Must be resolved by filemanager-gap-analysis partner with Core contract update.
 
 ---
 
-**ID:** SPEC-filemanager-035
-**Type:** mismatch
-**Parameter/Event:** `View` / `ViewMode`
-**Priority:** P2 (this phase)
+**ID:** SPEC-filemanager-204
+**Type:** spec-ahead
+**Parameter/Event:** `FileManagerDownloadEventArgs` settable `Stream`/`MimeType`/`FileName`
+**Priority:** P1 (blocking for `OnDownload` usability)
 
 | Field | In Spec | In Source |
 |-------|---------|-----------|
-| Name | `View` | `ViewMode` |
-| Type | `FileManagerViewType` (enum) | `FileManagerViewMode` (enum) |
-| Default | `ListView` | `FileManagerViewMode.List` |
-| Description | Controls the file content visualization (Grid or ListView) | Controls Grid vs List display |
-
-**Note:** Two mismatches: (1) parameter name `View` vs `ViewMode`; (2) enum type name `FileManagerViewType` vs `FileManagerViewMode`; (3) the spec default view is `ListView` (thumbnail tiles), but source default is `List` (table view). The spec's "Grid" view is a table view; the spec's "ListView" is thumbnails — the source has the semantics inverted relative to spec naming.
-
-**Recommended action:** Rename `ViewMode` → `View`; rename enum to `FileManagerViewType`; align enum values with spec (`ListView` for thumbnails, `Grid` for table). Update `@bind-View` two-way binding.
-**Delegated to:** gap-analysis-resolution intake
-
----
-
-**ID:** SPEC-filemanager-036
-**Type:** mismatch
-**Parameter/Event:** `OnDelete`
-**Priority:** P2 (this phase)
-
-| Field | In Spec | In Source |
-|-------|---------|-----------|
-| Name | `OnDelete` | `OnDelete` |
-| Type | `EventCallback<FileManagerDeleteEventArgs>` | `EventCallback<FileManagerEntry>` |
+| Name | `Stream`, `MimeType`, `FileName` | same |
+| Type | `Stream? { get; set; }`, `string? { get; set; }`, `string? { get; set; }` | `init`-only setters |
 | Default | — | — |
-| Description | Fires when item(s) are deleted after confirmation | Fires on delete; no confirmation dialog; passes entry directly |
+| Description | Spec examples (`events.md:242`) assign `args.Stream = ...`, `args.MimeType = ...`, `args.FileName = ...` inside the handler | Source `init;` setters make post-construction assignment a compile error against the current spec example |
 
-**Note:** The parameter name matches, but the arg type is different. The spec uses `FileManagerDeleteEventArgs` (with an `Item` property of type `TItem`). Source passes `FileManagerEntry` directly. Additionally, source has no delete confirmation dialog (spec-required) and does not gate deletion on `AllowDelete` — the `AllowDelete` bool parameter is declared but unused in markup.
+**Note:** Compile-breaking mismatch between spec examples and source contract.
 
-**Recommended action:** Change `OnDelete` arg from `FileManagerEntry` to `FileManagerDeleteEventArgs`; implement confirmation dialog; honor `AllowDelete` in markup.
-**Delegated to:** gap-analysis-resolution intake
+**Recommended action:** Change `FileManagerDownloadEventArgs<TItem>` to expose `{ get; set; }` on `Stream`, `MimeType`, `FileName`.
+**Delegated to:** **COORDINATOR ESCALATION** — lives in `src/Marilo.Core/Models/FileManagerModels.cs`. Out of scope for this worktree.
+
+---
+
+### C. Mismatch (both exist, differ in name/type/behavior)
+
+---
+
+**ID:** SPEC-filemanager-301
+**Type:** mismatch
+**Parameter/Event:** `FileManagerViewMode` enum (obsolete)
+**Priority:** P3 (next phase)
+
+| Field | In Spec | In Source |
+|-------|---------|-----------|
+| Name | `FileManagerViewType` (spec) | `FileManagerViewType` + `FileManagerViewMode` `[Obsolete]` |
+| Type | enum | enum |
+| Default | `ListView` | `ListView` |
+| Description | Single canonical type | Source exposes a second `[Obsolete]` enum `FileManagerViewMode` that does not appear in spec |
+
+**Note:** Documentation consistency — the obsolete enum is still public surface that users may search for.
+
+**Recommended action:** Add a short note to `views.md` about the legacy `FileManagerViewMode` enum and the migration path. Source action (removing the enum) is a follow-up breaking change.
+**Delegated to:** spec update only (in-scope)
+
+---
+
+**ID:** SPEC-filemanager-302
+**Type:** mismatch
+**Parameter/Event:** Toolbar extensibility pattern (`<FileManagerToolBar>` vs `ToolBarTemplate`)
+**Priority:** P2 (this phase)
+
+| Field | In Spec | In Source |
+|-------|---------|-----------|
+| Name | `<FileManagerToolBar>` child-tag component | `ToolBarTemplate` RenderFragment |
+| Type | composite component with nested tool tags | single replacement `RenderFragment?` |
+| Default | composable additive model | full replacement |
+| Description | Spec lets users add/reorder tools; source lets users replace the entire toolbar | Behavioral delta |
+
+**Recommended action:** Resolve via either (a) update the spec to match source (`ToolBarTemplate`) for this release, or (b) ship both. Default: (a) for this phase; track (b) as a follow-up.
+**Delegated to:** spec update only if resolving as (a); filemanager-gap-analysis if resolving as (b).
+
+---
+
+**ID:** SPEC-filemanager-303
+**Type:** mismatch
+**Parameter/Event:** `FileManagerReadEventArgs.Data` vs spec example type
+**Priority:** P3 (next phase)
+
+| Field | In Spec | In Source |
+|-------|---------|-----------|
+| Name | `Data` on `FileManagerReadEventArgs` | same |
+| Type | spec example assigns `IEnumerable<TItem>` | source uses `IEnumerable<object>?` then `args.Data.OfType<TItem>()` |
+| Default | — | `null` |
+| Description | Spec example wants a strongly typed collection; source boxes through `object` | Type-safety delta |
+
+**Note:** Not a compile break, but forces consumers to cast if they want compile-time safety in the handler.
+
+**Recommended action:** Consider making `FileManagerReadEventArgs` generic (`FileManagerReadEventArgs<TItem>`). Breaking change.
+**Delegated to:** **COORDINATOR ESCALATION** — Core-model change. Out of scope for this worktree.
 
 ---
 
@@ -695,17 +359,35 @@
 
 | Priority | Gap IDs | Count |
 |----------|---------|-------|
-| P1 — blocking | 001, 005, 010, 011, 020 | 5 |
-| P2 — this phase | 002, 003, 004, 007, 012, 013, 014, 015, 016, 017, 018, 019, 021, 022, 023, 024, 025, 026, 027, 028, 029, 030, 033, 034, 035, 036 | 26 |
-| P3 — next phase | 006, 008, 009, 031, 032 | 5 |
+| P1 — blocking | 204 | 1 (escalated) |
+| P2 — this phase | 101, 102, 103, 104, 105, 108, 203, 302 | 8 (6 in-scope spec edits, 2 escalated) |
+| P3 — next phase | 106, 107, 201, 202, 301, 303 | 6 |
+
+## In-Scope vs Escalated
+
+| Status | IDs |
+|--------|-----|
+| **In-scope spec updates (this worktree can close)** | 101, 102, 103, 104, 105, 106, 107, 108, 201, 301, 302 (11 gaps — all require only spec-file edits under `docs/component-specs/filemanager/`) |
+| **Coordinator escalations (Core model / shared contracts)** | 203, 204, 303 (3 gaps touching `src/Marilo.Core/Models/FileManagerModels.cs`) |
+| **Delegated to filemanager-gap-analysis (source changes)** | 202 (breadcrumb refactor) — follow-up phase |
 
 ---
 
 ## Recommended Resolution Order
 
-1. **P1 — Architecture** (SPEC-filemanager-001/005/010): Make component generic `<TItem>`, rename `Items` → `Data`, implement all field-binding string parameters. This unblocks all field-resolution and data-binding work.
-2. **P1 — Naming** (SPEC-filemanager-034, 020): Rename `CurrentPath` → `Path` and `CurrentPathChanged` → `PathChanged` so spec examples compile.
-3. **P1 — OnRead** (SPEC-filemanager-011): Implement the alternate data-provision event for on-demand loading.
-4. **P2 — Events** (SPEC-filemanager-012–019, 033, 036): Align event names and arg types; implement `OnEdit`, `OnUpdate`, `OnDownload`, `OnModelInit`, `OnCreate`, `SelectedItems`, `SelectedItemsChanged`, `ViewChanged`.
-5. **P2 — UI Surface** (SPEC-filemanager-022–030, 035): Implement toolbar composite, breadcrumb, context menu, inline rename, delete dialog, upload integration, preview pane, search.
-6. **P3 — Polish** (SPEC-filemanager-006, 008, 009, 031, 032): Loader container, Width/Class, sort UI, ARIA keyboard nav.
+1. **Close undocumented params (spec-only):** Add 101–108 to `overview.md` parameters table and relevant feature pages. Single pass.
+2. **Resolve toolbar pattern (302):** Decide `ToolBarTemplate` vs `<FileManagerToolBar>`; update `toolbar.md` accordingly.
+3. **Escalate Core changes (203, 204, 303):** Hand off to filemanager-gap-analysis to touch Core models.
+4. **Follow-ups (106, 107, 201, 202, 301):** Defer to next phase.
+
+---
+
+## Audit Checklist
+
+| Check | Status |
+|-------|--------|
+| All source parameters inventoried (40 + inherited Class + Rebind method) | PASS |
+| All spec parameters inventoried (40+ across all feature files) | PASS |
+| Every gap record has a type classification (a/b/c) | PASS |
+| Priority order justified | PASS |
+| Output references spec, does not copy it | PASS |
