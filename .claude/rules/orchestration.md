@@ -21,6 +21,44 @@ When `status` is `"inactive"` (the default), Claude Code operates in normal sing
    - If `MARILO_ORCHESTRATION_ROLE=worker` env var is set, OR `MARILO_WORKER_ID` is set, OR the tmux session matches `marilo-w-*`, you are a **worker**.
    - Otherwise, ask the user which role to assume before proceeding.
 
+## Orchestrator autonomy over orchestration runtime files
+
+The orchestrator is pre-authorized to mutate orchestration runtime state without asking for user confirmation.
+
+### Runtime files: no confirmation required
+When acting in the ORCHESTRATOR role, Claude MAY read and write these files autonomously:
+
+- `.claude/orchestration/_orchestrator/session.json`
+- `.claude/orchestration/_orchestrator/log.jsonl`
+- `.claude/orchestration/_orchestrator/inbox/**`
+- `.claude/orchestration/_orchestrator/results/**`
+- `.claude/orchestration/_orchestrator/reviews/**`
+- `.claude/orchestration/_memory/workers/**`
+
+These files are operational state, queues, logs, handoffs, and review artifacts. They are expected to change continuously during a live orchestrator run.
+
+### Governance files: confirmation still required
+Even in ORCHESTRATOR role, Claude MUST request approval before modifying:
+
+- `CLAUDE.md`
+- `.claude/rules/**`
+- `.wolf/OPENWOLF.md`
+- `.claude/orchestration/GUIDE.md`
+- `.claude/orchestration/templates/**`
+- `.claude/orchestration/_memory/projects/marilo.json`
+- any file listed in `orchestrator_only_changes` that is not part of runtime state
+
+These files define the orchestration system, repo policy, or public architecture and are not considered runtime state.
+
+### Worker restriction
+Workers MUST treat all `.claude/orchestration/**` files as read-only except:
+- their own assigned inbox message,
+- their own result file,
+- their own worker state file,
+- any file explicitly listed in their `files_owned`.
+
+Workers must escalate instead of editing outside that scope.
+
 ## Modes
 
 ### Orchestrator Mode
