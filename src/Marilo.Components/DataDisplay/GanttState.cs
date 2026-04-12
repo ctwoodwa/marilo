@@ -3,6 +3,8 @@ namespace Marilo.Components.DataDisplay;
 /// <summary>Controls which filter UI is displayed in MariloGantt.</summary>
 public enum GanttFilterMode
 {
+    /// <summary>No filter UI is displayed.</summary>
+    None,
     /// <summary>A filter input row is rendered below the column headers.</summary>
     FilterRow,
     /// <summary>Popup filter accessed via funnel icon in column headers.</summary>

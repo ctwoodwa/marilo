@@ -80,11 +80,91 @@
     </DemoSection>
 </PageSection>
 
+<PageSection Title="Composable Views">
+    <DemoSection Title="Child View Components"
+                 Description="Use SchedulerDayView, SchedulerWeekView, and SchedulerMonthView as child components to configure each view independently. Only registered views appear in the toolbar."
+                 Code="@_childViewCode">
+        <div class="demo-row">
+            <MariloScheduler Appointments="@_sampleAppointments"
+                             CurrentDate="@_currentDate"
+                             View="SchedulerView.Week"
+                             Height="500px">
+                <SchedulerDayView StartTime="TimeSpan.FromHours(7)"
+                                  EndTime="TimeSpan.FromHours(20)"
+                                  SlotDuration="TimeSpan.FromMinutes(30)" />
+                <SchedulerWeekView StartTime="TimeSpan.FromHours(8)"
+                                   EndTime="TimeSpan.FromHours(18)"
+                                   FirstDayOfWeek="DayOfWeek.Monday" />
+                <SchedulerMonthView FirstDayOfWeek="DayOfWeek.Monday" />
+            </MariloScheduler>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Selective Views with Custom Labels"
+                 Description="Register only the views you need. Use the Label parameter to customize toolbar button text."
+                 Code="@_selectiveViewCode">
+        <div class="demo-row">
+            <MariloScheduler Appointments="@_sampleAppointments"
+                             CurrentDate="@_currentDate"
+                             View="SchedulerView.Day"
+                             Height="500px">
+                <SchedulerDayView Label="Today"
+                                  StartTime="TimeSpan.FromHours(9)"
+                                  EndTime="TimeSpan.FromHours(17)" />
+                <SchedulerWeekView Label="This Week"
+                                   FirstDayOfWeek="DayOfWeek.Monday" />
+            </MariloScheduler>
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Editing">
+    <DemoSection Title="CRUD Editing"
+                 Description="Set Editable to true to allow double-click editing. Handle OnUpdate and OnDelete to respond to user changes. The component is fully controlled -- update your data in the handler."
+                 Code="@_editCode">
+        <div class="demo-row">
+            <p><strong>Last edit action:</strong> @_editAction</p>
+            <MariloScheduler Appointments="@_editableAppointments"
+                             CurrentDate="@_currentDate"
+                             View="SchedulerView.Month"
+                             Editable="true"
+                             OnUpdate="@HandleUpdate"
+                             OnDelete="@HandleDelete"
+                             Style="height:500px;" />
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Templates">
+    <DemoSection Title="Appointment Template"
+                 Description="Use AppointmentTemplate to customize how appointments render. The template receives the SchedulerAppointment as context."
+                 Code="@_templateCode">
+        <div class="demo-row">
+            <MariloScheduler Appointments="@_sampleAppointments"
+                             CurrentDate="@_currentDate"
+                             View="SchedulerView.Month"
+                             Style="height:500px;">
+                <AppointmentTemplate Context="appt">
+                    <div style="display:flex;align-items:center;gap:4px;">
+                        <span style="font-size:10px;">&#9679;</span>
+                        <span style="font-weight:600;">@appt.Title</span>
+                        @if (!string.IsNullOrEmpty(appt.Description))
+                        {
+                            <span style="opacity:0.7;font-size:10px;">(@appt.Description)</span>
+                        }
+                    </div>
+                </AppointmentTemplate>
+            </MariloScheduler>
+        </div>
+    </DemoSection>
+</PageSection>
+
 @code {
     private DateTime _currentDate = new DateTime(2026, 4, 12);
     private DateTime _boundDate = new DateTime(2026, 4, 12);
     private SchedulerView _boundView = SchedulerView.Month;
     private string _lastAction = "(none)";
+    private string _editAction = "(none)";
 
     private static List<SchedulerAppointment> _sampleAppointments = new()
     {
@@ -144,6 +224,37 @@
         _lastAction = $"Clicked date: {date:yyyy-MM-dd}";
     }
 
+    private List<SchedulerAppointment> _editableAppointments = new()
+    {
+        new SchedulerAppointment
+        {
+            Title = "Sprint Planning",
+            Start = new DateTime(2026, 4, 13, 9, 0, 0),
+            End = new DateTime(2026, 4, 13, 11, 0, 0),
+            Color = "#0078d4"
+        },
+        new SchedulerAppointment
+        {
+            Title = "Design Review",
+            Start = new DateTime(2026, 4, 14, 14, 0, 0),
+            End = new DateTime(2026, 4, 14, 15, 30, 0),
+            Color = "#107c10"
+        }
+    };
+
+    private void HandleUpdate(SchedulerAppointment updated)
+    {
+        var idx = _editableAppointments.FindIndex(a => a.Id == updated.Id);
+        if (idx >= 0) _editableAppointments[idx] = updated;
+        _editAction = $"Updated: {updated.Title}";
+    }
+
+    private void HandleDelete(SchedulerAppointment deleted)
+    {
+        _editableAppointments.RemoveAll(a => a.Id == deleted.Id);
+        _editAction = $"Deleted: {deleted.Title}";
+    }
+
     private const string _monthCode = @"<MariloScheduler Appointments=""@_appointments""
                  CurrentDate=""@(new DateTime(2026, 4, 12))""
                  Style=""height:500px;"" />";
@@ -176,4 +287,47 @@
     private const string _navCode = @"<MariloScheduler Appointments=""@_appointments""
                  @bind-CurrentDate=""@_currentDate""
                  Style=""height:500px;"" />";
+
+    private const string _childViewCode = @"<MariloScheduler Appointments=""@_appointments""
+                 CurrentDate=""@_currentDate""
+                 View=""SchedulerView.Week""
+                 Height=""500px"">
+    <SchedulerDayView StartTime=""TimeSpan.FromHours(7)""
+                      EndTime=""TimeSpan.FromHours(20)""
+                      SlotDuration=""TimeSpan.FromMinutes(30)"" />
+    <SchedulerWeekView StartTime=""TimeSpan.FromHours(8)""
+                       EndTime=""TimeSpan.FromHours(18)""
+                       FirstDayOfWeek=""DayOfWeek.Monday"" />
+    <SchedulerMonthView FirstDayOfWeek=""DayOfWeek.Monday"" />
+</MariloScheduler>";
+
+    private const string _selectiveViewCode = @"<MariloScheduler Appointments=""@_appointments""
+                 CurrentDate=""@_currentDate""
+                 View=""SchedulerView.Day""
+                 Height=""500px"">
+    <SchedulerDayView Label=""Today""
+                      StartTime=""TimeSpan.FromHours(9)""
+                      EndTime=""TimeSpan.FromHours(17)"" />
+    <SchedulerWeekView Label=""This Week""
+                       FirstDayOfWeek=""DayOfWeek.Monday"" />
+</MariloScheduler>";
+
+    private const string _editCode = @"<MariloScheduler Appointments=""@_appointments""
+                 CurrentDate=""@_currentDate""
+                 View=""SchedulerView.Month""
+                 Editable=""true""
+                 OnUpdate=""@HandleUpdate""
+                 OnDelete=""@HandleDelete""
+                 Style=""height:500px;"" />";
+
+    private const string _templateCode = @"<MariloScheduler Appointments=""@_appointments""
+                 CurrentDate=""@_currentDate""
+                 View=""SchedulerView.Month""
+                 Style=""height:500px;"">
+    <AppointmentTemplate Context=""appt"">
+        <div style=""display:flex;align-items:center;gap:4px;"">
+            <span style=""font-weight:600;"">@appt.Title</span>
+        </div>
+    </AppointmentTemplate>
+</MariloScheduler>";
 }

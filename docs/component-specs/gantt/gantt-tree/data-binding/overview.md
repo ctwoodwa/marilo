@@ -26,7 +26,7 @@ There are two modes of providing data to a Gantt Tree, and they all use the item
 
 ## Gantt Tree Item Features
 
-The Blazor Gantt Tree provides various parameters to configure its items. Also, check the [Gantt public API](slug:Marilo.Blazor.Components.MariloGantt-1).
+The Blazor Gantt Tree provides various parameters to configure its items. Also, check the [Gantt public API](slug:Marilo.Components.DataDisplay.MariloGantt-1).
 
 
 | Parameter | Description |

@@ -22,7 +22,7 @@ In this article:
 
 ## Rebind Method
 
-You can refresh the Grid data by using the `Rebind` method exposed to the reference of the MariloGrid. If you have manually defined the [OnRead event](slug:components/grid/manual-operations) the business logic defined in its event handler will be executed. 
+You can refresh the Grid data by using the `Rebind` method exposed to the reference of the MariloDataGrid. If you have manually defined the [OnRead event](slug:components/grid/manual-operations) the business logic defined in its event handler will be executed. 
 
 ````RAZOR
 @* Clicking on the Rebind button will change the Name of the first item in the Grid and refresh the data *@

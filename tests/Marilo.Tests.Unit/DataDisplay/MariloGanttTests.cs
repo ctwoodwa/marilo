@@ -1965,4 +1965,140 @@ public class MariloGanttTests : MariloTestBase
         Assert.NotEmpty(selectedBars);
     }
 
+    // ── Sortable=false disables sorting ──────────────────────────────
+
+    [Fact]
+    public void Sortable_False_Prevents_Sort_On_Header_Click()
+    {
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, CreateTestData())
+            .Add(x => x.Sortable, false)
+            .Add(x => x.GanttColumns, DefaultColumns()));
+
+        var header = cut.Find(".mar-gantt__header-cell");
+        header.Click();
+
+        // No sort indicator should appear when Sortable is false
+        var indicators = cut.FindAll(".mar-gantt__sort-indicator");
+        Assert.Empty(indicators);
+    }
+
+    // ── FilterMode.None hides filter row ─────────────────────────────
+
+    [Fact]
+    public void FilterMode_None_Hides_FilterRow()
+    {
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, CreateTestData())
+            .Add(x => x.FilterMode, GanttFilterMode.None)
+            .Add(x => x.GanttColumns, DefaultColumns()));
+
+        var filterRows = cut.FindAll(".mar-gantt__filter-row");
+        Assert.Empty(filterRows);
+        var filterInputs = cut.FindAll(".mar-gantt__filter-input");
+        Assert.Empty(filterInputs);
+    }
+
+    // ── SelectedTaskChanged fires on selection ───────────────────────
+
+    [Fact]
+    public void SelectedTaskChanged_Fires_On_Row_Click()
+    {
+        TaskModel? changedTask = null;
+        var data = CreateTestData();
+
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.GanttColumns, DefaultColumns())
+            .Add(x => x.GanttViews, ViewsFragment(GanttView.Week))
+            .Add(x => x.SelectedTaskChanged, EventCallback.Factory.Create<TaskModel?>(this, val => changedTask = val)));
+
+        var rows = cut.FindAll(".mar-gantt__task-row");
+        rows[0].Click();
+
+        Assert.NotNull(changedTask);
+        Assert.Equal("Alpha", changedTask!.Title);
+    }
+
+    // ── NewRowPosition default ───────────────────────────────────────
+
+    [Fact]
+    public void NewRowPosition_Default_IsTop()
+    {
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, CreateTestData()));
+
+        Assert.Equal(GanttNewRowPosition.Top, cut.Instance.NewRowPosition);
+    }
+
+    // ── Milestone rendering ──────────────────────────────────────────
+
+    [Fact]
+    public void Milestone_Task_Renders_Diamond()
+    {
+        var data = new List<TaskModel>
+        {
+            new() { Id = 1, ParentId = null, Title = "Milestone", Start = BaseDate, End = BaseDate, PercentComplete = 0 },
+        };
+
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.GanttViews, ViewsFragment(GanttView.Week)));
+
+        var milestones = cut.FindAll(".mar-gantt__milestone");
+        Assert.NotEmpty(milestones);
+
+        var diamonds = cut.FindAll(".mar-gantt__milestone-diamond");
+        Assert.NotEmpty(diamonds);
+    }
+
+    // ── Summary task rendering ───────────────────────────────────────
+
+    [Fact]
+    public void Summary_Task_Gets_Summary_CSS_Class()
+    {
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, CreateTestData())
+            .Add(x => x.GanttColumns, DefaultColumns())
+            .Add(x => x.GanttViews, ViewsFragment(GanttView.Week)));
+
+        // Parent tasks (Alpha, Beta, Gamma) have children and should get --summary
+        var summaryBars = cut.FindAll(".mar-gantt__bar--summary");
+        Assert.Equal(3, summaryBars.Count);
+    }
+
+    // ── TooltipTemplate renders custom content ───────────────────────
+
+    [Fact]
+    public void TooltipTemplate_Renders_Custom_Content()
+    {
+        RenderFragment<TaskModel> tooltipTpl = item => builder =>
+        {
+            builder.OpenElement(0, "span");
+            builder.AddAttribute(1, "class", "custom-tooltip");
+            builder.AddContent(2, $"TIP:{item.Title}");
+            builder.CloseElement();
+        };
+
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, CreateTestData())
+            .Add(x => x.GanttViews, ViewsFragment(GanttView.Week))
+            .Add(x => x.TooltipTemplate, tooltipTpl));
+
+        var customTooltips = cut.FindAll(".custom-tooltip");
+        Assert.True(customTooltips.Count > 0);
+        Assert.Contains("TIP:Alpha", customTooltips[0].TextContent);
+    }
+
+    // ── FilterRowDebounceDelay parameter ─────────────────────────────
+
+    [Fact]
+    public void FilterRowDebounceDelay_Default_IsZero()
+    {
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, CreateTestData()));
+
+        Assert.Equal(0, cut.Instance.FilterRowDebounceDelay);
+    }
+
 }

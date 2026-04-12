@@ -349,6 +349,249 @@ public class MariloMapTests : MariloTestBase
     }
 
     [Fact]
+    public void MapLayer_Tile_Descriptor_Preserves_UrlTemplate()
+    {
+        var cut = Render<MariloMap>(p => p
+            .AddChildContent<MapLayer>(lp => lp
+                .Add(l => l.Type, MapLayerType.Tile)
+                .Add(l => l.UrlTemplate, "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png")
+                .Add(l => l.Subdomains, new[] { "a", "b", "c" })));
+        var descriptor = cut.Instance.RegisteredLayers[0].ToDescriptor();
+        // The adapter translates {s} placeholders in JS — C# descriptor preserves them as-is.
+        Assert.Contains("{s}", descriptor.UrlTemplate);
+        Assert.Contains("{z}", descriptor.UrlTemplate);
+        Assert.Contains("{x}", descriptor.UrlTemplate);
+        Assert.Contains("{y}", descriptor.UrlTemplate);
+        Assert.Equal(3, descriptor.Subdomains!.Length);
+    }
+
+    [Fact]
+    public void Adapter_Handles_Null_Layers_Gracefully()
+    {
+        // Map with no layers should render without errors and have empty layer list.
+        var cut = Render<MariloMap>(p => p
+            .Add(x => x.Center, new MapCenter { Latitude = 0, Longitude = 0 })
+            .Add(x => x.Zoom, 5));
+        Assert.Empty(cut.Instance.RegisteredLayers);
+        // The adapter should have been created (import invocation) but no addLayer calls.
+        var addLayerCalls = JSInterop.Invocations
+            .Where(i => i.Identifier == "addLayer").ToList();
+        Assert.Empty(addLayerCalls);
+    }
+
+    [Fact]
+    public void MapLayer_Marker_Descriptor_Includes_Data()
+    {
+        var markers = new List<object> { new { LatLng = new[] { 40.0, -74.0 }, Title = "Test" } };
+        var cut = Render<MariloMap>(p => p
+            .AddChildContent<MapLayer>(lp => lp
+                .Add(l => l.Type, MapLayerType.Marker)
+                .Add(l => l.Data, (object)markers)
+                .Add(l => l.LocationField, "LatLng")
+                .Add(l => l.TitleField, "Title")));
+        var descriptor = cut.Instance.RegisteredLayers[0].ToDescriptor();
+        Assert.NotNull(descriptor.Data);
+        Assert.Equal("LatLng", descriptor.LocationField);
+        Assert.Equal("Title", descriptor.TitleField);
+    }
+
+    [Fact]
+    public void MapLayer_Bubble_Descriptor_Includes_Data()
+    {
+        var bubbles = new List<object> { new { LatLng = new[] { 40.0, -74.0 }, Revenue = 1000 } };
+        var cut = Render<MariloMap>(p => p
+            .AddChildContent<MapLayer>(lp => lp
+                .Add(l => l.Type, MapLayerType.Bubble)
+                .Add(l => l.Data, (object)bubbles)
+                .Add(l => l.LocationField, "LatLng")
+                .Add(l => l.ValueField, "Revenue")));
+        var descriptor = cut.Instance.RegisteredLayers[0].ToDescriptor();
+        Assert.NotNull(descriptor.Data);
+        Assert.Equal("Revenue", descriptor.ValueField);
+    }
+
+    [Fact]
+    public void MapLayer_Tile_Descriptor_Does_Not_Include_Data()
+    {
+        var cut = Render<MariloMap>(p => p
+            .AddChildContent<MapLayer>(lp => lp
+                .Add(l => l.Type, MapLayerType.Tile)
+                .Add(l => l.UrlTemplate, "https://tiles.example.com/{z}/{x}/{y}.png")
+                .Add(l => l.Data, (object)"should-not-appear")));
+        var descriptor = cut.Instance.RegisteredLayers[0].ToDescriptor();
+        // Tile layers should not pass Data through (it goes via UrlTemplate instead).
+        Assert.Null(descriptor.Data);
+    }
+
+    [Fact]
+    public void MapLayerMarkerSettings_Registers_With_Parent_Layer()
+    {
+        var cut = Render<MariloMap>(p => p
+            .AddChildContent(builder =>
+            {
+                builder.OpenComponent<MapLayer>(0);
+                builder.AddAttribute(1, nameof(MapLayer.Type), MapLayerType.Marker);
+                builder.AddAttribute(2, nameof(MapLayer.LocationField), "LatLng");
+                builder.AddAttribute(3, nameof(MapLayer.ChildContent), (RenderFragment)(inner =>
+                {
+                    inner.OpenComponent<MapLayerMarkerSettings>(0);
+                    inner.AddAttribute(1, nameof(MapLayerMarkerSettings.Template), "myMarkerTemplate");
+                    inner.CloseComponent();
+                }));
+                builder.CloseComponent();
+            }));
+        var layer = cut.Instance.RegisteredLayers[0];
+        Assert.NotNull(layer.MarkerSettings);
+        Assert.Equal("myMarkerTemplate", layer.MarkerSettings!.Template);
+    }
+
+    [Fact]
+    public void MapLayerBubbleSettings_Registers_With_Parent_Layer()
+    {
+        var cut = Render<MariloMap>(p => p
+            .AddChildContent(builder =>
+            {
+                builder.OpenComponent<MapLayer>(0);
+                builder.AddAttribute(1, nameof(MapLayer.Type), MapLayerType.Bubble);
+                builder.AddAttribute(2, nameof(MapLayer.LocationField), "LatLng");
+                builder.AddAttribute(3, nameof(MapLayer.ValueField), "Revenue");
+                builder.AddAttribute(4, nameof(MapLayer.ChildContent), (RenderFragment)(inner =>
+                {
+                    inner.OpenComponent<MapLayerBubbleSettings>(0);
+                    inner.AddAttribute(1, nameof(MapLayerBubbleSettings.FillColor), "#0000ff");
+                    inner.AddAttribute(2, nameof(MapLayerBubbleSettings.FillOpacity), 0.5);
+                    inner.AddAttribute(3, nameof(MapLayerBubbleSettings.StrokeColor), "#000000");
+                    inner.AddAttribute(4, nameof(MapLayerBubbleSettings.StrokeWidth), 2.0);
+                    inner.CloseComponent();
+                }));
+                builder.CloseComponent();
+            }));
+        var layer = cut.Instance.RegisteredLayers[0];
+        Assert.NotNull(layer.BubbleSettings);
+        Assert.Equal("#0000ff", layer.BubbleSettings!.FillColor);
+        Assert.Equal(0.5, layer.BubbleSettings.FillOpacity);
+        Assert.Equal("#000000", layer.BubbleSettings.StrokeColor);
+        Assert.Equal(2.0, layer.BubbleSettings.StrokeWidth);
+    }
+
+    [Fact]
+    public void MapLayerShapeSettings_Registers_With_Parent_Layer()
+    {
+        var cut = Render<MariloMap>(p => p
+            .AddChildContent(builder =>
+            {
+                builder.OpenComponent<MapLayer>(0);
+                builder.AddAttribute(1, nameof(MapLayer.Type), MapLayerType.Shape);
+                builder.AddAttribute(2, nameof(MapLayer.Data), (object)"{\"type\":\"FeatureCollection\",\"features\":[]}");
+                builder.AddAttribute(3, nameof(MapLayer.ChildContent), (RenderFragment)(inner =>
+                {
+                    inner.OpenComponent<MapLayerShapeSettings>(0);
+                    inner.AddAttribute(1, nameof(MapLayerShapeSettings.FillColor), "#ff0000");
+                    inner.AddAttribute(2, nameof(MapLayerShapeSettings.FillOpacity), 0.3);
+                    inner.AddAttribute(3, nameof(MapLayerShapeSettings.StrokeColor), "#ffffff");
+                    inner.AddAttribute(4, nameof(MapLayerShapeSettings.StrokeWidth), 1.5);
+                    inner.CloseComponent();
+                }));
+                builder.CloseComponent();
+            }));
+        var layer = cut.Instance.RegisteredLayers[0];
+        Assert.NotNull(layer.ShapeSettings);
+        Assert.Equal("#ff0000", layer.ShapeSettings!.FillColor);
+        Assert.Equal(0.3, layer.ShapeSettings.FillOpacity);
+        Assert.Equal("#ffffff", layer.ShapeSettings.StrokeColor);
+        Assert.Equal(1.5, layer.ShapeSettings.StrokeWidth);
+    }
+
+    [Fact]
+    public void BubbleSettings_Included_In_Descriptor_Style()
+    {
+        var cut = Render<MariloMap>(p => p
+            .AddChildContent(builder =>
+            {
+                builder.OpenComponent<MapLayer>(0);
+                builder.AddAttribute(1, nameof(MapLayer.Type), MapLayerType.Bubble);
+                builder.AddAttribute(2, nameof(MapLayer.LocationField), "LatLng");
+                builder.AddAttribute(3, nameof(MapLayer.ValueField), "Val");
+                builder.AddAttribute(4, nameof(MapLayer.ChildContent), (RenderFragment)(inner =>
+                {
+                    inner.OpenComponent<MapLayerBubbleSettings>(0);
+                    inner.AddAttribute(1, nameof(MapLayerBubbleSettings.FillColor), "#00ff00");
+                    inner.AddAttribute(2, nameof(MapLayerBubbleSettings.StrokeColor), "#111111");
+                    inner.AddAttribute(3, nameof(MapLayerBubbleSettings.MinSize), 5.0);
+                    inner.AddAttribute(4, nameof(MapLayerBubbleSettings.MaxSize), 40.0);
+                    inner.CloseComponent();
+                }));
+                builder.CloseComponent();
+            }));
+        var descriptor = cut.Instance.RegisteredLayers[0].ToDescriptor();
+        Assert.NotNull(descriptor.Style);
+        Assert.Equal("#00ff00", descriptor.Style!.FillColor);
+        Assert.Equal("#111111", descriptor.Style.StrokeColor);
+        Assert.Equal(5.0, descriptor.Style.MinSize);
+        Assert.Equal(40.0, descriptor.Style.MaxSize);
+    }
+
+    [Fact]
+    public void ShapeSettings_Included_In_Descriptor_Style()
+    {
+        var cut = Render<MariloMap>(p => p
+            .AddChildContent(builder =>
+            {
+                builder.OpenComponent<MapLayer>(0);
+                builder.AddAttribute(1, nameof(MapLayer.Type), MapLayerType.Shape);
+                builder.AddAttribute(2, nameof(MapLayer.Data), (object)"{\"type\":\"FeatureCollection\",\"features\":[]}");
+                builder.AddAttribute(3, nameof(MapLayer.ChildContent), (RenderFragment)(inner =>
+                {
+                    inner.OpenComponent<MapLayerShapeSettings>(0);
+                    inner.AddAttribute(1, nameof(MapLayerShapeSettings.FillColor), "#aabbcc");
+                    inner.AddAttribute(2, nameof(MapLayerShapeSettings.FillOpacity), 0.7);
+                    inner.CloseComponent();
+                }));
+                builder.CloseComponent();
+            }));
+        var descriptor = cut.Instance.RegisteredLayers[0].ToDescriptor();
+        Assert.NotNull(descriptor.Style);
+        Assert.Equal("#aabbcc", descriptor.Style!.FillColor);
+        Assert.Equal(0.7, descriptor.Style.FillOpacity);
+        Assert.Null(descriptor.Style.MinSize);
+        Assert.Null(descriptor.Style.MaxSize);
+    }
+
+    [Fact]
+    public async Task Refresh_Triggers_Adapter_Sync()
+    {
+        var cut = Render<MariloMap>(p => p
+            .Add(x => x.Center, new MapCenter { Latitude = 0, Longitude = 0 })
+            .Add(x => x.Zoom, 5)
+            .AddChildContent<MapLayer>(lp => lp
+                .Add(l => l.Type, MapLayerType.Tile)
+                .Add(l => l.UrlTemplate, "https://tiles.example.com/{z}/{x}/{y}.png")));
+        // Refresh should not throw; it re-syncs layers to the adapter.
+        await cut.Instance.Refresh();
+    }
+
+    [Fact]
+    public async Task Refresh_NoOp_Before_Initialization()
+    {
+        // Create a map but do NOT trigger OnAfterRenderAsync (adapter not initialized).
+        // Refresh should be a safe no-op.
+        var cut = Render<MariloMap>();
+        // This should not throw even though the adapter is not initialized.
+        await cut.Instance.Refresh();
+    }
+
+    [Fact]
+    public void Layer_Without_Settings_Has_Null_Style_In_Descriptor()
+    {
+        var cut = Render<MariloMap>(p => p
+            .AddChildContent<MapLayer>(lp => lp
+                .Add(l => l.Type, MapLayerType.Marker)
+                .Add(l => l.LocationField, "LatLng")));
+        var descriptor = cut.Instance.RegisteredLayers[0].ToDescriptor();
+        Assert.Null(descriptor.Style);
+    }
+
+    [Fact]
     public void MapLayers_Wrapper_With_Multiple_Children()
     {
         var cut = Render<MariloMap>(p => p

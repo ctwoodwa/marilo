@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 namespace Marilo.Components.DataDisplay.Map;
 
@@ -12,7 +13,7 @@ internal interface IMapEngineAdapter : IAsyncDisposable
     /// <summary>
     /// Initialize the map engine inside the given container element.
     /// </summary>
-    Task InitializeAsync(ElementReference container, MapInitOptions options);
+    Task InitializeAsync(ElementReference container, MapInitOptions options, DotNetObjectReference<MariloMap> dotNetRef);
 
     /// <summary>
     /// Update the map viewport (center and zoom).

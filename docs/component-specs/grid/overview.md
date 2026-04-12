@@ -23,7 +23,7 @@ The Marilo Blazor grid is built on native Blazor from the ground up, by a compan
 
 ## Creating Blazor Grid
 
-1. Use the `MariloGrid` tag.
+1. Use the `MariloDataGrid` tag.
 1. Assign the Grid `Data` parameter to an `IEnumerable<T>` property, **or** use the [`OnRead` event](slug:common-features-data-binding-onread). We'll go with `Data` this time. The [Grid Data Binding article](slug:grid-data-binding) compares the two alternatives.
 1. (optional) Enable some data operations like paging, sorting or filtering.
 1. Add [`MariloGridColumn`](slug:components/grid/columns/bound) instances directly inside `<MariloDataGrid>`. Each column `Field` should point to the model property to display. Use `nameof()` or the plain field name. Define user-friendly column `Title`s or [`DisplayFormat` for numeric and date values](slug:grid-columns-displayformat).
@@ -120,8 +120,10 @@ The following table lists Grid parameters, which are not discussed elsewhere in 
 | `AdaptiveMode` | `AdaptiveMode` enum <br /> (`None`) | Defines the adaptive mode of the Grid. When set to `Auto`, and the window width is below [`768px` or `RootComponentAdaptiveSettings.Medium`](slug:adaptive-rendering#rendering-specifics), the Grid will render ins inner popups (for example, FilterMenu, ContextMenu and more) as an `ActionSheet`. |
 | `Class` | `string` | Additional CSS class for the `<div class="k-grid">` element. Use it to apply custom styles or [override the theme](slug:themes-override). For example, [change the Grid font size](slug:grid-kb-change-font-size). |
 | `Height` | `string` | A height style in [any supported CSS unit](slug:common-features/dimensions). You can also [make the Grid height change automatically with the browser window](slug:grid-kb-adjust-height-with-browser). |
+| `IsLoading` | `bool` <br /> (`false`) | Whether data is currently loading. When `true`, displays a loading overlay with a spinner and sets `aria-busy` on the grid. See [Loading Animation](slug:grid-loading). |
 | `Navigable` | `bool` | Enables [keyboard navigation](slug:grid-keyboard-navigation). |
 | `CustomKeyboardShortcuts` | `Dictionary` | [Overrides the built-in keyboard navigation shortcuts](slug:grid-keyboard-navigation#using-custom-keys). |
+| `Striped` | `bool` <br /> (`false`) | Applies alternating row background colors for improved readability. |
 | `Width` | `string` | A width style in [any supported CSS unit](slug:common-features/dimensions). The Grid has no default width, but expands horizontally to fill its container. |
 
 

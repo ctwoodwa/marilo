@@ -147,10 +147,28 @@ The following table lists Tree List parameters, which are not related to other f
 
 | Parameter | Type and Default&nbsp;Value | Description |
 |---|---|---|
-| `Class` | `string` | The additional CSS class that will be rendered to the `div.k-treelist` element. Use it to apply custom styles or [override the theme](slug:themes-override). For example, [change the TreeList font size](slug:grid-kb-change-font-size). |
-| `Height` | `string` | The height value in [any supported CSS unit](slug:common-features/dimensions). |
-| `Navigable` | `bool` | Whether [keyboard navigation](slug:accessibility-overview#keyboard-navigation) is enabled. |
-| `Width` | `string` | The width value in [any supported CSS unit](slug:common-features/dimensions). The TreeList has no default width, but expands horizontally to fill its container. |
+| `Data` | `IEnumerable<TItem>` | The data source for the TreeList. |
+| `IdField` | `string?` | The property name that uniquely identifies each item (used with flat data). |
+| `ParentIdField` | `string?` | The property name that identifies the parent item (used with flat data). |
+| `ItemsField` | `string?` | The property name that contains child items (used with hierarchical data). |
+| `HasChildrenField` | `string?` | The property name (bool) indicating whether an item has children. |
+| `Sortable` | `bool` | Enables sorting on all columns. Individual columns can override via their own `Sortable` parameter. |
+| `FilterMode` | `TreeListFilterMode` (`None`) | `None` or `FilterRow`. |
+| `SelectionMode` | `TreeListSelectionMode` (`None`) | `None`, `Single`, or `Multiple`. |
+| `SelectedItems` | `IReadOnlyList<TItem>?` | The currently selected items (two-way bindable via `SelectedItemsChanged`). |
+| `EditMode` | `TreeListEditMode` (`None`) | `None` or `Inline`. |
+| `Navigable` | `bool` | Enables keyboard navigation (Arrow keys, Enter, Escape, Home, End). |
+| `Resizable` | `bool` | Enables column resizing by dragging header cell edges. |
+| `Reorderable` | `bool` | Enables column reordering by dragging header cells. |
+| `Pageable` | `bool` | Shows a pager below the TreeList. Paging applies to top-level items. |
+| `PageSize` | `int` (`10`) | Number of top-level items per page. |
+| `Page` | `int` (`1`) | Current page number (1-based, two-way bindable). |
+| `EnableVirtualization` | `bool` | Uses Blazor's built-in `<Virtualize>` component for the row list instead of rendering all rows. Dramatically improves performance for large trees. |
+| `ItemHeight` | `int` (`36`) | Pixel height of each row, used as `ItemSize` by the Virtualize component. |
+| `RowDraggable` | `bool` | Enables row drag-and-drop. Rows get `draggable="true"` and CSS classes `mar-treelist__row--dragging` / `mar-treelist__row--drop-target`. |
+| `Class` | `string` | Additional CSS class rendered on the root `div.mar-treelist` element. |
+| `Height` | `string` | The height value in any supported CSS unit. |
+| `Width` | `string` | The width value in any supported CSS unit. |
 
 
 ## TreeList Reference and Methods

@@ -40,6 +40,21 @@ public enum TreeListEditMode
 }
 
 /// <summary>
+/// Specifies the drop position relative to the destination row during row drag-and-drop.
+/// </summary>
+public enum TreeListDropPosition
+{
+    /// <summary>Drop before the destination item.</summary>
+    Before,
+
+    /// <summary>Drop after the destination item.</summary>
+    After,
+
+    /// <summary>Drop as a child of the destination item.</summary>
+    Over
+}
+
+/// <summary>
 /// Specifies the command type for a TreeList toolbar button.
 /// </summary>
 public enum TreeListToolbarCommand

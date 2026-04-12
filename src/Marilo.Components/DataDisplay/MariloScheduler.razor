@@ -1,7 +1,13 @@
+@using Marilo.Components.DataDisplay.Scheduler
 @inherits MariloComponentBase
+@implements ISchedulerViewHost
+@* Configuration-only children register via CascadingValue *@
+<CascadingValue Value="(ISchedulerViewHost)this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
 
 <div class="@CombineClasses("mar-scheduler")"
-     style="@CombineStyles()"
+     style="@CombineStyles(SizeStyle)"
      @attributes="AdditionalAttributes">
 
     @* Header / Navigation *@
@@ -10,12 +16,14 @@
         <span class="mar-scheduler__title">@GetHeaderTitle()</span>
         <button type="button" class="mar-btn mar-btn--flat" @onclick="NavigateNext">&#9654;</button>
         <span class="mar-scheduler__spacer"></span>
-        <button type="button" class="mar-btn mar-btn--flat @(View == SchedulerView.Day ? "mar-btn--primary" : "")"
-                @onclick="() => SetView(SchedulerView.Day)">Day</button>
-        <button type="button" class="mar-btn mar-btn--flat @(View == SchedulerView.Week ? "mar-btn--primary" : "")"
-                @onclick="() => SetView(SchedulerView.Week)">Week</button>
-        <button type="button" class="mar-btn mar-btn--flat @(View == SchedulerView.Month ? "mar-btn--primary" : "")"
-                @onclick="() => SetView(SchedulerView.Month)">Month</button>
+        @foreach (var viewType in AvailableViews)
+        {
+            var vt = viewType;
+            var label = GetViewLabel(vt);
+            <button type="button"
+                    class="mar-btn mar-btn--flat @(View == vt ? "mar-btn--primary" : "")"
+                    @onclick="() => SetView(vt)">@label</button>
+        }
     </div>
 
     @* Calendar view *@
@@ -23,11 +31,36 @@
     {
         <div class="mar-scheduler__month">
             <div class="mar-scheduler__weekday-headers">
-                @foreach (var day in _dayNames)
+                @foreach (var day in GetDayNames())
                 {
                     <span class="mar-scheduler__weekday">@day</span>
                 }
             </div>
+            @* All-day row for month view *@
+            @if (HasAllDayAppointments())
+            {
+                <div class="mar-scheduler__allday-row">
+                    @foreach (var appt in GetAllDayAppointments())
+                    {
+                        var a = appt;
+                        <div class="mar-scheduler__appointment mar-scheduler__appointment--allday"
+                             style="@(!string.IsNullOrEmpty(a.Color) ? $"background-color:{a.Color};" : "")"
+                             @onclick:stopPropagation="true"
+                             @onclick="() => OnAppointmentClick.InvokeAsync(a)"
+                             @ondblclick:stopPropagation="true"
+                             @ondblclick="() => HandleAppointmentDoubleClick(a)">
+                            @if (AppointmentTemplate != null)
+                            {
+                                @AppointmentTemplate(a)
+                            }
+                            else
+                            {
+                                @a.Title
+                            }
+                        </div>
+                    }
+                </div>
+            }
             <div class="mar-scheduler__month-grid">
                 @foreach (var day in GetMonthDays())
                 {
@@ -37,14 +70,23 @@
                     <div class="mar-scheduler__day-cell @(isToday ? "mar-scheduler__day-cell--today" : "") @(!isCurrentMonth ? "mar-scheduler__day-cell--outside" : "")"
                          @onclick="() => OnDateClick.InvokeAsync(d.ToDateTime(TimeOnly.MinValue))">
                         <span class="mar-scheduler__day-number">@d.Day</span>
-                        @foreach (var appt in GetAppointmentsForDate(d))
+                        @foreach (var appt in GetTimedAppointmentsForDate(d))
                         {
                             var a = appt;
                             <div class="mar-scheduler__appointment"
                                  style="@(!string.IsNullOrEmpty(a.Color) ? $"background-color:{a.Color};" : "")"
                                  @onclick:stopPropagation="true"
-                                 @onclick="() => OnAppointmentClick.InvokeAsync(a)">
-                                @a.Title
+                                 @onclick="() => OnAppointmentClick.InvokeAsync(a)"
+                                 @ondblclick:stopPropagation="true"
+                                 @ondblclick="() => HandleAppointmentDoubleClick(a)">
+                                @if (AppointmentTemplate != null)
+                                {
+                                    @AppointmentTemplate(a)
+                                }
+                                else
+                                {
+                                    @a.Title
+                                }
                             </div>
                         }
                     </div>
@@ -55,9 +97,44 @@
     else if (View == SchedulerView.Week || View == SchedulerView.Day)
     {
         var days = View == SchedulerView.Week ? GetWeekDays() : new List<DateOnly> { DateOnly.FromDateTime(CurrentDate) };
+        var effectiveStartHour = GetEffectiveStartHour();
+        var effectiveEndHour = GetEffectiveEndHour();
+
+        @* All-day row for day/week views *@
+        @if (HasAllDayAppointmentsForDays(days))
+        {
+            <div class="mar-scheduler__allday-row">
+                @foreach (var day in days)
+                {
+                    var d = day;
+                    <div class="mar-scheduler__allday-cell">
+                        @foreach (var appt in GetAllDayAppointmentsForDate(d))
+                        {
+                            var a = appt;
+                            <div class="mar-scheduler__appointment mar-scheduler__appointment--allday"
+                                 style="@(!string.IsNullOrEmpty(a.Color) ? $"background-color:{a.Color};" : "")"
+                                 @onclick:stopPropagation="true"
+                                 @onclick="() => OnAppointmentClick.InvokeAsync(a)"
+                                 @ondblclick:stopPropagation="true"
+                                 @ondblclick="() => HandleAppointmentDoubleClick(a)">
+                                @if (AppointmentTemplate != null)
+                                {
+                                    @AppointmentTemplate(a)
+                                }
+                                else
+                                {
+                                    @a.Title
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
+
         <div class="mar-scheduler__time-grid">
             <div class="mar-scheduler__time-labels">
-                @for (var h = StartHour; h <= EndHour; h++)
+                @for (var h = effectiveStartHour; h <= effectiveEndHour; h++)
                 {
                     <div class="mar-scheduler__time-label">@($"{h:D2}:00")</div>
                 }
@@ -68,19 +145,28 @@
                 <div class="mar-scheduler__day-column">
                     <div class="mar-scheduler__day-column-header">@d.ToString("ddd M/d")</div>
                     <div class="mar-scheduler__day-slots" style="position: relative;">
-                        @for (var h = StartHour; h <= EndHour; h++)
+                        @for (var h = effectiveStartHour; h <= effectiveEndHour; h++)
                         {
                             <div class="mar-scheduler__time-slot"></div>
                         }
-                        @foreach (var appt in GetAppointmentsForDate(d))
+                        @foreach (var appt in GetTimedAppointmentsForDate(d))
                         {
                             var a = appt;
-                            var top = (a.Start.Hour - StartHour + a.Start.Minute / 60.0) * 48;
+                            var top = (a.Start.Hour - effectiveStartHour + a.Start.Minute / 60.0) * 48;
                             var height = (a.End - a.Start).TotalHours * 48;
                             <div class="mar-scheduler__appointment mar-scheduler__appointment--timed"
                                  style="top: @(top)px; height: @(height)px; @(!string.IsNullOrEmpty(a.Color) ? $"background-color:{a.Color};" : "")"
-                                 @onclick="() => OnAppointmentClick.InvokeAsync(a)">
-                                @a.Title
+                                 @onclick="() => OnAppointmentClick.InvokeAsync(a)"
+                                 @ondblclick:stopPropagation="true"
+                                 @ondblclick="() => HandleAppointmentDoubleClick(a)">
+                                @if (AppointmentTemplate != null)
+                                {
+                                    @AppointmentTemplate(a)
+                                }
+                                else
+                                {
+                                    @a.Title
+                                }
                             </div>
                         }
                     </div>
@@ -88,9 +174,47 @@
             }
         </div>
     }
+
+    @* Inline edit form *@
+    @if (Editable && _editingAppointment != null)
+    {
+        <div class="mar-scheduler__edit-form">
+            <div class="mar-scheduler__edit-form-header">
+                <span>Edit Appointment</span>
+                <button type="button" class="mar-btn mar-btn--flat mar-scheduler__edit-form-close" @onclick="CloseEditForm">&times;</button>
+            </div>
+            <div class="mar-scheduler__edit-form-body">
+                <label class="mar-scheduler__edit-form-label">
+                    Title
+                    <input type="text" class="mar-scheduler__edit-form-input" value="@_editTitle" @oninput="OnEditTitleChanged" />
+                </label>
+                <label class="mar-scheduler__edit-form-label">
+                    Start
+                    <input type="datetime-local" class="mar-scheduler__edit-form-input" value="@_editStart.ToString("yyyy-MM-ddTHH:mm")" @onchange="OnEditStartChanged" />
+                </label>
+                <label class="mar-scheduler__edit-form-label">
+                    End
+                    <input type="datetime-local" class="mar-scheduler__edit-form-input" value="@_editEnd.ToString("yyyy-MM-ddTHH:mm")" @onchange="OnEditEndChanged" />
+                </label>
+            </div>
+            <div class="mar-scheduler__edit-form-actions">
+                <button type="button" class="mar-btn mar-btn--primary" @onclick="SaveEdit">Save</button>
+                <button type="button" class="mar-btn mar-btn--danger" @onclick="DeleteAppointment">Delete</button>
+                <button type="button" class="mar-btn mar-btn--flat" @onclick="CloseEditForm">Cancel</button>
+            </div>
+        </div>
+    }
 </div>
 
 @code {
+    private readonly List<SchedulerViewBase> _registeredViews = new();
+
+    // ── Edit form state ─────────────────────────────────────────────
+    private SchedulerAppointment? _editingAppointment;
+    private string _editTitle = string.Empty;
+    private DateTime _editStart;
+    private DateTime _editEnd;
+
     [Parameter] public DateTime CurrentDate { get; set; } = DateTime.Today;
     [Parameter] public EventCallback<DateTime> CurrentDateChanged { get; set; }
     [Parameter] public SchedulerView View { get; set; } = SchedulerView.Month;
@@ -102,7 +226,144 @@
     [Parameter] public EventCallback<DateTime> OnDateClick { get; set; }
     [Parameter] public EventCallback<SchedulerAppointment> OnAppointmentCreate { get; set; }
 
-    private static readonly string[] _dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    /// <summary>Fires when an existing appointment is updated via the edit form. The component is fully controlled -- the consumer must update data.</summary>
+    [Parameter] public EventCallback<SchedulerAppointment> OnUpdate { get; set; }
+
+    /// <summary>Fires when an appointment is deleted via the edit form. The component is fully controlled -- the consumer must remove from data.</summary>
+    [Parameter] public EventCallback<SchedulerAppointment> OnDelete { get; set; }
+
+    /// <summary>When true, double-clicking an appointment opens an inline edit form. Default false.</summary>
+    [Parameter] public bool Editable { get; set; }
+
+    /// <summary>Custom render fragment for appointment content. When set, renders inside the appointment slot instead of the default title text.</summary>
+    [Parameter] public RenderFragment<SchedulerAppointment>? AppointmentTemplate { get; set; }
+
+    /// <summary>Child content for composable view configuration (SchedulerDayView, SchedulerWeekView, etc.).</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>Height of the scheduler. Applied as inline CSS.</summary>
+    [Parameter] public string? Height { get; set; }
+
+    /// <summary>Width of the scheduler. Applied as inline CSS.</summary>
+    [Parameter] public string? Width { get; set; }
+
+    // ── ISchedulerViewHost ──────────────────────────────────────────
+
+    void ISchedulerViewHost.RegisterView(SchedulerViewBase view)
+    {
+        if (!_registeredViews.Contains(view))
+        {
+            _registeredViews.Add(view);
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    void ISchedulerViewHost.UnregisterView(SchedulerViewBase view)
+    {
+        if (_registeredViews.Remove(view))
+        {
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    // ── Computed properties ─────────────────────────────────────────
+
+    /// <summary>Whether child view components have been registered (composable mode).</summary>
+    private bool HasRegisteredViews => _registeredViews.Count > 0;
+
+    /// <summary>The list of available views, either from registered children or default Day/Week/Month.</summary>
+    private IReadOnlyList<SchedulerView> AvailableViews =>
+        HasRegisteredViews
+            ? _registeredViews.Select(v => v.ViewType).Distinct().ToList()
+            : [SchedulerView.Day, SchedulerView.Week, SchedulerView.Month];
+
+    private string GetViewLabel(SchedulerView viewType)
+    {
+        if (HasRegisteredViews)
+        {
+            var registered = _registeredViews.FirstOrDefault(v => v.ViewType == viewType);
+            if (registered != null) return registered.EffectiveLabel;
+        }
+        return viewType.ToString();
+    }
+
+    /// <summary>Gets a registered view of the specified type, or null.</summary>
+    private T? GetRegisteredView<T>() where T : SchedulerViewBase
+        => _registeredViews.OfType<T>().FirstOrDefault();
+
+    private string? SizeStyle
+    {
+        get
+        {
+            var parts = new List<string>();
+            if (!string.IsNullOrEmpty(Height)) parts.Add($"height:{Height}");
+            if (!string.IsNullOrEmpty(Width)) parts.Add($"width:{Width}");
+            return parts.Count > 0 ? string.Join(";", parts) : null;
+        }
+    }
+
+    // ── Effective config from registered views or fallback params ────
+
+    private int GetEffectiveStartHour()
+    {
+        if (View == SchedulerView.Day)
+        {
+            var dayView = GetRegisteredView<SchedulerDayView>();
+            if (dayView != null) return dayView.StartTime.Hours;
+        }
+        else if (View == SchedulerView.Week)
+        {
+            var weekView = GetRegisteredView<SchedulerWeekView>();
+            if (weekView != null) return weekView.StartTime.Hours;
+        }
+        return StartHour;
+    }
+
+    private int GetEffectiveEndHour()
+    {
+        if (View == SchedulerView.Day)
+        {
+            var dayView = GetRegisteredView<SchedulerDayView>();
+            if (dayView != null) return dayView.EndTime.Hours;
+        }
+        else if (View == SchedulerView.Week)
+        {
+            var weekView = GetRegisteredView<SchedulerWeekView>();
+            if (weekView != null) return weekView.EndTime.Hours;
+        }
+        return EndHour;
+    }
+
+    private DayOfWeek GetEffectiveFirstDayOfWeek()
+    {
+        if (View == SchedulerView.Week)
+        {
+            var weekView = GetRegisteredView<SchedulerWeekView>();
+            if (weekView != null) return weekView.FirstDayOfWeek;
+        }
+        else if (View == SchedulerView.Month)
+        {
+            var monthView = GetRegisteredView<SchedulerMonthView>();
+            if (monthView != null) return monthView.FirstDayOfWeek;
+        }
+        return DayOfWeek.Sunday;
+    }
+
+    // ── Header / Navigation ─────────────────────────────────────────
+
+    private static readonly string[] _defaultDayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+    private string[] GetDayNames()
+    {
+        var firstDay = GetEffectiveFirstDayOfWeek();
+        if (firstDay == DayOfWeek.Sunday) return _defaultDayNames;
+
+        var offset = (int)firstDay;
+        var names = new string[7];
+        for (var i = 0; i < 7; i++)
+            names[i] = _defaultDayNames[(i + offset) % 7];
+        return names;
+    }
 
     private string GetHeaderTitle() => View switch
     {
@@ -144,15 +405,17 @@
 
     private DateTime GetWeekStart()
     {
-        var diff = (int)CurrentDate.DayOfWeek;
+        var firstDay = GetEffectiveFirstDayOfWeek();
+        var diff = ((int)CurrentDate.DayOfWeek - (int)firstDay + 7) % 7;
         return CurrentDate.AddDays(-diff);
     }
 
     private List<DateOnly> GetMonthDays()
     {
+        var firstDay = GetEffectiveFirstDayOfWeek();
         var days = new List<DateOnly>();
         var first = new DateOnly(CurrentDate.Year, CurrentDate.Month, 1);
-        var startOffset = (int)first.DayOfWeek;
+        var startOffset = ((int)first.DayOfWeek - (int)firstDay + 7) % 7;
         for (var i = startOffset - 1; i >= 0; i--)
             days.Add(first.AddDays(-(i + 1)));
         var daysInMonth = DateTime.DaysInMonth(CurrentDate.Year, CurrentDate.Month);
@@ -177,5 +440,95 @@
             var apptEnd = DateOnly.FromDateTime(a.End);
             return date >= apptDate && date <= apptEnd;
         });
+    }
+
+    /// <summary>Returns non-all-day appointments for a given date.</summary>
+    private IEnumerable<SchedulerAppointment> GetTimedAppointmentsForDate(DateOnly date)
+    {
+        return GetAppointmentsForDate(date).Where(a => !a.IsAllDay);
+    }
+
+    // ── All-day helpers ─────────────────────────────────────────────
+
+    private bool HasAllDayAppointments() => Appointments.Any(a => a.IsAllDay);
+
+    private IEnumerable<SchedulerAppointment> GetAllDayAppointments() => Appointments.Where(a => a.IsAllDay);
+
+    private bool HasAllDayAppointmentsForDays(List<DateOnly> days)
+    {
+        return Appointments.Any(a => a.IsAllDay && days.Any(d =>
+        {
+            var apptDate = DateOnly.FromDateTime(a.Start);
+            var apptEnd = DateOnly.FromDateTime(a.End);
+            return d >= apptDate && d <= apptEnd;
+        }));
+    }
+
+    private IEnumerable<SchedulerAppointment> GetAllDayAppointmentsForDate(DateOnly date)
+    {
+        return GetAppointmentsForDate(date).Where(a => a.IsAllDay);
+    }
+
+    // ── Edit form handlers ──────────────────────────────────────────
+
+    private void HandleAppointmentDoubleClick(SchedulerAppointment appt)
+    {
+        if (!Editable) return;
+        _editingAppointment = appt;
+        _editTitle = appt.Title;
+        _editStart = appt.Start;
+        _editEnd = appt.End;
+    }
+
+    private void OnEditTitleChanged(ChangeEventArgs e) => _editTitle = e.Value?.ToString() ?? string.Empty;
+
+    private void OnEditStartChanged(ChangeEventArgs e)
+    {
+        if (DateTime.TryParse(e.Value?.ToString(), out var dt)) _editStart = dt;
+    }
+
+    private void OnEditEndChanged(ChangeEventArgs e)
+    {
+        if (DateTime.TryParse(e.Value?.ToString(), out var dt)) _editEnd = dt;
+    }
+
+    private async Task SaveEdit()
+    {
+        if (_editingAppointment == null) return;
+        // Create a copy with updated values — component is fully controlled
+        var updated = new SchedulerAppointment
+        {
+            Id = _editingAppointment.Id,
+            Title = _editTitle,
+            Start = _editStart,
+            End = _editEnd,
+            Description = _editingAppointment.Description,
+            IsAllDay = _editingAppointment.IsAllDay,
+            Color = _editingAppointment.Color,
+            RecurrenceRule = _editingAppointment.RecurrenceRule
+        };
+        _editingAppointment = null;
+        await OnUpdate.InvokeAsync(updated);
+    }
+
+    private async Task DeleteAppointment()
+    {
+        if (_editingAppointment == null) return;
+        var toDelete = _editingAppointment;
+        _editingAppointment = null;
+        await OnDelete.InvokeAsync(toDelete);
+    }
+
+    private void CloseEditForm() => _editingAppointment = null;
+
+    // ── Dispose ─────────────────────────────────────────────────────
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _registeredViews.Clear();
+        }
+        base.Dispose(disposing);
     }
 }

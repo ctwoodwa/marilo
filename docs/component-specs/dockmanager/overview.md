@@ -117,6 +117,7 @@ The following table lists the Dock Manager parameters. Also check the [DockManag
 | OnPaneFloat | EventCallback<string> | Fires when a pane is floated or docked. |
 | OnPaneActivated | EventCallback<string> | Fires when a pane becomes the active tab. |
 | OnTabReordered | EventCallback<DockTabReorderEventArgs> | Fires when a tab is reordered via drag-and-drop. |
+| OnPaneMoved | EventCallback<DockPaneMoveEventArgs> | Fires when a tab is moved between tab groups. |
 | OnLayoutChanged | EventCallback | Fires whenever the layout changes. |
 
 ### MariloDockPane Parameters
@@ -132,6 +133,9 @@ The following table lists the Dock Manager parameters. Also check the [DockManag
 | FloatingLeft | string ("50px") | CSS left offset when floating. |
 | FloatingWidth | string ("400px") | CSS width when floating. |
 | FloatingHeight | string ("300px") | CSS height when floating. |
+| TabGroupId | string ("root") | Logical tab group this pane belongs to. Used for cross-pane tab moves. |
+| MinWidth | string ("100px") | Minimum width constraint. Enforced during floating resize. |
+| MinHeight | string ("100px") | Minimum height constraint. Enforced during floating resize. |
 
 ### DockManagerContentPane Parameters
 

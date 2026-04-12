@@ -23,6 +23,15 @@
     /// <summary>Whether the pane starts in floating (overlay) mode. Defaults to false.</summary>
     [Parameter] public bool IsFloating { get; set; }
 
+    /// <summary>Logical tab group this pane belongs to. Used for cross-pane tab moves. Defaults to "root".</summary>
+    [Parameter] public string TabGroupId { get; set; } = "root";
+
+    /// <summary>Minimum width constraint (e.g. "100px"). Enforced during floating resize. Defaults to "100px".</summary>
+    [Parameter] public string MinWidth { get; set; } = "100px";
+
+    /// <summary>Minimum height constraint (e.g. "100px"). Enforced during floating resize. Defaults to "100px".</summary>
+    [Parameter] public string MinHeight { get; set; } = "100px";
+
     /// <summary>CSS top offset when floating. Defaults to "50px".</summary>
     [Parameter] public string FloatingTop { get; set; } = "50px";
 
@@ -44,12 +53,26 @@
     /// </summary>
     internal bool IsCurrentlyFloating { get; set; }
 
+    /// <summary>Runtime top position, initialized from <see cref="FloatingTop"/>.</summary>
+    internal string RuntimeTop { get; set; } = "50px";
+
+    /// <summary>Runtime left position, initialized from <see cref="FloatingLeft"/>.</summary>
+    internal string RuntimeLeft { get; set; } = "50px";
+
+    /// <summary>Runtime width, initialized from <see cref="FloatingWidth"/>.</summary>
+    internal string RuntimeWidth { get; set; } = "400px";
+
+    /// <summary>Runtime height, initialized from <see cref="FloatingHeight"/>.</summary>
+    internal string RuntimeHeight { get; set; } = "300px";
+
     private bool _previousIsFloating;
+    private string? _prevTop, _prevLeft, _prevWidth, _prevHeight;
 
     protected override async Task OnInitializedAsync()
     {
         IsCurrentlyFloating = IsFloating;
         _previousIsFloating = IsFloating;
+        SyncRuntimePositionFromParameters();
         if (DockManager != null) await DockManager.RegisterPane(this);
     }
 
@@ -62,6 +85,15 @@
             IsCurrentlyFloating = IsFloating;
             _previousIsFloating = IsFloating;
         }
+        SyncRuntimePositionFromParameters();
+    }
+
+    private void SyncRuntimePositionFromParameters()
+    {
+        if (FloatingTop != _prevTop) { RuntimeTop = FloatingTop; _prevTop = FloatingTop; }
+        if (FloatingLeft != _prevLeft) { RuntimeLeft = FloatingLeft; _prevLeft = FloatingLeft; }
+        if (FloatingWidth != _prevWidth) { RuntimeWidth = FloatingWidth; _prevWidth = FloatingWidth; }
+        if (FloatingHeight != _prevHeight) { RuntimeHeight = FloatingHeight; _prevHeight = FloatingHeight; }
     }
 
     public async ValueTask DisposeAsync()

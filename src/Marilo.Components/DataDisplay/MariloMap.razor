@@ -37,6 +37,7 @@
     private string _containerId = $"mar-map-{Guid.NewGuid():N}";
     private ElementReference _containerRef;
     private IMapEngineAdapter? _adapter;
+    private DotNetObjectReference<MariloMap>? _dotNetRef;
     private bool _adapterInitialized;
     private readonly List<MapLayer> _layers = new();
     private readonly Dictionary<string, MapLayerDescriptor> _previousLayerDescriptors = new();
@@ -67,6 +68,7 @@
             try
             {
                 _adapter = new MapLibreAdapter(JS);
+                _dotNetRef = DotNetObjectReference.Create(this);
                 var initOptions = new MapInitOptions(
                     CenterLat: Center?.Latitude ?? 0,
                     CenterLng: Center?.Longitude ?? 0,
@@ -75,7 +77,7 @@
                     MaxZoom: MaxZoom,
                     Zoomable: Zoomable,
                     Pannable: Pannable);
-                await _adapter.InitializeAsync(_containerRef, initOptions);
+                await _adapter.InitializeAsync(_containerRef, initOptions, _dotNetRef);
                 _adapterInitialized = true;
                 await SyncLayersToAdapterAsync();
             }
@@ -120,6 +122,18 @@
             _previousLayerDescriptors[id] = descriptor;
     }
 
+    /// <summary>
+    /// Re-syncs all layers to the adapter. Call after making programmatic changes
+    /// that do not trigger automatic re-rendering.
+    /// </summary>
+    public async Task Refresh()
+    {
+        if (_adapterInitialized)
+        {
+            await SyncLayersToAdapterAsync();
+        }
+    }
+
     [JSInvokable]
     public async Task OnMapClickFromJs(double latitude, double longitude)
     {
@@ -161,6 +175,8 @@
             await _adapter.DisposeAsync();
             _adapter = null;
         }
+        _dotNetRef?.Dispose();
+        _dotNetRef = null;
         _adapterInitialized = false;
     }
 }

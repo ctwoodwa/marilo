@@ -17,6 +17,7 @@ This article explains the events available in the Marilo DockManager for Blazor:
 * [OnPanePin](#onpanepin)
 * [OnPaneActivated](#onpaneactivated)
 * [OnTabReordered](#ontabreordered)
+* [OnPaneMoved](#onpanemoved)
 * [OnLayoutChanged](#onlayoutchanged)
 
 ## OnPaneClosed
@@ -48,9 +49,21 @@ The event handler receives a DockTabReorderEventArgs object that contains:
 | OldIndex | int | The original index of the tab before the drag. |
 | NewIndex | int | The new index of the tab after the drop. |
 
+## OnPaneMoved
+
+The OnPaneMoved event fires when a tab is moved from one tab group to another via drag-and-drop.
+
+The event handler receives a DockPaneMoveEventArgs object that contains:
+
+| Property | Type | Description |
+|---|---|---|
+| PaneId | string | The Id of the pane (tab) that was moved. |
+| SourceGroupId | string | The Id of the source tab group from which the pane was moved. |
+| TargetGroupId | string | The Id of the target tab group to which the pane was moved. |
+
 ## OnLayoutChanged
 
-The OnLayoutChanged event fires whenever the layout changes. This includes pane registration, removal, reordering, floating, and docking. Use this event to persist layout state or trigger dependent UI updates.
+The OnLayoutChanged event fires whenever the layout changes. This includes pane registration, removal, reordering, floating, docking, and cross-pane tab moves. Use this event to persist layout state or trigger dependent UI updates.
 
 The event handler receives no arguments (EventCallback).
 

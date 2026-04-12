@@ -6,13 +6,12 @@ namespace Marilo.Components.DataDisplay.Map;
 /// <summary>
 /// MapLibre GL JS adapter implementing <see cref="IMapEngineAdapter"/>.
 /// Owns the JS module reference and translates adapter calls into JS interop calls.
-/// Wave 2: stub implementation — real MapLibre integration is Wave 3.
+/// MapLibre GL JS is loaded from CDN by the JS module — not bundled.
 /// </summary>
 internal sealed class MapLibreAdapter : IMapEngineAdapter
 {
     private readonly IJSRuntime _jsRuntime;
     private IJSObjectReference? _jsModule;
-    private DotNetObjectReference<MapLibreAdapter>? _dotNetRef;
     private bool _disposed;
 
     public MapLibreAdapter(IJSRuntime jsRuntime)
@@ -21,7 +20,10 @@ internal sealed class MapLibreAdapter : IMapEngineAdapter
     }
 
     /// <inheritdoc />
-    public async Task InitializeAsync(ElementReference container, MapInitOptions options)
+    public async Task InitializeAsync(
+        ElementReference container,
+        MapInitOptions options,
+        DotNetObjectReference<MariloMap> dotNetRef)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
 
@@ -29,9 +31,7 @@ internal sealed class MapLibreAdapter : IMapEngineAdapter
             "import",
             "./_content/Marilo.Components/js/marilo-map.js");
 
-        _dotNetRef = DotNetObjectReference.Create(this);
-
-        await _jsModule.InvokeVoidAsync("init", container, _dotNetRef, new
+        await _jsModule.InvokeVoidAsync("init", container, dotNetRef, new
         {
             centerLat = options.CenterLat,
             centerLng = options.CenterLng,
@@ -89,7 +89,5 @@ internal sealed class MapLibreAdapter : IMapEngineAdapter
                 // Circuit may already be gone in Blazor Server.
             }
         }
-
-        _dotNetRef?.Dispose();
     }
 }

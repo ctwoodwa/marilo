@@ -179,6 +179,100 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
+// --- All-day row ---
+.mar-scheduler__allday-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-bottom: 1px solid var(--marilo-color-border);
+  background: var(--marilo-color-subtle-background, var(--bs-tertiary-bg, #f8f9fa));
+  min-height: 28px;
+}
+
+.mar-scheduler__allday-cell {
+  flex: 1;
+  min-width: 100px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.mar-scheduler__appointment--allday {
+  width: 100%;
+  font-weight: 600;
+}
+
+// --- Inline Edit Form ---
+.mar-scheduler__edit-form {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  width: 320px;
+  background: var(--marilo-color-surface, var(--bs-body-bg, #fff));
+  border: 1px solid var(--marilo-color-border);
+  border-radius: var(--marilo-radius-md, 0.375rem);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  padding: 0;
+  overflow: hidden;
+}
+
+.mar-scheduler__edit-form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+  border-bottom: 1px solid var(--marilo-color-border);
+  background: var(--marilo-color-subtle-background, var(--bs-tertiary-bg, #f8f9fa));
+}
+
+.mar-scheduler__edit-form-close {
+  font-size: 1.125rem;
+  line-height: 1;
+  padding: 2px 6px;
+}
+
+.mar-scheduler__edit-form-body {
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mar-scheduler__edit-form-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--marilo-color-text-secondary, var(--bs-secondary-color, #6c757d));
+}
+
+.mar-scheduler__edit-form-input {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--marilo-color-border);
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  background: var(--marilo-color-surface, var(--bs-body-bg, #fff));
+  color: var(--marilo-color-text, var(--bs-body-color, #212529));
+
+  &:focus {
+    outline: none;
+    border-color: var(--bs-primary, #0d6efd);
+    box-shadow: 0 0 0 0.25rem rgba(var(--bs-primary-rgb, 13, 110, 253), 0.25);
+  }
+}
+
+.mar-scheduler__edit-form-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-top: 1px solid var(--marilo-color-border);
+}
+
 // =================================================================
 // Dark Mode
 // =================================================================
@@ -241,6 +335,35 @@
 
   .mar-scheduler__time-slot {
     border-bottom-color: rgba(255, 255, 255, 0.06);
+  }
+
+  .mar-scheduler__allday-row {
+    border-bottom-color: var(--marilo-color-border, #495057);
+    background: var(--marilo-color-subtle-background, var(--bs-tertiary-bg, #2b3035));
+  }
+
+  .mar-scheduler__edit-form {
+    background: var(--marilo-color-surface, var(--bs-body-bg, #212529));
+    border-color: var(--marilo-color-border, #495057);
+  }
+
+  .mar-scheduler__edit-form-header {
+    border-bottom-color: var(--marilo-color-border, #495057);
+    background: var(--marilo-color-subtle-background, var(--bs-tertiary-bg, #2b3035));
+  }
+
+  .mar-scheduler__edit-form-label {
+    color: var(--marilo-color-text-secondary, var(--bs-secondary-color, #adb5bd));
+  }
+
+  .mar-scheduler__edit-form-input {
+    background: var(--marilo-color-surface, var(--bs-body-bg, #212529));
+    border-color: var(--marilo-color-border, #495057);
+    color: var(--marilo-color-text, var(--bs-body-color, #dee2e6));
+  }
+
+  .mar-scheduler__edit-form-actions {
+    border-top-color: var(--marilo-color-border, #495057);
   }
 }
 

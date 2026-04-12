@@ -14,8 +14,8 @@ You can change the [filter menu](slug:gantt-filter-menu) to show a list of check
 
 To enable the checkbox list filtering in the Gantt:
 
-1. Set the `FilterMode` parameter of the grid to `Marilo.Blazor.GanttFilterMode.FilterMenu`
-1. Set the `FilterMenuType` parameter of the grid to `Marilo.Blazor.FilterMenuType.CheckBoxList`. It defaults to `Menu` for the default behavior.
+1. Set the `FilterMode` parameter of the Gantt to `GanttFilterMode.FilterMenu`
+1. Set the `FilterMenuType` parameter of the column to `GanttColumnFilterType.CheckboxList`. It defaults to `Text` for the default behavior.
 
 You can also change the filter menu behavior for a particular column - its own `FilterMenuType` parameter can be either `Menu` or `CheckBoxList` regardless of the main Gantt parameter. This lets you mix both modes as necessary for your application - you can either have all columns use the same mode with a single setting, or override it for a few columns that need the less common mode.
 

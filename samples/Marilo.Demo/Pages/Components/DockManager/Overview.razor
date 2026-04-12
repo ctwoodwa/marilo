@@ -91,6 +91,37 @@ Build succeeded.</pre>
     </DemoSection>
 </PageSection>
 
+<PageSection Title="Cross-Pane Tab Move">
+    <DemoSection Title="Cross-Pane Tab Move" Description="Tabs can be dragged between tab groups. Set TabGroupId on each pane to define logical groups. Drop a tab on another group's header strip to move it. The OnPaneMoved event fires with source/target group IDs." Code="@_crossPaneMoveCode">
+        <MariloDockManager Height="300px" Width="100%"
+                           OnPaneMoved="HandlePaneMoved"
+                           OnLayoutChanged="HandleLayoutChanged">
+            <MariloDockPane Id="left-1" Title="Left 1" TabGroupId="left-group">
+                <div style="padding:12px;">
+                    <p style="font-weight:600;">Left Group - Pane 1</p>
+                    <p>Drag this tab to the right group.</p>
+                </div>
+            </MariloDockPane>
+            <MariloDockPane Id="left-2" Title="Left 2" TabGroupId="left-group">
+                <div style="padding:12px;">
+                    <p style="font-weight:600;">Left Group - Pane 2</p>
+                </div>
+            </MariloDockPane>
+            <MariloDockPane Id="right-1" Title="Right 1" TabGroupId="right-group">
+                <div style="padding:12px;">
+                    <p style="font-weight:600;">Right Group - Pane 1</p>
+                    <p>Drag this tab to the left group.</p>
+                </div>
+            </MariloDockPane>
+            <MariloDockPane Id="right-2" Title="Right 2" TabGroupId="right-group">
+                <div style="padding:12px;">
+                    <p style="font-weight:600;">Right Group - Pane 2</p>
+                </div>
+            </MariloDockPane>
+        </MariloDockManager>
+    </DemoSection>
+</PageSection>
+
 @if (!string.IsNullOrEmpty(_lastAction))
 {
     <div style="margin-top:12px;padding:8px;background:#f5f5f5;border-radius:4px;font-size:13px;">
@@ -107,6 +138,7 @@ Build succeeded.</pre>
     private Task HandleFloat(string id) { _lastAction = $"Floated pane: {id}"; return Task.CompletedTask; }
     private Task HandleActivated(string id) { _lastAction = $"Activated pane: {id}"; return Task.CompletedTask; }
     private Task HandleLayoutChanged() { _lastAction = $"Layout changed"; return Task.CompletedTask; }
+    private Task HandlePaneMoved(DockPaneMoveEventArgs args) { _lastAction = $"Moved pane {args.PaneId} from {args.SourceGroupId} to {args.TargetGroupId}"; return Task.CompletedTask; }
 
     private const string _basicCode =
         "<MariloDockManager Height=\"300px\">\n" +
@@ -136,6 +168,19 @@ Build succeeded.</pre>
         "                    FloatingWidth=\"300px\"\n" +
         "                    FloatingHeight=\"200px\">\n" +
         "        <p>This pane starts floating.</p>\n" +
+        "    </MariloDockPane>\n" +
+        "</MariloDockManager>";
+
+    private const string _crossPaneMoveCode =
+        "<MariloDockManager Height=\"300px\" OnPaneMoved=\"HandlePaneMoved\">\n" +
+        "    <MariloDockPane Id=\"left-1\" Title=\"Left 1\" TabGroupId=\"left-group\">\n" +
+        "        <p>Left Group - Pane 1</p>\n" +
+        "    </MariloDockPane>\n" +
+        "    <MariloDockPane Id=\"left-2\" Title=\"Left 2\" TabGroupId=\"left-group\">\n" +
+        "        <p>Left Group - Pane 2</p>\n" +
+        "    </MariloDockPane>\n" +
+        "    <MariloDockPane Id=\"right-1\" Title=\"Right 1\" TabGroupId=\"right-group\">\n" +
+        "        <p>Right Group - Pane 1</p>\n" +
         "    </MariloDockPane>\n" +
         "</MariloDockManager>";
 

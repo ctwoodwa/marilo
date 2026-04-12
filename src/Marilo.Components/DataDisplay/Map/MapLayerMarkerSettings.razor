@@ -1,0 +1,21 @@
+@inherits MariloComponentBase
+
+@* MapLayerMarkerSettings is a non-visual registration component — it renders no markup. *@
+
+@code {
+    /// <summary>The JS function name used as a marker template.</summary>
+    [Parameter] public string? Template { get; set; }
+
+    [CascadingParameter] internal IMapLayerSettingsHost? ParentLayer { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ParentLayer?.RegisterMarkerSettings(this);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing) ParentLayer?.UnregisterMarkerSettings(this);
+        base.Dispose(disposing);
+    }
+}

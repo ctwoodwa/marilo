@@ -47,6 +47,17 @@
   }
 }
 
+// ── Selected row ─────────────────────────────────────────────
+.mar-treelist__row--selected {
+  background: color-mix(in srgb, var(--marilo-color-primary, #0078d4) 10%, var(--marilo-color-surface, #ffffff));
+}
+
+// ── Focused row (keyboard navigation) ────────────────────────
+.mar-treelist__row--focused {
+  outline: 2px solid var(--marilo-color-primary, #0078d4);
+  outline-offset: -2px;
+}
+
 // ── Cell ──────────────────────────────────────────────────────
 .mar-treelist__td {
   padding: var(--marilo-space-sm, 8px) var(--marilo-space-md, 12px);
@@ -228,6 +239,14 @@
       background: var(--marilo-color-subtle-background, #484644);
       color: var(--marilo-color-text, #f3f2f1);
     }
+  }
+
+  .mar-treelist__row--selected {
+    background: color-mix(in srgb, var(--marilo-color-primary, #479ef5) 15%, var(--marilo-color-surface, #252423));
+  }
+
+  .mar-treelist__row--focused {
+    outline-color: var(--marilo-color-primary, #479ef5);
   }
 
   .mar-treelist__resize-handle {

@@ -13,6 +13,9 @@
     </CascadingValue>
 
     <table class="mar-treelist__table" role="treegrid"
+           tabindex="@(Navigable ? 0 : -1)"
+           @onkeydown="HandleKeyDown"
+           @onkeydown:preventDefault="Navigable"
            @onmousemove="OnResizeMouseMove"
            @onmouseup="OnResizeMouseUp"
            @onmousemove:preventDefault="_isResizing">
@@ -34,6 +37,8 @@
                     var thClass = $"mar-treelist__th{(isSortable ? " mar-treelist__th--sortable" : "")}{(isSorted ? $" {sortCss}" : "")}{dragOverCss}";
 
                     <th class="@thClass"
+                        role="columnheader"
+                        aria-sort="@(isSorted ? (_sortDirection == Marilo.Core.Enums.SortDirection.Ascending ? "ascending" : "descending") : "none")"
                         style="@GetColumnWidthStyle(col)"
                         draggable="@(Reorderable ? "true" : "false")"
                         @onclick="() => HandleHeaderClick(col)"
@@ -67,7 +72,7 @@
                 }
                 @if (EditMode == Marilo.Core.Enums.TreeListEditMode.Inline)
                 {
-                    <th class="mar-treelist__th mar-treelist__th--commands">Commands</th>
+                    <th class="mar-treelist__th mar-treelist__th--commands" role="columnheader">Commands</th>
                 }
             </tr>
             @if (FilterMode == Marilo.Core.Enums.TreeListFilterMode.FilterRow)
@@ -95,11 +100,21 @@
             }
         </thead>
         <tbody>
+            @{ _currentRenderRowIndex = 0; }
             @if (_isNewItem && _editingItem is not null)
             {
                 @RenderEditRow(_editingItem, 0)
             }
-            @RenderRows(_rootItems, 0)
+            @if (EnableVirtualization)
+            {
+                <Virtualize Items="FlattenedVisibleRows" ItemSize="@((float)ItemHeight)" Context="entry">
+                    @RenderSingleRow(entry.Node, entry.Depth)
+                </Virtualize>
+            }
+            else
+            {
+                @RenderRows(_rootItems, 0)
+            }
         </tbody>
     </table>
 

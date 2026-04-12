@@ -19,7 +19,7 @@ In this article:
 
 ## Basics
 
-To enable the filter menu, set the `FilterMode` property of the grid to `Marilo.Blazor.GanttFilterMode.FilterMenu`.
+To enable the filter menu, set the `FilterMode` property of the Gantt to `GanttFilterMode.FilterMenu`.
 
 The Gantt will render a button in the column header that you click to get a popup with filtering options. The popup lets you choose filter operator, filter criteria, to apply and clear the filter.
 

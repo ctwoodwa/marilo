@@ -71,3 +71,22 @@ public class TreeListReadEventArgs<TItem>
     /// <summary>Set this to the total number of top-level items (before paging) so the pager can calculate page count.</summary>
     public int Total { get; set; }
 }
+
+/// <summary>
+/// Event arguments for the <c>OnRowDrop</c> row drag-and-drop callback on <c>MariloTreeList</c>.
+/// </summary>
+/// <typeparam name="TItem">The row data type.</typeparam>
+public class TreeListRowDropEventArgs<TItem>
+{
+    /// <summary>The dragged item.</summary>
+    public TItem Item { get; set; } = default!;
+
+    /// <summary>The item over which the dragged item was dropped, or default if dropped at the end.</summary>
+    public TItem? DestinationItem { get; set; }
+
+    /// <summary>The drop position relative to the <see cref="DestinationItem"/>.</summary>
+    public Enums.TreeListDropPosition DropPosition { get; set; }
+
+    /// <summary>The flat index where the drop occurred.</summary>
+    public int DestinationIndex { get; set; }
+}

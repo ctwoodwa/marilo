@@ -1,5 +1,6 @@
 using Bunit;
 using Marilo.Components.DataDisplay;
+using Marilo.Components.DataDisplay.Scheduler;
 using Marilo.Core.Models;
 using Xunit;
 
@@ -228,5 +229,361 @@ public class MariloSchedulerTests : MariloTestBase
             .First(el => el.TextContent.Contains("Sprint Planning"));
 
         Assert.Contains("background-color:#0078d4", apptEl.GetAttribute("style"));
+    }
+
+    // ── Child view registration ─────────────────────────────────────
+
+    [Fact]
+    public void ChildViews_Register_And_Show_In_Toolbar()
+    {
+        var cut = Render<MariloScheduler>(p => p
+            .Add(s => s.CurrentDate, new DateTime(2026, 4, 13))
+            .Add(s => s.View, SchedulerView.Day)
+            .Add(s => s.ChildContent, builder =>
+            {
+                builder.OpenComponent<SchedulerDayView>(0);
+                builder.CloseComponent();
+                builder.OpenComponent<SchedulerWeekView>(1);
+                builder.CloseComponent();
+            }));
+
+        // Only Day and Week buttons should appear (no Month since it was not registered)
+        var buttons = cut.FindAll("button");
+        var viewButtons = buttons.Where(b =>
+            b.TextContent.Trim() == "Day" ||
+            b.TextContent.Trim() == "Week" ||
+            b.TextContent.Trim() == "Month").ToList();
+
+        Assert.Equal(2, viewButtons.Count);
+        Assert.Contains(viewButtons, b => b.TextContent.Trim() == "Day");
+        Assert.Contains(viewButtons, b => b.TextContent.Trim() == "Week");
+    }
+
+    [Fact]
+    public void CustomViewConfig_StartTime_Respected()
+    {
+        var cut = Render<MariloScheduler>(p => p
+            .Add(s => s.CurrentDate, new DateTime(2026, 4, 13))
+            .Add(s => s.View, SchedulerView.Day)
+            .Add(s => s.ChildContent, builder =>
+            {
+                builder.OpenComponent<SchedulerDayView>(0);
+                builder.AddAttribute(1, "StartTime", TimeSpan.FromHours(6));
+                builder.AddAttribute(2, "EndTime", TimeSpan.FromHours(22));
+                builder.CloseComponent();
+            }));
+
+        var timeLabels = cut.FindAll(".mar-scheduler__time-label");
+        // 6..22 inclusive = 17 labels
+        Assert.Equal(17, timeLabels.Count);
+        Assert.Contains("06:00", cut.Markup);
+        Assert.Contains("22:00", cut.Markup);
+    }
+
+    [Fact]
+    public void DefaultViews_When_No_Children()
+    {
+        var cut = Render<MariloScheduler>(p => p
+            .Add(s => s.CurrentDate, new DateTime(2026, 4, 13)));
+
+        // All three view buttons should appear by default
+        var buttons = cut.FindAll("button");
+        var viewButtons = buttons.Where(b =>
+            b.TextContent.Trim() == "Day" ||
+            b.TextContent.Trim() == "Week" ||
+            b.TextContent.Trim() == "Month").ToList();
+
+        Assert.Equal(3, viewButtons.Count);
+    }
+
+    [Fact]
+    public async Task ViewSwitching_With_ChildViews()
+    {
+        SchedulerView? newView = null;
+        var cut = Render<MariloScheduler>(p => p
+            .Add(s => s.CurrentDate, new DateTime(2026, 4, 13))
+            .Add(s => s.View, SchedulerView.Day)
+            .Add(s => s.ViewChanged, (SchedulerView v) => { newView = v; })
+            .Add(s => s.ChildContent, builder =>
+            {
+                builder.OpenComponent<SchedulerDayView>(0);
+                builder.CloseComponent();
+                builder.OpenComponent<SchedulerWeekView>(1);
+                builder.CloseComponent();
+            }));
+
+        var weekBtn = cut.FindAll("button").First(b => b.TextContent.Trim() == "Week");
+        await cut.InvokeAsync(() => weekBtn.Click());
+
+        Assert.Equal(SchedulerView.Week, newView);
+    }
+
+    [Fact]
+    public void WeekView_CustomFirstDayOfWeek_Respected()
+    {
+        var cut = Render<MariloScheduler>(p => p
+            .Add(s => s.CurrentDate, new DateTime(2026, 4, 13))
+            .Add(s => s.View, SchedulerView.Week)
+            .Add(s => s.ChildContent, builder =>
+            {
+                builder.OpenComponent<SchedulerWeekView>(0);
+                builder.AddAttribute(1, "FirstDayOfWeek", DayOfWeek.Monday);
+                builder.CloseComponent();
+            }));
+
+        // Week should start on Monday - first day column header
+        var dayHeaders = cut.FindAll(".mar-scheduler__day-column-header");
+        Assert.StartsWith("Mon", dayHeaders[0].TextContent.Trim());
+    }
+
+    [Fact]
+    public void ChildView_CustomLabel_Shows_In_Toolbar()
+    {
+        var cut = Render<MariloScheduler>(p => p
+            .Add(s => s.CurrentDate, new DateTime(2026, 4, 13))
+            .Add(s => s.View, SchedulerView.Day)
+            .Add(s => s.ChildContent, builder =>
+            {
+                builder.OpenComponent<SchedulerDayView>(0);
+                builder.AddAttribute(1, "Label", "Today");
+                builder.CloseComponent();
+            }));
+
+        var buttons = cut.FindAll("button");
+        Assert.Contains(buttons, b => b.TextContent.Trim() == "Today");
+    }
+
+    [Fact]
+    public void Height_Width_Applied_As_Style()
+    {
+        var cut = Render<MariloScheduler>(p => p
+            .Add(s => s.CurrentDate, new DateTime(2026, 4, 13))
+            .Add(s => s.Height, "600px")
+            .Add(s => s.Width, "100%"));
+
+        var root = cut.Find(".mar-scheduler");
+        var style = root.GetAttribute("style") ?? "";
+        Assert.Contains("height:600px", style);
+        Assert.Contains("width:100%", style);
+    }
+
+    [Fact]
+    public void MonthView_CustomFirstDayOfWeek_Weekday_Headers()
+    {
+        var cut = Render<MariloScheduler>(p => p
+            .Add(s => s.CurrentDate, new DateTime(2026, 4, 13))
+            .Add(s => s.View, SchedulerView.Month)
+            .Add(s => s.ChildContent, builder =>
+            {
+                builder.OpenComponent<SchedulerMonthView>(0);
+                builder.AddAttribute(1, "FirstDayOfWeek", DayOfWeek.Monday);
+                builder.CloseComponent();
+            }));
+
+        var headers = cut.FindAll(".mar-scheduler__weekday");
+        Assert.Equal(7, headers.Count);
+        // First header should be Mon
+        Assert.Equal("Mon", headers[0].TextContent.Trim());
+        // Last should be Sun
+        Assert.Equal("Sun", headers[6].TextContent.Trim());
+    }
+
+    // ── CRUD Editing ────────────────────────────────────────────────
+
+    [Fact]
+    public async Task EditForm_Renders_On_DoubleClick_When_Editable()
+    {
+        var cut = Render<MariloScheduler>(p => p
+            .Add(s => s.CurrentDate, new DateTime(2026, 4, 13))
+            .Add(s => s.View, SchedulerView.Month)
+            .Add(s => s.Appointments, SampleAppointments)
+            .Add(s => s.Editable, true));
+
+        // No edit form initially
+        Assert.Empty(cut.FindAll(".mar-scheduler__edit-form"));
+
+        // Double-click an appointment
+        var apptEl = cut.FindAll(".mar-scheduler__appointment")
+            .First(el => el.TextContent.Contains("Sprint Planning"));
+        await cut.InvokeAsync(() => apptEl.DoubleClick());
+
+        // Edit form should now render
+        var editForm = cut.FindAll(".mar-scheduler__edit-form");
+        Assert.Single(editForm);
+        Assert.Contains("Edit Appointment", cut.Markup);
+    }
+
+    [Fact]
+    public async Task EditForm_Does_Not_Render_When_Editable_Is_False()
+    {
+        var cut = Render<MariloScheduler>(p => p
+            .Add(s => s.CurrentDate, new DateTime(2026, 4, 13))
+            .Add(s => s.View, SchedulerView.Month)
+            .Add(s => s.Appointments, SampleAppointments)
+            .Add(s => s.Editable, false));
+
+        var apptEl = cut.FindAll(".mar-scheduler__appointment")
+            .First(el => el.TextContent.Contains("Sprint Planning"));
+        await cut.InvokeAsync(() => apptEl.DoubleClick());
+
+        Assert.Empty(cut.FindAll(".mar-scheduler__edit-form"));
+    }
+
+    [Fact]
+    public async Task OnUpdate_Fires_With_Updated_Appointment()
+    {
+        SchedulerAppointment? updated = null;
+        var cut = Render<MariloScheduler>(p => p
+            .Add(s => s.CurrentDate, new DateTime(2026, 4, 13))
+            .Add(s => s.View, SchedulerView.Month)
+            .Add(s => s.Appointments, SampleAppointments)
+            .Add(s => s.Editable, true)
+            .Add(s => s.OnUpdate, (SchedulerAppointment a) => { updated = a; }));
+
+        // Double-click to open edit form
+        var apptEl = cut.FindAll(".mar-scheduler__appointment")
+            .First(el => el.TextContent.Contains("Sprint Planning"));
+        await cut.InvokeAsync(() => apptEl.DoubleClick());
+
+        // Click Save
+        var saveBtn = cut.FindAll("button").First(b => b.TextContent.Trim() == "Save");
+        await cut.InvokeAsync(() => saveBtn.Click());
+
+        Assert.NotNull(updated);
+        Assert.Equal("Sprint Planning", updated.Title);
+    }
+
+    [Fact]
+    public async Task OnDelete_Fires_With_Correct_Appointment()
+    {
+        SchedulerAppointment? deleted = null;
+        var cut = Render<MariloScheduler>(p => p
+            .Add(s => s.CurrentDate, new DateTime(2026, 4, 13))
+            .Add(s => s.View, SchedulerView.Month)
+            .Add(s => s.Appointments, SampleAppointments)
+            .Add(s => s.Editable, true)
+            .Add(s => s.OnDelete, (SchedulerAppointment a) => { deleted = a; }));
+
+        // Double-click to open edit form
+        var apptEl = cut.FindAll(".mar-scheduler__appointment")
+            .First(el => el.TextContent.Contains("Sprint Planning"));
+        await cut.InvokeAsync(() => apptEl.DoubleClick());
+
+        // Click Delete
+        var deleteBtn = cut.FindAll("button").First(b => b.TextContent.Trim() == "Delete");
+        await cut.InvokeAsync(() => deleteBtn.Click());
+
+        Assert.NotNull(deleted);
+        Assert.Equal("Sprint Planning", deleted.Title);
+    }
+
+    [Fact]
+    public async Task EditForm_Closes_On_Cancel()
+    {
+        var cut = Render<MariloScheduler>(p => p
+            .Add(s => s.CurrentDate, new DateTime(2026, 4, 13))
+            .Add(s => s.View, SchedulerView.Month)
+            .Add(s => s.Appointments, SampleAppointments)
+            .Add(s => s.Editable, true));
+
+        var apptEl = cut.FindAll(".mar-scheduler__appointment")
+            .First(el => el.TextContent.Contains("Sprint Planning"));
+        await cut.InvokeAsync(() => apptEl.DoubleClick());
+
+        Assert.Single(cut.FindAll(".mar-scheduler__edit-form"));
+
+        var cancelBtn = cut.FindAll("button").First(b => b.TextContent.Trim() == "Cancel");
+        await cut.InvokeAsync(() => cancelBtn.Click());
+
+        Assert.Empty(cut.FindAll(".mar-scheduler__edit-form"));
+    }
+
+    // ── Appointment Template ────────────────────────────────────────
+
+    [Fact]
+    public void AppointmentTemplate_Renders_Custom_Content()
+    {
+        var cut = Render<MariloScheduler>(p => p
+            .Add(s => s.CurrentDate, new DateTime(2026, 4, 13))
+            .Add(s => s.View, SchedulerView.Month)
+            .Add(s => s.Appointments, SampleAppointments)
+            .Add(s => s.AppointmentTemplate, (SchedulerAppointment a) => builder =>
+            {
+                builder.OpenElement(0, "span");
+                builder.AddAttribute(1, "class", "custom-appt");
+                builder.AddContent(2, $"CUSTOM: {a.Title}");
+                builder.CloseElement();
+            }));
+
+        var customElements = cut.FindAll(".custom-appt");
+        Assert.True(customElements.Count >= 2, $"Expected at least 2 custom appointment elements, found {customElements.Count}");
+        Assert.Contains("CUSTOM: Sprint Planning", cut.Markup);
+    }
+
+    [Fact]
+    public void AppointmentTemplate_Used_In_WeekView()
+    {
+        var cut = Render<MariloScheduler>(p => p
+            .Add(s => s.CurrentDate, new DateTime(2026, 4, 13))
+            .Add(s => s.View, SchedulerView.Week)
+            .Add(s => s.Appointments, SampleAppointments)
+            .Add(s => s.AppointmentTemplate, (SchedulerAppointment a) => builder =>
+            {
+                builder.OpenElement(0, "em");
+                builder.AddAttribute(1, "class", "tpl-week");
+                builder.AddContent(2, a.Title);
+                builder.CloseElement();
+            }));
+
+        var tplElements = cut.FindAll(".tpl-week");
+        Assert.True(tplElements.Count >= 1, "Expected at least 1 templated appointment in week view");
+    }
+
+    // ── All-day row ─────────────────────────────────────────────────
+
+    [Fact]
+    public void AllDayRow_Renders_For_AllDay_Appointments_In_MonthView()
+    {
+        var cut = Render<MariloScheduler>(p => p
+            .Add(s => s.CurrentDate, new DateTime(2026, 4, 13))
+            .Add(s => s.View, SchedulerView.Month)
+            .Add(s => s.Appointments, SampleAppointments));
+
+        var allDayRow = cut.FindAll(".mar-scheduler__allday-row");
+        Assert.Single(allDayRow);
+        Assert.Contains("Multi-day Event", cut.Find(".mar-scheduler__allday-row").TextContent);
+    }
+
+    [Fact]
+    public void AllDayRow_Renders_In_WeekView()
+    {
+        var cut = Render<MariloScheduler>(p => p
+            .Add(s => s.CurrentDate, new DateTime(2026, 4, 10))
+            .Add(s => s.View, SchedulerView.Week)
+            .Add(s => s.Appointments, SampleAppointments));
+
+        var allDayRow = cut.FindAll(".mar-scheduler__allday-row");
+        Assert.Single(allDayRow);
+    }
+
+    [Fact]
+    public void AllDayRow_Does_Not_Render_Without_AllDay_Appointments()
+    {
+        var timedOnly = new List<SchedulerAppointment>
+        {
+            new()
+            {
+                Title = "Meeting",
+                Start = new DateTime(2026, 4, 13, 9, 0, 0),
+                End = new DateTime(2026, 4, 13, 10, 0, 0)
+            }
+        };
+
+        var cut = Render<MariloScheduler>(p => p
+            .Add(s => s.CurrentDate, new DateTime(2026, 4, 13))
+            .Add(s => s.View, SchedulerView.Month)
+            .Add(s => s.Appointments, timedOnly));
+
+        Assert.Empty(cut.FindAll(".mar-scheduler__allday-row"));
     }
 }

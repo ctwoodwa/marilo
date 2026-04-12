@@ -96,8 +96,43 @@
     </DemoSection>
 </PageSection>
 
+<PageSection Title="Selection">
+    <DemoSection Title="Task Selection" Description="Click a task row or bar to select it. The selected task is highlighted on the timeline. Use bind-SelectedTask for two-way binding or OnTaskSelect for event-based handling.">
+        <div class="demo-row" style="margin-bottom: 8px;">
+            <span>Selected: <strong>@(_selectedTask?.Title ?? "None")</strong></span>
+        </div>
+        <MariloGantt TItem="GanttTask"
+                     Data="@_tasks"
+                     IdField="Id"
+                     ParentIdField="ParentId"
+                     Height="350px"
+                     @bind-SelectedTask="_selectedTask">
+            <GanttColumns>
+                <GanttColumn TItem="GanttTask"
+                             Field="Title"
+                             Expandable="true"
+                             Width="200px"
+                             Title="Task" />
+                <GanttColumn TItem="GanttTask"
+                             Field="Start"
+                             Width="100px"
+                             DisplayFormat="{0:d}" />
+                <GanttColumn TItem="GanttTask"
+                             Field="End"
+                             Width="100px"
+                             DisplayFormat="{0:d}" />
+            </GanttColumns>
+            <GanttViews>
+                <GanttWeekView />
+                <GanttMonthView />
+            </GanttViews>
+        </MariloGantt>
+    </DemoSection>
+</PageSection>
+
 @code {
     private string? _filterText;
+    private GanttTask? _selectedTask;
 
     private List<GanttTask> _tasks = GenerateSampleData();
     private List<GanttTask> _depTasks = GenerateDependencyData();

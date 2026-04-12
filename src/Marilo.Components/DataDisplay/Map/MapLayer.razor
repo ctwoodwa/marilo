@@ -1,7 +1,13 @@
 @using Marilo.Core.Enums
 @inherits MariloComponentBase
+@implements IMapLayerSettingsHost
 
-@* MapLayer is a non-visual registration component — it renders no markup. *@
+@* MapLayer is a non-visual registration component — it renders no markup of its own,
+   but accepts child settings components via CascadingValue. *@
+
+<CascadingValue Value="(IMapLayerSettingsHost)this" IsFixed="true">
+    @ChildContent
+</CascadingValue>
 
 @code {
     /// <summary>The type of map layer (Tile, Marker, Shape, Bubble).</summary>
@@ -40,10 +46,59 @@
     /// <summary>Unique identifier for this layer. Auto-generated if not set.</summary>
     [Parameter] public string? LayerId { get; set; }
 
+    /// <summary>Child content for settings components (e.g. MapLayerMarkerSettings, MapLayerBubbleSettings, MapLayerShapeSettings).</summary>
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
     [CascadingParameter] internal IMapLayerHost? ParentMap { get; set; }
 
     internal string EffectiveLayerId => LayerId ?? _autoId;
     private readonly string _autoId = $"mar-layer-{Guid.NewGuid():N}";
+
+    private MapLayerMarkerSettings? _markerSettings;
+    private MapLayerBubbleSettings? _bubbleSettings;
+    private MapLayerShapeSettings? _shapeSettings;
+
+    /// <summary>The registered marker settings child component, if any.</summary>
+    internal MapLayerMarkerSettings? MarkerSettings => _markerSettings;
+
+    /// <summary>The registered bubble settings child component, if any.</summary>
+    internal MapLayerBubbleSettings? BubbleSettings => _bubbleSettings;
+
+    /// <summary>The registered shape settings child component, if any.</summary>
+    internal MapLayerShapeSettings? ShapeSettings => _shapeSettings;
+
+    void IMapLayerSettingsHost.RegisterMarkerSettings(MapLayerMarkerSettings settings)
+    {
+        _markerSettings = settings;
+    }
+
+    void IMapLayerSettingsHost.UnregisterMarkerSettings(MapLayerMarkerSettings settings)
+    {
+        if (ReferenceEquals(_markerSettings, settings))
+            _markerSettings = null;
+    }
+
+    void IMapLayerSettingsHost.RegisterBubbleSettings(MapLayerBubbleSettings settings)
+    {
+        _bubbleSettings = settings;
+    }
+
+    void IMapLayerSettingsHost.UnregisterBubbleSettings(MapLayerBubbleSettings settings)
+    {
+        if (ReferenceEquals(_bubbleSettings, settings))
+            _bubbleSettings = null;
+    }
+
+    void IMapLayerSettingsHost.RegisterShapeSettings(MapLayerShapeSettings settings)
+    {
+        _shapeSettings = settings;
+    }
+
+    void IMapLayerSettingsHost.UnregisterShapeSettings(MapLayerShapeSettings settings)
+    {
+        if (ReferenceEquals(_shapeSettings, settings))
+            _shapeSettings = null;
+    }
 
     /// <summary>
     /// Creates a <see cref="MapLayerDescriptor"/> from the current parameter values.
@@ -56,6 +111,29 @@
             geoJsonData = geoJson;
         }
 
+        MapLayerStyleDescriptor? style = null;
+
+        if (_bubbleSettings is not null)
+        {
+            style = new MapLayerStyleDescriptor(
+                FillColor: _bubbleSettings.FillColor,
+                FillOpacity: _bubbleSettings.FillOpacity,
+                StrokeColor: _bubbleSettings.StrokeColor,
+                StrokeWidth: _bubbleSettings.StrokeWidth,
+                MinSize: _bubbleSettings.MinSize,
+                MaxSize: _bubbleSettings.MaxSize);
+        }
+        else if (_shapeSettings is not null)
+        {
+            style = new MapLayerStyleDescriptor(
+                FillColor: _shapeSettings.FillColor,
+                FillOpacity: _shapeSettings.FillOpacity,
+                StrokeColor: _shapeSettings.StrokeColor,
+                StrokeWidth: _shapeSettings.StrokeWidth,
+                MinSize: null,
+                MaxSize: null);
+        }
+
         return new MapLayerDescriptor(
             Id: EffectiveLayerId,
             Type: Type,
@@ -63,13 +141,14 @@
             Subdomains: Subdomains,
             Attribution: Attribution,
             GeoJsonData: geoJsonData,
+            Data: (Type is MapLayerType.Marker or MapLayerType.Bubble) ? Data : null,
             LocationField: LocationField,
             TitleField: TitleField,
             ValueField: ValueField,
             Opacity: Opacity,
             MinZoom: MinZoom,
             MaxZoom: MaxZoom,
-            Style: null);
+            Style: style);
     }
 
     protected override void OnInitialized()

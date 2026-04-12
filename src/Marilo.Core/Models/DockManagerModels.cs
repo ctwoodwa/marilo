@@ -70,6 +70,18 @@ public class DockPaneDescriptor
     public double Size { get; set; } = 1.0;
 
     /// <summary>
+    /// Minimum width constraint for the pane (e.g. "100px"). Enforced during resize.
+    /// Defaults to "100px".
+    /// </summary>
+    public string MinWidth { get; set; } = "100px";
+
+    /// <summary>
+    /// Minimum height constraint for the pane (e.g. "100px"). Enforced during resize.
+    /// Defaults to "100px".
+    /// </summary>
+    public string MinHeight { get; set; } = "100px";
+
+    /// <summary>
     /// Whether the pane is in floating (overlay) mode. Defaults to false.
     /// </summary>
     public bool IsFloating { get; set; }
@@ -115,4 +127,20 @@ public class DockTabReorderEventArgs
 
     /// <summary>The new index of the tab after the drop.</summary>
     public int NewIndex { get; set; }
+}
+
+/// <summary>
+/// Event arguments for the <c>OnPaneMoved</c> callback, fired when a tab is
+/// moved from one tab group to another via drag-and-drop.
+/// </summary>
+public class DockPaneMoveEventArgs
+{
+    /// <summary>The Id of the pane (tab) that was moved.</summary>
+    public string PaneId { get; set; } = string.Empty;
+
+    /// <summary>The Id of the source tab group from which the pane was moved.</summary>
+    public string SourceGroupId { get; set; } = string.Empty;
+
+    /// <summary>The Id of the target tab group to which the pane was moved.</summary>
+    public string TargetGroupId { get; set; } = string.Empty;
 }

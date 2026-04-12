@@ -93,7 +93,7 @@ The Grid exposes several relevant events. You can find related examples in the [
 
 ## Root-level PagerButtonCount Parameter
 
-In addition to the nested `GridPagerSettings` approach shown below, `MariloGrid` exposes a simpler root-level `PagerButtonCount` parameter that controls the maximum number of page buttons rendered in the pager without requiring any `GridSettings` configuration. This is the currently-implemented pager button count parameter on `MariloGrid` directly.
+In addition to the nested `GridPagerSettings` approach shown below, `MariloDataGrid` exposes a simpler root-level `PagerButtonCount` parameter that controls the maximum number of page buttons rendered in the pager without requiring any `GridSettings` configuration. This is the currently-implemented pager button count parameter on `MariloDataGrid` directly.
 
 ### Parameters
 
@@ -101,7 +101,7 @@ In addition to the nested `GridPagerSettings` approach shown below, `MariloGrid`
 | --- | --- | --- |
 | `PagerButtonCount` | `int` | The maximum number of page buttons to show in the pager. Defaults to `5`. |
 
->caption Set the root-level PagerButtonCount on MariloGrid
+>caption Set the root-level PagerButtonCount on MariloDataGrid
 
 ````RAZOR
 <MariloDataGrid Data="@GridData" Pageable="true" PageSize="5" PagerButtonCount="7">

@@ -26,6 +26,7 @@ internal record MapLayerDescriptor(
     string[]? Subdomains,
     string? Attribution,
     string? GeoJsonData,
+    object? Data,
     string? LocationField,
     string? TitleField,
     string? ValueField,

@@ -4,6 +4,7 @@ using Marilo.Core.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.Web.Virtualization;
 
 namespace Marilo.Components.DataGrid;
 
@@ -34,6 +35,9 @@ public partial class MariloTreeList<TItem> : MariloComponentBase, IColumnHost, I
     [Parameter] public EventCallback<TreeListCommandEventArgs<TItem>> OnUpdate { get; set; }
     [Parameter] public EventCallback<TreeListCommandEventArgs<TItem>> OnDelete { get; set; }
 
+    /// <summary>When true, keyboard navigation is enabled on the tree list (Arrow keys, Enter, Escape, Home, End).</summary>
+    [Parameter] public bool Navigable { get; set; }
+
     /// <summary>When true, columns can be resized by dragging the right edge of header cells.</summary>
     [Parameter] public bool Resizable { get; set; }
 
@@ -62,6 +66,18 @@ public partial class MariloTreeList<TItem> : MariloComponentBase, IColumnHost, I
     /// </summary>
     [Parameter] public EventCallback<TreeListReadEventArgs<TItem>> OnRead { get; set; }
 
+    /// <summary>When true, uses Blazor's built-in Virtualize component for the row list instead of rendering all rows.</summary>
+    [Parameter] public bool EnableVirtualization { get; set; }
+
+    /// <summary>The pixel height of each row, used by the Virtualize component's ItemSize. Default is 36.</summary>
+    [Parameter] public int ItemHeight { get; set; } = 36;
+
+    /// <summary>When true, data rows are draggable for reordering within the tree.</summary>
+    [Parameter] public bool RowDraggable { get; set; }
+
+    /// <summary>Fires when a row is dropped onto a new position. The consumer must update the data source.</summary>
+    [Parameter] public EventCallback<TreeListRowDropEventArgs<TItem>> OnRowDropped { get; set; }
+
     private List<TreeListNode> _rootItems = new();
     private HashSet<string> _expandedIds = new();
     private string? _sortField;
@@ -74,7 +90,7 @@ public partial class MariloTreeList<TItem> : MariloComponentBase, IColumnHost, I
     private readonly List<MariloColumnBase> _registeredColumns = new();
     private int _totalItemCount;
     private CancellationTokenSource? _readCts;
-    private record TreeListNode(string Id, TItem Item, List<TreeListNode> Children, bool HasChildren);
+    internal record TreeListNode(string Id, TItem Item, List<TreeListNode> Children, bool HasChildren);
 
     /// <summary>Total number of pages based on top-level item count and page size.</summary>
     internal int TotalPages => Pageable && PageSize > 0 ? Math.Max(1, (int)Math.Ceiling((double)_totalItemCount / PageSize)) : 1;
@@ -347,6 +363,8 @@ public partial class MariloTreeList<TItem> : MariloComponentBase, IColumnHost, I
         if (OnSelectionChanged.HasDelegate) await OnSelectionChanged.InvokeAsync(new TreeListSelectionEventArgs<TItem> { SelectedItems = selectedList });
     }
 
+    private int _currentRenderRowIndex;
+
     private RenderFragment RenderRows(List<TreeListNode> nodes, int depth) => builder =>
     {
         int seq = 0;
@@ -358,18 +376,35 @@ public partial class MariloTreeList<TItem> : MariloComponentBase, IColumnHost, I
             var nodeId = node.Id; var nodeItem = node.Item;
             var isSelected = IsItemSelected(node.Item);
             var isEditingRow = IsEditing(node.Item);
+            var isFocused = Navigable && _focusedRowIndex == _currentRenderRowIndex;
+            var rowIndex = _currentRenderRowIndex;
+            _currentRenderRowIndex++;
             var rowCss = isEditingRow ? "mar-treelist__row mar-treelist__row--editing" : isSelected ? "mar-treelist__row mar-treelist__row--selected" : "mar-treelist__row";
+            if (isFocused) rowCss += " mar-treelist__row--focused";
+            if (RowDraggable && _rowDragSourceIndex == rowIndex) rowCss += " mar-treelist__row--dragging";
+            if (RowDraggable && _rowDragOverIndex == rowIndex && _rowDragSourceIndex != rowIndex) rowCss += " mar-treelist__row--drop-target";
             builder.OpenElement(seq++, "tr");
             builder.AddAttribute(seq++, "class", rowCss);
             builder.AddAttribute(seq++, "role", "row");
             builder.AddAttribute(seq++, "aria-level", depth + 1);
+            if (hasKids) builder.AddAttribute(seq++, "aria-expanded", isExpanded ? "true" : "false");
             if (isSelected) builder.AddAttribute(seq++, "aria-selected", "true");
+            if (RowDraggable) builder.AddAttribute(seq++, "draggable", "true");
             builder.AddAttribute(seq++, "onclick", EventCallback.Factory.Create(this, () => HandleRowClick(node.Item)));
             if (EditMode == TreeListEditMode.Inline) builder.AddAttribute(seq++, "ondblclick", EventCallback.Factory.Create(this, () => HandleRowDoubleClick(node.Item)));
+            if (RowDraggable)
+            {
+                var ri = rowIndex; var item = node.Item;
+                builder.AddAttribute(seq++, "ondragstart", EventCallback.Factory.Create<DragEventArgs>(this, e => OnRowDragStart(e, ri)));
+                builder.AddAttribute(seq++, "ondragover", EventCallback.Factory.Create<DragEventArgs>(this, e => OnRowDragOver(e, ri)));
+                builder.AddAttribute(seq++, "ondragover:preventDefault", true);
+                builder.AddAttribute(seq++, "ondrop", EventCallback.Factory.Create<DragEventArgs>(this, e => OnRowDrop(e, ri, item)));
+                builder.AddAttribute(seq++, "ondragend", EventCallback.Factory.Create<DragEventArgs>(this, e => OnRowDragEnd(e)));
+            }
             for (var ci = 0; ci < columns.Count; ci++)
             {
                 var col = columns[ci]; var cellTemplate = (col as MariloTreeListColumn)?.Template;
-                builder.OpenElement(seq++, "td"); builder.AddAttribute(seq++, "class", "mar-treelist__td");
+                builder.OpenElement(seq++, "td"); builder.AddAttribute(seq++, "class", "mar-treelist__td"); builder.AddAttribute(seq++, "role", "gridcell");
                 var tdStyle = GetColumnWidthStyle(col);
                 if (!string.IsNullOrEmpty(tdStyle)) builder.AddAttribute(seq++, "style", tdStyle);
                 if (isEditingRow)
@@ -410,7 +445,7 @@ public partial class MariloTreeList<TItem> : MariloComponentBase, IColumnHost, I
             }
             if (EditMode == TreeListEditMode.Inline)
             {
-                builder.OpenElement(seq++, "td"); builder.AddAttribute(seq++, "class", "mar-treelist__td mar-treelist__td--commands");
+                builder.OpenElement(seq++, "td"); builder.AddAttribute(seq++, "class", "mar-treelist__td mar-treelist__td--commands"); builder.AddAttribute(seq++, "role", "gridcell");
                 if (isEditingRow)
                 {
                     builder.OpenElement(seq++, "button"); builder.AddAttribute(seq++, "type", "button"); builder.AddAttribute(seq++, "class", "mar-treelist__cmd-btn mar-treelist__cmd-btn--save"); builder.AddAttribute(seq++, "onclick", EventCallback.Factory.Create(this, SaveEditInternalAsync)); builder.AddEventStopPropagationAttribute(seq++, "onclick", true); builder.AddContent(seq++, "Save"); builder.CloseElement();
@@ -427,6 +462,52 @@ public partial class MariloTreeList<TItem> : MariloComponentBase, IColumnHost, I
         }
     };
 
+    /// <summary>Renders a single row for use with virtualization (flattened visible rows).</summary>
+    internal RenderFragment RenderSingleRow(TreeListNode node, int depth) => builder =>
+    {
+        int seq = 0;
+        var columns = OrderedColumns;
+        var isExpanded = _expandedIds.Contains(node.Id);
+        var hasKids = node.Children.Any() || node.HasChildren;
+        var nodeId = node.Id; var nodeItem = node.Item;
+        var isSelected = IsItemSelected(node.Item);
+        var isEditingRow = IsEditing(node.Item);
+        var rowCss = isEditingRow ? "mar-treelist__row mar-treelist__row--editing" : isSelected ? "mar-treelist__row mar-treelist__row--selected" : "mar-treelist__row";
+        builder.OpenElement(seq++, "tr");
+        builder.AddAttribute(seq++, "class", rowCss);
+        builder.AddAttribute(seq++, "style", $"height:{ItemHeight}px;");
+        builder.AddAttribute(seq++, "role", "row");
+        builder.AddAttribute(seq++, "aria-level", depth + 1);
+        if (hasKids) builder.AddAttribute(seq++, "aria-expanded", isExpanded ? "true" : "false");
+        if (isSelected) builder.AddAttribute(seq++, "aria-selected", "true");
+        if (RowDraggable) builder.AddAttribute(seq++, "draggable", "true");
+        builder.AddAttribute(seq++, "onclick", EventCallback.Factory.Create(this, () => HandleRowClick(node.Item)));
+        if (EditMode == TreeListEditMode.Inline) builder.AddAttribute(seq++, "ondblclick", EventCallback.Factory.Create(this, () => HandleRowDoubleClick(node.Item)));
+        for (var ci = 0; ci < columns.Count; ci++)
+        {
+            var col = columns[ci]; var cellTemplate = (col as MariloTreeListColumn)?.Template;
+            builder.OpenElement(seq++, "td"); builder.AddAttribute(seq++, "class", "mar-treelist__td"); builder.AddAttribute(seq++, "role", "gridcell");
+            var tdStyle = GetColumnWidthStyle(col);
+            if (!string.IsNullOrEmpty(tdStyle)) builder.AddAttribute(seq++, "style", tdStyle);
+            if (ci == 0)
+            {
+                builder.OpenElement(seq++, "span"); builder.AddAttribute(seq++, "style", $"padding-left: {depth * 20}px; display: inline-flex; align-items: center; gap: 4px;");
+                if (hasKids) { builder.OpenElement(seq++, "button"); builder.AddAttribute(seq++, "type", "button"); builder.AddAttribute(seq++, "class", "mar-tree-item__toggle"); builder.AddAttribute(seq++, "onclick", EventCallback.Factory.Create(this, () => ToggleExpand(nodeId, nodeItem))); builder.AddEventStopPropagationAttribute(seq++, "onclick", true); builder.AddContent(seq++, isExpanded ? "\u25BC" : "\u25B6"); builder.CloseElement(); }
+                else { builder.OpenElement(seq++, "span"); builder.AddAttribute(seq++, "style", "width: 20px;"); builder.CloseElement(); }
+                if (cellTemplate is not null) builder.AddContent(seq++, cellTemplate((object)node.Item!));
+                else builder.AddContent(seq++, col.GetDisplayValue(node.Item));
+                builder.CloseElement();
+            }
+            else
+            {
+                if (cellTemplate is not null) builder.AddContent(seq++, cellTemplate((object)node.Item!));
+                else builder.AddContent(seq++, col.GetDisplayValue(node.Item));
+            }
+            builder.CloseElement();
+        }
+        builder.CloseElement();
+    };
+
     private RenderFragment RenderEditRow(TItem item, int depth) => builder =>
     {
         int seq = 0; var columns = OrderedColumns;
@@ -434,14 +515,14 @@ public partial class MariloTreeList<TItem> : MariloComponentBase, IColumnHost, I
         for (var ci = 0; ci < columns.Count; ci++)
         {
             var col = columns[ci]; var fieldName = col.Field; var currentVal = GetEditValue(fieldName)?.ToString() ?? "";
-            builder.OpenElement(seq++, "td"); builder.AddAttribute(seq++, "class", "mar-treelist__td");
+            builder.OpenElement(seq++, "td"); builder.AddAttribute(seq++, "class", "mar-treelist__td"); builder.AddAttribute(seq++, "role", "gridcell");
             builder.OpenElement(seq++, "input"); builder.AddAttribute(seq++, "type", "text"); builder.AddAttribute(seq++, "class", "mar-treelist__edit-input"); builder.AddAttribute(seq++, "value", currentVal);
             builder.AddAttribute(seq++, "oninput", EventCallback.Factory.Create<ChangeEventArgs>(this, e => SetEditValue(fieldName, e.Value?.ToString() ?? "")));
             builder.CloseElement(); builder.CloseElement();
         }
         if (EditMode == TreeListEditMode.Inline)
         {
-            builder.OpenElement(seq++, "td"); builder.AddAttribute(seq++, "class", "mar-treelist__td mar-treelist__td--commands");
+            builder.OpenElement(seq++, "td"); builder.AddAttribute(seq++, "class", "mar-treelist__td mar-treelist__td--commands"); builder.AddAttribute(seq++, "role", "gridcell");
             builder.OpenElement(seq++, "button"); builder.AddAttribute(seq++, "type", "button"); builder.AddAttribute(seq++, "class", "mar-treelist__cmd-btn mar-treelist__cmd-btn--save"); builder.AddAttribute(seq++, "onclick", EventCallback.Factory.Create(this, SaveEditInternalAsync)); builder.AddContent(seq++, "Save"); builder.CloseElement();
             builder.OpenElement(seq++, "button"); builder.AddAttribute(seq++, "type", "button"); builder.AddAttribute(seq++, "class", "mar-treelist__cmd-btn mar-treelist__cmd-btn--cancel"); builder.AddAttribute(seq++, "onclick", EventCallback.Factory.Create(this, CancelEditInternal)); builder.AddContent(seq++, "Cancel"); builder.CloseElement();
             builder.CloseElement();
@@ -631,4 +712,179 @@ public partial class MariloTreeList<TItem> : MariloComponentBase, IColumnHost, I
             await InvokeAsync(StateHasChanged);
         }
     }
+
+    // ── Keyboard navigation ─────────────────────────────────────
+    internal int _focusedRowIndex = -1;
+
+    /// <summary>Collects all visible rows (flattened, respecting expand state) for keyboard navigation.</summary>
+    private List<(TreeListNode Node, int Depth)> GetFlattenedVisibleRows()
+    {
+        var result = new List<(TreeListNode, int)>();
+        CollectVisibleRows(_rootItems, 0, result);
+        return result;
+    }
+
+    private void CollectVisibleRows(List<TreeListNode> nodes, int depth, List<(TreeListNode, int)> result)
+    {
+        foreach (var node in nodes)
+        {
+            result.Add((node, depth));
+            if (_expandedIds.Contains(node.Id) && node.Children.Any())
+                CollectVisibleRows(node.Children, depth + 1, result);
+        }
+    }
+
+    internal async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (!Navigable) return;
+
+        var visibleRows = GetFlattenedVisibleRows();
+        if (visibleRows.Count == 0) return;
+
+        switch (e.Key)
+        {
+            case "ArrowDown":
+                _focusedRowIndex = Math.Min(_focusedRowIndex + 1, visibleRows.Count - 1);
+                break;
+
+            case "ArrowUp":
+                _focusedRowIndex = Math.Max(_focusedRowIndex - 1, 0);
+                break;
+
+            case "ArrowRight":
+                if (_focusedRowIndex >= 0 && _focusedRowIndex < visibleRows.Count)
+                {
+                    var (node, _) = visibleRows[_focusedRowIndex];
+                    var hasKids = node.Children.Any() || node.HasChildren;
+                    if (hasKids && !_expandedIds.Contains(node.Id))
+                    {
+                        _expandedIds.Add(node.Id);
+                        if (OnExpand.HasDelegate) await OnExpand.InvokeAsync(node.Item);
+                    }
+                    else if (hasKids && _expandedIds.Contains(node.Id))
+                    {
+                        // Move to first child
+                        if (_focusedRowIndex + 1 < visibleRows.Count)
+                            _focusedRowIndex++;
+                    }
+                }
+                break;
+
+            case "ArrowLeft":
+                if (_focusedRowIndex >= 0 && _focusedRowIndex < visibleRows.Count)
+                {
+                    var (node, depth) = visibleRows[_focusedRowIndex];
+                    var hasKids = node.Children.Any() || node.HasChildren;
+                    if (hasKids && _expandedIds.Contains(node.Id))
+                    {
+                        _expandedIds.Remove(node.Id);
+                        if (OnCollapse.HasDelegate) await OnCollapse.InvokeAsync(node.Item);
+                    }
+                    else if (depth > 0)
+                    {
+                        // Move to parent
+                        for (var i = _focusedRowIndex - 1; i >= 0; i--)
+                        {
+                            if (visibleRows[i].Depth < depth)
+                            {
+                                _focusedRowIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+
+            case "Enter":
+                if (_focusedRowIndex >= 0 && _focusedRowIndex < visibleRows.Count)
+                {
+                    var (node, _) = visibleRows[_focusedRowIndex];
+                    if (EditMode == TreeListEditMode.Inline && IsEditing(node.Item))
+                    {
+                        // Already editing — no-op, let input handle Enter
+                    }
+                    else if (EditMode == TreeListEditMode.Inline)
+                    {
+                        BeginEdit(node.Item);
+                    }
+                    else
+                    {
+                        await HandleRowClick(node.Item);
+                    }
+                }
+                break;
+
+            case "Escape":
+                if (_editingItem is not null)
+                {
+                    CancelEditInternal();
+                }
+                break;
+
+            case "Home":
+                _focusedRowIndex = 0;
+                break;
+
+            case "End":
+                _focusedRowIndex = visibleRows.Count - 1;
+                break;
+
+            default:
+                return; // Don't re-render for unhandled keys
+        }
+    }
+
+    // ── Row drag-and-drop ───────────────────────────────────────
+    private int _rowDragSourceIndex = -1;
+    private int _rowDragOverIndex = -1;
+
+    private void OnRowDragStart(DragEventArgs e, int flatIndex)
+    {
+        if (!RowDraggable) return;
+        _rowDragSourceIndex = flatIndex;
+    }
+
+    private void OnRowDragOver(DragEventArgs e, int flatIndex)
+    {
+        if (!RowDraggable) return;
+        _rowDragOverIndex = flatIndex;
+    }
+
+    private async Task OnRowDrop(DragEventArgs e, int flatIndex, TItem targetItem)
+    {
+        if (!RowDraggable || _rowDragSourceIndex < 0 || _rowDragSourceIndex == flatIndex)
+        {
+            _rowDragSourceIndex = -1;
+            _rowDragOverIndex = -1;
+            return;
+        }
+
+        var visibleRows = GetFlattenedVisibleRows();
+        TItem? sourceItem = _rowDragSourceIndex < visibleRows.Count ? visibleRows[_rowDragSourceIndex].Node.Item : default;
+        if (sourceItem is null) { _rowDragSourceIndex = -1; _rowDragOverIndex = -1; return; }
+
+        var position = flatIndex > _rowDragSourceIndex ? TreeListDropPosition.After : TreeListDropPosition.Before;
+        _rowDragSourceIndex = -1;
+        _rowDragOverIndex = -1;
+
+        if (OnRowDropped.HasDelegate)
+        {
+            await OnRowDropped.InvokeAsync(new TreeListRowDropEventArgs<TItem>
+            {
+                Item = sourceItem,
+                DestinationItem = targetItem,
+                DropPosition = position,
+                DestinationIndex = flatIndex
+            });
+        }
+    }
+
+    private void OnRowDragEnd(DragEventArgs e)
+    {
+        _rowDragSourceIndex = -1;
+        _rowDragOverIndex = -1;
+    }
+
+    /// <summary>Flattened visible rows for virtualization.</summary>
+    internal List<(TreeListNode Node, int Depth)> FlattenedVisibleRows => GetFlattenedVisibleRows();
 }
