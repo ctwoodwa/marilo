@@ -27,10 +27,10 @@
 }
 
 .mar-datagrid-row:last-child { border-bottom: none; }
-.mar-datagrid-row:hover { background: var(--marilo-color-surface-hover, #f3f2f1); }
-.mar-datagrid-row--selected { background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 10%, var(--marilo-color-surface, #ffffff)); }
-.mar-datagrid-row--selected:hover { background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 15%, var(--marilo-color-surface, #ffffff)); }
-.mar-datagrid-row--striped:nth-child(even) { background: var(--marilo-color-stripe, #faf9f8); }
+.mar-datagrid-row:hover { background: var(--marilo-color-surface); }
+.mar-datagrid-row--selected { background: var(--marilo-color-primary-light); }
+.mar-datagrid-row--selected:hover { background: var(--marilo-color-primary-light); }
+.mar-datagrid-row--striped:nth-child(even) { background: var(--marilo-color-surface); }
 
 .mar-datagrid-cell {
     flex: 1;
@@ -173,7 +173,7 @@
     border-radius: 4px;
     padding: 0.4rem 0.55rem;
     font-size: 0.9rem;
-    background: var(--marilo-color-surface, #ffffff);
+    background: var(--marilo-color-surface);
 }
 
 .mar-datagrid .mar-datagrid-filter-menu-actions {
@@ -186,6 +186,137 @@
     border: 1px solid var(--marilo-color-border, #c8c6c4);
     border-radius: 6px;
     padding: 0.35rem 0.75rem;
-    background: var(--marilo-color-surface, #ffffff);
+    background: var(--marilo-color-surface);
     cursor: pointer;
+}
+
+// =============================================================================
+// Unstyled selectors (DG-08 Phase 5)
+// =============================================================================
+
+.mar-datagrid-pager-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 2rem;
+    padding: 0 var(--marilo-space-xs);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-sm);
+    background: var(--marilo-color-surface);
+    color: var(--marilo-color-text);
+    cursor: pointer;
+    transition: background var(--marilo-transition-fast), color var(--marilo-transition-fast);
+
+    &:hover { background: var(--marilo-color-surface-hover); }
+    &--active { background: var(--marilo-color-primary); color: var(--marilo-color-on-primary); border-color: var(--marilo-color-primary); }
+    &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+.mar-datagrid-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--marilo-space-xl) var(--marilo-space-md);
+    color: var(--marilo-color-text-muted);
+    font-size: var(--marilo-font-size-base);
+}
+
+.mar-datagrid-loading-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--marilo-color-surface) 70%, transparent);
+    z-index: 10;
+}
+
+.mar-datagrid-popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mar-datagrid-sort-indicator {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0.25rem;
+    color: var(--marilo-color-primary);
+    font-size: 0.75rem;
+}
+
+.mar-datagrid-validation-summary {
+    padding: var(--marilo-space-sm) var(--marilo-space-md);
+    border: 1px solid var(--marilo-color-danger, #d92626);
+    border-radius: var(--marilo-radius-sm);
+    background: color-mix(in srgb, var(--marilo-color-danger, #d92626) 8%, var(--marilo-color-surface));
+    color: var(--marilo-color-danger, #d92626);
+    font-size: var(--marilo-font-size-sm);
+}
+
+.mar-datagrid-footer-row {
+    display: flex;
+    align-items: center;
+    background: var(--marilo-color-surface);
+    border-top: 1px solid var(--marilo-color-border);
+    font-weight: var(--marilo-font-weight-semibold);
+}
+
+.mar-datagrid-detail-row {
+    background: var(--marilo-color-surface);
+    border-bottom: 1px solid var(--marilo-color-border);
+
+    > td, > .mar-datagrid-cell {
+        padding: var(--marilo-space-sm) var(--marilo-space-md);
+    }
+}
+
+.mar-datagrid-col--locked {
+    position: sticky;
+    z-index: 2;
+    background: var(--marilo-color-surface);
+    border-right: 2px solid var(--marilo-color-border);
+}
+
+.mar-datagrid-searchbox {
+    display: flex;
+    align-items: center;
+    gap: var(--marilo-space-sm);
+    padding: var(--marilo-space-xs) var(--marilo-space-md);
+    border-bottom: 1px solid var(--marilo-color-border);
+
+    input {
+        flex: 1;
+        border: 1px solid var(--marilo-color-border);
+        border-radius: var(--marilo-radius-sm);
+        padding: 0.3rem 0.6rem;
+        font-size: var(--marilo-font-size-base);
+        background: var(--marilo-color-surface);
+        color: var(--marilo-color-text);
+
+        &::placeholder { color: var(--marilo-color-text-muted); }
+        &:focus { outline: none; border-color: var(--marilo-color-primary); }
+    }
+}
+
+// =============================================================================
+// Focus ring rules (DG-10 Phase 5)
+// =============================================================================
+
+.mar-datagrid-cell:focus,
+.mar-datagrid-header-cell:focus {
+    outline: 2px solid var(--marilo-color-focus-ring, var(--marilo-color-primary));
+    outline-offset: -2px;
+    position: relative;
+    z-index: 1;
+}
+
+.mar-datagrid-row--focused {
+    outline: 2px solid var(--marilo-color-focus-ring, var(--marilo-color-primary));
+    outline-offset: -1px;
 }
