@@ -16,7 +16,7 @@
                 + (isDropTarget ? " mar-dockmanager__tab--drop-target" : "");
             <div class="@tabClass"
                  draggable="true"
-                 @onclick="() => SetActive(paneId)"
+                 @onclick="() => ActivatePane(paneId)"
                  @ondragstart="() => OnTabDragStart(paneId)"
                  @ondragover:preventDefault="true"
                  @ondragover="() => OnTabDragOver(paneId)"
@@ -29,7 +29,7 @@
                     <button type="button" class="mar-dockmanager__action" title="Float" @onclick:stopPropagation="true" @onclick="() => ToggleFloat(paneId)">&#8599;</button>
                     @if (pane.Closable)
                     {
-                        <button type="button" class="mar-dockmanager__action" title="Close" @onclick:stopPropagation="true" @onclick="() => ClosePane(paneId)">&times;</button>
+                        <button type="button" class="mar-dockmanager__action mar-dockmanager__action--close" title="Close" @onclick:stopPropagation="true" @onclick="() => ClosePane(paneId)">&times;</button>
                     }
                 </span>
             </div>
@@ -79,7 +79,7 @@
     [Parameter] public string? Width { get; set; }
 
     /// <summary>Callback invoked when a pane is closed.</summary>
-    [Parameter] public EventCallback<string> OnPaneClose { get; set; }
+    [Parameter] public EventCallback<string> OnPaneClosed { get; set; }
 
     /// <summary>Callback invoked when a pane is pinned.</summary>
     [Parameter] public EventCallback<string> OnPanePin { get; set; }
@@ -87,10 +87,18 @@
     /// <summary>Callback invoked when a pane is floated or docked.</summary>
     [Parameter] public EventCallback<string> OnPaneFloat { get; set; }
 
+    /// <summary>Callback invoked when a pane becomes the active tab.</summary>
+    [Parameter] public EventCallback<string> OnPaneActivated { get; set; }
+
     /// <summary>
     /// Callback invoked when a tab is reordered within the tab strip via drag-and-drop.
     /// </summary>
     [Parameter] public EventCallback<DockTabReorderEventArgs> OnTabReordered { get; set; }
+
+    /// <summary>
+    /// Callback invoked whenever the layout changes (pane added, removed, reordered, floated, or docked).
+    /// </summary>
+    [Parameter] public EventCallback OnLayoutChanged { get; set; }
 
     private readonly List<MariloDockPane> _panes = new();
     private string? _activeId;
@@ -106,7 +114,7 @@
     private string HeightStyle() => Height != null ? $"height:{Height}" : "";
     private string WidthStyle() => Width != null ? $"width:{Width}" : "";
 
-    internal void RegisterPane(MariloDockPane pane)
+    internal async Task RegisterPane(MariloDockPane pane)
     {
         if (!_panes.Contains(pane))
         {
@@ -115,18 +123,20 @@
             {
                 _activeId ??= pane.Id ?? pane.Title ?? _panes.Count.ToString();
             }
-            StateHasChanged();
+            await InvokeAsync(StateHasChanged);
+            await OnLayoutChanged.InvokeAsync();
         }
     }
 
-    internal void UnregisterPane(MariloDockPane pane)
+    internal async Task UnregisterPane(MariloDockPane pane)
     {
         _panes.Remove(pane);
         if (_activeId == (pane.Id ?? pane.Title))
         {
             _activeId = _dockedPanes.FirstOrDefault()?.Id ?? _dockedPanes.FirstOrDefault()?.Title;
         }
-        StateHasChanged();
+        await InvokeAsync(StateHasChanged);
+        await OnLayoutChanged.InvokeAsync();
     }
 
     internal bool IsPaneActive(MariloDockPane pane)
@@ -137,13 +147,18 @@
         return id == _activeId;
     }
 
-    private void SetActive(string? id) => _activeId = id;
+    private async Task ActivatePane(string? id)
+    {
+        if (id == _activeId) return;
+        _activeId = id;
+        if (id != null) await OnPaneActivated.InvokeAsync(id);
+    }
 
     private async Task ClosePane(string? id)
     {
         var pane = _panes.FirstOrDefault(p => (p.Id ?? p.Title) == id);
-        if (pane != null) UnregisterPane(pane);
-        if (id != null) await OnPaneClose.InvokeAsync(id);
+        if (pane != null) await UnregisterPane(pane);
+        if (id != null) await OnPaneClosed.InvokeAsync(id);
     }
 
     private async Task PinPane(string? id)
@@ -178,6 +193,7 @@
         }
 
         await OnPaneFloat.InvokeAsync(id);
+        await OnLayoutChanged.InvokeAsync();
         StateHasChanged();
     }
 
@@ -189,7 +205,7 @@
             pane.IsCurrentlyFloating = false;
             UnregisterPane(pane);
         }
-        if (id != null) await OnPaneClose.InvokeAsync(id);
+        if (id != null) await OnPaneClosed.InvokeAsync(id);
     }
 
     // ── Drag-and-drop tab reordering ──────���──────────────────────────
@@ -238,6 +254,7 @@
                 OldIndex = sourceIndex,
                 NewIndex = targetIndex
             });
+            await OnLayoutChanged.InvokeAsync();
         }
 
         ResetDragState();

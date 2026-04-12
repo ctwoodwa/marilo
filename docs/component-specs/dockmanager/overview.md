@@ -10,7 +10,7 @@ components: ["dockmanager"]
 ---
 # Blazor DockManager Overview
 
-The <a href="https://www.marilo.com/blazor-ui/dockmanager" target="_blank">Blazor DockManager component</a> is a versatile tool that enables users to manage and organize multiple panes within a single container. It supports features like docking, undocking, resizing, and repositioning, offering a flexible and customizable layout.
+The Blazor DockManager component is a versatile tool that enables users to manage and organize multiple panes within a single container. It supports features like tabbed navigation, floating panes, drag-and-drop tab reordering, pin/close actions, and event-driven layout updates.
 
 The DockManager is best suited for desktop-like interfaces and applications designed for larger screens, where users can take full advantage of its advanced layout management capabilities.
 
@@ -109,10 +109,29 @@ The following table lists the Dock Manager parameters. Also check the [DockManag
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |
-| `Class` | `string` | The custom CSS class of the `<div class="k-dockmanager">` element. Use it to [override theme styles](slug:themes-override). |
-| `Height` | `string` | The Dock Manager height. If not set, the component will expand automatically to cover the available space. |
-| `Orientation`  | `DockManagerPaneOrientation` enum <br /> (`Vertical`) | Determines the orientation of the root splitter. |
-| `Width` | `string` | The Dock Manager width. If not set, the component will expand horizontally to fill its parent. |
+| ChildContent | RenderFragment | Child content containing MariloDockPane declarations. |
+| Height | string ("500px") | CSS height of the dock manager container. |
+| Width | string | CSS width of the dock manager container. |
+| OnPaneClosed | EventCallback<string> | Fires when a pane is closed. |
+| OnPanePin | EventCallback<string> | Fires when a pane is pinned. |
+| OnPaneFloat | EventCallback<string> | Fires when a pane is floated or docked. |
+| OnPaneActivated | EventCallback<string> | Fires when a pane becomes the active tab. |
+| OnTabReordered | EventCallback<DockTabReorderEventArgs> | Fires when a tab is reordered via drag-and-drop. |
+| OnLayoutChanged | EventCallback | Fires whenever the layout changes. |
+
+### MariloDockPane Parameters
+
+| Parameter | Type and Default&nbsp;Value | Description |
+| --- | --- | --- |
+| Id | string | Unique identifier for the pane. |
+| Title | string | Display title for the pane tab. |
+| ChildContent | RenderFragment | Content rendered inside the pane. |
+| Closable | bool (true) | Whether the pane can be closed by the user. |
+| IsFloating | bool (false) | Whether the pane starts in floating (overlay) mode. |
+| FloatingTop | string ("50px") | CSS top offset when floating. |
+| FloatingLeft | string ("50px") | CSS left offset when floating. |
+| FloatingWidth | string ("400px") | CSS width when floating. |
+| FloatingHeight | string ("300px") | CSS height when floating. |
 
 ### DockManagerContentPane Parameters
 

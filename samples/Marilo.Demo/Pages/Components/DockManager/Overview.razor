@@ -5,9 +5,11 @@
 <PageSection Title="Overview">
     <DemoSection Title="Basic Usage" Description="Dock Manager provides a tabbed panel layout with pin, float, and close actions for each pane." Code="@_basicCode">
         <MariloDockManager Height="300px" Width="100%"
-                           OnPaneClose="HandleClose"
+                           OnPaneClosed="HandleClose"
                            OnPanePin="HandlePin"
-                           OnPaneFloat="HandleFloat">
+                           OnPaneFloat="HandleFloat"
+                           OnPaneActivated="HandleActivated"
+                           OnLayoutChanged="HandleLayoutChanged">
             <MariloDockPane Id="explorer" Title="Explorer">
                 <div style="padding:12px;">
                     <p style="font-weight:600;">Project Explorer</p>
@@ -57,7 +59,7 @@
     <DemoSection Title="Floating Panes" Description="Panes can be toggled between docked and floating states. Floating panes render as overlays with a title bar, dock button, and close button. Click the float arrow on a docked tab or the dock arrow on a floating pane to toggle." Code="@_floatingCode">
         <MariloDockManager @ref="_floatingManager" Height="400px" Width="100%"
                            OnPaneFloat="HandleFloat"
-                           OnPaneClose="HandleClose">
+                           OnPaneClosed="HandleClose">
             <MariloDockPane Id="editor" Title="Editor">
                 <div style="padding:12px;">
                     <p style="font-weight:600;">Code Editor</p>
@@ -103,6 +105,8 @@ Build succeeded.</pre>
     private Task HandleClose(string id) { _lastAction = $"Closed pane: {id}"; return Task.CompletedTask; }
     private Task HandlePin(string id) { _lastAction = $"Pinned pane: {id}"; return Task.CompletedTask; }
     private Task HandleFloat(string id) { _lastAction = $"Floated pane: {id}"; return Task.CompletedTask; }
+    private Task HandleActivated(string id) { _lastAction = $"Activated pane: {id}"; return Task.CompletedTask; }
+    private Task HandleLayoutChanged() { _lastAction = $"Layout changed"; return Task.CompletedTask; }
 
     private const string _basicCode =
         "<MariloDockManager Height=\"300px\">\n" +

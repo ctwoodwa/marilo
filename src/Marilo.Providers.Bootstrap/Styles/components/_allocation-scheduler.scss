@@ -598,6 +598,13 @@
     }
   }
 
+  // ── Conflict Icon ──
+  .mar-allocation-scheduler__conflict-icon {
+    margin-inline-start: 4px;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+
   // ── Fill Handle (hardcoded class — same for all themes) ──
   .mar-allocation-scheduler__fill-handle {
     position: absolute;

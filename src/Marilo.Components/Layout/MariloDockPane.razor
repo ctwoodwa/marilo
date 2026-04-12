@@ -1,4 +1,4 @@
-@implements IDisposable
+@implements IAsyncDisposable
 
 @if (DockManager != null && DockManager.IsPaneActive(this))
 {
@@ -46,11 +46,11 @@
 
     private bool _previousIsFloating;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         IsCurrentlyFloating = IsFloating;
         _previousIsFloating = IsFloating;
-        DockManager?.RegisterPane(this);
+        if (DockManager != null) await DockManager.RegisterPane(this);
     }
 
     protected override void OnParametersSet()
@@ -64,8 +64,8 @@
         }
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        DockManager?.UnregisterPane(this);
+        if (DockManager != null) await DockManager.UnregisterPane(this);
     }
 }

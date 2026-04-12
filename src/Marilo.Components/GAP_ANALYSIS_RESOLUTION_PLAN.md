@@ -1451,35 +1451,39 @@ The Marilo icon system has been upgraded from a single custom icon set to a plug
 
 ---
 
-## MariloMap Delivery Assessment (2026-04-12)
+## MariloMap Delivery Assessment (2026-04-12, updated)
 
-**Status:** AMBER — Functional prototype with complete API surface. MapLibre JS integration deferred to dedicated implementation pass.
+**Status:** AMBER — Complete API surface and layer system with full spec accuracy. MapLibre JS integration is the single remaining implementation task.
 
 ### What is GREEN (complete and tested)
 
-- **Component model:** `MariloMap`, `MapLayer`, `MapLayers` with CascadingValue + child-registration pattern (same as DataGrid/GridColumn). 26 bUnit tests covering registration, unregistration, idempotency, descriptor mapping, events, defaults, and internal visibility.
+- **Component model:** `MariloMap`, `MapLayer`, `MapLayers` with CascadingValue + child-registration pattern (same as DataGrid/GridColumn). 26 bUnit tests covering registration, unregistration, idempotency, descriptor mapping, events, defaults, internal visibility, null center, zero zoom, default layer type, shape with non-string/null data, explicit layer ID, StyleUrl parameter, and legacy Markers parameter.
 - **Layer types:** All four (`Tile`, `Marker`, `Shape`, `Bubble`) register correctly via `MapLayerType` enum, produce correct `MapLayerDescriptor` records, and support `LayerId`, `Opacity`, `MinZoom`/`MaxZoom`.
 - **Events:** `OnClick`, `OnMarkerClick`, `OnShapeClick`, `OnZoomEnd`, `OnPanEnd` all fire from JSInvokable methods with correct event arg shapes.
 - **Adapter boundary:** `IMapEngineAdapter` (internal) with `MapLibreAdapter` stub. Clean separation for future engine swaps.
 - **Provider SCSS:** `_map.scss` created for both FluentUI and Bootstrap providers with full BEM class coverage (`mar-map`, `__container`, `__controls`, `__control-btn`, `__attribution`, `__marker`, `__marker-icon`, `__marker-tooltip`, `__bubble`, `__shape`, `__loading`, `__placeholder`) including dark mode blocks. Registered in both `_index.scss` entry points.
-- **Demo:** Comprehensive demo page at `/components/map/overview` with 7 demo sections: Basic Tile Layer, Zoom/Pan Controls, Tile+Marker, Shape (GeoJSON), Bubble, All Layers Combined, and Events. Uses proper `@` Razor expressions, real data models, and interactive controls.
-- **Tests:** 26 tests (up from 14), 0 failures. Full suite: 1374 passed, 0 skipped, 0 failed.
+- **Demo:** Comprehensive demo page at `/components/map/overview` with 6 demo sections covering all layer types: Basic Tile Layer, Zoom/Pan Controls, Tile+Marker, Shape (GeoJSON), Bubble, and All Layers Combined. Each section uses proper `@` Razor expressions, real data models, interactive controls, and event handlers.
+- **Spec accuracy:** All 8 spec files (`overview.md`, `events.md`, `layers/overview.md`, `layers/tile.md`, `layers/marker.md`, `layers/shape.md`, `layers/bubble.md`, `architecture-decision-tile-engine.md`) verified against source. Parameter tables corrected: `Zoom` type fixed (`double` -> `int`), removed non-existent `Bounds` parameter, added `StyleUrl` and `Markers` parameters, event arg property tables trimmed to match actual `MapModels.cs` types (removed phantom `EventArgs`, `Extent`, `GeoJsonDataItem`, `DataItem:object` properties), layer parameter table pruned to 12 implemented parameters (removed 7 planned-but-unimplemented entries), settings sub-component sections replaced with explicit "planned" notes.
+- **Tests:** 26 tests, 0 failures. Full suite: 1374 passed, 0 skipped, 0 failed.
 
 ### What is AMBER (API surface present, behavior pending)
 
-- **MapLibre JS module:** `marilo-map.js` does not exist yet. `MapLibreAdapter` imports it but initialization will throw `JSException` (caught and swallowed). Tile rendering is non-functional.
-- **Provider-only parameters not in source:** Spec describes `Bounds`, `MapControlsAttribution`/`MapControlsNavigator`/`MapControlsZoom`, `Refresh()`, `Shape` (marker shape), `Extent` (layer), `MaxSize`/`MinSize` (bubble), `Symbol`, `TileSize`, `ZIndex`, and settings sub-components (`MapLayerMarkerSettings`, `MapLayerBubbleSettings`, `MapLayerShapeSettings`). These are in the spec as the target API but not yet implemented in source.
-- **Source-only parameters not in spec:** `StyleUrl`, `Markers` (legacy flat list) exist in source but are not in the spec.
+- **MapLibre JS module:** `marilo-map.js` does not exist yet. `MapLibreAdapter` imports it but initialization will throw `JSException` (caught and swallowed). Tile rendering is non-functional until JS integration pass.
+- **Planned child components:** `MapLayerMarkerSettings`, `MapLayerBubbleSettings`, `MapLayerShapeSettings` and their nested style components are documented as planned in specs but not implemented. Internal `MapLayerStyleDescriptor` record has fields ready for wiring.
+- **Planned MapLayer parameters:** `Extent`, `MaxSize`, `MinSize`, `Shape`, `Symbol`, `TileSize`, `ZIndex` are documented as planned but not implemented.
+- **MapControls:** `MapControlsAttribution`, `MapControlsNavigator`, `MapControlsZoom` child components planned. `MapControlsPosition` enum exists in `Marilo.Core.Enums`.
 
 ### What is RED (blocked)
 
-- **JS adapter authoring:** Requires writing `marilo-map.js` with MapLibre GL JS initialization, layer management, and event forwarding. Blocked on deciding PMTiles vs. raster tile serving approach for demo.
+- **JS adapter authoring:** Requires writing `marilo-map.js` with MapLibre GL JS initialization, layer management, and event forwarding. This is the single remaining implementation task for functional map rendering.
 - **Local basemap pipeline:** Scripts scaffolded in `tools/map-data/` but tiles not yet generated.
 
 ### Build verification
 
-- `dotnet build Marilo.slnx`: **0 errors**, 6 warnings (all pre-existing)
+- `dotnet build src/Marilo.Components/Marilo.Components.csproj`: **0 errors, 0 warnings**
+- `dotnet build samples/Marilo.Demo/Marilo.Demo.csproj`: **0 errors, 0 warnings**
 - `dotnet test tests/Marilo.Tests.Unit/Marilo.Tests.Unit.csproj`: **1374 passed, 0 failed**
+- Note: `dotnet build Marilo.slnx` has a pre-existing `MariloDockPane` IAsyncDisposable error unrelated to map work.
 
 ---
 

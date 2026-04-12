@@ -446,4 +446,200 @@ public class EditorTests : MariloTestBase
         var textarea = cut.Find("textarea");
         Assert.NotNull(textarea.GetAttribute("disabled"));
     }
+
+    // ── Adaptive parameter test ─────────────────────────────────────
+
+    [Fact]
+    public void Editor_Adaptive_RendersToolbarWithoutError()
+    {
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.Adaptive, true)
+            .Add(p => p.Value, "<p>Adaptive</p>"));
+
+        var toolbar = cut.Find(".mar-editor-toolbar");
+        Assert.NotNull(toolbar);
+    }
+
+    // ── Source mode value roundtrip ─────────────────────────────────
+
+    [Fact]
+    public void Editor_Source_ValueChanges_UpdateViaInput()
+    {
+        string? current = "<p>start</p>";
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.EditMode, EditorEditMode.Source)
+            .Add(p => p.Value, current)
+            .Add(p => p.ValueChanged, v => current = v));
+
+        var textarea = cut.Find("textarea");
+        textarea.Input("<p>end</p>");
+
+        Assert.Equal("<p>end</p>", current);
+    }
+
+    // ── Preview mode renders content ────────────────────────────────
+
+    [Fact]
+    public void Editor_Preview_RendersContent()
+    {
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.EditMode, EditorEditMode.Preview)
+            .Add(p => p.Value, "<p>Preview content</p>"));
+
+        var markup = cut.Markup;
+        Assert.Contains("mar-editor-preview", markup);
+        Assert.Contains("Preview content", markup);
+    }
+
+    // ── Disabled/ReadOnly contenteditable=false ─────────────────────
+
+    [Fact]
+    public void Editor_Disabled_WysiwygNotEditable()
+    {
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.Disabled, true)
+            .Add(p => p.Value, ""));
+
+        Assert.Contains("contenteditable=\"false\"", cut.Markup.ToLower());
+    }
+
+    [Fact]
+    public void Editor_ReadOnly_WysiwygNotEditable()
+    {
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.ReadOnly, true)
+            .Add(p => p.Value, ""));
+
+        Assert.Contains("contenteditable=\"false\"", cut.Markup.ToLower());
+    }
+
+    // ── MarkdownConverter roundtrip ─────────────────────────────────
+
+    [Fact]
+    public void MarkdownConverter_Roundtrip_PreservesBasicStructure()
+    {
+        var converter = new MarkdownFormatConverter();
+        var md = "# Title\n\nA paragraph with **bold** text.\n";
+        var html = converter.ToHtml(md);
+        var backToMd = converter.FromHtml(html);
+
+        Assert.Contains("# Title", backToMd);
+        Assert.Contains("**bold**", backToMd);
+    }
+
+    // ── PlainText empty/null edge cases ─────────────────────────────
+
+    [Fact]
+    public void PlainTextConverter_EmptyAndNull_ReturnsEmpty()
+    {
+        var converter = new PlainTextFormatConverter();
+        Assert.Equal(string.Empty, converter.ToHtml(""));
+        Assert.Equal(string.Empty, converter.ToHtml(null!));
+        Assert.Equal(string.Empty, converter.FromHtml(""));
+        Assert.Equal(string.Empty, converter.FromHtml(null!));
+    }
+
+    // ── EditorCustomTool properties ─────────────────────────────────
+
+    [Fact]
+    public void EditorCustomTool_AllProperties_Set()
+    {
+        var tool = new EditorCustomTool
+        {
+            Name = "Test",
+            Icon = "icon-test",
+            Tooltip = "A tooltip"
+        };
+        Assert.Equal("Test", tool.Name);
+        Assert.Equal("icon-test", tool.Icon);
+        Assert.Equal("A tooltip", tool.Tooltip);
+    }
+
+    // ── EditorCommandArgs subclass tests ────────────────────────────
+
+    [Fact]
+    public void LinkCommandArgs_AllProperties()
+    {
+        var args = new LinkCommandArgs
+        {
+            Command = "createLink",
+            Href = "https://example.com",
+            Text = "Example",
+            Target = "_blank",
+            Title = "Link title"
+        };
+        Assert.Equal("createLink", args.Command);
+        Assert.Equal("https://example.com", args.Href);
+        Assert.Equal("Example", args.Text);
+        Assert.Equal("_blank", args.Target);
+        Assert.Equal("Link title", args.Title);
+    }
+
+    [Fact]
+    public void TableCommandArgs_Defaults()
+    {
+        var args = new TableCommandArgs();
+        Assert.Equal(2, args.Rows);
+        Assert.Equal(2, args.Columns);
+    }
+
+    [Fact]
+    public void ImageCommandArgs_Properties()
+    {
+        var args = new ImageCommandArgs
+        {
+            Src = "img.png",
+            Alt = "An image",
+            Width = "100",
+            Height = "50"
+        };
+        Assert.Equal("img.png", args.Src);
+        Assert.Equal("An image", args.Alt);
+        Assert.Equal("100", args.Width);
+        Assert.Equal("50", args.Height);
+    }
+
+    [Fact]
+    public void ColorCommandArgs_Properties()
+    {
+        var args = new ColorCommandArgs { Command = "foreColor", Color = "#ff0000" };
+        Assert.Equal("foreColor", args.Command);
+        Assert.Equal("#ff0000", args.Color);
+    }
+
+    [Fact]
+    public void FontSizeCommandArgs_DefaultSize()
+    {
+        var args = new FontSizeCommandArgs();
+        Assert.Equal("3", args.Size);
+    }
+
+    [Fact]
+    public void FontFamilyCommandArgs_Properties()
+    {
+        var args = new FontFamilyCommandArgs { Family = "Arial" };
+        Assert.Equal("Arial", args.Family);
+    }
+
+    // ── FormatConverter DI extension tests ───────────────────────────
+
+    [Fact]
+    public void AddMariloEditorMarkdownSupport_RegistersConverter()
+    {
+        var services = new ServiceCollection();
+        services.AddMariloEditorMarkdownSupport();
+        var sp = services.BuildServiceProvider();
+        var converters = sp.GetServices<IEditorFormatConverter>();
+        Assert.Contains(converters, c => c.Format == "markdown");
+    }
+
+    [Fact]
+    public void AddMariloEditorPlainTextSupport_RegistersConverter()
+    {
+        var services = new ServiceCollection();
+        services.AddMariloEditorPlainTextSupport();
+        var sp = services.BuildServiceProvider();
+        var converters = sp.GetServices<IEditorFormatConverter>();
+        Assert.Contains(converters, c => c.Format == "plaintext");
+    }
 }

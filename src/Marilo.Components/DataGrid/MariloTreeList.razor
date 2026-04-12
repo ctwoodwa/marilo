@@ -102,4 +102,31 @@
             @RenderRows(_rootItems, 0)
         </tbody>
     </table>
+
+    @if (Pageable && TotalPages > 0)
+    {
+        <nav class="mar-treelist__pager" role="navigation" aria-label="TreeList pagination">
+            <button type="button"
+                    class="mar-treelist__pager-btn mar-treelist__pager-btn--prev"
+                    disabled="@(Page <= 1)"
+                    @onclick="GoToPreviousPageAsync">
+                &laquo; Prev
+            </button>
+            @for (var p = 1; p <= TotalPages; p++)
+            {
+                var pageNum = p;
+                <button type="button"
+                        class="@($"mar-treelist__pager-btn{(pageNum == Page ? " mar-treelist__pager-btn--active" : "")}")"
+                        @onclick="() => GoToPageAsync(pageNum)">
+                    @pageNum
+                </button>
+            }
+            <button type="button"
+                    class="mar-treelist__pager-btn mar-treelist__pager-btn--next"
+                    disabled="@(Page >= TotalPages)"
+                    @onclick="GoToNextPageAsync">
+                Next &raquo;
+            </button>
+        </nav>
+    }
 </div>

@@ -513,6 +513,12 @@
   // ── Fill Handle ──────────────────────────────────────
   // Shown in the bottom-right corner of the active editable cell.
   // Dragging this handle copies the source cell value to adjacent cells.
+  &__conflict-icon {
+    margin-inline-start: 4px;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+
   &__fill-handle {
     position: absolute;
     right: -4px;

@@ -43,6 +43,25 @@ public partial class MariloTreeList<TItem> : MariloComponentBase, IColumnHost, I
     /// <summary>Fires after a column is reordered via drag-and-drop.</summary>
     [Parameter] public EventCallback<TreeListColumnReorderEventArgs> OnColumnReordered { get; set; }
 
+    /// <summary>When true, a pager is shown below the tree list. Pagination applies to top-level items only.</summary>
+    [Parameter] public bool Pageable { get; set; }
+
+    /// <summary>The number of top-level items to display per page. Default is 10.</summary>
+    [Parameter] public int PageSize { get; set; } = 10;
+
+    /// <summary>The current page number (1-based). Supports two-way binding.</summary>
+    [Parameter] public int Page { get; set; } = 1;
+
+    /// <summary>Fires when the current page changes.</summary>
+    [Parameter] public EventCallback<int> PageChanged { get; set; }
+
+    /// <summary>
+    /// Server-side data callback. When set, the component delegates sorting, filtering, and paging
+    /// to the consumer instead of performing client-side operations. The consumer must set
+    /// <see cref="TreeListReadEventArgs{TItem}.Data"/> and <see cref="TreeListReadEventArgs{TItem}.Total"/>.
+    /// </summary>
+    [Parameter] public EventCallback<TreeListReadEventArgs<TItem>> OnRead { get; set; }
+
     private List<TreeListNode> _rootItems = new();
     private HashSet<string> _expandedIds = new();
     private string? _sortField;
@@ -53,7 +72,12 @@ public partial class MariloTreeList<TItem> : MariloComponentBase, IColumnHost, I
     internal Dictionary<string, object?> _editingValues = new();
     internal bool _isNewItem;
     private readonly List<MariloColumnBase> _registeredColumns = new();
+    private int _totalItemCount;
+    private CancellationTokenSource? _readCts;
     private record TreeListNode(string Id, TItem Item, List<TreeListNode> Children, bool HasChildren);
+
+    /// <summary>Total number of pages based on top-level item count and page size.</summary>
+    internal int TotalPages => Pageable && PageSize > 0 ? Math.Max(1, (int)Math.Ceiling((double)_totalItemCount / PageSize)) : 1;
 
     void IColumnHost.RegisterColumn(MariloColumnBase column)
     {
@@ -77,10 +101,44 @@ public partial class MariloTreeList<TItem> : MariloComponentBase, IColumnHost, I
         }
     }
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
         if (SelectedItems is not null) _selectedItemsSet = new HashSet<TItem>(SelectedItems);
-        _rootItems = BuildTree();
+
+        if (OnRead.HasDelegate)
+        {
+            await LoadServerDataAsync();
+        }
+        else
+        {
+            _rootItems = BuildTree();
+        }
+    }
+
+    private async Task LoadServerDataAsync()
+    {
+        _readCts?.Cancel();
+        var cts = new CancellationTokenSource();
+        _readCts = cts;
+
+        var args = new TreeListReadEventArgs<TItem>
+        {
+            Page = Page,
+            PageSize = PageSize,
+            SortField = _sortField,
+            SortDirection = _sortDirection,
+            FilterValues = new Dictionary<string, string>(_filterValues),
+            CancellationToken = cts.Token
+        };
+
+        await OnRead.InvokeAsync(args);
+
+        if (cts.Token.IsCancellationRequested) return;
+
+        _totalItemCount = args.Total;
+        var serverItems = args.Data.ToList();
+        int idx = 0;
+        _rootItems = serverItems.Select(i => new TreeListNode($"srv-{idx++}", i, new(), false)).ToList();
     }
 
     private List<TreeListNode> BuildTree()
@@ -89,10 +147,21 @@ public partial class MariloTreeList<TItem> : MariloComponentBase, IColumnHost, I
         if (!items.Any()) return new();
         items = ApplyFilter(items);
         items = ApplySort(items);
-        if (!string.IsNullOrEmpty(ItemsField)) return BuildHierarchical(items.Cast<object>(), 0);
-        if (!string.IsNullOrEmpty(IdField) && !string.IsNullOrEmpty(ParentIdField)) return BuildFlat(items);
-        int idx = 0;
-        return items.Select(i => new TreeListNode($"auto-{idx++}", i, new(), false)).ToList();
+
+        List<TreeListNode> nodes;
+        if (!string.IsNullOrEmpty(ItemsField)) nodes = BuildHierarchical(items.Cast<object>(), 0);
+        else if (!string.IsNullOrEmpty(IdField) && !string.IsNullOrEmpty(ParentIdField)) nodes = BuildFlat(items);
+        else { int idx = 0; nodes = items.Select(i => new TreeListNode($"auto-{idx++}", i, new(), false)).ToList(); }
+
+        _totalItemCount = nodes.Count;
+
+        if (Pageable && PageSize > 0)
+        {
+            var page = Math.Max(1, Math.Min(Page, TotalPages));
+            nodes = nodes.Skip((page - 1) * PageSize).Take(PageSize).ToList();
+        }
+
+        return nodes;
     }
 
     private List<TItem> ApplySort(List<TItem> items)
@@ -126,7 +195,16 @@ public partial class MariloTreeList<TItem> : MariloComponentBase, IColumnHost, I
             if (_sortDirection is null) _sortField = null;
         }
         else { _sortField = field; _sortDirection = SortDirection.Ascending; }
-        _rootItems = BuildTree();
+
+        if (OnRead.HasDelegate)
+        {
+            await LoadServerDataAsync();
+        }
+        else
+        {
+            _rootItems = BuildTree();
+        }
+
         if (OnSortChanged.HasDelegate)
             await OnSortChanged.InvokeAsync(new TreeListSortEventArgs { Field = _sortField, Direction = _sortDirection });
     }
@@ -237,11 +315,19 @@ public partial class MariloTreeList<TItem> : MariloComponentBase, IColumnHost, I
         return true;
     }
 
-    private void HandleFilterInput(string field, string value)
+    private async Task HandleFilterInput(string field, string value)
     {
         if (string.IsNullOrEmpty(value)) _filterValues.Remove(field);
         else _filterValues[field] = value;
-        _rootItems = BuildTree();
+
+        if (OnRead.HasDelegate)
+        {
+            await LoadServerDataAsync();
+        }
+        else
+        {
+            _rootItems = BuildTree();
+        }
     }
 
     private bool IsItemSelected(TItem item) => _selectedItemsSet.Contains(item);
@@ -512,5 +598,37 @@ public partial class MariloTreeList<TItem> : MariloComponentBase, IColumnHost, I
     {
         _dragSourceIndex = -1;
         _dragOverIndex = -1;
+    }
+
+    // ── Paging ──────────────────────────────────────────────────
+    internal async Task GoToPageAsync(int page)
+    {
+        if (page < 1 || page > TotalPages || page == Page) return;
+        Page = page;
+        if (PageChanged.HasDelegate) await PageChanged.InvokeAsync(Page);
+
+        if (OnRead.HasDelegate)
+        {
+            await LoadServerDataAsync();
+        }
+        else
+        {
+            _rootItems = BuildTree();
+        }
+    }
+
+    private Task GoToPreviousPageAsync() => GoToPageAsync(Page - 1);
+    private Task GoToNextPageAsync() => GoToPageAsync(Page + 1);
+
+    /// <summary>
+    /// Triggers a data re-read from the server. Only effective when <see cref="OnRead"/> is bound.
+    /// </summary>
+    public async Task RebindAsync()
+    {
+        if (OnRead.HasDelegate)
+        {
+            await LoadServerDataAsync();
+            await InvokeAsync(StateHasChanged);
+        }
     }
 }

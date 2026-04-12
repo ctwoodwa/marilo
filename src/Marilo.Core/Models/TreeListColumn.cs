@@ -39,3 +39,35 @@ public class TreeListColumnReorderEventArgs
     /// <summary>The new index of the column after the move.</summary>
     public int NewIndex { get; set; }
 }
+
+/// <summary>
+/// Event arguments for the <c>OnRead</c> server-side data callback on <c>MariloTreeList</c>.
+/// The consumer must set <see cref="Data"/> and <see cref="Total"/> in their handler.
+/// </summary>
+/// <typeparam name="TItem">The row data type.</typeparam>
+public class TreeListReadEventArgs<TItem>
+{
+    /// <summary>The current page number (1-based).</summary>
+    public int Page { get; init; }
+
+    /// <summary>The number of items per page.</summary>
+    public int PageSize { get; init; }
+
+    /// <summary>The field currently sorted on, or null if no sort is active.</summary>
+    public string? SortField { get; init; }
+
+    /// <summary>The current sort direction, or null if no sort is active.</summary>
+    public SortDirection? SortDirection { get; init; }
+
+    /// <summary>The current filter values keyed by field name.</summary>
+    public IReadOnlyDictionary<string, string> FilterValues { get; init; } = new Dictionary<string, string>();
+
+    /// <summary>Cancellation token that is cancelled if a new data request starts before this one completes.</summary>
+    public CancellationToken CancellationToken { get; init; }
+
+    /// <summary>Set this to the data items for the current page/view. The tree list will display these.</summary>
+    public IEnumerable<TItem> Data { get; set; } = [];
+
+    /// <summary>Set this to the total number of top-level items (before paging) so the pager can calculate page count.</summary>
+    public int Total { get; set; }
+}

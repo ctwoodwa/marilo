@@ -1,5 +1,91 @@
 // =============================================================================
 // Component: DockManager
+
+// -- Tab strip (matches razor BEM classes) --
+
+.mar-dockmanager__tabs {
+    display: flex;
+    gap: var(--marilo-space-xs);
+    padding: var(--marilo-space-xs) var(--marilo-space-sm);
+    border-bottom: 1px solid var(--marilo-color-border);
+    background: var(--marilo-color-subtle-background, #faf9f8);
+    overflow-x: auto;
+}
+
+.mar-dockmanager__tab {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--marilo-space-xs);
+    padding: var(--marilo-space-xs) var(--marilo-space-md);
+    cursor: pointer;
+    border-radius: var(--marilo-radius-sm) var(--marilo-radius-sm) 0 0;
+    white-space: nowrap;
+    user-select: none;
+    transition: background var(--marilo-transition-fast),
+                opacity var(--marilo-transition-fast);
+
+    &:hover {
+        background: var(--marilo-color-subtle-background-hover, #f3f2f1);
+    }
+
+    &--active {
+        background: var(--marilo-color-surface);
+        border-bottom: 2px solid var(--marilo-color-primary);
+        font-weight: 600;
+    }
+
+    &--dragging {
+        opacity: 0.4;
+    }
+
+    &--drop-target {
+        box-shadow: inset 2px 0 0 var(--marilo-color-primary);
+    }
+}
+
+.mar-dockmanager__tab-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    margin-left: var(--marilo-space-xs);
+}
+
+.mar-dockmanager__action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: transparent;
+    border-radius: var(--marilo-radius-sm);
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    color: var(--marilo-color-text-secondary, #605e5c);
+
+    &:hover {
+        background: var(--marilo-color-subtle-background-hover, #f3f2f1);
+        color: var(--marilo-color-text);
+    }
+
+    &--close:hover {
+        background: var(--marilo-color-danger, #d13438);
+        color: #fff;
+    }
+}
+
+.mar-dockmanager__content {
+    flex: 1;
+    overflow: auto;
+}
+
+.mar-dockpane {
+    padding: var(--marilo-space-md);
+}
+
 // =============================================================================
 
 .mar-dockmanager {
@@ -188,6 +274,36 @@
 
 // ── Dark mode ────────────────────────────────────────────────────────
 [data-marilo-theme="dark"] {
+
+    .mar-dockmanager__tabs {
+        background: var(--marilo-color-subtle-background, #252423);
+        border-color: var(--marilo-color-border, #484644);
+    }
+
+    .mar-dockmanager__tab {
+        &:hover {
+            background: var(--marilo-color-subtle-background-hover, #3b3a39);
+        }
+
+        &--active {
+            background: var(--marilo-color-surface, #252423);
+        }
+    }
+
+    .mar-dockmanager__action {
+        color: var(--marilo-color-text-secondary, #a19f9d);
+
+        &:hover {
+            background: var(--marilo-color-subtle-background-hover, #3b3a39);
+            color: var(--marilo-color-text, #faf9f8);
+        }
+
+        &--close:hover {
+            background: var(--marilo-color-danger, #d13438);
+            color: #fff;
+        }
+    }
+
     .mar-dockmanager__floating-pane {
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     }
