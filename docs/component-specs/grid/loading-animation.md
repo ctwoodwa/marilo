@@ -57,19 +57,17 @@ The following example binds the Grid with an [`OnRead` event handler](slug:commo
         </Template>
     </MariloLoaderContainer>
 
-    <MariloGrid OnRead="@OnGridRead"
+    <MariloDataGrid OnRead="@OnGridRead"
                  TItem="@Product"
                  EnableLoaderContainer="@EnableGridLoaderContainer"
                  Height="280px"
                  Pageable="true"
                  PageSize="5"
                  Sortable="true">
-        <GridColumns>
-            <GridColumn Field="@nameof(Product.Name)" />
-            <GridColumn Field="@nameof(Product.Price)" DisplayFormat="{0:C2}" />
-            <GridColumn Field="@nameof(Product.Quantity)" />
-        </GridColumns>
-    </MariloGrid>
+            <MariloGridColumn Field="@nameof(Product.Name)" />
+            <MariloGridColumn Field="@nameof(Product.Price)" DisplayFormat="{0:C2}" />
+            <MariloGridColumn Field="@nameof(Product.Quantity)" />
+    </MariloDataGrid>
 </div>
 
 @code {

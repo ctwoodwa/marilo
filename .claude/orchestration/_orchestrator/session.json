@@ -2,83 +2,26 @@
   "schema_version": "1.0",
   "session_id": "marilo-grid-pipeline-2026-04-11-1200",
   "status": "active",
-  "shared_goal": "Parallel ICM delivery pipeline across datagrid, datasheet, gantt, scheduler, allocation-scheduler — 4 waves, review gate between waves, orchestrator integrates. Editor added in tick 6.",
+  "shared_goal": "Gap-analysis S05 implementation in progress. Wave 1 complete for all 4 components. Treeview delivery pipeline complete (AMBER).",
   "started_at": "2026-04-11T12:00:00Z",
-  "last_heartbeat": "2026-04-11T18:00:00Z",
-  "orchestrator_tmux_session": "marilo-orchestrator",
-  "integration_owner": "orchestrator",
-  "wave": 4,
-  "wave_4_status": "complete-for-4-of-5",
+  "last_heartbeat": "2026-04-12T03:15:00Z",
+  "tick_count": 15,
   "active_workers": [
-    { "worker_id": "w-datagrid-delivery", "status": "complete", "icm_stage": "04-sync-check", "gate": "BLOCKED", "blocking_items": 12, "pipeline_state": "closed; remediation routes to datagrid-gap-analysis" },
-    { "worker_id": "w-datasheet-delivery", "status": "complete", "icm_stage": "04-sync-check", "gate": "BLOCKED", "blocking_items": 7, "pipeline_state": "closed-pending-user-decisions (UD-01, UD-02)" },
-    { "worker_id": "w-gantt-delivery", "status": "complete", "icm_stage": "04-sync-check", "gate": "BLOCKED", "blocking_items": 7, "pipeline_state": "closed; remediation routes to gantt-gap-analysis" },
-    { "worker_id": "w-scheduler-delivery", "status": "idle-blocked", "icm_stage": "02-example-ux-complete", "gate": "n/a", "pipeline_state": "PARKED at Wave 2 per user option-a defer; awaiting implementation lane" },
-    { "worker_id": "w-allocation-scheduler-delivery", "status": "complete", "icm_stage": "04-sync-check", "gate": "AMBER", "blocking_items": 0, "pipeline_state": "closed at AMBER; 12 remediation lanes (R1-R12) sequenceable now" },
-    { "worker_id": "w-editor-delivery", "status": "idle", "icm_stage": "02-example-ux-step-3-checkpoint", "gate": "n/a", "pipeline_state": "gap list approved at checkpoint; next dispatch: stage 02 steps 4-10 (author 7 scenarios + 1 refactor)" }
+    { "worker_id": "w-datagrid-gap-analysis", "status": "review-pending", "icm_stage": "05-implement-W1", "pipeline_state": "W1 done: 78 spec files renamed. Build 0/0." },
+    { "worker_id": "w-datasheet-gap-analysis", "status": "review-pending", "icm_stage": "05-implement-W1", "pipeline_state": "W1 done: 8/8 tasks, 7 new tests (TDD), 80/80 pass." },
+    { "worker_id": "w-gantt-gap-analysis", "status": "review-pending", "icm_stage": "05-implement-W1", "pipeline_state": "W1 done: bar SCSS + 6 tokens + 2 tests, 94/94 pass." },
+    { "worker_id": "w-allocation-scheduler-gap-analysis", "status": "review-pending", "icm_stage": "05-implement-WB", "pipeline_state": "WB done: 5/5 tasks, 2 demos, 12 spec edits. Build 0/0." },
+    { "worker_id": "w-treeview-delivery", "status": "review-pending", "icm_stage": "04-sync-check", "pipeline_state": "COMPLETE (AMBER). 87 gaps: 22 CLEAR, 52 BLOCKED, 13 REMEDIATION-NEEDED." },
+    { "worker_id": "w-scheduler-delivery", "status": "idle-blocked" },
+    { "worker_id": "w-editor-delivery", "status": "idle" }
   ],
-  "review_queue": [],
-  "blocked_queue": [
-    { "worker_id": "w-scheduler-delivery", "type": "user-decision", "summary": "Wave 3 deferred per user option (a) — scheduler needs implementation lane", "raised_ts": "2026-04-11T17:00:00Z" }
-  ],
-  "user_attention_items": [
-    {
-      "id": "scheduler-wave-3-reframe",
-      "source": "w-scheduler-delivery Wave 1 + Wave 2",
-      "type": "structural-scoping",
-      "status": "RESOLVED",
-      "resolution": "Option (a) DEFER — scheduler parked at Wave 2 complete; no Wave 3 until an implementation lane lands.",
-      "raised_at": "2026-04-11T17:00:00Z",
-      "resolved_at": "2026-04-11T17:40:00Z"
-    },
-    {
-      "id": "scheduler-public-api",
-      "type": "public-api-decision",
-      "status": "OPEN",
-      "ids": ["NM-SCHED-001", "NM-SCHED-003"],
-      "summary": "Scheduler naming/shape decisions: CurrentDate→Date rename + generic TItem vs closed SchedulerAppointment DTO",
-      "raised_at": "2026-04-11T17:00:00Z"
-    },
-    {
-      "id": "scheduler-policy",
-      "type": "spec-scope-policy",
-      "status": "OPEN",
-      "summary": "manual-operations.md published:false in/out of scope + per-topic vs per-parameter gap enumeration policy",
-      "raised_at": "2026-04-11T17:00:00Z"
-    },
-    {
-      "id": "datasheet-theming-architecture",
-      "type": "architecture-decision",
-      "status": "OPEN",
-      "summary": "Extend IMariloCssProvider with DataSheet-specific methods OR narrow spec to BEM-level theming. Gates 5 datasheet checklist items + every VP remediation lane.",
-      "raised_at": "2026-04-11T17:15:00Z"
-    },
-    {
-      "id": "datasheet-10k-rows",
-      "type": "scope-confirmation",
-      "status": "OPEN",
-      "summary": "Confirm 10k-row in-memory demo capacity OR cap at 5k. Gates virtualization upper threshold.",
-      "raised_at": "2026-04-11T17:15:00Z"
-    },
-    {
-      "id": "datagrid-fu-3-user-escalation",
-      "source": "w-datagrid-delivery Wave 4",
-      "type": "naming-decision",
-      "status": "OPEN",
-      "summary": "Datagrid naming-cascade root cause: P1 M-01/M-02/S-04/S-05 — <MariloGrid> vs <MariloDataGrid>, <GridColumn> vs <MariloGridColumn>, <GridColumns> wrapper, GridCommandColumn element. Cascades into every spec snippet and Section 2.7. Worker flagged FU-3 as user-escalation-required.",
-      "raised_at": "2026-04-11T18:00:00Z"
-    }
-  ],
-  "tick_count": 7,
+  "review_queue": ["w-datagrid-gap-analysis", "w-datasheet-gap-analysis", "w-gantt-gap-analysis", "w-allocation-scheduler-gap-analysis", "w-treeview-delivery"],
   "pipeline_summary": {
-    "delivery_pipeline_complete": ["datagrid", "datasheet", "gantt", "allocation-scheduler"],
-    "delivery_pipeline_in_progress": ["editor"],
-    "delivery_pipeline_parked": ["scheduler"],
-    "gates_BLOCKED": 3,
-    "gates_AMBER": 1,
-    "gates_CLEAR": 0,
-    "total_blocking_items": 26,
-    "next_remediation_owner": "gap-analysis workspaces (datagrid, gantt, datasheet, allocation-scheduler)"
+    "implementation_wave_1_complete": true,
+    "code_changes": { "source_files": 4, "scss_files": 5, "spec_files": "78+19", "demo_files": 4, "test_files": 2, "new_tests": 9 },
+    "all_builds_passing": true,
+    "all_tests_passing": true,
+    "treeview_delivery_complete": "AMBER"
   },
-  "notes": "TICK 7 (2026-04-11T18:00Z): Wave 4 dispatched + reviewed for 4 sync-check workers (datagrid, datasheet, gantt, allocation-scheduler) and Wave 2 dispatched + reviewed for editor. All 5 PASS. Delivery pipeline FORMALLY CLOSED for 4 of 5 components. Editor remains in active stage 02. Scheduler still parked. Aggregate result: 3 BLOCKED gates + 1 AMBER + 26 total blocking items + 6 OPEN user_attention_items (1 NEW from datagrid FU-3). Next tick should focus on: (a) editor stage 02 steps 4-10 dispatch, OR (b) bootstrap gap-analysis workspaces for the 4 closed components, OR (c) wait for user resolution of OPEN UDs."
+  "notes": "TICK 15 MILESTONE: First implementation wave landed. Source changes to DataSheet (tabindex, paste-guard, aria-live, AddRow, undo). SCSS changes to Gantt (bar foundation) + AllocationScheduler (scrollbar a11y). 78 spec files renamed for DataGrid. 2 new demo pages for AllocationScheduler. 9 new bUnit tests. All builds 0/0. All tests passing. Treeview delivery pipeline closed at AMBER. 8 decisions resolved. Loop cancelled."
 }

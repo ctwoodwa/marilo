@@ -29,15 +29,13 @@ The `MariloGridColumn` exposes two parameters for formatting cell values: `Displ
 @using System.ComponentModel.DataAnnotations
 @* This Using is for the model class attribute only *@
 
-<MariloGrid Data="@GridData" Pageable="true">
-    <GridColumns>
-        <GridColumn Field="@nameof(SampleModel.Name)" />
+<MariloDataGrid Data="@GridData" Pageable="true">
+        <MariloGridColumn Field="@nameof(SampleModel.Name)" />
 
-        <GridColumn Field="@nameof(SampleModel.Salary)" />
-        <GridColumn DisplayFormat="{0:dd MMM yy}" Field="@nameof(SampleModel.HireDate)" />
+        <MariloGridColumn Field="@nameof(SampleModel.Salary)" />
+        <MariloGridColumn DisplayFormat="{0:dd MMM yy}" Field="@nameof(SampleModel.HireDate)" />
 
-    </GridColumns>
-</MariloGrid>
+</MariloDataGrid>
 
 @code {
     class SampleModel

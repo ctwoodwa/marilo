@@ -70,11 +70,13 @@ The following guidance helps determine when to enable or disable virtualization:
 
 >tip For datasets over 10,000 rows, the primary performance bottleneck shifts from DOM rendering to data transfer and in-memory state management. Consider loading data in pages or using server-side filtering to reduce the client-side dataset size.
 
+>note **WASM Demo Threshold:** 10,000 rows is supported with `EnableVirtualization=true` in hosted Blazor Server scenarios. The interactive demo caps at 5,000 rows due to WASM host constraints (browser memory and JS interop overhead). Production Blazor Server deployments can safely exceed this threshold.
+
 ## Performance Considerations
 
 ### Initial Load
 
-* When `IsLoading` is `true`, the DataSheet renders skeleton placeholder rows. The number of skeleton rows matches the viewport height divided by the estimated row height.
+* When `IsLoading` is `true`, the DataSheet renders skeleton placeholder rows. The number of skeleton rows is a fixed count (currently 5), independent of the viewport height.
 * When data arrives and `IsLoading` transitions to `false`, the component snapshots original values (via deep cloning) for all rows. For very large datasets (10,000+ rows), this cloning step may cause a brief UI pause. If this is a concern, load data incrementally.
 
 ### Editing in Virtualized Sheets

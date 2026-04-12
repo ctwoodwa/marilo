@@ -217,9 +217,21 @@
     overflow-x: hidden;
     background: var(--bs-body-bg);
     z-index: 2;
-    scrollbar-width: none;
+    // Thin visible scrollbar so keyboard/SR users can discover scrollability.
+    // Sync scrolling still driven by JS from the timeline panel.
+    scrollbar-width: thin;
+    scrollbar-color: var(--bs-border-color) transparent;
 
-    &::-webkit-scrollbar { display: none; }
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: var(--bs-border-color);
+      border-radius: 3px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
   }
 
   // ── Splitter handle (hardcoded class) ─────────────────

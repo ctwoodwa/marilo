@@ -147,6 +147,10 @@ The left pane width always equals the sum of its rendered column widths; there i
 See [Splitter and Dual-Pane Layout](slug:allocation-scheduler-splitter-layout).
 
 
+### Current-Period Column Highlight
+
+The timeline automatically highlights the column corresponding to the current date period. Both the header cell and the body cells for the current bucket receive the `mar-allocation-scheduler__col-current` CSS class. The FluentUI provider renders this with a subtle primary-tinted background, bold header text, and a 2px top accent border so the "today" column is immediately identifiable.
+
 ### Allocation Layer
 
 Each resource row can show one or more task layers stacked vertically. Each layer corresponds to one task and renders its allocation values across visible buckets.
@@ -212,9 +216,10 @@ See [Analysis and Targets](slug:allocation-scheduler-analysis-targets) for param
 | `ViewGrain` | `TimeGranularity` | same as `AuthoritativeLevel` | The current display granularity. Supports two-way binding. |
 | `VisibleStart` | `DateTime` | `DateTime.Today` | The start of the visible date range. Supports two-way binding. |
 | `VisibleEnd` | `DateTime` | derived | The end of the visible date range. Supports two-way binding. |
-| `DefaultRangeLength` | `int` | `3` | Number of units for the default visible range. |
+| `DefaultRangeLength` | `int` | `3` | **Deprecated.** Use `MinVisibleColumns` with `DefaultRangeUnit` instead. `DefaultRangeLength` now acts as a minimum floor forwarded to `MinVisibleColumns`, not an exact count. |
 | `DefaultRangeUnit` | `TimeGranularity` | `Month` | Unit for the default visible range length. |
 | `ValueMode` | `AllocationValueMode` | `Hours` | Whether cells display hours or currency values. |
+| `ShowJumpToDate` | `bool` | `true` | Shows a date-picker input in the toolbar so the user can navigate directly to any date without stepping forward/back. When `false`, only the forward/back/today buttons render. |
 | `ShowTargets` | `bool` | `false` | Renders target overlay values alongside actuals. |
 | `ShowDeltas` | `bool` | `false` | Renders variance between actuals and targets. |
 | `DeltaDisplayMode` | `DeltaDisplayMode` | `Value` | Show deltas as absolute values, percentage, or status icons. |

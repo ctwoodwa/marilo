@@ -22,20 +22,20 @@ To enable the built-in Grid SearchBox, use one of the following options:
 
 * Add a `<GridToolBarSearchBoxTool>` tag to the [Grid ToolBar](slug:components/grid/features/toolbar). This approach is suitable if you are not using a Grid ToolBar yet, or if you are using only built-in ToolBar tools.
     ````RAZOR.skip-repl
-    <MariloGrid>
+    <MariloDataGrid>
         <GridToolBar>
             <GridToolBarSearchBoxTool />
         </GridToolBar>
-    </MariloGrid>
+    </MariloDataGrid>
     ````
 
 * Add a `<GridSearchBox>` tag to the [Grid ToolBar Template](slug:components/grid/features/toolbar#custom-toolbar-configuration). This approach is suitable if you have or need custom Grid ToolBar content.
     ````RAZOR.skip-repl
-    <MariloGrid>
+    <MariloDataGrid>
         <GridToolBarTemplate>
             <GridSearchBox />
         </GridToolBarTemplate>
-    </MariloGrid>
+    </MariloDataGrid>
     ````
 
 The following example shows the first option in action, while the [customization demo](#customize-the-searchbox) below uses a `GridToolBarTemplate`.
@@ -43,18 +43,16 @@ The following example shows the first option in action, while the [customization
 >caption Grid SearchBox
 
 ````RAZOR
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              Height="90vh"
              Pageable="true">
     <GridToolBar>
         <GridToolBarSearchBoxTool Placeholder="Type a letter or digit..." Width="180px" />
     </GridToolBar>
-    <GridColumns>
-        <GridColumn Field="@nameof(GridModel.Id)" />
-        <GridColumn Field="@nameof(GridModel.Name)" />
-        <GridColumn Field="@nameof(GridModel.Description)" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(GridModel.Id)" />
+        <MariloGridColumn Field="@nameof(GridModel.Name)" />
+        <MariloGridColumn Field="@nameof(GridModel.Description)" />
+</MariloDataGrid>
 
 @code {
     private List<GridModel> GridData { get; set; } = new();
@@ -96,14 +94,12 @@ In addition to the toolbar-tool approach shown above, `MariloGrid` exposes a sim
 >caption Enable the root-level SearchBox on MariloGrid
 
 ````RAZOR
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              ShowSearchBox="true"
              SearchBoxPlaceholder="Search employees...">
-    <GridColumns>
-        <GridColumn Field="@nameof(Employee.Name)" />
-        <GridColumn Field="@nameof(Employee.Department)" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(Employee.Name)" />
+        <MariloGridColumn Field="@nameof(Employee.Department)" />
+</MariloDataGrid>
 
 @code {
     private List<Employee> GridData { get; set; } = new();
@@ -141,7 +137,7 @@ The example below demonstrates all SearchBox settings in action, and also how to
 >caption Grid SearchBox customizaton
 
 ````RAZOR
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              Pageable="true"
              PageSize="20"
              Sortable="true"
@@ -157,11 +153,9 @@ The example below demonstrates all SearchBox settings in action, and also how to
                        Size="@ThemeConstants.SearchBox.Size.Small"
                        Width="240px" />
     </GridToolBarTemplate>
-    <GridColumns>
-        <GridColumn Field="@nameof(GridModel.Name)" />
-        <GridColumn Field="@nameof(GridModel.Description)" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(GridModel.Name)" />
+        <MariloGridColumn Field="@nameof(GridModel.Description)" />
+</MariloDataGrid>
 
 <style>
     .primary-searchbox {

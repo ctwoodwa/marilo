@@ -24,16 +24,16 @@
 | Field | Value |
 |-------|-------|
 | Spec version | unversioned |
-| Last spec audit | 2026-04-11 (re-verified; 13 undocumented closed in overview.md) |
-| Open spec gaps | 23 (1 undocumented, 13 spec-ahead, 7 mismatch, plus 2 planned bundles) |
+| Last spec audit | 2026-04-11 (events.md rewrite; all 14 undocumented now closed) |
+| Open spec gaps | 17 (0 undocumented, 13 spec-ahead, 5 mismatch — SPEC-033/034 documented in events.md; SPEC-028–032 need code decision) |
 
 ## Example UX State
 
 | Field | Value |
 |-------|-------|
 | Demo page(s) | TreeView/Overview.razor |
-| Last demo audit | 2026-04-09 |
-| Open demo gaps | 1 (empty-state scenario, P3 deferred) |
+| Last demo audit | 2026-04-11 (Wave 2 steps 5-6: P1 scenarios authored + b1/b2 rewrites) |
+| Open demo gaps | 18 (0 P1, 10 P2, 8 P3) — all 4 P1 gaps closed, 2 P2 stale rewrites closed |
 
 ## Visual Parity State
 

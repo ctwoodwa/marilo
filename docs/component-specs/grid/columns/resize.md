@@ -74,25 +74,23 @@ The known limitations of the Autofit Columns feature include:
 <MariloButton OnClick="@AutoFitMultipleColumns">AutoFit String Columns</MariloButton>
 <MariloButton OnClick="@AutoFitAllColumns">AutoFit All Columns</MariloButton>
 
-<MariloGrid @ref="@GridRef"
+<MariloDataGrid @ref="@GridRef"
              Data="@GridData"
              Resizable="true"
              Pageable="true"
              Sortable="true"
              Height="300px">
-    <GridColumns>
-        <GridColumn Field=@nameof(SampleData.Id) Title="ID" Id="@IdColumnId" />
-        <GridColumn Field=@nameof(SampleData.FirstName) Title="First Name" Id="@FirstNameColumnId" />
-        <GridColumn Field=@nameof(SampleData.LastName) Title="Last Name" Id="@LastNameColumnId" />
-        <GridCommandColumn Width="100px" Resizable="false">
+        <MariloGridColumn Field=@nameof(SampleData.Id) Title="ID" Id="@IdColumnId" />
+        <MariloGridColumn Field=@nameof(SampleData.FirstName) Title="First Name" Id="@FirstNameColumnId" />
+        <MariloGridColumn Field=@nameof(SampleData.LastName) Title="Last Name" Id="@LastNameColumnId" />
+        <MariloGridCommandColumn Width="100px" Resizable="false">
             <GridCommandButton Icon="@SvgIcon.Pencil">Edit</GridCommandButton>
             <GridCommandButton Icon="@SvgIcon.Trash">Delete</GridCommandButton>
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 
 @code {
-    public MariloGrid<SampleData>? GridRef { get; set; }
+    public MariloDataGrid<SampleData>? GridRef { get; set; }
     public List<SampleData> GridData { get; set; } = new();
 
     // Columns IDs used in the Grid column definitions and in the AutoFit methods.

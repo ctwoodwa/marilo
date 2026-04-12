@@ -40,13 +40,11 @@ You can also use [aggregates](slug:grid-aggregates) for the grouped data.
 ````RAZOR
 Drag the column header of the "Team" and/or "On Vacation" column to the group panel at the top
 
-<MariloGrid Data=@GridData Groupable="true" Pageable="true" Height="400px">
-    <GridColumns>
-        <GridColumn Field=@nameof(Employee.Name) Groupable="false" />
-        <GridColumn Field=@nameof(Employee.Team) Title="Team" />
-        <GridColumn Field=@nameof(Employee.IsOnLeave) Title="On Vacation" />
-    </GridColumns>
-</MariloGrid>
+<MariloDataGrid Data=@GridData Groupable="true" Pageable="true" Height="400px">
+        <MariloGridColumn Field=@nameof(Employee.Name) Groupable="false" />
+        <MariloGridColumn Field=@nameof(Employee.Team) Title="Team" />
+        <MariloGridColumn Field=@nameof(Employee.IsOnLeave) Title="On Vacation" />
+</MariloDataGrid>
 
 @code {
     public List<Employee> GridData { get; set; }
@@ -102,22 +100,20 @@ You can group the Grid from your code through the [Grid state](slug:grid-state).
 
 ## Grouping Settings
 
-The Grid provides grouping configuration options via the [`GridGroupableSettings` tag](slug:Marilo.Blazor.Components.GridGroupableSettings), which is nested inside `GridSettings`.
+The Grid provides grouping configuration options via the [`GridGroupableSettings` tag](slug:Marilo.Components.DataGrid.GridGroupableSettings), which is nested inside `GridSettings`.
 
 ````RAZOR
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              Groupable="true"
              Sortable="true">
     <GridSettings>
         <GridGroupableSettings Reorderable="true"
                                Sortable="true" />
     </GridSettings>
-    <GridColumns>
-        <GridColumn Field="@(nameof(SampleData.Id))" />
-        <GridColumn Field="@(nameof(SampleData.Name))" />
-        <GridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@(nameof(SampleData.Id))" />
+        <MariloGridColumn Field="@(nameof(SampleData.Name))" />
+        <MariloGridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" />
+</MariloDataGrid>
 
 @code {
     private IEnumerable<SampleData> GridData = Enumerable.Range(1, 30).Select(x => new SampleData

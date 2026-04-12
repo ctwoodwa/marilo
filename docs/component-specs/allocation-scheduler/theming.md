@@ -57,6 +57,21 @@ mar-allocation-scheduler__scenario-chip--active   (modifier)
 | `--marilo-color-surface` | Cell backgrounds |
 | `--marilo-color-subtle-background` | Header and toolbar backgrounds |
 
+## Dark Theme Token Overrides
+
+When `[data-marilo-theme="dark"]` is active, the FluentUI provider overrides several design tokens to ensure readable contrast on dark surfaces. These overrides are scoped to the `.mar-allocation-scheduler` block.
+
+| Token | Dark-Mode Value | Purpose |
+|---|---|---|
+| `--marilo-color-subtle-background` | `#2b2b2b` | Toolbar and header row backgrounds |
+| `--marilo-color-disabled-background` | `#3a3a3a` | Disabled cell backgrounds |
+| `--marilo-color-primary-rgb` | `76, 166, 255` | Used for `color-mix()` tints on selection and drag-target backgrounds |
+| `--marilo-color-text` | `#e0e0e0` | Primary text color for cell values and labels |
+| `--marilo-color-border` | `#404040` | Cell and row separator borders |
+| `--marilo-color-surface` | `#1e1e1e` | Cell and pane backgrounds |
+
+These tokens are consumed by the same SCSS rules that drive light mode — no separate dark-mode selectors are needed beyond the token overrides. Custom themes can override any of these tokens at the host level to create branded dark modes.
+
 ## Bootstrap Mapping
 
 | Marilo class | Bootstrap equivalent |

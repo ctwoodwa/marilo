@@ -38,7 +38,7 @@ To implement an AI Chat Assistant for your Grid, follow the steps below:
     Configure the desired features in the Grid. You can control Grid features through the state, even if their UI is not enabled explicitly in the declaration of the component.
 
     ````RAZOR.skip-repl
-    <MariloGrid @ref="@GridRef"
+    <MariloDataGrid @ref="@GridRef"
                 Data="@GridData"
                 FilterMode="GridFilterMode.FilterMenu"
                 Groupable="true"
@@ -50,10 +50,8 @@ To implement an AI Chat Assistant for your Grid, follow the steps below:
         <GridSettings>
             <GridPdfExport PageOrientation="@GridPdfExportPageOrientation.Landscape" />
         </GridSettings>
-        <GridColumns>
             <!-- Define columns -->
-        </GridColumns>
-    </MariloGrid>
+    </MariloDataGrid>
     ````
 
 2. Set Up the Chat Component
@@ -176,7 +174,7 @@ To implement an AI Chat Assistant for your Grid, follow the steps below:
             </MariloChat>
         </Template>
         <DrawerContent>
-            <MariloGrid @ref="@GridRef" ...>
+            <MariloDataGrid @ref="@GridRef" ...>
                 <GridToolBar>
                     <GridToolBarCustomTool>
                         <MariloToggleButton OnClick="@ToggleChat"
@@ -185,7 +183,7 @@ To implement an AI Chat Assistant for your Grid, follow the steps below:
                         </MariloToggleButton>
                     </GridToolBarCustomTool>
                 </GridToolBar>
-            </MariloGrid>
+            </MariloDataGrid>
         </DrawerContent>
     </MariloDrawer>
 

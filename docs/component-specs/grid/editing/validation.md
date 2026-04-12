@@ -59,7 +59,7 @@ Install the [`Blazored.FluentValidation`](https://www.nuget.org/packages/Blazore
 @using Blazored.FluentValidation
 @using FluentValidation
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              EditMode="@GridEditMode.Inline"
              OnCreate="@OnGridCreate"
              OnUpdate="@OnGridUpdate">
@@ -77,19 +77,17 @@ Install the [`Blazored.FluentValidation`](https://www.nuget.org/packages/Blazore
             Enable Validation
         </label>
     </GridToolBarTemplate>
-    <GridColumns>
-        <GridColumn Field="@nameof(Product.Name)" />
-        <GridColumn Field="@nameof(Product.Price)" DisplayFormat="{0:C2}" />
-        <GridColumn Field="@nameof(Product.Quantity)" DisplayFormat="{0:N0}" />
-        <GridColumn Field="@nameof(Product.ReleaseDate)" DisplayFormat="{0:d}" />
-        <GridColumn Field="@nameof(Product.Discontinued)" Width="120px" />
-        <GridCommandColumn Width="180px">
+        <MariloGridColumn Field="@nameof(Product.Name)" />
+        <MariloGridColumn Field="@nameof(Product.Price)" DisplayFormat="{0:C2}" />
+        <MariloGridColumn Field="@nameof(Product.Quantity)" DisplayFormat="{0:N0}" />
+        <MariloGridColumn Field="@nameof(Product.ReleaseDate)" DisplayFormat="{0:d}" />
+        <MariloGridColumn Field="@nameof(Product.Discontinued)" Width="120px" />
+        <MariloGridCommandColumn Width="180px">
             <GridCommandButton Command="Edit">Edit</GridCommandButton>
             <GridCommandButton Command="Save" ShowInEdit="true">Save</GridCommandButton>
             <GridCommandButton Command="Cancel" ShowInEdit="true">Cancel</GridCommandButton>
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 
 @code {
     private List<Product> GridData { get; set; } = new();

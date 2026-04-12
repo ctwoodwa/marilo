@@ -85,6 +85,19 @@ Fallback template for resource metadata cells when no column-level `Template` is
 
 > When both `ResourceRowTemplate` and a column-level `Template` are set, the column-level template wins for that column.
 
+## Grouped Headers
+
+When the view grain is coarser than Day, the timeline renders a **two-row header**: a top group row and a bottom leaf row. The group row labels the parent period (e.g., "Apr 2026" when viewing weeks, "2026" when viewing months). The leaf row labels individual time buckets.
+
+### BEM Classes
+
+| Class | Description |
+|---|---|
+| `mar-allocation-scheduler__header-group-row` | The `<tr>` for the top group header row. |
+| `mar-allocation-scheduler__header-group-cell` | Each `<th>` in the group row, spanning the child columns that belong to the same parent period. |
+
+The group row uses `role="row"` and group cells use `role="columnheader"` with a `colspan` matching the number of child buckets. The leaf row uses the standard `AllocationSchedulerTimeHeaderClass` CSS provider method.
+
 ## ToolbarTemplate
 
 Append custom content to the built-in toolbar.

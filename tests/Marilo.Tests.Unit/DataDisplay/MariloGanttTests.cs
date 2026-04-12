@@ -1872,4 +1872,33 @@ public class MariloGanttTests : MariloTestBase
         Assert.Equal(GanttColumnFilterType.Text, col.FilterType);
     }
 
+    // ── Bar base rendering (W4-INT-13) ───────────────────────────────
+
+    [Fact]
+    public void Gantt_Renders_Bar_With_Base_Class()
+    {
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, CreateTestData())
+            .Add(x => x.GanttColumns, DefaultColumns())
+            .Add(x => x.GanttViews, ViewsFragment(GanttView.Week)));
+
+        // The Razor emits <div class="mar-gantt__bar ..."> for each task bar.
+        // At least one bar should be present for the 9-item test data set.
+        var bars = cut.FindAll(".mar-gantt__bar");
+        Assert.NotEmpty(bars);
+    }
+
+    [Fact]
+    public void Gantt_Renders_BarRow_With_Base_Class()
+    {
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, CreateTestData())
+            .Add(x => x.GanttColumns, DefaultColumns())
+            .Add(x => x.GanttViews, ViewsFragment(GanttView.Week)));
+
+        // Each bar sits inside a bar-row container.
+        var barRows = cut.FindAll(".mar-gantt__bar-row");
+        Assert.NotEmpty(barRows);
+    }
+
 }

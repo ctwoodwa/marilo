@@ -27,7 +27,7 @@ The suggested approach for implementation is the following:
 Configure the Grid with the three key parameters that control highlighting and selection: `HighlightedItems` for row highlighting, `HighlightedCells` for cell-level highlighting, and `SelectedItems` for row selection. Enable multiple selection to allow users to select multiple rows based on AI prompts.
 
 ````RAZOR.skip-repl
-<MariloGrid @ref="@GridRef"
+<MariloDataGrid @ref="@GridRef"
              Data="@GridData"
              HighlightedItems="@HighlightedItems"
              HighlightedCells="@HighlightedCells"
@@ -35,16 +35,14 @@ Configure the Grid with the three key parameters that control highlighting and s
              SelectionMode="@GridSelectionMode.Multiple"
              Pageable="true"
              Sortable="true">
-    <GridColumns>
-        <GridColumn Field="@nameof(PatientDto.PatientName)" Title="Patient Name" />
-        <GridColumn Field="@nameof(PatientDto.Age)" Title="Age" />
-        <GridColumn Field="@nameof(PatientDto.Department)" Title="Department" />
-        <GridColumn Field="@nameof(PatientDto.Status)" Title="Status" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(PatientDto.PatientName)" Title="Patient Name" />
+        <MariloGridColumn Field="@nameof(PatientDto.Age)" Title="Age" />
+        <MariloGridColumn Field="@nameof(PatientDto.Department)" Title="Department" />
+        <MariloGridColumn Field="@nameof(PatientDto.Status)" Title="Status" />
+</MariloDataGrid>
 
 @code {
-    private MariloGrid<PatientDto> GridRef { get; set; }
+    private MariloDataGrid<PatientDto> GridRef { get; set; }
     private List<PatientDto> GridData { get; set; }
     private IEnumerable<PatientDto> SelectedItems { get; set; } = new List<PatientDto>();
     private List<PatientDto> HighlightedItems { get; set; } = new();
@@ -62,7 +60,7 @@ Configure the Grid with the three key parameters that control highlighting and s
 Add a `GridToolBarSmartBoxTool` to the Grid toolbar to provide the AI interaction interface. Configure the `GridToolBarSmartBoxToolAIAssistantSettings` with the `OnPromptRequest` event handler that will process user prompts. Optionally, provide predefined prompt suggestions and enable speech-to-text functionality.
 
 ````RAZOR.skip-repl
-<MariloGrid @ref="@GridRef"
+<MariloDataGrid @ref="@GridRef"
              Data="@GridData"
              HighlightedItems="@HighlightedItems"
              HighlightedCells="@HighlightedCells"
@@ -87,10 +85,8 @@ Add a `GridToolBarSmartBoxTool` to the Grid toolbar to provide the AI interactio
             </GridToolBarSmartBoxToolSettings>
         </GridToolBarSmartBoxTool>
     </GridToolBar>
-    <GridColumns>
         <!-- Grid columns -->
-    </GridColumns>
-</MariloGrid>
+</MariloDataGrid>
 
 @code {
     private List<string> AIPromptSuggestions { get; set; } = new()
@@ -139,7 +135,7 @@ Implement the `OnPromptRequest` event handler to send user prompts to your AI se
 Optionally, provide a way for users to clear all highlights and selections. You can add a toolbar button that resets the Grid state and clears the highlight and selection collections.
 
 ````RAZOR.skip-repl
-<MariloGrid @ref="@GridRef">
+<MariloDataGrid @ref="@GridRef">
     <GridToolBar>
         <GridToolBarSmartBoxTool>
             <!-- AI Assistant settings -->
@@ -154,10 +150,8 @@ Optionally, provide a way for users to clear all highlights and selections. You 
             </MariloButton>
         </GridToolBarCustomTool>
     </GridToolBar>
-    <GridColumns>
         <!-- Grid columns -->
-    </GridColumns>
-</MariloGrid>
+</MariloDataGrid>
 
 @code {
     private async Task OnResetChangesClick()

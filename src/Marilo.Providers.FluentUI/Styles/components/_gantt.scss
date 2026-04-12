@@ -39,6 +39,30 @@
   }
 }
 
+// ── Bar base ──────────────────────────────────────────────────
+.mar-gantt__bar {
+  position: relative;
+  height: var(--marilo-gantt-bar-height, 24px);
+  background: var(--marilo-gantt-bar-bg, var(--colorBrandBackground, #0078d4));
+  border-radius: var(--marilo-gantt-bar-radius, 4px);
+  color: var(--marilo-gantt-bar-color, var(--colorNeutralForegroundOnBrand, #ffffff));
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  font-size: var(--marilo-gantt-bar-font-size, 12px);
+  line-height: 1;
+  box-sizing: border-box;
+  transition: filter 0.15s ease;
+}
+
+.mar-gantt__bar-row {
+  position: relative;
+  height: var(--marilo-gantt-row-height, 36px);
+  display: flex;
+  align-items: center;
+}
+
 // ── Milestone ──────────────────────────────────────────────────
 .mar-gantt__milestone {
   position: absolute;

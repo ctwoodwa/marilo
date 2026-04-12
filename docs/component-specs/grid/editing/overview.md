@@ -56,14 +56,12 @@ To allow users to add or edit values in the Grid:
 >caption Set up Grid popup edit mode
 
 ````RAZOR.skip-repl
-<MariloGrid EditMode="@GridEditMode.Popup"
+<MariloDataGrid EditMode="@GridEditMode.Popup"
              OnUpdate="@OnGridUpdate">
-    <GridColumns>
-        <GridCommandColumn>
+        <MariloGridCommandColumn>
             <GridCommandButton Command="Edit">Edit</GridCommandButton>
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 ````
 
 >tip See the Grid add and edit operations in action in the complete examples for Grid [inline](slug:grid-editing-inline#examples), [in-cell](slug:grid-editing-incell#examples), and [popup](slug:grid-editing-popup#examples) editing.
@@ -80,7 +78,7 @@ Delete operations provide the same user experience in all Grid edit modes and re
 
 Delete operations can work even if the Grid `EditMode` parameter value is `None`.
 
-If the Grid contains Delete command buttons that display and operate in edit mode, these buttons will fire the [`OnDelete` event](#events) with a [cloned data item instance](#item-instances) in the [event argument](#gridcommandeventargs). To find the original data item in the Grid data source, use the item ID or [override the `Equals()` method of the Grid model class](slug://grid-kb-editing-in-hierarchy).
+If the Grid contains Delete command buttons that display and operate in edit mode, these buttons will fire the [`OnDelete` event](#events) with a [cloned data item instance](#item-instances) in the [event argument](#gridediteventargs). To find the original data item in the Grid data source, use the item ID or [override the `Equals()` method of the Grid model class](slug://grid-kb-editing-in-hierarchy).
 
 >tip See the delete operations in action in the complete examples for Grid [inline](slug:grid-editing-inline#examples), [in-cell](slug:grid-editing-incell#examples), and [popup](slug:grid-editing-popup#examples) editing. Also check how to [customize the Delete Confirmation Dialog](slug:grid-kb-customize-delete-confirmation-dialog).
 
@@ -106,10 +104,10 @@ You can also [trigger add and edit operations programmatically](slug:grid-kb-add
 
 ## Events
 
-The following table describes the Grid events, which are related to adding, deleting, and editing items. Also check the sections about [item instances](#item-instances) and [event arguments](#gridcommandeventargs) below.
+The following table describes the Grid events, which are related to adding, deleting, and editing items. Also check the sections about [item instances](#item-instances) and [event arguments](#gridediteventargs) below.
 
 
-| Event | Required | Description | [Item Instance](#gridcommandeventargs) | If&nbsp;Cancelled |
+| Event | Required | Description | [Item Instance](#gridediteventargs) | If&nbsp;Cancelled |
 | --- | --- | --- | --- | --- |
 | `OnAdd` | No | Fires on `Add` [command button](slug://components/grid/columns/command) click, before the Grid enters add mode. This event preceeds `OnCreate` or `OnCancel`. | [New](#item-instances) | Grid remains in read mode. |
 | `OnCancel` | No | Fires on `Cancel` command invocation. | [New or cloned](#item-instances) | Grid remains in add or edit mode. |
@@ -121,7 +119,7 @@ The following table describes the Grid events, which are related to adding, dele
 
 The following considerations apply for the Grid CRUD events:
 
-* Most events provide a [`GridCommandEventArgs` argument](#gridcommandeventargs) in the handler. `OnModelInit` has no event argument.
+* Most events provide a [`GridEditEventArgs<TItem>` argument](#gridediteventargs) in the handler. `OnModelInit` has no event argument.
 * All events, except `OnModelInit`, are cancellable and the user action can be prevented. Cancelling `OnDelete` does not automatically prevent item deletion from the Grid data source. This depends entirely on the executed application code.
 * The `OnCreate`, `OnDelete`, and `OnUpdate` events are required when using add, delete, and edit operations, respectively. The app must use these events to modify the Grid data source. [The Grid does not modify its data directly](#item-instances).
 
@@ -142,9 +140,9 @@ The Grid does not expose or modify its data items directly in add or edit mode. 
 * Provides the app with full control over the data source.
 * Sets some requirements [for the Grid model class](#model-requirements) and for [updating Entity Framework models](slug:grid-kb-entity-framework-model-update).
 
-### GridCommandEventArgs
+### GridEditEventArgs
 
-All events in the [Events table](#events), except `OnModelInit`, provide a [`GridCommandEventArgs`](slug:marilo.blazor.components.gridcommandeventargs) event argument. It exposes the following properties:
+All events in the [Events table](#events), except `OnModelInit`, provide a [`GridEditEventArgs<TItem>`](slug:Marilo.Components.DataGrid.GridEditEventArgs-1) event argument. It exposes the following properties:
 
 | Property&nbsp;Name | Type | Description |
 | --- | --- | --- |
@@ -156,7 +154,9 @@ All events in the [Events table](#events), except `OnModelInit`, provide a [`Gri
 
 ## Column Editors
 
-You can customize the column editors through the [column `EditorType` parameter](slug:components/grid/columns/bound#data-operations), or by using an [editor template](slug:grid-templates-editor). The `EditorType` parameter accepts a member of the `GridEditorType` enum:
+You can customize the column editors through the [column `EditorType` parameter](slug:components/grid/columns/bound#data-operations), or by using an [editor template](slug:grid-templates-editor). The `EditorType` parameter accepts a member of the `GridEditorType` enum.
+
+> The `GridEditorType` enum is planned but not yet implemented in source. See gap SA-09 for tracking.
 
 | Column Field Type | Valid `GridEditorType` Enum Members |
 | --- | --- |
@@ -167,7 +167,7 @@ You can customize the column editors through the [column `EditorType` parameter]
 >caption Setting column editor type
 
 ````RAZOR.skip-repl
-<GridColumn Field="@nameof(Race.StartDateTime)"
+<MariloGridColumn Field="@nameof(Race.StartDateTime)"
             EditorType="@GridEditorType.DateTimePicker" />
 ````
 
@@ -218,7 +218,7 @@ This configuration is available in InCell and Inline edit modes. For more detail
 <div class="skip-repl"></div>
 
 ````C#
-private void OnCreate(GridCommandEventArgs args)
+private void OnCreate(GridEditEventArgs<TItem> args)
 {
     if (NewRowPosition == GridNewRowPosition.Bottom)
     {

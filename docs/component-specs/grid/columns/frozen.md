@@ -32,24 +32,22 @@ This article you can observe Freezing different columns. The examples are separa
     <div class="alert alert-info w-25">@Result</div>
 }
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              Width="850px"
              Height="400px">
-    <GridColumns>
-        <GridColumn Field=@nameof(Product.ProductName) Title="Product Name" Width="150px" Locked="true" />
-        <GridColumn Field=@nameof(Product.UnitPrice) Title="Unit Price" Width="150px" />
-        <GridColumn Field=@nameof(Product.UnitsInStock) Title="Units in stock" Width="150px" />
-        <GridColumn Field=@nameof(Product.CreatedAt) Title="Date created" Width="250px" />
-        <GridColumn Field=@nameof(Product.Discontinued) Title="Discontinued" Width="150px" />
-        <GridCommandColumn Width="250px" Locked="true">
+        <MariloGridColumn Field=@nameof(Product.ProductName) Title="Product Name" Width="150px" Locked="true" />
+        <MariloGridColumn Field=@nameof(Product.UnitPrice) Title="Unit Price" Width="150px" />
+        <MariloGridColumn Field=@nameof(Product.UnitsInStock) Title="Units in stock" Width="150px" />
+        <MariloGridColumn Field=@nameof(Product.CreatedAt) Title="Date created" Width="250px" />
+        <MariloGridColumn Field=@nameof(Product.Discontinued) Title="Discontinued" Width="150px" />
+        <MariloGridCommandColumn Width="250px" Locked="true">
             <GridCommandButton Command="CustomCommand"
                                Icon="@SvgIcon.InfoCircle"
                                OnClick="@((GridCommandEventArgs  e) => Result = $" click from {(e.Item as Product).ProductName}" )">
                 Information
             </GridCommandButton>
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 
 @code {
     private string Result { get; set; }
@@ -108,16 +106,14 @@ This article you can observe Freezing different columns. The examples are separa
 ````RAZOR
 @*You can observe the behavior of a frozen column that is neither first, nor last*@
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              Width="550px"
              Height="400px">
-    <GridColumns>
-        <GridColumn Field=@nameof(Product.ProductName) Title="Product Name" Width="200px" Locked="true" />
-        <GridColumn Field=@nameof(Product.UnitPrice) Title="Unit Price" Width="200px" />
-        <GridColumn Field=@nameof(Product.SupplierId) Title="Supplier Id" Width="150px" Locked="true" />
-        <GridColumn Field="@nameof(Product.UnitsInStock)" Title="Units In Stock" Width="200px" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field=@nameof(Product.ProductName) Title="Product Name" Width="200px" Locked="true" />
+        <MariloGridColumn Field=@nameof(Product.UnitPrice) Title="Unit Price" Width="200px" />
+        <MariloGridColumn Field=@nameof(Product.SupplierId) Title="Supplier Id" Width="150px" Locked="true" />
+        <MariloGridColumn Field="@nameof(Product.UnitsInStock)" Title="Units In Stock" Width="200px" />
+</MariloDataGrid>
 
 
 @code {

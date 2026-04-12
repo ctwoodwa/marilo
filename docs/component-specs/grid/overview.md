@@ -26,7 +26,7 @@ The Marilo Blazor grid is built on native Blazor from the ground up, by a compan
 1. Use the `MariloGrid` tag.
 1. Assign the Grid `Data` parameter to an `IEnumerable<T>` property, **or** use the [`OnRead` event](slug:common-features-data-binding-onread). We'll go with `Data` this time. The [Grid Data Binding article](slug:grid-data-binding) compares the two alternatives.
 1. (optional) Enable some data operations like paging, sorting or filtering.
-1. Add [`GridColumn`](slug:components/grid/columns/bound) instances under the `GridColumns` tag. Each column `Field` should point to the model property to display. Use `nameof()` or the plain field name. Define user-friendly column `Title`s or [`DisplayFormat` for numeric and date values](slug:grid-columns-displayformat).
+1. Add [`MariloGridColumn`](slug:components/grid/columns/bound) instances directly inside `<MariloDataGrid>`. Each column `Field` should point to the model property to display. Use `nameof()` or the plain field name. Define user-friendly column `Title`s or [`DisplayFormat` for numeric and date values](slug:grid-columns-displayformat).
 
 >caption Get started with the Blazor Grid
 
@@ -112,7 +112,7 @@ The Grid supports custom content in various parts of the component such as data 
 
 ## Grid Parameters
 
-The following table lists Grid parameters, which are not discussed elsewhere in the component documentation. Check the [Grid API Reference](slug:Marilo.Blazor.Components.MariloGrid-1) for a full list of parameters, methods and events.
+The following table lists Grid parameters, which are not discussed elsewhere in the component documentation. Check the [Grid API Reference](slug:Marilo.Components.DataGrid.MariloDataGrid-1) for a full list of parameters, methods and events.
 
 
 | Parameter | Type and Default&nbsp;Value | Description |
@@ -149,7 +149,7 @@ To execute these methods, obtain reference to the Grid instance via `@ref`.
 ## See Also
 
 * [Live Demos: Grid](https://demos.marilo.com/blazor-ui/grid/overview)
-* [Grid API Reference](slug:Marilo.Blazor.Components.MariloGrid-1)
+* [Grid API Reference](slug:Marilo.Components.DataGrid.MariloDataGrid-1)
 
 <VideoMetadata 
     name="Marilo UI for Blazor Data Grid"

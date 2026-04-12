@@ -27,7 +27,7 @@ The show stacked Grid columns, set the `DataLayoutMode` component parameter to `
 >caption Enable stacked columns in the Grid
 
 ````RAZOR.skip-repl
-<MariloGrid DataLayoutMode="@GridDataLayoutMode.Stacked" />
+<MariloDataGrid DataLayoutMode="@GridDataLayoutMode.Stacked" />
 ````
 
 ## Stacked Columns Count
@@ -39,21 +39,19 @@ When using multiple stacked columns, the data row values are arranged first hori
 >caption Display 2 stacked columns in the Grid
 
 ````RAZOR.skip-repl
-<MariloGrid DataLayoutMode="@GridDataLayoutMode.Stacked">
+<MariloDataGrid DataLayoutMode="@GridDataLayoutMode.Stacked">
     <GridSettings>
         <GridStackedLayoutSettings ColumnsCount="2" />
     </GridSettings>
-    <GridColumns>
-        <GridColumn Field="@nameof(Product.Name)" />
-        <GridColumn Field="@nameof(Product.Price)" />
-        <GridColumn Field="@nameof(Product.Quantity)" />
-        <GridColumn Field="@nameof(Product.StartDate)" />
-        <GridColumn Field="@nameof(Product.IsActive)" />
-        <GridCommandColumn>
+        <MariloGridColumn Field="@nameof(Product.Name)" />
+        <MariloGridColumn Field="@nameof(Product.Price)" />
+        <MariloGridColumn Field="@nameof(Product.Quantity)" />
+        <MariloGridColumn Field="@nameof(Product.StartDate)" />
+        <MariloGridColumn Field="@nameof(Product.IsActive)" />
+        <MariloGridCommandColumn>
             <GridCommandButton />
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 ````
 
 ## Stacked Columns Width
@@ -102,7 +100,7 @@ The following sample shows how to:
 <MariloMediaQuery Media="(min-width:800px)" OnChange="@( (bool matches) => IsMediumScreen = matches )" />
 <MariloMediaQuery Media="(max-width:500px)" OnChange="@( (bool matches) => IsSmallScreen = matches )" />
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              DataLayoutMode="@( IsLargeScreen ? GridDataLayoutMode.Columns : GridDataLayoutMode.Stacked )"
              FilterMode="@GridFilterMode.FilterMenu"
              EditMode="@GridEditMode.Inline"
@@ -132,23 +130,21 @@ The following sample shows how to:
             <GridToolBarCancelEditTool>Cancel</GridToolBarCancelEditTool>
         }
     </GridToolBar>
-    <GridColumns>
         <GridCheckboxColumn />
-        <GridColumn Field="@nameof(Product.Name)" />
-        <GridColumn Field="@nameof(Product.Price)" DisplayFormat="{0:c2}" />
-        <GridColumn Field="@nameof(Product.Quantity)" DisplayFormat="{0:n0}" />
-        <GridColumn Field="@nameof(Product.StartDate)" DisplayFormat="{0:d}" />
-        <GridColumn Field="@nameof(Product.IsActive)" />
-        <GridCommandColumn Width="120px">
+        <MariloGridColumn Field="@nameof(Product.Name)" />
+        <MariloGridColumn Field="@nameof(Product.Price)" DisplayFormat="{0:c2}" />
+        <MariloGridColumn Field="@nameof(Product.Quantity)" DisplayFormat="{0:n0}" />
+        <MariloGridColumn Field="@nameof(Product.StartDate)" DisplayFormat="{0:d}" />
+        <MariloGridColumn Field="@nameof(Product.IsActive)" />
+        <MariloGridCommandColumn Width="120px">
             <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil" />
             <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true" />
             <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true" />
-        </GridCommandColumn>
-    </GridColumns>
+        </MariloGridCommandColumn>
     <DetailTemplate>
         <div style="padding:0.5em 0;">DetailTemplate for @context.Name</div>
     </DetailTemplate>
-</MariloGrid>
+</MariloDataGrid>
 
 @code {
     private int GridStackedColumnsCount => IsSmallScreen ? 1 : 2;

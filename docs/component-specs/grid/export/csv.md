@@ -61,7 +61,7 @@ For further customizations, use the `GridExcelExport` tag to subscribe to the [G
 @* You can sort, group, filter, page the grid, reorder its columns, and you can click the
     Export button to save the current data *@
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              Pageable="true"
              Sortable="true"
              Reorderable="true"
@@ -78,15 +78,13 @@ For further customizations, use the `GridExcelExport` tag to subscribe to the [G
         <GridCsvExport FileName="marilo-grid-export" />
     </GridExport>
 
-    <GridColumns>
-        <GridColumn Field="@nameof(SampleData.ProductId)" Title="ID" />
-        <GridColumn Field="@nameof(SampleData.ProductName)" Title="Product Name" />
-        <GridColumn Field="@nameof(SampleData.UnitsInStock)" Title="In stock" />
-        <GridColumn Field="@nameof(SampleData.Price)" Title="Unit Price" />
-        <GridColumn Field="@nameof(SampleData.Discontinued)" Title="Discontinued" />
-        <GridColumn Field="@nameof(SampleData.FirstReleaseDate)" Title="Release Date" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(SampleData.ProductId)" Title="ID" />
+        <MariloGridColumn Field="@nameof(SampleData.ProductName)" Title="Product Name" />
+        <MariloGridColumn Field="@nameof(SampleData.UnitsInStock)" Title="In stock" />
+        <MariloGridColumn Field="@nameof(SampleData.Price)" Title="Unit Price" />
+        <MariloGridColumn Field="@nameof(SampleData.Discontinued)" Title="Discontinued" />
+        <MariloGridColumn Field="@nameof(SampleData.FirstReleaseDate)" Title="Release Date" />
+</MariloDataGrid>
 
 @code {
     private List<SampleData> GridData { get; set; }
@@ -122,8 +120,8 @@ You can programmatically invoke the export feature of the Grid, by using the fol
 
 | Method | Type | Description |
 | --- | --- | --- |
-| `SaveAsCsvFileAsync` | `ValueTask` | Sends the exported CSV file to the browser for download. You can pass [`GridCsvExportOptions`](slug:Marilo.Blazor.Components.MariloGrid-1) to customize the export. |
-| `ExportToCsvAsync` | `Task<MemoryStream>` | Returns the exported data as a `MemoryStream`. The stream itself is finalized, so that the resource does not leak. To read and work with the stream, clone its available binary data to a new `MemoryStream` instance. You can pass [`GridCsvExportOptions`](slug:Marilo.Blazor.Components.Grid.GridCsvExportOptions) to customize the export. |
+| `SaveAsCsvFileAsync` | `ValueTask` | Sends the exported CSV file to the browser for download. You can pass [`GridCsvExportOptions`](slug:Marilo.Components.DataGrid.MariloDataGrid-1) to customize the export. |
+| `ExportToCsvAsync` | `Task<MemoryStream>` | Returns the exported data as a `MemoryStream`. The stream itself is finalized, so that the resource does not leak. To read and work with the stream, clone its available binary data to a new `MemoryStream` instance. You can pass [`GridCsvExportOptions`](slug:Marilo.Components.DataGrid.GridCsvExportOptions) to customize the export. |
 
 When exporting programmatically with a `GridCsvExportOptions` argument:
 
@@ -136,14 +134,14 @@ When exporting programmatically with a `GridCsvExportOptions` argument:
 @* Send the exported file for download and get the exported data as a memory stream *@
 
 @using System.IO
-@using Marilo.Blazor.Components.Grid;
+@using Marilo.Components.DataGrid;
 
 <MariloButton OnClick="@(async () => await GridRef.SaveAsCsvFileAsync())">Download the CSV file</MariloButton>
 <MariloButton OnClick="@GetTheDataAsAStream">Get the Exported Data as a MemoryStream</MariloButton>
 <MariloButton OnClick="@(async () => await SaveAsCsvWithOptions())">Download CSV with Options</MariloButton>
 <MariloButton OnClick="@(async () => await ExportToCsvWithOptions())">Get CSV Data with Options</MariloButton>
 
-<MariloGrid @ref="@GridRef"
+<MariloDataGrid @ref="@GridRef"
              Data="@GridData"
              Pageable="true"
              Sortable="true"
@@ -161,18 +159,16 @@ When exporting programmatically with a `GridCsvExportOptions` argument:
         <GridCsvExport FileName="marilo-grid-export" AllPages="@ExportAllPages" />
     </GridExport>
 
-    <GridColumns>
-        <GridColumn Field="@nameof(SampleData.ProductId)" Title="ID" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.ProductName)" Title="Product Name" Width="300px" />
-        <GridColumn Field="@nameof(SampleData.UnitsInStock)" Title="In stock" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.Price)" Title="Unit Price" Width="200px" />
-        <GridColumn Field="@nameof(SampleData.Discontinued)" Title="Discontinued" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.FirstReleaseDate)" Title="Release Date" Width="300px" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(SampleData.ProductId)" Title="ID" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.ProductName)" Title="Product Name" Width="300px" />
+        <MariloGridColumn Field="@nameof(SampleData.UnitsInStock)" Title="In stock" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.Price)" Title="Unit Price" Width="200px" />
+        <MariloGridColumn Field="@nameof(SampleData.Discontinued)" Title="Discontinued" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.FirstReleaseDate)" Title="Release Date" Width="300px" />
+</MariloDataGrid>
 
 @code {
-    private MariloGrid<SampleData> GridRef { get; set; }
+    private MariloDataGrid<SampleData> GridRef { get; set; }
     private MemoryStream exportedCsvStream { get; set; }
     private List<SampleData> GridData { get; set; }
     private bool ExportAllPages { get; set; }

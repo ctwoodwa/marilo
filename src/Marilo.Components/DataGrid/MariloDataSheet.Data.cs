@@ -265,6 +265,10 @@ public partial class MariloDataSheet<TItem>
         if (_isSaving) return;
         _isSaving = true;
 
+        // SA-13: announce save start to screen readers
+        _ariaAnnouncement = "Saving changes.";
+        StateHasChanged();
+
         // Track entries whose TransientState we set to Saving so the
         // exception path can roll them back cleanly.
         List<DirtyRowEntry<TItem>>? savingEntries = null;
@@ -303,7 +307,11 @@ public partial class MariloDataSheet<TItem>
             // Step 3: Block if invalid
             if (!isValid)
             {
-                _ariaAnnouncement = "Save blocked: fix validation errors first.";
+                // SA-13: announce validation failure with error count
+                var errorCount = _dirtyRows.Values
+                    .SelectMany(e => e.ValidationErrors)
+                    .Count();
+                _ariaAnnouncement = $"Save failed. {errorCount} validation error{(errorCount == 1 ? "" : "s")}.";
                 StateHasChanged();
                 return;
             }
@@ -405,6 +413,9 @@ public partial class MariloDataSheet<TItem>
         }
         catch
         {
+            // SA-13: announce save failure to screen readers
+            _ariaAnnouncement = "Save failed. An error occurred.";
+
             // Rollback: clear TransientState on every entry we flipped to
             // Saving so the grid returns to a dirty-but-editable state and
             // the user can retry. Then re-throw so the caller sees the
@@ -419,8 +430,8 @@ public partial class MariloDataSheet<TItem>
                 {
                     entry.TransientState = null;
                 }
-                StateHasChanged();
             }
+            StateHasChanged();
             throw;
         }
         finally
@@ -515,6 +526,7 @@ public partial class MariloDataSheet<TItem>
         }
 
         _dirtyRows.Clear();
+        _undoBuffer.Clear(); // SA-04: clear undo buffer on reset
         ClearActiveCell();
         _ariaAnnouncement = "All changes have been reset.";
         StateHasChanged();

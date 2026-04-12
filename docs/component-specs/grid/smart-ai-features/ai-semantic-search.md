@@ -35,7 +35,7 @@ You must implement the semantic search logic yourself, for example, by integrati
     Add the `GridToolBarSmartBoxTool` to your Grid toolbar and configure the semantic search settings:
 
     ````RAZOR.skip-repl
-    <MariloGrid Data="@GridData">
+    <MariloDataGrid Data="@GridData">
         <GridToolBar>
             <GridToolBarSmartBoxTool>
                 <GridToolBarSmartBoxToolSettings>
@@ -50,13 +50,11 @@ You must implement the semantic search logic yourself, for example, by integrati
             </GridToolBarSmartBoxTool>
         </GridToolBar>
 
-        <GridColumns>
-            <GridColumn Field="@nameof(Product.Name)" />
-            <GridColumn Field="@nameof(Product.Description)" />
-            <GridColumn Field="@nameof(Product.Category)" />
-            <GridColumn Field="@nameof(Product.Price)" />
-        </GridColumns>
-    </MariloGrid>
+            <MariloGridColumn Field="@nameof(Product.Name)" />
+            <MariloGridColumn Field="@nameof(Product.Description)" />
+            <MariloGridColumn Field="@nameof(Product.Category)" />
+            <MariloGridColumn Field="@nameof(Product.Price)" />
+    </MariloDataGrid>
 
     @code {
         private List<Product> GridData { get; set; } = new();
@@ -163,7 +161,7 @@ The example below shows a semantic search implementation with vector embeddings:
 @inject IVectorDatabase VectorDatabase
 @inject IProductRepository ProductRepository
 
-<MariloGrid Data="@GridData">
+<MariloDataGrid Data="@GridData">
     <GridToolBar>
         @if (IsSearching)
         {
@@ -183,13 +181,11 @@ The example below shows a semantic search implementation with vector embeddings:
         </GridToolBarSmartBoxTool>
     </GridToolBar>
 
-    <GridColumns>
-        <GridColumn Field="@nameof(Product.Name)" Title="Product Name" />
-        <GridColumn Field="@nameof(Product.Description)" />
-        <GridColumn Field="@nameof(Product.Category)" />
-        <GridColumn Field="@nameof(Product.Price)" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(Product.Name)" Title="Product Name" />
+        <MariloGridColumn Field="@nameof(Product.Description)" />
+        <MariloGridColumn Field="@nameof(Product.Category)" />
+        <MariloGridColumn Field="@nameof(Product.Price)" />
+</MariloDataGrid>
 
 @if (!string.IsNullOrEmpty(SearchError))
 {

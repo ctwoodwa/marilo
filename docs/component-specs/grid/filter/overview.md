@@ -61,20 +61,18 @@ You can customize the filter editors declaratively for some data types. It is po
 ````RAZOR
 @* Using FilterEditorType and FilterEditorFormat parameters *@
 
-<MariloGrid Data=@GridData 
-             FilterMode="Marilo.Blazor.GridFilterMode.FilterMenu"
+<MariloDataGrid Data=@GridData 
+             FilterMode="Marilo.Components.DataGrid.GridFilterMode.FilterMenu"
              Pageable="true" 
              Height="400px">
-    <GridColumns>
-        <GridColumn Field="@nameof(Employee.Name)" />
-        <GridColumn Field="@nameof(Employee.AgeInYears)" Title="Age" />
-        <GridColumn Field="@nameof(Employee.HireDate)" 
+        <MariloGridColumn Field="@nameof(Employee.Name)" />
+        <MariloGridColumn Field="@nameof(Employee.AgeInYears)" Title="Age" />
+        <MariloGridColumn Field="@nameof(Employee.HireDate)" 
                     FilterEditorType="@GridFilterEditorType.DateTimePicker"
                     FilterEditorFormat="yyyy-MM-dd HH:mm"
                     Title="Hire Date" />
-        <GridColumn Field="@nameof(Employee.IsOnLeave)" Title="On Vacation" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(Employee.IsOnLeave)" Title="On Vacation" />
+</MariloDataGrid>
 
 @code {
     public List<Employee> GridData { get; set; }

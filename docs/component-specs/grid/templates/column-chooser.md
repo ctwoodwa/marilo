@@ -19,7 +19,7 @@ When the Template is setup the list of columns, rendered by default, would not b
 ````RAZOR
 @* Use the Template to render the list of columns and add some custom styles *@ 
 
-<MariloGrid Data="@MyData"
+<MariloDataGrid Data="@MyData"
              Pageable="true"
              PageSize="5"
              Width="700px"
@@ -44,15 +44,13 @@ When the Template is setup the list of columns, rendered by default, would not b
             </GridColumnMenuChooser>
         </GridColumnMenuSettings>
     </GridSettings>
-    <GridColumns>
-        <GridColumn Field="@(nameof(SampleData.Id))" Width="80px" Title="Id" Id="id-column-id" />
-        <GridColumn Field="@(nameof(SampleData.FirstName))" Title="First Name" Id="firstname-column-id" />
-        <GridColumn Field="@(nameof(SampleData.LastName))" Title="Last Name" Id="lastname-column-id" />
-        <GridColumn Field="@(nameof(SampleData.CompanyName))" Title="Company" Id="companyname-column-id" />
-        <GridColumn Field="@(nameof(SampleData.Team))" Title="Team" Id="team-column-id" />
-        <GridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" Id="hiredate-column-id" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@(nameof(SampleData.Id))" Width="80px" Title="Id" Id="id-column-id" />
+        <MariloGridColumn Field="@(nameof(SampleData.FirstName))" Title="First Name" Id="firstname-column-id" />
+        <MariloGridColumn Field="@(nameof(SampleData.LastName))" Title="Last Name" Id="lastname-column-id" />
+        <MariloGridColumn Field="@(nameof(SampleData.CompanyName))" Title="Company" Id="companyname-column-id" />
+        <MariloGridColumn Field="@(nameof(SampleData.Team))" Title="Team" Id="team-column-id" />
+        <MariloGridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" Id="hiredate-column-id" />
+</MariloDataGrid>
 
 @code {
     public string TextboxValue { get; set; } = string.Empty;

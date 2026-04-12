@@ -51,7 +51,7 @@ public class AllocationSet
     public DateTime CreatedDate    { get; set; }
     public DateTime? FinalizedDate { get; set; }   // set when IsLocked = true
     public bool   IsLocked         { get; set; }
-    public AllocationScenarioStatus Status { get; set; }
+    public ScenarioStatus Status { get; set; }
     public string Description      { get; set; }
 }
 ```
@@ -93,10 +93,10 @@ public enum AllocationSetType
 }
 ```
 
-### AllocationScenarioStatus
+### ScenarioStatus
 
 ```csharp
-public enum AllocationScenarioStatus
+public enum ScenarioStatus
 {
     Draft,      // Being edited; visible only to the creator
     Shared,     // Visible to the project team for review
@@ -243,7 +243,7 @@ The following example shows a component with one locked baseline and two active 
             SetId            = Guid.Parse("..."),
             Name             = "Optimistic Hire",
             Type             = AllocationSetType.Scenario,
-            Status           = AllocationScenarioStatus.Shared,
+            Status           = ScenarioStatus.Shared,
             ParentBaselineId = Guid.Parse("..."),
         },
         new AllocationSet
@@ -251,7 +251,7 @@ The following example shows a component with one locked baseline and two active 
             SetId            = Guid.Parse("..."),
             Name             = "Reduced Budget",
             Type             = AllocationSetType.Scenario,
-            Status           = AllocationScenarioStatus.Draft,
+            Status           = ScenarioStatus.Draft,
             ParentBaselineId = Guid.Parse("..."),
         }
     };

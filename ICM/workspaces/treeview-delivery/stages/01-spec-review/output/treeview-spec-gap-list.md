@@ -2,6 +2,7 @@
 
 **Audit Date:** 2026-04-03
 **Re-verified:** 2026-04-11 (parameter inventory unchanged; partial closures applied)
+**Re-verified:** 2026-04-11 (events.md rewrite; additional closures applied — see 2026-04-11 (events) section below)
 **Component:** MariloTreeView / MariloTreeItem
 **Spec Directory:** /workspaces/Marilo/docs/component-specs/treeview/
 **Source:** /workspaces/Marilo/src/Marilo.Components/Navigation/MariloTreeView.razor.cs
@@ -12,10 +13,10 @@
 
 | Type | Count | Open |
 |------|-------|------|
-| Undocumented (implemented but not in spec) | 14 | 3 |
+| Undocumented (implemented but not in spec) | 14 | 0 |
 | Spec-ahead (documented but not implemented) | 13 | 13 |
-| Mismatch (both exist but disagree) | 7 | 7 |
-| **Total** | **34** | **23** |
+| Mismatch (both exist but disagree) | 7 | 4 |
+| **Total** | **34** | **17** |
 
 | Priority | Count |
 |----------|-------|
@@ -46,6 +47,28 @@ Still open in (A): **SPEC-treeview-008** (OnItemContextMenu — needs events.md 
 Still open in (A) but downgraded: none.
 
 Remaining undocumented open count after this pass: **1** (008). The counts table above reflects: 13 of 14 undocumented closed, plus `CollapseAllAsync` (previously only in source) is now also in the spec methods table.
+
+---
+
+## 2026-04-11 Closures (events.md rewrite)
+
+The following gaps were closed by rewriting `docs/component-specs/treeview/events.md` and updating `overview.md`:
+
+- **SPEC-treeview-008** `OnItemContextMenu` — events.md now documents `EventCallback<TreeItemContextMenuEventArgs>` with full properties table (`Item`, `ItemId`, `MouseEventArgs`). **CLOSED.**
+- **SPEC-treeview-033** Collection parameter types — events.md example code updated to use `IEnumerable<string>` for `CheckedItems`, `ExpandedItems`, `SelectedItems`. overview.md `ExpandedItems` example also updated to `IEnumerable<string>`. **CLOSED.**
+- **SPEC-treeview-034** `OnItemClick` type — events.md now explicitly documents that current source exposes `EventCallback<object>` and notes that `TreeViewItemClickEventArgs` is Planned. **CLOSED (documented).**
+
+Additionally in this pass:
+- **OnItemEdit** — new section added to events.md documenting `EventCallback<TreeItemEditEventArgs>` with properties table (`ItemId`, `NewText`). This closes the inline-editing event documentation deferred from SPEC-treeview-005.
+- **Planned markers** — `OnExpand`, `OnItemDoubleClick`, `OnItemRender` all marked as **Planned** in events.md.
+- **Drag Events** — section rewritten: `OnItemDrop` (current source, tuple type) documented as implemented; `OnDragStart`/`OnDrag`/`OnDrop`/`OnDragEnd` marked as **Planned**. SPEC-028/029 naming decision noted inline.
+
+Remaining open mismatches (require code or spec decision — cannot close by spec-only update):
+- **SPEC-028** `EnableDragDrop` vs `Draggable` — name decision needed
+- **SPEC-029** `OnItemDrop` vs `OnDrop` (type + name) — code change needed for full resolution
+- **SPEC-030** `TreeSelectionMode` vs `TreeViewSelectionMode` — enum name decision
+- **SPEC-031** `AllowCheckChildren` vs `CheckChildren` — name decision
+- **SPEC-032** `AllowCheckParents` vs `CheckParents` — name decision
 
 ---
 
@@ -661,8 +684,10 @@ Each record includes a **cross-ref** column: `Yes` = already addressed by `fluen
 **ID:** SPEC-treeview-036
 **Type:** mismatch
 **Parameter/Event:** Ctrl+click deselect / toggle
-**Priority:** P2
+**Priority:** P1
 **Cross-ref fluent-ui-gap-analysis.md:** No
+
+> Priority upgraded P2 → P1 per orchestrator review record `_orchestrator/reviews/w-treeview-delivery-2026-04-11-1755.md` (user-visible behavior divergence from spec).
 
 | Field | In Spec | In Source |
 |-------|---------|-----------|

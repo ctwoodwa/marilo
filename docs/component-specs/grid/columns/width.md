@@ -74,7 +74,7 @@ For predictable and user-friendly behavior, consider the following Grid configur
             <p>Resize this pane to resize the Grid.</p>
         </SplitterPane>
         <SplitterPane>
-            <MariloGrid Data="@GridData"
+            <MariloDataGrid Data="@GridData"
                          Class="grid-min-width"
                          FilterMode="@GridFilterMode.FilterMenu"
                          Resizable="true"
@@ -84,27 +84,25 @@ For predictable and user-friendly behavior, consider the following Grid configur
                     <GridAggregate Field="@nameof(Product.Price)" Aggregate="@GridAggregateType.Average" />
                     <GridAggregate Field="@nameof(Product.Quantity)" Aggregate="@GridAggregateType.Sum" />
                 </GridAggregates>
-                <GridColumns>
-                    <GridColumn Field="@nameof(Product.Id)" Width="90px" />
-                    <GridColumn Field="@nameof(Product.Name)">
+                    <MariloGridColumn Field="@nameof(Product.Id)" Width="90px" />
+                    <MariloGridColumn Field="@nameof(Product.Name)">
                         <FooterTemplate>
                             Count: @context.Count
                         </FooterTemplate>
-                    </GridColumn>
-                    <GridColumn Field="@nameof(Product.Price)" Width="110px">
+                    </MariloGridColumn>
+                    <MariloGridColumn Field="@nameof(Product.Price)" Width="110px">
                         <FooterTemplate>
                             Average: @context.Average
                         </FooterTemplate>
-                    </GridColumn>
-                    <GridColumn Field="@nameof(Product.Quantity)" Width="130px">
+                    </MariloGridColumn>
+                    <MariloGridColumn Field="@nameof(Product.Quantity)" Width="130px">
                         <FooterTemplate>
                             Sum: @context.Sum
                         </FooterTemplate>
-                    </GridColumn>
-                    <GridColumn Field="@nameof(Product.ReleaseDate)" DisplayFormat="{0:D}" />
-                    <GridColumn Field="@nameof(Product.IsActive)" Width="120px" />
-                </GridColumns>
-            </MariloGrid>
+                    </MariloGridColumn>
+                    <MariloGridColumn Field="@nameof(Product.ReleaseDate)" DisplayFormat="{0:D}" />
+                    <MariloGridColumn Field="@nameof(Product.IsActive)" Width="120px" />
+            </MariloDataGrid>
         </SplitterPane>
     </SplitterPanes>
 </MariloSplitter>

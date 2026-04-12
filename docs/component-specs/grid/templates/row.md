@@ -25,7 +25,7 @@ You can use the `Context` attribute of the `<RowTemplate>` tag of the grid to se
 ````RAZOR
 Render the entire row with your own code and logic
 
-<MariloGrid Data=@MyData Height="500px">
+<MariloDataGrid Data=@MyData Height="500px">
 	<RowTemplate Context="employee">
 		<td>
 			<MariloAvatar Type="AvatarType.Text">E @employee.ID</MariloAvatar>
@@ -35,11 +35,9 @@ Render the entire row with your own code and logic
 			Hired on: @(String.Format("{0:dd MMM yyyy}", employee.HireDate))
 		</td>
 	</RowTemplate>
-	<GridColumns>
-		<GridColumn Field=@nameof(SampleData.Name) Title="Employee Name" />
-		<GridColumn Field=@nameof(SampleData.HireDate) Title="Hire Date" />
-	</GridColumns>
-</MariloGrid>
+		<MariloGridColumn Field=@nameof(SampleData.Name) Title="Employee Name" />
+		<MariloGridColumn Field=@nameof(SampleData.HireDate) Title="Hire Date" />
+</MariloDataGrid>
 
 @code {
 	public class SampleData

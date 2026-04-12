@@ -2252,4 +2252,231 @@ public class MariloDataSheetTests : MariloTestBase
 
         Assert.True(cut.Instance.IsCellActive(data[0], "Amount"));
     }
+
+    // ─────────────────────────────────────────────────────────────────────
+    // S05 Wave 1 — Gap-analysis remediation tests
+    // ─────────────────────────────────────────────────────────────────────
+
+    // ── TASK-DS-002: Grid root tabindex="0" (SA-01) ────────────────────
+
+    [Fact]
+    public void GridRoot_Has_Tabindex_Zero()
+    {
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, SeedData())
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        var grid = cut.Find("[role='grid']");
+        Assert.Equal("0", grid.GetAttribute("tabindex"));
+    }
+
+    // ── TASK-DS-004: Paste-during-save guard (SA-08) ───────────────────
+
+    [Fact]
+    public async Task Paste_DuringSave_IsNoOp()
+    {
+        var data = SeedData();
+        var originalAmount = data[0].Amount; // 100m
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.IsSaving, true)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(10);
+                builder.AddAttribute(11, "Field", "Amount");
+                builder.AddAttribute(12, "Title", "Amount");
+                builder.AddAttribute(13, "ColumnType", DataSheetColumnType.Number);
+                builder.CloseComponent();
+            }));
+
+        // Activate cell and try to paste while IsSaving is true
+        await cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "Amount"));
+        await cut.InvokeAsync(() => cut.Instance.PasteFromClipboard("999"));
+
+        // Paste must be blocked — amount unchanged, no dirty rows
+        Assert.Equal(originalAmount, data[0].Amount);
+        Assert.Empty(cut.Instance.GetDirtyRows());
+    }
+
+    // ── TASK-DS-005: Missing aria-live announcements in SaveAllAsync ───
+
+    [Fact]
+    public async Task SaveAll_Announces_SavingChanges_AtStart()
+    {
+        var data = SeedData();
+        string? capturedAnnouncement = null;
+        IRenderedComponent<MariloDataSheet<TestRow>>? cutRef = null;
+
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.OnSaveAll, args =>
+            {
+                // Capture the announcement text visible DURING the save handler.
+                // The _ariaAnnouncement field should have been set before OnSaveAll fires.
+                capturedAnnouncement = cutRef!.Instance._ariaAnnouncement;
+            })
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        cutRef = cut;
+
+        // Make a dirty edit
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Edited"));
+        cut.Instance._savedStateDurationMs = 0; // eliminate async delay
+
+        await cut.InvokeAsync(() => cut.Instance.SaveAllAsync());
+
+        Assert.NotNull(capturedAnnouncement);
+        Assert.Contains("Saving", capturedAnnouncement!, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task SaveAll_ValidationFail_AnnouncesErrorCount()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.AddAttribute(3, "Required", true);
+                builder.CloseComponent();
+            }));
+
+        // Set required field to empty — will fail validation
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", ""));
+        cut.Instance._savedStateDurationMs = 0;
+
+        await cut.InvokeAsync(() => cut.Instance.SaveAllAsync());
+
+        var announcement = cut.Find(".mar-datasheet__aria-live").TextContent.Trim();
+        Assert.Contains("validation", announcement, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task SaveAll_Exception_AnnouncesSaveFailed()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.OnSaveAll, _ => throw new InvalidOperationException("Server error"))
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.CommitCellEdit(data[0], "Name", "Edited"));
+        cut.Instance._savedStateDurationMs = 0;
+
+        // SaveAllAsync will throw — catch it and check the announcement
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            cut.InvokeAsync(() => cut.Instance.SaveAllAsync()));
+
+        var announcement = cut.Find(".mar-datasheet__aria-live").TextContent.Trim();
+        Assert.Contains("failed", announcement, StringComparison.OrdinalIgnoreCase);
+    }
+
+    // ── TASK-DS-006: AddRow activates first editable cell (SA-03) ──────
+
+    [Fact]
+    public async Task AddRow_ActivatesFirstEditableCell()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.AllowAddRow, true)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Total");
+                builder.AddAttribute(2, "Title", "Total");
+                builder.AddAttribute(3, "ColumnType", DataSheetColumnType.Computed);
+                builder.AddAttribute(4, "Editable", false);
+                builder.CloseComponent();
+
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(10);
+                builder.AddAttribute(11, "Field", "Name");
+                builder.AddAttribute(12, "Title", "Name");
+                builder.CloseComponent();
+
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(20);
+                builder.AddAttribute(21, "Field", "Amount");
+                builder.AddAttribute(22, "Title", "Amount");
+                builder.AddAttribute(23, "ColumnType", DataSheetColumnType.Number);
+                builder.CloseComponent();
+            }));
+
+        await cut.InvokeAsync(() => cut.Instance.AddRowAsync());
+
+        // The new row is at index 0 in _displayRows
+        var newRow = cut.Instance._displayRows[0];
+
+        // Active cell should be on the new row's first editable column (Name),
+        // skipping the non-editable computed column (Total)
+        Assert.True(cut.Instance.IsCellActive(newRow, "Name"));
+    }
+
+    // ── TASK-DS-007: Reset clears undo buffer (SA-04) ──────────────────
+
+    [Fact]
+    public async Task Reset_ClearsUndoBuffer_CtrlZ_IsNoOp()
+    {
+        var data = SeedData();
+        var cut = Render<MariloDataSheet<TestRow>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.EnableVirtualization, false)
+            .Add(x => x.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloDataSheetColumn<TestRow>>(0);
+                builder.AddAttribute(1, "Field", "Name");
+                builder.AddAttribute(2, "Title", "Name");
+                builder.CloseComponent();
+            }));
+
+        // Edit: Alpha -> Changed (populates undo buffer)
+        await cut.InvokeAsync(() => cut.Instance.EnterEditMode(data[0], "Name"));
+        await cut.InvokeAsync(() => cut.Instance.OnCellValueCommit(data[0], "Name", "Changed"));
+        Assert.Equal("Changed", data[0].Name);
+
+        // Reset all changes
+        await cut.InvokeAsync(() => cut.Instance.ResetAsync());
+        Assert.Equal("Alpha", data[0].Name); // restored to original
+
+        // Activate the cell and try Ctrl+Z — should be a no-op because
+        // undo buffer was cleared by ResetAsync
+        await cut.InvokeAsync(() => cut.Instance.ActivateCell(data[0], "Name"));
+        await cut.InvokeAsync(() => cut.Instance.HandleKeyDown("z", true, false));
+
+        // Value should still be "Alpha" (the restored value), NOT "Changed"
+        // (the undo buffer was cleared so Ctrl+Z has nothing to undo)
+        Assert.Equal("Alpha", data[0].Name);
+    }
 }

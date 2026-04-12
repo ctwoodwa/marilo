@@ -426,6 +426,7 @@ public partial class MariloDataSheet<TItem>
     public async Task PasteFromClipboard(string tsvData)
     {
         if (!AllowBulkPaste || _activeCellRow is null || _activeCellField is null) return;
+        if (IsSaving) return;  // SA-08: paste disabled during save
 
         var startRowIdx = _displayRows.IndexOf(_activeCellRow);
         var startColIdx = _columns.FindIndex(c => c.Field == _activeCellField);

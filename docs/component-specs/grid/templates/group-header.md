@@ -17,20 +17,19 @@ When the grid is grouped, the top row above the group provides information about
 ````RAZOR
 @* Group by the Team and Active Projects fields to see the results *@
 
-<MariloGrid Data=@GridData Groupable="true" Pageable="true" Height="650px">
+<MariloDataGrid Data=@GridData Groupable="true" Pageable="true" Height="650px">
     <GridAggregates>
         <GridAggregate Field=@nameof(Employee.Team) Aggregate="@GridAggregateType.Count" />
     </GridAggregates>
-    <GridColumns>
-        <GridColumn Field=@nameof(Employee.Name) Groupable="false" />
-        <GridColumn Field=@nameof(Employee.Team) Title="Team">
+        <MariloGridColumn Field=@nameof(Employee.Name) Groupable="false" />
+        <MariloGridColumn Field=@nameof(Employee.Team) Title="Team">
             <GroupHeaderTemplate>
                 @context.Value @* the default text you would get without the template *@
                 &nbsp;<span>Team size: @context.Count</span>
             </GroupHeaderTemplate>
-        </GridColumn>
-        <GridColumn Field=@nameof(Employee.Salary) Title="Salary" Groupable="false" />
-        <GridColumn Field=@nameof(Employee.ActiveProjects) Title="Active Projects">
+        </MariloGridColumn>
+        <MariloGridColumn Field=@nameof(Employee.Salary) Title="Salary" Groupable="false" />
+        <MariloGridColumn Field=@nameof(Employee.ActiveProjects) Title="Active Projects">
             <GroupHeaderTemplate>
                 @{
                     <span>Currently active projects: @context.Value &nbsp;</span>
@@ -42,9 +41,8 @@ When the grid is grouped, the top row above the group provides information about
                     }
                 }
             </GroupHeaderTemplate>
-        </GridColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridColumn>
+</MariloDataGrid>
 
 @code {
     public List<Employee> GridData { get; set; }

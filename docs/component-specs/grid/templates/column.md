@@ -14,7 +14,7 @@ By default, each Grid cell renders the value of the respective column `Field` of
 
 ## Basics
 
-To define a column template, use a `<Template>` tag inside the `<GridColumn>` tag. The Grid uses the defined `Template` to show the "view" representation of all cells in that column. This also includes cells from [columns that are marked as `Editable="false"`](slug:components/grid/columns/bound#data-operations), while the cells' parent row is in [inline edit mode](slug:grid-editing-inline).
+To define a column template, use a `<Template>` tag inside the `<MariloGridColumn>` tag. The Grid uses the defined `Template` to show the "view" representation of all cells in that column. This also includes cells from [columns that are marked as `Editable="false"`](slug:components/grid/columns/bound#data-operations), while the cells' parent row is in [inline edit mode](slug:grid-editing-inline).
 
 Visual Studio tends to autocomplete the `<Template>` tag with a lowercase `t` which breaks the template logic and does not allow you to access the `context`. Ensure the `Template` tag uses a capital `T`. 
 
@@ -36,9 +36,8 @@ The example below shows how to:
 >caption Using Grid cell (column) template
 
 ````RAZOR
-<MariloGrid Data="@GridData" Height="400px">
-    <GridColumns>
-        <GridColumn Field="@(nameof(FoodItem.Id))" Title="Image">
+<MariloDataGrid Data="@GridData" Height="400px">
+        <MariloGridColumn Field="@(nameof(FoodItem.Id))" Title="Image">
             <Template>
                 @{
                     var item = (FoodItem)context;
@@ -46,22 +45,22 @@ The example below shows how to:
                          alt="Image of @item.Name" />
                 }
             </Template>
-        </GridColumn>
-        <GridColumn Field="@(nameof(FoodItem.Name))">
+        </MariloGridColumn>
+        <MariloGridColumn Field="@(nameof(FoodItem.Name))">
             <Template>
                 Food item name:
                 <br />
                 <strong>@((context as FoodItem).Name)</strong>
             </Template>
-        </GridColumn>
-        <GridColumn Field="@nameof(FoodItem.BestBefore)" Title="Date - Default format">
-        </GridColumn>
-        <GridColumn Field="@nameof(FoodItem.BestBefore)" Title="Date - Custom format string">
+        </MariloGridColumn>
+        <MariloGridColumn Field="@nameof(FoodItem.BestBefore)" Title="Date - Default format">
+        </MariloGridColumn>
+        <MariloGridColumn Field="@nameof(FoodItem.BestBefore)" Title="Date - Custom format string">
             <Template>
                 @((context as FoodItem).BestBefore.ToString("dd MMM yyyy"))
             </Template>
-        </GridColumn>
-        <GridColumn Field="@nameof(FoodItem.Organic)">
+        </MariloGridColumn>
+        <MariloGridColumn Field="@nameof(FoodItem.Organic)">
             <Template>
                 @{
                     var item = (FoodItem)context;
@@ -72,9 +71,8 @@ The example below shows how to:
                 or Icon:
                 <MariloSvgIcon Icon="@( item.Organic ? SvgIcon.CheckboxChecked : SvgIcon.Checkbox )" />
             </Template>
-        </GridColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridColumn>
+</MariloDataGrid>
 
 @code {
     private IEnumerable<FoodItem> GridData = Enumerable.Range(1, 10).Select(x => new FoodItem

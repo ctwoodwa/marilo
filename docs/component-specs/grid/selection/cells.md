@@ -22,12 +22,12 @@ You can also select a cell range by holding and dragging the mouse cursor. The d
 To enable cell selection:
 
 1. Set the Grid `SelectedCells` parameter to a collection of type `IEnumerable<GridCellReference<TItem>>`. The collection must be initialized in advance. See [`GridCellReference`](#gridcellreference) for infomation about the object properties.
-1. Set the `SelectionUnit` parameter on the `<MariloGrid>` to `GridSelectionUnit.Cell`.
+1. Set the `SelectionUnit` parameter on the `<MariloDataGrid>` to `GridSelectionUnit.Cell`.
 
 >caption Grid multiple cell selection
 
 ````RAZOR
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              SelectionMode="@GridSelectionMode.Multiple"
              SelectionUnit="@GridSelectionUnit.Cell"
              @bind-SelectedCells="@SelectedCells"
@@ -35,11 +35,9 @@ To enable cell selection:
     <GridSettings>
         <GridSelectionSettings DragToSelect="true" />
     </GridSettings>
-    <GridColumns>
-        <GridColumn Field="@nameof(Employee.Name)" />
-        <GridColumn Field="@nameof(Employee.Team)" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(Employee.Name)" />
+        <MariloGridColumn Field="@nameof(Employee.Team)" />
+</MariloDataGrid>
 
 <h3>Selected Cells:</h3>
 
@@ -99,7 +97,7 @@ You can respond to user selection actions through the `SelectedCellsChanged` eve
 ````RAZOR
 @* Select cells and handle the SelectedCellsChanged event *@
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              SelectionMode="@GridSelectionMode.Multiple"
              SelectionUnit="@GridSelectionUnit.Cell"
              SelectedCells="@SelectedCells"
@@ -108,11 +106,9 @@ You can respond to user selection actions through the `SelectedCellsChanged` eve
     <GridSettings>
         <GridSelectionSettings DragToSelect="true" />
     </GridSettings>
-    <GridColumns>
-        <GridColumn Field="@nameof(Employee.Name)" />
-        <GridColumn Field="@nameof(Employee.Team)" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(Employee.Name)" />
+        <MariloGridColumn Field="@nameof(Employee.Team)" />
+</MariloDataGrid>
 
 <p><code>SelectedItemsChanged</code> fired at: @SelectedCellsChangedLog</p>
 

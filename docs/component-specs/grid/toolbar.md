@@ -49,7 +49,7 @@ In addition to the built-in tools, the Grid also supports custom tools. Use the 
 
 ## Toolbar Tools Configuration
 
-Add a `<GridToolBar>` tag inside `<MariloGrid>` to configure a toolbar, for example:
+Add a `<GridToolBar>` tag inside `<MariloDataGrid>` to configure a toolbar, for example:
 
 * Arrange the Grid tools in a specific order;
 * Remove some of the built-in tools;
@@ -60,7 +60,7 @@ Add a `<GridToolBar>` tag inside `<MariloGrid>` to configure a toolbar, for exam
 >caption Grid Toolbar Tools
 
 ````RAZOR
-<MariloGrid Data=@GridData
+<MariloDataGrid Data=@GridData
              EditMode="@GridEditMode.Inline"
              FilterMode="GridFilterMode.FilterMenu"
              Groupable="true"
@@ -100,17 +100,15 @@ Add a `<GridToolBar>` tag inside `<MariloGrid>` to configure a toolbar, for exam
 
         <GridToolBarSearchBoxTool />
     </GridToolBar>
-    <GridColumns>
-        <GridColumn Field=@nameof(Person.EmployeeId) Editable="false" Visible="true" Width="200px" />
-        <GridColumn Field=@nameof(Person.Name) Width="200px" />
-        <GridColumn Field=@nameof(Person.AgeInYears) Title="Age" Visible="false" Width="240px" />
-        <GridColumn Field=@nameof(Person.HireDate) Title="Hire Date" Width="230px" />
-        <GridCommandColumn Width="200px">
+        <MariloGridColumn Field=@nameof(Person.EmployeeId) Editable="false" Visible="true" Width="200px" />
+        <MariloGridColumn Field=@nameof(Person.Name) Width="200px" />
+        <MariloGridColumn Field=@nameof(Person.AgeInYears) Title="Age" Visible="false" Width="240px" />
+        <MariloGridColumn Field=@nameof(Person.HireDate) Title="Hire Date" Width="230px" />
+        <MariloGridCommandColumn Width="200px">
             <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil"></GridCommandButton>
             <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true"></GridCommandButton>
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 
 @code {
     private List<Person> GridData { get; set; } = new();
@@ -193,7 +191,7 @@ See [ToolBar Tools Configuration](#toolbar-tools-configuration) for an example.
 
 ## Custom Toolbar Configuration
 
-Add a `<GridToolBarTemplate>` tag inside `<MariloGrid>` to configure a custom toolbar. You can add your own HTML and components to create a more complex layout in the Grid header to match your business needs and also `GridCommandButton` instances (read more about the features available in those buttons in the [Command Column](slug:components/grid/columns/command) article).
+Add a `<GridToolBarTemplate>` tag inside `<MariloDataGrid>` to configure a custom toolbar. You can add your own HTML and components to create a more complex layout in the Grid header to match your business needs and also `GridCommandButton` instances (read more about the features available in those buttons in the [Command Column](slug:components/grid/columns/command) article).
 
 When using a `<GridToolBarTemplate>`, you need to use the `Tab` key to navigate between the focusable items. This is because the `<GridToolBarTemplate>` allows rendering of custom elements. On the other hand, the `<GridToolBar>` uses the [built-in keyboard navigation](slug:accessibility-overview#keyboard-navigation) through arrow keys.
 
@@ -202,7 +200,7 @@ When using a `<GridToolBarTemplate>`, you need to use the `Tab` key to navigate 
 ````RAZOR
 @result
 
-<MariloGrid Data=@MyData Pageable="true" PageSize="15" EditMode="@GridEditMode.Inline" Height="500px" OnCreate="@CreateHandler">
+<MariloDataGrid Data=@MyData Pageable="true" PageSize="15" EditMode="@GridEditMode.Inline" Height="500px" OnCreate="@CreateHandler">
 
     <GridToolBarTemplate>
         <div style="display: flex; width: 100%; justify-content: space-between;">
@@ -227,16 +225,14 @@ When using a `<GridToolBarTemplate>`, you need to use the `Tab` key to navigate 
         <GridPdfExport FileName="marilo-grid-export" AllPages="@ExportAllPages" />
     </GridExport>
 
-    <GridColumns>
-        <GridColumn Field=@nameof(SampleData.Name) Title="Employee Name" />
-        <GridColumn Field=@nameof(SampleData.HireDate) Title="Hire Date" />
-        <GridCommandColumn>
+        <MariloGridColumn Field=@nameof(SampleData.Name) Title="Employee Name" />
+        <MariloGridColumn Field=@nameof(SampleData.HireDate) Title="Hire Date" />
+        <MariloGridCommandColumn>
             <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil">Edit</GridCommandButton>
             <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">Save</GridCommandButton>
             <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 
 @code {
     private string result;
@@ -278,4 +274,4 @@ When using a `<GridToolBarTemplate>`, you need to use the `Tab` key to navigate 
 ## See Also
 
 * [Grid Live Demo](https://demos.marilo.com/blazor-ui/grid/overview)
-* [Grid API](slug:Marilo.Blazor.Components.MariloGrid-1)
+* [Grid API](slug:Marilo.Components.DataGrid.MariloDataGrid-1)

@@ -17,7 +17,7 @@ With the `ButtonsTemplate`, you can personalize the appearance and behavior of t
 ````RAZOR
 @using System.ComponentModel.DataAnnotations
 
-<MariloGrid Data=@MyData EditMode="@GridEditMode.Popup" Pageable="true" Height="500px"
+<MariloDataGrid Data=@MyData EditMode="@GridEditMode.Popup" Pageable="true" Height="500px"
              OnUpdate="@UpdateHandler" OnEdit="@EditHandler" OnDelete="@DeleteHandler" OnCreate="@CreateHandler">
     <GridToolBarTemplate>
         <GridCommandButton Command="Add" Icon="@SvgIcon.Plus">Add Employee</GridCommandButton>
@@ -52,15 +52,13 @@ With the `ButtonsTemplate`, you can personalize the appearance and behavior of t
             </ButtonsTemplate>
         </GridPopupEditFormSettings>
     </GridSettings>
-    <GridColumns>
-        <GridColumn Field=@nameof(SampleData.ID) Title="ID" Editable="false" />
-        <GridColumn Field=@nameof(SampleData.Name) Title="Name" />
-        <GridCommandColumn>
+        <MariloGridColumn Field=@nameof(SampleData.ID) Title="ID" Editable="false" />
+        <MariloGridColumn Field=@nameof(SampleData.Name) Title="Name" />
+        <MariloGridCommandColumn>
             <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil">Edit</GridCommandButton>
             <GridCommandButton Command="Delete" Icon="@SvgIcon.Trash">Delete</GridCommandButton>
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 
 @code {
     void EditHandler(GridCommandEventArgs args)

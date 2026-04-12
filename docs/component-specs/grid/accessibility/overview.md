@@ -109,7 +109,7 @@ The following example demonstrates the [accessibility compliance of the Grid com
     }
 </style>
 
-<MariloGrid @ref="@GridRef"
+<MariloDataGrid @ref="@GridRef"
              Data="@GridData"
              Navigable="true"
              Reorderable="true"
@@ -134,15 +134,13 @@ The following example demonstrates the [accessibility compliance of the Grid com
     <GridToolBarTemplate>
         <GridCommandButton Command="Add" Icon="@SvgIcon.Plus">Add Employee</GridCommandButton>
     </GridToolBarTemplate>
-    <GridColumns>
-        <GridColumn Field=@nameof(SampleData.ID) Editable="false" />
-        <GridColumn Field=@nameof(SampleData.Name) />
-        <GridCommandColumn>
+        <MariloGridColumn Field=@nameof(SampleData.ID) Editable="false" />
+        <MariloGridColumn Field=@nameof(SampleData.Name) />
+        <MariloGridCommandColumn>
             <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">Save</GridCommandButton>
             <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 
 @code {
     private List<RadioModel> RadioOptions { get; set; }
@@ -160,7 +158,7 @@ The following example demonstrates the [accessibility compliance of the Grid com
     private SampleData SelectedPerson { get; set; }
     //component references so we can use their methods
     private MariloContextMenu<MenuItem> ContextMenuRef { get; set; }
-    private MariloGrid<SampleData> GridRef { get; set; }
+    private MariloDataGrid<SampleData> GridRef { get; set; }
 
     private int DestinationIndex { get; set; }
     private int OriginIndex { get; set; }

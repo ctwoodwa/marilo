@@ -25,14 +25,12 @@ Set the `FilterMode` parameter of the Marilo Grid to `GridFilterMode.FilterRow`.
 ````RAZOR
 @* Filter row mode *@
 
-<MariloGrid Data=@GridData FilterMode="@GridFilterMode.FilterRow" Pageable="true" Height="400px">
-	<GridColumns>
-		<GridColumn Field=@nameof(Employee.Name) />
-		<GridColumn Field=@nameof(Employee.AgeInYears) Title="Age" />
-		<GridColumn Field=@nameof(Employee.HireDate) Title="Hire Date" />
-		<GridColumn Field=@nameof(Employee.IsOnLeave) Title="On Vacation" />
-	</GridColumns>
-</MariloGrid>
+<MariloDataGrid Data=@GridData FilterMode="@GridFilterMode.FilterRow" Pageable="true" Height="400px">
+		<MariloGridColumn Field=@nameof(Employee.Name) />
+		<MariloGridColumn Field=@nameof(Employee.AgeInYears) Title="Age" />
+		<MariloGridColumn Field=@nameof(Employee.HireDate) Title="Hire Date" />
+		<MariloGridColumn Field=@nameof(Employee.IsOnLeave) Title="On Vacation" />
+</MariloDataGrid>
 
 @code {
 	public List<Employee> GridData { get; set; }
@@ -87,24 +85,22 @@ You can override the default Filter Row behavior for each column through the fol
 
 @using Marilo.DataSource
 
-<MariloGrid Data="@MyData"
+<MariloDataGrid Data="@MyData"
              Height="400px"
              Pageable="true"
              FilterMode="@GridFilterMode.FilterRow"
              FilterRowDebounceDelay="200">
-    <GridColumns>
-        <GridColumn DefaultFilterOperator="FilterOperator.IsEqualTo"
+        <MariloGridColumn DefaultFilterOperator="FilterOperator.IsEqualTo"
                     ShowFilterCellButtons="false"
                     Field="@(nameof(SampleData.Id))" Width="120px" />
-        <GridColumn DefaultFilterOperator="FilterOperator.StartsWith"
+        <MariloGridColumn DefaultFilterOperator="FilterOperator.StartsWith"
                     ShowFilterCellButtons="false"
                     Field="@(nameof(SampleData.Name))" Title="Employee Name" />
-        <GridColumn DefaultFilterOperator="FilterOperator.Contains"
+        <MariloGridColumn DefaultFilterOperator="FilterOperator.Contains"
                     ShowFilterCellButtons="false" Field="@(nameof(SampleData.Team))" Title="Team" />
-        <GridColumn DefaultFilterOperator="FilterOperator.IsGreaterThanOrEqualTo"
+        <MariloGridColumn DefaultFilterOperator="FilterOperator.IsGreaterThanOrEqualTo"
                     ShowFilterCellButtons="false" Field="@(nameof(SampleData.HireDate))" Title="Hire Date" />
-    </GridColumns>
-</MariloGrid>
+</MariloDataGrid>
 
 @code {
     public IEnumerable<SampleData> MyData = Enumerable.Range(1, 30).Select(x => new SampleData

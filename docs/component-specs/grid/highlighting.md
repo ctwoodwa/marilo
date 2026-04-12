@@ -35,19 +35,17 @@ See [Grid Highlighting API Reference](slug:marilo.blazor.components.HighlightedC
 >caption Example of highlighting rows and cells in the Blazor Grid
 
 ````RAZOR 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              HighlightedItems="@HighlightedItems"
              HighlightedCells="@HighlightedCells"
              Pageable="true">
-    <GridColumns>
-        <GridColumn Field="@nameof(Product.ProductId)" />
-        <GridColumn Field="@nameof(Product.ProductName)" />
-        <GridColumn Field="@nameof(Product.UnitPrice)" />
-        <GridColumn Field="@nameof(Product.UnitsInStock)" />
-        <GridColumn Field="@nameof(Product.CreatedAt)" />
-        <GridColumn Field="@nameof(Product.Discontinued)" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(Product.ProductId)" />
+        <MariloGridColumn Field="@nameof(Product.ProductName)" />
+        <MariloGridColumn Field="@nameof(Product.UnitPrice)" />
+        <MariloGridColumn Field="@nameof(Product.UnitsInStock)" />
+        <MariloGridColumn Field="@nameof(Product.CreatedAt)" />
+        <MariloGridColumn Field="@nameof(Product.Discontinued)" />
+</MariloDataGrid>
 
 @code {
     private List<Product> GridData { get; set; } = new();

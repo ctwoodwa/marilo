@@ -18,7 +18,7 @@ The `GridPagerTemplate` allows you to modify the layout, content, and functional
 @using Marilo.DataSource
 @using Marilo.DataSource.Extensions
 
-<MariloGrid OnRead="@OnGridRead"
+<MariloDataGrid OnRead="@OnGridRead"
              TItem="@Product"
              FilterMode="GridFilterMode.FilterRow"
              Height="360px"
@@ -41,12 +41,10 @@ The `GridPagerTemplate` allows you to modify the layout, content, and functional
             </div>
         </div>
     </GridPagerTemplate>
-    <GridColumns>
-        <GridColumn Field="@nameof(Product.Name)" />
-        <GridColumn Field="@nameof(Product.Price)" DisplayFormat="{0:c2}" />
-        <GridColumn Field="@nameof(Product.Quantity)" DisplayFormat="{0:n0}" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(Product.Name)" />
+        <MariloGridColumn Field="@nameof(Product.Price)" DisplayFormat="{0:c2}" />
+        <MariloGridColumn Field="@nameof(Product.Quantity)" DisplayFormat="{0:n0}" />
+</MariloDataGrid>
 
 @code {
     private List<Product> GridData { get; set; } = new();

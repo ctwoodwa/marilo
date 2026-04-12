@@ -1407,3 +1407,25 @@ The Marilo icon system has been upgraded from a single custom icon set to a plug
 | **`AddMariloIconsCustom()` extension** | DI escape hatch for registering any custom sprite or CSS-class icon set. |
 | **Legacy `Marilo.Icons` preserved** | `MariloIconProvider` updated with new interface members. `UseMariloIcons()` and `AddMariloIcons()` marked `[Obsolete]`. |
 | **All existing providers updated** | `FluentUIIconProvider`, `BootstrapIconProvider`, `ProviderSwitcher`, `TestIconProvider` — all implement `RenderMode` and `LibraryName`. |
+
+---
+
+## MariloMap Architecture Decision (2026-04-12)
+
+**Status:** Architecture decision COMPLETE. Spec/demo/source work UNBLOCKED.
+
+**Engine:** MapLibre GL JS v4+ (BSD-3-Clause) selected as the v1 tile rendering engine.
+
+**Key decisions:**
+- Engine-neutral public API (`MapLayer`, `MapMarker`, `MapCenter`, etc.) with internal `IMapEngineAdapter` boundary.
+- MapLibre is the sole v1 adapter. Leaflet and OpenLayers remain viable future adapters.
+- JS module lifecycle follows the established Marilo pattern (lazy init on `OnAfterRenderAsync`, dispose on component teardown).
+- Layer registration uses the `CascadingValue` + child-registration pattern (same as DataGrid → GridColumn).
+- Provider styling covers container CSS, controls, and popup appearance — not tile rendering.
+- `UrlTemplate` adopts industry-standard `{s}/{z}/{x}/{y}` placeholders; legacy `#= ... #` syntax deprecated.
+
+**Remaining blockers:** None for spec revision, model expansion, and demo planning. JS adapter authoring is the next implementation step.
+
+**Architecture decision document:** `docs/component-specs/map/architecture-decision-tile-engine.md`
+
+**Deferred features:** Clustering, vector tile styles, drawing/editing, 3D terrain, heatmap layer, animated transitions, offline tiles, custom projections.

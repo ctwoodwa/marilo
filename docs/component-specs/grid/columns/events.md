@@ -35,20 +35,18 @@ This event fires upon the rendering of the Grids columns. It receives an argumen
     }
 </style>
 
-<MariloGrid Data="@MyData"
+<MariloDataGrid Data="@MyData"
              Height="400px"
              Pageable="true"
              Width="750px">
-    <GridColumns>
-        <GridColumn Field="@(nameof(SampleData.Id))" Width="120px" />
-        <GridColumn Field="@(nameof(SampleData.Name))"
+        <MariloGridColumn Field="@(nameof(SampleData.Id))" Width="120px" />
+        <MariloGridColumn Field="@(nameof(SampleData.Name))"
                     Title="Employee Name"
                     Groupable="false"
                     OnCellRender="@OnCellRenderHandler" />
-        <GridColumn Field="@(nameof(SampleData.Team))" Title="Team" />
-        <GridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@(nameof(SampleData.Team))" Title="Team" />
+        <MariloGridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" />
+</MariloDataGrid>
 
 @code {
 
@@ -97,19 +95,17 @@ This event fires upon the rendering of the Grids columns. It receives an argumen
     }
 </style>
 
-<MariloGrid Data="@MyData"
+<MariloDataGrid Data="@MyData"
              Height="400px"
              Pageable="true"
              Width="750px">
-    <GridColumns>
-        <GridColumn Field="@(nameof(SampleData.Id))" Width="120px" />
-        <GridColumn Field="@(nameof(SampleData.Name))" Title = "Employee Name"
+        <MariloGridColumn Field="@(nameof(SampleData.Id))" Width="120px" />
+        <MariloGridColumn Field="@(nameof(SampleData.Name))" Title = "Employee Name"
                     Groupable="false"
                     OnCellRender="@((x) => OnCellRenderHandler(x, "Employee Name"))" />
-        <GridColumn Field="@(nameof(SampleData.Team))" Title="Team" OnCellRender="@((x) => OnCellRenderHandler(x, "Team"))" />
-        <GridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire date" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@(nameof(SampleData.Team))" Title="Team" OnCellRender="@((x) => OnCellRenderHandler(x, "Team"))" />
+        <MariloGridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire date" />
+</MariloDataGrid>
 
 @code {   
 

@@ -29,16 +29,14 @@ To hide a Grid column set its `Visible` parameter to `false`. To hide a column b
 ````RAZOR
 @* Hide the Hire Date Grid column by setting the Visible parameter to false *@
 
-<MariloGrid Data="@MyData" 
+<MariloDataGrid Data="@MyData" 
              Pageable="true"
              PageSize="10">
-    <GridColumns>
-        <GridColumn Field="@(nameof(SampleData.Id))" Width="120px" />
-        <GridColumn Field="@(nameof(SampleData.Name))" Title="Employee Name" />
-        <GridColumn Field="@(nameof(SampleData.Team))" Title="Team" />
-        <GridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" Visible="false" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@(nameof(SampleData.Id))" Width="120px" />
+        <MariloGridColumn Field="@(nameof(SampleData.Name))" Title="Employee Name" />
+        <MariloGridColumn Field="@(nameof(SampleData.Team))" Title="Team" />
+        <MariloGridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" Visible="false" />
+</MariloDataGrid>
 
 @code {
     public IEnumerable<SampleData> MyData = Enumerable.Range(1, 30).Select(x => new SampleData
@@ -96,17 +94,15 @@ The application can later the value of the `Visible` parameter and that will tog
 
 <br />
 
-<MariloGrid Data=@MyData
+<MariloDataGrid Data=@MyData
              Pageable="true"
              PageSize="5"
              Width="700px">
-    <GridColumns>
-        <GridColumn Field=@nameof(SampleData.ID) Title="ID" />
-        <GridColumn Field=@nameof(SampleData.Name) Title="Name" />
-        <GridColumn Field=@nameof(SampleData.HireDate) Title="Hire Date" Visible="@isVisible" />
-        <GridColumn Field=@nameof(SampleData.Salary) Title="Salary" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field=@nameof(SampleData.ID) Title="ID" />
+        <MariloGridColumn Field=@nameof(SampleData.Name) Title="Name" />
+        <MariloGridColumn Field=@nameof(SampleData.HireDate) Title="Hire Date" Visible="@isVisible" />
+        <MariloGridColumn Field=@nameof(SampleData.Salary) Title="Salary" />
+</MariloDataGrid>
 
 @code {
     public bool isVisible { get; set; } = true;
@@ -151,24 +147,22 @@ When cell-specific templates are used, they are not rendered at all. If you are 
 ````RAZOR
 @* The Template for the Salary column will not be rendered *@
 
-<MariloGrid Data=@MyData
+<MariloDataGrid Data=@MyData
              Pageable="true"
              PageSize="5"
              Width="700px">
-    <GridColumns>
-        <GridColumn Field=@nameof(SampleData.ID) Title="ID" />
-        <GridColumn Field=@nameof(SampleData.Name) Title="Name" />
-        <GridColumn Field=@nameof(SampleData.HireDate) Title="Hire date" />
-        <GridColumn Field=@nameof(SampleData.Salary) Title="Salary" Visible="false">
+        <MariloGridColumn Field=@nameof(SampleData.ID) Title="ID" />
+        <MariloGridColumn Field=@nameof(SampleData.Name) Title="Name" />
+        <MariloGridColumn Field=@nameof(SampleData.HireDate) Title="Hire date" />
+        <MariloGridColumn Field=@nameof(SampleData.Salary) Title="Salary" Visible="false">
             <Template>
                 @{ 
                     var item = context as SampleData;
                     @item.Salary.ToString("C2");
                 }
             </Template>
-        </GridColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridColumn>
+</MariloDataGrid>
 
 @code {
     // in a real case, keep the models in dedicated locations, this is just an easy to copy and see example
@@ -211,17 +205,15 @@ This example shows hiding a column based on a simple condition in its data. You 
 ````RAZOR
 @* The Name column is hidden, because the data for the grid contains "Name 2" *@
 
-<MariloGrid Data=@MyData
+<MariloDataGrid Data=@MyData
              Pageable="true"
              PageSize="5"
              Width="700px">
-    <GridColumns>
-        <GridColumn Field=@nameof(SampleData.ID) Title="ID" />
-        <GridColumn Field=@nameof(SampleData.Name) Title="Name" Visible="@((MyData.Any(x => x.Name.Contains("Name 2"))) ? false : true)" />
-        <GridColumn Field=@nameof(SampleData.HireDate) Title="Hire date" />
-        <GridColumn Field=@nameof(SampleData.Salary) Title="Salary" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field=@nameof(SampleData.ID) Title="ID" />
+        <MariloGridColumn Field=@nameof(SampleData.Name) Title="Name" Visible="@((MyData.Any(x => x.Name.Contains("Name 2"))) ? false : true)" />
+        <MariloGridColumn Field=@nameof(SampleData.HireDate) Title="Hire date" />
+        <MariloGridColumn Field=@nameof(SampleData.Salary) Title="Salary" />
+</MariloDataGrid>
 
 @code {
     // in a real case, keep the models in dedicated locations, this is just an easy to copy and see example

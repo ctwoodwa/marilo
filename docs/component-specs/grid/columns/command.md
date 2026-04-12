@@ -12,7 +12,7 @@ components: ["grid"]
 
 The command column of a grid allows you to initiate [inline](slug:grid-editing-inline) or [popup](slug:grid-editing-popup) editing, or to execute your own commands.
 
-To define it, add a `GridCommandColumn` in the `GridColumns` collection of a grid. The command column takes a collection of `GridCommandButton` instances that invoke the commands. It also provides the data item `context` and a `Title` property to set its header text.
+To define it, add a `MariloGridCommandColumn` inside `<MariloDataGrid>`. The command column takes a collection of `GridCommandButton` instances that invoke the commands. It also provides the data item `context` and a `Title` property to set its header text.
 
 In this article:
 
@@ -72,7 +72,7 @@ Use a **named** context variable to avoid errors when nesting components or `Ren
 <div class="skip-repl"></div>
 
 ````RAZOR
-<GridCommandColumn Context="dataItem">
+<MariloGridCommandColumn Context="dataItem">
     @{ var product = (Product)dataItem; }
 
     @if (product.Quantity > 0)
@@ -89,7 +89,7 @@ Use a **named** context variable to avoid errors when nesting components or `Ren
                        Title="@( product.Quantity > 0 ? "Cannot delete products in stock" : string.Empty )">
         Delete
     </GridCommandButton>
-</GridCommandColumn>
+</MariloGridCommandColumn>
 ````
 
 ### Header Template
@@ -112,20 +112,18 @@ The following code example demonstrates declarations and handling.
 
 @CustomCommandResult
 
-<MariloGrid Data=@GridData EditMode="@GridEditMode.Inline" OnUpdate="@MyOnUpdateHandler"
+<MariloDataGrid Data=@GridData EditMode="@GridEditMode.Inline" OnUpdate="@MyOnUpdateHandler"
              Pageable="true" PageSize="15" Height="500px">
-    <GridColumns>
-        <GridColumn Field=@nameof(SampleData.ID) Editable="false" Title="Employee ID" />
-        <GridColumn Field=@nameof(SampleData.Name) Title="Employee Name" />
-        <GridColumn Field=@nameof(SampleData.HireDate) Title="Hire Date" />
-        <GridCommandColumn>
+        <MariloGridColumn Field=@nameof(SampleData.ID) Editable="false" Title="Employee ID" />
+        <MariloGridColumn Field=@nameof(SampleData.Name) Title="Employee Name" />
+        <MariloGridColumn Field=@nameof(SampleData.HireDate) Title="Hire Date" />
+        <MariloGridCommandColumn>
             <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil">Edit</GridCommandButton>
             <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true" OnClick="@CustomSaveOnClickHandler">Save</GridCommandButton>
             <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
             <GridCommandButton Command="MyOwnCommand" Icon="@SvgIcon.InfoCircle" ShowInEdit="false" OnClick="@MyCustomCommandOnClickHandler">My Command</GridCommandButton>
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 
 @code {
     //in a real case, keep the models in dedicated locations, this is just an easy to copy and see example

@@ -53,7 +53,7 @@ Install the `Marilo.AI.SmartComponents.Extensions` package to your project:
 Add an AI Assistant tool to your Grid toolbar and implement the `OnPromptRequest` event handler:
 
 ````RAZOR.skip-repl
-<MariloGrid Data="@GridData">
+<MariloDataGrid Data="@GridData">
     <GridToolBar>
         <GridToolBarSmartBoxTool>
             <GridToolBarSmartBoxToolSettings>
@@ -65,10 +65,8 @@ Add an AI Assistant tool to your Grid toolbar and implement the `OnPromptRequest
             </GridToolBarSmartBoxToolSettings>
         </GridToolBarSmartBoxTool>
     </GridToolBar>
-    <GridColumns>
         <!-- Grid columns -->
-    </GridColumns>
-</MariloGrid>
+</MariloDataGrid>
 
 @code {
     private List<MyDataModel> GridData { get; set; }
@@ -263,7 +261,7 @@ The following example demonstrates a complete implementation of the AI Smart Box
 
 @inject HttpClient HttpClientInstance
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              Pageable="true"
              Sortable="true"
              FilterMode="@GridFilterMode.FilterMenu">
@@ -286,13 +284,11 @@ The following example demonstrates a complete implementation of the AI Smart Box
         </GridToolBarSmartBoxTool>
     </GridToolBar>
     
-    <GridColumns>
-        <GridColumn Field="@nameof(Product.ProductName)" Title="Product Name" />
-        <GridColumn Field="@nameof(Product.UnitPrice)" Title="Price" DisplayFormat="{0:C2}" />
-        <GridColumn Field="@nameof(Product.UnitsInStock)" Title="Stock" />
-        <GridColumn Field="@nameof(Product.Category)" Title="Category" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(Product.ProductName)" Title="Product Name" />
+        <MariloGridColumn Field="@nameof(Product.UnitPrice)" Title="Price" DisplayFormat="{0:C2}" />
+        <MariloGridColumn Field="@nameof(Product.UnitsInStock)" Title="Stock" />
+        <MariloGridColumn Field="@nameof(Product.Category)" Title="Category" />
+</MariloDataGrid>
 
 @code {
     private List<Product> GridData { get; set; }

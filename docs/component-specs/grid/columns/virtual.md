@@ -40,31 +40,29 @@ To enable Virtualized Columns:
 ````RAZOR
 @* Observe the behavior of the Grid with enabled ColumnVirtualization *@
 
-<MariloGrid Data="@MyData"
+<MariloDataGrid Data="@MyData"
              Width="800px"
              Height="400px"
              RowHeight="65"
              ColumnVirtualization="true"
              Pageable="true" PageSize="5">
-    <GridColumns>
         <GridCheckboxColumn Title="Select" Width="70px" />
-        <GridColumn Field="@(nameof(User.Id))" Width="100px" />
-        <GridColumn Field="@(nameof(User.FirstName))" Title="First Name" Width="200px" />
-        <GridColumn Field="@(nameof(User.LastName))" Title="Last Name" Width="200px" />
-        <GridColumn Field="@(nameof(User.FullName))" Title="Full Name" Width="200px" />
-        <GridColumn Field="@(nameof(User.DateOfBirth))" Title="Date of Birth" Width="200px" />
-        <GridColumn Field="@(nameof(User.Age))" Title="Age" Width="100px" />
-        <GridColumn Field="@(nameof(User.EmailAddress))" Title="Email Address" Width="200px" />
-        <GridColumn Field="@(nameof(User.RegistrationDate))" Title="Registration Date" Width="200px" />
-        <GridColumn Field="@(nameof(User.LocalTime))" Title="Local Time" Width="200px" />
-        <GridColumn Field="@(nameof(User.UserNumber))" Title="User Number" Width="300px" />
-        <GridColumn Field="@(nameof(User.Gender))" Title="Gender" Width="200px" />
-        <GridCommandColumn Width="250px" Title="Command Column">
+        <MariloGridColumn Field="@(nameof(User.Id))" Width="100px" />
+        <MariloGridColumn Field="@(nameof(User.FirstName))" Title="First Name" Width="200px" />
+        <MariloGridColumn Field="@(nameof(User.LastName))" Title="Last Name" Width="200px" />
+        <MariloGridColumn Field="@(nameof(User.FullName))" Title="Full Name" Width="200px" />
+        <MariloGridColumn Field="@(nameof(User.DateOfBirth))" Title="Date of Birth" Width="200px" />
+        <MariloGridColumn Field="@(nameof(User.Age))" Title="Age" Width="100px" />
+        <MariloGridColumn Field="@(nameof(User.EmailAddress))" Title="Email Address" Width="200px" />
+        <MariloGridColumn Field="@(nameof(User.RegistrationDate))" Title="Registration Date" Width="200px" />
+        <MariloGridColumn Field="@(nameof(User.LocalTime))" Title="Local Time" Width="200px" />
+        <MariloGridColumn Field="@(nameof(User.UserNumber))" Title="User Number" Width="300px" />
+        <MariloGridColumn Field="@(nameof(User.Gender))" Title="Gender" Width="200px" />
+        <MariloGridCommandColumn Width="250px" Title="Command Column">
             <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil">Edit</GridCommandButton>
             <GridCommandButton Command="Delete" Icon="@SvgIcon.Trash">Delete</GridCommandButton>
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 
 @code {
     public IEnumerable<User> MyData = Enumerable.Range(1, 30).Select(x => new User
@@ -139,31 +137,29 @@ You can use Virtualized Columns and Rows together. More information on Virtual R
 ````RAZOR
 @*Observe the behavior of the Grid with Virtual Rows and Columns*@
 
-<MariloGrid Data="@MyData"
+<MariloDataGrid Data="@MyData"
              Width="800px"
              RowHeight="65"
              Height="400px"
              ScrollMode="GridScrollMode.Virtual"
              ColumnVirtualization="true">
-    <GridColumns>
         <GridCheckboxColumn Title="Select" Width="70px" />
-        <GridColumn Field="@(nameof(User.Id))" Width="100px" />
-        <GridColumn Field="@(nameof(User.FirstName))" Title="First Name" Width="200px" />
-        <GridColumn Field="@(nameof(User.LastName))" Title="Last Name" Width="200px" />
-        <GridColumn Field="@(nameof(User.FullName))" Title="Full Name" Width="200px" />
-        <GridColumn Field="@(nameof(User.DateOfBirth))" Title="Date of Birth" Width="200px" />
-        <GridColumn Field="@(nameof(User.Age))" Title="Age" Width="100px" />
-        <GridColumn Field="@(nameof(User.EmailAddress))" Title="Email Address" Width="200px" />
-        <GridColumn Field="@(nameof(User.RegistrationDate))" Title="Registration Date" Width="200px" />
-        <GridColumn Field="@(nameof(User.LocalTime))" Title="Local Time" Width="200px" />
-        <GridColumn Field="@(nameof(User.UserNumber))" Title="User Number" Width="300px" />
-        <GridColumn Field="@(nameof(User.Gender))" Title="Gender" Width="200px" />
-        <GridCommandColumn Width="250px" Title="Command Column">
+        <MariloGridColumn Field="@(nameof(User.Id))" Width="100px" />
+        <MariloGridColumn Field="@(nameof(User.FirstName))" Title="First Name" Width="200px" />
+        <MariloGridColumn Field="@(nameof(User.LastName))" Title="Last Name" Width="200px" />
+        <MariloGridColumn Field="@(nameof(User.FullName))" Title="Full Name" Width="200px" />
+        <MariloGridColumn Field="@(nameof(User.DateOfBirth))" Title="Date of Birth" Width="200px" />
+        <MariloGridColumn Field="@(nameof(User.Age))" Title="Age" Width="100px" />
+        <MariloGridColumn Field="@(nameof(User.EmailAddress))" Title="Email Address" Width="200px" />
+        <MariloGridColumn Field="@(nameof(User.RegistrationDate))" Title="Registration Date" Width="200px" />
+        <MariloGridColumn Field="@(nameof(User.LocalTime))" Title="Local Time" Width="200px" />
+        <MariloGridColumn Field="@(nameof(User.UserNumber))" Title="User Number" Width="300px" />
+        <MariloGridColumn Field="@(nameof(User.Gender))" Title="Gender" Width="200px" />
+        <MariloGridCommandColumn Width="250px" Title="Command Column">
             <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil">Edit</GridCommandButton>
             <GridCommandButton Command="Delete" Icon="@SvgIcon.Trash">Delete</GridCommandButton>
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 
 @code {
     public IEnumerable<User> MyData = Enumerable.Range(1, 50).Select(x => new User
@@ -223,21 +219,19 @@ Column virtualization is commonly used when you have many columns. You may not h
 ````RAZOR
 @*Grid with Virtual Autogenerated Columns*@
 
-<MariloGrid Data="@MyData"
+<MariloDataGrid Data="@MyData"
              Width="800px"
              RowHeight="65"
              Height="400px"
              ColumnVirtualization="true"
              AutoGenerateColumns="true">
-    <GridColumns>
         <GridCheckboxColumn Title="Select" Width="70px" />
         <GridAutoGeneratedColumns ColumnWidth="200px" />
-        <GridCommandColumn Width="250px" Title="Command Column">
+        <MariloGridCommandColumn Width="250px" Title="Command Column">
             <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil">Edit</GridCommandButton>
             <GridCommandButton Command="Delete" Icon="@SvgIcon.Trash">Delete</GridCommandButton>
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 
 @code {
     public IEnumerable<User> MyData = Enumerable.Range(1, 50).Select(x => new User

@@ -12,7 +12,7 @@ components: ["grid"]
 
 This feature attempts to address the need for a **Compact Grid**, which renders more items by utilizing the available space, mainly through setting smaller padding in its cells.
 
-You can increase or decrease the size of the Grid by setting the `Size` attribute to a member of the [`Marilo.Blazor.ThemeConstants.Grid.Size`](slug:Marilo.Blazor.ThemeConstants.Grid.Size).Size class:
+You can increase or decrease the size of the Grid by setting the `Size` attribute to a member of the [`Marilo.Components.DataGrid.ThemeConstants.Grid.Size`](slug:Marilo.Components.DataGrid.ThemeConstants.Grid.Size).Size class:
 
 | Class members | Manual declarations |
 |------------|--------|
@@ -27,7 +27,7 @@ You can increase or decrease the size of the Grid by setting the `Size` attribut
 @* These are all built-in Size modes *@
 
 @{ 
-    var fields = typeof(Marilo.Blazor.ThemeConstants.Grid.Size)
+    var fields = typeof(Marilo.Components.DataGrid.ThemeConstants.Grid.Size)
         .GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static
         | System.Reflection.BindingFlags.FlattenHierarchy)
         .Where(field => field.IsLiteral && !field.IsInitOnly).ToList();
@@ -36,14 +36,12 @@ You can increase or decrease the size of the Grid by setting the `Size` attribut
     {
         string size = field.GetValue(null).ToString();
 
-        <MariloGrid Size="@size"
+        <MariloDataGrid Size="@size"
 					 Data="@GridData"
 			 	     Height="350px">
-            <GridColumns>
-                <GridColumn Field="ID"></GridColumn>
-                <GridColumn Field="TheName" Title="Employee Name"></GridColumn>
-            </GridColumns>
-        </MariloGrid>
+                <MariloGridColumn Field="ID"></MariloGridColumn>
+                <MariloGridColumn Field="TheName" Title="Employee Name"></MariloGridColumn>
+        </MariloDataGrid>
         <br />
     }
 }
@@ -61,20 +59,18 @@ You can increase or decrease the size of the Grid by setting the `Size` attribut
 >caption Set GridCommandButton Size option
 
 ```CSHTML
-<MariloGrid Size="@ThemeConstants.Grid.Size.Small"
+<MariloDataGrid Size="@ThemeConstants.Grid.Size.Small"
              Data="@GridData"
 			 Height="350px">
     <GridToolBarTemplate>
         <GridCommandButton Size="@ThemeConstants.Button.Size.Small">Custom Command</GridCommandButton>
     </GridToolBarTemplate>
-	<GridColumns>
-		<GridColumn Field="ID"></GridColumn>
-		<GridColumn Field="TheName" Title="Employee Name"></GridColumn>
-        <GridCommandColumn>
+		<MariloGridColumn Field="ID"></MariloGridColumn>
+		<MariloGridColumn Field="TheName" Title="Employee Name"></MariloGridColumn>
+        <MariloGridCommandColumn>
             <GridCommandButton Size="@ThemeConstants.Button.Size.Small">Custom Command</GridCommandButton>
-        </GridCommandColumn>
-	</GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 
 @code {
 	private IEnumerable<object> GridData = Enumerable.Range(1, 50).Select(x => new { ID = x, TheName = "name " + x });

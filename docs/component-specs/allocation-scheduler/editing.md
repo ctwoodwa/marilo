@@ -104,7 +104,7 @@ The AllocationScheduler does not expose an "edit mode" enum (like `GridEditMode.
 | **Typed input** | Any printable character while a cell is focused | Enters edit mode; replaces cell value with the typed character. Fires `OnStartTyping` internally. |
 | **F2 / Enter** | `F2` or `Enter` key on a focused cell | Enters edit mode; seeds editor with current value. Fires `OnEnterEditMode` internally. |
 | **Double-click** | Double-click on a cell | Enters edit mode (same as F2). |
-| **Drag-fill** | Click the fill handle on the active cell and drag | Does NOT enter in-place edit; computes the fill values and fires `OnRangeEdited` with the resolved records. |
+| **Drag-fill** | Click the fill handle on the active cell and drag | Does NOT enter in-place edit; target cells are highlighted with an inset box-shadow preview. On release, the component computes fill values and fires `OnRangeEdited` with the resolved records. <!-- pending R10: preview will change to dashed outline --> |
 | **Bulk selection + type** | Select a range, then type | Enters edit mode on the active cell within the range; on commit, fires `OnRangeEdited` (not `OnCellEdited`) when `AllowBulkEdit` is `true`. |
 | **Paste** | `Ctrl+V` with TSV on clipboard | Parses the TSV and fires `OnPasteData`, which converts to `OnRangeEdited`. No in-place edit state. |
 | **Context menu commands** | Right-click → Distribute / Shift / Move / Set Target | Fires the corresponding event (`OnDistributeRequested`, `OnShiftValues`, `OnMoveValues`, `OnTargetChanged`). No in-place edit state. |
@@ -246,6 +246,12 @@ Fires when a context-menu command is invoked. For built-in commands (Distribute,
 | `BackLoaded` | Heavier weight on later cells (linear growth from 0 toward 2/N). |
 | `WorkingDaysWeighted` | Only working days get a share. Zero-weighted on weekends and holidays. Requires consumer to provide a working-day calendar — if none is provided, behaves like `EvenSpread`. |
 | `Custom` | The consumer supplies the distribution via `OnDistributeRequested` — the component emits a proposed distribution using `EvenSpread`, which the consumer replaces before the event returns. |
+
+## Column Width and Layout
+
+When `TimeColumnWidth` is not set, the timeline table uses fluid column sizing: each time column is sized via `calc(100% / N)` where N is the number of visible buckets. This ensures columns fill the available width evenly regardless of view grain. At Month grain with 3 months visible, each column gets ~33% of the timeline pane width; at Week grain with 12 weeks visible, each gets ~8.3%.
+
+When `TimeColumnWidth` is set to a pixel value, columns use that fixed width and the timeline pane scrolls horizontally if the total exceeds the pane width. Users can resize individual columns when `AllowTimeColumnResize` is `true`, and double-click a header border to auto-fit to content width when `AutoFitOnDoubleClick` is `true`. Column resize events fire via `OnTimeColumnResized`.
 
 ## Validation
 
