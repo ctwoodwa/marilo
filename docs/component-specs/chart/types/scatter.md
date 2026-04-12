@@ -33,19 +33,19 @@ Scatter charts are useful for showing the relation between different sets of dat
     <ChartTitle Text="Unrecoverable Errors Per Minute vs. Signal Level"></ChartTitle>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Scatter"
+        <MariloChartSeries Type="ChartSeriesType.Scatter"
                      Data="@Series1Data"
                      Name="APSK modulation"
                      XField="@nameof(ModelData.Strength)"
                      YField="@nameof(ModelData.Errors)">
-        </ChartSeries>
+        </MariloChartSeries>
 
-        <ChartSeries Type="ChartSeriesType.Scatter"
+        <MariloChartSeries Type="ChartSeriesType.Scatter"
                      Data="@Series2Data"
                      Name="QAM modulation"
                      XField="@nameof(ModelData.Strength)"
                      YField="@nameof(ModelData.Errors)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartXAxes>

@@ -72,10 +72,10 @@ There are two different ways to configure the `From` and `To` values. The correc
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@series1Data">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@series2Data">
-        </ChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@series1Data">
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@series2Data">
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -97,7 +97,7 @@ There are two different ways to configure the `From` and `To` values. The correc
 
     <ChartTitle Text="Quarterly revenue per product"></ChartTitle>
 
-    <ChartLegend Position="ChartLegendPosition.Right">
+    <ChartLegend Position="ChartPosition.Right">
     </ChartLegend>
 </MariloChart>
 
@@ -117,12 +117,12 @@ There are two different ways to configure the `From` and `To` values. The correc
     <ChartTitle Text="Unrecoverable Errors Per Minute vs. Signal Level"></ChartTitle>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Scatter"
+        <MariloChartSeries Type="ChartSeriesType.Scatter"
                      Data="@SeriesData"
                      Name="APSK modulation"
                      XField="@nameof(ModelData.Strength)"
                      YField="@nameof(ModelData.Errors)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartXAxes>

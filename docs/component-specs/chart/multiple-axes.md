@@ -85,10 +85,10 @@ Multiple y-axes and their position
 
 <MariloChart>
 	<ChartSeriesItems>
-		<ChartSeries Type="ChartSeriesType.Line" Data="@seriesOneData" Color="green">
-		</ChartSeries>
-		<ChartSeries Type="ChartSeriesType.Line" Data="@seriesTwoData" Color="blue" Axis="secondAxis">
-		</ChartSeries>
+		<MariloChartSeries Type="ChartSeriesType.Line" Data="@seriesOneData" Color="green">
+		</MariloChartSeries>
+		<MariloChartSeries Type="ChartSeriesType.Line" Data="@seriesTwoData" Color="blue" Axis="secondAxis">
+		</MariloChartSeries>
 	</ChartSeriesItems>
 
 	<ChartValueAxes>
@@ -106,7 +106,7 @@ Multiple y-axes and their position
 
 	<ChartTitle Text="Revenue per product"></ChartTitle>
 
-	<ChartLegend Position="ChartLegendPosition.Right">
+	<ChartLegend Position="ChartPosition.Right">
 	</ChartLegend>
 </MariloChart>
 
@@ -129,12 +129,12 @@ Multiple category axes and their position
 
 <MariloChart>
 	<ChartSeriesItems>
-		<ChartSeries Type="ChartSeriesType.Line" Name="Product 1" Data="@chartData" CategoryAxis="firstAxis" Color="red"
+		<MariloChartSeries Type="ChartSeriesType.Line" Name="Product 1" Data="@chartData" CategoryAxis="firstAxis" Color="red"
 							Field="@nameof(MyDataModel.Product1)" CategoryField="@nameof(MyDataModel.FirstSeriesCategories)">
-		</ChartSeries>
-		<ChartSeries Type="ChartSeriesType.Line" Name="Product 2" Data="@chartData" CategoryAxis="secondAxis" Color="blue"
+		</MariloChartSeries>
+		<MariloChartSeries Type="ChartSeriesType.Line" Name="Product 2" Data="@chartData" CategoryAxis="secondAxis" Color="blue"
 							Field="@nameof(MyDataModel.Product2)" CategoryField="@nameof(MyDataModel.SecondSeriesCategories)">
-		</ChartSeries>
+		</MariloChartSeries>
 	</ChartSeriesItems>
 
 	<ChartCategoryAxes>
@@ -183,12 +183,12 @@ Viable values for the axes positions
 
 <MariloChart>
 	<ChartSeriesItems>
-		<ChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@chartData" CategoryAxis="firstAxis" Color="red"
+		<MariloChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@chartData" CategoryAxis="firstAxis" Color="red"
 							Field="@nameof(MyDataModel.Product1)" CategoryField="@nameof(MyDataModel.FirstSeriesCategories)">
-		</ChartSeries>
-		<ChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@chartData" CategoryAxis="secondAxis" Color="blue"
+		</MariloChartSeries>
+		<MariloChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@chartData" CategoryAxis="secondAxis" Color="blue"
 							Field="@nameof(MyDataModel.Product2)" CategoryField="@nameof(MyDataModel.SecondSeriesCategories)">
-		</ChartSeries>
+		</MariloChartSeries>
 	</ChartSeriesItems>
 
 	<ChartCategoryAxes>
@@ -231,12 +231,12 @@ Potentially unwanted behavior 1
 
 <MariloChart>
 	<ChartSeriesItems>
-		<ChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@chartData" CategoryAxis="firstAxis" Color="red"
+		<MariloChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@chartData" CategoryAxis="firstAxis" Color="red"
 							Field="@nameof(MyDataModel.Product1)" CategoryField="@nameof(MyDataModel.FirstSeriesCategories)">
-		</ChartSeries>
-		<ChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@chartData" CategoryAxis="secondAxis" Color="blue"
+		</MariloChartSeries>
+		<MariloChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@chartData" CategoryAxis="secondAxis" Color="blue"
 							Field="@nameof(MyDataModel.Product2)" CategoryField="@nameof(MyDataModel.SecondSeriesCategories)">
-		</ChartSeries>
+		</MariloChartSeries>
 	</ChartSeriesItems>
 
 	<ChartCategoryAxes>
@@ -274,12 +274,12 @@ Potentially unwanted behavior 2
 
 <MariloChart>
 	<ChartSeriesItems>
-		<ChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@chartData" CategoryAxis="firstAxis" Color="red"
+		<MariloChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@chartData" CategoryAxis="firstAxis" Color="red"
 							Field="@nameof(MyDataModel.Product1)" CategoryField="@nameof(MyDataModel.FirstSeriesCategories)">
-		</ChartSeries>
-		<ChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@chartData" CategoryAxis="secondAxis" Color="blue"
+		</MariloChartSeries>
+		<MariloChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@chartData" CategoryAxis="secondAxis" Color="blue"
 							Field="@nameof(MyDataModel.Product2)" CategoryField="@nameof(MyDataModel.SecondSeriesCategories)">
-		</ChartSeries>
+		</MariloChartSeries>
 	</ChartSeriesItems>
 
 	<ChartCategoryAxes>
@@ -322,16 +322,16 @@ When using numerical charts, you define the extra axes in the `ChartXAxes` and `
     <ChartLegend Visible="true"></ChartLegend>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.ScatterLine"
+        <MariloChartSeries Type="ChartSeriesType.ScatterLine"
                      Data="@ElectricalPower"
                      Name="Electrical Motor - Power"
                      XAxis="ElectricalMotorAxis"
                      XField="@nameof(ModelData.X)"
                      YField="@nameof(ModelData.Y)"
                      Style="ChartSeriesStyle.Smooth">
-        </ChartSeries>
+        </MariloChartSeries>
 
-        <ChartSeries Type="ChartSeriesType.ScatterLine"
+        <MariloChartSeries Type="ChartSeriesType.ScatterLine"
                      Data="@ElectricalTorque"
                      Name="Electrical Motor - Torque"
                      XAxis="ElectricalMotorAxis"
@@ -339,24 +339,24 @@ When using numerical charts, you define the extra axes in the `ChartXAxes` and `
                      XField="@nameof(ModelData.X)"
                      YField="@nameof(ModelData.Y)"
                      Style="ChartSeriesStyle.Smooth">
-        </ChartSeries>
+        </MariloChartSeries>
 
-        <ChartSeries Type="ChartSeriesType.ScatterLine"
+        <MariloChartSeries Type="ChartSeriesType.ScatterLine"
                      Data="@GasPower"
                      Name="Gasoline Motor - Power"
                      XField="@nameof(ModelData.X)"
                      YField="@nameof(ModelData.Y)"
                      Style="ChartSeriesStyle.Smooth">
-        </ChartSeries>
+        </MariloChartSeries>
 
-        <ChartSeries Type="ChartSeriesType.ScatterLine"
+        <MariloChartSeries Type="ChartSeriesType.ScatterLine"
                      Data="@GasTorque"
                      Name="Gasoline Motor - Torque"
                      YAxis="TorqueAxis"
                      XField="@nameof(ModelData.X)"
                      YField="@nameof(ModelData.Y)"
                      Style="ChartSeriesStyle.Smooth">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartXAxes>
@@ -448,15 +448,15 @@ The general approach is to set an axis crossing point that has a very large valu
     </ChartValueAxes>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@series1Data">
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@series1Data">
             <ChartSeriesStack Enabled="true" Group="separateGroup1"></ChartSeriesStack>
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@series2Data">
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@series2Data">
             <ChartSeriesStack Enabled="true" Group="separateGroup2"></ChartSeriesStack>
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 3" Data="@series3Data">
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 3" Data="@series3Data">
             <ChartSeriesStack Enabled="true" Group="separateGroup3"></ChartSeriesStack>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -464,7 +464,7 @@ The general approach is to set an axis crossing point that has a very large valu
     </ChartCategoryAxes>
 
     <ChartTitle Text="Quarterly revenue per product"></ChartTitle>
-    <ChartLegend Position="ChartLegendPosition.Right">
+    <ChartLegend Position="ChartPosition.Right">
     </ChartLegend>
 </MariloChart>
 
@@ -509,14 +509,14 @@ This approach can work for both numerical and categorical axes. The example belo
     </ChartValueAxes>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 1 (SUM)" Data="@chartData" Field="@nameof(MyDataModel.Product1)" CategoryField="@nameof(MyDataModel.MySharedCategories)" Aggregate="ChartSeriesAggregate.Sum" Axis="FirstYAxis">
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 1 (SUM)" Data="@chartData" Field="@nameof(MyDataModel.Product1)" CategoryField="@nameof(MyDataModel.MySharedCategories)" Aggregate="ChartSeriesAggregate.Sum" Axis="FirstYAxis">
             <ChartSeriesLabels Visible="false"></ChartSeriesLabels>
             <ChartSeriesTooltip Visible="true"></ChartSeriesTooltip>
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 2 (SUM)" Data="@chartData" Field="@nameof(MyDataModel.Product2)" CategoryField="@nameof(MyDataModel.MySharedCategories)" Aggregate="ChartSeriesAggregate.Sum" Axis="SecondYAxis">
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 2 (SUM)" Data="@chartData" Field="@nameof(MyDataModel.Product2)" CategoryField="@nameof(MyDataModel.MySharedCategories)" Aggregate="ChartSeriesAggregate.Sum" Axis="SecondYAxis">
             <ChartSeriesLabels Visible="false"></ChartSeriesLabels>
             <ChartSeriesTooltip Visible="true"></ChartSeriesTooltip>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
 </MariloChart>

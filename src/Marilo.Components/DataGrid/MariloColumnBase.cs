@@ -42,6 +42,12 @@ public abstract class MariloColumnBase : MariloComponentBase, IColumnDescriptor
     /// <summary>Additional CSS class for the header cell.</summary>
     [Parameter] public string? HeaderClass { get; set; }
 
+    /// <summary>Whether this column is sortable. Null means inherit from the parent component.</summary>
+    [Parameter] public bool? Sortable { get; set; }
+
+    /// <summary>Whether this column is filterable. Null means inherit from the parent component.</summary>
+    [Parameter] public bool? Filterable { get; set; }
+
     /// <summary>Gets the display title for the column header.</summary>
     public string DisplayTitle => Title ?? Field;
 
@@ -68,7 +74,7 @@ public abstract class MariloColumnBase : MariloComponentBase, IColumnDescriptor
 /// <summary>
 /// Lightweight column descriptor used internally when mapping legacy POCO
 /// <see cref="TreeListColumn"/> instances to the unified column model.
-/// Not a Blazor component — just carries metadata.
+/// Not a Blazor component â€” just carries metadata.
 /// </summary>
 #pragma warning disable CS0618 // Obsolete usage is intentional for backward compat
 internal sealed class LegacyColumnAdapter : IColumnDescriptor

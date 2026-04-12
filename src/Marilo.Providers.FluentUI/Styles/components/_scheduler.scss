@@ -1,1 +1,244 @@
-// TODO: Placeholder — no FluentUI styles defined yet
+// =================================================================
+// Marilo FluentUI Provider — Scheduler
+// =================================================================
+
+.mar-scheduler {
+  border: 1px solid var(--marilo-color-border, #e1dfdd);
+  border-radius: var(--marilo-radius-md, 4px);
+  background: var(--marilo-color-surface, #ffffff);
+  color: var(--marilo-color-text, #323130);
+  font-family: var(--marilo-font-family, 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif);
+  font-size: var(--marilo-font-size-md, 14px);
+  overflow: hidden;
+}
+
+// --- Header / Navigation ---
+.mar-scheduler__header {
+  display: flex;
+  align-items: center;
+  gap: var(--marilo-space-sm, 8px);
+  padding: var(--marilo-space-sm, 8px) var(--marilo-space-md, 12px);
+  border-bottom: 1px solid var(--marilo-color-border, #e1dfdd);
+  background: var(--marilo-color-subtle-background, #faf9f8);
+}
+
+.mar-scheduler__title {
+  font-weight: 600;
+  font-size: var(--marilo-font-size-md, 14px);
+  min-width: 180px;
+  text-align: center;
+}
+
+.mar-scheduler__spacer {
+  flex: 1;
+}
+
+// --- Month View ---
+.mar-scheduler__month {
+  display: flex;
+  flex-direction: column;
+}
+
+.mar-scheduler__weekday-headers {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border-bottom: 1px solid var(--marilo-color-border, #e1dfdd);
+  background: var(--marilo-color-subtle-background, #faf9f8);
+}
+
+.mar-scheduler__weekday {
+  padding: var(--marilo-space-xs, 4px) var(--marilo-space-sm, 8px);
+  font-weight: 600;
+  font-size: var(--marilo-font-size-sm, 12px);
+  text-align: center;
+  color: var(--marilo-color-text-secondary, #605e5c);
+}
+
+.mar-scheduler__month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.mar-scheduler__day-cell {
+  min-height: 80px;
+  padding: var(--marilo-space-xs, 4px);
+  border-right: 1px solid var(--marilo-color-border, #e1dfdd);
+  border-bottom: 1px solid var(--marilo-color-border, #e1dfdd);
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+
+  &:hover {
+    background: var(--marilo-color-subtle-background-hover, #f3f2f1);
+  }
+
+  &:nth-child(7n) {
+    border-right: none;
+  }
+
+  &--today {
+    background: color-mix(in srgb, var(--marilo-color-primary, #0078d4) 8%, var(--marilo-color-surface, #ffffff));
+
+    .mar-scheduler__day-number {
+      background: var(--marilo-color-primary, #0078d4);
+      color: var(--marilo-color-on-primary, #ffffff);
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+    }
+  }
+
+  &--outside {
+    color: var(--marilo-color-text-disabled, #a19f9d);
+    background: var(--marilo-color-subtle-background, #faf9f8);
+  }
+}
+
+.mar-scheduler__day-number {
+  font-size: var(--marilo-font-size-sm, 12px);
+  display: block;
+  margin-bottom: var(--marilo-space-xs, 4px);
+}
+
+.mar-scheduler__appointment {
+  font-size: var(--marilo-font-size-xs, 11px);
+  padding: 2px var(--marilo-space-xs, 4px);
+  margin-bottom: 2px;
+  border-radius: var(--marilo-radius-sm, 2px);
+  background: var(--marilo-color-primary, #0078d4);
+  color: var(--marilo-color-on-primary, #ffffff);
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  transition: opacity 0.1s ease;
+
+  &:hover {
+    opacity: 0.85;
+  }
+
+  &--timed {
+    position: absolute;
+    left: 2px;
+    right: 2px;
+    z-index: 1;
+    min-height: 18px;
+  }
+}
+
+// --- Day / Week (Time Grid) View ---
+.mar-scheduler__time-grid {
+  display: flex;
+  overflow: auto;
+}
+
+.mar-scheduler__time-labels {
+  flex-shrink: 0;
+  width: 60px;
+  border-right: 1px solid var(--marilo-color-border, #e1dfdd);
+}
+
+.mar-scheduler__time-label {
+  height: 48px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 0 var(--marilo-space-sm, 8px);
+  font-size: var(--marilo-font-size-xs, 11px);
+  color: var(--marilo-color-text-secondary, #605e5c);
+}
+
+.mar-scheduler__day-column {
+  flex: 1;
+  min-width: 100px;
+  border-right: 1px solid var(--marilo-color-border, #e1dfdd);
+
+  &:last-child {
+    border-right: none;
+  }
+}
+
+.mar-scheduler__day-column-header {
+  padding: var(--marilo-space-xs, 4px) var(--marilo-space-sm, 8px);
+  text-align: center;
+  font-weight: 600;
+  font-size: var(--marilo-font-size-sm, 12px);
+  border-bottom: 1px solid var(--marilo-color-border, #e1dfdd);
+  background: var(--marilo-color-subtle-background, #faf9f8);
+}
+
+.mar-scheduler__day-slots {
+  position: relative;
+}
+
+.mar-scheduler__time-slot {
+  height: 48px;
+  border-bottom: 1px solid var(--marilo-color-border-light, #edebe9);
+}
+
+// =================================================================
+// Dark Mode
+// =================================================================
+[data-marilo-theme="dark"] {
+  .mar-scheduler {
+    border-color: var(--marilo-color-border, #484644);
+    background: var(--marilo-color-surface, #252423);
+    color: var(--marilo-color-text, #f3f2f1);
+  }
+
+  .mar-scheduler__header {
+    border-bottom-color: var(--marilo-color-border, #484644);
+    background: var(--marilo-color-subtle-background, #323130);
+  }
+
+  .mar-scheduler__weekday-headers {
+    border-bottom-color: var(--marilo-color-border, #484644);
+    background: var(--marilo-color-subtle-background, #323130);
+  }
+
+  .mar-scheduler__weekday {
+    color: var(--marilo-color-text-secondary, #c8c6c4);
+  }
+
+  .mar-scheduler__day-cell {
+    border-right-color: var(--marilo-color-border, #484644);
+    border-bottom-color: var(--marilo-color-border, #484644);
+
+    &:hover {
+      background: var(--marilo-color-subtle-background-hover, #3b3a39);
+    }
+
+    &--today {
+      background: color-mix(in srgb, var(--marilo-color-primary, #2b88d8) 12%, var(--marilo-color-surface, #252423));
+    }
+
+    &--outside {
+      color: var(--marilo-color-text-disabled, #605e5c);
+      background: var(--marilo-color-subtle-background, #323130);
+    }
+  }
+
+  .mar-scheduler__time-label {
+    color: var(--marilo-color-text-secondary, #c8c6c4);
+  }
+
+  .mar-scheduler__time-labels {
+    border-right-color: var(--marilo-color-border, #484644);
+  }
+
+  .mar-scheduler__day-column {
+    border-right-color: var(--marilo-color-border, #484644);
+  }
+
+  .mar-scheduler__day-column-header {
+    border-bottom-color: var(--marilo-color-border, #484644);
+    background: var(--marilo-color-subtle-background, #323130);
+  }
+
+  .mar-scheduler__time-slot {
+    border-bottom-color: var(--marilo-color-border-light, #3b3a39);
+  }
+}

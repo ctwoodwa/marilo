@@ -11,54 +11,35 @@ components: ["diagram"]
 
 # Diagram Data Binding
 
-This article explains how to bind the Diagram component to a data source using descriptor classes. Data binding provides an alternative to defining shapes and connections declaratively with tags.
+This article explains how to bind the Diagram component to data using descriptor classes. The v1 API uses flat descriptor lists passed to the `Shapes` and `Connections` parameters.
 
-The Diagram supports binding to collections of shapes and connections through two main parameters:
+## Parameters
 
-* `ShapesData`—accepts a `List<DiagramShapeDescriptor>` that defines the shapes and their properties.
-* `ConnectionsData`—accepts a `List<DiagramConnectionDescriptor>` that defines the connections between shapes and their properties.
-
-The descriptor classes mirror the properties of the declarative tags [`<DiagramShape>`](slug:diagram-shapes) and [`<DiagramConnection>`](slug:diagram-connections), allowing you to configure the Diagram elements programmatically.
-
+* `Shapes` accepts an `IReadOnlyList<DiagramShapeDescriptor>` that defines the shapes and their properties.
+* `Connections` accepts an `IReadOnlyList<DiagramConnectionDescriptor>` that defines the connections between shapes and their properties.
 
 ## Descriptor Classes
 
-The data binding mechanism uses descriptor classes that correspond to the declarative component tags. For each tag, there is a descriptor class with the same properties:
+* [`DiagramShapeDescriptor`](slug:diagram-shapes) contains properties: `Id`, `Text`, `Type`, `X`, `Y`, `Width`, `Height`, `CssClass`, `TooltipText`.
+* [`DiagramConnectionDescriptor`](slug:diagram-connections) contains properties: `Id`, `FromShapeId`, `ToShapeId`, `Text`, `CssClass`.
 
-* [`DiagramShapeDescriptor`](slug:Marilo.Blazor.Components.DiagramShapeDescriptor)—corresponds to `<DiagramShape>` and contains properties like `Id`, `X`, `Y`, `Width`, `Height`, `Fill`, `Content`, and more.
-* [`DiagramConnectionDescriptor`](slug:Marilo.Blazor.Components.DiagramConnectionDescriptor)—corresponds to `<DiagramConnection>` and contains properties like `FromId`, `ToId`, `Stroke`, `Content`, and more.
-
-Nested properties (such as `Fill`, `Stroke`, and `Content`) also have their own descriptor classes:
-
-* [`DiagramShapeFillDescriptor`](slug:Marilo.Blazor.Components.DiagramShapeFillDescriptor)—defines the fill color and gradient of a shape.
-* [`DiagramShapeContentDescriptor`](slug:Marilo.Blazor.Components.DiagramShapeContentDescriptor)—defines the text and text color displayed inside a shape.
-* [`DiagramConnectionStrokeDescriptor`](slug:Marilo.Blazor.Components.DiagramConnectionStrokeDescriptor)—defines the stroke color and width of a connection.
-* [`DiagramConnectionContentDescriptor`](slug:Marilo.Blazor.Components.DiagramConnectionContentDescriptor)—defines the text and text color displayed on a connection.
+> Nested descriptor classes for fill, stroke, and content styling (`DiagramShapeFillDescriptor`, `DiagramShapeContentDescriptor`, `DiagramConnectionStrokeDescriptor`, `DiagramConnectionContentDescriptor`) are deferred to a future version alongside declarative child tags.
 
 ## Binding Data from Custom Models
 
 You can map data from your existing model classes to the descriptor classes. This approach provides flexibility and allows you to integrate the Diagram with your application data.
 
-The example below demonstrates how to:
-
-* Create custom model classes (`OrganizationNode` and `OrganizationConnection`).
-* Map the model data to `DiagramShapeDescriptor` and `DiagramConnectionDescriptor`.
-* Set shape and connection properties such as color, text, and position.
-
 >caption Binding the Diagram to data from custom models
 
 ````RAZOR
-<MariloDiagram ShapesData="@ShapesData"
-                ConnectionsData="@ConnectionsData"
-                Height="600px">
-    <DiagramShapeDefaults />
-    <DiagramLayout HorizontalSeparation="140"
-                   VerticalSeparation="80" />
-</MariloDiagram>
+<MariloDiagram Shapes="@ShapesData"
+               Connections="@ConnectionsData"
+               Height="400px"
+               OnShapeClick="HandleClick" />
 
 @code {
-    private List<DiagramShapeDescriptor> ShapesData { get; set; } = new List<DiagramShapeDescriptor>();
-    private List<DiagramConnectionDescriptor> ConnectionsData { get; set; } = new List<DiagramConnectionDescriptor>();
+    private List<DiagramShapeDescriptor> ShapesData { get; set; } = new();
+    private List<DiagramConnectionDescriptor> ConnectionsData { get; set; } = new();
 
     protected override void OnInitialized()
     {
@@ -69,17 +50,12 @@ The example below demonstrates how to:
             ShapesData.Add(new DiagramShapeDescriptor()
             {
                 Id = node.Id,
+                Text = node.Label,
                 Width = node.Width,
                 Height = node.Height,
-                Fill = new DiagramShapeFillDescriptor()
-                {
-                    Color = node.BackgroundColor
-                },
-                Content = new DiagramShapeContentDescriptor()
-                {
-                    Text = node.Label,
-                    Color = node.TextColor
-                }
+                X = node.X,
+                Y = node.Y,
+                TooltipText = $"{node.Label} ({node.Role})"
             });
         }
 
@@ -89,291 +65,50 @@ The example below demonstrates how to:
         {
             ConnectionsData.Add(new DiagramConnectionDescriptor()
             {
-                FromId = connection.FromId,
-                ToId = connection.ToId,
-                Stroke = new DiagramConnectionStrokeDescriptor()
-                {
-                    Color = connection.LineColor
-                },
-                Content = new DiagramConnectionContentDescriptor()
-                {
-                    Text = connection.Label,
-                    Color = connection.LabelColor
-                }
+                Id = connection.Id,
+                FromShapeId = connection.FromId,
+                ToShapeId = connection.ToId,
+                Text = connection.Label
             });
         }
     }
 
-    private List<OrganizationNode> GetOrganizationNodes()
+    private void HandleClick(DiagramShapeClickEventArgs args)
     {
-        return new List<OrganizationNode>()
-        {
-            new OrganizationNode()
-            {
-                Id = "ceo",
-                Label = "CEO",
-                Width = 150,
-                Height = 70,
-                BackgroundColor = "#0078D4",
-                TextColor = "#FFFFFF"
-            },
-            new OrganizationNode()
-            {
-                Id = "cto",
-                Label = "CTO",
-                Width = 150,
-                Height = 70,
-                BackgroundColor = "#00BCF2",
-                TextColor = "#FFFFFF"
-            },
-            new OrganizationNode()
-            {
-                Id = "cfo",
-                Label = "CFO",
-                Width = 150,
-                Height = 70,
-                BackgroundColor = "#00BCF2",
-                TextColor = "#FFFFFF"
-            },
-            new OrganizationNode()
-            {
-                Id = "dev-manager",
-                Label = "Dev Manager",
-                Width = 150,
-                Height = 70,
-                BackgroundColor = "#8661C5",
-                TextColor = "#FFFFFF"
-            },
-            new OrganizationNode()
-            {
-                Id = "qa-manager",
-                Label = "QA Manager",
-                Width = 150,
-                Height = 70,
-                BackgroundColor = "#8661C5",
-                TextColor = "#FFFFFF"
-            },
-            new OrganizationNode()
-            {
-                Id = "finance-manager",
-                Label = "Finance Manager",
-                Width = 150,
-                Height = 70,
-                BackgroundColor = "#8661C5",
-                TextColor = "#FFFFFF"
-            }
-        };
+        Console.WriteLine($"Clicked: {args.Shape.Text}");
     }
 
-    private List<OrganizationConnection> GetOrganizationConnections()
+    private List<OrganizationNode> GetOrganizationNodes() => new()
     {
-        return new List<OrganizationConnection>()
-        {
-            new OrganizationConnection()
-            {
-                FromId = "ceo",
-                ToId = "cto",
-                Label = "Supervises",
-                LineColor = "#0078D4",
-                LabelColor = "#0078D4"
-            },
-            new OrganizationConnection()
-            {
-                FromId = "ceo",
-                ToId = "cfo",
-                Label = "Supervises",
-                LineColor = "#0078D4",
-                LabelColor = "#0078D4"
-            },
-            new OrganizationConnection()
-            {
-                FromId = "cto",
-                ToId = "dev-manager",
-                Label = "Manages",
-                LineColor = "#00BCF2",
-                LabelColor = "#00BCF2"
-            },
-            new OrganizationConnection()
-            {
-                FromId = "cto",
-                ToId = "qa-manager",
-                Label = "Manages",
-                LineColor = "#00BCF2",
-                LabelColor = "#00BCF2"
-            },
-            new OrganizationConnection()
-            {
-                FromId = "cfo",
-                ToId = "finance-manager",
-                Label = "Manages",
-                LineColor = "#00BCF2",
-                LabelColor = "#00BCF2"
-            }
-        };
-    }
+        new() { Id = "ceo", Label = "CEO", Role = "Executive", Width = 120, Height = 50, X = 200, Y = 20 },
+        new() { Id = "cto", Label = "CTO", Role = "Technology", Width = 120, Height = 50, X = 80, Y = 120 },
+        new() { Id = "cfo", Label = "CFO", Role = "Finance", Width = 120, Height = 50, X = 320, Y = 120 },
+    };
+
+    private List<OrganizationConnection> GetOrganizationConnections() => new()
+    {
+        new() { Id = "c1", FromId = "ceo", ToId = "cto", Label = "Supervises" },
+        new() { Id = "c2", FromId = "ceo", ToId = "cfo", Label = "Supervises" },
+    };
 
     public class OrganizationNode
     {
-        public string Id { get; set; }
-        public string Label { get; set; }
-        public double? Width { get; set; }
-        public double? Height { get; set; }
-        public string BackgroundColor { get; set; }
-        public string TextColor { get; set; }
+        public string Id { get; set; } = "";
+        public string Label { get; set; } = "";
+        public string Role { get; set; } = "";
+        public double Width { get; set; }
+        public double Height { get; set; }
+        public double X { get; set; }
+        public double Y { get; set; }
     }
 
     public class OrganizationConnection
     {
-        public string FromId { get; set; }
-        public string ToId { get; set; }
-        public string Label { get; set; }
-        public string LineColor { get; set; }
-        public string LabelColor { get; set; }
+        public string Id { get; set; } = "";
+        public string FromId { get; set; } = "";
+        public string ToId { get; set; } = "";
+        public string Label { get; set; } = "";
     }
-}
-````
-
-
-## Direct Descriptor Initialization
-
-You can also create the descriptor objects directly without mapping from custom models. This approach is useful when you don't have an existing data structure or prefer to define the Diagram data inline.
-
->caption Direct initialization of descriptor objects
-
-````RAZOR
-<MariloDiagram @ref="@DiagramRef"
-                ShapesData="@ShapesData"
-                ConnectionsData="@ConnectionsData"
-                Height="500px">
-    <DiagramShapeDefaults Type="@DiagramShapeType.Circle" />
-</MariloDiagram>
-
-@code {
-    private MariloDiagram DiagramRef { get; set; }
-
-    private List<DiagramShapeDescriptor> ShapesData { get; set; } = new List<DiagramShapeDescriptor>()
-    {
-        new DiagramShapeDescriptor()
-        {
-            Id = "node1",
-            X = 150,
-            Y = 100,
-            Fill = new DiagramShapeFillDescriptor()
-            {
-                Color = "#FF6358"
-            },
-            Content = new DiagramShapeContentDescriptor()
-            {
-                Text = "Process Start",
-                Color = "#FFFFFF"
-            }
-        },
-        new DiagramShapeDescriptor()
-        {
-            Id = "node2",
-            X = 400,
-            Y = 100,
-            Fill = new DiagramShapeFillDescriptor()
-            {
-                Color = "#FFB822"
-            },
-            Content = new DiagramShapeContentDescriptor()
-            {
-                Text = "Data Input",
-                Color = "#000000"
-            }
-        },
-        new DiagramShapeDescriptor()
-        {
-            Id = "node3",
-            X = 650,
-            Y = 100,
-            Fill = new DiagramShapeFillDescriptor()
-            {
-                Color = "#28B4C8"
-            },
-            Content = new DiagramShapeContentDescriptor()
-            {
-                Text = "Processing",
-                Color = "#FFFFFF"
-            }
-        },
-        new DiagramShapeDescriptor()
-        {
-            Id = "node4",
-            X = 400,
-            Y = 300,
-            Fill = new DiagramShapeFillDescriptor()
-            {
-                Color = "#2EB85C"
-            },
-            Content = new DiagramShapeContentDescriptor()
-            {
-                Text = "Output Result",
-                Color = "#FFFFFF"
-            }
-        }
-    };
-
-    private List<DiagramConnectionDescriptor> ConnectionsData { get; set; } = new List<DiagramConnectionDescriptor>()
-    {
-        new DiagramConnectionDescriptor()
-        {
-            FromId = "node1",
-            ToId = "node2",
-            Stroke = new DiagramConnectionStrokeDescriptor()
-            {
-                Color = "#FF6358"
-            },
-            Content = new DiagramConnectionContentDescriptor()
-            {
-                Text = "Initialize",
-                Color = "#FF6358"
-            }
-        },
-        new DiagramConnectionDescriptor()
-        {
-            FromId = "node2",
-            ToId = "node3",
-            Stroke = new DiagramConnectionStrokeDescriptor()
-            {
-                Color = "#FFB822"
-            },
-            Content = new DiagramConnectionContentDescriptor()
-            {
-                Text = "Validate",
-                Color = "#FFB822"
-            }
-        },
-        new DiagramConnectionDescriptor()
-        {
-            FromId = "node3",
-            ToId = "node4",
-            Stroke = new DiagramConnectionStrokeDescriptor()
-            {
-                Color = "#28B4C8"
-            },
-            Content = new DiagramConnectionContentDescriptor()
-            {
-                Text = "Complete",
-                Color = "#28B4C8"
-            }
-        },
-        new DiagramConnectionDescriptor()
-        {
-            FromId = "node1",
-            ToId = "node4",
-            Stroke = new DiagramConnectionStrokeDescriptor()
-            {
-                Color = "#6C757D"
-            },
-            Content = new DiagramConnectionContentDescriptor()
-            {
-                Text = "Error Path",
-                Color = "#6C757D"
-            }
-        }
-    };
 }
 ````
 
@@ -382,4 +117,3 @@ You can also create the descriptor objects directly without mapping from custom 
 * [Diagram Overview](slug:diagram-overview)
 * [Diagram Shapes](slug:diagram-shapes)
 * [Diagram Connections](slug:diagram-connections)
-* [Diagram Layouts](slug:diagram-layouts)

@@ -50,13 +50,9 @@ Tables, their columns, and rows in the content area of Editor are resizable. To 
 
 Images in the content area of the Editor are resizable. To grab the resize handles, hover on the borders of the image.
 
-## Dependencies
+## Architecture
 
-The Marilo UI for [Blazor Editor](https://www.marilo.com/blazor-ui/editor) uses the ProseMirror engine and it depends on it. You do not need to add any extra assets or references yourself, though, we have taken care of everything internally.
-
-## ProseMirror Schema and Plugins
-
-The Editor uses a built-in [ProseMirror Schema](https://prosemirror.net/docs/guide/#schema) that includes most of the common HTML tags and a set of predefined [ProseMirror Plugins](https://prosemirror.net/docs/ref/#state.Plugin_System) for its basic functionalities. Find out how to customize the default ProseMirror [Schema](slug:editor-prosemirror-schema-overview) and [Plugins](slug:editor-prosemirror-plugins) to achieve the desired functionality in the Editor for Blazor.
+The Marilo Editor uses a `contenteditable` div with `document.execCommand` for rich text editing. The JS interop module is loaded as an inline IIFE. No external JS dependencies are required.
 
 ## Editor Parameters
 
@@ -65,14 +61,22 @@ The following table lists Editor parameters, which are not discussed elsewhere i
 
 | Parameter | Type and Default value | Description |
 |-----------|------------------------|-------------|
-| `Value`  | `string` | The value of the component. It supports two-way binding or alternatively, use it with the [`ValueChanged` event](slug:editor-events#valuechanged). |
-| `DebounceDelay`  | `int` <br /> (`100`) | The time in milliseconds that passes between updates on the `Value`. The default is `100ms` and if that causes performance issues with many repaints on your view, you can increase it. Since the editor is expected to handle longer editing sessions and larger content than regular inputs, we added this parameter to debounce the view-model updates and events. |
-| `Adaptive`  | `bool` | Defines if the [toolbar](slug:editor-toolbar) should adapt to changes in the width of the component and automatically hide and show the overflowing items in a popup. |
-| `Width`  | `string` | Defines the width of the Editor. The default width is `null` but the themes apply `100%`. |
-| `Height`  | `string` <br /> (`250px`) | Defines the height of the Editor. |
-| `ReadOnly` | `bool` | If set to `true`, the component will be readonly and will not allow user input. The component is not readonly by default and allows user input. |
-| `AriaLabelledBy`  | `string` | Maps to the `area-labelledby` attribute. Use this parameter to reference another element to define its accessible name. |
-| `AriaDescribedBy`  | `string` | Maps to the `area-describedby` attribute. Use this parameter to establish a relationship between widgets or groups and the text that describes them. |
+| `Value`  | `string?` | The HTML content of the editor. Supports two-way binding via `@bind-Value` or use with the [`ValueChanged` event](slug:editor-events#valuechanged). |
+| `ValueExpression` | `Expression<Func<string>>?` | Expression identifying the bound value for Blazor `EditForm` validation integration. |
+| `EditMode` | `EditorEditMode` <br /> (`Edit`) | The edit mode: `Edit` (WYSIWYG), `Preview` (rendered HTML), or `Source` (raw HTML textarea). Supports two-way binding via `EditModeChanged`. |
+| `Tools` | `IEnumerable<EditorTool>?` | The built-in toolbar tools to show. When `null`, a default set of 19 tools is displayed. |
+| `CustomTools` | `IEnumerable<EditorCustomTool>?` | Custom tool buttons rendered after built-in tools in the toolbar. |
+| `ToolbarTemplate` | `RenderFragment?` | Custom render template that replaces the entire toolbar. When set, built-in and custom tool buttons are not rendered. |
+| `ChildContent` | `RenderFragment?` | Child content for child components such as `EditorPasteSettings`. |
+| `Placeholder` | `string?` | Placeholder text shown when the editor is empty. Rendered via `data-placeholder` attribute in Edit mode and `placeholder` attribute in Source mode. |
+| `DebounceDelay`  | `int` <br /> (`100`) | The time in milliseconds between content updates to the `Value`. Increase for large content to reduce repaints. |
+| `Adaptive`  | `bool` | When `true`, the toolbar collapses overflowing items into a popup when the editor is too narrow. |
+| `Width`  | `string?` | The width of the editor container. Default is `null` (themes apply `100%`). |
+| `Height`  | `string` <br /> (`250px`) | The height of the content area. |
+| `ReadOnly` | `bool` | When `true`, the editor is read-only. The toolbar is hidden and `contenteditable` is set to `false`. |
+| `Disabled` | `bool` | When `true`, the editor is disabled. The toolbar is hidden and the content area is not interactive. |
+| `AriaLabelledBy`  | `string?` | Maps to the `aria-labelledby` attribute on the WYSIWYG content area. |
+| `AriaDescribedBy`  | `string?` | Maps to the `aria-describedby` attribute on the WYSIWYG content area. |
 
 ## Editor Reference and Methods
 
@@ -80,28 +84,28 @@ The Editor provides methods for programmatic operation. To use them, obtain a re
 
 | Method | Description |
 | --- | --- |
-| `ExecuteAsync` | Executes a [built-in Editor command programmatically](slug:editor-built-in-tools#programmatic-execution). You can also use this method to call built-in commands that are part of a [custom tool](slug:editor-custom-tools). |
+| `ExecuteAsync(EditorCommandArgs)` | Executes a formatting command programmatically. Accepts `HtmlCommandArgs`, `FormatCommandArgs`, `LinkCommandArgs`, `ImageCommandArgs`, `TableCommandArgs`, `ColorCommandArgs`, `FontSizeCommandArgs`, `FontFamilyCommandArgs`, or `ToolCommandArgs`. |
+| `ExecuteCommandAsync(string)` | Executes a command by name (e.g., `"bold"`, `"italic"`). |
+| `SetModeAsync(EditorEditMode)` | Sets the edit mode programmatically. Captures content from WYSIWYG before switching to Source. |
+| `GetHtmlAsync()` | Returns the current HTML content from the editor. |
+| `ImportAsync(string, string)` | Imports content in the specified format (e.g., `"markdown"`, `"plaintext"`) via a registered `IEditorFormatConverter`, converting it to HTML and setting the editor value. |
+| `ExportAsync(string)` | Exports the current HTML content to the specified format via a registered `IEditorFormatConverter`. |
 
->caption Paste in the Editor at the cursor position
+>caption Insert HTML at the cursor position
 
 ````RAZOR
-@* This snippet shows how to insert a horizontal rule (<hr /> tag) at the cursor position.
-You can replace that string with any other content you can generate/obtain according to your application needs*@
+<button @onclick="@InsertHr">Insert HR</button>
 
-@using Marilo.Blazor.Components.Editor
+<MariloEditor @ref="@TheEditor" @bind-Value="@TheContent" />
 
-<MariloButton OnClick="@InsertHr">insert hr</MariloButton>
-
-<MariloEditor @ref="@TheEditor" @bind-Value="@TheContent"></MariloEditor>
-
-@code{
-    MariloEditor TheEditor { get; set; }
-
-    string TheContent { get; set; } = "<p>Lorem ipsum.</p><p>Dolor sit amet.</p>";
+@code {
+    MariloEditor? TheEditor;
+    string TheContent = "<p>Lorem ipsum.</p><p>Dolor sit amet.</p>";
 
     async Task InsertHr()
     {
-        await TheEditor.ExecuteAsync(new HtmlCommandArgs("insertHtml", "<hr />"));
+        if (TheEditor is not null)
+            await TheEditor.ExecuteAsync(new HtmlCommandArgs { Command = "insertHtml", Html = "<hr />" });
     }
 }
 ````

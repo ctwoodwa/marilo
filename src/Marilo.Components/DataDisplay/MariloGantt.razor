@@ -227,7 +227,7 @@
                          aria-posinset="@posInSiblings"
                          aria-expanded="@(hasChildren ? (expanded ? "true" : "false") : null)"
                          tabindex="@(isFocused ? 0 : -1)"
-                         @onclick="() => OnTaskClick.InvokeAsync(n.Item)"
+                         @onclick="async () => { await HandleTaskSelect(n.Item); await OnTaskClick.InvokeAsync(n.Item); }"
                          @ondblclick="() => { if (!isIncell && !isPopup) _ = BeginEdit(capturedRowIdx); }"
                          @ondblclick:stopPropagation="true">
                         @foreach (var col in cols)
@@ -479,7 +479,7 @@
                          aria-expanded="@(hasChildren ? (expanded ? "true" : "false") : null)"
                          tabindex="@(isFocused ? 0 : -1)"
                          style="padding-left: @(pad)px;"
-                         @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
+                         @onclick="async () => { await HandleTaskSelect(n.Item); await OnTaskClick.InvokeAsync(n.Item); }">
                         @if (hasChildren)
                         {
                             <button type="button"
@@ -558,7 +558,7 @@
                         var barWidth = GetBarWidth(barStart, barEnd);
                         var barTitle = accessor.GetTitle(n.Item);
                         var pctWidth = Math.Clamp(barPct, 0, 100);
-                        var barClass = "mar-gantt__bar" + (isSummary ? " mar-gantt__bar--summary" : "");
+                        var barClass = "mar-gantt__bar" + (isSummary ? " mar-gantt__bar--summary" : "") + (ReferenceEquals(n.Item, SelectedTask) ? " mar-gantt__bar--selected" : "");
 
                         <div class="mar-gantt__bar-row">
                             @if (isMilestone)
@@ -568,7 +568,7 @@
                                      style="left: @((int)milestoneOffset)px; top: @(bi * RowHeight + RowHeight / 2 - 6)px;"
                                      role="img"
                                      aria-label="@($"Milestone: {barTitle}: {taskStart:M/d/yyyy}")"
-                                     @onclick="() => OnTaskClick.InvokeAsync(n.Item)"
+                                     @onclick="async () => { await HandleTaskSelect(n.Item); await OnTaskClick.InvokeAsync(n.Item); }"
                                      @onclick:stopPropagation="true">
                                     <span class="mar-gantt__milestone-diamond">&#x25C6;</span>
                                 </div>
@@ -580,7 +580,7 @@
                                      role="img"
                                      aria-label="@($"{barTitle}: {barStart:M/d/yyyy} – {barEnd:M/d/yyyy}")"
                                      style="left: @((int)startOffset)px; width: @((int)barWidth)px;"
-                                     @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
+                                     @onclick="async () => { await HandleTaskSelect(n.Item); await OnTaskClick.InvokeAsync(n.Item); }">
                                     <div class="mar-gantt__bar-resize mar-gantt__bar-resize--left"></div>
                                     <div class="mar-gantt__bar-progress" style="width: @(pctWidth)%;"></div>
                                     @if (TaskTemplate is not null)
@@ -614,15 +614,15 @@
                     {
                         <svg class="mar-gantt__dependency-svg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;">
                             <defs>
-                                <marker id="@($"gantt-arrow-{_instanceId}")" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
-                                    <path d="M0,0 L10,4 L0,8 Z" fill="#999" />
+                                <marker id="@($"gantt-arrow-{_instanceId}")" class="mar-gantt__dependency-marker" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
+                                    <path d="M0,0 L10,4 L0,8 Z" />
                                 </marker>
                             </defs>
                             @foreach (var dep in _dependencyLines)
                             {
                                 <line x1="@dep.X1.ToString("F1")" y1="@dep.Y1.ToString("F1")"
                                       x2="@dep.X2.ToString("F1")" y2="@dep.Y2.ToString("F1")"
-                                      stroke="#999" stroke-width="1.5"
+                                      class="mar-gantt__dependency"
                                       marker-end="@($"url(#gantt-arrow-{_instanceId})")" />
                             }
                         </svg>
@@ -664,7 +664,7 @@
                         var barWidth = GetBarWidth(barStart, barEnd);
                         var barTitle = accessor.GetTitle(n.Item);
                         var pctWidth = Math.Clamp(barPct, 0, 100);
-                        var barClass = "mar-gantt__bar" + (isSummary ? " mar-gantt__bar--summary" : "");
+                        var barClass = "mar-gantt__bar" + (isSummary ? " mar-gantt__bar--summary" : "") + (ReferenceEquals(n.Item, SelectedTask) ? " mar-gantt__bar--selected" : "");
 
                         <div class="mar-gantt__bar-row">
                             @if (isMilestone)
@@ -674,7 +674,7 @@
                                      style="left: @((int)milestoneOffset)px; top: @(bi * RowHeight + RowHeight / 2 - 6)px;"
                                      role="img"
                                      aria-label="@($"Milestone: {barTitle}: {taskStart:M/d/yyyy}")"
-                                     @onclick="() => OnTaskClick.InvokeAsync(n.Item)"
+                                     @onclick="async () => { await HandleTaskSelect(n.Item); await OnTaskClick.InvokeAsync(n.Item); }"
                                      @onclick:stopPropagation="true">
                                     <span class="mar-gantt__milestone-diamond">&#x25C6;</span>
                                 </div>
@@ -686,7 +686,7 @@
                                      role="img"
                                      aria-label="@($"{barTitle}: {barStart:M/d/yyyy} – {barEnd:M/d/yyyy}")"
                                      style="left: @((int)startOffset)px; width: @((int)barWidth)px;"
-                                     @onclick="() => OnTaskClick.InvokeAsync(n.Item)">
+                                     @onclick="async () => { await HandleTaskSelect(n.Item); await OnTaskClick.InvokeAsync(n.Item); }">
                                     <div class="mar-gantt__bar-resize mar-gantt__bar-resize--left"></div>
                                     <div class="mar-gantt__bar-progress" style="width: @(pctWidth)%;"></div>
                                     @if (TaskTemplate is not null)
@@ -720,15 +720,15 @@
                     {
                         <svg class="mar-gantt__dependency-svg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;">
                             <defs>
-                                <marker id="@($"gantt-arrow-{_instanceId}")" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
-                                    <path d="M0,0 L10,4 L0,8 Z" fill="#999" />
+                                <marker id="@($"gantt-arrow-{_instanceId}")" class="mar-gantt__dependency-marker" markerWidth="10" markerHeight="8" refX="10" refY="4" orient="auto">
+                                    <path d="M0,0 L10,4 L0,8 Z" />
                                 </marker>
                             </defs>
                             @foreach (var dep in _dependencyLines)
                             {
                                 <line x1="@dep.X1.ToString("F1")" y1="@dep.Y1.ToString("F1")"
                                       x2="@dep.X2.ToString("F1")" y2="@dep.Y2.ToString("F1")"
-                                      stroke="#999" stroke-width="1.5"
+                                      class="mar-gantt__dependency"
                                       marker-end="@($"url(#gantt-arrow-{_instanceId})")" />
                             }
                         </svg>

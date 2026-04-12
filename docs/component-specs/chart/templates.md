@@ -16,7 +16,7 @@ Starting in **version 7.0.0**, when all Chart series have no data to show, a def
 <MariloButton OnClick="@UpdateData">@ButtonContent</MariloButton>
 <br />
 <MariloChart @ref="ChartRef" Width="800px" Height="400px">
-    <ChartTitle Text="Product Sales Over the Years" Position="@ChartTitlePosition.Bottom"></ChartTitle>
+    <ChartTitle Text="Product Sales Over the Years" Position="@ChartPosition.Bottom"></ChartTitle>
 
     <ChartSettings>
         @* Define what should be shown when there's no data in the chart *@
@@ -26,12 +26,12 @@ Starting in **version 7.0.0**, when all Chart series have no data to show, a def
     </ChartSettings>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column"
+        <MariloChartSeries Type="ChartSeriesType.Column"
                      Data="@ChartData"
                      Name="Product Sales"
                      Field="@nameof(ChartSeriesData.ProductSales)"
                      CategoryField="@nameof(ChartSeriesData.Year)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 </MariloChart>
 

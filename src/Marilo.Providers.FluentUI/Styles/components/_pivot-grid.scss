@@ -1,0 +1,284 @@
+// =============================================================================
+// Component: PivotGrid (container, configurator, configurator-button)
+// =============================================================================
+
+// ── Container ────────────────────────────────────────────────────────────────
+
+.mar-pivotgrid-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    gap: 0;
+}
+
+.mar-pivotgrid-container--with-configurator {
+    .mar-pivotgrid-container__content {
+        flex: 1 1 0;
+        min-width: 0;
+        overflow: auto;
+    }
+}
+
+.mar-pivotgrid-container__content {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.mar-pivotgrid-container__configurator-panel {
+    flex: 0 0 260px;
+    border-left: 1px solid var(--marilo-color-border);
+    background: var(--marilo-color-surface, #fafafa);
+    overflow-y: auto;
+}
+
+// ── Configurator ─────────────────────────────────────────────────────────────
+
+.mar-pivotgrid-configurator {
+    padding: var(--marilo-spacing-md, 12px);
+    font-size: var(--marilo-font-size-sm, 13px);
+}
+
+.mar-pivotgrid-configurator__section {
+    margin-bottom: var(--marilo-spacing-md, 12px);
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.mar-pivotgrid-configurator__section-title {
+    margin: 0 0 var(--marilo-spacing-xs, 4px);
+    font-size: var(--marilo-font-size-sm, 13px);
+    font-weight: 600;
+    color: var(--marilo-color-text-secondary, #605e5c);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.mar-pivotgrid-configurator__field-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.mar-pivotgrid-configurator__field-item {
+    padding: var(--marilo-spacing-xs, 4px) var(--marilo-spacing-sm, 8px);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-sm, 2px);
+    margin-bottom: var(--marilo-spacing-xs, 4px);
+    background: var(--marilo-color-background, #ffffff);
+    color: var(--marilo-color-text, #323130);
+    cursor: default;
+}
+
+.mar-pivotgrid-configurator__field-item--row {
+    border-left: 3px solid var(--marilo-color-primary, #0078d4);
+}
+
+.mar-pivotgrid-configurator__field-item--column {
+    border-left: 3px solid var(--marilo-color-success, #107c10);
+}
+
+.mar-pivotgrid-configurator__field-item--measure {
+    border-left: 3px solid var(--marilo-color-warning, #ffb900);
+}
+
+.mar-pivotgrid-configurator__empty-hint {
+    margin: 0;
+    padding: var(--marilo-spacing-xs, 4px) var(--marilo-spacing-sm, 8px);
+    color: var(--marilo-color-text-disabled, #a19f9d);
+    font-style: italic;
+}
+
+// ── Configurator Button ──────────────────────────────────────────────────────
+
+.mar-pivotgrid-configurator-button {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--marilo-spacing-xs, 4px);
+    padding: var(--marilo-spacing-xs, 4px) var(--marilo-spacing-sm, 8px);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-sm, 2px);
+    background: var(--marilo-color-background, #ffffff);
+    color: var(--marilo-color-text, #323130);
+    font-size: var(--marilo-font-size-sm, 13px);
+    cursor: pointer;
+    transition: background-color 0.15s, border-color 0.15s;
+
+    &:hover {
+        background: var(--marilo-color-surface-hover, #f3f2f1);
+    }
+}
+
+.mar-pivotgrid-configurator-button--active {
+    background: var(--marilo-color-primary, #0078d4);
+    color: var(--marilo-color-on-primary, #ffffff);
+    border-color: var(--marilo-color-primary, #0078d4);
+
+    &:hover {
+        background: color-mix(in srgb, var(--marilo-color-primary, #0078d4) 85%, var(--marilo-color-surface, #ffffff));
+    }
+}
+
+.mar-pivotgrid-configurator-button__icon {
+    font-size: 14px;
+}
+
+.mar-pivotgrid-configurator-button__text {
+    // Inherits from parent
+}
+
+// ── PivotGrid Table ─────────────────────────────────────────────────────────
+
+.mar-pivotgrid {
+    font-size: var(--marilo-font-size-sm, 13px);
+    color: var(--marilo-color-text, #323130);
+}
+
+.mar-pivotgrid__table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+    border: 1px solid var(--marilo-color-border, #e1dfdd);
+}
+
+.mar-pivotgrid__corner {
+    background: var(--marilo-color-surface, #fafafa);
+    padding: var(--marilo-spacing-sm, 8px);
+    font-weight: 600;
+    text-align: left;
+    border: 1px solid var(--marilo-color-border, #e1dfdd);
+    color: var(--marilo-color-text-secondary, #605e5c);
+
+    span + span::before {
+        content: " / ";
+        color: var(--marilo-color-text-disabled, #a19f9d);
+    }
+}
+
+.mar-pivotgrid__col-header {
+    background: var(--marilo-color-surface, #fafafa);
+    padding: var(--marilo-spacing-sm, 8px);
+    font-weight: 600;
+    text-align: center;
+    border: 1px solid var(--marilo-color-border, #e1dfdd);
+    white-space: nowrap;
+}
+
+.mar-pivotgrid__row-header {
+    background: var(--marilo-color-surface, #fafafa);
+    padding: var(--marilo-spacing-sm, 8px);
+    font-weight: 600;
+    text-align: left;
+    border: 1px solid var(--marilo-color-border, #e1dfdd);
+    white-space: nowrap;
+}
+
+.mar-pivotgrid__cell {
+    padding: var(--marilo-spacing-sm, 8px);
+    text-align: right;
+    border: 1px solid var(--marilo-color-border, #e1dfdd);
+    font-variant-numeric: tabular-nums;
+}
+
+.mar-pivotgrid__scroll {
+    overflow: auto;
+}
+
+.mar-pivotgrid__col-header,
+.mar-pivotgrid__row-header {
+    &:hover {
+        background: var(--marilo-color-surface-hover, #f3f2f1);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--marilo-color-primary, #0078d4);
+        outline-offset: -2px;
+    }
+}
+
+.mar-pivotgrid__cell {
+    &:hover {
+        background: var(--marilo-color-surface-hover, #f3f2f1);
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--marilo-color-primary, #0078d4);
+        outline-offset: -2px;
+    }
+}
+
+.mar-pivotgrid__empty {
+    padding: var(--marilo-spacing-lg, 20px);
+    text-align: center;
+    color: var(--marilo-color-text-disabled, #a19f9d);
+    font-style: italic;
+}
+
+// ── Dark Mode ──────────────────────────────────────────────────────────────
+
+[data-marilo-theme="dark"] {
+    .mar-pivotgrid {
+        color: var(--marilo-color-text, #e1dfdd);
+    }
+
+    .mar-pivotgrid__table {
+        border-color: var(--marilo-color-border, #484644);
+    }
+
+    .mar-pivotgrid__corner,
+    .mar-pivotgrid__col-header,
+    .mar-pivotgrid__row-header {
+        background: var(--marilo-color-surface, #252423);
+        border-color: var(--marilo-color-border, #484644);
+        color: var(--marilo-color-text-secondary, #a19f9d);
+    }
+
+    .mar-pivotgrid__col-header,
+    .mar-pivotgrid__row-header {
+        &:hover {
+            background: var(--marilo-color-surface-hover, #3b3a39);
+        }
+    }
+
+    .mar-pivotgrid__cell {
+        border-color: var(--marilo-color-border, #484644);
+
+        &:hover {
+            background: var(--marilo-color-surface-hover, #3b3a39);
+        }
+    }
+
+    .mar-pivotgrid__empty {
+        color: var(--marilo-color-text-disabled, #605e5c);
+    }
+
+    .mar-pivotgrid-container__configurator-panel {
+        border-left-color: var(--marilo-color-border, #484644);
+        background: var(--marilo-color-surface, #252423);
+    }
+
+    .mar-pivotgrid-configurator__section-title {
+        color: var(--marilo-color-text-secondary, #a19f9d);
+    }
+
+    .mar-pivotgrid-configurator__field-item {
+        border-color: var(--marilo-color-border, #484644);
+        background: var(--marilo-color-background, #1b1a19);
+        color: var(--marilo-color-text, #e1dfdd);
+    }
+
+    .mar-pivotgrid-configurator__empty-hint {
+        color: var(--marilo-color-text-disabled, #605e5c);
+    }
+
+    .mar-pivotgrid-configurator-button {
+        border-color: var(--marilo-color-border, #484644);
+        background: var(--marilo-color-background, #1b1a19);
+        color: var(--marilo-color-text, #e1dfdd);
+
+        &:hover {
+            background: var(--marilo-color-surface-hover, #3b3a39);
+        }
+    }
+}

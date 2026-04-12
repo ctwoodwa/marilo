@@ -36,6 +36,7 @@ The `DiagramShapeType` enum defines five built-in shape types:
 | `Width` | `double` | `100` | Width of the shape in pixels |
 | `Height` | `double` | `60` | Height of the shape in pixels |
 | `CssClass` | `string?` | `null` | Optional CSS class applied to the SVG element |
+| `TooltipText` | `string?` | `null` | Optional tooltip text displayed on hover (rendered as SVG `<title>`) |
 
 ## Example
 

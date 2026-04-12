@@ -2365,4 +2365,255 @@ public class TreeViewTests : MariloTestBase
 
         Assert.Contains("mar-tree-item--focused", cut.Markup);
     }
+
+    // ── Size / Density Tests ────────────────────────────────────────────
+
+    [Fact]
+    public void TreeView_SizeParameter_SetsInlineFontSizeStyle()
+    {
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Size, "sm")
+            .Add(p => p.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloTreeItem>(0);
+                builder.AddAttribute(1, "Title", "Item");
+                builder.CloseComponent();
+            }));
+
+        var tree = cut.Find("[role='tree']");
+        var style = tree.GetAttribute("style") ?? "";
+        Assert.Contains("font-size:sm", style);
+    }
+
+    [Fact]
+    public void TreeView_SizeNull_NoInlineFontSizeStyle()
+    {
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloTreeItem>(0);
+                builder.AddAttribute(1, "Title", "Item");
+                builder.CloseComponent();
+            }));
+
+        var tree = cut.Find("[role='tree']");
+        var style = tree.GetAttribute("style") ?? "";
+        Assert.DoesNotContain("font-size", style);
+    }
+
+    [Fact]
+    public void TreeView_SizeLg_SetsLargeFontSizeStyle()
+    {
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Size, "lg")
+            .Add(p => p.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloTreeItem>(0);
+                builder.AddAttribute(1, "Title", "Item");
+                builder.CloseComponent();
+            }));
+
+        var tree = cut.Find("[role='tree']");
+        var style = tree.GetAttribute("style") ?? "";
+        Assert.Contains("font-size:lg", style);
+    }
+
+    // ── Empty Data Edge Case ────────────────────────────────────────────
+
+    [Fact]
+    public void TreeView_EmptyData_RendersEmptyTree()
+    {
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, new List<object>())
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.ParentIdField, "ParentId")
+            .Add(p => p.TextField, "Name"));
+
+        // Tree container renders but with no items
+        var tree = cut.Find("[role='tree']");
+        Assert.NotNull(tree);
+        var items = cut.FindAll("[role='treeitem']");
+        Assert.Empty(items);
+    }
+
+    // ── Single CheckBox Mode Tests ──────────────────────────────────────
+
+    [Fact]
+    public void TreeView_SingleCheckMode_OnlyOneItemCheckedAtATime()
+    {
+        var checkedItemsReceived = new List<IEnumerable<string>>();
+
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Node A"),
+            new HierarchicalNode("2", "Node B"),
+            new HierarchicalNode("3", "Node C"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.CheckBoxMode, CheckBoxMode.Single)
+            .Add(p => p.CheckedItemsChanged, ids => checkedItemsReceived.Add(ids)));
+
+        var checkboxes = cut.FindAll(".mar-tree-item__checkbox");
+        Assert.Equal(3, checkboxes.Count);
+
+        // Check the first item
+        checkboxes[0].Change(true);
+        Assert.Single(checkedItemsReceived);
+        Assert.Single(checkedItemsReceived[0]);
+        Assert.Contains("1", checkedItemsReceived[0]);
+
+        // Check the second item — should replace, not add
+        cut.FindAll(".mar-tree-item__checkbox")[1].Change(true);
+        Assert.Equal(2, checkedItemsReceived.Count);
+        Assert.Single(checkedItemsReceived[1]);
+        Assert.Contains("2", checkedItemsReceived[1]);
+        Assert.DoesNotContain("1", checkedItemsReceived[1]);
+    }
+
+    // ── AriaLabel Parameter Test ────────────────────────────────────────
+
+    [Fact]
+    public void TreeView_AriaLabel_AppliedToTreeRoot()
+    {
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.AriaLabel, "File browser")
+            .Add(p => p.ChildContent, builder =>
+            {
+                builder.OpenComponent<MariloTreeItem>(0);
+                builder.AddAttribute(1, "Title", "Item");
+                builder.CloseComponent();
+            }));
+
+        var tree = cut.Find("[role='tree']");
+        Assert.Equal("File browser", tree.GetAttribute("aria-label"));
+    }
+
+    // ── Keyboard: Home/End Tests ────────────────────────────────────────
+
+    [Fact]
+    public void TreeView_HomeKey_FocusesFirstNode()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Node A"),
+            new HierarchicalNode("2", "Node B"),
+            new HierarchicalNode("3", "Node C"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children"));
+
+        var tree = cut.Find("[role='tree']");
+
+        // Move to second node first
+        tree.KeyDown(new KeyboardEventArgs { Key = "ArrowDown" });
+        tree.KeyDown(new KeyboardEventArgs { Key = "ArrowDown" });
+
+        // Home should jump to first node
+        tree.KeyDown(new KeyboardEventArgs { Key = "Home" });
+
+        var focused = cut.Find(".mar-tree-item--focused");
+        Assert.Equal("tree-node-1", focused.GetAttribute("id"));
+    }
+
+    [Fact]
+    public void TreeView_EndKey_FocusesLastNode()
+    {
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Node A"),
+            new HierarchicalNode("2", "Node B"),
+            new HierarchicalNode("3", "Node C"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children"));
+
+        var tree = cut.Find("[role='tree']");
+
+        // End should jump to last node
+        tree.KeyDown(new KeyboardEventArgs { Key = "End" });
+
+        var focused = cut.Find(".mar-tree-item--focused");
+        Assert.Equal("tree-node-3", focused.GetAttribute("id"));
+    }
+
+    // ── Multiple Selection Mode Test ────────────────────────────────────
+
+    [Fact]
+    public void TreeView_MultipleSelectionMode_TogglesMultipleItems()
+    {
+        var selectedItems = new List<IEnumerable<string>>();
+
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Node A"),
+            new HierarchicalNode("2", "Node B"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.SelectionMode, TreeSelectionMode.Multiple)
+            .Add(p => p.SelectedItemsChanged, ids => selectedItems.Add(ids)));
+
+        // Click first item title
+        var titles = cut.FindAll(".mar-tree-item__title");
+        titles[0].Click();
+
+        Assert.Single(selectedItems);
+        Assert.Contains("1", selectedItems[0]);
+
+        // Click second item title — should add to selection
+        cut.FindAll(".mar-tree-item__title")[1].Click();
+        Assert.Equal(2, selectedItems.Count);
+        Assert.Contains("1", selectedItems[1]);
+        Assert.Contains("2", selectedItems[1]);
+
+        // Click first item again — should toggle it off
+        cut.FindAll(".mar-tree-item__title")[0].Click();
+        Assert.Equal(3, selectedItems.Count);
+        Assert.DoesNotContain("1", selectedItems[2]);
+        Assert.Contains("2", selectedItems[2]);
+    }
+
+    // ── SelectionMode.None Test ─────────────────────────────────────────
+
+    [Fact]
+    public void TreeView_SelectionModeNone_ClickDoesNotSelect()
+    {
+        var selectedItems = new List<IEnumerable<string>>();
+
+        var data = new List<object>
+        {
+            new HierarchicalNode("1", "Node A"),
+        };
+
+        var cut = Render<MariloTreeView>(parameters => parameters
+            .Add(p => p.Data, data)
+            .Add(p => p.IdField, "Id")
+            .Add(p => p.TextField, "Name")
+            .Add(p => p.ItemsField, "Children")
+            .Add(p => p.SelectionMode, TreeSelectionMode.None)
+            .Add(p => p.SelectedItemsChanged, ids => selectedItems.Add(ids)));
+
+        var title = cut.Find(".mar-tree-item__title");
+        title.Click();
+
+        // No selection events should fire
+        Assert.Empty(selectedItems);
+    }
 }

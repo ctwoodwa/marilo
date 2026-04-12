@@ -51,6 +51,9 @@ public class DiagramShapeDescriptor
 
     /// <summary>Optional CSS class applied to the shape SVG element.</summary>
     public string? CssClass { get; set; }
+
+    /// <summary>Optional tooltip text displayed on hover (rendered as SVG &lt;title&gt;).</summary>
+    public string? TooltipText { get; set; }
 }
 
 /// <summary>
@@ -81,6 +84,24 @@ public class DiagramShapeClickEventArgs : EventArgs
 {
     /// <summary>The shape that was clicked.</summary>
     public DiagramShapeDescriptor Shape { get; set; } = default!;
+}
+
+/// <summary>
+/// Event arguments for the MariloDiagram.OnConnectionClick event.
+/// </summary>
+public class DiagramConnectionClickEventArgs : EventArgs
+{
+    /// <summary>The connection that was clicked.</summary>
+    public DiagramConnectionDescriptor Connection { get; set; } = default!;
+}
+
+/// <summary>
+/// Event arguments for the MariloDiagram.OnSelectionChanged event.
+/// </summary>
+public class DiagramSelectionChangedEventArgs : EventArgs
+{
+    /// <summary>The current set of selected shape IDs after the change.</summary>
+    public IReadOnlyList<string> SelectedShapeIds { get; set; } = [];
 }
 
 // ── Legacy aliases (kept for compilation compatibility) ──────────────

@@ -19,7 +19,7 @@ The <a href="https://www.marilo.com/blazor-ui/range-bar-chart" target="_blank">B
 2. Set the series `Type` parameter to `ChartSeriesType.RangeBar`.
 3. Provide a data collection to the series `Data` parameter. You can use a [collection of arrays](#binding-range-bar-series-to-collection-of-arrays) or a [collection of custom objects](#binding-range-column-series-to-custom-objects).
 4. If the Range Bar data is a collection of arrays, provide data for the `Categories` parameter of the `ChartCategoryAxis`.
-5. (optional) Set `Visible="true"` or define [label `Template`](slug:components/chart/label-template-format) for `<ChartSeriesLabelsFrom>` or `<ChartSeriesLabelsTo>`. These are nested tags inside `<ChartSeriesLabels>` of the respective `<ChartSeries>`.
+5. (optional) Set `Visible="true"` or define [label `Template`](slug:components/chart/label-template-format) for `<ChartSeriesLabelsFrom>` or `<ChartSeriesLabelsTo>`. These are nested tags inside `<ChartSeriesLabels>` of the respective `<MariloChartSeries>`.
 
 ### Binding Range Bar Series to Collection of Arrays
 
@@ -34,7 +34,7 @@ Set the `Categories` parameter of the `ChartCategoryAxis` to `object[]`. The mem
     <ChartTitle Text="Sleep Hours by Age"></ChartTitle>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.RangeBar" Data="@SleepData">
+        <MariloChartSeries Type="ChartSeriesType.RangeBar" Data="@SleepData">
             <ChartSeriesLabels>
                 @* Show the From and To labels together *@
 
@@ -46,7 +46,7 @@ Set the `Categories` parameter of the `ChartCategoryAxis` to `object[]`. The mem
                 @*<ChartSeriesLabelsFrom Visible="true" Template="#= dataItem[0] #" />
                     <ChartSeriesLabelsTo Visible="true" Template="#= dataItem[1] #" />*@
             </ChartSeriesLabels>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -98,7 +98,7 @@ Set the `Categories` parameter of the `ChartCategoryAxis` to `object[]`. The mem
     <ChartTitle Text="Sleep Hours by Age"></ChartTitle>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.RangeBar"
+        <MariloChartSeries Type="ChartSeriesType.RangeBar"
                      Data="@SleepData"
                      FromField="@(nameof(RangeBarModel.LowValue))"
                      ToField="@(nameof(RangeBarModel.HighValue))"
@@ -114,7 +114,7 @@ Set the `Categories` parameter of the `ChartCategoryAxis` to `object[]`. The mem
                 @*<ChartSeriesLabelsFrom Visible="true" Template="#= dataItem.LowValue #" />
                     <ChartSeriesLabelsTo Visible="true" Template="#= dataItem.HighValue #" />*@
             </ChartSeriesLabels>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartValueAxes>

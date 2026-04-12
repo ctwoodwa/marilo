@@ -92,6 +92,17 @@
         </MariloChart>
     </DemoSection>
 
+    <DemoSection Title="Scatter Line Chart" Description="A scatter plot with connecting lines for trend analysis." Code="@_scatterLineCode">
+        <MariloChart Title="Revenue vs Profit Trend" Height="350px">
+            <MariloChartSeries Name="Months"
+                               Data="_salesData"
+                               XField="Revenue"
+                               YField="Profit"
+                               Type="ChartSeriesType.ScatterLine"
+                               Color="#edc948" />
+        </MariloChart>
+    </DemoSection>
+
     <DemoSection Title="Bubble Chart" Description="A bubble chart where size encodes a third dimension." Code="@_bubbleCode">
         <MariloChart Title="Market Analysis" Height="350px">
             <MariloChartSeries Name="Products"
@@ -302,6 +313,16 @@
         "                       YField=\"Profit\"\n" +
         "                       Type=\"ChartSeriesType.Scatter\"\n" +
         "                       Color=\"#ff9da7\" />\n" +
+        "</MariloChart>";
+
+    private const string _scatterLineCode =
+        "<MariloChart Title=\"Revenue vs Profit Trend\" Height=\"350px\">\n" +
+        "    <MariloChartSeries Name=\"Months\"\n" +
+        "                       Data=\"_salesData\"\n" +
+        "                       XField=\"Revenue\"\n" +
+        "                       YField=\"Profit\"\n" +
+        "                       Type=\"ChartSeriesType.ScatterLine\"\n" +
+        "                       Color=\"#edc948\" />\n" +
         "</MariloChart>";
 
     private const string _bubbleCode =

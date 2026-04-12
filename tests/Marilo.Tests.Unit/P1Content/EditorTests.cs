@@ -292,4 +292,158 @@ public class EditorTests : MariloTestBase
         Assert.NotNull(captured);
         Assert.Contains("<p>Hello world</p>", captured);
     }
+
+    // ── Height / Width parameter tests ──────────────────────────────
+
+    [Fact]
+    public void Editor_Applies_Custom_Height()
+    {
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.Height, "400px"));
+
+        var markup = cut.Markup;
+        Assert.Contains("height:400px", markup);
+    }
+
+    [Fact]
+    public void Editor_Applies_Custom_Width()
+    {
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.Width, "800px"));
+
+        var container = cut.Find("div.mar-editor");
+        var style = container.GetAttribute("style");
+        Assert.Contains("width:800px", style);
+    }
+
+    [Fact]
+    public void Editor_Default_Height_Is_250px()
+    {
+        var cut = Render<MariloEditor>();
+        Assert.Contains("height:250px", cut.Markup);
+    }
+
+    // ── DebounceDelay parameter test ────────────────────────────────
+
+    [Fact]
+    public void Editor_DebounceDelay_AppearsInJsScript()
+    {
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.DebounceDelay, 500));
+
+        var evalInvocations = JSInterop.Invocations
+            .Where(i => i.Identifier == "eval")
+            .ToList();
+
+        Assert.Contains(evalInvocations, inv =>
+        {
+            var script = inv.Arguments.FirstOrDefault()?.ToString() ?? "";
+            return script.Contains("debounceMs = 500");
+        });
+    }
+
+    // ── ToolbarTemplate parameter test ──────────────────────────────
+
+    [Fact]
+    public void Editor_ToolbarTemplate_RendersCustomToolbar()
+    {
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.ToolbarTemplate,
+                (Microsoft.AspNetCore.Components.RenderFragment)(builder =>
+                {
+                    builder.OpenElement(0, "div");
+                    builder.AddAttribute(1, "class", "custom-toolbar");
+                    builder.AddContent(2, "Custom Toolbar");
+                    builder.CloseElement();
+                })));
+
+        Assert.Contains("custom-toolbar", cut.Markup);
+        Assert.Contains("Custom Toolbar", cut.Markup);
+        // Built-in tool buttons should NOT render when ToolbarTemplate is set
+        var toolButtons = cut.FindAll(".mar-editor-tool-btn");
+        Assert.Empty(toolButtons);
+    }
+
+    // ── EditMode parameter variations ───────────────────────────────
+
+    [Fact]
+    public void Editor_Preview_Mode_Renders_Sanitized_Value()
+    {
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.EditMode, EditorEditMode.Preview)
+            .Add(p => p.Value, "<p>Safe</p><script>alert('xss')</script>"));
+
+        var preview = cut.Find(".mar-editor-preview");
+        Assert.Contains("Safe", preview.InnerHtml);
+        Assert.DoesNotContain("script", preview.InnerHtml.ToLower());
+    }
+
+    [Fact]
+    public void Editor_Source_Mode_Shows_Placeholder()
+    {
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.EditMode, EditorEditMode.Source)
+            .Add(p => p.Placeholder, "Enter HTML here..."));
+
+        var textarea = cut.Find("textarea");
+        Assert.Equal("Enter HTML here...", textarea.GetAttribute("placeholder"));
+    }
+
+    // ── Source mode OnChange event ──────────────────────────────────
+
+    [Fact]
+    public void Editor_Source_OnChange_Fires()
+    {
+        string? changedValue = null;
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.EditMode, EditorEditMode.Source)
+            .Add(p => p.Value, "")
+            .Add(p => p.OnChange, (string v) => changedValue = v)
+            .Add(p => p.ValueChanged, (string _) => { }));
+
+        var textarea = cut.Find("textarea");
+        textarea.Input("<p>New</p>");
+
+        Assert.Equal("<p>New</p>", changedValue);
+    }
+
+    // ── Disabled hides toolbar in Source mode ────────────────────────
+
+    [Fact]
+    public void Editor_Disabled_Source_Mode_HidesToolbar()
+    {
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.Disabled, true)
+            .Add(p => p.EditMode, EditorEditMode.Source));
+
+        var toolbars = cut.FindAll(".mar-editor-toolbar");
+        Assert.Empty(toolbars);
+    }
+
+    // ── Source mode textarea disabled/readonly ───────────────────────
+
+    [Fact]
+    public void Editor_ReadOnly_Source_TextareaIsReadonly()
+    {
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.ReadOnly, true)
+            .Add(p => p.EditMode, EditorEditMode.Source));
+
+        // ReadOnly hides toolbar so no textarea in source (toolbar hidden too)
+        // Actually ReadOnly just hides toolbar; source textarea still renders
+        // But the textarea should have readonly attribute
+        var textarea = cut.Find("textarea");
+        Assert.NotNull(textarea.GetAttribute("readonly"));
+    }
+
+    [Fact]
+    public void Editor_Disabled_Source_TextareaIsDisabled()
+    {
+        var cut = Render<MariloEditor>(parameters => parameters
+            .Add(p => p.Disabled, true)
+            .Add(p => p.EditMode, EditorEditMode.Source));
+
+        var textarea = cut.Find("textarea");
+        Assert.NotNull(textarea.GetAttribute("disabled"));
+    }
 }

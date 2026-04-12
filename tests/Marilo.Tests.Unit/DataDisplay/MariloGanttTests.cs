@@ -1901,4 +1901,68 @@ public class MariloGanttTests : MariloTestBase
         Assert.NotEmpty(barRows);
     }
 
+    // ── VP-gantt-03: Dependency line uses CSS class ───────────────────────
+
+    [Fact]
+    public void Dependency_Line_Has_CSS_Class_Not_Hardcoded_Stroke()
+    {
+        var data = new List<TaskModel>
+        {
+            new() { Id = 1, ParentId = null, Title = "Task A", Start = BaseDate, End = BaseDate.AddDays(3) },
+            new() { Id = 2, ParentId = null, Title = "Task B", Start = BaseDate.AddDays(3), End = BaseDate.AddDays(6), DependsOn = [1] },
+        };
+
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.GanttViews, ViewsFragment(GanttView.Week)));
+
+        var lines = cut.FindAll(".mar-gantt__dependency-svg line");
+        Assert.Single(lines);
+
+        var line = lines[0];
+        // Must have the CSS class
+        Assert.Contains("mar-gantt__dependency", line.GetAttribute("class") ?? "");
+        // Must NOT have hardcoded stroke attribute
+        Assert.Null(line.GetAttribute("stroke"));
+    }
+
+    // ── W4-INT-19: Selection API ─────────────────────────────────────────
+
+    [Fact]
+    public void Task_Bar_Click_Sets_SelectedTask()
+    {
+        TaskModel? selected = null;
+        var data = CreateTestData();
+
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.GanttColumns, DefaultColumns())
+            .Add(x => x.GanttViews, ViewsFragment(GanttView.Week))
+            .Add(x => x.OnTaskSelect, EventCallback.Factory.Create<TaskModel?>(this, val => selected = val)));
+
+        // Click on the first task row to trigger selection
+        var rows = cut.FindAll(".mar-gantt__task-row");
+        Assert.NotEmpty(rows);
+        rows[0].Click();
+
+        Assert.NotNull(selected);
+    }
+
+    [Fact]
+    public void Selected_Task_Bar_Gets_Selected_CSS_Class()
+    {
+        var data = CreateTestData();
+        var firstTask = data[0];
+
+        var cut = Render<MariloGantt<TaskModel>>(p => p
+            .Add(x => x.Data, data)
+            .Add(x => x.GanttColumns, DefaultColumns())
+            .Add(x => x.GanttViews, ViewsFragment(GanttView.Week))
+            .Add(x => x.SelectedTask, firstTask));
+
+        // The bar for the selected (first) task should have the --selected class
+        var selectedBars = cut.FindAll(".mar-gantt__bar--selected");
+        Assert.NotEmpty(selectedBars);
+    }
+
 }

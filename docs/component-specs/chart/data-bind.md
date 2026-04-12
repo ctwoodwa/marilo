@@ -61,10 +61,10 @@ Independent data
 
 <MariloChart>
 	<ChartSeriesItems>
-		<ChartSeries Type="ChartSeriesType.Column" Name="Series 1" Data="@data1">
-		</ChartSeries>
-		<ChartSeries Type="ChartSeriesType.Column" Name="Series 2" Data="@data2">
-		</ChartSeries>
+		<MariloChartSeries Type="ChartSeriesType.Column" Name="Series 1" Data="@data1">
+		</MariloChartSeries>
+		<MariloChartSeries Type="ChartSeriesType.Column" Name="Series 2" Data="@data2">
+		</MariloChartSeries>
 	</ChartSeriesItems>
 
 	<ChartCategoryAxes>
@@ -97,12 +97,12 @@ One model for all the chart data
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@chartData"
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@chartData"
                      Field="@nameof(MyDataModel.Product1)" CategoryField="@nameof(MyDataModel.MySharedCategories)">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@chartData"
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@chartData"
                      Field="@nameof(MyDataModel.Product2)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 </MariloChart>
 
@@ -131,12 +131,12 @@ Separate fields for series categories
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@chartData"
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@chartData"
                      Field="@nameof(MyDataModel.Product1)" CategoryField="@nameof(MyDataModel.FirstSeriesCategories)">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@chartData"
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@chartData"
                      Field="@nameof(MyDataModel.Product2)" CategoryField="@nameof(MyDataModel.SecondSeriesCategories)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 </MariloChart>
 
@@ -168,12 +168,12 @@ Combining matching standalone categories
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@chartData"
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@chartData"
                      Field="@nameof(MyDataModel.Product1)" CategoryField="@nameof(MyDataModel.FirstSeriesCategories)">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@chartData"
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@chartData"
                      Field="@nameof(MyDataModel.Product2)" CategoryField="@nameof(MyDataModel.SecondSeriesCategories)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 </MariloChart>
 
@@ -212,12 +212,12 @@ Mixed data binding
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@chartData" Field="@nameof(MyDataModel.Product1)">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@chartData" Field="@nameof(MyDataModel.Product2)">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Series 3" Data="@standaloneData">
-        </ChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@chartData" Field="@nameof(MyDataModel.Product1)">
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@chartData" Field="@nameof(MyDataModel.Product2)">
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Series 3" Data="@standaloneData">
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -254,11 +254,11 @@ Standalone categories are ignored when there is category data binding to a model
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@chartData"
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@chartData"
                      Field="@nameof(MyDataModel.Product1)" CategoryField="@nameof(MyDataModel.MySharedCategories)">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Standalone series" Data="@standaloneData">
-        </ChartSeries>
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Standalone series" Data="@standaloneData">
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -307,19 +307,19 @@ This means that it is often suitable to provide each series with its own collect
     <ChartTitle Text="Unrecoverable Errors Per Minute vs. Signal Level"></ChartTitle>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Scatter"
+        <MariloChartSeries Type="ChartSeriesType.Scatter"
                      Data="@Series1Data"
                      Name="APSK modulation"
                      XField="@nameof(ModelData.Strength)"
                      YField="@nameof(ModelData.Errors)">
-        </ChartSeries>
+        </MariloChartSeries>
 
-        <ChartSeries Type="ChartSeriesType.Scatter"
+        <MariloChartSeries Type="ChartSeriesType.Scatter"
                      Data="@Series2Data"
                      Name="QAM modulation"
                      XField="@nameof(ModelData.Strength)"
                      YField="@nameof(ModelData.Errors)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartXAxes>
@@ -375,19 +375,19 @@ This means that it is often suitable to provide each series with its own collect
     <ChartTitle Text="Unrecoverable Errors Per Minute vs. Signal Level"></ChartTitle>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Scatter"
+        <MariloChartSeries Type="ChartSeriesType.Scatter"
                      Data="@AllChartData"
                      Name="APSK modulation"
                      XField="@nameof(ModelData.ApskStrength)"
                      YField="@nameof(ModelData.ApskErrors)">
-        </ChartSeries>
+        </MariloChartSeries>
 
-        <ChartSeries Type="ChartSeriesType.Scatter"
+        <MariloChartSeries Type="ChartSeriesType.Scatter"
                      Data="@AllChartData"
                      Name="QAM modulation"
                      XField="@nameof(ModelData.QamStrength)"
                      YField="@nameof(ModelData.QamErrors)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartXAxes>

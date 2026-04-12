@@ -132,8 +132,8 @@ The following table lists TreeView parameters, which are not related to other fe
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |
-| `Class` | `string` | The additional CSS class that will be rendered on the `div.k-treeview` element. Use it to apply custom styles or [override the theme](slug:themes-override). Inherited from `MariloComponentBase`. |
-| `Size` | `string` <br /> `"md"` | Affects the TreeView layout, for example the amount of space between items. The possible valid values are `"lg"` (large), `"md"` (medium) and `"sm"` (small). For easier setting, use the predefined string properties in class [`Marilo.Blazor.ThemeConstants.TreeView.Size`](slug:Marilo.Blazor.ThemeConstants.TreeView.Size). |
+| `Class` | `string` | The additional CSS class that will be rendered on the `ul.mar-treeview` element. Use it to apply custom styles or [override the theme](slug:themes-override). Inherited from `MariloComponentBase`. |
+| `Size` | `string?` <br /> (`null`) | Affects the TreeView density. When set to `"sm"` or `"lg"`, triggers SCSS density variants via `font-size` inline style. Density can also be controlled with CSS custom properties (see below). When `null`, uses the default (medium) density. |
 | `AriaLabel` | `string?` <br /> (`null`) | Accessibility label applied to the root tree element. See [Wai-Aria Support](slug:treeview-wai-aria-support). |
 | `Disabled` | `bool` <br /> (`false`) | When `true`, prevents all user interaction with the tree (clicks, keyboard, drag, edit). |
 | `ReadOnly` | `bool` <br /> (`false`) | When `true`, shows the current state (selection, expansion, checks) but prevents any user-initiated mutations. |
@@ -141,13 +141,27 @@ The following table lists TreeView parameters, which are not related to other fe
 | `ExpandOnDoubleClick` | `bool` <br /> (`false`) | When `true`, double-clicking an item header expands/collapses the node. Suppressed while `AllowEditing` is `true` so double-click can trigger inline editing instead. |
 | `SingleExpand` | `bool` <br /> (`false`) | Accordion behavior — when expanding a node, automatically collapses its sibling nodes so only one branch at each level stays open. |
 | `AutoExpand` | `bool` <br /> (`false`) | When `true`, automatically expands all ancestors of the currently selected items so the selection is always visible. |
-| `AllowEditing` | `bool` <br /> (`false`) | Enables inline text editing on tree items. A commit raises the `OnItemEdit` event (`EventCallback<TreeItemEditEventArgs>`). Planned full inline-editing spec section is tracked in `fluent-ui-gap-analysis.md`. |
+| `AllowEditing` | `bool` <br /> (`false`) | Enables inline text editing on tree items. Double-click or F2 starts editing; Enter commits, Escape cancels. A commit raises the `OnItemEdit` event (`EventCallback<TreeItemEditEventArgs>`). |
+| `EnableDragDrop` | `bool` <br /> (`false`) | Enables drag-and-drop reordering of tree items. Fires `OnItemDrop` when an item is dropped onto another. |
 | `FilterFunc` | `Func<object, bool>?` <br /> (`null`) | Predicate run against each data item to determine visibility. Ancestors of any matching item stay visible so matches retain their tree context. Call `ClearFilter()` to reset. |
 | `ItemTemplate` | `RenderFragment<object>?` <br /> (`null`) | Template used to render the content of every tree item. Covered in detail under [Templates](slug:components/treeview/templates). |
 | `CheckboxTemplate` | `RenderFragment<CheckboxContext>?` <br /> (`null`) | Template used to render each item's checkbox when `CheckBoxMode` is not `None`. |
-| `DragThrottleInterval` | `int` <br /> (`0`) | *Planned.* Milliseconds between each firing of the `OnDrag` event during drag operations. Tracked via gap-analysis-resolution. |
 
-> The TreeView source also exposes `EnableDragDrop` and the `OnItemDrop` event today. Telerik-parity names (`Draggable`, `OnDrop`) are **Planned** — see `fluent-ui-gap-analysis.md` and the gap workspace for the renaming/typing decision.
+### Size / Density Control via CSS Custom Properties
+
+The TreeView exposes CSS custom properties on `:root` that control density without needing the `Size` parameter or a provider contract change (VP-004 deferred). Override these on the tree container or an ancestor element to create custom density presets:
+
+| Custom Property | Default (medium) | Small | Large |
+| --- | --- | --- | --- |
+| `--mar-treeview-item-padding-y` | `2px` | `1px` | `4px` |
+| `--mar-treeview-item-padding-x` | `8px` | `4px` | `12px` |
+| `--mar-treeview-item-gap` | `4px` | `2px` | `8px` |
+| `--mar-treeview-indent` | `24px` | `16px` | `32px` |
+| `--mar-treeview-icon-size` | `16px` | `14px` | `20px` |
+| `--mar-treeview-font-size` | `14px` | `12px` | `16px` |
+| `--mar-treeview-line-height` | `20px` | `16px` | `24px` |
+
+These properties are activated automatically when `Size="sm"` or `Size="lg"`, or you can set them manually via a wrapping `style` attribute or CSS class.
 
 
 ## TreeView Reference and Methods
@@ -160,12 +174,11 @@ The table below lists the TreeView methods. Also consult the [TreeView API](slug
 
 | Method | Description |
 | --- | --- |
-| `Rebind` | [Refreshes the component data](slug:treeview-refresh-data#rebind-method). |
+| `Rebind()` | [Refreshes the component data](slug:treeview-refresh-data#rebind-method). Clears the cached tree and triggers a re-render. |
 | `ExpandAllAsync(bool includeUnloaded = false, int maxDepth = int.MaxValue, CancellationToken ct = default)` | Expands every node in the tree. When `includeUnloaded` is `true`, `LoadChildrenAsync` is invoked for lazy-loaded nodes that have not yet been fetched, honoring `maxDepth` and the supplied cancellation token. |
 | `CollapseAllAsync()` | Collapses every expanded node and raises `ExpandedItemsChanged`. |
 | `SelectNodeAsync(string id)` | Programmatically navigates to a node: expands all of its ancestors, marks it selected, and sets keyboard focus. |
 | `ClearFilter()` | Clears the active `FilterFunc` result so every node is visible again. |
-| `GetItemFromDropIndex` <br /> `(string index)` | *Planned.* Will resolve the corresponding `TItem` of the destination TreeView from the passed [`DestinationIndex`](slug:grid-drag-drop-overview#event-arguments). Tracked via gap-analysis-resolution. |
 
 <div class="skip-repl"></div>
 

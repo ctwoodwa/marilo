@@ -1,17 +1,41 @@
+using Marilo.Core.Enums;
+
 namespace Marilo.Core.Models;
 
-/// <summary>
-/// Defines a column in a MariloTreeList.
-/// </summary>
-[Obsolete("Use MariloTreeListColumn child components instead. This POCO-based column API will be removed in a future release.")]
+[Obsolete("Use MariloTreeListColumn child components instead.")]
 public class TreeListColumn
 {
-    /// <summary>Column header title.</summary>
     public string Title { get; set; } = string.Empty;
+    public string Field { get; set; } = string.Empty;
+    public string? Width { get; set; }
+}
 
-    /// <summary>Property name on TItem to display in this column.</summary>
+public class TreeListCommandEventArgs<TItem>
+{
+    public TItem Item { get; set; } = default!;
+    public TItem? ParentItem { get; set; }
+    public bool IsNew { get; set; }
+}
+
+public class TreeListSortEventArgs
+{
+    public string? Field { get; set; }
+    public SortDirection? Direction { get; set; }
+}
+
+public class TreeListSelectionEventArgs<TItem>
+{
+    public IReadOnlyList<TItem> SelectedItems { get; set; } = Array.Empty<TItem>();
+}
+
+public class TreeListColumnReorderEventArgs
+{
+    /// <summary>The field name of the column that was moved.</summary>
     public string Field { get; set; } = string.Empty;
 
-    /// <summary>Optional CSS width (e.g., "200px", "30%").</summary>
-    public string? Width { get; set; }
+    /// <summary>The original index of the column before the move.</summary>
+    public int OldIndex { get; set; }
+
+    /// <summary>The new index of the column after the move.</summary>
+    public int NewIndex { get; set; }
 }

@@ -179,9 +179,9 @@ public class MariloDiagramTests : MariloTestBase
             .Add(x => x.Shapes, shapes)
             .Add(x => x.OnShapeClick, (DiagramShapeClickEventArgs args) => receivedArgs = args));
 
-        // Click the first shape (a rect)
-        var firstShape = cut.Find(".mar-diagram__shape");
-        firstShape.Click();
+        // Click the first shape group
+        var firstGroup = cut.Find(".mar-diagram__shape-group");
+        firstGroup.Click();
 
         Assert.NotNull(receivedArgs);
         Assert.Equal("s1", receivedArgs!.Shape.Id);
@@ -224,5 +224,241 @@ public class MariloDiagramTests : MariloTestBase
 
         var conn = cut.Find("line.mar-diagram__connection.highlight");
         Assert.NotNull(conn);
+    }
+
+    // ── Edge case: Connection to nonexistent shape ──────────────────
+
+    [Fact]
+    public void Connection_To_Nonexistent_Shape_Is_Silently_Skipped()
+    {
+        var shapes = new List<DiagramShapeDescriptor>
+        {
+            new() { Id = "a", Text = "A", X = 50, Y = 50, Width = 80, Height = 40 }
+        };
+        var connections = new List<DiagramConnectionDescriptor>
+        {
+            new() { Id = "bad1", FromShapeId = "a", ToShapeId = "nonexistent" },
+            new() { Id = "bad2", FromShapeId = "ghost", ToShapeId = "a" },
+        };
+
+        var cut = Render<MariloDiagram>(p => p
+            .Add(x => x.Shapes, shapes)
+            .Add(x => x.Connections, connections));
+
+        // Neither connection should render
+        var lines = cut.FindAll("line.mar-diagram__connection");
+        Assert.Empty(lines);
+
+        // Shape still renders
+        Assert.Single(cut.FindAll(".mar-diagram__shape"));
+    }
+
+    // ── Edge case: Empty FromShapeId / ToShapeId ────────────────────
+
+    [Fact]
+    public void Connection_With_Empty_FromShapeId_Is_Skipped()
+    {
+        var shapes = new List<DiagramShapeDescriptor>
+        {
+            new() { Id = "a", X = 0, Y = 0 },
+            new() { Id = "b", X = 100, Y = 0 }
+        };
+        var connections = new List<DiagramConnectionDescriptor>
+        {
+            new() { Id = "c1", FromShapeId = "", ToShapeId = "b" },
+        };
+
+        var cut = Render<MariloDiagram>(p => p
+            .Add(x => x.Shapes, shapes)
+            .Add(x => x.Connections, connections));
+
+        Assert.Empty(cut.FindAll("line.mar-diagram__connection"));
+    }
+
+    [Fact]
+    public void Connection_With_Empty_ToShapeId_Is_Skipped()
+    {
+        var shapes = new List<DiagramShapeDescriptor>
+        {
+            new() { Id = "a", X = 0, Y = 0 },
+            new() { Id = "b", X = 100, Y = 0 }
+        };
+        var connections = new List<DiagramConnectionDescriptor>
+        {
+            new() { Id = "c1", FromShapeId = "a", ToShapeId = "" },
+        };
+
+        var cut = Render<MariloDiagram>(p => p
+            .Add(x => x.Shapes, shapes)
+            .Add(x => x.Connections, connections));
+
+        Assert.Empty(cut.FindAll("line.mar-diagram__connection"));
+    }
+
+    // ── Edge case: Duplicate shape IDs ──────────────────────────────
+
+    [Fact]
+    public void Duplicate_Shape_Ids_Renders_All_Shapes_Uses_First_For_Connections()
+    {
+        var shapes = new List<DiagramShapeDescriptor>
+        {
+            new() { Id = "dup", Text = "First", X = 10, Y = 10, Width = 80, Height = 40 },
+            new() { Id = "dup", Text = "Second", X = 200, Y = 10, Width = 80, Height = 40 },
+            new() { Id = "other", Text = "Other", X = 100, Y = 100, Width = 80, Height = 40 },
+        };
+        var connections = new List<DiagramConnectionDescriptor>
+        {
+            new() { Id = "c1", FromShapeId = "dup", ToShapeId = "other" },
+        };
+
+        var cut = Render<MariloDiagram>(p => p
+            .Add(x => x.Shapes, shapes)
+            .Add(x => x.Connections, connections));
+
+        // All three shapes render
+        Assert.Equal(3, cut.FindAll(".mar-diagram__shape").Count);
+
+        // Connection uses first occurrence of "dup"
+        var line = cut.Find("line.mar-diagram__connection");
+        Assert.NotNull(line);
+    }
+
+    // ── Accessibility ───────────────────────────────────────────────
+
+    [Fact]
+    public void Svg_Has_Role_Img()
+    {
+        var cut = Render<MariloDiagram>(p => p
+            .Add(x => x.Shapes, new List<DiagramShapeDescriptor>()));
+
+        var svg = cut.Find("svg.mar-diagram__canvas");
+        Assert.Equal("img", svg.GetAttribute("role"));
+    }
+
+    [Fact]
+    public void Container_Has_AriaLabel_When_Set()
+    {
+        var cut = Render<MariloDiagram>(p => p
+            .Add(x => x.Shapes, new List<DiagramShapeDescriptor>())
+            .Add(x => x.AriaLabel, "Organization chart"));
+
+        var container = cut.Find(".mar-diagram");
+        Assert.Equal("Organization chart", container.GetAttribute("aria-label"));
+    }
+
+    [Fact]
+    public void Svg_Has_Default_AriaLabel_When_AriaLabel_Not_Set()
+    {
+        var cut = Render<MariloDiagram>(p => p
+            .Add(x => x.Shapes, new List<DiagramShapeDescriptor>()));
+
+        var svg = cut.Find("svg.mar-diagram__canvas");
+        Assert.Equal("Diagram", svg.GetAttribute("aria-label"));
+    }
+
+    [Fact]
+    public void Shape_Group_Has_Role_Button()
+    {
+        var shapes = new List<DiagramShapeDescriptor>
+        {
+            new() { Id = "s1", Text = "Clickable", X = 10, Y = 10 }
+        };
+
+        var cut = Render<MariloDiagram>(p => p
+            .Add(x => x.Shapes, shapes));
+
+        var group = cut.Find(".mar-diagram__shape-group");
+        Assert.Equal("button", group.GetAttribute("role"));
+    }
+
+    [Fact]
+    public void Shape_Group_Has_AriaLabel_From_Shape_Text()
+    {
+        var shapes = new List<DiagramShapeDescriptor>
+        {
+            new() { Id = "s1", Text = "My Shape", X = 10, Y = 10 }
+        };
+
+        var cut = Render<MariloDiagram>(p => p
+            .Add(x => x.Shapes, shapes));
+
+        var group = cut.Find(".mar-diagram__shape-group");
+        Assert.Equal("My Shape", group.GetAttribute("aria-label"));
+    }
+
+    [Fact]
+    public void Shape_Group_Uses_Id_As_AriaLabel_When_Text_Is_Null()
+    {
+        var shapes = new List<DiagramShapeDescriptor>
+        {
+            new() { Id = "node-42", X = 10, Y = 10 }
+        };
+
+        var cut = Render<MariloDiagram>(p => p
+            .Add(x => x.Shapes, shapes));
+
+        var group = cut.Find(".mar-diagram__shape-group");
+        Assert.Equal("node-42", group.GetAttribute("aria-label"));
+    }
+
+    [Fact]
+    public void Shape_Group_Has_Tabindex_Zero()
+    {
+        var shapes = new List<DiagramShapeDescriptor>
+        {
+            new() { Id = "s1", Text = "Focusable", X = 10, Y = 10 }
+        };
+
+        var cut = Render<MariloDiagram>(p => p
+            .Add(x => x.Shapes, shapes));
+
+        var group = cut.Find(".mar-diagram__shape-group");
+        Assert.Equal("0", group.GetAttribute("tabindex"));
+    }
+
+    // ── Tooltip rendering ───────────────────────────────────────────
+
+    [Fact]
+    public void Diagram_Renders_Title_Element_When_TooltipText_Set()
+    {
+        var shapes = new List<DiagramShapeDescriptor>
+        {
+            new() { Id = "s1", Text = "Hover", X = 10, Y = 10, TooltipText = "My tooltip" }
+        };
+
+        var cut = Render<MariloDiagram>(p => p
+            .Add(x => x.Shapes, shapes));
+
+        var title = cut.Find("title");
+        Assert.Equal("My tooltip", title.TextContent);
+    }
+
+    [Fact]
+    public void Diagram_Does_Not_Render_Title_When_TooltipText_Null()
+    {
+        var shapes = new List<DiagramShapeDescriptor>
+        {
+            new() { Id = "s1", Text = "No Tip", X = 10, Y = 10 }
+        };
+
+        var cut = Render<MariloDiagram>(p => p
+            .Add(x => x.Shapes, shapes));
+
+        Assert.Empty(cut.FindAll("title"));
+    }
+
+    // ── Null connections list ───────────────────────────────────────
+
+    [Fact]
+    public void Diagram_Renders_Shapes_When_Connections_Is_Null()
+    {
+        var shapes = CreateTestShapes();
+
+        var cut = Render<MariloDiagram>(p => p
+            .Add(x => x.Shapes, shapes)
+            .Add(x => x.Connections, (IReadOnlyList<DiagramConnectionDescriptor>?)null));
+
+        Assert.Equal(3, cut.FindAll(".mar-diagram__shape").Count);
+        Assert.Empty(cut.FindAll("line.mar-diagram__connection"));
     }
 }

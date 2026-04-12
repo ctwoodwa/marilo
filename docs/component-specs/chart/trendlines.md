@@ -72,7 +72,7 @@ Use the Linear Trendline to visualize the rise or decline of a specific quantity
     <ChartZoomable Enabled="true" />
 
     <ChartLegend Visible="true" 
-                 Position="@ChartLegendPosition.Bottom">
+                 Position="@ChartPosition.Bottom">
     </ChartLegend>
 
     <ChartTooltip Visible="true" 
@@ -80,14 +80,14 @@ Use the Linear Trendline to visualize the rise or decline of a specific quantity
     </ChartTooltip>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.ScatterLine"
+        <MariloChartSeries Type="ChartSeriesType.ScatterLine"
                      Name="@Series1Name"
                      Data="@ScatterData"
                      XField="@nameof(SalesData.NumericPeriod)"
                      YField="@nameof(SalesData.Count)">
-        </ChartSeries>
+        </MariloChartSeries>
 
-        <ChartSeries Type="ChartSeriesType.LinearTrendline"
+        <MariloChartSeries Type="ChartSeriesType.LinearTrendline"
                      Name="Sales Forecast (LINEAR)"
                      For="@Series1Name"
                      Color="blue">
@@ -97,7 +97,7 @@ Use the Linear Trendline to visualize the rise or decline of a specific quantity
                                               After="10">
                 </ChartSeriesTrendlineForecast>
             </ChartSeriesTrendline>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartXAxes>
@@ -226,7 +226,7 @@ Use the Moving Average Trendline to smooth out data fluctuations. This trendline
     <ChartZoomable Enabled="true" />
 
     <ChartLegend Visible="true" 
-                 Position="@ChartLegendPosition.Bottom">
+                 Position="@ChartPosition.Bottom">
     </ChartLegend>
 
     <ChartTooltip Visible="true" 
@@ -234,15 +234,15 @@ Use the Moving Average Trendline to smooth out data fluctuations. This trendline
     </ChartTooltip>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Line"
+        <MariloChartSeries Type="ChartSeriesType.Line"
                      Name="@Series1Name"
                      Data="@Data"
                      Field="@nameof(SalesData.Count)"
                      CategoryField="@nameof(SalesData.Period)">
             <ChartSeriesMarkers Visible="false" />
-        </ChartSeries>
+        </MariloChartSeries>
 
-        <ChartSeries Type="ChartSeriesType.MovingAverageTrendline"
+        <MariloChartSeries Type="ChartSeriesType.MovingAverageTrendline"
                      Name="Sales Forecast (MOVING AVERAGE)"
                      For="@Series1Name"
                      Color="teal">
@@ -250,7 +250,7 @@ Use the Moving Average Trendline to smooth out data fluctuations. This trendline
             <ChartSeriesTrendline>
                 <ChartSeriesTrendline Period="4" />
             </ChartSeriesTrendline>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -361,26 +361,26 @@ Use the Exponential Trendline to visualize data with rapidly accelerating growth
 <MariloChart>
     <ChartPannable Enabled="true" Lock="@ChartAxisLock.Y" />
     <ChartZoomable Enabled="true" />
-    <ChartLegend Visible="true" Position="@ChartLegendPosition.Bottom" />
+    <ChartLegend Visible="true" Position="@ChartPosition.Bottom" />
     <ChartTooltip Visible="true" Shared="false" />
 
     <ChartSeriesItems>
 
-        <ChartSeries Type="ChartSeriesType.ScatterLine"
+        <MariloChartSeries Type="ChartSeriesType.ScatterLine"
                      Name="Stock Price Trend"
                      Data="@ChartData"
                      XField="@nameof(StockPriceTrend.NumericPeriod)"
                      YField="@nameof(StockPriceTrend.Price)">
-        </ChartSeries>
+        </MariloChartSeries>
 
-        <ChartSeries Type="@ChartSeriesType.ExponentialTrendline"
+        <MariloChartSeries Type="@ChartSeriesType.ExponentialTrendline"
                      Name="Stock Price (EXPONENTIAL)"
                      For="Stock Price Trend"
                      Color="blue">
             <ChartSeriesTrendline Period="4">
                 <ChartSeriesTrendlineForecast Before="0" After="3" />
             </ChartSeriesTrendline>
-        </ChartSeries>
+        </MariloChartSeries>
 
     </ChartSeriesItems>
 
@@ -547,26 +547,26 @@ Use the Logarithmic Trendline to visualize data with rapid initial growth that s
 <MariloChart>
     <ChartPannable Enabled="true" Lock="@ChartAxisLock.Y" />
     <ChartZoomable Enabled="true" />
-    <ChartLegend Visible="true" Position="@ChartLegendPosition.Bottom" />
+    <ChartLegend Visible="true" Position="@ChartPosition.Bottom" />
     <ChartTooltip Visible="true" Shared="false" />
 
     <ChartSeriesItems>
 
-        <ChartSeries Type="ChartSeriesType.ScatterLine"
+        <MariloChartSeries Type="ChartSeriesType.ScatterLine"
                      Name="Stock Price Trend"
                      Data="@ChartData"
                      XField="@nameof(StockPriceTrend.NumericPeriod)"
                      YField="@nameof(StockPriceTrend.Price)">
-        </ChartSeries>
+        </MariloChartSeries>
 
-        <ChartSeries Type="@ChartSeriesType.LogarithmicTrendline"
+        <MariloChartSeries Type="@ChartSeriesType.LogarithmicTrendline"
                      Name="Stock Price (LOGARITHMIC)"
                      For="Stock Price Trend"
                      Color="green">
             <ChartSeriesTrendline Period="4">
                 <ChartSeriesTrendlineForecast Before="0" After="3" />
             </ChartSeriesTrendline>
-        </ChartSeries>
+        </MariloChartSeries>
 
     </ChartSeriesItems>
 
@@ -733,19 +733,19 @@ Use the Power Trendline to visualize data that follows a power-law relationship,
 <MariloChart>
     <ChartPannable Enabled="true" Lock="@ChartAxisLock.Y" />
     <ChartZoomable Enabled="true" />
-    <ChartLegend Visible="true" Position="@ChartLegendPosition.Bottom" />
+    <ChartLegend Visible="true" Position="@ChartPosition.Bottom" />
     <ChartTooltip Visible="true" Shared="false" />
 
     <ChartSeriesItems>
 
-        <ChartSeries Type="ChartSeriesType.ScatterLine"
+        <MariloChartSeries Type="ChartSeriesType.ScatterLine"
                      Name="Stock Price Trend"
                      Data="@ChartData"
                      XField="@nameof(StockPriceTrend.NumericPeriod)"
                      YField="@nameof(StockPriceTrend.Price)">
-        </ChartSeries>
+        </MariloChartSeries>
 
-        <ChartSeries Type="@ChartSeriesType.PowerTrendline"
+        <MariloChartSeries Type="@ChartSeriesType.PowerTrendline"
                      Name="Stock Price (POWER)"
                      For="Stock Price Trend"
                      Color="teal">
@@ -753,7 +753,7 @@ Use the Power Trendline to visualize data that follows a power-law relationship,
             <ChartSeriesTrendline Period="4">
                 <ChartSeriesTrendlineForecast Before="0" After="3" />
             </ChartSeriesTrendline>
-        </ChartSeries>
+        </MariloChartSeries>
 
     </ChartSeriesItems>
 
@@ -920,26 +920,26 @@ Use the Polynomial Trendline to visualize complex data patterns not fitting the 
 <MariloChart>
     <ChartPannable Enabled="true" Lock="@ChartAxisLock.Y" />
     <ChartZoomable Enabled="true" />
-    <ChartLegend Visible="true" Position="@ChartLegendPosition.Bottom" />
+    <ChartLegend Visible="true" Position="@ChartPosition.Bottom" />
     <ChartTooltip Visible="true" Shared="false" />
 
     <ChartSeriesItems>
 
-        <ChartSeries Type="ChartSeriesType.ScatterLine"
+        <MariloChartSeries Type="ChartSeriesType.ScatterLine"
                      Name="Stock Price Trend"
                      Data="@ChartData"
                      XField="@nameof(StockPriceTrend.NumericPeriod)"
                      YField="@nameof(StockPriceTrend.Price)">
-        </ChartSeries>
+        </MariloChartSeries>
 
-        <ChartSeries Type="@ChartSeriesType.PolynomialTrendline"
+        <MariloChartSeries Type="@ChartSeriesType.PolynomialTrendline"
                      Name="Stock Price (POLYNOMIAL)"
                      For="Stock Price Trend"
                      Color="brown">
             <ChartSeriesTrendline Period="4">
                 <ChartSeriesTrendlineForecast Before="0" After="3" />
             </ChartSeriesTrendline>
-        </ChartSeries>
+        </MariloChartSeries>
 
     </ChartSeriesItems>
 

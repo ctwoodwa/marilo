@@ -3,14 +3,177 @@
 @layout ComponentDemoLayout
 
 <PageSection Title="Overview">
-    <DemoSection Title="Basic Usage" Description="Scheduler displays events on a calendar with day, week, and month views." Code="@_basicCode">
+    <DemoSection Title="Month View with Appointments"
+                 Description="The default Scheduler view is Month. Pass appointment data via the Appointments parameter."
+                 Code="@_monthCode">
         <div class="demo-row">
-            <MariloScheduler Style="height:500px;" />
+            <MariloScheduler Appointments="@_sampleAppointments"
+                             CurrentDate="@_currentDate"
+                             Style="height:500px;" />
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Week View"
+                 Description="Switch to Week view to see hourly time slots across 7 days. Appointments render as timed blocks positioned by Start/End time."
+                 Code="@_weekCode">
+        <div class="demo-row">
+            <MariloScheduler Appointments="@_sampleAppointments"
+                             CurrentDate="@_currentDate"
+                             View="SchedulerView.Week"
+                             StartHour="7"
+                             EndHour="20"
+                             Style="height:500px;" />
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Day View"
+                 Description="Day view shows a single day with hourly slots. Use StartHour and EndHour to control the visible time range."
+                 Code="@_dayCode">
+        <div class="demo-row">
+            <MariloScheduler Appointments="@_sampleAppointments"
+                             CurrentDate="@_currentDate"
+                             View="SchedulerView.Day"
+                             StartHour="8"
+                             EndHour="18"
+                             Style="height:500px;" />
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Interaction">
+    <DemoSection Title="View Switching"
+                 Description="Use two-way binding on View to track and control which view is active. The built-in toolbar buttons switch between Day, Week, and Month."
+                 Code="@_viewSwitchCode">
+        <div class="demo-row">
+            <p><strong>Current view:</strong> @_boundView</p>
+            <MariloScheduler Appointments="@_sampleAppointments"
+                             CurrentDate="@_currentDate"
+                             @bind-View="@_boundView"
+                             Style="height:500px;" />
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Event Handling"
+                 Description="Handle OnAppointmentClick and OnDateClick to respond to user interactions."
+                 Code="@_eventsCode">
+        <div class="demo-row">
+            <p><strong>Last action:</strong> @_lastAction</p>
+            <MariloScheduler Appointments="@_sampleAppointments"
+                             CurrentDate="@_currentDate"
+                             View="SchedulerView.Month"
+                             OnAppointmentClick="@HandleAppointmentClick"
+                             OnDateClick="@HandleDateClick"
+                             Style="height:500px;" />
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Date Navigation"
+                 Description="Use two-way binding on CurrentDate to track navigation. The Previous/Next buttons change the date based on the active view."
+                 Code="@_navCode">
+        <div class="demo-row">
+            <p><strong>Current date:</strong> @_boundDate.ToString("yyyy-MM-dd")</p>
+            <MariloScheduler Appointments="@_sampleAppointments"
+                             @bind-CurrentDate="@_boundDate"
+                             View="SchedulerView.Month"
+                             Style="height:500px;" />
         </div>
     </DemoSection>
 </PageSection>
 
 @code {
-    private const string _basicCode =
-        "<MariloScheduler Style=\"height:500px;\" />";
+    private DateTime _currentDate = new DateTime(2026, 4, 12);
+    private DateTime _boundDate = new DateTime(2026, 4, 12);
+    private SchedulerView _boundView = SchedulerView.Month;
+    private string _lastAction = "(none)";
+
+    private static List<SchedulerAppointment> _sampleAppointments = new()
+    {
+        new SchedulerAppointment
+        {
+            Title = "Sprint Planning",
+            Start = new DateTime(2026, 4, 13, 9, 0, 0),
+            End = new DateTime(2026, 4, 13, 11, 0, 0),
+            Color = "#0078d4"
+        },
+        new SchedulerAppointment
+        {
+            Title = "Design Review",
+            Start = new DateTime(2026, 4, 14, 14, 0, 0),
+            End = new DateTime(2026, 4, 14, 15, 30, 0),
+            Color = "#107c10"
+        },
+        new SchedulerAppointment
+        {
+            Title = "Team Standup",
+            Start = new DateTime(2026, 4, 12, 9, 30, 0),
+            End = new DateTime(2026, 4, 12, 9, 45, 0),
+            Color = "#5c2d91"
+        },
+        new SchedulerAppointment
+        {
+            Title = "Client Demo",
+            Start = new DateTime(2026, 4, 15, 13, 0, 0),
+            End = new DateTime(2026, 4, 15, 14, 0, 0),
+            Color = "#d83b01"
+        },
+        new SchedulerAppointment
+        {
+            Title = "Architecture Summit",
+            Description = "Two-day architecture planning event",
+            Start = new DateTime(2026, 4, 16),
+            End = new DateTime(2026, 4, 17),
+            IsAllDay = true,
+            Color = "#008272"
+        },
+        new SchedulerAppointment
+        {
+            Title = "Code Freeze",
+            Start = new DateTime(2026, 4, 20, 17, 0, 0),
+            End = new DateTime(2026, 4, 20, 17, 30, 0),
+            Color = "#a4262c"
+        }
+    };
+
+    private void HandleAppointmentClick(SchedulerAppointment appt)
+    {
+        _lastAction = $"Clicked appointment: {appt.Title} ({appt.Start:HH:mm} - {appt.End:HH:mm})";
+    }
+
+    private void HandleDateClick(DateTime date)
+    {
+        _lastAction = $"Clicked date: {date:yyyy-MM-dd}";
+    }
+
+    private const string _monthCode = @"<MariloScheduler Appointments=""@_appointments""
+                 CurrentDate=""@(new DateTime(2026, 4, 12))""
+                 Style=""height:500px;"" />";
+
+    private const string _weekCode = @"<MariloScheduler Appointments=""@_appointments""
+                 CurrentDate=""@(new DateTime(2026, 4, 12))""
+                 View=""SchedulerView.Week""
+                 StartHour=""7""
+                 EndHour=""20""
+                 Style=""height:500px;"" />";
+
+    private const string _dayCode = @"<MariloScheduler Appointments=""@_appointments""
+                 CurrentDate=""@(new DateTime(2026, 4, 12))""
+                 View=""SchedulerView.Day""
+                 StartHour=""8""
+                 EndHour=""18""
+                 Style=""height:500px;"" />";
+
+    private const string _viewSwitchCode = @"<MariloScheduler Appointments=""@_appointments""
+                 CurrentDate=""@_currentDate""
+                 @bind-View=""@_currentView""
+                 Style=""height:500px;"" />";
+
+    private const string _eventsCode = @"<MariloScheduler Appointments=""@_appointments""
+                 CurrentDate=""@_currentDate""
+                 OnAppointmentClick=""@HandleAppointmentClick""
+                 OnDateClick=""@HandleDateClick""
+                 Style=""height:500px;"" />";
+
+    private const string _navCode = @"<MariloScheduler Appointments=""@_appointments""
+                 @bind-CurrentDate=""@_currentDate""
+                 Style=""height:500px;"" />";
 }

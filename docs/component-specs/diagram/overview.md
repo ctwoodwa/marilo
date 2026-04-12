@@ -81,6 +81,7 @@ The Diagram fires `OnShapeClick` with `DiagramShapeClickEventArgs` when the user
 | `Connections` | `IReadOnlyList<DiagramConnectionDescriptor>?` | `null` | Collection of connection descriptors to render |
 | `Width` | `string?` | `"100%"` | CSS width of the diagram container |
 | `Height` | `string?` | `"500px"` | CSS height of the diagram container |
+| `AriaLabel` | `string?` | `null` | Accessible label for the diagram container and SVG element |
 | `OnShapeClick` | `EventCallback<DiagramShapeClickEventArgs>` | | Fires when a shape is clicked |
 
 ## Deferred Features
@@ -88,7 +89,8 @@ The Diagram fires `OnShapeClick` with `DiagramShapeClickEventArgs` when the user
 The following features are explicitly deferred to future versions:
 
 * Declarative child tags (`<DiagramShape>`, `<DiagramConnection>`, etc.)
-* Layout engines (tree, force-directed, layered)
+* Data binding via `ShapesData`/`ConnectionsData` with nested descriptor classes (`Fill`, `Content`, `Stroke`)
+* Layout engines (tree, force-directed, layered) via `<DiagramLayout>` child tag
 * Drag-and-drop shape repositioning
 * Zoom and pan
 * Selection (single and multi-select)

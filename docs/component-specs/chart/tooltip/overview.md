@@ -10,7 +10,7 @@ components: ["charts"]
 ---
 # Tooltip for Marilo Blazor Chart
 
-The Marilo Chart provides a tooltip for its data points. You can have settings specific to each `<ChartSeries>`, common tooltip settings for all series, or a [shared](slug:chart-tooltip-shared) tooltip for all categories.
+The Marilo Chart provides a tooltip for its data points. You can have settings specific to each `<MariloChartSeries>`, common tooltip settings for all series, or a [shared](slug:chart-tooltip-shared) tooltip for all categories.
 
 In this article:
 
@@ -27,7 +27,7 @@ By default the value of the point will be presented when hovered over.
 
 To enable tooltips for the data points of each individual series:
 
-1. Inside the `<ChartSeries>`, include the `<ChartSeriesTooltip>` tag.
+1. Inside the `<MariloChartSeries>`, include the `<ChartSeriesTooltip>` tag.
 1. Set its `Visible` parameter to `true`.
 
 
@@ -38,12 +38,12 @@ To enable tooltips for the data points of each individual series:
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Series 1" Data="@data1">
-        </ChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Series 1" Data="@data1">
+        </MariloChartSeries>
 
-        <ChartSeries Type="ChartSeriesType.Column" Name="Series 2" Data="@data2">
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Series 2" Data="@data2">
             <ChartSeriesTooltip Visible="true"></ChartSeriesTooltip>
-        </ChartSeries>
+        </MariloChartSeries>
 
     </ChartSeriesItems>
 
@@ -64,7 +64,7 @@ To enable tooltips for the data points of each individual series:
 
 The Chart allows you to enable and define common tooltip settings for all series at once. It looks like the individual tooltips (the value of the point will be presented when hovered over), but you declare it only once.
 
-A tooltip set to a specific `<ChartSeries>` will take precedence over the common tooltip settings.
+A tooltip set to a specific `<MariloChartSeries>` will take precedence over the common tooltip settings.
 
 To enable the same tooltip for all series:
 
@@ -82,10 +82,10 @@ To enable the same tooltip for all series:
     </ChartTooltip>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Bar" Name="Product 1" Data="@series1Data">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Bar" Name="Product 2" Data="@series2Data">
-        </ChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Bar" Name="Product 1" Data="@series1Data">
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Bar" Name="Product 2" Data="@series2Data">
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -94,7 +94,7 @@ To enable the same tooltip for all series:
 
     <ChartTitle Text="Quarterly revenue per product"></ChartTitle>
 
-    <ChartLegend Position="ChartLegendPosition.Right">
+    <ChartLegend Position="ChartPosition.Right">
     </ChartLegend>
 </MariloChart>
 
@@ -130,15 +130,15 @@ You can customize the appearance of the individual series tooltip by using:
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Line" Name="Product 1 (bound to simple data)" Data="@simpleData">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Line" Name="Product 2 (bound to model)"
+        <MariloChartSeries Type="ChartSeriesType.Line" Name="Product 1 (bound to simple data)" Data="@simpleData">
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Line" Name="Product 2 (bound to model)"
                      Data="@modelData" Field="@nameof(MyDataModel.SecondSeriesValue)">
             <ChartSeriesTooltip Visible="true"
                                 Background="#0000FF"
                                 Color="#D3D3D3">
             </ChartSeriesTooltip>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartValueAxes>
@@ -151,7 +151,7 @@ You can customize the appearance of the individual series tooltip by using:
 
     <ChartTitle Text="Quarterly sales trend"></ChartTitle>
 
-    <ChartLegend Position="Marilo.Blazor.ChartLegendPosition.Bottom">
+    <ChartLegend Position="Marilo.Blazor.ChartPosition.Bottom">
     </ChartLegend>
 </MariloChart>
 
@@ -208,9 +208,9 @@ The available series data point information in the `context` is:
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Line" Name="Product 1 (bound to simple data)" Data="@simpleData">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Line" Name="Product 2 (bound to model)"
+        <MariloChartSeries Type="ChartSeriesType.Line" Name="Product 1 (bound to simple data)" Data="@simpleData">
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Line" Name="Product 2 (bound to model)"
                      Data="@modelData" Field="@nameof(MyDataModel.SecondSeriesValue)">
             <ChartSeriesTooltip Visible="true">
                 <Template>
@@ -218,7 +218,7 @@ The available series data point information in the `context` is:
                     @((context.DataItem as MyDataModel).SecondSeriesValue) for @((context.DataItem as MyDataModel).ExtraData)
                 </Template>
             </ChartSeriesTooltip>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartValueAxes>
@@ -231,7 +231,7 @@ The available series data point information in the `context` is:
 
     <ChartTitle Text="Quarterly sales trend"></ChartTitle>
 
-    <ChartLegend Position="Marilo.Blazor.ChartLegendPosition.Bottom">
+    <ChartLegend Position="Marilo.Blazor.ChartPosition.Bottom">
     </ChartLegend>
 </MariloChart>
 

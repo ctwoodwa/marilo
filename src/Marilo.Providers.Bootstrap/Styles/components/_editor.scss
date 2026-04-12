@@ -28,3 +28,165 @@
     box-shadow: inset 0 0 0 1px var(--marilo-color-primary);
   }
 }
+
+// ── Shared BEM classes (hardcoded in razor, not from CssProvider) ────
+
+.mar-editor-tool-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  border: 1px solid transparent;
+  border-radius: var(--bs-border-radius-sm, 0.25rem);
+  background: transparent;
+  color: var(--bs-body-color);
+  cursor: pointer;
+  padding: 2px 4px;
+  font-size: var(--marilo-font-size-sm, 14px);
+
+  &:hover {
+    background: var(--bs-tertiary-bg, #f8f9fa);
+  }
+
+  &--active {
+    background: var(--bs-tertiary-bg, #e9ecef);
+    border-color: var(--bs-border-color, #dee2e6);
+  }
+
+  &--more {
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+}
+
+.mar-editor__tool-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  border: 1px solid transparent;
+  border-radius: var(--bs-border-radius-sm, 0.25rem);
+  background: transparent;
+  color: var(--bs-body-color);
+  cursor: pointer;
+  padding: 2px 4px;
+  font-size: var(--marilo-font-size-sm, 14px);
+
+  &:hover {
+    background: var(--bs-tertiary-bg, #f8f9fa);
+  }
+}
+
+.mar-editor-preview {
+  color: var(--bs-body-color);
+  background: var(--bs-body-bg, #fff);
+}
+
+.mar-editor-source {
+  color: var(--bs-body-color);
+  background: var(--bs-body-bg, #fff);
+  font-family: var(--bs-font-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace);
+  font-size: var(--marilo-font-size-sm, 13px);
+  border: none;
+  resize: vertical;
+}
+
+.mar-editor-wysiwyg {
+  color: var(--bs-body-color);
+  background: var(--bs-body-bg, #fff);
+
+  &[data-placeholder]:empty::before {
+    content: attr(data-placeholder);
+    color: var(--bs-secondary-color, #6c757d);
+    pointer-events: none;
+  }
+}
+
+.mar-editor-overflow-popup {
+  background: var(--bs-body-bg, #fff);
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: var(--bs-border-radius, 0.375rem);
+  box-shadow: var(--bs-box-shadow-sm, 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075));
+}
+
+.mar-editor-img-resize-wrapper {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+}
+
+.mar-editor-img-resize-handle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--bs-primary, #0d6efd);
+  border: 1px solid #fff;
+  box-sizing: border-box;
+  z-index: 10;
+}
+
+// ── Dark Theme Patches ───────────────────────────────────────────────
+[data-marilo-theme="dark"],
+[data-bs-theme="dark"] {
+  .mar-bs-editor {
+    border-color: var(--bs-border-color, #484644);
+  }
+
+  .mar-bs-editor-toolbar {
+    background-color: var(--marilo-color-surface, #252423);
+  }
+
+  .mar-bs-editor-content {
+    color: var(--marilo-color-text, #f3f2f1);
+    background-color: var(--marilo-color-surface, #252423);
+  }
+
+  .mar-editor-tool-btn {
+    color: var(--marilo-color-text, #f3f2f1);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    &--active {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--bs-border-color, #484644);
+    }
+  }
+
+  .mar-editor__tool-button {
+    color: var(--marilo-color-text, #f3f2f1);
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+  }
+
+  .mar-editor-preview,
+  .mar-editor-wysiwyg {
+    color: var(--marilo-color-text, #f3f2f1);
+    background: var(--marilo-color-surface, #252423);
+  }
+
+  .mar-editor-source {
+    color: var(--marilo-color-text, #f3f2f1);
+    background: var(--marilo-color-surface, #1b1a19);
+  }
+
+  .mar-editor-wysiwyg[data-placeholder]:empty::before {
+    color: var(--bs-secondary-color, #a19f9d);
+  }
+
+  .mar-editor-overflow-popup {
+    background: var(--marilo-color-surface, #252423);
+    border-color: var(--bs-border-color, #484644);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  }
+
+  .mar-editor-img-resize-handle {
+    background: var(--bs-primary, #6ea8fe);
+    border-color: var(--marilo-color-surface, #252423);
+  }
+}

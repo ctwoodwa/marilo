@@ -10,6 +10,8 @@ components: ["scheduler"]
 ---
 # Blazor Scheduler Overview
 
+> **Spec version:** v0.1 — prototype stub. Source implements 8 parameters (`CurrentDate`, `View`, `Appointments`, `StartHour`, `EndHour`, `OnAppointmentClick`, `OnDateClick`, `OnAppointmentCreate`) against a full-featured spec. See `scheduler-gap-analysis` for resolution plan.
+
 The <a href="https://www.marilo.com/blazor-ui/scheduler" target="_blank">Blazor Scheduler component</a> lets users see, edit and add appointments, so they can plan their agenda. The Scheduler offers different views, control over the workday start and end, resource grouping and various other features and settings.
 
 

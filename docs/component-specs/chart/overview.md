@@ -18,9 +18,9 @@ The <a href="https://demos.marilo.com/blazor-ui/chart/overview" target="_blank">
 ## Creating Blazor Chart
 
 1. Add the `<MariloChart>` tag to your razor page.
-1. Define [Chart series](slug:Marilo.Blazor.Components.ChartSeries) and [bind them to data](slug:components/chart/databind).
-1. Configure the [category axis](slug:Marilo.Blazor.Components.ChartCategoryAxis) (X axis). Either set a `CategoryField` for each `<ChartSeries>`, or provide all `Categories` in bulk in a `<ChartCategoryAxis>` tag.
-1. Set a `<ChartTitle>` and the `Position` of the [`<ChartLegend>`](slug:Marilo.Blazor.Components.ChartLegend). To make the legend appear, define a `Name` for each `<ChartSeries>`.
+1. Define [Chart series](slug:MariloChartSeries) and [bind them to data](slug:components/chart/databind).
+1. Configure the [category axis](slug:ChartCategoryAxis) (X axis). Either set a `CategoryField` for each `<MariloChartSeries>`, or provide all `Categories` in bulk in a `<ChartCategoryAxis>` tag.
+1. Set a `<ChartTitle>` and the `Position` of the [`<ChartLegend>`](slug:ChartLegend). To make the legend appear, define a `Name` for each `<MariloChartSeries>`.
 
 >caption Basic chart
 
@@ -43,9 +43,9 @@ You can also add a secondary title through `ChartSubtitle` and configure its `Po
 <MariloChart>
     <ChartTitle Text="Product Sales"
                 Description="Product Sales by Year and Country"
-                Position="@ChartTitlePosition.Top">
+                Position="@ChartPosition.Top">
         <ChartSubtitle Text="Product Sales by Year and Country"
-                       Position="@ChartSubtitlePosition.Bottom" />
+                       Position="@ChartPosition.Bottom" />
     </ChartTitle>
 </MariloChart>
 ````
@@ -69,8 +69,8 @@ You can make a responsive chart
     <MariloChart Width ="100%" Height="100%" @ref="theChart">
 
         <ChartSeriesItems>
-            <ChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@someData">
-            </ChartSeries>
+            <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@someData">
+            </MariloChartSeries>
         </ChartSeriesItems>
         <ChartCategoryAxes>
             <ChartCategoryAxis Categories="@xAxisItems"></ChartCategoryAxis>
@@ -84,7 +84,7 @@ You can make a responsive chart
 @code {
     string ContainerWidth { get; set; } = "400px";
     string ContainerHeight { get; set; } = "300px";
-    Marilo.Blazor.Components.MariloChart theChart { get; set; }
+    MariloChart theChart { get; set; }
 
     async Task ResizeChart()
     {
@@ -114,23 +114,23 @@ The Chart allows various [customizations through child tags and parameters](#cha
 ````RAZOR
 <style>
     /* All Charts */
-    div.k-chart {
+    div.mar-chart {
         /* Chart background */
-        --kendo-chart-bg: #ffd;
+        --mar-chart-bg: #ffd;
         /* Chart text */
-        --kendo-chart-text: #f00;
-        /* First series color. Supports up to --kendo-chart-series-30 */
-        --kendo-chart-series-1: #f93;
+        --mar-chart-text: #f00;
+        /* First series color */
+        --mar-chart-series-0: #f93;
     }
 
     /* Charts with this CSS class */
     div.lime-chart {
         /* Chart background */
-        --kendo-chart-bg: #dfd;
+        --mar-chart-bg: #dfd;
         /* Chart text */
-        --kendo-chart-text: #00f;
-        /* First series color. Supports up to --kendo-chart-series-30 */
-        --kendo-chart-series-1: #39f;
+        --mar-chart-text: #00f;
+        /* First series color */
+        --mar-chart-series-0: #39f;
     }
 </style>
 
@@ -139,11 +139,11 @@ The Chart allows various [customizations through child tags and parameters](#cha
                   Width="400px">
         <ChartTitle Text="Chart" />
         <ChartSeriesItems>
-            <ChartSeries Type="ChartSeriesType.Column"
+            <MariloChartSeries Type="ChartSeriesType.Column"
                          Data="@ChartData"
                          Field="@nameof(SalesData.Revenue)"
                          CategoryField="@nameof(SalesData.Product)">
-            </ChartSeries>
+            </MariloChartSeries>
         </ChartSeriesItems>
     </MariloChart>
 
@@ -152,11 +152,11 @@ The Chart allows various [customizations through child tags and parameters](#cha
                   Width="400px">
         <ChartTitle Text="Chart" />
         <ChartSeriesItems>
-            <ChartSeries Type="ChartSeriesType.Column"
+            <MariloChartSeries Type="ChartSeriesType.Column"
                          Data="@ChartData"
                          Field="@nameof(SalesData.Revenue)"
                          CategoryField="@nameof(SalesData.Product)">
-            </ChartSeries>
+            </MariloChartSeries>
         </ChartSeriesItems>
     </MariloChart>
 </div>
@@ -193,10 +193,33 @@ The following table lists Chart parameters, which are not discussed elsewhere in
 
 | Parameter | Type and Default value | Description |
 |-----------|------------------------|-------------|
-| `Width`  | `string` | Controls the width of the Chart. |
-| `Height`  | `string` | Controls the height of the Chart. |
-| `Class`  | `string` | Renders a custom CSS class on the `<div class="k-chart">` element. |
+| `Width`  | `string` (`"100%"`) | Controls the width of the Chart. |
+| `Height`  | `string` (`"300px"`) | Controls the height of the Chart. |
+| `Class`  | `string` | Renders a custom CSS class on the chart container element. |
 | `Transitions` | `bool?` | Controls if the Chart renders animations. |
+| `ShowLegend` | `bool` (`true`) | Whether to show the chart legend when no `<ChartLegend>` child is provided. |
+| `ShowTooltips` | `bool` (`true`) | Whether to show tooltips on hover when no `<ChartTooltip>` child is provided. |
+| `Palette` | `string[]?` | Custom color palette for chart series. When not set, the Chart uses a built-in default palette. |
+
+## Chart Events
+
+The following table lists Chart events that are not discussed in the dedicated [Events](slug:chart-events) article.
+
+| Event | Type | Description |
+|-------|------|-------------|
+| `OnSeriesClick` | `EventCallback<ChartSeriesClickEventArgs>` | Fires when a data point is clicked. |
+| `OnClick` | `EventCallback<ChartClickEventArgs>` | Legacy alias for `OnSeriesClick`. Prefer `OnSeriesClick` for new code. |
+| `OnLegendItemClick` | `EventCallback<ChartLegendItemClickEventArgs>` | Fires when a legend item is clicked. |
+| `OnRender` | `EventCallback<ChartRenderEventArgs>` | Fires after the chart has rendered. Provides chart dimensions and data summary. |
+
+## Chart Series Parameters
+
+The `<MariloChartSeries>` component accepts the following additional parameters beyond its core data-binding properties:
+
+| Parameter | Type and Default value | Description |
+|-----------|------------------------|-------------|
+| `Gap` | `double?` | Gap between categories as a 0-1 ratio. Applies to bar and column series. |
+| `Spacing` | `double?` | Spacing between bars in a group as a 0-1 ratio. Applies to bar and column series. |
 
 ## Chart Reference and Methods
 
@@ -227,4 +250,4 @@ To execute Chart methods, obtain reference to the component instance via `@ref`.
 ## See Also
 
 * [Live Demos: Chart](https://demos.marilo.com/blazor-ui/chart/overview)
-* [Chart API Reference](slug:Marilo.Blazor.Components.MariloChart)
+* [Chart API Reference](slug:MariloChart)

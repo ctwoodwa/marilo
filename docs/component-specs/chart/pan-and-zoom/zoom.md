@@ -29,26 +29,26 @@ To perform zooming, do either of the following:
     <ChartZoomable Enabled="true"></ChartZoomable>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.ScatterLine"
+        <MariloChartSeries Type="ChartSeriesType.ScatterLine"
                      Data="@Series1Data"
                      Name="0.8C"
                      XField="@nameof(ModelData.X)"
                      YField="@nameof(ModelData.Y)">
-        </ChartSeries>
+        </MariloChartSeries>
 
-        <ChartSeries Type="ChartSeriesType.ScatterLine"
+        <MariloChartSeries Type="ChartSeriesType.ScatterLine"
                      Data="@Series2Data"
                      Name="1.6C"
                      XField="@nameof(ModelData.X)"
                      YField="@nameof(ModelData.Y)">
-        </ChartSeries>
+        </MariloChartSeries>
 
-        <ChartSeries Type="ChartSeriesType.ScatterLine"
+        <MariloChartSeries Type="ChartSeriesType.ScatterLine"
                      Data="@Series3Data"
                      Name="3.1C"
                      XField="@nameof(ModelData.X)"
                      YField="@nameof(ModelData.Y)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartXAxes>
@@ -126,12 +126,12 @@ To specify if users can zoom in and out on a selected area, set the boolean `Ena
     </ChartZoomable>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column"
+        <MariloChartSeries Type="ChartSeriesType.Column"
                      Name="Product 1"
                      Data="@Data"
                      Field="@nameof(ChartSeriesData.ProductSales)"
                      CategoryField="@nameof(ChartSeriesData.Year)">
-        </ChartSeries>
+        </MariloChartSeries>
 
         <ChartCategoryAxes>
             <ChartCategoryAxis Min="1" Max="5"></ChartCategoryAxis>
@@ -203,12 +203,12 @@ Press CTRL + Click and Drag.
     </ChartZoomable>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column"
+        <MariloChartSeries Type="ChartSeriesType.Column"
                      Name="Product 1"
                      Data="@Data"
                      Field="@nameof(ChartSeriesData.ProductSales)"
                      CategoryField="@nameof(ChartSeriesData.Year)">
-        </ChartSeries>
+        </MariloChartSeries>
 
         <ChartCategoryAxes>
             <ChartCategoryAxis Min="1" Max="5"></ChartCategoryAxis>

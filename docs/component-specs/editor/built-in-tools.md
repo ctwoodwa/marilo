@@ -55,7 +55,7 @@ Here is a simple example that demonstrates how to use class names, command names
     private string EditorValue { get; set; } = @"<p>foo</p><p>bar</p>";
 
     // "Bold", "Italic" and "Underline" are class names
-    private List<IEditorTool> EditorTools { get; set; } = new List<IEditorTool>() {
+    private IEnumerable<EditorTool> EditorTools { get; set; } = new IEnumerable<EditorTool>() {
         new EditorNS.Bold(),
         new EditorNS.Italic(),
         new EditorNS.Underline()
@@ -212,7 +212,7 @@ The `ForeColor` and `BackgroundColor` tools expose a few customization propertie
 @code {
     private string EditorValue { get; set; }
 
-    private List<IEditorTool> EditorTools { get; set; } = new List<IEditorTool>()
+    private IEnumerable<EditorTool> EditorTools { get; set; } = new IEnumerable<EditorTool>()
     {
         new ForeColor()
         {
@@ -247,7 +247,7 @@ The [`FontFamily`](slug:Marilo.Blazor.Components.Editor.FontFamily) and [`FontSi
 @code {
     private string EditorValue { get; set; }
 
-    private List<IEditorTool> EditorTools { get; set; } = new List<IEditorTool>()
+    private IEnumerable<EditorTool> EditorTools { get; set; } = new IEnumerable<EditorTool>()
     {
         new EditorNS.FontFamily()
         {
@@ -386,7 +386,7 @@ The [`Format` tool exposes a `Data` property](slug:Marilo.Blazor.Components.Edit
 @code {
     private string EditorValue { get; set; }
 
-    private List<IEditorTool> EditorTools { get; set; } = new List<IEditorTool>()
+    private IEnumerable<EditorTool> EditorTools { get; set; } = new IEnumerable<EditorTool>()
     {
         new Format()
         {

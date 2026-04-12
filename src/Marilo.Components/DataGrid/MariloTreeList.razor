@@ -6,23 +6,99 @@
      style="@CombineStyles()"
      @attributes="AdditionalAttributes">
 
-    @* Column definitions (hidden, registers via CascadingValue) *@
     <CascadingValue Value="(IColumnHost)this" IsFixed="true">
-        @ChildContent
+        <CascadingValue Value="(ITreeListEditController)this" IsFixed="true">
+            @ChildContent
+        </CascadingValue>
     </CascadingValue>
 
-    <table class="mar-treelist__table" role="treegrid">
+    <table class="mar-treelist__table" role="treegrid"
+           @onmousemove="OnResizeMouseMove"
+           @onmouseup="OnResizeMouseUp"
+           @onmousemove:preventDefault="_isResizing">
         <thead>
             <tr>
-                @foreach (var col in EffectiveColumns)
+                @{ var orderedCols = OrderedColumns; }
+                @for (var colIdx = 0; colIdx < orderedCols.Count; colIdx++)
                 {
-                    <th class="mar-treelist__th" style="@(col.Width != null ? $"width:{col.Width};" : "")">
-                        @col.DisplayTitle
+                    var col = orderedCols[colIdx];
+                    var idx = colIdx;
+                    var isSortable = IsColumnSortable(col);
+                    var isSorted = _sortField == col.Field && _sortDirection is not null;
+                    var sortCss = isSorted
+                        ? (_sortDirection == Marilo.Core.Enums.SortDirection.Ascending
+                            ? "mar-treelist__sort-asc"
+                            : "mar-treelist__sort-desc")
+                        : "";
+                    var dragOverCss = Reorderable && _dragOverIndex == idx && _dragSourceIndex != idx ? " mar-treelist__th--drag-over" : "";
+                    var thClass = $"mar-treelist__th{(isSortable ? " mar-treelist__th--sortable" : "")}{(isSorted ? $" {sortCss}" : "")}{dragOverCss}";
+
+                    <th class="@thClass"
+                        style="@GetColumnWidthStyle(col)"
+                        draggable="@(Reorderable ? "true" : "false")"
+                        @onclick="() => HandleHeaderClick(col)"
+                        @ondragstart="(e) => OnDragStart(e, idx)"
+                        @ondragover="(e) => OnDragOver(e, idx)"
+                        @ondragover:preventDefault
+                        @ondrop="(e) => OnDrop(e, idx)"
+                        @ondragend="OnDragEnd">
+                        @{
+                            var headerTemplate = (col as MariloTreeListColumn)?.HeaderTemplate;
+                        }
+                        @if (headerTemplate is not null)
+                        {
+                            @headerTemplate
+                        }
+                        else
+                        {
+                            @col.DisplayTitle
+                        }
+                        @if (isSorted)
+                        {
+                            <span class="mar-treelist__sort-indicator">@(_sortDirection == Marilo.Core.Enums.SortDirection.Ascending ? "\u25B2" : "\u25BC")</span>
+                        }
+                        @if (Resizable)
+                        {
+                            <span class="mar-treelist__resize-handle"
+                                  @onmousedown="(e) => OnResizeMouseDown(e, col)"
+                                  @onmousedown:stopPropagation></span>
+                        }
                     </th>
                 }
+                @if (EditMode == Marilo.Core.Enums.TreeListEditMode.Inline)
+                {
+                    <th class="mar-treelist__th mar-treelist__th--commands">Commands</th>
+                }
             </tr>
+            @if (FilterMode == Marilo.Core.Enums.TreeListFilterMode.FilterRow)
+            {
+                <tr class="mar-treelist__filter-row">
+                    @foreach (var col in orderedCols)
+                    {
+                        <td class="mar-treelist__filter-cell">
+                            @if (IsColumnFilterable(col))
+                            {
+                                var fieldName = col.Field;
+                                <input type="text"
+                                       class="mar-treelist__filter-input"
+                                       placeholder="Filter..."
+                                       value="@(_filterValues.TryGetValue(fieldName, out var fv) ? fv : "")"
+                                       @oninput="@(e => HandleFilterInput(fieldName, e.Value?.ToString() ?? ""))" />
+                            }
+                        </td>
+                    }
+                    @if (EditMode == Marilo.Core.Enums.TreeListEditMode.Inline)
+                    {
+                        <td class="mar-treelist__filter-cell"></td>
+                    }
+                </tr>
+            }
         </thead>
         <tbody>
+            @if (_isNewItem && _editingItem is not null)
+            {
+                @RenderEditRow(_editingItem, 0)
+            }
             @RenderRows(_rootItems, 0)
         </tbody>
     </table>

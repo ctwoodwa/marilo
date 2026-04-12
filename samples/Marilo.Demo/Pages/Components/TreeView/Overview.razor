@@ -55,6 +55,68 @@
     </DemoSection>
 </PageSection>
 
+<PageSection Title="Size / Density">
+    <DemoSection Title="Size Parameter (sm / lg)" Description="Use the Size parameter to switch between small, medium (default), and large density presets." Code="@_sizeParameterCode">
+        <div style="display: flex; gap: 32px; align-items: flex-start;">
+            <div>
+                <h4>Small (Size=&quot;sm&quot;)</h4>
+                <MariloTreeView Size="sm">
+                    <MariloTreeItem Title="Documents" IsExpanded="true">
+                        <MariloTreeItem Title="Reports" />
+                        <MariloTreeItem Title="Images" />
+                    </MariloTreeItem>
+                    <MariloTreeItem Title="Downloads" />
+                </MariloTreeView>
+            </div>
+            <div>
+                <h4>Medium (default)</h4>
+                <MariloTreeView>
+                    <MariloTreeItem Title="Documents" IsExpanded="true">
+                        <MariloTreeItem Title="Reports" />
+                        <MariloTreeItem Title="Images" />
+                    </MariloTreeItem>
+                    <MariloTreeItem Title="Downloads" />
+                </MariloTreeView>
+            </div>
+            <div>
+                <h4>Large (Size=&quot;lg&quot;)</h4>
+                <MariloTreeView Size="lg">
+                    <MariloTreeItem Title="Documents" IsExpanded="true">
+                        <MariloTreeItem Title="Reports" />
+                        <MariloTreeItem Title="Images" />
+                    </MariloTreeItem>
+                    <MariloTreeItem Title="Downloads" />
+                </MariloTreeView>
+            </div>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="CSS Custom Property Density" Description="Override CSS custom properties directly for fine-grained density control without changing the Size parameter. This is useful for custom density presets or matching specific layout requirements." Code="@_cssDensityCode">
+        <div style="display: flex; gap: 32px; align-items: flex-start;">
+            <div>
+                <h4>Compact (custom props)</h4>
+                <MariloTreeView style="--mar-treeview-item-padding-y: 0px; --mar-treeview-item-padding-x: 4px; --mar-treeview-item-gap: 2px; --mar-treeview-indent: 12px; --mar-treeview-font-size: 11px; --mar-treeview-line-height: 14px; --mar-treeview-icon-size: 12px;">
+                    <MariloTreeItem Title="Documents" IsExpanded="true">
+                        <MariloTreeItem Title="Reports" />
+                        <MariloTreeItem Title="Images" />
+                    </MariloTreeItem>
+                    <MariloTreeItem Title="Downloads" />
+                </MariloTreeView>
+            </div>
+            <div>
+                <h4>Spacious (custom props)</h4>
+                <MariloTreeView style="--mar-treeview-item-padding-y: 6px; --mar-treeview-item-padding-x: 16px; --mar-treeview-item-gap: 10px; --mar-treeview-indent: 36px; --mar-treeview-font-size: 18px; --mar-treeview-line-height: 28px; --mar-treeview-icon-size: 22px;">
+                    <MariloTreeItem Title="Documents" IsExpanded="true">
+                        <MariloTreeItem Title="Reports" />
+                        <MariloTreeItem Title="Images" />
+                    </MariloTreeItem>
+                    <MariloTreeItem Title="Downloads" />
+                </MariloTreeView>
+            </div>
+        </div>
+    </DemoSection>
+</PageSection>
+
 <PageSection Title="Events">
     <DemoSection Title="SelectedItemsChanged" Description="Wire the SelectedItemsChanged callback to react when the user clicks a node. The log below updates on every selection change." Code="@_selectedItemsChangedCode">
         <MariloTreeView Data="@_flatData"
@@ -172,6 +234,19 @@
         </MariloTreeView>
     </DemoSection>
 
+    <DemoSection Title="ExpandOnDoubleClick" Description="Expand or collapse a node by double-clicking the item header. Single clicks do not toggle expansion." Code="@_expandOnDoubleClickCode">
+        <MariloTreeView ExpandOnDoubleClick="true">
+            <MariloTreeItem Title="Projects">
+                <MariloTreeItem Title="Alpha" />
+                <MariloTreeItem Title="Beta" />
+            </MariloTreeItem>
+            <MariloTreeItem Title="Archive">
+                <MariloTreeItem Title="2024" />
+                <MariloTreeItem Title="2025" />
+            </MariloTreeItem>
+        </MariloTreeView>
+    </DemoSection>
+
     <DemoSection Title="SingleExpand (Accordion)" Description="Only one node at each level can be expanded at a time. Expanding a sibling collapses the others." Code="@_singleExpandCode">
         <MariloTreeView SingleExpand="true">
             <MariloTreeItem Title="Section A">
@@ -188,14 +263,20 @@
         </MariloTreeView>
     </DemoSection>
 
-    <DemoSection Title="AutoExpand" Description="Automatically expand ancestor nodes when an item is selected, ensuring the selected item is always visible." Code="@_autoExpandCode">
+    <DemoSection Title="AutoExpand (Interactive)" Description="Automatically expand ancestor nodes when an item is selected. Click the buttons to programmatically select a deeply nested item and watch its ancestors expand." Code="@_autoExpandCode">
         <MariloTreeView Data="@_flatData"
                         IdField="Id"
                         ParentIdField="ParentId"
                         TextField="Name"
                         AutoExpand="true"
                         SelectionMode="TreeSelectionMode.Single"
-                        SelectedItems="@(new[] { "4" })" />
+                        SelectedItems="@_autoExpandSelectedIds" />
+        <div style="margin-top: 8px;">
+            <button @onclick="SelectNestedForAutoExpand">Select Q1 Report (nested)</button>
+            <button @onclick="SelectRootForAutoExpand">Select Downloads (root)</button>
+            <button @onclick="ClearAutoExpandSelection">Clear Selection</button>
+        </div>
+        <p><strong>Selected:</strong> @(string.Join(", ", _autoExpandSelectedIds ?? []))</p>
     </DemoSection>
 
     <DemoSection Title="ExpandAllAsync / CollapseAllAsync" Description="Programmatically expand or collapse all nodes using public methods." Code="@_expandCollapseAllCode">
@@ -289,6 +370,35 @@
             <MariloTreeItem Title="Item B" Id="opt-b" />
             <MariloTreeItem Title="Item C" Id="opt-c" />
         </MariloTreeView>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Edge Cases">
+    <DemoSection Title="Empty Data" Description="When Data is an empty collection, the tree renders gracefully with no items. Useful for verifying empty-state behavior." Code="@_emptyDataCode">
+        <MariloTreeView Data="@_emptyData"
+                        IdField="Id"
+                        ParentIdField="ParentId"
+                        TextField="Name" />
+        <p style="color: gray; font-style: italic;">The tree above is intentionally empty.</p>
+    </DemoSection>
+
+    <DemoSection Title="Single-Root Tree" Description="A tree with a single root node and no children. The minimum viable tree structure." Code="@_singleRootCode">
+        <MariloTreeView>
+            <MariloTreeItem Title="Only Node" />
+        </MariloTreeView>
+    </DemoSection>
+
+    <DemoSection Title="Selection + Checkboxes Combined" Description="Selection and checkboxes can be active simultaneously. Selection highlights the clicked node, while checkboxes independently track checked state." Code="@_selectionCheckboxCode">
+        <MariloTreeView Data="@_flatData"
+                        IdField="Id"
+                        ParentIdField="ParentId"
+                        TextField="Name"
+                        SelectionMode="TreeSelectionMode.Single"
+                        @bind-SelectedItems="_comboSelectedIds"
+                        CheckBoxMode="CheckBoxMode.Multiple"
+                        @bind-CheckedItems="_comboCheckedIds" />
+        <p><strong>Selected:</strong> @(string.Join(", ", _comboSelectedIds ?? []))</p>
+        <p><strong>Checked:</strong> @(string.Join(", ", _comboCheckedIds ?? []))</p>
     </DemoSection>
 </PageSection>
 
@@ -467,6 +577,18 @@
         new TemplateNode("t3", null, "Low Priority", "#388e3c", "2 items"),
     ];
 
+    // AutoExpand interactive demo
+    private IEnumerable<string>? _autoExpandSelectedIds;
+
+    private void SelectNestedForAutoExpand() => _autoExpandSelectedIds = new[] { "4" };
+    private void SelectRootForAutoExpand() => _autoExpandSelectedIds = new[] { "6" };
+    private void ClearAutoExpandSelection() => _autoExpandSelectedIds = Array.Empty<string>();
+
+    // Edge case demos
+    private readonly List<object> _emptyData = new();
+    private IEnumerable<string>? _comboSelectedIds;
+    private IEnumerable<string>? _comboCheckedIds;
+
     // Code samples
     private const string _basicCode =
         "<MariloTreeView>\n" +
@@ -508,6 +630,36 @@
         "        ]),\n" +
         "    ];\n" +
         "}";
+
+    private const string _sizeParameterCode =
+        "<div style=\"display: flex; gap: 32px;\">\n" +
+        "    <div>\n" +
+        "        <h4>Small</h4>\n" +
+        "        <MariloTreeView Size=\"sm\">\n" +
+        "            <MariloTreeItem Title=\"Documents\" IsExpanded=\"true\">\n" +
+        "                <MariloTreeItem Title=\"Reports\" />\n" +
+        "            </MariloTreeItem>\n" +
+        "        </MariloTreeView>\n" +
+        "    </div>\n" +
+        "    <div>\n" +
+        "        <h4>Large</h4>\n" +
+        "        <MariloTreeView Size=\"lg\">\n" +
+        "            <MariloTreeItem Title=\"Documents\" IsExpanded=\"true\">\n" +
+        "                <MariloTreeItem Title=\"Reports\" />\n" +
+        "            </MariloTreeItem>\n" +
+        "        </MariloTreeView>\n" +
+        "    </div>\n" +
+        "</div>";
+
+    private const string _cssDensityCode =
+        "<!-- Override CSS custom properties for custom density -->\n" +
+        "<MariloTreeView style=\"--mar-treeview-item-padding-y: 0px;\n" +
+        "                       --mar-treeview-item-padding-x: 4px;\n" +
+        "                       --mar-treeview-indent: 12px;\n" +
+        "                       --mar-treeview-font-size: 11px;\n" +
+        "                       --mar-treeview-line-height: 14px;\">\n" +
+        "    <MariloTreeItem Title=\"Compact Item\" />\n" +
+        "</MariloTreeView>";
 
     private const string _iconsCode =
         "<MariloTreeView>\n" +
@@ -772,6 +924,44 @@
         "    <MariloTreeItem Title=\"Item B\" Id=\"opt-b\" />\n" +
         "    <MariloTreeItem Title=\"Item C\" Id=\"opt-c\" />\n" +
         "</MariloTreeView>";
+
+    private const string _expandOnDoubleClickCode =
+        "<MariloTreeView ExpandOnDoubleClick=\"true\">\n" +
+        "    <MariloTreeItem Title=\"Projects\">\n" +
+        "        <MariloTreeItem Title=\"Alpha\" />\n" +
+        "        <MariloTreeItem Title=\"Beta\" />\n" +
+        "    </MariloTreeItem>\n" +
+        "    <MariloTreeItem Title=\"Archive\">\n" +
+        "        <MariloTreeItem Title=\"2024\" />\n" +
+        "        <MariloTreeItem Title=\"2025\" />\n" +
+        "    </MariloTreeItem>\n" +
+        "</MariloTreeView>";
+
+    private const string _emptyDataCode =
+        "<MariloTreeView Data=\"@_emptyData\"\n" +
+        "                IdField=\"Id\"\n" +
+        "                ParentIdField=\"ParentId\"\n" +
+        "                TextField=\"Name\" />\n\n" +
+        "@code {\n" +
+        "    List<object> _emptyData = new();\n" +
+        "}";
+
+    private const string _singleRootCode =
+        "<MariloTreeView>\n" +
+        "    <MariloTreeItem Title=\"Only Node\" />\n" +
+        "</MariloTreeView>";
+
+    private const string _selectionCheckboxCode =
+        "<MariloTreeView Data=\"@_data\"\n" +
+        "                IdField=\"Id\"\n" +
+        "                ParentIdField=\"ParentId\"\n" +
+        "                TextField=\"Name\"\n" +
+        "                SelectionMode=\"TreeSelectionMode.Single\"\n" +
+        "                @bind-SelectedItems=\"_selectedIds\"\n" +
+        "                CheckBoxMode=\"CheckBoxMode.Multiple\"\n" +
+        "                @bind-CheckedItems=\"_checkedIds\" />\n" +
+        "<p>Selected: @(string.Join(\", \", _selectedIds ?? []))</p>\n" +
+        "<p>Checked: @(string.Join(\", \", _checkedIds ?? []))</p>";
 
     private static readonly (string Key, string Action)[] _keyboard =
     [

@@ -1451,6 +1451,38 @@ The Marilo icon system has been upgraded from a single custom icon set to a plug
 
 ---
 
+## MariloMap Delivery Assessment (2026-04-12)
+
+**Status:** AMBER — Functional prototype with complete API surface. MapLibre JS integration deferred to dedicated implementation pass.
+
+### What is GREEN (complete and tested)
+
+- **Component model:** `MariloMap`, `MapLayer`, `MapLayers` with CascadingValue + child-registration pattern (same as DataGrid/GridColumn). 26 bUnit tests covering registration, unregistration, idempotency, descriptor mapping, events, defaults, and internal visibility.
+- **Layer types:** All four (`Tile`, `Marker`, `Shape`, `Bubble`) register correctly via `MapLayerType` enum, produce correct `MapLayerDescriptor` records, and support `LayerId`, `Opacity`, `MinZoom`/`MaxZoom`.
+- **Events:** `OnClick`, `OnMarkerClick`, `OnShapeClick`, `OnZoomEnd`, `OnPanEnd` all fire from JSInvokable methods with correct event arg shapes.
+- **Adapter boundary:** `IMapEngineAdapter` (internal) with `MapLibreAdapter` stub. Clean separation for future engine swaps.
+- **Provider SCSS:** `_map.scss` created for both FluentUI and Bootstrap providers with full BEM class coverage (`mar-map`, `__container`, `__controls`, `__control-btn`, `__attribution`, `__marker`, `__marker-icon`, `__marker-tooltip`, `__bubble`, `__shape`, `__loading`, `__placeholder`) including dark mode blocks. Registered in both `_index.scss` entry points.
+- **Demo:** Comprehensive demo page at `/components/map/overview` with 7 demo sections: Basic Tile Layer, Zoom/Pan Controls, Tile+Marker, Shape (GeoJSON), Bubble, All Layers Combined, and Events. Uses proper `@` Razor expressions, real data models, and interactive controls.
+- **Tests:** 26 tests (up from 14), 0 failures. Full suite: 1374 passed, 0 skipped, 0 failed.
+
+### What is AMBER (API surface present, behavior pending)
+
+- **MapLibre JS module:** `marilo-map.js` does not exist yet. `MapLibreAdapter` imports it but initialization will throw `JSException` (caught and swallowed). Tile rendering is non-functional.
+- **Provider-only parameters not in source:** Spec describes `Bounds`, `MapControlsAttribution`/`MapControlsNavigator`/`MapControlsZoom`, `Refresh()`, `Shape` (marker shape), `Extent` (layer), `MaxSize`/`MinSize` (bubble), `Symbol`, `TileSize`, `ZIndex`, and settings sub-components (`MapLayerMarkerSettings`, `MapLayerBubbleSettings`, `MapLayerShapeSettings`). These are in the spec as the target API but not yet implemented in source.
+- **Source-only parameters not in spec:** `StyleUrl`, `Markers` (legacy flat list) exist in source but are not in the spec.
+
+### What is RED (blocked)
+
+- **JS adapter authoring:** Requires writing `marilo-map.js` with MapLibre GL JS initialization, layer management, and event forwarding. Blocked on deciding PMTiles vs. raster tile serving approach for demo.
+- **Local basemap pipeline:** Scripts scaffolded in `tools/map-data/` but tiles not yet generated.
+
+### Build verification
+
+- `dotnet build Marilo.slnx`: **0 errors**, 6 warnings (all pre-existing)
+- `dotnet test tests/Marilo.Tests.Unit/Marilo.Tests.Unit.csproj`: **1374 passed, 0 failed**
+
+---
+
 ## MariloDiagram v1 API Shape Implementation (2026-04-12)
 
 **Status:** v1 API shape IMPLEMENTED. Architecture decisions resolved.

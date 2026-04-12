@@ -1,0 +1,85 @@
+@using Marilo.Core.Enums
+@inherits MariloComponentBase
+
+@* MapLayer is a non-visual registration component — it renders no markup. *@
+
+@code {
+    /// <summary>The type of map layer (Tile, Marker, Shape, Bubble).</summary>
+    [Parameter] public MapLayerType Type { get; set; }
+
+    /// <summary>URL template for tile layers. Supports {s}, {z}, {x}, {y} placeholders.</summary>
+    [Parameter] public string? UrlTemplate { get; set; }
+
+    /// <summary>Subdomain values to substitute for {s} in the URL template.</summary>
+    [Parameter] public string[]? Subdomains { get; set; }
+
+    /// <summary>Attribution text displayed on the map for this layer.</summary>
+    [Parameter] public string? Attribution { get; set; }
+
+    /// <summary>Data source for marker, shape, or bubble layers. For Shape layers, a GeoJSON string.</summary>
+    [Parameter] public object? Data { get; set; }
+
+    /// <summary>Property name on Data items containing the geographic location (for Marker/Bubble layers).</summary>
+    [Parameter] public string? LocationField { get; set; }
+
+    /// <summary>Property name on Data items containing the display title (for Marker layers).</summary>
+    [Parameter] public string? TitleField { get; set; }
+
+    /// <summary>Property name on Data items containing the numeric value (for Bubble layers).</summary>
+    [Parameter] public string? ValueField { get; set; }
+
+    /// <summary>Layer opacity (0.0 to 1.0). Defaults to 1.0.</summary>
+    [Parameter] public double Opacity { get; set; } = 1.0;
+
+    /// <summary>Minimum zoom level at which this layer is visible. Defaults to 0.</summary>
+    [Parameter] public double MinZoom { get; set; } = 0;
+
+    /// <summary>Maximum zoom level at which this layer is visible. Defaults to 22.</summary>
+    [Parameter] public double MaxZoom { get; set; } = 22;
+
+    /// <summary>Unique identifier for this layer. Auto-generated if not set.</summary>
+    [Parameter] public string? LayerId { get; set; }
+
+    [CascadingParameter] internal IMapLayerHost? ParentMap { get; set; }
+
+    internal string EffectiveLayerId => LayerId ?? _autoId;
+    private readonly string _autoId = $"mar-layer-{Guid.NewGuid():N}";
+
+    /// <summary>
+    /// Creates a <see cref="MapLayerDescriptor"/> from the current parameter values.
+    /// </summary>
+    internal MapLayerDescriptor ToDescriptor()
+    {
+        string? geoJsonData = null;
+        if (Type == MapLayerType.Shape && Data is string geoJson)
+        {
+            geoJsonData = geoJson;
+        }
+
+        return new MapLayerDescriptor(
+            Id: EffectiveLayerId,
+            Type: Type,
+            UrlTemplate: UrlTemplate,
+            Subdomains: Subdomains,
+            Attribution: Attribution,
+            GeoJsonData: geoJsonData,
+            LocationField: LocationField,
+            TitleField: TitleField,
+            ValueField: ValueField,
+            Opacity: Opacity,
+            MinZoom: MinZoom,
+            MaxZoom: MaxZoom,
+            Style: null);
+    }
+
+    protected override void OnInitialized()
+    {
+        ParentMap?.RegisterLayer(this);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing) ParentMap?.UnregisterLayer(this);
+        base.Dispose(disposing);
+    }
+}

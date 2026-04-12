@@ -34,12 +34,12 @@ To perform panning, do either of the following:
     <ChartPannable Enabled="true"></ChartPannable>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column"
+        <MariloChartSeries Type="ChartSeriesType.Column"
                      Name="Product 1"
                      Data="@Data"
                      Field="@nameof(ChartSeriesData.ProductSales)"
                      CategoryField="@nameof(ChartSeriesData.Year)">
-        </ChartSeries>
+        </MariloChartSeries>
 
         <ChartCategoryAxes>
             <ChartCategoryAxis Min="1" Max="5"></ChartCategoryAxis>
@@ -112,12 +112,12 @@ Press CTRL + Click and Drag.
     </ChartPannable>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column"
+        <MariloChartSeries Type="ChartSeriesType.Column"
                      Name="Product 1"
                      Data="@Data"
                      Field="@nameof(ChartSeriesData.ProductSales)"
                      CategoryField="@nameof(ChartSeriesData.Year)">
-        </ChartSeries>
+        </MariloChartSeries>
 
         <ChartCategoryAxes>
             <ChartCategoryAxis Min="1" Max="5"></ChartCategoryAxis>

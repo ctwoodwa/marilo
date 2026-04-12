@@ -151,32 +151,34 @@ The tables below list the parameters of [all components, which comprise the Pivo
 
 ### Grid Parameters
 
-The following table lists the `MariloPivotGrid` parameters. Also check the [PivotGrid API Reference](slug:Marilo.Blazor.Components.MariloPivotGrid-1).
+The following table lists the `MariloPivotGrid` parameters.
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |
-| `Class` | `string` | A custom CSS class for the `<div class="k-pivotgrid">` element. Use it to [override theme styles](slug:themes-override). |
-| `ColumnHeadersWidth` | `string` | The width of each column in [any supported CSS unit](slug:common-features/dimensions). |
-| `Data` | `IEnumerable<TItem>` | The Pivot Grid component data. Use only with [`Local` `DataProviderType`](slug:pivotgrid-data-binding#local). |
-| `DataProviderType` | `PivotGridDataProviderType` enum <br /> (`Local`) | The [type of data source that the Pivot Grid will use](slug:pivotgrid-data-binding). |
-| `EnableLoaderContainer` | `bool` (`true`) | Defines if a built-in [LoaderContainer](slug:loadercontainer-overview) will show during long-running operations (over 600ms). |
-| `Height` | `string` | A `height` style in [any supported CSS unit](slug:common-features/dimensions). |
-| `LoadOnDemand` | `bool` <br /> (`true`) | Defines if the PivotGrid will request only the data to display in the current view, or all data. When loading on demand is disabled or when using the `Local` `DataProviderType`, the component performs all calculations in-memory. In such cases, large amounts of data may impact the performance, especially in WebAssembly apps. |
-| `RowHeadersWidth` | `string` | The width of all row headers in [any supported CSS unit](slug:common-features/dimensions). |
-| `TItem` | `object` | The PivotGrid `@typeparam`. Required if the data item type cannot be inferred at compile-time. |
-| `Width` | `string` | A `width` style in [any supported CSS unit](slug:common-features/dimensions). |
+| `AriaLabel` | `string?` (`"Pivot Grid"`) | Accessible label for the pivot grid container element. |
+| `CellTemplate` | `RenderFragment<PivotGridCellContext>?` | Custom template for rendering data cells. The context provides `RowKey`, `ColumnKey`, `Value`, `AggregateFunction`, `MeasureField`, and `FormattedValue`. |
+| `ChildContent` | `RenderFragment?` | Child content that accepts `MariloPivotGridRowField`, `MariloPivotGridColumnField`, and `MariloPivotGridMeasureField` components. |
+| `Class` | `string` | A custom CSS class for the `<div class="mar-pivotgrid">` element. Use it to [override theme styles](slug:themes-override). |
+| `ColumnHeaderTemplate` | `RenderFragment<string>?` | Custom template for rendering column header cells. The context is the column dimension value string. |
+| `Data` | `IEnumerable<object>?` | The Pivot Grid component data. |
+| `Filterable` | `bool` (`false`) | Whether filtering is enabled. |
+| `Height` | `string?` | A `height` style in any supported CSS unit. |
+| `RowHeaderTemplate` | `RenderFragment<string>?` | Custom template for rendering row header cells. The context is the row dimension value string. |
+| `Sortable` | `bool` (`false`) | Whether column and row headers are sorted alphabetically. |
+| `Width` | `string?` | A `width` style in any supported CSS unit. |
 
-### Row, Column and Measure Parameters
+> The `RowFields`, `ColumnFields`, and `MeasureFields` list parameters are obsolete. Use child field components (`MariloPivotGridRowField`, `MariloPivotGridColumnField`, `MariloPivotGridMeasureField`) instead.
 
-The following table lists parameters of the `PivotGridRow`, `PivotGridColumn` and `PivotGridMeasure` tags.
+### Row, Column and Measure Field Parameters
+
+The following table lists parameters of the `MariloPivotGridRowField`, `MariloPivotGridColumnField` and `MariloPivotGridMeasureField` child components.
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |
-| `Aggregate` | `PivotGridAggregateType` enum <br /> (`Sum`) | The nature of the calculated aggregate values. Applies to `PivotGridMeasure` only. |
-| `Format` | `string` | The [display format](https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings) of the calculated aggregate values, for example `"{0:C2}"`. Applies to `PivotGridMeasure` only. |
-| `HeaderClass` | `string` | Adds a custom CSS class to the respective row header, column header or measure. Use it to apply custom styles or [override the default PivotGrid styles](slug:themes-override). |
-| `Name` | `string` | The field name of the respective row, column or measure. |
-| `Title` | `string` | The label to be displayed in the Configurator for the respective row, column or measure. |
+| `AggregateFunction` | `PivotGridAggregateFunction` enum <br /> (`Sum`) | The nature of the calculated aggregate values. Applies to `MariloPivotGridMeasureField` only. Members: `Sum`, `Count`, `Average`, `Min`, `Max`. |
+| `Field` | `string` | The property name on the data item to bind to this field. |
+| `Format` | `string?` | The [display format](https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings) of the calculated aggregate values, for example `"C2"` or `"N1"`. Applies to `MariloPivotGridMeasureField` only. |
+| `Title` | `string?` | Display title for the field header. Falls back to `Field` if not set. |
 
 
 ### Configurator Parameters
@@ -185,8 +187,10 @@ The following table lists parameters of the `MariloPivotGridConfigurator` compon
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `Class` | `string` | A custom CSS class for the `<div class="k-pivotgrid-configurator">` element. Use it to [override theme styles](slug:themes-override). |
-| `EnableLoaderContainer` | `bool` (`true`) | Defines if a built-in [LoaderContainer](slug:loadercontainer-overview) will show during long-running operations (over 600ms). |
+| `Class` | `string` | A custom CSS class for the `<div class="mar-pivotgrid-configurator">` element. Use it to [override theme styles](slug:themes-override). |
+| `RowFields` | `IReadOnlyList<PivotGridField>?` | Row field definitions to display in the configurator. |
+| `ColumnFields` | `IReadOnlyList<PivotGridField>?` | Column field definitions to display in the configurator. |
+| `MeasureFields` | `IReadOnlyList<PivotGridField>?` | Measure field definitions to display in the configurator. |
 
 
 ### Button Parameters
@@ -195,7 +199,10 @@ The following table lists parameters of the `MariloPivotGridConfiguratorButton` 
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `Class` | `string` | A custom CSS class for the `<div class="k-pivotgrid-configurator-button">` element. Use it to [override theme styles](slug:themes-override). |
+| `Class` | `string` | A custom CSS class for the `<button class="mar-pivotgrid-configurator-button">` element. |
+| `ChildContent` | `RenderFragment?` | Custom button content. When null, a default gear icon and "Configure" text are rendered. |
+| `IsOpen` | `bool` | Whether the configurator is currently shown. Supports two-way binding via `IsOpenChanged`. |
+| `IsOpenChanged` | `EventCallback<bool>` | Callback when `IsOpen` changes. |
 
 
 ### Container Parameters
@@ -204,7 +211,11 @@ The following table lists parameters of the `MariloPivotGridContainer` component
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `Class` | `string` | A custom CSS class for the Container `<div>` element. Use it for [custom styling](slug:themes-override). |
+| `Class` | `string` | A custom CSS class for the Container `<div>` element. |
+| `ChildContent` | `RenderFragment?` | Primary content, typically a `MariloPivotGrid`. |
+| `ConfiguratorContent` | `RenderFragment?` | Optional configurator panel content. |
+| `ShowConfigurator` | `bool` | Whether the configurator panel is visible. |
+| `ShowConfiguratorChanged` | `EventCallback<bool>` | Callback when `ShowConfigurator` changes (supports two-way binding). |
 
 
 ## PivotGrid Reference and Methods

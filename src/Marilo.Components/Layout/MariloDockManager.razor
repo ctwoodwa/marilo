@@ -1,21 +1,35 @@
 @inherits MariloComponentBase
 
 <div class="@CombineClasses("mar-dockmanager")"
-     style="@CombineStyles(HeightStyle(), WidthStyle())"
+     style="@CombineStyles(HeightStyle(), WidthStyle(), "position:relative")"
      @attributes="AdditionalAttributes">
 
     <div class="mar-dockmanager__tabs">
-        @foreach (var pane in _panes)
+        @foreach (var pane in _dockedPanes)
         {
-            <div class="mar-dockmanager__tab @(pane.Id == _activeId ? "mar-dockmanager__tab--active" : "")"
-                 @onclick="() => SetActive(pane.Id)">
+            var paneId = pane.Id ?? pane.Title ?? "";
+            var isDragging = _dragSourcePaneId == paneId;
+            var isDropTarget = _dragTargetPaneId == paneId && _dragSourcePaneId != paneId;
+            var tabClass = "mar-dockmanager__tab"
+                + (paneId == _activeId ? " mar-dockmanager__tab--active" : "")
+                + (isDragging ? " mar-dockmanager__tab--dragging" : "")
+                + (isDropTarget ? " mar-dockmanager__tab--drop-target" : "");
+            <div class="@tabClass"
+                 draggable="true"
+                 @onclick="() => SetActive(paneId)"
+                 @ondragstart="() => OnTabDragStart(paneId)"
+                 @ondragover:preventDefault="true"
+                 @ondragover="() => OnTabDragOver(paneId)"
+                 @ondragleave="() => OnTabDragLeave(paneId)"
+                 @ondrop="OnTabDrop"
+                 @ondragend="OnTabDragEnd">
                 <span class="mar-dockmanager__tab-title">@(pane.Title ?? pane.Id)</span>
                 <span class="mar-dockmanager__tab-actions">
-                    <button type="button" class="mar-dockmanager__action" title="Pin" @onclick:stopPropagation="true" @onclick="() => PinPane(pane.Id)">&#128204;</button>
-                    <button type="button" class="mar-dockmanager__action" title="Float" @onclick:stopPropagation="true" @onclick="() => FloatPane(pane.Id)">&#8599;</button>
+                    <button type="button" class="mar-dockmanager__action" title="Pin" @onclick:stopPropagation="true" @onclick="() => PinPane(paneId)">&#128204;</button>
+                    <button type="button" class="mar-dockmanager__action" title="Float" @onclick:stopPropagation="true" @onclick="() => ToggleFloat(paneId)">&#8599;</button>
                     @if (pane.Closable)
                     {
-                        <button type="button" class="mar-dockmanager__action" title="Close" @onclick:stopPropagation="true" @onclick="() => ClosePane(pane.Id)">&times;</button>
+                        <button type="button" class="mar-dockmanager__action" title="Close" @onclick:stopPropagation="true" @onclick="() => ClosePane(paneId)">&times;</button>
                     }
                 </span>
             </div>
@@ -27,6 +41,31 @@
             @ChildContent
         </CascadingValue>
     </div>
+
+    @* ── Floating panes render as overlays ──────────────────────────── *@
+    @foreach (var pane in _floatingPanes)
+    {
+        var paneId = pane.Id ?? pane.Title ?? "";
+        var floatStyle = $"top:{pane.FloatingTop};left:{pane.FloatingLeft};width:{pane.FloatingWidth};height:{pane.FloatingHeight}";
+        <div class="mar-dockmanager__floating-pane" style="@floatStyle">
+            <div class="mar-dockmanager__floating-pane-titlebar">
+                <span class="mar-dockmanager__floating-pane-title">@(pane.Title ?? pane.Id)</span>
+                <span class="mar-dockmanager__floating-pane-actions">
+                    <button type="button"
+                            class="mar-dockmanager__floating-pane-dock"
+                            title="Dock"
+                            @onclick="() => ToggleFloat(paneId)">&#8601;</button>
+                    <button type="button"
+                            class="mar-dockmanager__floating-pane-close"
+                            title="Close"
+                            @onclick="() => CloseFloatingPane(paneId)">&times;</button>
+                </span>
+            </div>
+            <div class="mar-dockmanager__floating-pane-content">
+                @pane.ChildContent
+            </div>
+        </div>
+    }
 </div>
 
 @code {
@@ -45,11 +84,24 @@
     /// <summary>Callback invoked when a pane is pinned.</summary>
     [Parameter] public EventCallback<string> OnPanePin { get; set; }
 
-    /// <summary>Callback invoked when a pane is floated.</summary>
+    /// <summary>Callback invoked when a pane is floated or docked.</summary>
     [Parameter] public EventCallback<string> OnPaneFloat { get; set; }
+
+    /// <summary>
+    /// Callback invoked when a tab is reordered within the tab strip via drag-and-drop.
+    /// </summary>
+    [Parameter] public EventCallback<DockTabReorderEventArgs> OnTabReordered { get; set; }
 
     private readonly List<MariloDockPane> _panes = new();
     private string? _activeId;
+
+    // ── Derived views over _panes ─────────────��──────────────────────
+    private IEnumerable<MariloDockPane> _dockedPanes => _panes.Where(p => !p.IsCurrentlyFloating);
+    private IEnumerable<MariloDockPane> _floatingPanes => _panes.Where(p => p.IsCurrentlyFloating);
+
+    // ── Drag-and-drop state for tab reordering ───────────────────────
+    private string? _dragSourcePaneId;
+    private string? _dragTargetPaneId;
 
     private string HeightStyle() => Height != null ? $"height:{Height}" : "";
     private string WidthStyle() => Width != null ? $"width:{Width}" : "";
@@ -59,7 +111,10 @@
         if (!_panes.Contains(pane))
         {
             _panes.Add(pane);
-            _activeId ??= pane.Id ?? pane.Title ?? _panes.Count.ToString();
+            if (!pane.IsCurrentlyFloating)
+            {
+                _activeId ??= pane.Id ?? pane.Title ?? _panes.Count.ToString();
+            }
             StateHasChanged();
         }
     }
@@ -69,13 +124,15 @@
         _panes.Remove(pane);
         if (_activeId == (pane.Id ?? pane.Title))
         {
-            _activeId = _panes.FirstOrDefault()?.Id ?? _panes.FirstOrDefault()?.Title;
+            _activeId = _dockedPanes.FirstOrDefault()?.Id ?? _dockedPanes.FirstOrDefault()?.Title;
         }
         StateHasChanged();
     }
 
     internal bool IsPaneActive(MariloDockPane pane)
     {
+        // Floating panes are always visible (rendered in overlay), not via tab content
+        if (pane.IsCurrentlyFloating) return false;
         var id = pane.Id ?? pane.Title ?? "";
         return id == _activeId;
     }
@@ -94,8 +151,107 @@
         if (id != null) await OnPanePin.InvokeAsync(id);
     }
 
-    private async Task FloatPane(string? id)
+    /// <summary>
+    /// Toggles a pane between floating and docked states.
+    /// When floating, the pane is removed from the tab strip and rendered as an overlay.
+    /// When docking, it re-enters the tab strip as the active tab.
+    /// </summary>
+    public async Task ToggleFloat(string? id)
     {
-        if (id != null) await OnPaneFloat.InvokeAsync(id);
+        if (id == null) return;
+
+        var pane = _panes.FirstOrDefault(p => (p.Id ?? p.Title) == id);
+        if (pane == null) return;
+
+        pane.IsCurrentlyFloating = !pane.IsCurrentlyFloating;
+
+        if (!pane.IsCurrentlyFloating)
+        {
+            // Re-docking: make it the active tab
+            _activeId = id;
+        }
+        else
+        {
+            // Floating: select next docked pane as active
+            var nextDocked = _dockedPanes.FirstOrDefault();
+            _activeId = nextDocked?.Id ?? nextDocked?.Title;
+        }
+
+        await OnPaneFloat.InvokeAsync(id);
+        StateHasChanged();
+    }
+
+    private async Task CloseFloatingPane(string? id)
+    {
+        var pane = _panes.FirstOrDefault(p => (p.Id ?? p.Title) == id);
+        if (pane != null)
+        {
+            pane.IsCurrentlyFloating = false;
+            UnregisterPane(pane);
+        }
+        if (id != null) await OnPaneClose.InvokeAsync(id);
+    }
+
+    // ── Drag-and-drop tab reordering ──────���──────────────────────────
+
+    private void OnTabDragStart(string paneId)
+    {
+        _dragSourcePaneId = paneId;
+    }
+
+    private void OnTabDragOver(string paneId)
+    {
+        if (_dragSourcePaneId != null && _dragSourcePaneId != paneId)
+        {
+            _dragTargetPaneId = paneId;
+        }
+    }
+
+    private void OnTabDragLeave(string paneId)
+    {
+        if (_dragTargetPaneId == paneId)
+        {
+            _dragTargetPaneId = null;
+        }
+    }
+
+    private async Task OnTabDrop()
+    {
+        if (_dragSourcePaneId == null || _dragTargetPaneId == null)
+        {
+            ResetDragState();
+            return;
+        }
+
+        var sourceIndex = _panes.FindIndex(p => (p.Id ?? p.Title) == _dragSourcePaneId);
+        var targetIndex = _panes.FindIndex(p => (p.Id ?? p.Title) == _dragTargetPaneId);
+        if (sourceIndex >= 0 && targetIndex >= 0 && sourceIndex != targetIndex)
+        {
+            var item = _panes[sourceIndex];
+            _panes.RemoveAt(sourceIndex);
+            _panes.Insert(targetIndex, item);
+
+            await OnTabReordered.InvokeAsync(new DockTabReorderEventArgs
+            {
+                TabGroupId = "root",
+                PaneId = _dragSourcePaneId,
+                OldIndex = sourceIndex,
+                NewIndex = targetIndex
+            });
+        }
+
+        ResetDragState();
+        StateHasChanged();
+    }
+
+    private void OnTabDragEnd()
+    {
+        ResetDragState();
+    }
+
+    private void ResetDragState()
+    {
+        _dragSourcePaneId = null;
+        _dragTargetPaneId = null;
     }
 }

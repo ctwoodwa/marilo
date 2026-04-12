@@ -82,6 +82,19 @@
         </div>
         <p class="demo-info">Resize the container above to see tools overflow into a "More" popup.</p>
     </DemoSection>
+
+    <DemoSection Title="Toolbar Template" Description="Replace the entire toolbar with a custom RenderFragment using ToolbarTemplate.">
+        <MariloEditor @bind-Value="_templateContent"
+                      Height="150px">
+            <ToolbarTemplate>
+                <div class="demo-custom-toolbar" style="display:flex;gap:8px;padding:4px 8px;">
+                    <button type="button" class="mar-btn mar-btn--sm" @onclick='() => InsertViaTemplate("bold")'>Bold</button>
+                    <button type="button" class="mar-btn mar-btn--sm" @onclick='() => InsertViaTemplate("italic")'>Italic</button>
+                    <span style="color:var(--marilo-color-text-secondary);">Custom toolbar via ToolbarTemplate</span>
+                </div>
+            </ToolbarTemplate>
+        </MariloEditor>
+    </DemoSection>
 </PageSection>
 
 <PageSection Title="Content Features">
@@ -115,6 +128,44 @@
                       DebounceDelay="300"
                       Height="150px" />
         <p class="demo-info">Change count: <strong>@_changeCount</strong> | Last command: <strong>@(_lastCommand ?? "(none)")</strong></p>
+    </DemoSection>
+
+    <DemoSection Title="Selection Change" Description="OnSelectionChange fires when the text selection changes inside the editor.">
+        <MariloEditor @bind-Value="_selectionContent"
+                      OnSelectionChange="@OnEditorSelectionChange"
+                      Height="150px" />
+        <p class="demo-info">Selection change count: <strong>@_selectionChangeCount</strong></p>
+    </DemoSection>
+
+    <DemoSection Title="EditModeChanged" Description="EditModeChanged fires when the edit mode changes. ValueChanged fires on every content update.">
+        <div class="demo-controls">
+            <button type="button" class="mar-btn mar-btn--sm" @onclick="() => SwitchEditModeViaRef(EditorEditMode.Edit)">Edit</button>
+            <button type="button" class="mar-btn mar-btn--sm" style="margin-left:8px;" @onclick="() => SwitchEditModeViaRef(EditorEditMode.Source)">Source</button>
+            <button type="button" class="mar-btn mar-btn--sm" style="margin-left:8px;" @onclick="() => SwitchEditModeViaRef(EditorEditMode.Preview)">Preview</button>
+        </div>
+        <MariloEditor @ref="_editModeEventEditor"
+                      Value="@_editModeEventContent"
+                      ValueChanged="@OnExplicitValueChanged"
+                      EditMode="@_currentEditMode"
+                      EditModeChanged="@OnEditModeChanged"
+                      Height="150px" />
+        <p class="demo-info">Current mode: <strong>@_currentEditMode</strong> | Mode change count: <strong>@_modeChangeCount</strong> | Value change count: <strong>@_explicitValueChangeCount</strong></p>
+    </DemoSection>
+
+    <DemoSection Title="Form Validation" Description="ValueExpression enables integration with Blazor EditForm validation.">
+        <EditForm Model="_formModel" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <MariloEditor Value="@_formModel.Content"
+                          ValueChanged="@(v => _formModel.Content = v)"
+                          ValueExpression="() => _formModel.Content"
+                          Height="120px" />
+            <ValidationMessage For="() => _formModel.Content" />
+            <button type="submit" class="mar-btn mar-btn--sm" style="margin-top:8px;">Submit</button>
+        </EditForm>
+        @if (_formSubmitted)
+        {
+            <p class="demo-info" style="color:green;">Form submitted successfully.</p>
+        }
     </DemoSection>
 
     <DemoSection Title="Paste Settings" Description="Configure paste cleanup: strip MS Office classes, remove styles, or strip specific tags.">
@@ -260,6 +311,65 @@
         _lastCommand = command;
     }
 
-    // ── Paste Settings ───────────────────────────────────────────────
+    // ── Selection Change ─────────────────────────────────────────────
+    private string? _selectionContent = "<p>Click and select text to trigger OnSelectionChange.</p>";
+    private int _selectionChangeCount;
+
+    private void OnEditorSelectionChange()
+    {
+        _selectionChangeCount++;
+    }
+
+    // ── EditModeChanged / ValueChanged (explicit) ────────────────────
+    private MariloEditor? _editModeEventEditor;
+    private string? _editModeEventContent = "<p>Switch modes and observe the events.</p>";
+    private EditorEditMode _currentEditMode = EditorEditMode.Edit;
+    private int _modeChangeCount;
+    private int _explicitValueChangeCount;
+
+    private async Task SwitchEditModeViaRef(EditorEditMode mode)
+    {
+        if (_editModeEventEditor != null)
+            await _editModeEventEditor.SetModeAsync(mode);
+        _currentEditMode = mode;
+    }
+
+    private void OnEditModeChanged(EditorEditMode mode)
+    {
+        _currentEditMode = mode;
+        _modeChangeCount++;
+    }
+
+    private void OnExplicitValueChanged(string value)
+    {
+        _editModeEventContent = value;
+        _explicitValueChangeCount++;
+    }
+
+    // ── Form Validation ─────────────────────────────────────────────
+    private EditorFormModel _formModel = new();
+    private bool _formSubmitted;
+
+    private void HandleValidSubmit()
+    {
+        _formSubmitted = true;
+    }
+
+    private class EditorFormModel
+    {
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Content is required.")]
+        [System.ComponentModel.DataAnnotations.MinLength(10, ErrorMessage = "Content must be at least 10 characters.")]
+        public string Content { get; set; } = "";
+    }
+
+    // ── Toolbar Template ────────────────────────────────────────────
+    private string? _templateContent = "<p>Editor with a custom toolbar template.</p>";
+
+    private void InsertViaTemplate(string command)
+    {
+        _templateContent = $"<p>Executed: {command}</p>";
+    }
+
+    // ── Paste Settings ──────────────────────────────────────���────────
     private string? _pasteContent;
 }

@@ -1,101 +1,166 @@
+@using Marilo.Components.DataDisplay.Map
 @inherits MariloComponentBase
 @inject IJSRuntime JS
 @implements IAsyncDisposable
+@implements IMapLayerHost
 
 <div class="@CombineClasses("mar-map")"
      style="@CombineStyles($"width:{Width};height:{Height}")"
      @attributes="AdditionalAttributes">
-    <div id="@_containerId" style="width:100%;height:100%;"></div>
+
+    @* Layer definitions (hidden, registers via CascadingValue) *@
+    <CascadingValue Value="(IMapLayerHost)this" IsFixed="true">
+        @ChildContent
+    </CascadingValue>
+
+    <div @ref="_containerRef" id="@_containerId" style="width:100%;height:100%;"></div>
 </div>
 
 @code {
-    /// <summary>Geographic center point of the map.</summary>
     [Parameter] public MapCenter? Center { get; set; }
-
-    /// <summary>Zoom level (1-20). Defaults to 5.</summary>
     [Parameter] public int Zoom { get; set; } = 5;
-
-    /// <summary>Markers displayed on the map.</summary>
+    [Parameter] public double MinZoom { get; set; } = 1;
+    [Parameter] public double MaxZoom { get; set; } = 18;
+    [Parameter] public string? Width { get; set; } = "100%";
+    [Parameter] public string? Height { get; set; } = "400px";
+    [Parameter] public string? StyleUrl { get; set; }
+    [Parameter] public bool Zoomable { get; set; } = true;
+    [Parameter] public bool Pannable { get; set; } = true;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public EventCallback<MapClickEventArgs> OnClick { get; set; }
+    [Parameter] public EventCallback<MapMarkerClickEventArgs> OnMarkerClick { get; set; }
+    [Parameter] public EventCallback<MapShapeClickEventArgs> OnShapeClick { get; set; }
+    [Parameter] public EventCallback<MapZoomEndEventArgs> OnZoomEnd { get; set; }
+    [Parameter] public EventCallback<MapPanEndEventArgs> OnPanEnd { get; set; }
     [Parameter] public List<MapMarker> Markers { get; set; } = new();
 
-    /// <summary>CSS width of the map container.</summary>
-    [Parameter] public string? Width { get; set; } = "100%";
-
-    /// <summary>CSS height of the map container.</summary>
-    [Parameter] public string? Height { get; set; } = "400px";
-
-    /// <summary>URL to a MapLibre style JSON. When set, the map renders real vector tiles.</summary>
-    [Parameter] public string? StyleUrl { get; set; }
-
-    /// <summary>Callback invoked when a marker is clicked.</summary>
-    [Parameter] public EventCallback<MapMarker> OnMarkerClick { get; set; }
-
-    /// <summary>Whether zooming is enabled.</summary>
-    [Parameter] public bool Zoomable { get; set; } = true;
-
-    /// <summary>Whether panning is enabled.</summary>
-    [Parameter] public bool Pannable { get; set; } = true;
-
     private string _containerId = $"mar-map-{Guid.NewGuid():N}";
-    private IJSObjectReference? _jsModule;
-    private DotNetObjectReference<MariloMap>? _dotNetRef;
-    private bool _initialized;
+    private ElementReference _containerRef;
+    private IMapEngineAdapter? _adapter;
+    private bool _adapterInitialized;
+    private readonly List<MapLayer> _layers = new();
+    private readonly Dictionary<string, MapLayerDescriptor> _previousLayerDescriptors = new();
+
+    void IMapLayerHost.RegisterLayer(MapLayer layer)
+    {
+        if (!_layers.Contains(layer))
+        {
+            _layers.Add(layer);
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    void IMapLayerHost.UnregisterLayer(MapLayer layer)
+    {
+        if (_layers.Remove(layer))
+        {
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    internal IReadOnlyList<MapLayer> RegisteredLayers => _layers;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender && !string.IsNullOrEmpty(StyleUrl))
+        if (firstRender)
         {
-            _dotNetRef = DotNetObjectReference.Create(this);
             try
             {
-                _jsModule = await JS.InvokeAsync<IJSObjectReference>(
-                    "import",
-                    "./_content/Marilo.Components/js/marilo-map.js");
-
-                var markerData = Markers.Select(m => new { title = m.Title ?? "", latitude = m.Latitude, longitude = m.Longitude }).ToArray();
-
-                await _jsModule.InvokeVoidAsync("initMap", _containerId, new
-                {
-                    styleUrl = StyleUrl,
-                    lng = Center?.Longitude ?? 0,
-                    lat = Center?.Latitude ?? 0,
-                    zoom = Zoom,
-                    zoomable = Zoomable,
-                    pannable = Pannable,
-                    markers = markerData
-                }, _dotNetRef);
-
-                _initialized = true;
+                _adapter = new MapLibreAdapter(JS);
+                var initOptions = new MapInitOptions(
+                    CenterLat: Center?.Latitude ?? 0,
+                    CenterLng: Center?.Longitude ?? 0,
+                    Zoom: Zoom,
+                    MinZoom: MinZoom,
+                    MaxZoom: MaxZoom,
+                    Zoomable: Zoomable,
+                    Pannable: Pannable);
+                await _adapter.InitializeAsync(_containerRef, initOptions);
+                _adapterInitialized = true;
+                await SyncLayersToAdapterAsync();
             }
-            catch (JSException)
+            catch (JSException) { }
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (_adapterInitialized) await SyncLayersToAdapterAsync();
+    }
+
+    private async Task SyncLayersToAdapterAsync()
+    {
+        if (_adapter is null) return;
+        var currentDescriptors = new Dictionary<string, MapLayerDescriptor>();
+        foreach (var layer in _layers)
+        {
+            var descriptor = layer.ToDescriptor();
+            currentDescriptors[descriptor.Id] = descriptor;
+        }
+        foreach (var prevId in _previousLayerDescriptors.Keys)
+        {
+            if (!currentDescriptors.ContainsKey(prevId))
             {
-                // Module may not be available in test environments
+                try { await _adapter.RemoveLayerAsync(prevId); } catch (JSException) { }
             }
         }
+        foreach (var (id, descriptor) in currentDescriptors)
+        {
+            if (!_previousLayerDescriptors.TryGetValue(id, out var prev))
+            {
+                try { await _adapter.AddLayerAsync(descriptor); } catch (JSException) { }
+            }
+            else if (!prev.Equals(descriptor))
+            {
+                try { await _adapter.UpdateLayerAsync(descriptor); } catch (JSException) { }
+            }
+        }
+        _previousLayerDescriptors.Clear();
+        foreach (var (id, descriptor) in currentDescriptors)
+            _previousLayerDescriptors[id] = descriptor;
+    }
+
+    [JSInvokable]
+    public async Task OnMapClickFromJs(double latitude, double longitude)
+    {
+        var args = new MapClickEventArgs { Location = new MapLocation { Latitude = latitude, Longitude = longitude } };
+        await OnClick.InvokeAsync(args);
     }
 
     [JSInvokable]
     public async Task OnMarkerClickFromJs(string title, double latitude, double longitude)
     {
-        var marker = Markers.FirstOrDefault(m =>
-            m.Latitude == latitude && m.Longitude == longitude)
-            ?? new MapMarker { Title = title, Latitude = latitude, Longitude = longitude };
+        var args = new MapMarkerClickEventArgs { DataItem = new MapMarker { Title = title, Latitude = latitude, Longitude = longitude } };
+        await OnMarkerClick.InvokeAsync(args);
+    }
 
-        await OnMarkerClick.InvokeAsync(marker);
-        StateHasChanged();
+    [JSInvokable]
+    public async Task OnShapeClickFromJs(string? dataItemJson)
+    {
+        await OnShapeClick.InvokeAsync(new MapShapeClickEventArgs());
+    }
+
+    [JSInvokable]
+    public async Task OnZoomEndFromJs(double zoom, double centerLat, double centerLng)
+    {
+        var args = new MapZoomEndEventArgs { Zoom = zoom, Center = new MapCenter { Latitude = centerLat, Longitude = centerLng } };
+        await OnZoomEnd.InvokeAsync(args);
+    }
+
+    [JSInvokable]
+    public async Task OnPanEndFromJs(double centerLat, double centerLng)
+    {
+        var args = new MapPanEndEventArgs { Center = new MapCenter { Latitude = centerLat, Longitude = centerLng } };
+        await OnPanEnd.InvokeAsync(args);
     }
 
     public async ValueTask DisposeAsync()
     {
-        if (_jsModule != null && _initialized)
+        if (_adapter is not null)
         {
-            try
-            {
-                await _jsModule.InvokeVoidAsync("disposeMap", _containerId);
-                await _jsModule.DisposeAsync();
-            }
-            catch (JSDisconnectedException) { }
+            await _adapter.DisposeAsync();
+            _adapter = null;
         }
-        _dotNetRef?.Dispose();
+        _adapterInitialized = false;
     }
 }

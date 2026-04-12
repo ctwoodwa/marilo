@@ -36,12 +36,12 @@ The `OnAxisLabelClick` event fires when the user clicks a label item on any of t
 
 <MariloChart OnAxisLabelClick="@OnChartAxisLabelClick">
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Line"
+        <MariloChartSeries Type="ChartSeriesType.Line"
                      Data="@Series1Data"
                      Field="@nameof(SalesData.Revenue)"
                      CategoryField="@nameof(SalesData.TimePeriod)"
                      Name="Smartphones">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -113,13 +113,13 @@ The `OnLegendItemClick` event fires when the user clicks on any item in the Char
     <ChartSeriesItems>
         @for (int i = 0; i < ChartData.Count; i++)
         {
-            <ChartSeries Type="ChartSeriesType.Line"
+            <MariloChartSeries Type="ChartSeriesType.Line"
                          Data="@ChartData[i]"
                          Field="@nameof(SalesData.Revenue)"
                          CategoryField="@nameof(SalesData.TimePeriod)"
                          Name="@Products[i]"
                          Visible="@( GetSeriesVisibility(i) )">
-            </ChartSeries>
+            </MariloChartSeries>
         }
     </ChartSeriesItems>
 
@@ -133,7 +133,7 @@ The `OnLegendItemClick` event fires when the user clicks on any item in the Char
 
     <ChartTitle Text="Revenue per Product Line"></ChartTitle>
 
-    <ChartLegend Position="@ChartLegendPosition.Bottom">
+    <ChartLegend Position="@ChartPosition.Bottom">
     </ChartLegend>
 </MariloChart>
 
@@ -239,7 +239,7 @@ The `OnDrilldown` event is triggered when the [drill-down functionality executes
 
 ## OnSeriesClick
 
-The `OnSeriesClick` event fires as a response to the user click on a `<ChartSeries>`.
+The `OnSeriesClick` event fires as a response to the user click on a `<MariloChartSeries>`.
 
 Below you can find:
 
@@ -266,9 +266,9 @@ The event handler receives a `ChartSeriesClickEventArgs` object which provides t
 
 * `Percentage` - applicable to [Donut](slug:components/chart/types/donut), [Pie](slug:components/chart/types/pie) and [Stacked 100%](slug:components/chart/stack#stack-100) Charts - the percentage value of the current data point from the whole.
 
-* `SeriesIndex` - provides the index of the `<ChartSeries>` the data point belongs to.
+* `SeriesIndex` - provides the index of the `<MariloChartSeries>` the data point belongs to.
 
-* `SeriesName` - bound to the Name parameter of the `<ChartSeries>` the data point belongs to.
+* `SeriesName` - bound to the Name parameter of the `<MariloChartSeries>` the data point belongs to.
 
 * `SeriesColor` - shows the RGB color of the Series the data point belongs to.
 
@@ -293,10 +293,10 @@ These examples showcase the different applications of the `OnSeriesClick` event.
     </ChartTooltip>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Bar" Name="Product 1" Data="@series1Data">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Bar" Name="Product 2" Data="@series2Data">
-        </ChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Bar" Name="Product 1" Data="@series1Data">
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Bar" Name="Product 2" Data="@series2Data">
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -305,7 +305,7 @@ These examples showcase the different applications of the `OnSeriesClick` event.
 
     <ChartTitle Text="Quarterly revenue per product"></ChartTitle>
 
-    <ChartLegend Position="ChartLegendPosition.Right">
+    <ChartLegend Position="ChartPosition.Right">
     </ChartLegend>
 </MariloChart>
 
@@ -337,14 +337,14 @@ These examples showcase the different applications of the `OnSeriesClick` event.
 
 <MariloChart OnSeriesClick="@OnSeriesClickHandler">
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Pie" Data="@pieData"
+        <MariloChartSeries Type="ChartSeriesType.Pie" Data="@pieData"
                      Field="@nameof(MyPieChartModel.SegmentValue)" CategoryField="@nameof(MyPieChartModel.SegmentName)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartTitle Text="Revenue per product"></ChartTitle>
 
-    <ChartLegend Position="ChartLegendPosition.Bottom">
+    <ChartLegend Position="ChartPosition.Bottom">
     </ChartLegend>
 </MariloChart>
 
@@ -404,14 +404,14 @@ These examples showcase the different applications of the `OnSeriesClick` event.
 
 <MariloChart OnSeriesClick="@OnSeriesClickHandler">
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Pie" Data="@pieData"
+        <MariloChartSeries Type="ChartSeriesType.Pie" Data="@pieData"
                      Field="@nameof(MyPieChartModel.SegmentValue)" CategoryField="@nameof(MyPieChartModel.SegmentName)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartTitle Text="Revenue per product"></ChartTitle>
 
-    <ChartLegend Position="ChartLegendPosition.Bottom">
+    <ChartLegend Position="ChartPosition.Bottom">
     </ChartLegend>
 </MariloChart>
 

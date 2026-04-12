@@ -17,15 +17,51 @@
     /// <summary>Content rendered inside the pane.</summary>
     [Parameter] public RenderFragment? ChildContent { get; set; }
 
-    /// <summary>Whether the pane can be closed. Defaults to true.</summary>
+    /// <summary>Whether the pane can be closed by the user. Defaults to true.</summary>
     [Parameter] public bool Closable { get; set; } = true;
+
+    /// <summary>Whether the pane starts in floating (overlay) mode. Defaults to false.</summary>
+    [Parameter] public bool IsFloating { get; set; }
+
+    /// <summary>CSS top offset when floating. Defaults to "50px".</summary>
+    [Parameter] public string FloatingTop { get; set; } = "50px";
+
+    /// <summary>CSS left offset when floating. Defaults to "50px".</summary>
+    [Parameter] public string FloatingLeft { get; set; } = "50px";
+
+    /// <summary>CSS width when floating. Defaults to "400px".</summary>
+    [Parameter] public string FloatingWidth { get; set; } = "400px";
+
+    /// <summary>CSS height when floating. Defaults to "300px".</summary>
+    [Parameter] public string FloatingHeight { get; set; } = "300px";
 
     /// <summary>Parent dock manager provided via cascading value.</summary>
     [CascadingParameter] public MariloDockManager? DockManager { get; set; }
 
+    /// <summary>
+    /// Runtime floating state. Initialized from <see cref="IsFloating"/> parameter
+    /// and toggled programmatically by the dock manager.
+    /// </summary>
+    internal bool IsCurrentlyFloating { get; set; }
+
+    private bool _previousIsFloating;
+
     protected override void OnInitialized()
     {
+        IsCurrentlyFloating = IsFloating;
+        _previousIsFloating = IsFloating;
         DockManager?.RegisterPane(this);
+    }
+
+    protected override void OnParametersSet()
+    {
+        // Only sync from parameter when the parameter itself changed
+        // (not when parent re-renders after a programmatic toggle)
+        if (IsFloating != _previousIsFloating)
+        {
+            IsCurrentlyFloating = IsFloating;
+            _previousIsFloating = IsFloating;
+        }
     }
 
     public void Dispose()

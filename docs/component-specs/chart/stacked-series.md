@@ -35,13 +35,13 @@ Basic stacking of series
 
 <MariloChart>
 	<ChartSeriesItems>
-		<ChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@series1Data">
+		<MariloChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@series1Data">
 			<ChartSeriesStack Enabled="true"></ChartSeriesStack>
-		</ChartSeries>
-		<ChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@series2Data">
-		</ChartSeries>
-		<ChartSeries Type="ChartSeriesType.Column" Name="Product 3" Data="@series3Data">
-		</ChartSeries>
+		</MariloChartSeries>
+		<MariloChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@series2Data">
+		</MariloChartSeries>
+		<MariloChartSeries Type="ChartSeriesType.Column" Name="Product 3" Data="@series3Data">
+		</MariloChartSeries>
 	</ChartSeriesItems>
 
 	<ChartCategoryAxes>
@@ -50,7 +50,7 @@ Basic stacking of series
 
 	<ChartTitle Text="Quarterly revenue per product"></ChartTitle>
 
-	<ChartLegend Position="ChartLegendPosition.Right">
+	<ChartLegend Position="ChartPosition.Right">
 	</ChartLegend>
 </MariloChart>
 
@@ -73,15 +73,15 @@ Stack clustering in groups
 
 <MariloChart>
 	<ChartSeriesItems>
-		<ChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@series1Data">
+		<MariloChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@series1Data">
 			<ChartSeriesStack Group="myStack"></ChartSeriesStack>
-		</ChartSeries>
-		<ChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@series2Data">
+		</MariloChartSeries>
+		<MariloChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@series2Data">
 			<ChartSeriesStack Group="myStack"></ChartSeriesStack>
-		</ChartSeries>
-		<ChartSeries Type="ChartSeriesType.Column" Name="Product 3" Data="@series3Data">
+		</MariloChartSeries>
+		<MariloChartSeries Type="ChartSeriesType.Column" Name="Product 3" Data="@series3Data">
 			<ChartSeriesStack Group="mySecondStack"></ChartSeriesStack>
-		</ChartSeries>
+		</MariloChartSeries>
 	</ChartSeriesItems>
 
 	<ChartCategoryAxes>
@@ -90,7 +90,7 @@ Stack clustering in groups
 
 	<ChartTitle Text="Quarterly revenue per product"></ChartTitle>
 
-	<ChartLegend Position="ChartLegendPosition.Right">
+	<ChartLegend Position="ChartPosition.Right">
 	</ChartLegend>
 </MariloChart>
 
@@ -117,15 +117,15 @@ Stack to 100%
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@series1Data">
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@series1Data">
             <ChartSeriesStack Group="myStack" Type="Marilo.Blazor.ChartSeriesStackType.Stack100"></ChartSeriesStack>
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@series2Data">
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@series2Data">
             <ChartSeriesStack Group="myStack"></ChartSeriesStack>
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 3" Data="@series3Data">
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 3" Data="@series3Data">
             <ChartSeriesStack Group="mySecondStack"></ChartSeriesStack>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -134,7 +134,7 @@ Stack to 100%
 
     <ChartTitle Text="Quarterly revenue per product"></ChartTitle>
 
-    <ChartLegend Position="ChartLegendPosition.Right">
+    <ChartLegend Position="ChartPosition.Right">
     </ChartLegend>
 </MariloChart>
 

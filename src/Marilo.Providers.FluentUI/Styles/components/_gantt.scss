@@ -201,6 +201,38 @@
   }
 }
 
+// ── Dependency lines ──────────────────────────────────────────
+.mar-gantt__dependency {
+  stroke: var(--marilo-gantt-dependency-stroke, var(--colorNeutralStroke1, #999));
+  stroke-width: 1.5;
+}
+
+.mar-gantt__dependency-marker path {
+  fill: var(--marilo-gantt-dependency-stroke, var(--colorNeutralStroke1, #999));
+}
+
+// ── Selected bar ──────────────────────────────────────────────
+.mar-gantt__bar--selected {
+  outline: 2px solid var(--marilo-color-primary, #0078d4);
+  outline-offset: 1px;
+  filter: brightness(1.08);
+}
+
+// ── Dark mode ─────────────────────────────────────────────────
+[data-marilo-theme="dark"] {
+  .mar-gantt__dependency {
+    stroke: var(--marilo-gantt-dependency-stroke, var(--colorNeutralStroke1, #8a8886));
+  }
+
+  .mar-gantt__dependency-marker path {
+    fill: var(--marilo-gantt-dependency-stroke, var(--colorNeutralStroke1, #8a8886));
+  }
+
+  .mar-gantt__bar--selected {
+    outline-color: var(--marilo-color-primary, #2b88d8);
+  }
+}
+
 // ── Accessibility: reduced motion ─────────────────────────────
 @media (prefers-reduced-motion: reduce) {
   .mar-gantt,
