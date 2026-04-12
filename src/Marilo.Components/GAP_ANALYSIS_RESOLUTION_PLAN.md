@@ -1429,3 +1429,22 @@ The Marilo icon system has been upgraded from a single custom icon set to a plug
 **Architecture decision document:** `docs/component-specs/map/architecture-decision-tile-engine.md`
 
 **Deferred features:** Clustering, vector tile styles, drawing/editing, 3D terrain, heatmap layer, animated transitions, offline tiles, custom projections.
+
+### Local OSS Basemap Pipeline (2026-04-12)
+
+**Status:** Scaffolded. Scripts and docs in place; tiles not yet generated (requires running `bash tools/map-data/setup.sh`).
+
+**What's in place:**
+- `tools/map-data/` — download + Planetiler tile-generation scripts using Podman.
+- First data region: Washington, D.C. (OSM via Geofabrik, ~30 MB) + Natural Earth (public domain).
+- PMTiles output format, served as static files from `wwwroot/map-data/`.
+- MapLibre style JSON at `wwwroot/map-styles/basemap-local.json`.
+- Attribution docs at `docs/map-data-attribution.md`.
+- Setup guide at `docs/map-local-basemap-setup.md`.
+
+**What's left:**
+- Wire PMTiles protocol adapter into `maplibre-adapter.js` (blocked on JS adapter authoring).
+- Add more OSM regions or allow region selection via script argument.
+- Self-host glyph PBFs for fully offline demos.
+- Globe-friendly raster hillshade source.
+- Marilo-branded style (colors, typography).

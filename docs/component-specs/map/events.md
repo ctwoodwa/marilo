@@ -34,16 +34,16 @@ The `OnClick` event fires when the user clicks or taps on the Map. The `OnClick`
 @* This code snippet showcases an example of how to handle the Map OnClick event. *@
 
 <MariloMap Center="@Center"
-            Zoom="3"
-            OnClick="@OnMapClick">
+           Zoom="3"
+           OnClick="@OnMapClick">
     <MapLayers>
-        <MapLayer Type="@MapLayersType.Tile"
+        <MapLayer Type="@MapLayerType.Tile"
                   Attribution="@Attribution"
                   Subdomains="@Subdomains"
                   UrlTemplate="@UrlTemplate">
         </MapLayer>
 
-        <MapLayer Type="@MapLayersType.Bubble"
+        <MapLayer Type="@MapLayerType.Bubble"
                   Data="@BubbleData"
                   LocationField="@nameof(BubbleModel.LatLng)"
                   ValueField="@nameof(BubbleModel.Revenue)">
@@ -55,7 +55,7 @@ The `OnClick` event fires when the user clicks or taps on the Map. The `OnClick`
             </MapLayerBubbleSettings>
         </MapLayer>
 
-        <MapLayer Type="@MapLayersType.Marker"
+        <MapLayer Type="@MapLayerType.Marker"
                   Data="@MarkerData1"
                   LocationField="@nameof(MarkerModel.LatLng)"
                   TitleField="@nameof(MarkerModel.Title)">
@@ -67,9 +67,9 @@ The `OnClick` event fires when the user clicks or taps on the Map. The `OnClick`
 
 @code {
     private string[] Subdomains { get; set; } = new string[] { "a", "b", "c" };
-    private string UrlTemplate { get; set; } = "https://#= subdomain #.tile.openstreetmap.org/#= zoom #/#= x #/#= y #.png";
-    private string Attribution { get; set; } = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
-    private double[] Center { get; set; } = new double[] { 30.268107, -97.744821 };
+    private const string UrlTemplate = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+    private const string Attribution = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
+    private MapCenter Center { get; set; } = new() { Latitude = 30.268107, Longitude = -97.744821 };
     private string EventResult { get; set; }
 
     private List<MarkerModel> MarkerData1 { get; set; } = new List<MarkerModel>()
@@ -140,16 +140,16 @@ The `OnMarkerClick` event fires when the user clicks or taps a marker. The `OnMa
 @* This code snippet showcases an example of how to handle the Map OnMarkerClick event. *@
 
 <MariloMap Center="@Center"
-            Zoom="3"
-            OnMarkerClick="@OnMarkerClick">
+           Zoom="3"
+           OnMarkerClick="@OnMarkerClick">
     <MapLayers>
-        <MapLayer Type="@MapLayersType.Tile"
+        <MapLayer Type="@MapLayerType.Tile"
                   Attribution="@Attribution"
                   Subdomains="@Subdomains"
                   UrlTemplate="@UrlTemplate">
         </MapLayer>
 
-        <MapLayer Type="@MapLayersType.Bubble"
+        <MapLayer Type="@MapLayerType.Bubble"
                   Data="@BubbleData"
                   LocationField="@nameof(BubbleModel.LatLng)"
                   ValueField="@nameof(BubbleModel.Revenue)">
@@ -161,7 +161,7 @@ The `OnMarkerClick` event fires when the user clicks or taps a marker. The `OnMa
             </MapLayerBubbleSettings>
         </MapLayer>
 
-        <MapLayer Type="@MapLayersType.Marker"
+        <MapLayer Type="@MapLayerType.Marker"
                   Data="@MarkerData1"
                   LocationField="@nameof(MarkerModel.LatLng)"
                   TitleField="@nameof(MarkerModel.Title)">
@@ -173,9 +173,9 @@ The `OnMarkerClick` event fires when the user clicks or taps a marker. The `OnMa
 
 @code {
     private string[] Subdomains { get; set; } = new string[] { "a", "b", "c" };
-    private string UrlTemplate { get; set; } = "https://#= subdomain #.tile.openstreetmap.org/#= zoom #/#= x #/#= y #.png";
-    private string Attribution { get; set; } = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
-    private double[] Center { get; set; } = new double[] { 30.268107, -97.744821 };
+    private const string UrlTemplate = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+    private const string Attribution = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
+    private MapCenter Center { get; set; } = new() { Latitude = 30.268107, Longitude = -97.744821 };
     private string EventResult { get; set; }
 
     private List<MarkerModel> MarkerData1 { get; set; } = new List<MarkerModel>()
@@ -247,16 +247,16 @@ The `OnShapeClick` event fires when the user clicks or taps a shape. The `OnShap
 @* This code snippet showcases an example of how to handle the Map OnShapeClick event. *@
 
 <MariloMap Center="@Center"
-            Zoom="3"
-            OnShapeClick="@OnShapeClick">
+           Zoom="3"
+           OnShapeClick="@OnShapeClick">
     <MapLayers>
-        <MapLayer Type="@MapLayersType.Tile"
+        <MapLayer Type="@MapLayerType.Tile"
                   Attribution="@Attribution"
                   Subdomains="@Subdomains"
                   UrlTemplate="@UrlTemplate">
         </MapLayer>
 
-        <MapLayer Type="@MapLayersType.Bubble"
+        <MapLayer Type="@MapLayerType.Bubble"
                   Data="@BubbleData"
                   LocationField="@nameof(BubbleModel.LatLng)"
                   ValueField="@nameof(BubbleModel.Revenue)">
@@ -268,7 +268,7 @@ The `OnShapeClick` event fires when the user clicks or taps a shape. The `OnShap
             </MapLayerBubbleSettings>
         </MapLayer>
 
-        <MapLayer Type="@MapLayersType.Marker"
+        <MapLayer Type="@MapLayerType.Marker"
                   Data="@MarkerData1"
                   LocationField="@nameof(MarkerModel.LatLng)"
                   TitleField="@nameof(MarkerModel.Title)">
@@ -280,9 +280,9 @@ The `OnShapeClick` event fires when the user clicks or taps a shape. The `OnShap
 
 @code {
     private string[] Subdomains { get; set; } = new string[] { "a", "b", "c" };
-    private string UrlTemplate { get; set; } = "https://#= subdomain #.tile.openstreetmap.org/#= zoom #/#= x #/#= y #.png";
-    private string Attribution { get; set; } = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
-    private double[] Center { get; set; } = new double[] { 30.268107, -97.744821 };
+    private const string UrlTemplate = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+    private const string Attribution = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
+    private MapCenter Center { get; set; } = new() { Latitude = 30.268107, Longitude = -97.744821 };
     private string EventResult { get; set; }
 
     private List<MarkerModel> MarkerData1 { get; set; } = new List<MarkerModel>()
@@ -345,8 +345,8 @@ The `OnZoomEnd` event fires when the user has finished zooming the Map. The `OnZ
 | Property | Type | Description |
 | ---------| ---- | ----------- |
 | `Zoom` | `double` | The new zoom level of the Map. |
-| `Center` | `double[]` | The latitude and longitude of the Map's center. |
-| `Extent` | `double[]` | The NW and SE latitude and longitude of the Map. |
+| `Center` | `MapCenter` | The latitude and longitude of the Map's center. |
+| `Extent` | `MapBounds` | The NW and SE bounds of the Map viewport. |
 
 >caption Handle OnZoomEnd.
 
@@ -354,16 +354,16 @@ The `OnZoomEnd` event fires when the user has finished zooming the Map. The `OnZ
 @* This code snippet showcases an example of how to handle the Map OnZoomEnd event. *@
 
 <MariloMap Center="@Center"
-            Zoom="3" 
-            OnZoomEnd="@OnZoomEnd">
+           Zoom="3" 
+           OnZoomEnd="@OnZoomEnd">
     <MapLayers>
-        <MapLayer Type="@MapLayersType.Tile"
+        <MapLayer Type="@MapLayerType.Tile"
                   Attribution="@Attribution"
                   Subdomains="@Subdomains"
                   UrlTemplate="@UrlTemplate">
         </MapLayer>
 
-        <MapLayer Type="@MapLayersType.Bubble"
+        <MapLayer Type="@MapLayerType.Bubble"
                   Data="@BubbleData"
                   LocationField="@nameof(BubbleModel.LatLng)"
                   ValueField="@nameof(BubbleModel.Revenue)">
@@ -375,7 +375,7 @@ The `OnZoomEnd` event fires when the user has finished zooming the Map. The `OnZ
             </MapLayerBubbleSettings>
         </MapLayer>
 
-        <MapLayer Type="@MapLayersType.Marker"
+        <MapLayer Type="@MapLayerType.Marker"
                   Data="@MarkerData1"
                   LocationField="@nameof(MarkerModel.LatLng)"
                   TitleField="@nameof(MarkerModel.Title)">
@@ -387,9 +387,9 @@ The `OnZoomEnd` event fires when the user has finished zooming the Map. The `OnZ
 
 @code {
     private string[] Subdomains { get; set; } = new string[] { "a", "b", "c" };
-    private string UrlTemplate { get; set; } = "https://#= subdomain #.tile.openstreetmap.org/#= zoom #/#= x #/#= y #.png";
-    private string Attribution { get; set; } = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
-    private double[] Center { get; set; } = new double[] { 30.268107, -97.744821 };
+    private const string UrlTemplate = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+    private const string Attribution = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
+    private MapCenter Center { get; set; } = new() { Latitude = 30.268107, Longitude = -97.744821 };
     private string EventResult { get; set; }
 
     private List<MarkerModel> MarkerData1 { get; set; } = new List<MarkerModel>()
@@ -422,8 +422,8 @@ The `OnZoomEnd` event fires when the user has finished zooming the Map. The `OnZ
         var extent = args.Extent;
 
         LogToConsole(
-            $"zoom end: zoom level = {zoom}, center coordinates = [{center[0]},{center[1]}]," +
-            $"extent = NW - [{extent[0]}, {extent[1]}]; SE - [{extent[2]}, {extent[3]}]");
+            $"zoom end: zoom level = {zoom}, center = [{center.Latitude},{center.Longitude}]," +
+            $"extent = NW - [{extent.SouthWest.Latitude}, {extent.SouthWest.Longitude}]; NE - [{extent.NorthEast.Latitude}, {extent.NorthEast.Longitude}]");
     }
 
     private void LogToConsole(string text)
@@ -452,8 +452,8 @@ The `OnPanEnd` event fires when the user has finished moving (panning) the Map. 
 
 | Property | Type | Description |
 | ---------| ---- | ----------- |
-| `Center` | `double[]` | The latitude and longitude of the Map's center. |
-| `Extent` | `double[]` | The NW and SE latitude and longitude of the Map. |
+| `Center` | `MapCenter` | The latitude and longitude of the Map's center. |
+| `Extent` | `MapBounds` | The NW and SE bounds of the Map viewport. |
 
 >caption Handle the Map OnPanEnd event
 
@@ -461,16 +461,16 @@ The `OnPanEnd` event fires when the user has finished moving (panning) the Map. 
 @* This code snippet showcases an example of how to handle the Map OnPanEnd event. *@
 
 <MariloMap Center="@Center"
-            Zoom="3"
-            OnPanEnd="@OnPanEnd">
+           Zoom="3"
+           OnPanEnd="@OnPanEnd">
     <MapLayers>
-        <MapLayer Type="@MapLayersType.Tile"
+        <MapLayer Type="@MapLayerType.Tile"
                   Attribution="@Attribution"
                   Subdomains="@Subdomains"
                   UrlTemplate="@UrlTemplate">
         </MapLayer>
 
-        <MapLayer Type="@MapLayersType.Bubble"
+        <MapLayer Type="@MapLayerType.Bubble"
                   Data="@BubbleData"
                   LocationField="@nameof(BubbleModel.LatLng)"
                   ValueField="@nameof(BubbleModel.Revenue)">
@@ -482,7 +482,7 @@ The `OnPanEnd` event fires when the user has finished moving (panning) the Map. 
             </MapLayerBubbleSettings>
         </MapLayer>
 
-        <MapLayer Type="@MapLayersType.Marker"
+        <MapLayer Type="@MapLayerType.Marker"
                   Data="@MarkerData1"
                   LocationField="@nameof(MarkerModel.LatLng)"
                   TitleField="@nameof(MarkerModel.Title)">
@@ -494,9 +494,9 @@ The `OnPanEnd` event fires when the user has finished moving (panning) the Map. 
 
 @code {
     private string[] Subdomains { get; set; } = new string[] { "a", "b", "c" };
-    private string UrlTemplate { get; set; } = "https://#= subdomain #.tile.openstreetmap.org/#= zoom #/#= x #/#= y #.png";
-    private string Attribution { get; set; } = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
-    private double[] Center { get; set; } = new double[] { 30.268107, -97.744821 };
+    private const string UrlTemplate = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+    private const string Attribution = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
+    private MapCenter Center { get; set; } = new() { Latitude = 30.268107, Longitude = -97.744821 };
     private string EventResult { get; set; }
 
     private List<MarkerModel> MarkerData1 { get; set; } = new List<MarkerModel>()
@@ -528,8 +528,8 @@ The `OnPanEnd` event fires when the user has finished moving (panning) the Map. 
         var extent = args.Extent;
 
         LogToConsole(
-            $"pan end: center coordinates = [{center[0]},{center[1]}]," +
-            $"extent = NW - [{extent[0]}, {extent[1]}]; SE - [{extent[2]}, {extent[3]}]");
+            $"pan end: center = [{center.Latitude},{center.Longitude}]," +
+            $"extent = SW - [{extent.SouthWest.Latitude}, {extent.SouthWest.Longitude}]; NE - [{extent.NorthEast.Latitude}, {extent.NorthEast.Longitude}]");
     }
 
     private void LogToConsole(string text)

@@ -6,7 +6,10 @@
       "Skill(start-multi-agent-work)",
       "Bash(export PATH=\"$PATH:C:/Users/Chris/AppData/Roaming/Python/Python314/Scripts\")",
       "Bash(semgrep --version)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(ls .claude/orchestration/_orchestrator/results/)",
+      "Bash(ls .claude/orchestration/_orchestrator/inbox/*escalation*)",
+      "Bash(ls .claude/orchestration/_memory/workers/)"
     ],
     "defaultMode": "acceptEdits"
   }

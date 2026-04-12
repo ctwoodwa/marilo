@@ -28,6 +28,7 @@ The following parameters enable you to customize the appearance of the Blazor Ma
 
 | Parameter | Type | Description |
 | --- | --- | --- |
+| `Type` | `MapLayerType` enum | The type of the layer (`Tile`, `Marker`, `Shape`, `Bubble`). |
 | `Attribution` | `string` | The attribution for the layer. |
 | `Data` | `object` | The data for the layer. |
 | `Extent` | `double[]` | Specifies the extent of the region covered by this layer. The layer will be hidden when the specified area is out of view. Accepts a four-element array that specifies the extent covered by this layer: North-West latitude, longitude, South-East latitude, longitude. |
@@ -37,13 +38,12 @@ The following parameters enable you to customize the appearance of the Blazor Ma
 | `MinSize` | `double` | The minimum symbol size for bubble layer symbols. |
 | `MinZoom` | `double` | The minimum zoom level at which to show this layer. |
 | `Opacity` | `double` | The opacity for the layer. |
-| `Shape` | `MapMarkersShape` enum | The marker shape for marker layers. |
+| `Shape` | `MapMarkerShape` enum | The marker shape for marker layers (`Pin`, `PinTarget`). |
 | `Subdomains` | `string[]` | A list of subdomains to use for loading tiles. Using multiple subdomains allows more requests to be executed in parallel. Also see `UrlTemplate`. |
 | `Symbol` | `MapLayersSymbol` enum | The default symbol for bubble layers. |
 | `TileSize` | `double` | The size of the image tile in pixels. |
 | `TitleField` | `string` | The data item field which contains the marker title. |
-| `Type` | `MapLayersType` enum | The type of the layer. |
-| `UrlTemplate` | `string` | The URL template for tile layers. The available variables are: <ul><li>`x`&mdash;the X coordinate of the tile;</li><li>`y`&mdash;the Y coordinate of the tile</li><li>`zoom`&mdash;the zoom level</li><li>`subdomain`&mdash;the subdomain for this tile. Also see `Subdomains`. <br />There are [two possible ways to define the `UrlTemplate`](slug:components/map/overview#content-security-policy). |
+| `UrlTemplate` | `string` | The URL template for tile layers. Uses industry-standard placeholders: `{s}` (subdomain), `{z}` (zoom), `{x}` (tile X), `{y}` (tile Y). Example: `"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"`. See [UrlTemplate Syntax](slug:components/map/overview#urltemplate-syntax). |
 | `ValueField` | `string` | The value field for bubble layer symbols. The data item field should be a number. |
 | `ZIndex` | `double` | The zIndex for this layer. Layers are normally stacked in declaration order (last one is on top). |
 

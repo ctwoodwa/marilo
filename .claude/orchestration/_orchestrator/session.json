@@ -1,27 +1,52 @@
 {
   "schema_version": "1.0",
-  "session_id": "marilo-grid-pipeline-2026-04-11-1200",
+  "session_id": "marilo-delivery-all-16-2026-04-12",
   "status": "active",
-  "shared_goal": "Gap-analysis S05 implementation in progress. Wave 1 complete for all 4 components. Treeview delivery pipeline complete (AMBER).",
-  "started_at": "2026-04-11T12:00:00Z",
-  "last_heartbeat": "2026-04-12T03:15:00Z",
-  "tick_count": 15,
-  "active_workers": [
-    { "worker_id": "w-datagrid-gap-analysis", "status": "review-pending", "icm_stage": "05-implement-W1", "pipeline_state": "W1 done: 78 spec files renamed. Build 0/0." },
-    { "worker_id": "w-datasheet-gap-analysis", "status": "review-pending", "icm_stage": "05-implement-W1", "pipeline_state": "W1 done: 8/8 tasks, 7 new tests (TDD), 80/80 pass." },
-    { "worker_id": "w-gantt-gap-analysis", "status": "review-pending", "icm_stage": "05-implement-W1", "pipeline_state": "W1 done: bar SCSS + 6 tokens + 2 tests, 94/94 pass." },
-    { "worker_id": "w-allocation-scheduler-gap-analysis", "status": "review-pending", "icm_stage": "05-implement-WB", "pipeline_state": "WB done: 5/5 tasks, 2 demos, 12 spec edits. Build 0/0." },
-    { "worker_id": "w-treeview-delivery", "status": "review-pending", "icm_stage": "04-sync-check", "pipeline_state": "COMPLETE (AMBER). 87 gaps: 22 CLEAR, 52 BLOCKED, 13 REMEDIATION-NEEDED." },
-    { "worker_id": "w-scheduler-delivery", "status": "idle-blocked" },
-    { "worker_id": "w-editor-delivery", "status": "idle" }
-  ],
-  "review_queue": ["w-datagrid-gap-analysis", "w-datasheet-gap-analysis", "w-gantt-gap-analysis", "w-allocation-scheduler-gap-analysis", "w-treeview-delivery"],
-  "pipeline_summary": {
-    "implementation_wave_1_complete": true,
-    "code_changes": { "source_files": 4, "scss_files": 5, "spec_files": "78+19", "demo_files": 4, "test_files": 2, "new_tests": 9 },
-    "all_builds_passing": true,
-    "all_tests_passing": true,
-    "treeview_delivery_complete": "AMBER"
+  "shared_goal": "Complete delivery pipeline for all 16 Marilo components. Wave 1 complete: 5 delivery audits done. Architecture decisions surfaced for pivotgrid, dockmanager, diagram.",
+  "started_at": "2026-04-12T16:00:00Z",
+  "last_heartbeat": "2026-04-12T17:00:00Z",
+  "tick_count": 2,
+  "wave": 1,
+  "prior_session": {
+    "session_id": "marilo-grid-pipeline-2026-04-11-1200",
+    "closed_at": "2026-04-12T16:00:00Z",
+    "close_reason": "All 5 pending reviews PASS. Session scope expanded to 16-component delivery.",
+    "final_tick": 15
   },
-  "notes": "TICK 15 MILESTONE: First implementation wave landed. Source changes to DataSheet (tabindex, paste-guard, aria-live, AddRow, undo). SCSS changes to Gantt (bar foundation) + AllocationScheduler (scrollbar a11y). 78 spec files renamed for DataGrid. 2 new demo pages for AllocationScheduler. 9 new bUnit tests. All builds 0/0. All tests passing. Treeview delivery pipeline closed at AMBER. 8 decisions resolved. Loop cancelled."
+  "active_workers": [
+    { "worker_id": "w-treelist-delivery", "status": "complete", "icm_stage": "deliver", "gate": "BLOCKED", "gaps": 23 },
+    { "worker_id": "w-map-delivery", "status": "complete", "icm_stage": "deliver", "gate": "BLOCKED", "gaps": 20 },
+    { "worker_id": "w-pivotgrid-delivery", "status": "complete", "icm_stage": "deliver", "gate": "FAIL", "gaps": 25, "needs_architecture_decision": true },
+    { "worker_id": "w-dockmanager-delivery", "status": "complete", "icm_stage": "deliver", "gate": "FAIL", "gaps": 22, "needs_architecture_decision": true },
+    { "worker_id": "w-diagram-delivery", "status": "complete", "icm_stage": "deliver", "gate": "FAIL", "gaps": 31, "needs_architecture_decision": true }
+  ],
+  "parked_workers": [
+    { "worker_id": "w-datagrid-delivery", "status": "parked", "gate": "complex" },
+    { "worker_id": "w-datasheet-delivery", "status": "parked", "gate": "needs-review" },
+    { "worker_id": "w-gantt-delivery", "status": "parked", "gate": "BLOCKED" },
+    { "worker_id": "w-scheduler-delivery", "status": "parked", "gate": "needs-review" },
+    { "worker_id": "w-allocation-scheduler-delivery", "status": "parked", "gate": "AMBER" },
+    { "worker_id": "w-chart-delivery", "status": "parked", "gate": "AMBER" },
+    { "worker_id": "w-editor-delivery", "status": "parked", "gate": "AMBER" },
+    { "worker_id": "w-treeview-delivery", "status": "parked", "gate": "AMBER" },
+    { "worker_id": "w-filemanager-delivery", "status": "parked", "gate": "AMBER" },
+    { "worker_id": "w-wizard-delivery", "status": "parked", "gate": "GREEN" },
+    { "worker_id": "w-splitter-delivery", "status": "parked", "gate": "GREEN" }
+  ],
+  "review_queue": [],
+  "blocked_queue": [],
+  "architecture_decisions_needed": [
+    { "component": "pivotgrid", "decision": "API shape: child component tags vs flat List<PivotGridField> parameters" },
+    { "component": "dockmanager", "decision": "Scope: full spec-faithful dock manager vs scoped-down simpler model" },
+    { "component": "diagram", "decision": "API paradigm (flat vs declarative), event naming, model types" }
+  ],
+  "pipeline_summary": {
+    "total_components": 16,
+    "green": 2,
+    "amber": 5,
+    "blocked_with_report": 2,
+    "fail_needs_architecture": 3,
+    "complex_from_prior": 4,
+    "all_16_have_delivery_reports": true
+  }
 }

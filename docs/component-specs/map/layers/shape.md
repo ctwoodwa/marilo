@@ -17,7 +17,7 @@ Marilo Map supports all **Geometry** and **Feature Objects**, as well as the **G
 **To configure a Map Layer of type Shape:**
 
 1. Add the `MariloMap` tag.
-2. Set the `Type` parameter of the `MapLayer` to `Shape`.
+2. Set the `Type` parameter of the `MapLayer` to `MapLayerType.Shape`.
 3. Set the `Data` parameter.
 4. Add the `MapLayerShapeSettingsStyle` tag inside `MapLayerShapeSettings`.
 
@@ -29,9 +29,9 @@ The following example demonstrates how to configure the Map Shape Layer.
 @* This code snippet showcases an example of a Shape Layer configuration. *@
 
 <MariloMap Center="@Center"
-            Zoom="3">
+           Zoom="3">
     <MapLayers>
-        <MapLayer Type="@MapLayersType.Shape"
+        <MapLayer Type="@MapLayerType.Shape"
                   Data="@WorldData">
             <MapLayerShapeSettings>
                 <MapLayerShapeSettingsStyle>
@@ -41,7 +41,7 @@ The following example demonstrates how to configure the Map Shape Layer.
             </MapLayerShapeSettings>
         </MapLayer>
 
-        <MapLayer Type="@MapLayersType.Marker"
+        <MapLayer Type="@MapLayerType.Marker"
                   Data="@MarkerData1"
                   LocationField="@nameof(MarkerModel.LatLng)"
                   TitleField="@nameof(MarkerModel.Title)">
@@ -50,7 +50,7 @@ The following example demonstrates how to configure the Map Shape Layer.
 </MariloMap>
 
 @code {
-    private double[] Center { get; set; } = new double[] { 30.268107, -97.744821 };
+    private MapCenter Center { get; set; } = new() { Latitude = 30.268107, Longitude = -97.744821 };
 
     private string WorldData { get; set; }
 

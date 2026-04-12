@@ -96,3 +96,9 @@ coverage/
 !.claude/orchestration/_memory/workers/.gitkeep
 /.claude/orchestration/_handoffs
 .claude/orchestration/_orchestrator/log.jsonl
+
+# Map basemap pipeline — downloaded sources and generated tiles
+tools/map-data/input/
+tools/map-data/output/
+samples/Marilo.Demo/wwwroot/map-data/*.pmtiles
+samples/Marilo.Demo/wwwroot/map-data/*.mbtiles

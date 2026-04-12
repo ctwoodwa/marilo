@@ -12,14 +12,14 @@ components: ["map"]
 
 The tile layer works by rendering images that display the actual map. These images are requested from third-party services that conform to the [Tile Map Service standard](https://en.wikipedia.org/wiki/Tile_Map_Service) and support the [WGS 84 projection standards](https://en.wikipedia.org/wiki/World_Geodetic_System). 
 
-The built-in configuration options of the `MapLayer` allow you to set an URL template via the `UrlTemplate` property that will access the service and provide the needed images.
+The built-in configuration options of the `MapLayer` allow you to set a URL template via the `UrlTemplate` property that will access the service and provide the needed images. The template uses `{s}`, `{z}`, `{x}`, `{y}` placeholders for subdomain, zoom, and tile coordinates respectively.
 
->tip Licenses and Official Author rights to the Tile Layer Images are determined by the used Web Map Service. The **Marilo Map** only provides an UI control that allows you to setup and place a map in an application, built via Blazor techniques. You need to provide proper attribution with the correct copyright notice and, if needed, establish an account with the map owner to ensure unlimited/fast access.
+>tip Licenses and Official Author rights to the Tile Layer Images are determined by the used Web Map Service. The **Marilo Map** only provides a UI control that allows you to setup and place a map in an application, built via Blazor techniques. You need to provide proper attribution with the correct copyright notice and, if needed, establish an account with the map owner to ensure unlimited/fast access.
 
 **To configure a Map Layer of type Tile:**
 
 1. Add the `MariloMap` tag.
-2. Set the `Type` parameter of the `MapLayer` to `Tile`.
+2. Set the `Type` parameter of the `MapLayer` to `MapLayerType.Tile`.
 3. Set the `Attribution` and `Subdomains` parameters.
 4. Provide the `UrlTemplate` property.
 
@@ -29,9 +29,9 @@ The following example demonstrates how to configure the Map Tile Layer.
 
 ````RAZOR
 <MariloMap Center="@MapCenter"
-            Zoom="3">
+           Zoom="3">
     <MapLayers>
-        <MapLayer Type="@MapLayersType.Tile"
+        <MapLayer Type="@MapLayerType.Tile"
                   Attribution="@LayerAttribution"
                   Subdomains="@LayerSubdomains"
                   UrlTemplate="@LayerUrlTemplate">
@@ -40,12 +40,10 @@ The following example demonstrates how to configure the Map Tile Layer.
 </MariloMap>
 
 @code {
-    private double[] MapCenter { get; set; } = new double[] { 30.268107, -97.744821 };
+    private MapCenter MapCenter { get; set; } = new() { Latitude = 30.268107, Longitude = -97.744821 };
 
-    public readonly string[] LayerSubdomains = new string[] { "a", "b", "c" };
-    public const string LayerUrlTemplate = "https://#= subdomain #.tile.openstreetmap.org/#= zoom #/#= x #/#= y #.png";
-    public const string LayerAttribution = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
-
+    private readonly string[] LayerSubdomains = new string[] { "a", "b", "c" };
+    private const string LayerUrlTemplate = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+    private const string LayerAttribution = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
 }
 ````
-
