@@ -18,111 +18,141 @@
             </marker>
         </defs>
 
-        @foreach (var edge in Edges)
+        @* ── Connections ────────────────────────────────────────── *@
+        @if (Connections != null && Shapes != null)
         {
-            var fromNode = Nodes.FirstOrDefault(n => n.Id == edge.FromId);
-            var toNode = Nodes.FirstOrDefault(n => n.Id == edge.ToId);
-            if (fromNode != null && toNode != null)
+            @foreach (var conn in Connections)
             {
-                var x1 = fromNode.X + fromNode.Width / 2;
-                var y1 = fromNode.Y + fromNode.Height / 2;
-                var x2 = toNode.X + toNode.Width / 2;
-                var y2 = toNode.Y + toNode.Height / 2;
-
-                <line x1="@x1" y1="@y1" x2="@x2" y2="@y2"
-                      stroke="#666" stroke-width="2"
-                      marker-end="url(#mar-diagram-arrow)"
-                      style="cursor:pointer"
-                      @onclick="() => HandleEdgeClick(edge)" />
-
-                @if (!string.IsNullOrEmpty(edge.Text))
+                var fromShape = Shapes.FirstOrDefault(s => s.Id == conn.FromShapeId);
+                var toShape = Shapes.FirstOrDefault(s => s.Id == conn.ToShapeId);
+                if (fromShape != null && toShape != null)
                 {
-                    <g>
-                        <text x="@((x1 + x2) / 2)" y="@((y1 + y2) / 2 - 8)"
-                              text-anchor="middle"
-                              fill="#666" font-size="12">@edge.Text</text>
-                    </g>
+                    var x1 = fromShape.X + fromShape.Width / 2;
+                    var y1 = fromShape.Y + fromShape.Height / 2;
+                    var x2 = toShape.X + toShape.Width / 2;
+                    var y2 = toShape.Y + toShape.Height / 2;
+
+                    <line class="@ConnectionCssClass(conn)"
+                          x1="@x1" y1="@y1" x2="@x2" y2="@y2"
+                          stroke="#666" stroke-width="2"
+                          marker-end="url(#mar-diagram-arrow)"
+                          style="cursor:pointer" />
+
+                    @if (!string.IsNullOrEmpty(conn.Text))
+                    {
+                        <g>
+                            <text x="@((x1 + x2) / 2)" y="@((y1 + y2) / 2 - 8)"
+                                  text-anchor="middle"
+                                  fill="#666" font-size="12"
+                                  class="mar-diagram__connection-label">@conn.Text</text>
+                        </g>
+                    }
                 }
             }
         }
 
-        @foreach (var node in Nodes)
+        @* ── Shapes ─────────────────────────────────────────────── *@
+        @if (Shapes != null)
         {
-            @if (node.Shape == "ellipse")
+            @foreach (var shape in Shapes)
             {
-                <ellipse cx="@(node.X + node.Width / 2)" cy="@(node.Y + node.Height / 2)"
-                         rx="@(node.Width / 2)" ry="@(node.Height / 2)"
-                         fill="#e3f2fd" stroke="#1976d2" stroke-width="2"
-                         style="cursor:pointer"
-                         @onclick="() => HandleNodeClick(node)" />
-            }
-            else
-            {
-                <rect x="@node.X" y="@node.Y"
-                      width="@node.Width" height="@node.Height"
-                      rx="4" ry="4"
-                      fill="#e3f2fd" stroke="#1976d2" stroke-width="2"
-                      style="cursor:pointer"
-                      @onclick="() => HandleNodeClick(node)" />
-            }
+                var cx = shape.X + shape.Width / 2;
+                var cy = shape.Y + shape.Height / 2;
 
-            @if (NodeTemplate != null)
-            {
-                <foreignObject x="@node.X" y="@node.Y"
-                               width="@node.Width" height="@node.Height">
-                    <div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%">
-                        @NodeTemplate(node)
-                    </div>
-                </foreignObject>
-            }
-            else if (!string.IsNullOrEmpty(node.Text))
-            {
-                <g>
-                    <text x="@(node.X + node.Width / 2)" y="@(node.Y + node.Height / 2 + 5)"
-                          text-anchor="middle"
-                          fill="#333" font-size="14"
-                          style="pointer-events:none">@node.Text</text>
-                </g>
+                @switch (shape.Type)
+                {
+                    case DiagramShapeType.Ellipse:
+                        <ellipse class="@ShapeCssClass(shape)"
+                                 cx="@cx" cy="@cy"
+                                 rx="@(shape.Width / 2)" ry="@(shape.Height / 2)"
+                                 fill="#e3f2fd" stroke="#1976d2" stroke-width="2"
+                                 style="cursor:pointer"
+                                 @onclick="() => HandleShapeClick(shape)" />
+                        break;
+
+                    case DiagramShapeType.Circle:
+                        var r = Math.Min(shape.Width, shape.Height) / 2;
+                        <circle class="@ShapeCssClass(shape)"
+                                cx="@cx" cy="@cy" r="@r"
+                                fill="#e3f2fd" stroke="#1976d2" stroke-width="2"
+                                style="cursor:pointer"
+                                @onclick="() => HandleShapeClick(shape)" />
+                        break;
+
+                    case DiagramShapeType.Diamond:
+                        var dPoints = $"{cx},{shape.Y} {shape.X + shape.Width},{cy} {cx},{shape.Y + shape.Height} {shape.X},{cy}";
+                        <polygon class="@ShapeCssClass(shape)"
+                                 points="@dPoints"
+                                 fill="#e3f2fd" stroke="#1976d2" stroke-width="2"
+                                 style="cursor:pointer"
+                                 @onclick="() => HandleShapeClick(shape)" />
+                        break;
+
+                    case DiagramShapeType.Triangle:
+                        var tPoints = $"{cx},{shape.Y} {shape.X + shape.Width},{shape.Y + shape.Height} {shape.X},{shape.Y + shape.Height}";
+                        <polygon class="@ShapeCssClass(shape)"
+                                 points="@tPoints"
+                                 fill="#e3f2fd" stroke="#1976d2" stroke-width="2"
+                                 style="cursor:pointer"
+                                 @onclick="() => HandleShapeClick(shape)" />
+                        break;
+
+                    default: @* Rectangle *@
+                        <rect class="@ShapeCssClass(shape)"
+                              x="@shape.X" y="@shape.Y"
+                              width="@shape.Width" height="@shape.Height"
+                              rx="4" ry="4"
+                              fill="#e3f2fd" stroke="#1976d2" stroke-width="2"
+                              style="cursor:pointer"
+                              @onclick="() => HandleShapeClick(shape)" />
+                        break;
+                }
+
+                @if (!string.IsNullOrEmpty(shape.Text))
+                {
+                    <g>
+                        <text x="@cx" y="@(cy + 5)"
+                              text-anchor="middle"
+                              fill="#333" font-size="14"
+                              class="mar-diagram__shape-label"
+                              style="pointer-events:none">@shape.Text</text>
+                    </g>
+                }
             }
         }
     </svg>
 </div>
 
 @code {
-    /// <summary>Nodes displayed in the diagram.</summary>
-    [Parameter] public List<DiagramNode> Nodes { get; set; } = new();
+    /// <summary>Shapes displayed in the diagram.</summary>
+    [Parameter] public IReadOnlyList<DiagramShapeDescriptor>? Shapes { get; set; }
 
-    /// <summary>Edges connecting nodes.</summary>
-    [Parameter] public List<DiagramEdge> Edges { get; set; } = new();
+    /// <summary>Connections between shapes.</summary>
+    [Parameter] public IReadOnlyList<DiagramConnectionDescriptor>? Connections { get; set; }
 
-    /// <summary>CSS width of the diagram canvas.</summary>
+    /// <summary>CSS width of the diagram container.</summary>
     [Parameter] public string? Width { get; set; } = "100%";
 
-    /// <summary>CSS height of the diagram canvas.</summary>
+    /// <summary>CSS height of the diagram container.</summary>
     [Parameter] public string? Height { get; set; } = "500px";
 
-    /// <summary>Whether zooming is enabled.</summary>
-    [Parameter] public bool Zoomable { get; set; }
+    /// <summary>Callback invoked when a shape is clicked.</summary>
+    [Parameter] public EventCallback<DiagramShapeClickEventArgs> OnShapeClick { get; set; }
 
-    /// <summary>Whether panning is enabled.</summary>
-    [Parameter] public bool Pannable { get; set; }
-
-    /// <summary>Callback invoked when a node is clicked.</summary>
-    [Parameter] public EventCallback<DiagramNode> OnNodeClick { get; set; }
-
-    /// <summary>Callback invoked when an edge is clicked.</summary>
-    [Parameter] public EventCallback<DiagramEdge> OnEdgeClick { get; set; }
-
-    /// <summary>Custom template for rendering node content.</summary>
-    [Parameter] public RenderFragment<DiagramNode>? NodeTemplate { get; set; }
-
-    private async Task HandleNodeClick(DiagramNode node)
+    private async Task HandleShapeClick(DiagramShapeDescriptor shape)
     {
-        await OnNodeClick.InvokeAsync(node);
+        await OnShapeClick.InvokeAsync(new DiagramShapeClickEventArgs { Shape = shape });
     }
 
-    private async Task HandleEdgeClick(DiagramEdge edge)
+    private static string ShapeCssClass(DiagramShapeDescriptor shape)
     {
-        await OnEdgeClick.InvokeAsync(edge);
+        var baseClass = "mar-diagram__shape";
+        return string.IsNullOrEmpty(shape.CssClass) ? baseClass : $"{baseClass} {shape.CssClass}";
+    }
+
+    private static string ConnectionCssClass(DiagramConnectionDescriptor conn)
+    {
+        var baseClass = "mar-diagram__connection";
+        return string.IsNullOrEmpty(conn.CssClass) ? baseClass : $"{baseClass} {conn.CssClass}";
     }
 }

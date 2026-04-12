@@ -18,7 +18,7 @@
     { "worker_id": "w-map-delivery", "status": "complete", "icm_stage": "deliver", "gate": "BLOCKED", "gaps": 20 },
     { "worker_id": "w-pivotgrid-delivery", "status": "complete", "icm_stage": "deliver", "gate": "FAIL", "gaps": 25, "needs_architecture_decision": true },
     { "worker_id": "w-dockmanager-delivery", "status": "complete", "icm_stage": "deliver", "gate": "FAIL", "gaps": 22, "needs_architecture_decision": true },
-    { "worker_id": "w-diagram-delivery", "status": "complete", "icm_stage": "deliver", "gate": "FAIL", "gaps": 31, "needs_architecture_decision": true }
+    { "worker_id": "w-diagram-delivery", "status": "complete", "icm_stage": "deliver", "gate": "AMBER", "gaps": 31, "v1_api_implemented": true, "architecture_resolved": true }
   ],
   "parked_workers": [
     { "worker_id": "w-datagrid-delivery", "status": "parked", "gate": "complex" },
@@ -38,7 +38,7 @@
   "architecture_decisions_needed": [
     { "component": "pivotgrid", "decision": "API shape: child component tags vs flat List<PivotGridField> parameters" },
     { "component": "dockmanager", "decision": "Scope: full spec-faithful dock manager vs scoped-down simpler model" },
-    { "component": "diagram", "decision": "API paradigm (flat vs declarative), event naming, model types" }
+    { "component": "diagram", "decision": "RESOLVED: flat lists, OnShapeClick, DiagramShapeDescriptor. v1 implemented." }
   ],
   "pipeline_summary": {
     "total_components": 16,

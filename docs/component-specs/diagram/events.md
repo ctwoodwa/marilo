@@ -10,111 +10,56 @@ components: ["diagram"]
 ---
 # Blazor Diagram Events
 
-The Marilo [Blazor Diagram](slug:diagram-overview) fires events that are related to different user actions. This article describes all these events and their event arguments:
-
-* [`OnConnectionClick`](#onconnectionclick)
-* [`OnShapeClick`](#onshapeclick)
-
-## OnConnectionClick
-
-The `OnConnectionClick` event fires when the user clicks on a connection, including the connection ends that rest on the shape boundaries. The event argument is of type [`DiagramConnectionClickEventArgs`](slug:Marilo.Blazor.Components.DiagramConnectionClickEventArgs) and it provides information about the linked shapes (if they exist) or about the connection coordinates (if set).
-
->caption Using the Diagram OnConnectionClick event
-
-````RAZOR.skip-repl
-<MariloDiagram OnConnectionClick="@OnDiagramConnectionClick" />
-
-@code {
-    private void OnDiagramConnectionClick(DiagramConnectionClickEventArgs args)
-    {
-
-    }
-}
-````
-
-Also see the [example](#example) below.
+The MariloDiagram fires events when the user interacts with shapes.
 
 ## OnShapeClick
 
-The `OnShapeClick` event fires when the user clicks on a shape. The event argument is of type [`DiagramShapeClickEventArgs`](slug:Marilo.Blazor.Components.DiagramShapeClickEventArgs) and provides the shape `Id`.
+The `OnShapeClick` event fires when the user clicks on a shape. The event argument is of type `DiagramShapeClickEventArgs` and provides the full `DiagramShapeDescriptor` of the clicked shape via the `Shape` property.
 
 >caption Using the Diagram OnShapeClick event
 
-````RAZOR.skip-repl
-<MariloDiagram OnShapeClick="@OnDiagramShapeClick" />
-
-@code {
-    private void OnDiagramShapeClick(DiagramShapeClickEventArgs args)
-    {
-
-    }
-}
-````
-
-Use the [Diagram JSON state](slug:diagram-overview#define-shapes-and-connections-in-json) if you need to [change the Diagram configuration](slug:diagram-kb-change-shape-color-onshapeclick) while persisting other user changes that are not part of the component declaration.
-
-## Example
-
-The following example demonstrates all Diagram events in action.
-
->caption Using Diagram events
-
 ````RAZOR
-<MariloDiagram Height="360px"
-                OnConnectionClick="@OnDiagramConnectionClick"
-                OnShapeClick="@OnDiagramShapeClick">
-    <DiagramLayout Type="@DiagramLayoutType.Tree" />
-
-    <DiagramShapes>
-        <DiagramShape Id="shape1">
-            <DiagramShapeContent Text="Shape 1">
-            </DiagramShapeContent>
-        </DiagramShape>
-        <DiagramShape Id="shape2">
-            <DiagramShapeContent Text="Shape 2">
-            </DiagramShapeContent>
-        </DiagramShape>
-        <DiagramShape Id="shape3">
-            <DiagramShapeContent Text="Shape 3">
-            </DiagramShapeContent>
-        </DiagramShape>
-    </DiagramShapes>
-
-    <DiagramConnections>
-        <DiagramConnection FromId="shape1" ToId="shape2" />
-        <DiagramConnection FromId="shape1" ToId="shape3" />
-        <DiagramConnection>
-            <DiagramConnectionFrom X="300" Y="20" />
-            <DiagramConnectionTo X="400" Y="200" />
-        </DiagramConnection>
-    </DiagramConnections>
-</MariloDiagram>
+<MariloDiagram Shapes="_shapes"
+               OnShapeClick="@OnDiagramShapeClick"
+               Height="300px" />
 
 @DiagramEventLog
 
 @code {
     private string DiagramEventLog { get; set; } = string.Empty;
 
-    private void OnDiagramConnectionClick(DiagramConnectionClickEventArgs args)
-    {
-        if (args.FromX != null)
-        {
-            DiagramEventLog = $"Clicked on the connection between coordinates ({args.FromX}, {args.FromY}) and ({args.ToX}, {args.ToY}).";
-        }
-        else
-        {
-            DiagramEventLog = $"Clicked on the connection between shapes '{args.FromId}' and '{args.ToId}'.";
-        }
-    }
-
     private void OnDiagramShapeClick(DiagramShapeClickEventArgs args)
     {
-        DiagramEventLog = $"Clicked on shape '{args.Id}'.";
+        DiagramEventLog = $"Clicked shape '{args.Shape.Text}' (ID: {args.Shape.Id}, Type: {args.Shape.Type}).";
     }
+
+    private List<DiagramShapeDescriptor> _shapes = new()
+    {
+        new() { Id = "s1", Text = "Shape 1", Type = DiagramShapeType.Rectangle, X = 50, Y = 80, Width = 100, Height = 50 },
+        new() { Id = "s2", Text = "Shape 2", Type = DiagramShapeType.Ellipse, X = 220, Y = 80, Width = 120, Height = 60 },
+        new() { Id = "s3", Text = "Shape 3", Type = DiagramShapeType.Diamond, X = 410, Y = 70, Width = 100, Height = 70 },
+    };
 }
 ````
 
+## DiagramShapeClickEventArgs
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `Shape` | `DiagramShapeDescriptor` | The descriptor of the shape that was clicked |
+
+## Deferred Events
+
+The following events are deferred to future versions:
+
+* `OnConnectionClick` with `DiagramConnectionClickEventArgs`
+* `OnShapeDoubleClick`
+* `OnShapeDragStart` / `OnShapeDragEnd`
+* `OnConnectionCreate`
+* `OnSelectionChanged`
+
 ## See Also
 
-* [Live Demos: Diagram](https://demos.marilo.com/blazor-ui/diagram/overview)
-* [Diagram API Reference](slug:Marilo.Blazor.Components.MariloDiagram)
+* [Diagram Overview](slug:diagram-overview)
+* [Diagram Shapes](slug:diagram-shapes)
+* [Diagram Connections](slug:diagram-connections)

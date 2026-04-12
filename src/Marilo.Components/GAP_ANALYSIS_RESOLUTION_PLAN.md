@@ -1448,3 +1448,31 @@ The Marilo icon system has been upgraded from a single custom icon set to a plug
 - Self-host glyph PBFs for fully offline demos.
 - Globe-friendly raster hillshade source.
 - Marilo-branded style (colors, typography).
+
+---
+
+## MariloDiagram v1 API Shape Implementation (2026-04-12)
+
+**Status:** v1 API shape IMPLEMENTED. Architecture decisions resolved.
+
+**Architecture decisions (final):**
+- **Data shape:** Flat list parameters (`IReadOnlyList<DiagramShapeDescriptor>`, `IReadOnlyList<DiagramConnectionDescriptor>`), NOT declarative child tags.
+- **Event naming:** `OnShapeClick` with `DiagramShapeClickEventArgs` (carries full `DiagramShapeDescriptor`), NOT `OnNodeClick`.
+- **Model naming:** `DiagramShapeDescriptor` as the public-facing type, NOT `DiagramNode`. Legacy `DiagramNode` and `DiagramEdge` retained as `[Obsolete]` aliases for compilation compatibility.
+
+**What was implemented:**
+- `DiagramShapeDescriptor`, `DiagramConnectionDescriptor`, `DiagramShapeClickEventArgs`, `DiagramShapeType` enum in `src/Marilo.Core/Models/DiagramModels.cs`.
+- `MariloDiagram.razor` refactored: `Shapes` (`IReadOnlyList<DiagramShapeDescriptor>?`), `Connections` (`IReadOnlyList<DiagramConnectionDescriptor>?`), `OnShapeClick` (`EventCallback<DiagramShapeClickEventArgs>`). SVG rendering maps all five shape types (Rectangle, Ellipse, Diamond, Triangle, Circle). Graceful empty/null handling.
+- 13 bUnit tests in `tests/Marilo.Tests.Unit/DataDisplay/MariloDiagramTests.cs`: null/empty state, shape type rendering, connection rendering, event args, CssClass passthrough.
+- Demo page updated with flat descriptor API, shape type showcase, and interactive add/remove controls.
+- Specs updated: `overview.md`, `shapes.md`, `connections.md`, `events.md` all reflect the v1 API.
+
+**Deferred items:**
+- Declarative child tags (`<DiagramShape>`, `<DiagramConnection>`)
+- Layout engines (tree, force-directed, layered)
+- Drag-and-drop, zoom, pan, selection
+- Ports / connectors, connection routing
+- Shape templates (`RenderFragment`)
+- JSON import/export
+- `OnConnectionClick` event
+- Connection/shape stroke/fill configuration via descriptor properties

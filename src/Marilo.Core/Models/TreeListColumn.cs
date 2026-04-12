@@ -3,6 +3,7 @@ namespace Marilo.Core.Models;
 /// <summary>
 /// Defines a column in a MariloTreeList.
 /// </summary>
+[Obsolete("Use MariloTreeListColumn child components instead. This POCO-based column API will be removed in a future release.")]
 public class TreeListColumn
 {
     /// <summary>Column header title.</summary>

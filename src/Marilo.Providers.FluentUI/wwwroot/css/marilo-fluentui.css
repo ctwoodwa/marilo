@@ -538,10 +538,18 @@
   border-right: none;
   background: var(--marilo-color-surface, #ffffff);
   z-index: 2;
-  scrollbar-width: none;
+  scrollbar-width: thin;
+  scrollbar-color: var(--marilo-color-border, #d1d1d1) transparent;
 }
 .mar-allocation-scheduler__resource-panel::-webkit-scrollbar {
-  display: none;
+  width: 6px;
+}
+.mar-allocation-scheduler__resource-panel::-webkit-scrollbar-thumb {
+  background: var(--marilo-color-border, #d1d1d1);
+  border-radius: 3px;
+}
+.mar-allocation-scheduler__resource-panel::-webkit-scrollbar-track {
+  background: transparent;
 }
 .mar-allocation-scheduler__splitter {
   flex: 0 0 var(--allocation-scheduler-splitter-width, 8px);
@@ -2381,6 +2389,29 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
+}
+
+.mar-gantt__bar {
+  position: relative;
+  height: var(--marilo-gantt-bar-height, 24px);
+  background: var(--marilo-gantt-bar-bg, var(--colorBrandBackground, #0078d4));
+  border-radius: var(--marilo-gantt-bar-radius, 4px);
+  color: var(--marilo-gantt-bar-color, var(--colorNeutralForegroundOnBrand, #ffffff));
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  font-size: var(--marilo-gantt-bar-font-size, 12px);
+  line-height: 1;
+  box-sizing: border-box;
+  transition: filter 0.15s ease;
+}
+
+.mar-gantt__bar-row {
+  position: relative;
+  height: var(--marilo-gantt-row-height, 36px);
+  display: flex;
+  align-items: center;
 }
 
 .mar-gantt__milestone {
