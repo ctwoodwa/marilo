@@ -136,7 +136,7 @@ Validate="@(row => row.EndDate < row.StartDate
     : null)"
 ```
 
-If the delegate returns an error, the cell is marked `CellState.Invalid` with the returned message. The required check and the custom validate delegate are independent — both can produce errors, but only one error message is displayed (the required error takes priority if both fail).
+If the delegate returns an error, the cell is marked `CellState.Invalid` with the returned message. The required check is evaluated first; if it fails, the custom validate delegate is not invoked. Only one error message is produced.
 
 ## Pre-Save Validation (OnValidate)
 
@@ -190,7 +190,7 @@ When a cell is in `CellState.Invalid`:
 * The cell has `aria-invalid="true"` for screen readers.
 * The error message is also available in `DataSheetCellContext.ValidationError` for use in custom `CellTemplate` rendering.
 
-The Save All button (or Ctrl+S) is disabled as long as any cell in the sheet is in `CellState.Invalid`. The dirty count indicator in the save footer shows the number of dirty rows, but does not include invalid-only rows in the count.
+The Save All button (or Ctrl+S) is disabled as long as any cell in the sheet is in `CellState.Invalid`. The dirty count indicator in the save footer shows the number of dirty rows. The dirty count includes all rows with uncommitted changes, including those that are both dirty and invalid.
 
 ## Editing Lifecycle Sequence
 

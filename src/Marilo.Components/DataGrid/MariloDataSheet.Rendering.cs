@@ -50,7 +50,7 @@ public partial class MariloDataSheet<TItem>
             builder.OpenElement(10, "td");
             builder.AddAttribute(11, "role", "gridcell");
             builder.AddAttribute(12, "aria-colindex", nextAriaColIndex++);
-            builder.AddAttribute(13, "class", "mar-datasheet__select-cell");
+            builder.AddAttribute(13, "class", CssProvider.DataSheetSelectCellClass());
             builder.OpenElement(14, "input");
             builder.AddAttribute(15, "type", "checkbox");
             builder.AddAttribute(16, "checked", isSelected);
@@ -122,6 +122,11 @@ public partial class MariloDataSheet<TItem>
             builder.AddAttribute(31, "onclick",
                 EventCallback.Factory.Create<MouseEventArgs>(this, (_) => OnCellClick(cellRow, cellField)));
 
+            // SA-09 — Double-click enters edit mode directly per spec
+            // editing-and-validation.md "Double-click on any cell".
+            builder.AddAttribute(32, "ondblclick",
+                EventCallback.Factory.Create<MouseEventArgs>(this, (_) => OnCellDoubleClick(cellRow, cellField)));
+
             // Cell content
             if (column.CellTemplate != null && !isEditing)
             {
@@ -134,7 +139,7 @@ public partial class MariloDataSheet<TItem>
                     IsDirty = cellState == CellState.Dirty,
                     ValidationError = cellError
                 };
-                builder.AddContent(32, column.CellTemplate(context));
+                builder.AddContent(35, column.CellTemplate(context));
             }
             else if (isEditing)
             {
@@ -151,12 +156,12 @@ public partial class MariloDataSheet<TItem>
             // error with the cell without requiring mouse hover.
             if (cellErrorId != null)
             {
-                builder.OpenElement(33, "span");
-                builder.AddAttribute(34, "id", cellErrorId);
-                builder.AddAttribute(35, "class", "mar-datasheet__sr-only");
-                builder.AddAttribute(36, "style",
+                builder.OpenElement(36, "span");
+                builder.AddAttribute(37, "id", cellErrorId);
+                builder.AddAttribute(38, "class", CssProvider.DataSheetScreenReaderOnlyClass());
+                builder.AddAttribute(39, "style",
                     "position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;");
-                builder.AddContent(37, cellError);
+                builder.AddContent(40, cellError);
                 builder.CloseElement(); // span
             }
 
@@ -170,10 +175,10 @@ public partial class MariloDataSheet<TItem>
             builder.OpenElement(90, "td");
             builder.AddAttribute(91, "role", "gridcell");
             builder.AddAttribute(92, "aria-colindex", nextAriaColIndex++);
-            builder.AddAttribute(93, "class", "mar-datasheet__actions-cell");
+            builder.AddAttribute(93, "class", CssProvider.DataSheetActionsCellClass());
             builder.OpenElement(100, "button");
             builder.AddAttribute(101, "type", "button");
-            builder.AddAttribute(102, "class", "mar-datasheet__delete-btn");
+            builder.AddAttribute(102, "class", CssProvider.DataSheetDeleteButtonClass());
             builder.AddAttribute(103, "aria-label", "Delete row");
             builder.AddAttribute(104, "onclick",
                 EventCallback.Factory.Create<MouseEventArgs>(this, (_) => MarkRowDeleted(delRow)));
@@ -210,7 +215,7 @@ public partial class MariloDataSheet<TItem>
             default:
                 var display = column.Format != null ? column.Format(row) : value?.ToString() ?? "";
                 builder.OpenElement(40, "span");
-                builder.AddAttribute(41, "class", "mar-datasheet__cell-text");
+                builder.AddAttribute(41, "class", CssProvider.DataSheetCellTextClass());
                 builder.AddContent(42, display);
                 builder.CloseElement();
                 break;
@@ -230,7 +235,7 @@ public partial class MariloDataSheet<TItem>
             case DataSheetColumnType.Text:
                 builder.OpenElement(50, "input");
                 builder.AddAttribute(51, "type", "text");
-                builder.AddAttribute(52, "class", "mar-datasheet__editor-input");
+                builder.AddAttribute(52, "class", CssProvider.DataSheetEditorInputClass());
                 builder.AddAttribute(53, "value", value?.ToString() ?? "");
                 builder.AddAttribute(54, "aria-label", $"Edit {column.DisplayTitle}");
                 builder.AddAttribute(55, "onchange",
@@ -244,7 +249,7 @@ public partial class MariloDataSheet<TItem>
                                        ?? typeof(decimal);
                 builder.OpenElement(50, "input");
                 builder.AddAttribute(51, "type", "number");
-                builder.AddAttribute(52, "class", "mar-datasheet__editor-input");
+                builder.AddAttribute(52, "class", CssProvider.DataSheetEditorInputClass());
                 builder.AddAttribute(53, "value", value?.ToString() ?? "0");
                 builder.AddAttribute(54, "aria-label", $"Edit {column.DisplayTitle}");
                 builder.AddAttribute(55, "step", "any");
@@ -261,7 +266,7 @@ public partial class MariloDataSheet<TItem>
             case DataSheetColumnType.Date:
                 builder.OpenElement(50, "input");
                 builder.AddAttribute(51, "type", "date");
-                builder.AddAttribute(52, "class", "mar-datasheet__editor-input");
+                builder.AddAttribute(52, "class", CssProvider.DataSheetEditorInputClass());
                 builder.AddAttribute(53, "value", value is DateTime dt ? dt.ToString("yyyy-MM-dd") : "");
                 builder.AddAttribute(54, "aria-label", $"Edit {column.DisplayTitle}");
                 builder.AddAttribute(55, "onchange",
@@ -276,7 +281,7 @@ public partial class MariloDataSheet<TItem>
 
             case DataSheetColumnType.Select:
                 builder.OpenElement(50, "select");
-                builder.AddAttribute(51, "class", "mar-datasheet__editor-select");
+                builder.AddAttribute(51, "class", CssProvider.DataSheetEditorSelectClass());
                 builder.AddAttribute(52, "value", value?.ToString() ?? "");
                 builder.AddAttribute(53, "aria-label", $"Edit {column.DisplayTitle}");
                 builder.AddAttribute(54, "onchange",
