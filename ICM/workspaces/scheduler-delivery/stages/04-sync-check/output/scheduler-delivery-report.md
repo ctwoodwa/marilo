@@ -1,134 +1,144 @@
-# Scheduler Delivery Report — Sync Check
+# Scheduler Delivery Report — Stage 04 Sync-Check
 
-**Sync check date:** 2026-04-11
 **Component:** MariloScheduler
 **Stage:** 04-sync-check
-**Gate verdict:** **BLOCKED**
-**Blocking items:** 18
+**Date:** 2026-04-11
+**Checklist:** `stages/04-sync-check/shared/delivery-checklist.md`
 
 ---
 
-## Inputs evaluated
+## Overall Gate Verdict
 
-| Source | File | Summary |
-|--------|------|---------|
-| Stage 01 output | `stages/01-spec-review/output/scheduler-spec-gap-list.md` | 16 SA gaps, 2 NM gaps, 2 SRC gaps. Headline: source is stub-level (~181 lines, 8 params, 3 views) against a 25-file full-featured spec. |
-| Stage 02 output | `stages/02-example-ux/output/scheduler-example-ux-gap-list.md` | 0 Covered / 1 Partial / 23 BLK / 3 stub-level DEM opportunities. Demo is a single 16-line placeholder. |
-| Stage 03 output | `stages/03-visual-parity/output/scheduler-visual-parity-plan.md` | Plan only — no parity captures or gap scores. Stage was blocked by source+demo insufficiency; explicitly deferred pending net-new implementation. |
-| Gap workspace coverage | `scheduler-gap-analysis/_config/coverage-summary.md` | No phases started; 0 gaps resolved; 0 tests written. (Stage 01 intake exists separately.) |
+**BLOCKED**
+
+The Scheduler delivery pipeline cannot be marked CLEAR or AMBER at this time. The source component is a stub-level prototype (~181 lines, 8 parameters, 3 hardcoded views) against a 25-file spec surface describing a full Telerik-equivalent Scheduler. Essentially every checklist item that touches source, tests, or example UX fails. Visual parity is structurally impossible until a real implementation exists.
 
 ---
 
-## Section 1 — API Spec
+## Checklist Section Results
 
-| # | Checklist item | Verdict | Evidence |
-|---|---|---|---|
-| 1.1 | All implemented parameters documented in spec | **FAIL (BLOCKING)** | SA-SCHED-002 / NM-SCHED-001: source exposes `CurrentDate`/`CurrentDateChanged` (spec calls them `Date`/`DateChanged`); source exposes `Appointments` (spec calls it `Data` with generic `TItem`). SRC-SCHED-001: `OnAppointmentCreate` is declared but never raised. SRC-SCHED-002: `OnAppointmentClick`/`OnDateClick` expose raw types not described by any spec event. |
-| 1.2 | All documented parameters implemented in source | **FAIL (BLOCKING)** | SA-SCHED-001 through SA-SCHED-016 — virtually the entire spec surface is unimplemented. Key absences: `TItem` generic data binding (SA-001), `<SchedulerViews>` child config (SA-003), `<SchedulerResources>` / `<SchedulerResource>` (SA-006), resource grouping (SA-007), `<SchedulerToolBar>` (SA-008), CUD events and AllowCreate/Update/Delete (SA-009), templates (SA-012), recurrence (SA-005), `Rebind()`/`Refresh()` methods (SA-014), `Height`/`Width`/`Class`/`EnableLoaderContainer` (SA-015). |
-| 1.3 | Parameter types match between spec and source | **FAIL (BLOCKING)** | NM-SCHED-001: `CurrentDate` vs `Date` naming divergence. NM-SCHED-002: `StartHour`/`EndHour` as flat `int` (parent-level) vs spec's per-view `StartTime`/`EndTime` as `DateTime` on `<SchedulerDayView>` child tags. NM-SCHED-003: closed-world `SchedulerAppointment` DTO vs spec's open-generic `TItem` — architectural mismatch requiring orchestrator-level decision. |
-| 1.4 | Parameter defaults match between spec and source | **UNKNOWN → FAIL non-blocking** | Cannot evaluate defaults for parameters that don't exist. The 8 source-extant parameters (`CurrentDate`, `View`, `Appointments`, `StartHour`, `EndHour`, event callbacks) were not default-audited this wave. Non-blocking relative to the broader structural gaps. |
-| 1.5 | All events documented and implemented | **FAIL (BLOCKING)** | SA-SCHED-009/010: `OnCreate`/`OnEdit`/`OnUpdate`/`OnDelete`/`OnCancel`/`OnModelInit` absent from source. `OnItemClick`, `OnItemDoubleClick`, `OnItemContextMenu`, `ItemRender`, `OnCellRender` absent. Typed event args classes (`SchedulerCreateEventArgs`, `SchedulerUpdateEventArgs`, etc.) do not exist. SRC-SCHED-002: `OnAppointmentClick`/`OnDateClick` expose raw types and are undocumented in spec. |
-| 1.6 | Spec version reflects current implementation phase | **FAIL non-blocking** | Spec is unversioned. The spec describes a full Telerik-parity Scheduler while source is a stub — version metadata should reflect this gap, e.g. "v0.1 — prototype stub." |
+### API Spec — FAIL
 
-**Section 1 subtotal:** 4 FAIL-blocking, 2 FAIL non-blocking.
+| Check | Result | Note |
+|-------|--------|-------|
+| All implemented parameters documented in spec | FAIL | `CurrentDate`, `StartHour`, `EndHour`, `OnAppointmentClick`, `OnDateClick`, `OnAppointmentCreate` exist in source but use different names or shapes than the spec. Wave 1 NM-SCHED-001/002/003 cover the core mismatches. |
+| All documented parameters implemented in source | FAIL | 16 spec-ahead gaps (SA-SCHED-001 through SA-SCHED-016). Entire surface areas — generic TItem binding, view sub-components, toolbar, recurrence, resources, resource grouping, templates, edit lifecycle, ARIA — have zero source coverage. |
+| Parameter types match between spec and source | FAIL | `Date` (spec) vs `CurrentDate` (source); `StartTime`/`EndTime` per-view DateTime (spec) vs `StartHour`/`EndHour` flat int (source); generic `TItem` (spec) vs closed `SchedulerAppointment` DTO (source). See NM-SCHED-001/002/003. |
+| Parameter defaults match between spec and source | FAIL | Cannot be checked for most parameters because they do not exist in source. The stub parameters have no spec-declared defaults to compare against. |
+| All events documented and implemented | FAIL | Spec describes 10+ typed event callbacks with strongly-typed args classes. Source exposes 3 raw-typed callbacks, one of which (`OnAppointmentCreate`) is never invoked. No typed event args classes exist. |
+| Spec version reflects current implementation phase | WAIVED | Spec is unversioned (no version field in front matter across all 25 files). This is a known gap in Marilo's spec format — waived for this audit, but should be added when spec is next updated. |
 
----
-
-## Section 2 — Example UX
-
-| # | Checklist item | Verdict | Evidence |
-|---|---|---|---|
-| 2.1 | Every spec parameter has at least one demo scenario | **FAIL (BLOCKING)** | Stage 02 found 0 Covered, 1 Partial, 23 BLK across 25 spec topics. The single demo (`Overview.razor`, 16 LOC) passes no parameters except an inline `Style`. No `Appointments` data, no view switching, no event handlers. |
-| 2.2 | Every spec event has at least one demo scenario | **FAIL (BLOCKING)** | None of the spec-described events are exercised in any demo. EUX-SCHED-008/009. |
-| 2.3 | Disabled state demonstrated | **FAIL** | No disabled-state concept in source or demo. Non-blocking (source doesn't support it). |
-| 2.4 | Readonly state demonstrated (if supported) | **UNKNOWN** | Source has no readonly parameter. Non-blocking. |
-| 2.5 | Empty/no-data state demonstrated | **FAIL** | Stage 02 stage 2 headline: the existing demo renders an empty calendar chrome because it passes no appointments — but this is accidental, not intentional empty-state design. No dedicated empty-state scenario exists. Non-blocking. |
-| 2.6 | Error state demonstrated (if supported) | **UNKNOWN** | No error-state concept in source. Non-blocking. |
-| 2.7 | All code snippets use current parameter names and types | **FAIL (BLOCKING)** | No code snippets are present in any demo (single-tag render). Spec code snippets use `@bind-Date` and generic `TItem` patterns that do not compile against source. |
-| 2.8 | No Telerik component references in demo pages | **PASS** | Stage 02 confirmed the single demo file uses `<MariloScheduler>` with no Telerik tag references. |
-
-**Section 2 subtotal:** 2 FAIL-blocking, 3 FAIL non-blocking, 1 UNKNOWN, 1 PASS.
-
-**DEM opportunities noted by Stage 02 (actionable without source changes):**
-- EUX-SCHED-018: Day view with `Appointments` data (stub-level demo, uses existing `SchedulerView.Day` + `SchedulerAppointment` DTO)
-- EUX-SCHED-019: Week view with `Appointments` data
-- EUX-SCHED-020: Month view with `Appointments` data
-- EUX-SCHED-007 (partial): Show hardcoded 5-button header in action with view switching
-
-These 3–4 scenarios can be written now by a demo-only worker without touching source, and would convert `Overview.razor` from a sub-stub into a minimal but honest Scheduler demo. Recommended as Wave 4 demo lane while the gap-analysis source lane runs concurrently.
+**API Spec result: FAIL** — 5 checks fail, 1 waived.
 
 ---
 
-## Section 3 — Visual Parity
+### Example UX — FAIL
 
-| # | Checklist item | Verdict | Evidence |
-|---|---|---|---|
-| 3.1 | Fluent Light mode captured and scored | **BLOCKED** | Stage 03 produced a plan only. No captures taken. Explicitly deferred: "visual parity work is not possible against this source as-is" (Stage 01 verdict, confirmed by Stage 02). |
-| 3.2 | Fluent Dark mode captured and scored | **BLOCKED** | Same. |
-| 3.3 | Bootstrap Light mode captured and scored | **BLOCKED** | Same. |
-| 3.4 | Bootstrap Dark mode captured and scored | **BLOCKED** | Same. |
-| 3.5 | Material Light mode captured and scored | **BLOCKED** | Same, plus Material runtime not yet implemented (SCSS-only scaffold). |
-| 3.6 | Material Dark mode captured and scored | **BLOCKED** | Same. |
-| 3.7–3.9 | Parity scores, gap records, category classification | **BLOCKED** | Prerequisite: parity captures must exist first. |
+| Check | Result | Note |
+|-------|--------|-------|
+| Every spec parameter has at least one demo scenario | FAIL | 0 of the spec's parameters are demonstrated. The single demo file passes no parameters beyond an inline `Style="height:500px;"`. |
+| Every spec event has at least one demo scenario | FAIL | No events demonstrated. |
+| Disabled state demonstrated | FAIL | No disabled-state scenario in demo. |
+| Readonly state demonstrated (if supported) | WAIVED | Spec does not describe a distinct readonly state. Waived. |
+| Empty/no-data state demonstrated | FAIL | Demo passes no `Appointments` data — but this is not intentional empty-state demonstration; it is an absent wire-up. |
+| Error state demonstrated (if supported) | WAIVED | No error-state spec defined. Waived. |
+| All code snippets use current parameter names and types | FAIL | No non-trivial code snippets exist in the demo. |
+| No Telerik component references in demo pages | PASS | Demo file contains no Telerik references. |
 
-**Section 3 subtotal:** 9 BLOCKED — all contingent on net-new source+demo work landing first.
+**Wave 2 coverage totals (25 spec topics):** 0 COV / 1 PAR / 23 BLK / 0 strict DEM.
+Three stub-level DEM opportunities exist (Day/Week/Month view with Appointments data) but none are authored.
 
-Visual parity is the correct **final gate check** for Scheduler, not the current blocker. It should be re-queued after the gap-analysis implementation wave completes and the demo surface is non-trivial. Suggested re-trigger: when `scheduler-gap-analysis` stage 05 output exists and at least the TItem+field-mapping, 3 core views, and basic CRUD event surface are implemented.
-
----
-
-## Section 4 — Source and Tests
-
-| # | Checklist item | Verdict | Evidence |
-|---|---|---|---|
-| 4.1 | All spec parameters covered by bUnit tests | **FAIL (BLOCKING)** | Coverage summary: 0 tests written, no phases started. Source itself lacks the parameters that would be tested (blocked by SA gaps). |
-| 4.2 | No undocumented parameters in component source | **FAIL (BLOCKING)** | SRC-SCHED-001 (`OnAppointmentCreate` declared but never raised), SRC-SCHED-002 (`OnAppointmentClick`/`OnDateClick` not in spec events). |
-| 4.3 | Stage 06 closure reports exist for all active gap phases | **PASS (vacuously)** | `scheduler-gap-analysis` coverage summary shows no active phases. Vacuous pass — but the intake (stage 01) has been done; no phases have been opened for resolution. |
-| 4.4 | Pre-existing test failures documented | **PASS** | Build passes (confirmed in this session — `dotnet build` 0 errors). No test failures attributable to Scheduler specifically. |
-| 4.5 | All active gap phases show Tests Passing = YES | **PASS (vacuously)** | No active phases. |
-
-**Section 4 subtotal:** 2 FAIL-blocking, 3 PASS (2 vacuous).
+**Example UX result: FAIL** — 5 checks fail, 2 waived, 1 pass.
 
 ---
 
-## Section 5 — Alignment
+### Source and Tests — FAIL
 
-| # | Checklist item | Verdict | Evidence |
-|---|---|---|---|
-| 5.1 | Spec version consistent with gap workspace active phase | **FAIL non-blocking** | Spec is unversioned; gap workspace has not started resolution phases. Alignment is trivially consistent but only because neither side has progressed. |
-| 5.2 | Demo page parameter names match current source parameter names | **PASS** | The single demo passes only `Style="..."` — no named source parameters appear, so there are no name mismatches to find. Vacuous pass. |
-| 5.3 | No parameter renamed without spec and demo update | **FAIL non-blocking** | NM-SCHED-001 (`CurrentDate` vs `Date`) represents a pre-existing name divergence between spec and source that has not been resolved and is not reflected in either spec or demo. |
-| 5.4 | delivery-context.md reflects current state | **FAIL non-blocking** | All fields read "PENDING" — gate status, blocking item count, last spec audit, and open gap counts are not filled in. Updated below. |
+| Check | Result | Note |
+|-------|--------|-------|
+| All spec parameters covered by bUnit tests | FAIL | Wave 1 confirmed no `.razor.cs` companion file and no bUnit tests for the Scheduler exist. Source file location: `src/Marilo.Components/DataDisplay/MariloScheduler.razor` (single 181-line file). |
+| No undocumented parameters in component source | FAIL | `OnAppointmentClick`, `OnDateClick`, `OnAppointmentCreate`, `CurrentDate`, `StartHour`, `EndHour` are in source but misaligned with spec naming/types. `OnAppointmentCreate` is never invoked — a dead parameter. |
+| Stage 06 closure reports exist for all active gap phases | FAIL | No Stage 06 closure reports found under `scheduler-gap-analysis/stages/06-validate/output/`. Gap workspace for Scheduler shows all areas as PENDING. |
+| Pre-existing test failures documented in regression triage log | WAIVED | No tests exist to fail. Waived until tests are created. |
+| All active gap phases show Tests Passing = YES in coverage summary | FAIL | `scheduler-gap-analysis/_config/coverage-summary.md` — gaps are all PENDING with no Tests Passing entries. |
 
-**Section 5 subtotal:** 3 FAIL non-blocking, 1 PASS (vacuous).
-
----
-
-## Gate Summary
-
-| Section | Blocking failures | Non-blocking failures | Passes |
-|---|---|---|---|
-| 1 — API Spec | 4 | 2 | 0 |
-| 2 — Example UX | 2 | 3 | 1 |
-| 3 — Visual Parity | 9 (deferred) | 0 | 0 |
-| 4 — Source and Tests | 2 | 0 | 3 |
-| 5 — Alignment | 0 | 3 | 1 |
-| **Total** | **18** | **8** | **5** |
-
-**Gate verdict: BLOCKED**
-
-The root cause of all 18 blocking items is a single structural fact: **MariloScheduler source is a ~181-line stub implementing 8 parameters against a 25-file spec that assumes a full Telerik-parity Scheduler.** This is not a matter of fixing individual gaps — it requires a net-new implementation effort scoped in `scheduler-gap-analysis`.
+**Source and Tests result: FAIL** — 4 checks fail, 1 waived.
 
 ---
 
-## Remediation Lanes
+### Visual Parity — FAIL
 
-| Lane | Owner | Scope | Unblocks |
-|------|-------|-------|----------|
-| **A — Gap analysis implementation** | `scheduler-gap-analysis` | Drive stages 02–05: prioritize, design, plan, and implement the core Scheduler surface (`TItem` + field mapping, `<SchedulerViews>` / view sub-components, basic CRUD events, `AllowCreate`/`AllowUpdate`/`AllowDelete`, `Height`/`Width`/`Class`) | Sections 1, 2, 4 gate items |
-| **B — Demo stub improvements (now)** | demo worker | Author Day/Week/Month demos against existing `SchedulerAppointment` DTO (EUX-SCHED-018/019/020). No source changes required. Converts demo from 16-line placeholder to honest stub demo. | Section 2 partial credit while Lane A runs |
-| **C — Name resolution decision** | orchestrator | Decide: rename source `CurrentDate` → `Date` (breaking, aligns spec) or update spec `Date` → `CurrentDate` (non-breaking, aligns source). NM-SCHED-001 and NM-SCHED-002 shape decisions needed. | Section 1.3 mismatch |
-| **D — Visual parity (deferred)** | parity worker | Re-queue Stage 03 execution once Lane A produces a functional implementation and Lane B produces non-trivial demo pages. | Section 3 — all 9 items |
-| **E — Spec version + delivery-context cleanup** | any worker | Add spec version tag, fill in delivery-context.md tracking fields, clarify `manual-operations.md` published-false status. | Section 1.6, 5.1, 5.4 |
+| Check | Result | Note |
+|-------|--------|-------|
+| Fluent Light mode captured and scored | FAIL | Wave 3 plan exists but no captures were taken. Wave 1 and Wave 2 both confirmed there is no meaningful visual surface to capture — the demo renders an empty calendar chrome with no appointments. |
+| Fluent Dark mode captured and scored | FAIL | Same. |
+| Bootstrap Light mode captured and scored | FAIL | Same. |
+| Bootstrap Dark mode captured and scored | FAIL | Same. |
+| Material Light mode captured and scored | FAIL | Doubly blocked: Material runtime provider is SCSS-only scaffold as of 2026-04-10 (not yet implemented), and source/demo have no capturable surface. |
+| Material Dark mode captured and scored | FAIL | Same as Material Light. |
+| All parity scores (0-3) documented with gap records | FAIL | No captures, no scores, no gap records. |
+| Any score below 3 has remediation recommendation | WAIVED | Cannot score what has not been captured. |
+| Parity gaps classified by category | FAIL | No gaps classified — cannot classify without captures. |
 
-**Recommended immediate action:** Start `scheduler-gap-analysis` stage 02 (prioritize) — the intake (stage 01) is already complete. Concurrently, a demo worker can author the 3 stub-level Day/Week/Month demos (Lane B) without blocking on source changes.
+**Visual Parity result: FAIL** — 8 checks fail, 1 waived. Wave 3 output is a planning document, not a parity audit, because the implementation did not exist to audit.
+
+---
+
+### Alignment — FAIL
+
+| Check | Result | Note |
+|-------|--------|-------|
+| Spec version consistent with gap workspace active phase | FAIL | Spec has no version field; gap workspace shows all areas PENDING. Cannot verify alignment. |
+| Demo page parameter names match current source parameter names | FAIL | Demo uses `Style="height:500px;"` (not a spec parameter). The 3 stub source parameters (`StartHour`, `EndHour`, `CurrentDate`) are not used in the demo at all. |
+| No parameter renamed without spec and demo page update | PASS | No renames have occurred in this delivery pipeline. NM-SCHED-001 (`CurrentDate` vs `Date`) predates this cycle. |
+| delivery-context.md reflects current state of all four artifacts | FAIL | `delivery-context.md` shows all four state fields as PENDING. Reflects the actual state but is not updated with Wave 1-3 findings. |
+
+**Alignment result: FAIL** — 3 checks fail, 1 pass.
+
+---
+
+## Blocking Items
+
+1. **Source is stub-level vs. full-spec surface area** — MariloScheduler source is a 181-line prototype exposing 8 parameters and 3 hardcoded views. The spec describes 25 feature areas requiring net-new implementation of: generic `TItem` data binding, view sub-component system (`<SchedulerViews>`, 6 view types), toolbar framework, resource and resource-grouping system, recurrence (RFC5545), popup edit lifecycle, 4 template RenderFragments, and WAI-ARIA accessibility. **Recommended action:** Open a `scheduler-gap-analysis` work order to implement the full Scheduler source. Until this work ships, every downstream checklist item (demo, tests, visual parity) is blocked.
+
+2. **Demo is a 16-line placeholder** — The only Scheduler demo passes no parameters and exercises nothing. Even the 3 DEM opportunities that the stub source already supports (Day/Week/Month view with `Appointments` data) are not authored. **Recommended action:** Author the 3 stub-level demo scenarios immediately as they require no source changes. This unblocks visual parity for the partial stub surface.
+
+3. **No bUnit tests exist** — No test file, no `.razor.cs` companion. **Recommended action:** Add bUnit tests for the stub component's existing 8 parameters as a baseline; expand tests as source grows.
+
+4. **Visual parity captures blocked** — With no meaningful demo surface, no parity captures can be taken. **Recommended action:** Defer visual parity until items 1 and 2 are resolved. The Wave 3 plan is preserved as the execution blueprint for when captures become possible.
+
+5. **NM-SCHED-001: `CurrentDate` vs `Date` naming decision outstanding** — The source uses `CurrentDate`/`CurrentDateChanged`; the spec uses `Date`/`DateChanged`/`@bind-Date`. This is a public API decision (rename source, or update spec). **Recommended action:** Decide the canonical name at architecture level before any source expansion; changing after implementation ships is a breaking change.
+
+6. **NM-SCHED-002: `StartHour`/`EndHour` int vs per-view `StartTime`/`EndTime` DateTime design decision outstanding** — These are architecturally different shapes. **Recommended action:** Resolve at architecture level concurrently with SA-SCHED-003 (view sub-component design).
+
+7. **SRC-SCHED-001: `OnAppointmentCreate` dead parameter** — Declared but never raised. **Recommended action:** Wire it or remove it before source expansion.
+
+8. **`manual-operations.md` published-false scope decision outstanding** — Wave 1 flagged this for orchestrator decision. The spec file exists but is marked `published: false`. **Recommended action:** Decide whether manual operations are in-scope for this delivery cycle.
+
+9. **Material runtime provider not implemented** — Visual parity for Material theme is doubly blocked. **Recommended action:** Track separately under the Material provider delivery track; do not block Scheduler delivery gating on Material readiness.
+
+10. **`delivery-context.md` not updated with Wave 1-3 findings** — The context file shows all fields as PENDING and does not reflect the actual audit conclusions. **Recommended action:** Update `delivery-context.md` after resolving blocking items 1-3 as part of the next delivery cycle.
+
+---
+
+## Next-Priority Actions
+
+In recommended execution order:
+
+1. **Immediately actionable (no source changes required):**
+   - Author 3 stub-level demo scenarios in `Overview.razor`: Day view with sample Appointments, Week view with sample Appointments, Month view with sample Appointments. Unblocks visual parity for stub surface.
+   - Add baseline bUnit tests for the 8 existing stub parameters.
+
+2. **Architecture decisions (orchestrator/human):**
+   - Resolve `CurrentDate` vs `Date` naming (NM-SCHED-001).
+   - Resolve per-view `StartTime`/`EndTime` DateTime vs parent `StartHour`/`EndHour` int design (NM-SCHED-002).
+   - Decide scope of `manual-operations.md` (published: false).
+
+3. **Source implementation (scheduler-gap-analysis work order):**
+   - Phase the Scheduler source implementation: start with generic `TItem` + field mapping (SA-SCHED-001) as the foundational layer all other features depend on, then view sub-component system (SA-SCHED-003), then edit lifecycle (SA-SCHED-009), then recurrence/resources/templates/accessibility.
+
+4. **After source implementation:**
+   - Re-run Stage 01 spec review against new source.
+   - Update and expand demo to cover all implemented features.
+   - Execute visual parity captures per the Wave 3 plan.
+   - Re-run Stage 04 sync-check for a delivery gate verdict.
