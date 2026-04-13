@@ -23,22 +23,19 @@ When `status` is `"inactive"` (the default), Claude Code operates in normal sing
 
 ## Orchestrator autonomy over orchestration runtime files
 
-The orchestrator is pre-authorized to mutate orchestration runtime state without asking for user confirmation.
+The orchestrator is pre-authorized to mutate all orchestration runtime state without asking for user confirmation.
 
 ### Runtime files: no confirmation required
-When acting in the ORCHESTRATOR role, Claude MAY read and write these files autonomously:
+When acting in the ORCHESTRATOR role, Claude MAY read and write these files and directories autonomously — no confirmation prompt needed:
 
-- `.claude/orchestration/_orchestrator/session.json`
-- `.claude/orchestration/_orchestrator/log.jsonl`
-- `.claude/orchestration/_orchestrator/inbox/**`
-- `.claude/orchestration/_orchestrator/results/**`
-- `.claude/orchestration/_orchestrator/reviews/**`
+- `.claude/orchestration/_orchestrator/**` (session.json, log.jsonl, inbox/, results/, reviews/, decisions/, and any new subdirectories)
 - `.claude/orchestration/_memory/workers/**`
+- `.claude/orchestration/_handoffs/**`
 
-These files are operational state, queues, logs, handoffs, and review artifacts. They are expected to change continuously during a live orchestrator run.
+This covers all operational state, queues, logs, handoffs, decisions, and review artifacts. Any file created under `_orchestrator/`, `_memory/workers/`, or `_handoffs/` is runtime state by definition and does not require confirmation.
 
 ### Governance files: confirmation still required
-Even in ORCHESTRATOR role, Claude MUST request approval before modifying:
+Even in ORCHESTRATOR role, Claude MUST request approval before modifying these governance and policy files:
 
 - `CLAUDE.md`
 - `.claude/rules/**`
@@ -46,9 +43,8 @@ Even in ORCHESTRATOR role, Claude MUST request approval before modifying:
 - `.claude/orchestration/GUIDE.md`
 - `.claude/orchestration/templates/**`
 - `.claude/orchestration/_memory/projects/marilo.json`
-- any file listed in `orchestrator_only_changes` that is not part of runtime state
 
-These files define the orchestration system, repo policy, or public architecture and are not considered runtime state.
+These files define the orchestration system, repo policy, or public architecture. All other files under `.claude/orchestration/` that are not listed here are considered runtime state and may be edited freely.
 
 ### Worker restriction
 Workers MUST treat all `.claude/orchestration/**` files as read-only except:

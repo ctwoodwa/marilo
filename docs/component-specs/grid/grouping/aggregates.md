@@ -23,7 +23,7 @@ The Grid component provides built-in aggregates for column values based on [grou
 
 ## Available Aggregate Functions
 
-There are several available aggregate functions under the `Marilo.Blazor.GridAggregateType` enum:
+There are several available aggregate functions under the `Marilo.Components.DataGrid.GridAggregateType` enum:
 
 * `Average`
 * `Count`
@@ -66,7 +66,7 @@ To enable aggregates:
 ````RAZOR
 @using Marilo.DataSource
 
-<MariloGrid Data=@GridData
+<MariloDataGrid Data=@GridData
              Groupable="true"
              OnStateInit="@( (GridStateEventArgs<Employee> args) => OnGridStateInit(args) )">
     <GridAggregates>
@@ -77,8 +77,7 @@ To enable aggregates:
         <GridAggregate Field=@nameof(Employee.Salary) Aggregate="@GridAggregateType.Average" />
         <GridAggregate Field=@nameof(Employee.ActiveProjects) Aggregate="@GridAggregateType.Sum" />
     </GridAggregates>
-    <GridColumns>
-        <GridColumn Field=@nameof(Employee.Name) Groupable="false">
+        <MariloGridColumn Field=@nameof(Employee.Name) Groupable="false">
             <FooterTemplate>
                 Total employees: @context.Count
                 <br />
@@ -92,8 +91,8 @@ To enable aggregates:
                     <span>Total salaries: @salaries?.ToString("C0")</span>
                 }
             </FooterTemplate>
-        </GridColumn>
-        <GridColumn Field=@nameof(Employee.Team) Title="Team">
+        </MariloGridColumn>
+        <MariloGridColumn Field=@nameof(Employee.Team) Title="Team">
             <GroupHeaderTemplate>
                 <span>
                     @context.Value @* the default text you would get without the template *@
@@ -103,16 +102,16 @@ To enable aggregates:
             <GroupFooterTemplate>
                 Team Members: <strong>@context.Count</strong>
             </GroupFooterTemplate>
-        </GridColumn>
-        <GridColumn Field=@nameof(Employee.Salary) Title="Salary" Groupable="false" DisplayFormat="{0:C0}">
+        </MariloGridColumn>
+        <MariloGridColumn Field=@nameof(Employee.Salary) Title="Salary" Groupable="false" DisplayFormat="{0:C0}">
             <GroupFooterTemplate>
                 @* you can use a group footer for non-groupable columns as well *@
                 Total salaries: @context.Sum?.ToString("C0")
                 <br />
                 <span style="color: red;">Highest: @context.Max?.ToString("C0")</span>
             </GroupFooterTemplate>
-        </GridColumn>
-        <GridColumn Field=@nameof(Employee.ActiveProjects) Title="Active Projects">
+        </MariloGridColumn>
+        <MariloGridColumn Field=@nameof(Employee.ActiveProjects) Title="Active Projects">
             <GroupHeaderTemplate>
                 @{
                     <span>Currently active projects: @context.Value</span>
@@ -136,9 +135,8 @@ To enable aggregates:
                 <br />
                 <span>Average salary: @context.AggregateResults[nameof(Employee.Salary)]?.Average?.ToString("C0")</span>
             </GroupFooterTemplate>
-        </GridColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridColumn>
+</MariloDataGrid>
 
 @code {
     private List<Employee> GridData { get; set; } = new();

@@ -15,8 +15,8 @@
 |-------|-------|
 | API spec | /workspaces/Marilo/docs/component-specs/diagram/ |
 | Example UX | /workspaces/Marilo/samples/Marilo.Demo/Pages/Components/Diagram/ |
-| Component source | UNKNOWN |
-| Test files | UNKNOWN |
+| Component source | src/Marilo.Components/DataDisplay/MariloDiagram.razor |
+| Test files | UNKNOWN (none found) |
 | Gap workspace | /workspaces/Marilo/workspaces/diagram-gap-analysis |
 
 ## Spec State
@@ -24,32 +24,32 @@
 | Field | Value |
 |-------|-------|
 | Spec version | unversioned |
-| Last spec audit | PENDING |
-| Open spec gaps | PENDING |
+| Last spec audit | 2026-04-12 |
+| Open spec gaps | 24 spec-ahead, 3 source-ahead, 4 mismatches |
 
 ## Example UX State
 
 | Field | Value |
 |-------|-------|
 | Demo page(s) | Diagram/Overview.razor |
-| Last demo audit | PENDING |
-| Open demo gaps | PENDING |
+| Last demo audit | 2026-04-12 |
+| Open demo gaps | 26 missing scenarios (~5% coverage) |
 
 ## Visual Parity State
 
 | Field | Value |
 |-------|-------|
-| Last parity review | PENDING |
-| Themes reviewed | PENDING |
-| Open parity gaps | PENDING |
+| Last parity review | 2026-04-12 |
+| Themes reviewed | FluentUI, Bootstrap |
+| Open parity gaps | 0% parity -- 2 BEM classes, 0 provider SCSS rules |
 
 ## Delivery Gate
 
 | Field | Value |
 |-------|-------|
-| Last sync check | PENDING |
-| Gate status | PENDING |
-| Blocking items | PENDING |
+| Last sync check | 2026-04-12 |
+| Gate status | FAIL |
+| Blocking items | ARCH-1 (API paradigm), ARCH-2 (event naming), ARCH-3 (model types) |
 
 ## Gap Workspace Link
 

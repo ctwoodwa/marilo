@@ -17,31 +17,29 @@ When the grid is grouped, the columns can display a footer with information abou
 ````RAZOR
 @* Group by the Team column to see the results and aggregate data in the footer *@
 
-<MariloGrid Data=@GridData Groupable="true" Pageable="true" Height="650px">
+<MariloDataGrid Data=@GridData Groupable="true" Pageable="true" Height="650px">
     <GridAggregates>
         <GridAggregate Field=@nameof(Employee.Team) Aggregate="@GridAggregateType.Count" />
         <GridAggregate Field=@nameof(Employee.Salary) Aggregate="@GridAggregateType.Max" />
         <GridAggregate Field=@nameof(Employee.Salary) Aggregate="@GridAggregateType.Sum" />
     </GridAggregates>
-    <GridColumns>
-        <GridColumn Field=@nameof(Employee.Name) Groupable="false" />
-        <GridColumn Field=@nameof(Employee.Team) Title="Team">
+        <MariloGridColumn Field=@nameof(Employee.Name) Groupable="false" />
+        <MariloGridColumn Field=@nameof(Employee.Team) Title="Team">
             <GroupFooterTemplate>
                 Team Members: <strong>@context.Count</strong>
             </GroupFooterTemplate>
-        </GridColumn>
-        <GridColumn Field=@nameof(Employee.Salary) Title="Salary" Groupable="false">
+        </MariloGridColumn>
+        <MariloGridColumn Field=@nameof(Employee.Salary) Title="Salary" Groupable="false">
             <GroupFooterTemplate>
                 @* you can use a group footer for non-groupable columns as well *@
                 Total montly salary: @context.Sum
                 <br />
                 <span style="color: red;">Top paid employee: @context.Max</span>
             </GroupFooterTemplate>
-        </GridColumn>
-        <GridColumn Field=@nameof(Employee.ActiveProjects) Title="Active Projects">
-        </GridColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridColumn>
+        <MariloGridColumn Field=@nameof(Employee.ActiveProjects) Title="Active Projects">
+        </MariloGridColumn>
+</MariloDataGrid>
 
 @code {
     public List<Employee> GridData { get; set; }

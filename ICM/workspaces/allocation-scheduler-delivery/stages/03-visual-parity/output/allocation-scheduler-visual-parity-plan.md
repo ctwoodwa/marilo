@@ -68,3 +68,25 @@ Based on component structure and cerebrum learnings:
 2. Set up Playwright capture scripts for automated screenshot collection
 3. Execute first-pass Fluent Light review across P1 scenarios
 4. Document gaps and iterate through remaining themes/modes
+
+---
+
+## 2026-04-11 Wave-3 execution note (orchestrator tick 6)
+
+Stage 03 executed this tick as a **static-analysis pass** rather than a Playwright capture pass, because:
+
+- Material provider runtime is still absent (confirmed in Blockers above) — captures for 2 of 6 theme/mode combinations are impossible without building the provider first.
+- Stage 02 Wave-2 output is available and all 8 demo files catalogued, so the capture targets are known.
+- The four primary SCSS source files (Fluent component + root duplicate, Bootstrap component + root duplicate, Material placeholder, razor markup) contained enough evidence for 20 concrete gap records at the rubric's 1–2 score band without screenshots.
+
+Static-analysis scope delivered:
+
+- `allocation-scheduler-visual-parity-gaps.md` — 20 gap records (target was 10–20), covering all 9 structural elements named in the wave-3 scope × 3 themes × 2 modes to the degree each combination produced distinct findings.
+- `allocation-scheduler-parity-summary.md` — score matrix, worst-offenders ranking, category roll-up, Wave-2 carry-forward resolution, gate check.
+- Wave-2 Missing topics (`accessibility`, `theming`) surfaced as four implementation-visual gaps each — NOT deferred.
+
+Carry-over for Wave 4 (sync-check):
+
+- Verify the gap list reconciles against the Wave-1 spec gap list (a11y gaps here should map to `accessibility.md` spec entries).
+- Material runtime implementation remains the hard blocker on the 6-way parity closure — escalate during sync-check if still unresolved.
+- Fluent color-mix fallback literal issue (VP-003, VP-007) is systemic and likely shared across gantt/datagrid/scheduler — worth cross-workspace referral.

@@ -17,22 +17,20 @@ The Grid will also show its default or custom `NoDataTemplate` while loading its
 >caption Using NoDataTemplate
 
 ````RAZOR
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              FilterMode="@GridFilterMode.FilterRow"
              Height="400px"
              Pageable="true">
     <GridToolBarTemplate>
         <GridCommandButton OnClick="@LoadData">Load Data</GridCommandButton>
     </GridToolBarTemplate>
-    <GridColumns>
-        <GridColumn Field="@(nameof(SampleData.Name))" Title="Employee Name" />
-        <GridColumn Field="@(nameof(SampleData.Team))" />
-        <GridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" DisplayFormat="{0:d}" />
-    </GridColumns>
+        <MariloGridColumn Field="@(nameof(SampleData.Name))" Title="Employee Name" />
+        <MariloGridColumn Field="@(nameof(SampleData.Team))" />
+        <MariloGridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" DisplayFormat="{0:d}" />
     <NoDataTemplate>
         <p><strong style="color: var(--kendo-color-primary);">No Data Available.</strong></p>
     </NoDataTemplate>
-</MariloGrid>
+</MariloDataGrid>
 
 @code {
     private IEnumerable<SampleData>? GridData { get; set; }

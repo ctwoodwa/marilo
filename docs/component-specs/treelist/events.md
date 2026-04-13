@@ -34,7 +34,7 @@ You can read more about the CUD events in the [Editing Overview](slug:treelist-e
 * [OnRowDoubleClick](#onrowdoubleclick)
 * [OnRowContextMenu](#onrowcontextmenu)
 * [OnRowRender](#onrowrender)
-* [OnRowDrop](#onrowdrop)
+* [OnRowDropped](#onrowdropped)
 * [PageChanged](#pagechanged)
 * [PageSizeChanged](#pagechanged)
 
@@ -1389,9 +1389,9 @@ This event fires upon the rendering of the TreeList rows. It receives an argumen
 
 ![Blazor Treelist Onrowrender Event Example](images/treelist-onrowrender-event-example.png)
 
-## OnRowDrop
+## OnRowDropped
 
-The `OnRowDrop` event fires when the user drags and drops rows in the TreeList or between TreeLists. You can read more on setting it up and using the TreeList row dragging feature in the [Row Drag and Drop](slug:treelist-drag-drop-overview) article.
+The `OnRowDropped` event fires when the user drags and drops rows in the TreeList. Set `RowDraggable="true"` to enable. The event handler receives `TreeListRowDropEventArgs<TItem>` with `Item`, `DestinationItem`, `DropPosition` (`Before`/`After`/`Over`), and `DestinationIndex`. See the [Row Drag and Drop](slug:treelist-drag-drop-overview) article for full details.
 
 ## PageChanged
 

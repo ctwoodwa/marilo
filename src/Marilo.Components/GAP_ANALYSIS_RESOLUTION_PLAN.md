@@ -1407,3 +1407,108 @@ The Marilo icon system has been upgraded from a single custom icon set to a plug
 | **`AddMariloIconsCustom()` extension** | DI escape hatch for registering any custom sprite or CSS-class icon set. |
 | **Legacy `Marilo.Icons` preserved** | `MariloIconProvider` updated with new interface members. `UseMariloIcons()` and `AddMariloIcons()` marked `[Obsolete]`. |
 | **All existing providers updated** | `FluentUIIconProvider`, `BootstrapIconProvider`, `ProviderSwitcher`, `TestIconProvider` — all implement `RenderMode` and `LibraryName`. |
+
+---
+
+## MariloMap Architecture Decision (2026-04-12)
+
+**Status:** Architecture decision COMPLETE. Spec/demo/source work UNBLOCKED.
+
+**Engine:** MapLibre GL JS v4+ (BSD-3-Clause) selected as the v1 tile rendering engine.
+
+**Key decisions:**
+- Engine-neutral public API (`MapLayer`, `MapMarker`, `MapCenter`, etc.) with internal `IMapEngineAdapter` boundary.
+- MapLibre is the sole v1 adapter. Leaflet and OpenLayers remain viable future adapters.
+- JS module lifecycle follows the established Marilo pattern (lazy init on `OnAfterRenderAsync`, dispose on component teardown).
+- Layer registration uses the `CascadingValue` + child-registration pattern (same as DataGrid → GridColumn).
+- Provider styling covers container CSS, controls, and popup appearance — not tile rendering.
+- `UrlTemplate` adopts industry-standard `{s}/{z}/{x}/{y}` placeholders; legacy `#= ... #` syntax deprecated.
+
+**Remaining blockers:** None for spec revision, model expansion, and demo planning. JS adapter authoring is the next implementation step.
+
+**Architecture decision document:** `docs/component-specs/map/architecture-decision-tile-engine.md`
+
+**Deferred features:** Clustering, vector tile styles, drawing/editing, 3D terrain, heatmap layer, animated transitions, offline tiles, custom projections.
+
+### Local OSS Basemap Pipeline (2026-04-12)
+
+**Status:** Scaffolded. Scripts and docs in place; tiles not yet generated (requires running `bash tools/map-data/setup.sh`).
+
+**What's in place:**
+- `tools/map-data/` — download + Planetiler tile-generation scripts using Podman.
+- First data region: Washington, D.C. (OSM via Geofabrik, ~30 MB) + Natural Earth (public domain).
+- PMTiles output format, served as static files from `wwwroot/map-data/`.
+- MapLibre style JSON at `wwwroot/map-styles/basemap-local.json`.
+- Attribution docs at `docs/map-data-attribution.md`.
+- Setup guide at `docs/map-local-basemap-setup.md`.
+
+**What's left:**
+- Wire PMTiles protocol adapter into `maplibre-adapter.js` (blocked on JS adapter authoring).
+- Add more OSM regions or allow region selection via script argument.
+- Self-host glyph PBFs for fully offline demos.
+- Globe-friendly raster hillshade source.
+- Marilo-branded style (colors, typography).
+
+---
+
+## MariloMap Delivery Assessment (2026-04-12, updated)
+
+**Status:** AMBER — Complete API surface and layer system with full spec accuracy. MapLibre JS integration is the single remaining implementation task.
+
+### What is GREEN (complete and tested)
+
+- **Component model:** `MariloMap`, `MapLayer`, `MapLayers` with CascadingValue + child-registration pattern (same as DataGrid/GridColumn). 26 bUnit tests covering registration, unregistration, idempotency, descriptor mapping, events, defaults, internal visibility, null center, zero zoom, default layer type, shape with non-string/null data, explicit layer ID, StyleUrl parameter, and legacy Markers parameter.
+- **Layer types:** All four (`Tile`, `Marker`, `Shape`, `Bubble`) register correctly via `MapLayerType` enum, produce correct `MapLayerDescriptor` records, and support `LayerId`, `Opacity`, `MinZoom`/`MaxZoom`.
+- **Events:** `OnClick`, `OnMarkerClick`, `OnShapeClick`, `OnZoomEnd`, `OnPanEnd` all fire from JSInvokable methods with correct event arg shapes.
+- **Adapter boundary:** `IMapEngineAdapter` (internal) with `MapLibreAdapter` stub. Clean separation for future engine swaps.
+- **Provider SCSS:** `_map.scss` created for both FluentUI and Bootstrap providers with full BEM class coverage (`mar-map`, `__container`, `__controls`, `__control-btn`, `__attribution`, `__marker`, `__marker-icon`, `__marker-tooltip`, `__bubble`, `__shape`, `__loading`, `__placeholder`) including dark mode blocks. Registered in both `_index.scss` entry points.
+- **Demo:** Comprehensive demo page at `/components/map/overview` with 6 demo sections covering all layer types: Basic Tile Layer, Zoom/Pan Controls, Tile+Marker, Shape (GeoJSON), Bubble, and All Layers Combined. Each section uses proper `@` Razor expressions, real data models, interactive controls, and event handlers.
+- **Spec accuracy:** All 8 spec files (`overview.md`, `events.md`, `layers/overview.md`, `layers/tile.md`, `layers/marker.md`, `layers/shape.md`, `layers/bubble.md`, `architecture-decision-tile-engine.md`) verified against source. Parameter tables corrected: `Zoom` type fixed (`double` -> `int`), removed non-existent `Bounds` parameter, added `StyleUrl` and `Markers` parameters, event arg property tables trimmed to match actual `MapModels.cs` types (removed phantom `EventArgs`, `Extent`, `GeoJsonDataItem`, `DataItem:object` properties), layer parameter table pruned to 12 implemented parameters (removed 7 planned-but-unimplemented entries), settings sub-component sections replaced with explicit "planned" notes.
+- **Tests:** 26 tests, 0 failures. Full suite: 1374 passed, 0 skipped, 0 failed.
+
+### What is AMBER (API surface present, behavior pending)
+
+- **MapLibre JS module:** `marilo-map.js` does not exist yet. `MapLibreAdapter` imports it but initialization will throw `JSException` (caught and swallowed). Tile rendering is non-functional until JS integration pass.
+- **Planned child components:** `MapLayerMarkerSettings`, `MapLayerBubbleSettings`, `MapLayerShapeSettings` and their nested style components are documented as planned in specs but not implemented. Internal `MapLayerStyleDescriptor` record has fields ready for wiring.
+- **Planned MapLayer parameters:** `Extent`, `MaxSize`, `MinSize`, `Shape`, `Symbol`, `TileSize`, `ZIndex` are documented as planned but not implemented.
+- **MapControls:** `MapControlsAttribution`, `MapControlsNavigator`, `MapControlsZoom` child components planned. `MapControlsPosition` enum exists in `Marilo.Core.Enums`.
+
+### What is RED (blocked)
+
+- **JS adapter authoring:** Requires writing `marilo-map.js` with MapLibre GL JS initialization, layer management, and event forwarding. This is the single remaining implementation task for functional map rendering.
+- **Local basemap pipeline:** Scripts scaffolded in `tools/map-data/` but tiles not yet generated.
+
+### Build verification
+
+- `dotnet build src/Marilo.Components/Marilo.Components.csproj`: **0 errors, 0 warnings**
+- `dotnet build samples/Marilo.Demo/Marilo.Demo.csproj`: **0 errors, 0 warnings**
+- `dotnet test tests/Marilo.Tests.Unit/Marilo.Tests.Unit.csproj`: **1374 passed, 0 failed**
+- Note: `dotnet build Marilo.slnx` has a pre-existing `MariloDockPane` IAsyncDisposable error unrelated to map work.
+
+---
+
+## MariloDiagram v1 API Shape Implementation (2026-04-12)
+
+**Status:** v1 API shape IMPLEMENTED. Architecture decisions resolved.
+
+**Architecture decisions (final):**
+- **Data shape:** Flat list parameters (`IReadOnlyList<DiagramShapeDescriptor>`, `IReadOnlyList<DiagramConnectionDescriptor>`), NOT declarative child tags.
+- **Event naming:** `OnShapeClick` with `DiagramShapeClickEventArgs` (carries full `DiagramShapeDescriptor`), NOT `OnNodeClick`.
+- **Model naming:** `DiagramShapeDescriptor` as the public-facing type, NOT `DiagramNode`. Legacy `DiagramNode` and `DiagramEdge` retained as `[Obsolete]` aliases for compilation compatibility.
+
+**What was implemented:**
+- `DiagramShapeDescriptor`, `DiagramConnectionDescriptor`, `DiagramShapeClickEventArgs`, `DiagramShapeType` enum in `src/Marilo.Core/Models/DiagramModels.cs`.
+- `MariloDiagram.razor` refactored: `Shapes` (`IReadOnlyList<DiagramShapeDescriptor>?`), `Connections` (`IReadOnlyList<DiagramConnectionDescriptor>?`), `OnShapeClick` (`EventCallback<DiagramShapeClickEventArgs>`). SVG rendering maps all five shape types (Rectangle, Ellipse, Diamond, Triangle, Circle). Graceful empty/null handling.
+- 13 bUnit tests in `tests/Marilo.Tests.Unit/DataDisplay/MariloDiagramTests.cs`: null/empty state, shape type rendering, connection rendering, event args, CssClass passthrough.
+- Demo page updated with flat descriptor API, shape type showcase, and interactive add/remove controls.
+- Specs updated: `overview.md`, `shapes.md`, `connections.md`, `events.md` all reflect the v1 API.
+
+**Deferred items:**
+- Declarative child tags (`<DiagramShape>`, `<DiagramConnection>`)
+- Layout engines (tree, force-directed, layered)
+- Drag-and-drop, zoom, pan, selection
+- Ports / connectors, connection routing
+- Shape templates (`RenderFragment`)
+- JSON import/export
+- `OnConnectionClick` event
+- Connection/shape stroke/fill configuration via descriptor properties

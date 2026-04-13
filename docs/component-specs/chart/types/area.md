@@ -34,10 +34,10 @@ The Area Chart is similar to the [Range Area Chart](slug:components/chart/types/
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Area" Name="Product 1" Data="@series1Data">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Area" Name="Product 2" Data="@series2Data">
-        </ChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Area" Name="Product 1" Data="@series1Data">
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Area" Name="Product 2" Data="@series2Data">
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -46,7 +46,7 @@ The Area Chart is similar to the [Range Area Chart](slug:components/chart/types/
 
     <ChartTitle Text="Quarterly revenue per product"></ChartTitle>
 
-    <ChartLegend Position="Marilo.Blazor.ChartLegendPosition.Right">
+    <ChartLegend Position="Marilo.Blazor.ChartPosition.Right">
     </ChartLegend>
 </MariloChart>
 
@@ -93,10 +93,10 @@ You can render the lines between the points with different styles. The supported
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Area" Name="Product 1" Data="@series1Data">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Area" Name="Product 2" Data="@series2Data">
-        </ChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Area" Name="Product 1" Data="@series1Data">
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Area" Name="Product 2" Data="@series2Data">
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -107,7 +107,7 @@ You can render the lines between the points with different styles. The supported
 
     <ChartTitle Text="Quarterly revenue per product"></ChartTitle>
 
-    <ChartLegend Position="Marilo.Blazor.ChartLegendPosition.Right">
+    <ChartLegend Position="Marilo.Blazor.ChartPosition.Right">
     </ChartLegend>
 </MariloChart>
 

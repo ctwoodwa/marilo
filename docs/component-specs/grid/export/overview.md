@@ -40,7 +40,7 @@ The Grid export feature has the following limitations:
 * `bool` fields are exported as `TRUE` or `FALSE` strings, because there is no native boolean data type in the exported formats and these string values are the most common ones used in data and macros.
 * Dates are exported in the following format: `mm/dd/yyyy hh:mm:ss` plus the current app culture AM/PM specifier. The Excel date formats are different than .NET date formats and Excel may not always recognize the column as dates, for example, if the entire date format from the .NET culture is used. To customize the date formats, use the [Export Events](slug:grid-export-events).
 * Numbers are exported in the following format which uses the current thread culture: `Convert.ToDouble(value)`. To customize the number formats use the [Export Events](slug:grid-export-events).
-* The Grid exports only `<GridColumn>` instances. Other types of columns are not exported (for example: command, checkbox, hierarchy, group and row-drag columns).
+* The Grid exports only `<MariloGridColumn>` instances. Other types of columns are not exported (for example: command, checkbox, hierarchy, group and row-drag columns).
 
 ## Customization
 

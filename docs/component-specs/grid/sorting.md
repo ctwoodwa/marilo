@@ -32,12 +32,10 @@ You can prevent the user from sorting a certain field by setting `Sortable="fals
 ````RAZOR
 Click a column header to sort by its data
 
-<MariloGrid Data="@MyData" Sortable="true" Height="500px">
-	<GridColumns>
-		<GridColumn Field="ID"></GridColumn>
-		<GridColumn Field="TheName" Title="Employee Name"></GridColumn>
-	</GridColumns>
-</MariloGrid>
+<MariloDataGrid Data="@MyData" Sortable="true" Height="500px">
+		<MariloGridColumn Field="ID"></MariloGridColumn>
+		<MariloGridColumn Field="TheName" Title="Employee Name"></MariloGridColumn>
+</MariloDataGrid>
 
 @code {
 	public IEnumerable<object> MyData = Enumerable.Range(1, 50).Select(x => new { ID = x, TheName = "name " + x });
@@ -60,14 +58,12 @@ To allow sorting on more than one column at a time, set the `SortMode` parameter
 ````RAZOR
 @* Try sorting by Team, then by Name to see how the multiple sorts apply *@
 
-<MariloGrid Data=@GridData Sortable="true" SortMode="@GridSortMode.Multiple"
+<MariloDataGrid Data=@GridData Sortable="true" SortMode="@GridSortMode.Multiple"
              Pageable="true" Height="400px">
-    <GridColumns>
-        <GridColumn Field=@nameof(Employee.Name) />
-        <GridColumn Field=@nameof(Employee.Team) Title="Team" />
-        <GridColumn Field=@nameof(Employee.IsOnLeave) Title="On Vacation" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field=@nameof(Employee.Name) />
+        <MariloGridColumn Field=@nameof(Employee.Team) Title="Team" />
+        <MariloGridColumn Field=@nameof(Employee.IsOnLeave) Title="On Vacation" />
+</MariloDataGrid>
 
 @code {
     public List<Employee> GridData { get; set; }

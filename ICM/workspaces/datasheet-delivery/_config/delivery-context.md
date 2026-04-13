@@ -31,25 +31,25 @@
 
 | Field | Value |
 |-------|-------|
-| Demo page(s) | DataSheet/Overview.razor |
-| Last demo audit | PENDING |
-| Open demo gaps | PENDING |
+| Demo page(s) | DataSheet/Overview.razor, Editing-and-Validation.razor, BulkOperations.razor, Keyboard-and-Accessibility.razor (4 pages, 16 scenarios, ~1,488 lines) |
+| Last demo audit | 2026-04-11 (Wave 2) |
+| Open demo gaps | 6 (1 Missing theming-architecture-blocked, 4 Partial, 1 Blocked-by-source). Follow-ups EU-01..EU-08. |
 
 ## Visual Parity State
 
 | Field | Value |
 |-------|-------|
-| Last parity review | PENDING |
-| Themes reviewed | PENDING |
-| Open parity gaps | PENDING |
+| Last parity review | 2026-04-11 (Wave 3, static-analysis pass -- no browser capture) |
+| Themes reviewed | Fluent L/D, Bootstrap L/D, Material L/D (6 theme/mode combos) |
+| Open parity gaps | 12 tracked records (VP-datasheet-01 umbrella + VP-02..VP-12) + 3 deferrals (D01 theming, D02 range selection, D03 10k rows). 8 Critical + 3 Major + 0 Minor. All providers aggregate 0.22/3 -- structural gap (zero `mar-datasheet*` SCSS rules in any provider). |
 
 ## Delivery Gate
 
 | Field | Value |
 |-------|-------|
-| Last sync check | PENDING |
-| Gate status | PENDING |
-| Blocking items | PENDING |
+| Last sync check | 2026-04-11 (Wave 4) |
+| Gate status | BLOCKED |
+| Blocking items | 7 (UD-01 datasheet-theming-architecture OPEN, UD-02 datasheet-10k-rows OPEN, VP-datasheet-01 umbrella SCSS gap with 8 Critical + 3 Major children, Wave 1 V03 range selection source model missing, Wave 1 SA-01 grid root tabindex missing, Wave 1 SA-13 aria-live announcements missing, no datasheet-gap-analysis workspace bootstrapped yet) |
 
 ## Gap Workspace Link
 

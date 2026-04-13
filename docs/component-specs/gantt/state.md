@@ -153,7 +153,7 @@ The following state information is being implemented in releases:
 
 * **TreeList Columns** - *Planned* — Field, Visible, Width, Index (order) of each column. This will be available once column reorder and resize features are implemented. The `Index` field represents the visual order (after user reordering), not the markup order.
 
->tip Check the [Gantt State API Reference](slug:Marilo.Blazor.Components.GanttState-1) for the current full list of available properties.
+>tip Check the [Gantt State API Reference](slug:Marilo.Components.DataDisplay.GanttState-1) for the current full list of available properties.
 
 ## Examples
 

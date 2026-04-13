@@ -241,6 +241,15 @@ public partial class MariloDataSheet<TItem> : MariloComponentBase
             _dirtyRows[key] = entry;
         }
 
+        // SA-03: Activate the first editable, non-computed column on
+        // the new row so the user can immediately start typing.
+        var firstEditableCol = _columns.FirstOrDefault(c =>
+            c.Editable && c.ColumnType != DataSheetColumnType.Computed);
+        if (firstEditableCol != null)
+        {
+            ActivateCell(newItem, firstEditableCol.Field);
+        }
+
         StateHasChanged();
         await Task.CompletedTask;
     }

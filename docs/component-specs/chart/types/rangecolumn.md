@@ -19,7 +19,7 @@ The <a href="https://www.marilo.com/blazor-ui/range-column-chart" target="_blank
 2. Set the series `Type` parameter to `ChartSeriesType.RangeColumn`.
 3. Provide a data collection to its `Data` property. You can use a [collection of arrays](#binding-range-column-series-to-collection-of-arrays) or a [collection of custom objects](#binding-range-column-series-to-custom-objects).
 4. If the Range Column data is a collection of arrays, provide data for the `Categories` parameter of the `ChartCategoryAxis`.
-5. (optional) Set `Visible="true"` or define [label `Template`](slug:components/chart/label-template-format) for `<ChartSeriesLabelsFrom>` or `<ChartSeriesLabelsTo>`. These are nested tags inside `<ChartSeriesLabels>` of the respective `<ChartSeries>`.
+5. (optional) Set `Visible="true"` or define [label `Template`](slug:components/chart/label-template-format) for `<ChartSeriesLabelsFrom>` or `<ChartSeriesLabelsTo>`. These are nested tags inside `<ChartSeriesLabels>` of the respective `<MariloChartSeries>`.
 
 ### Binding Range Column Series to Collection of Arrays
 
@@ -32,22 +32,22 @@ Set the `Categories` parameter of the `ChartCategoryAxis` to `object[]`. The mem
 ````RAZOR
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Name="University 1"
+        <MariloChartSeries Name="University 1"
                      Data="@StudentScores1"
                      Type="ChartSeriesType.RangeColumn">
             <ChartSeriesLabels>
                 <ChartSeriesLabelsFrom Visible="true" />
                 <ChartSeriesLabelsTo Visible="false" />
             </ChartSeriesLabels>
-        </ChartSeries>
-        <ChartSeries Name="University 2"
+        </MariloChartSeries>
+        <MariloChartSeries Name="University 2"
                      Data="@StudentScores2"
                      Type="ChartSeriesType.RangeColumn">
             <ChartSeriesLabels>
                 <ChartSeriesLabelsFrom Visible="true" Template="#= dataItem[0] #" />
                 <ChartSeriesLabelsTo Visible="true" Template="#= dataItem[1] #" />
             </ChartSeriesLabels>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -65,7 +65,7 @@ Set the `Categories` parameter of the `ChartCategoryAxis` to `object[]`. The mem
 
     <ChartTitle Text="Exam Score Ranges"></ChartTitle>
 
-    <ChartLegend Position="ChartLegendPosition.Right"></ChartLegend>
+    <ChartLegend Position="ChartPosition.Right"></ChartLegend>
 </MariloChart>
 
 @code {
@@ -109,7 +109,7 @@ Set the `Categories` parameter of the `ChartCategoryAxis` to `object[]`. The mem
 ````RAZOR
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Name="University 1"
+        <MariloChartSeries Name="University 1"
                      Data="@StudentScoreList1"
                      Type="ChartSeriesType.RangeColumn"
                      FromField="@nameof(ScoreModel.LowScore)"
@@ -119,8 +119,8 @@ Set the `Categories` parameter of the `ChartCategoryAxis` to `object[]`. The mem
                 <ChartSeriesLabelsFrom Visible="true" />
                 <ChartSeriesLabelsTo Visible="false" />
             </ChartSeriesLabels>
-        </ChartSeries>
-        <ChartSeries Name="University 2"
+        </MariloChartSeries>
+        <MariloChartSeries Name="University 2"
                      Data="@StudentScoreList2"
                      Type="ChartSeriesType.RangeColumn"
                      FromField="@nameof(ScoreModel.LowScore)"
@@ -130,7 +130,7 @@ Set the `Categories` parameter of the `ChartCategoryAxis` to `object[]`. The mem
                 <ChartSeriesLabelsFrom Visible="true" Template="#= dataItem.LowScore #" />
                 <ChartSeriesLabelsTo Visible="true" Template="#= dataItem.HighScore #" />
             </ChartSeriesLabels>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartTooltip Visible="true">
@@ -144,7 +144,7 @@ Set the `Categories` parameter of the `ChartCategoryAxis` to `object[]`. The mem
 
     <ChartTitle Text="Exam Score Ranges"></ChartTitle>
 
-    <ChartLegend Position="ChartLegendPosition.Right"></ChartLegend>
+    <ChartLegend Position="ChartPosition.Right"></ChartLegend>
 </MariloChart>
 
 @code {

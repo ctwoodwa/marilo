@@ -32,10 +32,10 @@ Bar series
 
 <MariloChart>
 	<ChartSeriesItems>
-		<ChartSeries Type="ChartSeriesType.Bar" Name="Product 1" Data="@series1Data">
-		</ChartSeries>
-		<ChartSeries Type="ChartSeriesType.Bar"Name="Product 2" Data="@series2Data">
-		</ChartSeries>
+		<MariloChartSeries Type="ChartSeriesType.Bar" Name="Product 1" Data="@series1Data">
+		</MariloChartSeries>
+		<MariloChartSeries Type="ChartSeriesType.Bar"Name="Product 2" Data="@series2Data">
+		</MariloChartSeries>
 	</ChartSeriesItems>
 
 	<ChartCategoryAxes>
@@ -44,7 +44,7 @@ Bar series
 
 	<ChartTitle Text="Quarterly revenue per product"></ChartTitle>
 
-	<ChartLegend Position="ChartLegendPosition.Right">
+	<ChartLegend Position="ChartPosition.Right">
 	</ChartLegend>
 </MariloChart>
 
@@ -77,10 +77,10 @@ The color of a series is controlled through the `Color` property that can take a
     <ChartLegend Visible="false"></ChartLegend>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Bar" Name="Total Visits" Data="@Series1Data">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Bar" Name="Unique visitors" Data="@Series2Data">
-        </ChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Bar" Name="Total Visits" Data="@Series1Data">
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Bar" Name="Unique visitors" Data="@Series2Data">
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartValueAxes>

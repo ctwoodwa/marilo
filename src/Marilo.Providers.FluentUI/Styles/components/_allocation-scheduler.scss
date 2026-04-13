@@ -143,9 +143,21 @@
     background: var(--marilo-color-surface, #ffffff);
     z-index: 2;
 
-    // Hide scrollbar — vertical scroll is synced from timeline panel
-    scrollbar-width: none;
-    &::-webkit-scrollbar { display: none; }
+    // Thin visible scrollbar so keyboard/SR users can discover scrollability.
+    // Sync scrolling still driven by JS from the timeline panel.
+    scrollbar-width: thin;
+    scrollbar-color: var(--marilo-color-border, #d1d1d1) transparent;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: var(--marilo-color-border, #d1d1d1);
+      border-radius: 3px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
   }
 
   &__splitter {
@@ -473,8 +485,9 @@
     }
 
     &--drag-target {
-      background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 15%, var(--marilo-color-surface, #ffffff));
-      box-shadow: inset 0 0 0 1px var(--marilo-color-primary, #0f6cbd);
+      background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 8%, var(--marilo-color-surface, #ffffff));
+      outline: 2px dashed var(--marilo-color-primary, #0f6cbd);
+      outline-offset: -2px;
     }
 
     &--editing {
@@ -490,6 +503,7 @@
         font-family: inherit;
         font-variant-numeric: tabular-nums;
         background: var(--marilo-color-surface, #ffffff);
+        color: var(--marilo-color-text, #323130);
         padding: 0.375rem 0.25rem;
         box-sizing: border-box;
       }
@@ -499,6 +513,12 @@
   // ── Fill Handle ──────────────────────────────────────
   // Shown in the bottom-right corner of the active editable cell.
   // Dragging this handle copies the source cell value to adjacent cells.
+  &__conflict-icon {
+    margin-inline-start: 4px;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+
   &__fill-handle {
     position: absolute;
     right: -4px;
@@ -604,7 +624,7 @@
     background: var(--marilo-color-surface, #ffffff);
     border: 1px solid var(--marilo-color-border, #d1d1d1);
     border-radius: 4px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    box-shadow: var(--marilo-shadow-16, 0 8px 24px rgba(0, 0, 0, 0.12));
     min-width: 200px;
   }
 

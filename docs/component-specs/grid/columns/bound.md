@@ -24,7 +24,7 @@ Sections in this article:
 
 ## Show Data In A Grid
 
-To show data in a grid, you must define `GridColumn` instances in the `GridColumns` collection for the fields of the data source you want to show. Their `Field` parameter defines which property from the model is shown in the column. You can provide the collection of models to the grid in its `Data` parameter.
+To show data in a grid, you must define `MariloGridColumn` instances directly inside `<MariloDataGrid>` for the fields of the data source you want to show. Their `Field` parameter defines which property from the model is shown in the column. You can provide the collection of models to the grid in its `Data` parameter.
 
 >caption Provide data to the grid and choose which columns (fields) to see
 
@@ -34,14 +34,12 @@ To show data in a grid, you must define `GridColumn` instances in the `GridColum
 @using System.ComponentModel.DataAnnotations
 @* This Using is for the model class attributes only *@
 
-<MariloGrid Data="@MyData">
-    <GridColumns>
-        <GridColumn Field="@(nameof(SampleData.Id))" />
-        <GridColumn Field="@(nameof(SampleData.Name))" />
-        <GridColumn Field="@(nameof(SampleData.Team))" Title="Team" />
-        <GridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" />
-    </GridColumns>
-</MariloGrid>
+<MariloDataGrid Data="@MyData">
+        <MariloGridColumn Field="@(nameof(SampleData.Id))" />
+        <MariloGridColumn Field="@(nameof(SampleData.Name))" />
+        <MariloGridColumn Field="@(nameof(SampleData.Team))" Title="Team" />
+        <MariloGridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" />
+</MariloDataGrid>
 
 @code {
     public IEnumerable<SampleData> MyData = Enumerable.Range(1, 30).Select(x => new SampleData
@@ -63,7 +61,7 @@ To show data in a grid, you must define `GridColumn` instances in the `GridColum
 }
 ````
 
->tip You can also use a string for the field name, using the `nameof` operator is not necessary. For example, the ID column can be defined like this: `<GridColumn Field="Id" />`. The field name is, however, **case-sensitive**.
+>tip You can also use a string for the field name, using the `nameof` operator is not necessary. For example, the ID column can be defined like this: `<MariloGridColumn Field="Id" />`. The field name is, however, **case-sensitive**.
 
 >tip The `Data` collection can be an `ObservableCollection`, an array, a `List` - it must only implement `IEnumerable`.
 

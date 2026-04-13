@@ -1,0 +1,282 @@
+// =============================================================================
+// Component: TreeList — FluentUI Provider Styles
+// BEM classes emitted by MariloTreeList.razor
+// =============================================================================
+
+.mar-treelist {
+  width: 100%;
+  border: 1px solid var(--marilo-color-border, #e1dfdd);
+  border-radius: var(--marilo-radius-md, 4px);
+  overflow: auto;
+  font-family: var(--marilo-font-family, 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif);
+  font-size: var(--marilo-font-size-base, 14px);
+  color: var(--marilo-color-text, #323130);
+  background: var(--marilo-color-surface, #ffffff);
+}
+
+.mar-treelist__table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+// ── Header ────────────────────────────────────────────────────
+.mar-treelist__th {
+  padding: var(--marilo-space-sm, 8px) var(--marilo-space-md, 12px);
+  text-align: left;
+  font-weight: var(--marilo-font-weight-semibold, 600);
+  background: var(--marilo-color-subtle-background, #faf9f8);
+  border-bottom: 1px solid var(--marilo-color-border, #e1dfdd);
+  white-space: nowrap;
+  user-select: none;
+  color: var(--marilo-color-text, #323130);
+}
+
+// ── Row ───────────────────────────────────────────────────────
+.mar-treelist__row {
+  border-bottom: 1px solid var(--marilo-color-border, #edebe9);
+  transition: background var(--marilo-transition-fast, 0.1s ease);
+  cursor: pointer;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: var(--marilo-color-subtle-background, #faf9f8);
+  }
+}
+
+// ── Selected row ─────────────────────────────────────────────
+.mar-treelist__row--selected {
+  background: color-mix(in srgb, var(--marilo-color-primary, #0078d4) 10%, var(--marilo-color-surface, #ffffff));
+}
+
+// ── Focused row (keyboard navigation) ────────────────────────
+.mar-treelist__row--focused {
+  outline: 2px solid var(--marilo-color-primary, #0078d4);
+  outline-offset: -2px;
+}
+
+// ── Cell ──────────────────────────────────────────────────────
+.mar-treelist__td {
+  padding: var(--marilo-space-sm, 8px) var(--marilo-space-md, 12px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+// ── Toggle button (expand/collapse) ──────────────────────────
+// Note: the component emits `mar-tree-item__toggle` (shared with TreeView)
+.mar-tree-item__toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-radius: var(--marilo-radius-sm, 2px);
+  background: transparent;
+  color: var(--marilo-color-text-secondary, #605e5c);
+  cursor: pointer;
+  font-size: 10px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: background var(--marilo-transition-fast, 0.1s ease),
+              color var(--marilo-transition-fast, 0.1s ease);
+
+  &:hover {
+    background: var(--marilo-color-subtle-background, #f3f2f1);
+    color: var(--marilo-color-text, #323130);
+  }
+
+  &:active {
+    background: var(--marilo-color-subtle-background, #edebe9);
+  }
+}
+
+// ── Sortable header ──────────────────────────────────────────
+.mar-treelist__th--sortable {
+  cursor: pointer;
+}
+
+// ── Column resize handle ─────────────────────────────────────
+.mar-treelist__resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 4px;
+  cursor: col-resize;
+  background: transparent;
+  z-index: 1;
+  transition: background var(--marilo-transition-fast, 0.1s ease);
+
+  &:hover,
+  &:active {
+    background: var(--marilo-color-primary, #0078d4);
+  }
+}
+
+.mar-treelist__th {
+  position: relative;
+}
+
+// ── Column reorder drag indicator ────────────────────────────
+.mar-treelist__th--drag-over {
+  box-shadow: inset -2px 0 0 0 var(--marilo-color-primary, #0078d4);
+}
+
+// ── Pager ────────────────────────────────────────────────────
+.mar-treelist__pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--marilo-space-xs, 4px);
+  padding: var(--marilo-space-sm, 8px) var(--marilo-space-md, 12px);
+  border-top: 1px solid var(--marilo-color-border, #e1dfdd);
+}
+
+.mar-treelist__pager-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 var(--marilo-space-sm, 8px);
+  border: 1px solid var(--marilo-color-border, #e1dfdd);
+  border-radius: var(--marilo-radius-sm, 2px);
+  background: var(--marilo-color-surface, #ffffff);
+  color: var(--marilo-color-text, #323130);
+  font-size: var(--marilo-font-size-base, 14px);
+  cursor: pointer;
+  transition: background var(--marilo-transition-fast, 0.1s ease),
+              border-color var(--marilo-transition-fast, 0.1s ease);
+
+  &:hover:not(:disabled) {
+    background: var(--marilo-color-subtle-background, #f3f2f1);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &--active {
+    background: var(--marilo-color-primary, #0078d4);
+    color: var(--marilo-color-on-primary, #ffffff);
+    border-color: var(--marilo-color-primary, #0078d4);
+
+    &:hover:not(:disabled) {
+      background: var(--marilo-color-primary, #0078d4);
+    }
+  }
+}
+
+// ── Accessibility: reduced motion ─────────────────────────────
+@media (prefers-reduced-motion: reduce) {
+  .mar-treelist,
+  .mar-treelist * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+// ── Accessibility: high contrast ──────────────────────────────
+@media (forced-colors: active) {
+  .mar-treelist {
+    border-color: ButtonText;
+  }
+
+  .mar-treelist__th {
+    border-bottom-color: ButtonText;
+  }
+
+  .mar-treelist__row:hover {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  .mar-tree-item__toggle {
+    color: ButtonText;
+
+    &:hover {
+      color: Highlight;
+    }
+  }
+}
+
+// ── Dark mode ─────────────────────────────────────────────────
+[data-marilo-theme="dark"] {
+  .mar-treelist {
+    border-color: var(--marilo-color-border, #484644);
+    background: var(--marilo-color-surface, #252423);
+    color: var(--marilo-color-text, #f3f2f1);
+  }
+
+  .mar-treelist__th {
+    background: var(--marilo-color-subtle-background, #323130);
+    border-bottom-color: var(--marilo-color-border, #484644);
+    color: var(--marilo-color-text, #f3f2f1);
+  }
+
+  .mar-treelist__row {
+    border-bottom-color: var(--marilo-color-border, #3b3a39);
+
+    &:hover {
+      background: var(--marilo-color-subtle-background, #3b3a39);
+    }
+  }
+
+  .mar-tree-item__toggle {
+    color: var(--marilo-color-text-secondary, #a19f9d);
+
+    &:hover {
+      background: var(--marilo-color-subtle-background, #484644);
+      color: var(--marilo-color-text, #f3f2f1);
+    }
+  }
+
+  .mar-treelist__row--selected {
+    background: color-mix(in srgb, var(--marilo-color-primary, #479ef5) 15%, var(--marilo-color-surface, #252423));
+  }
+
+  .mar-treelist__row--focused {
+    outline-color: var(--marilo-color-primary, #479ef5);
+  }
+
+  .mar-treelist__resize-handle {
+    &:hover,
+    &:active {
+      background: var(--marilo-color-primary, #479ef5);
+    }
+  }
+
+  .mar-treelist__th--drag-over {
+    box-shadow: inset -2px 0 0 0 var(--marilo-color-primary, #479ef5);
+  }
+
+  .mar-treelist__pager {
+    border-top-color: var(--marilo-color-border, #484644);
+  }
+
+  .mar-treelist__pager-btn {
+    background: var(--marilo-color-surface, #252423);
+    color: var(--marilo-color-text, #f3f2f1);
+    border-color: var(--marilo-color-border, #484644);
+
+    &:hover:not(:disabled) {
+      background: var(--marilo-color-subtle-background, #3b3a39);
+    }
+
+    &--active {
+      background: var(--marilo-color-primary, #479ef5);
+      color: var(--marilo-color-on-primary, #ffffff);
+      border-color: var(--marilo-color-primary, #479ef5);
+    }
+  }
+}

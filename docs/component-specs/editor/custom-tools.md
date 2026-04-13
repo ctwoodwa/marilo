@@ -62,11 +62,11 @@ In this section you can find the following examples:
 
 @code {
     string TheEditorContent { get; set; } = "<h1>Lorem ipsum</h1><p>Dolor sit amet.</p>";
-    List<IEditorTool> Tools { get; set; }
+    IEnumerable<EditorTool> Tools { get; set; }
 
     protected override Task OnInitializedAsync()
     {
-        Tools = new List<IEditorTool>();
+        Tools = new IEnumerable<EditorTool>();
 
         // register the custom tool for the toolbar - it uses the Name parameter from the markup
         Tools.Add(new CustomTool("AddSignature"));
@@ -103,11 +103,11 @@ In this section you can find the following examples:
 @code {
     string TheEditorContent { get; set; } = "<p>Lorem ipsum</p><p>Dolor sit amet.</p>";
     MariloEditor EditorRef { get; set; }
-    List<IEditorTool> Tools { get; set; }
+    IEnumerable<EditorTool> Tools { get; set; }
 
     protected override Task OnInitializedAsync()
     {
-        Tools = new List<IEditorTool>();
+        Tools = new IEnumerable<EditorTool>();
 
         // register the custom tool for the toolbar - it uses the Name parameter from the markup
         Tools.Add(new CustomTool("ImportantFragment"));
@@ -143,11 +143,11 @@ You can call application code from the editor tools to, for example, save the cu
 
 @code {
     string TheEditorContent { get; set; } = "<h1>Lorem ipsum</h1><p>Dolor sit amet.</p>";
-    List<IEditorTool> Tools { get; set; }
+    IEnumerable<EditorTool> Tools { get; set; }
 
     protected override Task OnInitializedAsync()
     {
-        Tools = new List<IEditorTool>();
+        Tools = new IEnumerable<EditorTool>();
 
         // register the custom tool for the toolbar - it uses the Name parameter from the markup
         Tools.Add(new CustomTool("Save"));

@@ -20,21 +20,20 @@ You can use [aggregates](slug:grid-aggregates) for the current field directly fr
 ````RAZOR
 @* grand total footer that is always visible *@
 
-<MariloGrid Data=@GridData Pageable="true" Height="300px">
+<MariloDataGrid Data=@GridData Pageable="true" Height="300px">
     <GridAggregates>
         <GridAggregate Field=@nameof(Employee.Salary) Aggregate="@GridAggregateType.Max" />
         <GridAggregate Field=@nameof(Employee.Salary) Aggregate="@GridAggregateType.Sum" />
         <GridAggregate Field=@nameof(Employee.EmployeeId) Aggregate="@GridAggregateType.Count" />
     </GridAggregates>
-    <GridColumns>
-        <GridColumn Field=@nameof(Employee.Salary) Title="Salary">
+        <MariloGridColumn Field=@nameof(Employee.Salary) Title="Salary">
             <FooterTemplate>
                 Total salaries: @context.Sum?.ToString("C0")
                 <br />
                 Highest salary: @context.Max?.ToString("C0")
             </FooterTemplate>
-        </GridColumn>
-        <GridColumn Field=@nameof(Employee.Name)>
+        </MariloGridColumn>
+        <MariloGridColumn Field=@nameof(Employee.Name)>
             <FooterTemplate>
                 @{
                     // you can use aggregates for other fields/columns by extracting the desired one by its
@@ -46,9 +45,8 @@ You can use [aggregates](slug:grid-aggregates) for the current field directly fr
                 }
                 Total employees: @headCount
             </FooterTemplate>
-        </GridColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridColumn>
+</MariloDataGrid>
 
 @code {
     public List<Employee> GridData { get; set; }

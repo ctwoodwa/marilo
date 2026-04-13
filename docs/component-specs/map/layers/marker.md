@@ -24,7 +24,7 @@ This article describes how to:
 To define a Marker layer in the Map:
 
 1. Add a `<MapLayer>` tag to `<MapLayers>`.
-2. Set the `Type` parameter of the `MapLayer` to `MapLayersType.Marker`.
+2. Set the `Type` parameter of the `MapLayer` to `MapLayerType.Marker`.
 3. Set the `Data` parameter.
 4. Set the `LocationField` and `TitleField` parameters to the respective property names of the model class.
 5. (optional) Provide the [tooltip settings](#setting-marker-tooltips) or choose the [Marker shape](#defining-marker-shapes).
@@ -35,15 +35,15 @@ The following example demonstrates how to configure the Marker layer of the Map.
 
 ````RAZOR
 <MariloMap Center="@MapCenter"
-            Zoom="3">
+           Zoom="3">
     <MapLayers>
-        <MapLayer Type="@MapLayersType.Tile"
+        <MapLayer Type="@MapLayerType.Tile"
                   Attribution="@LayerAttribution"
                   Subdomains="@LayerSubdomains"
                   UrlTemplate="@LayerUrlTemplate">
         </MapLayer>
 
-        <MapLayer Type="@MapLayersType.Marker"
+        <MapLayer Type="@MapLayerType.Marker"
                   Data="@MarkerData"
                   LocationField="@nameof(MarkerModel.LatLng)"
                   TitleField="@nameof(MarkerModel.Title)">
@@ -53,10 +53,10 @@ The following example demonstrates how to configure the Marker layer of the Map.
 </MariloMap>
 
 @code {
-    private double[] MapCenter { get; set; } = new double[] { 30.268107, -97.744821 };
+    private MapCenter MapCenter { get; set; } = new() { Latitude = 30.268107, Longitude = -97.744821 };
 
     private readonly string[] LayerSubdomains = new string[] { "a", "b", "c" };
-    private const string LayerUrlTemplate = "https://#= subdomain #.tile.openstreetmap.org/#= zoom #/#= x #/#= y #.png";
+    private const string LayerUrlTemplate = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
     private const string LayerAttribution = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
 
     private List<MarkerModel> MarkerData { get; set; } = new List<MarkerModel>() {
@@ -95,22 +95,22 @@ The following example uses two Marker layers with different templates. One rende
 
 ````RAZOR
 <MariloMap Center="@MapCenter"
-            Zoom="3">
+           Zoom="3">
     <MapLayers>
-        <MapLayer Type="@MapLayersType.Tile"
+        <MapLayer Type="@MapLayerType.Tile"
                   Attribution="@LayerAttribution"
                   Subdomains="@LayerSubdomains"
                   UrlTemplate="mapLayerUrlTemplate">
         </MapLayer>
 
-        <MapLayer Type="@MapLayersType.Marker"
+        <MapLayer Type="@MapLayerType.Marker"
                   Data="@MarkerData1"
                   LocationField="@nameof(MarkerModel.LatLng)"
                   TitleField="@nameof(MarkerModel.Title)">
             <MapLayerMarkerSettings Template="mapLayerMarkerTemplate" />
         </MapLayer>
 
-        <MapLayer Type="@MapLayersType.Marker"
+        <MapLayer Type="@MapLayerType.Marker"
                   Data="@MarkerData2"
                   LocationField="@nameof(MarkerModel.LatLng)"
                   TitleField="@nameof(MarkerModel.Title)">
@@ -143,7 +143,7 @@ The following example uses two Marker layers with different templates. One rende
 </style>
 
 @code {
-    private double[] MapCenter { get; set; } = new double[] { 30.268107, -97.744821 };
+    private MapCenter MapCenter { get; set; } = new() { Latitude = 30.268107, Longitude = -97.744821 };
 
     private readonly string[] LayerSubdomains = new string[] { "a", "b", "c" };
     private const string LayerAttribution = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
@@ -199,26 +199,26 @@ The Map supports the `Pin` and `PinTarget` Marker types. To define the Marker ty
 
 ````RAZOR
 <MariloButtonGroup SelectionMode="@ButtonGroupSelectionMode.Single">
-    <ButtonGroupToggleButton Selected="@( MarkerShape == MapMarkersShape.PinTarget )"
-                             OnClick="@( () => MarkerShape = MapMarkersShape.PinTarget )">
+    <ButtonGroupToggleButton Selected="@( MarkerShape == MapMarkerShape.PinTarget )"
+                             OnClick="@( () => MarkerShape = MapMarkerShape.PinTarget )">
         Use Pin Target Markers
     </ButtonGroupToggleButton>
-    <ButtonGroupToggleButton Selected="@( MarkerShape == MapMarkersShape.Pin )"
-                             OnClick="@( () => MarkerShape = MapMarkersShape.Pin )">
+    <ButtonGroupToggleButton Selected="@( MarkerShape == MapMarkerShape.Pin )"
+                             OnClick="@( () => MarkerShape = MapMarkerShape.Pin )">
         Use Pin Markers
     </ButtonGroupToggleButton>
 </MariloButtonGroup>
 
 <MariloMap Center="@MapCenter"
-            Zoom="3">
+           Zoom="3">
     <MapLayers>
-        <MapLayer Type="@MapLayersType.Tile"
+        <MapLayer Type="@MapLayerType.Tile"
                   Attribution="@LayerAttribution"
                   Subdomains="@LayerSubdomains"
                   UrlTemplate="@LayerUrlTemplate">
         </MapLayer>
 
-        <MapLayer Type="@MapLayersType.Marker"
+        <MapLayer Type="@MapLayerType.Marker"
                   Data="@MarkerData"
                   LocationField="@nameof(MarkerModel.LatLng)"
                   TitleField="@nameof(MarkerModel.Title)"
@@ -228,12 +228,12 @@ The Map supports the `Pin` and `PinTarget` Marker types. To define the Marker ty
 </MariloMap>
 
 @code {
-    private double[] MapCenter { get; set; } = new double[] { 30.268107, -97.744821 };
+    private MapCenter MapCenter { get; set; } = new() { Latitude = 30.268107, Longitude = -97.744821 };
 
-    private MapMarkersShape MarkerShape { get; set; } = MapMarkersShape.Pin;
+    private MapMarkerShape MarkerShape { get; set; } = MapMarkerShape.Pin;
 
     private readonly string[] LayerSubdomains = new string[] { "a", "b", "c" };
-    private const string LayerUrlTemplate = "https://#= subdomain #.tile.openstreetmap.org/#= zoom #/#= x #/#= y #.png";
+    private const string LayerUrlTemplate = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
     private const string LayerAttribution = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
 
     public List<MarkerModel> MarkerData { get; set; } = new List<MarkerModel>() {
@@ -265,15 +265,15 @@ The `MapLayerMarkerSettingsTooltip` tag allows you to fine-tune the content, app
 
 ````RAZOR
 <MariloMap Center="@MapCenter"
-            Zoom="3">
+           Zoom="3">
     <MapLayers>
-        <MapLayer Type="@MapLayersType.Tile"
+        <MapLayer Type="@MapLayerType.Tile"
                   Attribution="@LayerAttribution"
                   Subdomains="@LayerSubdomains"
                   UrlTemplate="@LayerUrlTemplate">
         </MapLayer>
 
-        <MapLayer Type="@MapLayersType.Marker"
+        <MapLayer Type="@MapLayerType.Marker"
                   Data="@MarkerData1"
                   LocationField="@nameof(MarkerModel.LatLng)"
                   TitleField="@nameof(MarkerModel.Title)">
@@ -290,11 +290,11 @@ The `MapLayerMarkerSettingsTooltip` tag allows you to fine-tune the content, app
 </MariloMap>
 
 @code {
-    private double[] MapCenter { get; set; } = new double[] { 30.268107, -97.744821 };
+    private MapCenter MapCenter { get; set; } = new() { Latitude = 30.268107, Longitude = -97.744821 };
 
     private readonly string[] LayerSubdomains = new string[] { "a", "b", "c" };
-    private const string LayerUrlTemplate = "https://#= subdomain #.tile.openstreetmap.org/#= zoom #/#= x #/#= y #.png";
-    private string LayerAttribution { get; set; } = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
+    private const string LayerUrlTemplate = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+    private const string LayerAttribution = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
 
     private List<MarkerModel> MarkerData1 { get; set; } = new List<MarkerModel>() {
         new MarkerModel()

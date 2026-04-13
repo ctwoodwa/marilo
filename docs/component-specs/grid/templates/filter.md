@@ -23,7 +23,7 @@ There are two different templates you can use depending on the [Filter Mode](slu
 
 By default, the filter row puts an appropriate editor (like a numeric textbox for numbers) and its `ValueChanged` handler triggers grid filtering on every keystroke. There is also a button for the user to choose a filter operator, and a clear filter button when there is a value in the editor.
 
-To customize the filter cell, use the `<FilterCellTemplate>` tag of the `<GridColumn>`. It receives a `context` of type `FilterCellTemplateContext` that provides the following members:
+To customize the filter cell, use the `<FilterCellTemplate>` tag of the `<MariloGridColumn>`. It receives a `context` of type `FilterCellTemplateContext` that provides the following members:
 
 * `FilterDescriptor` - a [CompositeFilterDescriptor](slug:Marilo.DataSource.CompositeFilterDescriptor) object that describes the column filter. By default, its `FilterDescriptors` field contains two `FilterDescriptor` instances and its `LogicalOperator` is `AND`. You can populate the filter values in the existing `FilterDescriptors` and add more instances. You can change their [filter operator](slug:common-features-filter-operators) and the `LogicalOperator` of the `CompositeFilterDescriptor`.
 
@@ -52,12 +52,11 @@ You can find more examples in the [Live Demo: Custom Filter Row](https://demos.m
 
 The custom filter textboxes invoke filtering on Enter or blur through the OnChange event
 
-<MariloGrid Data=@GridData FilterMode="@GridFilterMode.FilterRow"
+<MariloDataGrid Data=@GridData FilterMode="@GridFilterMode.FilterRow"
              Height="400px" Width="700px" Pageable="true">
-    <GridColumns>
-        <GridColumn Field="Id" Filterable="false" Width="80px" />
+        <MariloGridColumn Field="Id" Filterable="false" Width="80px" />
 
-        <GridColumn Field="Price" Width="400px">
+        <MariloGridColumn Field="Price" Width="400px">
             <FilterCellTemplate>
                 @{
                     // we store a reference to the filter context to use in the business logic
@@ -88,11 +87,10 @@ The custom filter textboxes invoke filtering on Enter or blur through the OnChan
                                           })">
                 </MariloButton>
             </FilterCellTemplate>
-        </GridColumn>
+        </MariloGridColumn>
 
-        <GridColumn Field="ProductName" Title="Product" Filterable="false" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="ProductName" Title="Product" Filterable="false" />
+</MariloDataGrid>
 
 @code {
     private FilterCellTemplateContext PriceFilterContext { get; set; }
@@ -160,7 +158,7 @@ The custom filter textboxes invoke filtering on Enter or blur through the OnChan
 
 By default, the filter menu contains two filter values that are tied with a logical operator - OR or AND, with filtering being triggered through a dedicated Filter button and a Clear button removes the filter.
 
-To customize the filter menu, use the `<FilterMenuTemplate>` tag of the `<GridColumn>`. The `Filter` and `Clear` buttons are still available below the template.
+To customize the filter menu, use the `<FilterMenuTemplate>` tag of the `<MariloGridColumn>`. The `Filter` and `Clear` buttons are still available below the template.
 
 The template receives a `context` of type `FilterMenuTemplateContext` that provides the following members:
 
@@ -190,13 +188,12 @@ For an example with the CheckboxList Filter, see the [Custom Data](slug:grid-che
 ````RAZOR
 @using Marilo.DataSource
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              FilterMode="@GridFilterMode.FilterMenu"
              Pageable="true"
              Width="600px">
-    <GridColumns>
-        <GridColumn Field="@(nameof(Product.Name))" Title="Product" Filterable="false" />
-        <GridColumn Field="@(nameof(Product.Size))">
+        <MariloGridColumn Field="@(nameof(Product.Name))" Title="Product" Filterable="false" />
+        <MariloGridColumn Field="@(nameof(Product.Size))">
             <FilterMenuTemplate>
                 @foreach (var size in Sizes)
                 {
@@ -219,9 +216,8 @@ For an example with the CheckboxList Filter, see the [Custom Data](slug:grid-che
                     </div>
                 }
             </FilterMenuTemplate>
-        </GridColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridColumn>
+</MariloDataGrid>
 
 @code {
     private bool IsCheckboxInCurrentFilter(CompositeFilterDescriptor filterDescriptor, string size)
@@ -327,23 +323,21 @@ The template receives a `context` of type `FilterMenuTemplateContext` that provi
 
 @using Marilo.DataSource
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              Pageable="true"
              Sortable="true"
              FilterMode="@GridFilterMode.FilterMenu">
-    <GridColumns>
-        <GridColumn Field="Name" Title="Product Name" />
-        <GridColumn Field="Price">
+        <MariloGridColumn Field="Name" Title="Product Name" />
+        <MariloGridColumn Field="Price">
             <FilterMenuButtonsTemplate Context="filterContext">
                 <MariloButton OnClick="@(async _ => await filterContext.FilterAsync())">Filter </MariloButton>
                 <MariloButton OnClick="@(() => SetPredefinedFilterAsync(filterContext))">Select >= 55</MariloButton>
                 <MariloButton OnClick="@(() => ClearFilterAsync(filterContext))">Clear</MariloButton>
             </FilterMenuButtonsTemplate>
-        </GridColumn>
-        <GridColumn Field="@nameof(Product.Released)" />
-        <GridColumn Field="@nameof(Product.Discontinued)" />
-    </GridColumns>
-</MariloGrid>
+        </MariloGridColumn>
+        <MariloGridColumn Field="@nameof(Product.Released)" />
+        <MariloGridColumn Field="@nameof(Product.Discontinued)" />
+</MariloDataGrid>
 
 @code {
     private async Task SetPredefinedFilterAsync(FilterMenuTemplateContext filterContext)

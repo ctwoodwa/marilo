@@ -24,7 +24,7 @@ You can configure the Grid either for row or cell selection. See [Rows Selection
 
 ## Use Single or Multiple Selection
 
-You can configure the selection behavior by setting the Grid `SelectionMode` parameter to a member of the `Marilo.Blazor.GridSelectionMode` enum. The Grid supports the following selection modes:
+You can configure the selection behavior by setting the Grid `SelectionMode` parameter to a member of the `Marilo.Components.DataGrid.GridSelectionMode` enum. The Grid supports the following selection modes:
 
 * `None` (default)—Disables row and cell selection.
 * `Single`—Allows the user to select only one cell or row at a time. If the user attempts to select multiple cells or rows sequentially, only the most recent selection will take effect.

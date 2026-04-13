@@ -28,7 +28,7 @@ This article contains the following sections:
 
 To enable the Drag and Drop functionality:
 
-1. Set the `RowDraggable` parameter of the `<MariloGrid>` to `true`
+1. Set the `RowDraggable` parameter of the `<MariloDataGrid>` to `true`
 
 1. Use the `OnRowDrop` event to handle the drag and drop operations and modify the data source as per your business logic.
 
@@ -54,7 +54,7 @@ The `OnRowDrop` event provides an object of type `GridRowDropEventArgs<TItem>` t
 
 ## GridRowDraggableSettings
 
-The `GridRowDraggableSettings` is a child tag under the `<GridSettings>`, which is a child tag of the `<MariloGrid>`. It exposes the following parameters:
+The `GridRowDraggableSettings` is a child tag under the `<GridSettings>`, which is a child tag of the `<MariloDataGrid>`. It exposes the following parameters:
 
 * `DragClueField` - `string` - defines which field will be used to render the drag clue text. By default, this parameter will take the value of the first bound column of the first dragged row. 
 
@@ -74,7 +74,7 @@ This section contains the following examples:
 ````RAZOR
 @* Drag a row and drop it in the Grid. *@
 
-<MariloGrid Data="@MyData" Height="400px"
+<MariloDataGrid Data="@MyData" Height="400px"
              Pageable="true"
              Resizable="true" 
              Reorderable="true"
@@ -83,13 +83,11 @@ This section contains the following examples:
     <GridSettings>
         <GridRowDraggableSettings DragClueField="@nameof(SampleData.Name)"></GridRowDraggableSettings>
     </GridSettings>
-    <GridColumns>
-        <GridColumn Field="@(nameof(SampleData.Id))" Width="120px" />
-        <GridColumn Field="@(nameof(SampleData.Name))" Title="Employee Name" Groupable="false" />
-        <GridColumn Field="@(nameof(SampleData.Team))" Title="Team" />
-        <GridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@(nameof(SampleData.Id))" Width="120px" />
+        <MariloGridColumn Field="@(nameof(SampleData.Name))" Title="Employee Name" Groupable="false" />
+        <MariloGridColumn Field="@(nameof(SampleData.Team))" Title="Team" />
+        <MariloGridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" />
+</MariloDataGrid>
 
 @code {
     private void OnRowDropHandler(GridRowDropEventArgs<SampleData> args)
@@ -142,7 +140,7 @@ The following example demonstrates both these options. You can also check how to
 >caption Drag and drop items between Grids
 
 ````RAZOR
-<MariloGrid @ref="@FirstGridRef"
+<MariloDataGrid @ref="@FirstGridRef"
              Data="@MyData"
              Pageable="true"
              PageSize="5"
@@ -151,15 +149,13 @@ The following example demonstrates both these options. You can also check how to
     <GridSettings>
         <GridRowDraggableSettings DragClueField="@nameof(SampleData.Name)"></GridRowDraggableSettings>
     </GridSettings>
-    <GridColumns>
-        <GridColumn Field="@(nameof(SampleData.Id))" Width="120px" />
-        <GridColumn Field="@(nameof(SampleData.Name))" Title="Employee Name" />
-        <GridColumn Field="@(nameof(SampleData.Team))" />
-        <GridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" DisplayFormat="{0:d}" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@(nameof(SampleData.Id))" Width="120px" />
+        <MariloGridColumn Field="@(nameof(SampleData.Name))" Title="Employee Name" />
+        <MariloGridColumn Field="@(nameof(SampleData.Team))" />
+        <MariloGridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" DisplayFormat="{0:d}" />
+</MariloDataGrid>
 
-<MariloGrid Data="@MySecondGridData"
+<MariloDataGrid Data="@MySecondGridData"
              Pageable="true"
              PageSize="5"
              RowDraggable="true"
@@ -171,16 +167,14 @@ The following example demonstrates both these options. You can also check how to
     <NoDataTemplate>
         <div style="padding:85px 0">Drag and drop rows here...</div>
     </NoDataTemplate>
-    <GridColumns>
-        <GridColumn Field="@(nameof(SampleData.Id))" Width="120px" />
-        <GridColumn Field="@(nameof(SampleData.Name))" Title="Employee Name" />
-        <GridColumn Field="@(nameof(SampleData.Team))" />
-        <GridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" DisplayFormat="{0:d}" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@(nameof(SampleData.Id))" Width="120px" />
+        <MariloGridColumn Field="@(nameof(SampleData.Name))" Title="Employee Name" />
+        <MariloGridColumn Field="@(nameof(SampleData.Team))" />
+        <MariloGridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" DisplayFormat="{0:d}" />
+</MariloDataGrid>
 
 @code {
-    private MariloGrid<SampleData> FirstGridRef { get; set; }
+    private MariloDataGrid<SampleData> FirstGridRef { get; set; }
 
     private void OnRowDropHandler(GridRowDropEventArgs<SampleData> args)
     {
@@ -261,7 +255,7 @@ The functionality allows dragging items between Grid, [TreeList](slug:treelist-d
 @inject PersonService PersonService;
 @inject TreeListService TreeService;
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              Id="Grid1"
              Pageable="true"
              Width="450px"
@@ -274,11 +268,9 @@ The functionality allows dragging items between Grid, [TreeList](slug:treelist-d
     <GridSettings>
         <GridRowDraggableSettings DragClueField="@nameof(Person.Name)"></GridRowDraggableSettings>
     </GridSettings>
-    <GridColumns>
-        <GridColumn Field=@nameof(Person.EmployeeId) Editable="false" />
-        <GridColumn Field=@nameof(Person.Name) />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field=@nameof(Person.EmployeeId) Editable="false" />
+        <MariloGridColumn Field=@nameof(Person.Name) />
+</MariloDataGrid>
 <MariloTreeList Data="@TreeData"
                  Id="TreeList1"
                  ItemsField="Items"
@@ -299,7 +291,7 @@ The functionality allows dragging items between Grid, [TreeList](slug:treelist-d
 
 @code {
     public List<Person> GridData { get; set; }
-    public MariloGrid<Person> GridRef { get; set; }
+    public MariloDataGrid<Person> GridRef { get; set; }
     public MariloTreeList<FlatItem> TreeListRef { get; set; }
     public List<FlatItem> TreeData { get; set; }
     protected override async Task OnInitializedAsync()
@@ -601,7 +593,7 @@ public enum ProductSize
 
 @inject PersonService PersonService;
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              Id="Grid1"
              Width="450px"
              RowDraggable="true"
@@ -610,11 +602,9 @@ public enum ProductSize
     <GridSettings>
         <GridRowDraggableSettings DragClueField="@nameof(Person.Name)"></GridRowDraggableSettings>
     </GridSettings>
-    <GridColumns>
-        <GridColumn Field=@nameof(Person.EmployeeId) Editable="false" />
-        <GridColumn Field=@nameof(Person.Name) />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field=@nameof(Person.EmployeeId) Editable="false" />
+        <MariloGridColumn Field=@nameof(Person.Name) />
+</MariloDataGrid>
 
 <MariloTreeView @ref="@TreeRef"
                  Id="TreeView1"
@@ -628,7 +618,7 @@ public enum ProductSize
 
 @code {
     public List<Person> GridData { get; set; }
-    public MariloGrid<Person> GridRef { get; set; }
+    public MariloDataGrid<Person> GridRef { get; set; }
 
     public MariloTreeView TreeRef { get; set; }
     public TreeViewObservableFlatDataService TreeService { get; set; }
@@ -1006,7 +996,7 @@ public class BaseFlatItem
 @inject AppointmentService appointmentService;
 @inject ResourceService resourceService;
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              Id="Grid1"
              Width="450px"
              RowDraggable="true"
@@ -1015,11 +1005,9 @@ public class BaseFlatItem
     <GridSettings>
         <GridRowDraggableSettings DragClueField="@nameof(Person.Name)"></GridRowDraggableSettings>
     </GridSettings>
-    <GridColumns>
-        <GridColumn Field=@nameof(Person.EmployeeId) Editable="false" />
-        <GridColumn Field=@nameof(Person.Name) />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field=@nameof(Person.EmployeeId) Editable="false" />
+        <MariloGridColumn Field=@nameof(Person.Name) />
+</MariloDataGrid>
 
 <MariloScheduler @bind-Date="@SelectedDate"
                   Height="600px" Data="@Data"
@@ -1058,7 +1046,7 @@ public class BaseFlatItem
     List<string> GroupingResources = new List<string> { "Room", "Manager" };
 
     public List<Person> GridData { get; set; }
-    public MariloGrid<Person> GridRef { get; set; }
+    public MariloDataGrid<Person> GridRef { get; set; }
     public MariloScheduler<Appointment> SchedulerRef { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -1692,14 +1680,14 @@ public class Resource
 
 ### Drag and Drop multiple Rows
 
-You can drag and drop multiple rows in one or between multiple instances of the Grid. To enable it, you should set the [`SelectionMode` parameter](slug:grid-selection-overview) of the MariloGrid to `GridSelectionMode.Multiple`. Then, if you drag a selected row, you will effectively drag all the selected rows.
+You can drag and drop multiple rows in one or between multiple instances of the Grid. To enable it, you should set the [`SelectionMode` parameter](slug:grid-selection-overview) of the MariloDataGrid to `GridSelectionMode.Multiple`. Then, if you drag a selected row, you will effectively drag all the selected rows.
 
 When you select multiple rows, the row drag clue will be `N items selected` where `N` is the number of selected rows.
 
 ````RAZOR
 @* Select multiple rows and reorder them in the Grid. *@
 
-<MariloGrid Data="@MyData" Height="400px"
+<MariloDataGrid Data="@MyData" Height="400px"
              Pageable="true"
              Resizable="true" 
              Reorderable="true"
@@ -1709,13 +1697,11 @@ When you select multiple rows, the row drag clue will be `N items selected` wher
     <GridSettings>
         <GridRowDraggableSettings DragClueField="@nameof(SampleData.Name)"></GridRowDraggableSettings>
     </GridSettings>
-    <GridColumns>
-        <GridColumn Field="@(nameof(SampleData.Id))" Width="120px" />
-        <GridColumn Field="@(nameof(SampleData.Name))" Title="Employee Name" Groupable="false" />
-        <GridColumn Field="@(nameof(SampleData.Team))" Title="Team" />
-        <GridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@(nameof(SampleData.Id))" Width="120px" />
+        <MariloGridColumn Field="@(nameof(SampleData.Name))" Title="Employee Name" Groupable="false" />
+        <MariloGridColumn Field="@(nameof(SampleData.Team))" Title="Team" />
+        <MariloGridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" />
+</MariloDataGrid>
 
 @code {
     private void OnRowDropHandler(GridRowDropEventArgs<SampleData> args)
@@ -1772,4 +1758,4 @@ List on known limitations for the Grid Drag and Drop features:
 * [Live Demo: Grid Drag and Drop](https://demos.marilo.com/blazor-ui/grid/drag-drop)
 * [Drag and Drop Rows in Grid Hierarchy](slug:grid-kb-drag-drop-rows-hierarchy)
 * [Drag and Drop between Different Parent Components](slug:grid-kb-drag-drop-in-different-components)
-* [Grid API Reference](slug:Marilo.Blazor.Components.MariloGrid-1)
+* [Grid API Reference](slug:Marilo.Components.DataGrid.MariloDataGrid-1)

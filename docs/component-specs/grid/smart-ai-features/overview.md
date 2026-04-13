@@ -85,5 +85,5 @@ The following online demos show complete implementations of the Grid AI smart fu
 * [InlineAIPrompt Overview](slug:inlineaiprompt-overview)
 * [Live Demo: Grid AI Toolbar Assistant](https://demos.marilo.com/blazor-ui/grid/ai-toolbar-assistant)
 * [Live Demo: Grid AI Data Highlight](https://demos.marilo.com/blazor-ui/grid/ai-highlight)
-* [Grid API](slug:Marilo.Blazor.Components.MariloGrid-1)
+* [Grid API](slug:Marilo.Components.DataGrid.MariloDataGrid-1)
 * [Integration with Marilo.AI.SmartComponents.Extensions](slug:common-features-marilo-ai-smartcomponents-extensions-integration)

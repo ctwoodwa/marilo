@@ -32,10 +32,10 @@ Radar column charts are often used to make comparisons between several units tha
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="@ChartSeriesType.RadarColumn" Name="Soybean" Data="@series1Data">
-        </ChartSeries>
-        <ChartSeries Type="@ChartSeriesType.RadarColumn" Name="Lentils" Data="@series2Data">
-        </ChartSeries>
+        <MariloChartSeries Type="@ChartSeriesType.RadarColumn" Name="Soybean" Data="@series1Data">
+        </MariloChartSeries>
+        <MariloChartSeries Type="@ChartSeriesType.RadarColumn" Name="Lentils" Data="@series2Data">
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -50,7 +50,7 @@ Radar column charts are often used to make comparisons between several units tha
     <ChartTitle Text="Nutrients per 100g">
     </ChartTitle>
 
-    <ChartLegend Position="@Marilo.Blazor.ChartLegendPosition.Right">
+    <ChartLegend Position="@Marilo.Blazor.ChartPosition.Right">
     </ChartLegend>
 
 </MariloChart>

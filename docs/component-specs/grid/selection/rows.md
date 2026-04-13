@@ -26,21 +26,19 @@ To enable row selection:
     * Set the [Grid `SelectionMode` parameter](slug:grid-selection-overview#use-single-or-multiple-selection), or
     * Add a `<GridSelectionSettings>` tag inside the Grid `<GridSettings>` tag, and set the `SelectionType` parameter to `GridSelectionType.Row`.
 1. Set the Grid `SelectedItems` parameter to a collection of type `IEnumerable<TItem>` where `TItem` is the Grid model class. The collection must be initialized in advance.
-1. Optionally, add a [checkbox column](slug:components/grid/columns/checkbox) to the `GridColumns` collection of the Grid. The `GridCheckboxColumn` provides [additional configuration settings related to selection](slug:components/grid/columns/checkbox#parameters).
+1. Optionally, add a [checkbox column](slug:components/grid/columns/checkbox) directly inside `<MariloDataGrid>`. The `GridCheckboxColumn` provides [additional configuration settings related to selection](slug:components/grid/columns/checkbox#parameters).
 
 >caption Grid multiple row selection
 
 ````RAZOR
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              SelectionMode="@GridSelectionMode.Multiple"
              @bind-SelectedItems="@SelectedEmployees"
              Pageable="true">
-    <GridColumns>
         <GridCheckboxColumn SelectAll="true" CheckBoxOnlySelection="false" />
-        <GridColumn Field="@nameof(Employee.Name)" />
-        <GridColumn Field="@nameof(Employee.Team)" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(Employee.Name)" />
+        <MariloGridColumn Field="@nameof(Employee.Team)" />
+</MariloDataGrid>
 
 <h3>Selected Employees:</h3>
 
@@ -91,17 +89,15 @@ You can respond to user selection actions through the `SelectedItemsChanged` eve
 ````RAZOR
 @* Select rows and handle the SelectedItemsChanged event *@
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              SelectionMode="@GridSelectionMode.Multiple"
              SelectedItems="@SelectedEmployees"
              SelectedItemsChanged="@( (IEnumerable<Employee> newSelected) => OnRowSelect(newSelected) )"
              Pageable="true">
-    <GridColumns>
         <GridCheckboxColumn SelectAll="true" CheckBoxOnlySelection="false" />
-        <GridColumn Field="@nameof(Employee.Name)" />
-        <GridColumn Field="@nameof(Employee.Team)" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(Employee.Name)" />
+        <MariloGridColumn Field="@nameof(Employee.Team)" />
+</MariloDataGrid>
 
 <p><code>SelectedItemsChanged</code> fired at: @SelectedItemsChangedLog</p>
 

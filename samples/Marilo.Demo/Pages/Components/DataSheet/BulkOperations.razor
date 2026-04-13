@@ -204,6 +204,41 @@ Widget C	50	invalid-date</pre>
     </DemoSection>
 </PageSection>
 
+<PageSection Title="F -- Copy-Paste Round-Trip (Format Preservation)">
+    <DemoSection Title="data-raw-value Contract"
+                 Description="This grid has formatted columns (Currency and Date). When you copy cells (Ctrl+C), the copy handler reads the data-raw-value attribute instead of the formatted display text. Pasting back (Ctrl+V) round-trips the raw value faithfully. Try: select a currency cell, copy, paste into another row — the raw decimal survives, not the '$42.00' display string.">
+        <MariloDataSheet TItem="FormatRow"
+                         Data="@_formatRows"
+                         KeyField="Id"
+                         EnableVirtualization="false"
+                         OnSaveAll="@HandleFormatSave"
+                         EmptyStateMessage="No data.">
+            <MariloDataSheetColumn TItem="FormatRow"
+                                   Field="Label" Title="Label" ColumnType="DataSheetColumnType.Text"
+                                   Editable="true" Width="160px" />
+            <MariloDataSheetColumn TItem="FormatRow"
+                                   Field="Price" Title="Price (Currency)"
+                                   ColumnType="DataSheetColumnType.Number"
+                                   Editable="true" Width="160px"
+                                   Format='@(row => ((FormatRow)row).Price.ToString("C2"))' />
+            <MariloDataSheetColumn TItem="FormatRow"
+                                   Field="OrderDate" Title="Order Date"
+                                   ColumnType="DataSheetColumnType.Date"
+                                   Editable="true" Width="180px"
+                                   Format='@(row => ((FormatRow)row).OrderDate?.ToString("MMMM dd, yyyy") ?? "")' />
+        </MariloDataSheet>
+
+        <div class="ds-demo-roundtrip-note" style="margin-top:12px; padding:8px 12px; border-left:3px solid var(--mar-color-primary,#0078d4); background:var(--mar-color-surface-alt,#f5f5f5);">
+            <strong>Raw value preserved through round-trip.</strong>
+            The <code>data-raw-value</code> attribute on each formatted cell carries the
+            InvariantCulture-formatted raw value (e.g. <code>42.00</code> or
+            <code>04/10/2026 00:00:00</code>). The JS copy handler reads this
+            attribute instead of the display text, so paste always writes the
+            correct typed value back to the model.
+        </div>
+    </DemoSection>
+</PageSection>
+
 <style>
     .ds-demo-log {
         margin-top: 16px;
@@ -439,5 +474,23 @@ Widget C	50	invalid-date</pre>
         public string Id { get; set; } = "";
         public string Name { get; set; } = "";
         public decimal Value { get; set; }
+    }
+
+    // ── Scenario F — Copy-Paste Round-Trip ───────────────────────────
+    private List<FormatRow> _formatRows = new()
+    {
+        new() { Label = "Widget A", Price = 42.00m, OrderDate = new DateTime(2026, 4, 10) },
+        new() { Label = "Widget B", Price = 135.50m, OrderDate = new DateTime(2026, 3, 15) },
+        new() { Label = "Widget C", Price = 7.99m, OrderDate = new DateTime(2026, 2, 1) },
+    };
+
+    private Task HandleFormatSave(DataSheetSaveArgs<FormatRow> args) => Task.CompletedTask;
+
+    public record FormatRow
+    {
+        public Guid Id { get; init; } = Guid.NewGuid();
+        public string Label { get; set; } = "";
+        public decimal Price { get; set; }
+        public DateTime? OrderDate { get; set; }
     }
 }

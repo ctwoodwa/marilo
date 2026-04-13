@@ -29,23 +29,19 @@ When a detail template is defined, an expand/collapse button is rendered at the 
 ````RAZOR
 Click the + icon to expand the row details
 
-<MariloGrid Data="salesTeamMembers">
+<MariloDataGrid Data="salesTeamMembers">
     <DetailTemplate>
         @{
             var employee = context as MainModel;
-            <MariloGrid Data="employee.Orders" Pageable="true" PageSize="5">
-                <GridColumns>
-                    <GridColumn Field="OrderId"></GridColumn>
-                    <GridColumn Field="DealSize"></GridColumn>
-                </GridColumns>
-            </MariloGrid>
+            <MariloDataGrid Data="employee.Orders" Pageable="true" PageSize="5">
+                    <MariloGridColumn Field="OrderId"></MariloGridColumn>
+                    <MariloGridColumn Field="DealSize"></MariloGridColumn>
+            </MariloDataGrid>
         }
     </DetailTemplate>
-    <GridColumns>
-        <GridColumn Field="Id"></GridColumn>
-        <GridColumn Field="Name"></GridColumn>
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="Id"></MariloGridColumn>
+        <MariloGridColumn Field="Name"></MariloGridColumn>
+</MariloDataGrid>
 
 @code {
     List<MainModel> salesTeamMembers { get; set; }

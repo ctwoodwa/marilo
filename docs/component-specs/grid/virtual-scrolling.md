@@ -92,7 +92,7 @@ If you use the `OnRead` event without `ToDataSourceResultAsync()`, then [use the
 @using Marilo.DataSource
 @using Marilo.DataSource.Extensions
 
-<MariloGrid OnRead="@OnGridRead"
+<MariloDataGrid OnRead="@OnGridRead"
              TItem="@Product"
              FilterMode="GridFilterMode.FilterMenu"
              Groupable="true"
@@ -107,17 +107,15 @@ If you use the `OnRead` event without `ToDataSourceResultAsync()`, then [use the
                        FieldType="@typeof(string)"
                        Aggregate="@GridAggregateType.Count" />
     </GridAggregates>
-    <GridColumns>
-        <GridColumn Field="@nameof(Product.Name)">
+        <MariloGridColumn Field="@nameof(Product.Name)">
             <FooterTemplate>
                 Count: @context.Count
             </FooterTemplate>
-        </GridColumn>
-        <GridColumn Field="@nameof(Product.Category)" />
-        <GridColumn Field="@nameof(Product.Price)" DisplayFormat="{0:c2}" />
-        <GridColumn Field="@nameof(Product.Quantity)" />
-    </GridColumns>
-</MariloGrid>
+        </MariloGridColumn>
+        <MariloGridColumn Field="@nameof(Product.Category)" />
+        <MariloGridColumn Field="@nameof(Product.Price)" DisplayFormat="{0:c2}" />
+        <MariloGridColumn Field="@nameof(Product.Quantity)" />
+</MariloDataGrid>
 
 <p style="margin-top: 1em; font-size: 1.5em;">
     <code>DataSourceRequest.Skip</code> value

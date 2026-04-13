@@ -396,6 +396,30 @@ The following table lists the FileManager parameters. Also check the [FileManage
 | `AllowDelete` | `bool` <br /> (`false`) | Enables the Delete command in the [context menu](slug:filemanager-context-menu) and the delete-confirmation dialog. When `false`, delete is suppressed. Fires [`OnDelete`](slug:filemanager-events#ondelete). |
 | `AllowRename` | `bool` <br /> (`false`) | Enables the Rename command in the [context menu](slug:filemanager-context-menu) and the inline-rename input. When `false`, rename is suppressed. Fires [`OnEdit`](slug:filemanager-events#onedit) and [`OnUpdate`](slug:filemanager-events#onupdate). |
 | `ToolBarTemplate` | `RenderFragment?` <br /> (`null`) | When non-null, replaces the default toolbar content. Use to customize or extend the built-in toolbar. See [Toolbar](slug:filemanager-toolbar). |
+| `UploadSettings` | `FileManagerUploadSettings?` <br /> (`null`) | Upload configuration. When non-null, an Upload button appears in the default toolbar. See [Upload](slug:filemanager-upload). |
+| `SelectedItems` | `IEnumerable<TItem>` | The currently selected items. Supports two-way binding. See [Selection](slug:filemanager-selection). |
+| `OnRead` | `EventCallback<FileManagerReadEventArgs>` | Alternative data source. When bound, fires on init and path changes; the `Data` parameter is ignored. See [Events](slug:filemanager-events#onread). |
+
+### Field Binding Parameters
+
+Use these parameters to map your custom data model's property names to the FileManager's expected fields. Defaults match the `FileManagerEntry` built-in model.
+
+| Parameter | Type and &nbsp; DefaultValue | Description |
+| --- | --- | --- |
+| `IdField` | `string` <br /> (`"Id"`) | Property name for the item id. |
+| `ParentIdField` | `string` <br /> (`"ParentId"`) | Property name for the parent item id. |
+| `NameField` | `string` <br /> (`"Name"`) | Property name for the display name. |
+| `PathField` | `string` <br /> (`"Path"`) | Property name for the full path. |
+| `ExtensionField` | `string` <br /> (`"Extension"`) | Property name for the file extension. |
+| `IsDirectoryField` | `string` <br /> (`"IsDirectory"`) | Property name for the directory flag. |
+| `HasDirectoriesField` | `string` <br /> (`"HasDirectories"`) | Property name for the has-directories flag. |
+| `SizeField` | `string` <br /> (`"Size"`) | Property name for the file size. |
+| `DateCreatedField` | `string` <br /> (`"DateCreated"`) | Property name for the local date created. |
+| `DateCreatedUtcField` | `string` <br /> (`"DateCreatedUtc"`) | Property name for the UTC date created. |
+| `DateModifiedField` | `string` <br /> (`"DateModified"`) | Property name for the local date modified. |
+| `DateModifiedUtcField` | `string` <br /> (`"DateModifiedUtc"`) | Property name for the UTC date modified. |
+| `DirectoriesField` | `string` <br /> (`"Directories"`) | Property name for the child directories collection. |
+| `ItemsField` | `string` <br /> (`"Items"`) | Property name for the child items collection. |
 
 ### Styling and Appearance
 

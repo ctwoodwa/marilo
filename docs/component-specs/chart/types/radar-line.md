@@ -32,10 +32,10 @@ Radar line charts are often used to make comparisons between several units that 
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="@ChartSeriesType.RadarLine" Name="Avg. High" Data="@series1Data" Color="red">
-        </ChartSeries>
-        <ChartSeries Type="@ChartSeriesType.RadarLine" Name="Avg. Low" Data="@series2Data" Color="blue">
-        </ChartSeries>
+        <MariloChartSeries Type="@ChartSeriesType.RadarLine" Name="Avg. High" Data="@series1Data" Color="red">
+        </MariloChartSeries>
+        <MariloChartSeries Type="@ChartSeriesType.RadarLine" Name="Avg. Low" Data="@series2Data" Color="blue">
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -52,7 +52,7 @@ Radar line charts are often used to make comparisons between several units that 
     <ChartTitle Text="Monthly temperatures in Rovaniemi (the Santa Claus village)">
     </ChartTitle>
 
-    <ChartLegend Position="@Marilo.Blazor.ChartLegendPosition.Right">
+    <ChartLegend Position="@Marilo.Blazor.ChartPosition.Right">
     </ChartLegend>
 
 </MariloChart>

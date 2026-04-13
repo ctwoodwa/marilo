@@ -20,10 +20,11 @@ You can also use the [Blazor TreeList virtualization for the TreeList columns](s
 
 To enable Blazor TreeList row virtualization:
 
-1. Set the `ScrollMode` parameter to `TreeListScrollMode.Virtual` (the default value is `Scrollable`).
-1. [Set the `Height` parameter](#height) to a `string` CSS value.
-1. [Set the `RowHeight` parameter](#rowheight) to a `decimal` value that denotes pixels.
-1. [Set the `PageSize` parameter](#pagesize).
+1. Set the `EnableVirtualization` parameter to `true`.
+1. Set the `ItemHeight` parameter to the pixel height of each row (default `36`).
+1. Wrap the TreeList in a container with a fixed `height` and `overflow:auto` so the Virtualize component can measure the viewport.
+
+> The Marilo TreeList uses Blazor's built-in `<Virtualize>` component internally. The `ItemHeight` value maps directly to `Virtualize.ItemSize`.
 
 > The values of the `Height`, `RowHeight`, and `PageSize` parameters are related to one another. The following sections explain how.
 

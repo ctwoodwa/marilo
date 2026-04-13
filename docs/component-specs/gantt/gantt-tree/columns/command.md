@@ -28,7 +28,7 @@ In this article:
 
 ## Command Column Parameters
 
-The Blazor Gantt Command Column provides various parameters to configure the component. Also check the [Gantt public API](slug:Marilo.Blazor.Components.MariloGantt-1).
+The Blazor Gantt Command Column provides various parameters to configure the component. Also check the [Gantt public API](slug:Marilo.Components.DataDisplay.MariloGantt-1).
 
 ### The GanttCommandButton Tag
 

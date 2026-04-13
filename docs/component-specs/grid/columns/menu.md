@@ -28,7 +28,7 @@ The Grid allows you to set up a menu for its columns. It enables you to perform 
 
 ## Basics
 
-To enable the Column Menu, set the `ShowColumnMenu` parameter of the `<MariloGrid>` tag to `true`. This will enable the menu for each column of the Grid.
+To enable the Column Menu, set the `ShowColumnMenu` parameter of the `<MariloDataGrid>` tag to `true`. This will enable the menu for each column of the Grid.
 
 To disable the Column Menu for a specific column in the Grid, set the `ShowColumnMenu` parameter of the column to `false`.
 
@@ -39,19 +39,17 @@ You can see what the column menu can do and how to control its settings in the [
 ````RAZOR
 @* Set the ShowColumnMenu parameter to true *@
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              Pageable="true"
              PageSize="5"
              FilterMode="@GridFilterMode.FilterMenu"
              Sortable="true"
              ShowColumnMenu="true">
-    <GridColumns>
-        <GridColumn Field="@(nameof(SampleData.Id))" Width="80px" />
-        <GridColumn Field="@(nameof(SampleData.Name))" Title="Employee Name" Groupable="false" />
-        <GridColumn Field="@(nameof(SampleData.Team))" Title="Team" />
-        <GridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@(nameof(SampleData.Id))" Width="80px" />
+        <MariloGridColumn Field="@(nameof(SampleData.Name))" Title="Employee Name" Groupable="false" />
+        <MariloGridColumn Field="@(nameof(SampleData.Team))" Title="Team" />
+        <MariloGridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" />
+</MariloDataGrid>
 
 @code {
     private IEnumerable<SampleData> GridData = Enumerable.Range(1, 30).Select(x => new SampleData
@@ -142,7 +140,7 @@ The following example shows the basic configuration of the `ColumnMenuSettings`.
 The columns in the Column Chooser are divided into sections. The Lockable option is disabled from the Column Menu. Filtering in the Column Menu is disabled, so the Grid can use a `FilterRow`. The `Id` column has no Column Menu and the `HireDate` column is not visible in Column Chooser.
 
 ````RAZOR
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              Pageable="true"
              FilterMode="@GridFilterMode.FilterRow"
              Sortable="true"
@@ -164,15 +162,13 @@ The columns in the Column Chooser are divided into sections. The Lockable option
             </GridColumnMenuChooser>
         </GridColumnMenuSettings>
     </GridSettings>
-    <GridColumns>
-        <GridColumn Field="@(nameof(SampleData.Id))" Width="80px" ShowColumnMenu="false" />
-        <GridColumn Field="@(nameof(SampleData.FirstName))" Title="First Name" Id="firstname-column-id" />
-        <GridColumn Field="@(nameof(SampleData.LastName))" Title="Last Name" Id="lastname-column-id" />
-        <GridColumn Field="@(nameof(SampleData.CompanyName))" Title="Company" Id="companyname-column-id" />
-        <GridColumn Field="@(nameof(SampleData.Team))" Title="Team" Id="team-column-id" />
-        <GridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" VisibleInColumnChooser="false" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@(nameof(SampleData.Id))" Width="80px" ShowColumnMenu="false" />
+        <MariloGridColumn Field="@(nameof(SampleData.FirstName))" Title="First Name" Id="firstname-column-id" />
+        <MariloGridColumn Field="@(nameof(SampleData.LastName))" Title="Last Name" Id="lastname-column-id" />
+        <MariloGridColumn Field="@(nameof(SampleData.CompanyName))" Title="Company" Id="companyname-column-id" />
+        <MariloGridColumn Field="@(nameof(SampleData.Team))" Title="Team" Id="team-column-id" />
+        <MariloGridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" VisibleInColumnChooser="false" />
+</MariloDataGrid>
 
 @code {
     private IEnumerable<SampleData> GridData = Enumerable.Range(1, 30).Select(x => new SampleData
@@ -204,7 +200,7 @@ The columns in the Column Chooser are divided into sections. The Lockable option
 ````RAZOR
 @* Disable filtering and locking columns, hide a column from the chooser (Team), disable the menu for a column (Name). *@
 
-<MariloGrid Data="@MyData"
+<MariloDataGrid Data="@MyData"
              Pageable="true"
              PageSize="5"
              Groupable="true"
@@ -219,13 +215,11 @@ The columns in the Column Chooser are divided into sections. The Lockable option
                                 FilterMode="@ColumnMenuFilterMode.None">
         </GridColumnMenuSettings>
     </GridSettings>
-    <GridColumns>
-        <GridColumn Field="@(nameof(SampleData.Id))" Width="80px" />
-        <GridColumn Field="@(nameof(SampleData.Name))" Title="Employee Name" ShowColumnMenu="false" />
-        <GridColumn Field="@(nameof(SampleData.Team))" Title="Team" VisibleInColumnChooser="false" />
-        <GridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@(nameof(SampleData.Id))" Width="80px" />
+        <MariloGridColumn Field="@(nameof(SampleData.Name))" Title="Employee Name" ShowColumnMenu="false" />
+        <MariloGridColumn Field="@(nameof(SampleData.Team))" Title="Team" VisibleInColumnChooser="false" />
+        <MariloGridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" />
+</MariloDataGrid>
 
 @code {
     public IEnumerable<SampleData> MyData = Enumerable.Range(1, 30).Select(x => new SampleData

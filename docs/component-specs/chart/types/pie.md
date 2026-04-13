@@ -33,14 +33,14 @@ Pie series
 
 <MariloChart>
 	<ChartSeriesItems>
-		<ChartSeries Type="ChartSeriesType.Pie" Data="@pieData"
+		<MariloChartSeries Type="ChartSeriesType.Pie" Data="@pieData"
 							Field="@nameof(MyPieChartModel.SegmentValue)" CategoryField="@nameof(MyPieChartModel.SegmentName)">
-		</ChartSeries>
+		</MariloChartSeries>
 	</ChartSeriesItems>
 
 	<ChartTitle Text="Revenue per product"></ChartTitle>
 
-	<ChartLegend Position="ChartLegendPosition.Right">
+	<ChartLegend Position="ChartPosition.Right">
 	</ChartLegend>
 </MariloChart>
 
@@ -85,14 +85,14 @@ Set color to the pie chart items
 
 <MariloChart>
 	<ChartSeriesItems>
-		<ChartSeries Type="ChartSeriesType.Pie" Data="@pieData" ColorField="@nameof(MyPieChartModel.SegmentColor)"
+		<MariloChartSeries Type="ChartSeriesType.Pie" Data="@pieData" ColorField="@nameof(MyPieChartModel.SegmentColor)"
 							Field="@nameof(MyPieChartModel.SegmentValue)" CategoryField="@nameof(MyPieChartModel.SegmentName)">
-		</ChartSeries>
+		</MariloChartSeries>
 	</ChartSeriesItems>
 
 	<ChartTitle Text="Revenue per product"></ChartTitle>
 
-	<ChartLegend Position="ChartLegendPosition.Right">
+	<ChartLegend Position="ChartPosition.Right">
 	</ChartLegend>
 </MariloChart>
 
@@ -141,14 +141,14 @@ Separate items from the main body of the chart
 
 <MariloChart>
 	<ChartSeriesItems>
-		<ChartSeries Type="ChartSeriesType.Pie" Data="@pieData" ExplodeField="@nameof(MyPieChartModel.IsSeparated)"
+		<MariloChartSeries Type="ChartSeriesType.Pie" Data="@pieData" ExplodeField="@nameof(MyPieChartModel.IsSeparated)"
 							Field="@nameof(MyPieChartModel.SegmentValue)" CategoryField="@nameof(MyPieChartModel.SegmentName)">
-		</ChartSeries>
+		</MariloChartSeries>
 	</ChartSeriesItems>
 
 	<ChartTitle Text="Revenue per product"></ChartTitle>
 
-	<ChartLegend Position="ChartLegendPosition.Right">
+	<ChartLegend Position="ChartPosition.Right">
 	</ChartLegend>
 </MariloChart>
 
@@ -193,14 +193,14 @@ Show only some items in the legend
 
 <MariloChart>
 	<ChartSeriesItems>
-		<ChartSeries Type="ChartSeriesType.Pie" Data="@pieData" VisibleInLegendField="@nameof(MyPieChartModel.ShouldShowInLegend)"
+		<MariloChartSeries Type="ChartSeriesType.Pie" Data="@pieData" VisibleInLegendField="@nameof(MyPieChartModel.ShouldShowInLegend)"
 							Field="@nameof(MyPieChartModel.SegmentValue)" CategoryField="@nameof(MyPieChartModel.SegmentName)">
-		</ChartSeries>
+		</MariloChartSeries>
 	</ChartSeriesItems>
 
 	<ChartTitle Text="Revenue per product"></ChartTitle>
 
-	<ChartLegend Position="ChartLegendPosition.Right">
+	<ChartLegend Position="ChartPosition.Right">
 	</ChartLegend>
 </MariloChart>
 
@@ -265,8 +265,8 @@ Chart Height
                      Width="120px" />
 
 Chart Legend Position
-<MariloDropDownList Data="@ChartLegendPositions"
-                     @bind-Value="@ChartLegendPosition"
+<MariloDropDownList Data="@ChartPositions"
+                     @bind-Value="@SelectedLegendPosition"
                      Width="120px" />
 
 <MariloChart @ref="ChartRef"
@@ -274,16 +274,16 @@ Chart Legend Position
               Height="@ChartHeight"
               Class="chart-border">
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Pie"
+        <MariloChartSeries Type="ChartSeriesType.Pie"
                      Data="@PieData"
                      Field="@nameof(PieChartModel.Value)"
                      CategoryField="@nameof(PieChartModel.Category)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartTitle Text="Revenue per product"></ChartTitle>
 
-    <ChartLegend Position="@ChartLegendPosition">
+    <ChartLegend Position="@SelectedLegendPosition">
     </ChartLegend>
 </MariloChart>
 
@@ -299,16 +299,16 @@ Chart Legend Position
 
     private List<string> ChartDimensions { get; set; } = new List<string>() { "200px", "400px", "600px", "800px" };
 
-    private List<ChartLegendPosition> ChartLegendPositions { get; set; } = new List<ChartLegendPosition>() {
-        ChartLegendPosition.Top,
-        ChartLegendPosition.Bottom,
-        ChartLegendPosition.Left,
-        ChartLegendPosition.Right
+    private List<ChartPosition> ChartPositions { get; set; } = new List<ChartPosition>() {
+        ChartPosition.Top,
+        ChartPosition.Bottom,
+        ChartPosition.Left,
+        ChartPosition.Right
     };
 
     private string? ChartWidth { get; set; }
     private string ChartHeight { get; set; } = "400px";
-    private ChartLegendPosition ChartLegendPosition { get; set; } = ChartLegendPosition.Right;
+    private ChartPosition SelectedLegendPosition { get; set; } = ChartPosition.Right;
 
     private async Task RefreshChart()
     {

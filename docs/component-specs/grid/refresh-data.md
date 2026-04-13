@@ -22,7 +22,7 @@ In this article:
 
 ## Rebind Method
 
-You can refresh the Grid data by using the `Rebind` method exposed to the reference of the MariloGrid. If you have manually defined the [OnRead event](slug:components/grid/manual-operations) the business logic defined in its event handler will be executed. 
+You can refresh the Grid data by using the `Rebind` method exposed to the reference of the MariloDataGrid. If you have manually defined the [OnRead event](slug:components/grid/manual-operations) the business logic defined in its event handler will be executed. 
 
 ````RAZOR
 @* Clicking on the Rebind button will change the Name of the first item in the Grid and refresh the data *@
@@ -31,21 +31,19 @@ You can refresh the Grid data by using the `Rebind` method exposed to the refere
 
 @using Marilo.DataSource.Extensions
 
-<MariloGrid TItem="@Employee" 
+<MariloDataGrid TItem="@Employee" 
              OnRead="@ReadItems"
              FilterMode="@GridFilterMode.FilterRow"
              Sortable="true" 
              Pageable="true"
              @ref="@GridRef">
-    <GridColumns>
-        <GridColumn Field=@nameof(Employee.ID) />
-        <GridColumn Field=@nameof(Employee.Name) Title="Name" />
-        <GridColumn Field=@nameof(Employee.HireDate) Title="Hire Date" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field=@nameof(Employee.ID) />
+        <MariloGridColumn Field=@nameof(Employee.Name) Title="Name" />
+        <MariloGridColumn Field=@nameof(Employee.HireDate) Title="Hire Date" />
+</MariloDataGrid>
 
 @code {
-    private MariloGrid<Employee> GridRef { get; set; }
+    private MariloDataGrid<Employee> GridRef { get; set; }
 
     private void RebindGrid()
     {
@@ -119,15 +117,13 @@ You can refresh the Grid data by using the `Rebind` method exposed to the refere
 
 <MariloButton OnClick="@RemoveEmployee">Remove last employee</MariloButton>
 
-<MariloGrid Data="@MyData" Height="400px"
+<MariloDataGrid Data="@MyData" Height="400px"
              Pageable="true" Sortable="true">
-    <GridColumns>
-        <GridColumn Field="@(nameof(SampleData.Id))" Width="120px" />
-        <GridColumn Field="@(nameof(SampleData.Name))" Title="Employee Name" />
-        <GridColumn Field="@(nameof(SampleData.Team))" Title="Team" />
-        <GridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@(nameof(SampleData.Id))" Width="120px" />
+        <MariloGridColumn Field="@(nameof(SampleData.Name))" Title="Employee Name" />
+        <MariloGridColumn Field="@(nameof(SampleData.Team))" Title="Team" />
+        <MariloGridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" />
+</MariloDataGrid>
 
 @code {
     void AddEmployee()
@@ -183,15 +179,13 @@ You can refresh the Grid data by using the `Rebind` method exposed to the refere
 
 <MariloButton OnClick="@LoadNewData">Load new data</MariloButton>
 
-<MariloGrid Data="@MyData" Height="400px"
+<MariloDataGrid Data="@MyData" Height="400px"
              Pageable="true" Sortable="true">
-    <GridColumns>
-        <GridColumn Field="@(nameof(SampleData.Id))" Width="120px" />
-        <GridColumn Field="@(nameof(SampleData.Name))" Title="Employee Name" />
-        <GridColumn Field="@(nameof(SampleData.Team))" Title="Team" />
-        <GridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@(nameof(SampleData.Id))" Width="120px" />
+        <MariloGridColumn Field="@(nameof(SampleData.Name))" Title="Employee Name" />
+        <MariloGridColumn Field="@(nameof(SampleData.Team))" Title="Team" />
+        <MariloGridColumn Field="@(nameof(SampleData.HireDate))" Title="Hire Date" />
+</MariloDataGrid>
 
 @code {
     void AddEmployee()
@@ -266,18 +260,18 @@ To make the Grid fire `OnRead`, execute its [`SetStateAsync` method](slug:grid-s
 <MariloButton OnClick="@RefreshThroughState">Call OnRead to refresh Grid</MariloButton>
 <p>Monitor the <code>GeneratedAtMilliseconds</code> column values when you click the button</p>
 
-<MariloGrid TItem="@Employee"
+<MariloDataGrid TItem="@Employee"
              OnRead="@ReadItems"
              @ref="@GridRef"
              AutoGenerateColumns="true"
              FilterMode="@GridFilterMode.FilterRow"
              Sortable="true"
              Pageable="true">
-</MariloGrid>
+</MariloDataGrid>
 
 @code {
     //make the grid call OnRead to request data again
-    MariloGrid<Employee> GridRef { get; set; }
+    MariloDataGrid<Employee> GridRef { get; set; }
     async Task RefreshThroughState()
     {
         await GridRef.SetStateAsync(GridRef.GetState());

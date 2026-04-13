@@ -31,14 +31,14 @@ Donut series
 
 <MariloChart>
 	<ChartSeriesItems>
-		<ChartSeries Type="ChartSeriesType.Donut" Data="@donutData"
+		<MariloChartSeries Type="ChartSeriesType.Donut" Data="@donutData"
 							Field="@nameof(MyDonutChartModel.SegmentValue)" CategoryField="@nameof(MyDonutChartModel.SegmentName)">
-		</ChartSeries>
+		</MariloChartSeries>
 	</ChartSeriesItems>
 
 	<ChartTitle Text="Revenue per product"></ChartTitle>
 
-	<ChartLegend Position="ChartLegendPosition.Right">
+	<ChartLegend Position="ChartPosition.Right">
 	</ChartLegend>
 </MariloChart>
 
@@ -96,19 +96,19 @@ You can control the color of the individual segments of the donut chart by provi
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Donut"
+        <MariloChartSeries Type="ChartSeriesType.Donut"
                      Data="@donutData"
                      
                      ColorField="@nameof(MyDonutChartModel.SegmentColor)"
 
                      Field="@nameof(MyDonutChartModel.SegmentValue)"
                      CategoryField="@nameof(MyDonutChartModel.SegmentName)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartTitle Text="Revenue per product"></ChartTitle>
 
-    <ChartLegend Position="ChartLegendPosition.Right">
+    <ChartLegend Position="ChartPosition.Right">
     </ChartLegend>
 </MariloChart>
 
@@ -157,19 +157,19 @@ To explode (separate) a segment, use the `ExplodeField` property of the series a
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Donut"
+        <MariloChartSeries Type="ChartSeriesType.Donut"
                      Data="@donutData"
                      
                      ExplodeField="@nameof(MyDonutChartModel.IsSeparated)"
 
                      Field="@nameof(MyDonutChartModel.SegmentValue)"
                      CategoryField="@nameof(MyDonutChartModel.SegmentValue)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartTitle Text="Revenue per product"></ChartTitle>
 
-    <ChartLegend Position="ChartLegendPosition.Right">
+    <ChartLegend Position="ChartPosition.Right">
     </ChartLegend>
 </MariloChart>
 
@@ -214,19 +214,19 @@ You can hide certain segments from the legend (for example, if their contributio
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Donut"
+        <MariloChartSeries Type="ChartSeriesType.Donut"
                      Data="@donutData"
                      
                      VisibleInLegendField="@nameof(MyDonutChartModel.ShouldShowInLegend)"
 
                      Field="@nameof(MyDonutChartModel.SegmentValue)" 
                      CategoryField="@nameof(MyDonutChartModel.SegmentName)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartTitle Text="Revenue per product"></ChartTitle>
 
-    <ChartLegend Position="ChartLegendPosition.Right">
+    <ChartLegend Position="ChartPosition.Right">
     </ChartLegend>
 </MariloChart>
 
@@ -274,14 +274,14 @@ Control the hole size of the donut chart
 
 <MariloChart>
 	<ChartSeriesItems>
-		<ChartSeries Type="ChartSeriesType.Donut" Data="@donutData" HoleSize="90"
+		<MariloChartSeries Type="ChartSeriesType.Donut" Data="@donutData" HoleSize="90"
 							Field="@nameof(MyDonutChartModel.SegmentValue)" CategoryField="@nameof(MyDonutChartModel.SegmentName)">
-		</ChartSeries>
+		</MariloChartSeries>
 	</ChartSeriesItems>
 
 	<ChartTitle Text="Revenue per product"></ChartTitle>
 
-	<ChartLegend Position="ChartLegendPosition.Right">
+	<ChartLegend Position="ChartPosition.Right">
 	</ChartLegend>
 </MariloChart>
 
@@ -327,23 +327,23 @@ You can also use the `ColorField` property to define a field with the segments' 
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Donut" Data="@firstSeriesData"
+        <MariloChartSeries Type="ChartSeriesType.Donut" Data="@firstSeriesData"
                      Field="@nameof(MyDonutChartModel.SegmentValue)" CategoryField="@nameof(MyDonutChartModel.SegmentName)">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Donut" Data="@secondSeriesData"
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Donut" Data="@secondSeriesData"
                      Field="@nameof(MyDonutChartModel.SegmentValue)" CategoryField="@nameof(MyDonutChartModel.SegmentName)">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Donut" Data="@thirdSeriesData"
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Donut" Data="@thirdSeriesData"
                      Field="@nameof(MyDonutChartModel.SegmentValue)" CategoryField="@nameof(MyDonutChartModel.SegmentName)">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Donut" Data="@fourthSeriesData"
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Donut" Data="@fourthSeriesData"
                      Field="@nameof(MyDonutChartModel.SegmentValue)" CategoryField="@nameof(MyDonutChartModel.SegmentName)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartTitle Text="Revenue per product"></ChartTitle>
 
-    <ChartLegend Position="ChartLegendPosition.Right">
+    <ChartLegend Position="ChartPosition.Right">
     </ChartLegend>
 </MariloChart>
 
@@ -444,10 +444,10 @@ You can also use the `ColorField` property to define a field with the segments' 
     <ChartTitle Text="What is you favourite sport?">
         <ChartTitleMargin Bottom="20"></ChartTitleMargin>
     </ChartTitle>
-    <ChartLegend Visible="true" Position="ChartLegendPosition.Top"></ChartLegend>
+    <ChartLegend Visible="true" Position="ChartPosition.Top"></ChartLegend>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Donut"
+        <MariloChartSeries Type="ChartSeriesType.Donut"
                      Data="@Data"
                      Field="@nameof(ModelData.Value)"
                      CategoryField="@nameof(ModelData.Category)">
@@ -460,7 +460,7 @@ You can also use the `ColorField` property to define a field with the segments' 
                                                DashType="DashType.LongDashDotDot">
                 </ChartSeriesLabelsBorder>
             </ChartSeriesLabels>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
 </MariloChart>
@@ -511,7 +511,7 @@ The following example shows how to use the Chart `Height`, Series `Size`, and Le
 ````RAZOR
 <MariloChart Height="360px">
     <ChartSeriesItems>
-        <ChartSeries Data="@ChartData"
+        <MariloChartSeries Data="@ChartData"
                      Type="@ChartSeriesType.Donut"
                      Field="@nameof(ChartModel.Value)"
                      CategoryField="@nameof(ChartModel.Name)"
@@ -520,13 +520,13 @@ The following example shows how to use the Chart `Height`, Series `Size`, and Le
                                Position="@ChartSeriesLabelsPosition.OutsideEnd"
                                Template="chartSeriesLabelTemplate">
             </ChartSeriesLabels>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartTitle Text="Donut Chart"></ChartTitle>
 
     <ChartLegend Orientation="@ChartLegendOrientation.Vertical"
-                 Position="@ChartLegendPosition.Bottom"
+                 Position="@ChartPosition.Bottom"
                  Height="60" />
 </MariloChart>
 

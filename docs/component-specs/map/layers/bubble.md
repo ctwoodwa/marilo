@@ -21,7 +21,7 @@ Optionally, the bubbles can also be styled by using the `MapLayerBubbleSettings`
 **To configure a Map Layer of type Bubble:**
 
 1. Add the `MariloMap` tag.
-2. Set the `Type` parameter of the `MapLayer` to `Bubble`.
+2. Set the `Type` parameter of the `MapLayer` to `MapLayerType.Bubble`.
 3. Set the `Data` parameter.
 4. Set the `LocationField` and `ValueField` parameters.
 
@@ -33,15 +33,15 @@ The following example demonstrates how to configure the Map Bubble Layer.
 @* This code snippet showcases an example of a Bubble Layer configuration. *@
 
 <MariloMap Center="@Center"
-            Zoom="3">
+           Zoom="3">
     <MapLayers>
-        <MapLayer Type="@MapLayersType.Tile"
+        <MapLayer Type="@MapLayerType.Tile"
                   Attribution="@Attribution"
                   Subdomains="@Subdomains"
                   UrlTemplate="@UrlTemplate">
         </MapLayer>
 
-        <MapLayer Type="@MapLayersType.Bubble"
+        <MapLayer Type="@MapLayerType.Bubble"
                   Data="@BubbleData"
                   LocationField="@nameof(BubbleModel.LatLng)"
                   ValueField="@nameof(BubbleModel.Revenue)">
@@ -53,7 +53,7 @@ The following example demonstrates how to configure the Map Bubble Layer.
                   </MapLayerBubbleSettings>
         </MapLayer>
 
-        <MapLayer Type="@MapLayersType.Marker"
+        <MapLayer Type="@MapLayerType.Marker"
                   Data="@MarkerData1"
                   LocationField="@nameof(MarkerModel.LatLng)"
                   TitleField="@nameof(MarkerModel.Title)">
@@ -62,12 +62,12 @@ The following example demonstrates how to configure the Map Bubble Layer.
 </MariloMap>
 
 @code {
-    public string[] Subdomains { get; set; } = new string[] { "a", "b", "c" };
-    public string UrlTemplate { get; set; } = "https://#= subdomain #.tile.openstreetmap.org/#= zoom #/#= x #/#= y #.png";
-    public string Attribution { get; set; } = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
-    public double[] Center { get; set; } = new double[] { 30.268107, -97.744821 };
+    private string[] Subdomains { get; set; } = new string[] { "a", "b", "c" };
+    private const string UrlTemplate = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+    private const string Attribution = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
+    private MapCenter Center { get; set; } = new() { Latitude = 30.268107, Longitude = -97.744821 };
 
-    public List<MarkerModel> MarkerData1 { get; set; } = new List<MarkerModel>()
+    private List<MarkerModel> MarkerData1 { get; set; } = new List<MarkerModel>()
     {
         new MarkerModel()
         {
@@ -76,16 +76,7 @@ The following example demonstrates how to configure the Map Bubble Layer.
         }
      };
 
-    public List<MarkerModel> MarkerData2 { get; set; } = new List<MarkerModel>()
-    {
-        new MarkerModel()
-        {
-            LatLng = new double[] { 37.7749, -122.4194 },
-            Title = "San Francisco, CA"
-        }
-    };
-
-    public List<BubbleModel> BubbleData { get; set; } = new List<BubbleModel>()
+    private List<BubbleModel> BubbleData { get; set; } = new List<BubbleModel>()
     {
         new BubbleModel()
         {

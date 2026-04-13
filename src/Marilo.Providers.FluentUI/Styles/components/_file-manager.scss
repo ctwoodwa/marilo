@@ -1,0 +1,535 @@
+// =============================================================================
+// Component: FileManager
+// =============================================================================
+
+.mar-filemanager {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-md);
+    background: var(--marilo-color-surface);
+    color: var(--marilo-color-text);
+    overflow: hidden;
+}
+
+// ── Toolbar ─────────────────────────────────────────────────────────────────
+
+.mar-filemanager__toolbar {
+    display: flex;
+    align-items: center;
+    gap: var(--marilo-space-xs);
+    padding: var(--marilo-space-xs) var(--marilo-space-sm);
+    border-bottom: 1px solid var(--marilo-color-border);
+    background: var(--marilo-color-subtle-background, var(--marilo-color-surface));
+    flex-wrap: wrap;
+    min-height: 40px;
+}
+
+.mar-filemanager__path {
+    display: none;
+}
+
+.mar-filemanager__breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: var(--marilo-font-size-sm);
+    overflow: hidden;
+}
+
+.mar-filemanager__breadcrumb-segment {
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: var(--marilo-radius-sm);
+    white-space: nowrap;
+
+    &:hover {
+        background: var(--marilo-color-subtle-background-hover, rgba(0, 0, 0, 0.04));
+    }
+
+    &--active {
+        font-weight: 600;
+        cursor: default;
+
+        &:hover {
+            background: transparent;
+        }
+    }
+}
+
+.mar-filemanager__breadcrumb-separator {
+    color: var(--marilo-color-text-secondary);
+    user-select: none;
+}
+
+.mar-filemanager__spacer {
+    flex: 1;
+}
+
+.mar-filemanager__sort-select {
+    font-size: var(--marilo-font-size-sm);
+    padding: 2px var(--marilo-space-xs);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-sm);
+    background: var(--marilo-color-surface);
+    color: var(--marilo-color-text);
+}
+
+.mar-filemanager__sort-dir {
+    min-width: 28px;
+}
+
+.mar-filemanager__search {
+    font-size: var(--marilo-font-size-sm);
+    padding: 4px var(--marilo-space-sm);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-sm);
+    background: var(--marilo-color-surface);
+    color: var(--marilo-color-text);
+    min-width: 140px;
+    max-width: 220px;
+
+    &::placeholder {
+        color: var(--marilo-color-text-secondary);
+    }
+}
+
+.mar-filemanager__upload-btn,
+.mar-filemanager__details-btn,
+.mar-filemanager__view-toggle {
+    // Inherits from .mar-btn base styles; no extra rules needed.
+}
+
+.mar-filemanager__details-btn--active {
+    background: var(--marilo-color-subtle-background-selected, rgba(0, 0, 0, 0.08));
+}
+
+// ── Content area ────────────────────────────────────────────────────────────
+
+.mar-filemanager__content {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+// ── Sidebar (folder tree) ───────────────────────────────────────────────────
+
+.mar-filemanager__sidebar {
+    width: 220px;
+    min-width: 160px;
+    border-right: 1px solid var(--marilo-color-border);
+    overflow-y: auto;
+    padding: var(--marilo-space-xs) 0;
+    background: var(--marilo-color-subtle-background, var(--marilo-color-surface));
+}
+
+.mar-filemanager__tree {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.mar-filemanager__tree [role="treeitem"] {
+    display: flex;
+    align-items: center;
+    gap: var(--marilo-space-xs);
+    padding: 4px var(--marilo-space-sm);
+    cursor: pointer;
+    font-size: var(--marilo-font-size-sm);
+    border-radius: 0;
+    user-select: none;
+
+    &:hover {
+        background: var(--marilo-color-subtle-background-hover, rgba(0, 0, 0, 0.04));
+    }
+
+    &:focus-visible {
+        outline: 2px solid var(--marilo-color-primary);
+        outline-offset: -2px;
+    }
+}
+
+.mar-filemanager__tree-item--active {
+    background: var(--marilo-color-subtle-background-selected, rgba(0, 0, 0, 0.08));
+    font-weight: 600;
+}
+
+// ── File list area ──────────────────────────────────────────────────────────
+
+.mar-filemanager__files {
+    flex: 1;
+    overflow: auto;
+
+    &--with-preview {
+        flex: 2;
+    }
+}
+
+.mar-filemanager__loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--marilo-space-xl);
+    color: var(--marilo-color-text-secondary);
+}
+
+// ── Grid view ───────────────────────────────────────────────────────────────
+
+.mar-filemanager__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: var(--marilo-space-sm);
+    padding: var(--marilo-space-sm);
+}
+
+.mar-filemanager__grid-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--marilo-space-xs);
+    padding: var(--marilo-space-sm);
+    border-radius: var(--marilo-radius-md);
+    cursor: pointer;
+    user-select: none;
+    text-align: center;
+    word-break: break-word;
+    font-size: var(--marilo-font-size-sm);
+
+    &:hover {
+        background: var(--marilo-color-subtle-background-hover, rgba(0, 0, 0, 0.04));
+    }
+
+    &--selected {
+        background: var(--marilo-color-subtle-background-selected, rgba(0, 0, 0, 0.08));
+    }
+}
+
+.mar-filemanager__icon {
+    font-size: 2rem;
+    line-height: 1;
+}
+
+.mar-filemanager__name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+// ── List view (table) ───────────────────────────────────────────────────────
+
+.mar-filemanager__list {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--marilo-font-size-sm);
+
+    th {
+        text-align: left;
+        padding: var(--marilo-space-xs) var(--marilo-space-sm);
+        border-bottom: 1px solid var(--marilo-color-border);
+        font-weight: 600;
+        color: var(--marilo-color-text-secondary);
+        background: var(--marilo-color-subtle-background, var(--marilo-color-surface));
+        white-space: nowrap;
+    }
+
+    td {
+        padding: var(--marilo-space-xs) var(--marilo-space-sm);
+        border-bottom: 1px solid var(--marilo-color-border-subtle, rgba(0, 0, 0, 0.06));
+        white-space: nowrap;
+    }
+
+    tr[role="row"] {
+        cursor: pointer;
+
+        &:hover td {
+            background: var(--marilo-color-subtle-background-hover, rgba(0, 0, 0, 0.04));
+        }
+    }
+}
+
+.mar-filemanager__row--selected td {
+    background: var(--marilo-color-subtle-background-selected, rgba(0, 0, 0, 0.08));
+}
+
+// ── Rename input ────────────────────────────────────────────────────────────
+
+.mar-filemanager__rename-input {
+    font-size: var(--marilo-font-size-sm);
+    padding: 2px var(--marilo-space-xs);
+    border: 1px solid var(--marilo-color-primary);
+    border-radius: var(--marilo-radius-sm);
+    outline: none;
+    width: 100%;
+    max-width: 200px;
+    background: var(--marilo-color-surface);
+    color: var(--marilo-color-text);
+}
+
+// ── Preview pane ────────────────────────────────────────────────────────────
+
+.mar-filemanager__preview {
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
+    border-left: 1px solid var(--marilo-color-border);
+    padding: var(--marilo-space-md);
+    overflow-y: auto;
+    background: var(--marilo-color-subtle-background, var(--marilo-color-surface));
+}
+
+.mar-filemanager__preview-empty {
+    color: var(--marilo-color-text-secondary);
+    font-style: italic;
+}
+
+.mar-filemanager__preview-icon {
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: var(--marilo-space-sm);
+}
+
+.mar-filemanager__preview-name {
+    font-weight: 600;
+    font-size: var(--marilo-font-size-md);
+    margin-bottom: var(--marilo-space-sm);
+    word-break: break-word;
+}
+
+.mar-filemanager__preview-details {
+    font-size: var(--marilo-font-size-sm);
+}
+
+.mar-filemanager__preview-meta {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--marilo-space-xs) var(--marilo-space-sm);
+    margin: 0;
+
+    dt {
+        font-weight: 600;
+        color: var(--marilo-color-text-secondary);
+    }
+
+    dd {
+        margin: 0;
+    }
+}
+
+// ── Context menu ────────────────────────────────────────────────────────────
+
+.mar-filemanager__context-menu {
+    background: var(--marilo-color-surface);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-md);
+    box-shadow: var(--marilo-elevation-md);
+    min-width: 140px;
+    padding: var(--marilo-space-xs) 0;
+}
+
+.mar-filemanager__context-menu-item {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: var(--marilo-space-xs) var(--marilo-space-md);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: var(--marilo-font-size-sm);
+    color: var(--marilo-color-text);
+
+    &:hover {
+        background: var(--marilo-color-subtle-background-hover, rgba(0, 0, 0, 0.04));
+    }
+
+    &--delete:hover {
+        background: var(--marilo-color-danger-light, #fde7e9);
+        color: var(--marilo-color-danger, #d13438);
+    }
+}
+
+// ── Confirm dialog ──────────────────────────────────────────────────────────
+
+.mar-filemanager__confirm-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+}
+
+.mar-filemanager__confirm-dialog {
+    background: var(--marilo-color-surface);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-md);
+    box-shadow: var(--marilo-elevation-lg);
+    padding: var(--marilo-space-lg);
+    min-width: 280px;
+    max-width: 400px;
+}
+
+.mar-filemanager__confirm-message {
+    margin: 0 0 var(--marilo-space-md);
+    font-size: var(--marilo-font-size-md);
+}
+
+.mar-filemanager__confirm-actions {
+    display: flex;
+    gap: var(--marilo-space-sm);
+    justify-content: flex-end;
+}
+
+// ── Upload dialog ───────────────────────────────────────────────────────────
+
+.mar-filemanager__upload-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 1001;
+}
+
+.mar-filemanager__upload-dialog {
+    background: var(--marilo-color-surface);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-md);
+    box-shadow: var(--marilo-elevation-lg);
+    min-width: 320px;
+    max-width: 500px;
+}
+
+.mar-filemanager__upload-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--marilo-space-sm) var(--marilo-space-md);
+    border-bottom: 1px solid var(--marilo-color-border);
+    font-weight: 600;
+}
+
+.mar-filemanager__upload-body {
+    padding: var(--marilo-space-md);
+}
+
+.mar-filemanager__upload-input {
+    width: 100%;
+}
+
+.mar-filemanager__upload-close {
+    // Inherits from .mar-btn base styles
+}
+
+// ── Dark mode ───────────────────────────────────────────────────────────────
+
+[data-marilo-theme="dark"] {
+    .mar-filemanager {
+        border-color: var(--marilo-color-border);
+    }
+
+    .mar-filemanager__toolbar {
+        background: var(--marilo-color-subtle-background, #292827);
+    }
+
+    .mar-filemanager__sidebar {
+        background: var(--marilo-color-subtle-background, #292827);
+    }
+
+    .mar-filemanager__sort-select {
+        background: var(--marilo-color-surface, #252423);
+        color: var(--marilo-color-text, #f3f2f1);
+        border-color: var(--marilo-color-border);
+    }
+
+    .mar-filemanager__search {
+        background: var(--marilo-color-surface, #252423);
+        color: var(--marilo-color-text, #f3f2f1);
+        border-color: var(--marilo-color-border);
+    }
+
+    .mar-filemanager__rename-input {
+        background: var(--marilo-color-surface, #252423);
+        color: var(--marilo-color-text, #f3f2f1);
+    }
+
+    .mar-filemanager__breadcrumb-segment:hover {
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .mar-filemanager__tree [role="treeitem"]:hover {
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .mar-filemanager__tree-item--active {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .mar-filemanager__grid-item {
+        &:hover {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        &--selected {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    }
+
+    .mar-filemanager__list {
+        tr[role="row"]:hover td {
+            background: rgba(255, 255, 255, 0.06);
+        }
+
+        td {
+            border-bottom-color: rgba(255, 255, 255, 0.06);
+        }
+    }
+
+    .mar-filemanager__row--selected td {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .mar-filemanager__details-btn--active {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .mar-filemanager__preview {
+        background: var(--marilo-color-subtle-background, #292827);
+    }
+
+    .mar-filemanager__context-menu {
+        background: var(--marilo-color-surface, #252423);
+        border-color: var(--marilo-color-border);
+    }
+
+    .mar-filemanager__context-menu-item:hover {
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    .mar-filemanager__context-menu-item--delete:hover {
+        background: rgba(208, 52, 56, 0.15);
+        color: #f1707b;
+    }
+
+    .mar-filemanager__confirm-overlay {
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .mar-filemanager__confirm-dialog {
+        background: var(--marilo-color-surface, #252423);
+        border-color: var(--marilo-color-border);
+    }
+
+    .mar-filemanager__upload-overlay {
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    .mar-filemanager__upload-dialog {
+        background: var(--marilo-color-surface, #252423);
+        border-color: var(--marilo-color-border);
+    }
+
+    .mar-filemanager__list th {
+        background: var(--marilo-color-subtle-background, #292827);
+    }
+}

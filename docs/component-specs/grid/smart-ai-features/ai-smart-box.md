@@ -27,7 +27,7 @@ To use the `GridToolBarSmartBoxTool`, add it inside the `GridToolBar` tag. The S
 
 Each settings component can be enabled or disabled individually through its `Enabled` parameter (default is `true`). Each feature also supports history tracking through its respective history settings component.
 
-For detailed information on all available parameters, see the [GridToolBarSmartBoxTool API reference](slug:Marilo.Blazor.Components.GridToolBarSmartBoxTool).
+For detailed information on all available parameters, see the [GridToolBarSmartBoxTool API reference](slug:Marilo.Components.DataGrid.GridToolBarSmartBoxTool).
 
 ## Standard Search
 
@@ -63,7 +63,7 @@ Configure AI assistant history through the `GridToolBarSmartBoxToolAIAssistantHi
 The following example demonstrates how to configure the `GridToolBarSmartBoxTool` with all three features: standard search, semantic search, and AI Assistant.
 
 ````RAZOR.skip-repl
-<MariloGrid Data="@GridData">
+<MariloDataGrid Data="@GridData">
     <GridToolBar>
         <GridToolBarSmartBoxTool>
             <GridToolBarSmartBoxToolSettings>
@@ -88,12 +88,10 @@ The following example demonstrates how to configure the `GridToolBarSmartBoxTool
         </GridToolBarSmartBoxTool>
     </GridToolBar>
 
-    <GridColumns>
-        <GridColumn Field="@nameof(Product.Name)" />
-        <GridColumn Field="@nameof(Product.Price)" />
-        <GridColumn Field="@nameof(Product.Category)" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(Product.Name)" />
+        <MariloGridColumn Field="@nameof(Product.Price)" />
+        <MariloGridColumn Field="@nameof(Product.Category)" />
+</MariloDataGrid>
 
 @code {
     private List<Product> GridData { get; set; } = new();

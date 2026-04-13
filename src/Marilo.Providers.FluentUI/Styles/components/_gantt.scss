@@ -39,6 +39,384 @@
   }
 }
 
+// ── Layout structure ─────────────────────────────────────────
+.mar-gantt__container {
+  display: flex;
+  overflow: hidden;
+  flex: 1 1 auto;
+}
+
+.mar-gantt__tasklist {
+  flex-shrink: 0;
+  overflow-y: auto;
+  border-right: 1px solid var(--marilo-color-border, #c8c6c4);
+  background: var(--marilo-color-surface, #ffffff);
+
+  &:focus {
+    outline: 2px solid var(--marilo-color-primary, #0078d4);
+    outline-offset: -2px;
+  }
+}
+
+.mar-gantt__tasklist-header {
+  display: flex;
+  background: var(--marilo-color-subtle-background, #f3f2f1);
+  border-bottom: 1px solid var(--marilo-color-border, #c8c6c4);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.mar-gantt__task-row {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--marilo-color-border-light, #edebe9);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--marilo-color-subtle-background, #f3f2f1);
+  }
+
+  &--focused {
+    outline: 2px solid var(--marilo-color-primary, #0078d4);
+    outline-offset: -2px;
+  }
+
+  &--editing {
+    background: var(--marilo-color-subtle-background, #f3f2f1);
+  }
+}
+
+.mar-gantt__task-cell {
+  padding: 4px 8px;
+  font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+
+.mar-gantt__chevron {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 4px;
+  font-size: 12px;
+  color: var(--marilo-color-text-secondary, #605e5c);
+  line-height: 1;
+  flex-shrink: 0;
+
+  &:hover {
+    color: var(--marilo-color-text, #323130);
+  }
+}
+
+// ── Toolbar ──────────────────────────────────────────────────
+.mar-gantt__toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-bottom: 1px solid var(--marilo-color-border, #c8c6c4);
+  background: var(--marilo-color-subtle-background, #f3f2f1);
+}
+
+.mar-gantt__view-selector {
+  display: flex;
+  gap: 2px;
+}
+
+.mar-gantt__view-btn {
+  background: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 4px;
+  color: var(--marilo-color-text-secondary, #605e5c);
+
+  &:hover {
+    background: var(--marilo-color-subtle-background, #f3f2f1);
+  }
+
+  &--active {
+    background: var(--marilo-color-primary, #0078d4);
+    color: #ffffff;
+    border-color: var(--marilo-color-primary, #0078d4);
+  }
+}
+
+.mar-gantt__column-chooser-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 2px 6px;
+  color: var(--marilo-color-text-secondary, #605e5c);
+  margin-left: auto;
+}
+
+// ── Timeline ─────────────────────────────────────────────────
+.mar-gantt__timeline {
+  flex: 1 1 auto;
+  overflow: auto;
+  position: relative;
+}
+
+.mar-gantt__timeline-headers {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--marilo-color-surface, #ffffff);
+}
+
+.mar-gantt__timeline-header {
+  display: flex;
+  border-bottom: 1px solid var(--marilo-color-border, #c8c6c4);
+
+  &--main {
+    font-weight: 600;
+    font-size: 12px;
+  }
+
+  &--secondary {
+    font-size: 11px;
+    color: var(--marilo-color-text-secondary, #605e5c);
+  }
+}
+
+.mar-gantt__date-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 0;
+  border-right: 1px solid var(--marilo-color-border-light, #edebe9);
+  font-size: 11px;
+  flex-shrink: 0;
+
+  &--main {
+    font-weight: 600;
+    font-size: 12px;
+  }
+}
+
+.mar-gantt__bars {
+  position: relative;
+}
+
+// ── Sort indicator ───────────────────────────────────────────
+.mar-gantt__header--sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.mar-gantt__header--sorted {
+  font-weight: 700;
+}
+
+.mar-gantt__sort-indicator {
+  font-size: 10px;
+  margin-left: 4px;
+}
+
+// ── Filter row ───────────────────────────────────────────────
+.mar-gantt__filter-row {
+  display: flex;
+  border-bottom: 1px solid var(--marilo-color-border, #c8c6c4);
+  background: var(--marilo-color-surface, #ffffff);
+}
+
+.mar-gantt__filter-input {
+  width: 100%;
+  padding: 3px 6px;
+  border: 1px solid var(--marilo-color-border, #c8c6c4);
+  border-radius: 2px;
+  font-size: 12px;
+}
+
+// ── Edit input & actions ─────────────────────────────────────
+.mar-gantt__edit-input {
+  width: 100%;
+  padding: 3px 6px;
+  border: 1px solid var(--marilo-color-primary, #0078d4);
+  border-radius: 2px;
+  font-size: 13px;
+}
+
+.mar-gantt__edit-actions {
+  display: flex;
+  gap: 4px;
+  padding: 4px 8px;
+}
+
+.mar-gantt__edit-btn {
+  padding: 4px 10px;
+  border: 1px solid var(--marilo-color-border, #c8c6c4);
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 12px;
+  background: var(--marilo-color-surface, #ffffff);
+
+  &--save {
+    background: var(--marilo-color-primary, #0078d4);
+    color: #ffffff;
+    border-color: var(--marilo-color-primary, #0078d4);
+  }
+
+  &--cancel {
+    background: var(--marilo-color-surface, #ffffff);
+    color: var(--marilo-color-text, #323130);
+  }
+}
+
+// ── Command column ───────────────────────────────────────────
+.mar-gantt__command-header,
+.mar-gantt__command-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+// ── Tooltip ──────────────────────────────────────────────────
+.mar-gantt__tooltip {
+  position: absolute;
+  top: 100%;
+  z-index: 5;
+  background: var(--marilo-color-surface, #ffffff);
+  border: 1px solid var(--marilo-color-border, #c8c6c4);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+// ── Bar resize handles ───────────────────────────────────────
+.mar-gantt__bar-resize {
+  position: absolute;
+  top: 0;
+  width: 6px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 1;
+
+  &--left { left: 0; }
+  &--right { right: 0; }
+}
+
+// ── Column chooser panel ─────────────────────────────────────
+.mar-gantt__column-chooser {
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 10;
+  background: var(--marilo-color-surface, #ffffff);
+  border: 1px solid var(--marilo-color-border, #c8c6c4);
+  border-radius: 4px;
+  padding: 8px 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  min-width: 160px;
+}
+
+.mar-gantt__column-chooser-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.mar-gantt__column-chooser-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+// ── Checkbox filter panel ────────────────────────────────────
+.mar-gantt__checkbox-filter {
+  padding: 8px 12px;
+}
+
+.mar-gantt__checkbox-filter-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.mar-gantt__checkbox-filter-list {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.mar-gantt__checkbox-filter-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 0;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.mar-gantt__checkbox-filter-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+// ── Popup edit dialog ────────────────────────────────────────
+.mar-gantt__popup-edit {
+  padding: 12px 16px;
+}
+
+.mar-gantt__popup-edit-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+
+.mar-gantt__popup-edit-field {
+  margin-bottom: 8px;
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+}
+
+.mar-gantt__popup-edit-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+// ── Bar base ──────────────────────────────────────────────────
+.mar-gantt__bar {
+  position: relative;
+  height: var(--marilo-gantt-bar-height, 24px);
+  background: var(--marilo-gantt-bar-bg, var(--colorBrandBackground, #0078d4));
+  border-radius: var(--marilo-gantt-bar-radius, 4px);
+  color: var(--marilo-gantt-bar-color, var(--colorNeutralForegroundOnBrand, #ffffff));
+  cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  font-size: var(--marilo-gantt-bar-font-size, 12px);
+  line-height: 1;
+  box-sizing: border-box;
+  transition: filter 0.15s ease;
+}
+
+.mar-gantt__bar-row {
+  position: relative;
+  height: var(--marilo-gantt-row-height, 36px);
+  display: flex;
+  align-items: center;
+}
+
 // ── Milestone ──────────────────────────────────────────────────
 .mar-gantt__milestone {
   position: absolute;
@@ -174,6 +552,38 @@
 
   &:hover {
     background: var(--marilo-color-subtle-background, #f3f2f1);
+  }
+}
+
+// ── Dependency lines ──────────────────────────────────────────
+.mar-gantt__dependency {
+  stroke: var(--marilo-gantt-dependency-stroke, var(--colorNeutralStroke1, #999));
+  stroke-width: 1.5;
+}
+
+.mar-gantt__dependency-marker path {
+  fill: var(--marilo-gantt-dependency-stroke, var(--colorNeutralStroke1, #999));
+}
+
+// ── Selected bar ──────────────────────────────────────────────
+.mar-gantt__bar--selected {
+  outline: 2px solid var(--marilo-color-primary, #0078d4);
+  outline-offset: 1px;
+  filter: brightness(1.08);
+}
+
+// ── Dark mode ─────────────────────────────────────────────────
+[data-marilo-theme="dark"] {
+  .mar-gantt__dependency {
+    stroke: var(--marilo-gantt-dependency-stroke, var(--colorNeutralStroke1, #8a8886));
+  }
+
+  .mar-gantt__dependency-marker path {
+    fill: var(--marilo-gantt-dependency-stroke, var(--colorNeutralStroke1, #8a8886));
+  }
+
+  .mar-gantt__bar--selected {
+    outline-color: var(--marilo-color-primary, #2b88d8);
   }
 }
 

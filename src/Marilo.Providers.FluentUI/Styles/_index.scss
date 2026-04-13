@@ -49,9 +49,11 @@
 @forward 'components/context-menu';
 @forward 'components/data-banner';
 @forward 'components/data-grid';
+@forward 'components/data-sheet';
 @forward 'components/date-picker';
 @forward 'components/dialog';
 @forward 'components/divider';
+@forward 'components/dock-manager';
 @forward 'components/drag-drop';
 @forward 'components/drawer';
 @forward 'components/dropdown-list';
@@ -65,6 +67,7 @@
 @forward 'components/link';
 @forward 'components/list';
 @forward 'components/list-view';
+@forward 'components/map';
 @forward 'components/menu';
 @forward 'components/modal';
 @forward 'components/multi-select';
@@ -99,6 +102,7 @@
 @forward 'components/toast';
 @forward 'components/toolbar';
 @forward 'components/tooltip';
+@forward 'components/treelist';
 @forward 'components/tree-view';
 @forward 'components/typography';
 @forward 'components/upload';

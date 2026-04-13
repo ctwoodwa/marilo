@@ -27,6 +27,7 @@
     padding: 6px 10px;
     font-family: var(--marilo-font-family);
     font-size: var(--marilo-font-size-base);
+    line-height: var(--marilo-line-height-base, 1.5);
     color: var(--marilo-color-on-background);
     background: transparent;
     border: none;
@@ -147,20 +148,13 @@
     padding: 7px 34px 7px 34px;
     font-family: var(--marilo-font-family);
     font-size: var(--marilo-font-size-sm);
+    line-height: var(--marilo-line-height-base, 1.5);
     color: var(--marilo-color-on-background);
     background: var(--marilo-color-background);
     border: 1px solid var(--marilo-color-border);
     border-radius: var(--marilo-radius-lg);
     outline: none;
-    box-sizing: border-box;
-    -webkit-appearance: none;
-    appearance: none;
     transition: border-color var(--marilo-transition-fast), box-shadow var(--marilo-transition-fast);
-}
-
-.mar-search-box input[type="search"]::-webkit-search-cancel-button {
-    -webkit-appearance: none;
-    display: none;
 }
 
 .mar-search-box input[type="search"]::placeholder {
@@ -169,6 +163,7 @@
 
 .mar-search-box input[type="search"]:focus {
     border-color: var(--marilo-color-primary);
+    box-shadow: 0 0 0 2px rgba(15, 107, 189, 0.18);
     box-shadow: 0 0 0 2px color-mix(in srgb, var(--marilo-color-primary) 18%, transparent);
 }
 

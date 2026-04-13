@@ -12,19 +12,22 @@ components: ["map"]
 
 The <a href="https://www.marilo.com/blazor-ui/map" target="_blank">Blazor Map component</a> displays geospatial information organized in layers. The component provides [tile layers](slug:components/map/layers/tile), [vector shape layers](slug:components/map/layers/shape), [bubble layers](slug:components/map/layers/bubble), and [marker layers](slug:components/map/layers/marker).
 
+The Map uses [MapLibre GL JS](https://maplibre.org/) as its tile rendering engine, providing WebGL-accelerated rendering with support for vector tiles, raster tiles, and smooth pan/zoom interactions. See [architecture-decision-tile-engine.md](architecture-decision-tile-engine.md) for the full architecture decision record.
+
 ## Creating Blazor Map
 
 1. Use the `MariloMap` tag to add the component to a Razor file.
-1. Add a `<MapLayer>` tag nested inside `<MapLayers>`. Set its `Type` to `MapLayersType.Tile`.
-1. Set the [`UrlTemplate` parameter](slug:components/map/layers#maplayer-parameters) of the tile layer. Check the [required syntax that complies with Content Security Policy](#content-security-policy).
-1. (optional) Set the Map `Attribution` and `Subdomains` parameters, depending on the specific tile provider.
+1. Add a `<MapLayer>` tag nested inside `<MapLayers>`. Set its `Type` to `MapLayerType.Tile`.
+1. Set the [`UrlTemplate` parameter](slug:components/map/layers#maplayer-parameters) of the tile layer.
+1. (optional) Set the `Attribution` and `Subdomains` parameters, depending on the specific tile provider.
 
 >caption Basic Marilo Map for Blazor
 
 ````RAZOR
-<MariloMap>
+<MariloMap Center="@MapCenter"
+           Zoom="3">
     <MapLayers>
-        <MapLayer Type="@MapLayersType.Tile"
+        <MapLayer Type="@MapLayerType.Tile"
                   Attribution="@LayerAttribution"
                   Subdomains="@LayerSubdomains"
                   UrlTemplate="@LayerUrlTemplate">
@@ -33,11 +36,28 @@ The <a href="https://www.marilo.com/blazor-ui/map" target="_blank">Blazor Map co
 </MariloMap>
 
 @code {
+    private MapCenter MapCenter { get; set; } = new() { Latitude = 30.268107, Longitude = -97.744821 };
+
     private readonly string[] LayerSubdomains = new string[] { "a", "b", "c" };
-    private string LayerUrlTemplate { get; set; } = "https://#= subdomain #.tile.openstreetmap.org/#= zoom #/#= x #/#= y #.png";
+    private const string LayerUrlTemplate = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
     private const string LayerAttribution = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
 }
 ````
+
+### UrlTemplate Syntax
+
+The `UrlTemplate` parameter uses industry-standard placeholders:
+
+| Placeholder | Description |
+| --- | --- |
+| `{s}` | Subdomain (rotated from the `Subdomains` array) |
+| `{z}` | Zoom level |
+| `{x}` | Tile X coordinate |
+| `{y}` | Tile Y coordinate |
+
+Example: `"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"`
+
+> The legacy `#= subdomain #` / `#= zoom #` / `#= x #` / `#= y #` inline syntax is deprecated. Use the `{s}/{z}/{x}/{y}` placeholders instead. The adapter translates these to the engine's native source format internally.
 
 ## Layers
 
@@ -61,41 +81,6 @@ Blazor Map also incorporates a navigation tool allowing the end user to easily z
 
 The Blazor Map generates events that you can handle and further customize its behavior. [Read more about the Blazor Map events...](slug:components/map/events).
 
-## Content Security Policy
-
-The Map renders with the help of a JavaScript-based rendering engine. This engine uses a templating mechanism that supports two kinds of syntax:
-
-* [Legacy inline syntax](#creating-blazor-map). In this case, the template parameter is a string that consumes dynamic values <a href="https://docs.marilo.com/kendo-ui/framework/templates/essentials" target="_blank">through `#= ... #` expressions</a>, for example, `UrlTemplate="https://#= subdomain #.tile.openstreetmap.org/#= zoom #/#= x #/#= y #.png"`;
-* JavaScript functions that obtain dynamic values from the function arguments, for example, `UrlTemplate="jsFunctionName"`. This feature was introduced in version **4.5.0** of Marilo UI for Blazor.
-
-Both syntax options provide the same capabilities. The legacy inline syntax depends on JavaScript code evaluation, which is not [compliant with strict Content Security Policy (CSP)](slug:troubleshooting-csp). The function-based approach is CSP-compliant and can be more readable and convenient in complex scenarios.
-
->caption CSP-compliant Map
-
-````RAZOR
-<MariloMap>
-    <MapLayers>
-        <MapLayer Type="@MapLayersType.Tile"
-                  Attribution="@LayerAttribution"
-                  Subdomains="@LayerSubdomains"
-                  UrlTemplate="urlTemplateFunction">
-        </MapLayer>
-    </MapLayers>
-</MariloMap>
-
-@* Move the JavaScript to a separate JS file. *@
-<script suppress-error="BL9992" nonce="BL9992">//
-    function urlTemplateFunction(context) {
-        return `https://${context.subdomain}.tile.openstreetmap.org/${context.zoom}/${context.x}/${context.y}.png`;
-    }
-//</script>
-
-@code {
-    private readonly string[] LayerSubdomains = new string[] { "a", "b", "c" };
-    private const string LayerAttribution = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
-}
-````
-
 ## Map Parameters
 
 The Blazor Map provides various parameters that allow you to configure the component:
@@ -103,13 +88,12 @@ The Blazor Map provides various parameters that allow you to configure the compo
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `Center` | `double[]` | The map center. Coordinates are listed as [Latitude, Longitude]. |
-| `MinZoom` | `double` | The minimum zoom level. Typical web maps use zoom levels from 0 (the whole world) to 19 (sub-meter features). |
-| `MaxZoom` | `double` | The maximum zoom level. Typical web maps use zoom levels from 0 (the whole world) to 19 (sub-meter features). |
-| `MinSize` | `double` | The size of the map in pixels at zoom level 0. |
+| `Center` | `MapCenter` | The map center. `MapCenter` has `Latitude` and `Longitude` properties. |
+| `Zoom` | `double` | The initial zoom level. Typical web maps use zoom levels from 0 (the whole world) to 22 (sub-meter features). |
+| `MinZoom` | `double` | The minimum zoom level. |
+| `MaxZoom` | `double` | The maximum zoom level. |
+| `Bounds` | `MapBounds?` | Optional bounding box to constrain the viewport. `MapBounds` has `NorthEast` and `SouthWest` properties (each a `MapCenter`). |
 | `Pannable` | `bool` | Controls whether the user can pan the map. |
-| `WrapAround` | `bool` | Specifies whether the map should wrap around the east-west edges. |
-| `Zoom` | `double` | The initial zoom level. Typical web maps use zoom levels from 0 (the whole world) to 19 (sub-meter features). The map size is derived from the zoom level and minScale options: size = (2 ^ zoom) * minSize. |
 | `Zoomable` | `bool` | Controls whether the map zoom level can be changed by the user. |
 | `Class` | `string` | Specifies the class of the main DOM element. |
 | `Width` | `string` | Specifies the width of the main DOM element. |
@@ -121,7 +105,7 @@ The following `MapControlsAttribution` parameters enable you to customize the ap
 
 | Parameter | Type | Description |
 | --- | --- | --- |
-| `Position` | `MapControlsPosition (enum)` | Specifies the position of the attribtion control. |
+| `Position` | `MapControlsPosition (enum)` | Specifies the position of the attribution control. |
 
 The following `MapControlsNavigator` parameters enable you to customize the appearance of the Blazor Map Controls:
 
@@ -145,9 +129,10 @@ The Map exposes a `Refresh` method. Use it to redraw the component after making 
 <MariloButton OnClick="@ChangeMapZoom">Change Map Zoom</MariloButton>
 
 <MariloMap @ref="MapRef"
-            Zoom="@MapZoom">
+           Center="@MapCenter"
+           Zoom="@MapZoom">
     <MapLayers>
-        <MapLayer Type="@MapLayersType.Tile"
+        <MapLayer Type="@MapLayerType.Tile"
                   Attribution="@LayerAttribution"
                   Subdomains="@LayerSubdomains"
                   UrlTemplate="@LayerUrlTemplate">
@@ -160,8 +145,10 @@ The Map exposes a `Refresh` method. Use it to redraw the component after making 
 
     private double MapZoom { get; set; } = 4;
 
+    private MapCenter MapCenter { get; set; } = new() { Latitude = 30.268107, Longitude = -97.744821 };
+
     private readonly string[] LayerSubdomains = new string[] { "a", "b", "c" };
-    private const string LayerUrlTemplate = "https://#= subdomain #.tile.openstreetmap.org/#= zoom #/#= x #/#= y #.png";
+    private const string LayerUrlTemplate = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
     private const string LayerAttribution = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
 
     private void ChangeMapZoom()
@@ -181,3 +168,4 @@ The Map exposes a `Refresh` method. Use it to redraw the component after making 
 ## See Also
 
 * [Live Demo: Map](https://demos.marilo.com/blazor-ui/map/overview)
+* [Architecture Decision: Tile Engine](architecture-decision-tile-engine.md)

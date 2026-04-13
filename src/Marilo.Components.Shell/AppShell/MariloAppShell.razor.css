@@ -7,11 +7,15 @@
     --mas-bg: var(--marilo-color-bg, var(--marilo-color-background, #fafafa));
     --mas-surface: var(--marilo-color-surface, #ffffff);
     --mas-sidebar-bg: var(--marilo-color-surface, #f4f5f7);
+    --mas-border: rgba(31, 35, 40, 0.08);
     --mas-border: color-mix(in srgb, var(--marilo-color-text, #1f2328) 8%, transparent);
     --mas-text: var(--marilo-color-text, #1f2328);
+    --mas-text-muted: rgba(31, 35, 40, 0.50);
     --mas-text-muted: color-mix(in srgb, var(--marilo-color-text, #1f2328) 50%, transparent);
     --mas-primary: var(--marilo-color-primary, #5b6cff);
+    --mas-active-bg: rgba(91, 108, 255, 0.12);
     --mas-active-bg: color-mix(in srgb, var(--mas-primary) 12%, transparent);
+    --mas-hover-bg: rgba(31, 35, 40, 0.06);
     --mas-hover-bg: color-mix(in srgb, var(--mas-text) 6%, transparent);
     --mas-radius: var(--marilo-radius-md, 8px);
     --mas-transition: 180ms cubic-bezier(.2,.8,.2,1);
@@ -361,6 +365,7 @@
 .mar-appshell__content {
     flex: 1 1 auto;
     overflow: auto;
+    padding: 24px 24px;
     padding: 24px clamp(16px, 3vw, 40px);
 }
 
@@ -451,6 +456,7 @@
 .mar-appshell__scrim {
     display: none;
     position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
     inset: 0;
     background: rgba(0,0,0,0.35);
     z-index: 30;
@@ -514,6 +520,7 @@
     top: 0;
     right: 0;
     bottom: 0;
+    width: 420px;
     width: min(420px, 100vw);
     background: var(--marilo-color-surface, #fff);
     color: var(--marilo-color-text, #1f2328);
@@ -530,6 +537,7 @@
 }
 .mar-appshell ::deep .mar-appshell-slideover__scrim {
     position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
     inset: 0;
     background: rgba(0,0,0,0.35);
     z-index: 49;

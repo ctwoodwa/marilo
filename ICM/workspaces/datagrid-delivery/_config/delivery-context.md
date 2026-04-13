@@ -47,9 +47,9 @@
 
 | Field | Value |
 |-------|-------|
-| Last sync check | PENDING |
-| Gate status | PENDING |
-| Blocking items | PENDING |
+| Last sync check | 2026-04-11 (see stages/04-sync-check/output/datagrid-delivery-report.md) |
+| Gate status | BLOCKED |
+| Blocking items | 12 (9 checklist failures + 3 category-critical: unstyled-selector cluster, hardcoded #fff literals, D4 keyboard-honesty + missing focus rings bundle) |
 
 ## Gap Workspace Link
 

@@ -61,7 +61,7 @@ This example shows the basics of enabling the group load on demand - setting `Lo
 ````RAZOR
 Drag the column header of the "Team" and/or "On Vacation" column to the group panel at the top
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              LoadGroupsOnDemand="true"
              Groupable="true"
              Navigable="true" Pageable="true" Sortable="true" FilterMode="@GridFilterMode.FilterRow">
@@ -71,28 +71,26 @@ Drag the column header of the "Team" and/or "On Vacation" column to the group pa
         <GridAggregate Field="@nameof(Employee.Salary)" Aggregate="@GridAggregateType.Sum" />
         <GridAggregate Field="@nameof(Employee.IsOnLeave)" Aggregate="@GridAggregateType.Count" />
     </GridAggregates>
-    <GridColumns>
-        <GridColumn Field="@nameof(Employee.Name)" Groupable="false" />
-        <GridColumn Field="@nameof(Employee.Team)" Title="Team">
+        <MariloGridColumn Field="@nameof(Employee.Name)" Groupable="false" />
+        <MariloGridColumn Field="@nameof(Employee.Team)" Title="Team">
             <GroupHeaderTemplate>
                 Employees in this group: @context.Count
             </GroupHeaderTemplate>
-        </GridColumn>
-        <GridColumn Field="@nameof(Employee.Salary)" Groupable="false">
+        </MariloGridColumn>
+        <MariloGridColumn Field="@nameof(Employee.Salary)" Groupable="false">
             <GroupFooterTemplate>
                 Lowest salary in this group: @context.Min
             </GroupFooterTemplate>
             <FooterTemplate>
                 Total salary expenses @context.Sum
             </FooterTemplate>
-        </GridColumn>
-        <GridColumn Field="@nameof(Employee.IsOnLeave)" Title="On Vacation">
+        </MariloGridColumn>
+        <MariloGridColumn Field="@nameof(Employee.IsOnLeave)" Title="On Vacation">
             <GroupHeaderTemplate>
                 Employees with "OnLeave" @context.Value : @context.Count
             </GroupHeaderTemplate>
-        </GridColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridColumn>
+</MariloDataGrid>
 
 @code {
     public List<Employee> GridData { get; set; }
@@ -136,20 +134,18 @@ This example shows how you can combine the virtual row scrolling feature with lo
 
 Scroll through the groups or expand them to load their data on demand
 
-<MariloGrid TItem="@object"
+<MariloDataGrid TItem="@object"
              LoadGroupsOnDemand="true"
              Groupable="true"
              OnStateInit="@((GridStateEventArgs<object> args) => OnStateInitHandler(args))"
              OnRead="@ReadItems"
              ScrollMode="@GridScrollMode.Virtual" PageSize="20" RowHeight="60"
              Navigable="true" Sortable="true" FilterMode="@GridFilterMode.FilterRow" Height="600px">
-    <GridColumns>
-        <GridColumn Field="@nameof(Employee.Name)" FieldType="@typeof(string)" Groupable="false" />
-        <GridColumn Field="@nameof(Employee.Team)" FieldType="@typeof(string)" Title="Team" />
-        <GridColumn Field="@nameof(Employee.Salary)" FieldType="@typeof(decimal)" Groupable="false" />
-        <GridColumn Field="@nameof(Employee.IsOnLeave)" FieldType="@typeof(bool)" Title="On Vacation" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(Employee.Name)" FieldType="@typeof(string)" Groupable="false" />
+        <MariloGridColumn Field="@nameof(Employee.Team)" FieldType="@typeof(string)" Title="Team" />
+        <MariloGridColumn Field="@nameof(Employee.Salary)" FieldType="@typeof(decimal)" Groupable="false" />
+        <MariloGridColumn Field="@nameof(Employee.IsOnLeave)" FieldType="@typeof(bool)" Title="On Vacation" />
+</MariloDataGrid>
 
 @code {
     List<object> GridData { get; set; }
@@ -285,7 +281,7 @@ To toggle how the Grid loads groups:
     </label>
 </p>
 
-<MariloGrid @ref="@GridRef"
+<MariloDataGrid @ref="@GridRef"
              Data="@GridData"
              TItem="@Employee"
              Pageable="true"
@@ -294,16 +290,14 @@ To toggle how the Grid loads groups:
              LoadGroupsOnDemand="@GridLoadGroupsOnDemand"
              FilterMode="GridFilterMode.FilterRow"
              OnStateInit="@OnGridStateInit">
-    <GridColumns>
-        <GridColumn Field="@nameof(Employee.Name)" />
-        <GridColumn Field="@nameof(Employee.Team)" />
-        <GridColumn Field="@nameof(Employee.Salary)" />
-        <GridColumn Field="@nameof(Employee.OnVacation)" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(Employee.Name)" />
+        <MariloGridColumn Field="@nameof(Employee.Team)" />
+        <MariloGridColumn Field="@nameof(Employee.Salary)" />
+        <MariloGridColumn Field="@nameof(Employee.OnVacation)" />
+</MariloDataGrid>
 
 @code {
-    private MariloGrid<Employee>? GridRef { get; set; }
+    private MariloDataGrid<Employee>? GridRef { get; set; }
 
     private List<Employee> GridData { get; set; } = new();
 

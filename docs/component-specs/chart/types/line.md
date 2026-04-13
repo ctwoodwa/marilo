@@ -30,10 +30,10 @@ Line series
 
 <MariloChart>
 	<ChartSeriesItems>
-		<ChartSeries Type="ChartSeriesType.Line" Name="Product 1" Data="@series1Data">
-		</ChartSeries>
-		<ChartSeries Type="ChartSeriesType.Line" Name="Product 2" Data="@series2Data">
-		</ChartSeries>
+		<MariloChartSeries Type="ChartSeriesType.Line" Name="Product 1" Data="@series1Data">
+		</MariloChartSeries>
+		<MariloChartSeries Type="ChartSeriesType.Line" Name="Product 2" Data="@series2Data">
+		</MariloChartSeries>
 	</ChartSeriesItems>
 
 	<ChartCategoryAxes>
@@ -42,7 +42,7 @@ Line series
 
 	<ChartTitle Text="Quarterly revenue per product"></ChartTitle>
 
-	<ChartLegend Position="ChartLegendPosition.Right">
+	<ChartLegend Position="ChartPosition.Right">
 	</ChartLegend>
 </MariloChart>
 
@@ -79,10 +79,10 @@ If some values are missing from the series data (they are `null`), you can have 
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Line" Name="Product 1" Data="@series1Data">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Line" Name="Product 2" Data="@series2Data">
-        </ChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Line" Name="Product 1" Data="@series1Data">
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Line" Name="Product 2" Data="@series2Data">
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -95,7 +95,7 @@ If some values are missing from the series data (they are `null`), you can have 
 
     <ChartTitle Text="Quarterly revenue per product"></ChartTitle>
 
-    <ChartLegend Position="ChartLegendPosition.Right">
+    <ChartLegend Position="ChartPosition.Right">
     </ChartLegend>
 </MariloChart>
 

@@ -44,7 +44,7 @@ Using a `FormTemplate` to modify the Edit/Create Popup window.
 @using Marilo.DataSource
 @using Marilo.DataSource.Extensions
 
-<MariloGrid @ref="@GridRef"
+<MariloDataGrid @ref="@GridRef"
              OnRead="@OnGridRead"
              TItem="@Product"
              EditMode="@GridEditMode.Popup"
@@ -105,23 +105,21 @@ Using a `FormTemplate` to modify the Edit/Create Popup window.
             </FormTemplate>
         </GridPopupEditFormSettings>
     </GridSettings>
-    <GridColumns>
-        <GridColumn Field="@nameof(Product.Name)" />
-        <GridColumn Field="@nameof(Product.Price)" DisplayFormat="{0:C2}" />
-        <GridColumn Field="@nameof(Product.Quantity)" DisplayFormat="{0:N0}" />
-        <GridColumn Field="@nameof(Product.ReleaseDate)" DisplayFormat="{0:d}" />
-        <GridColumn Field="@nameof(Product.Discontinued)" Width="120px" />
-        <GridCommandColumn Width="180px">
+        <MariloGridColumn Field="@nameof(Product.Name)" />
+        <MariloGridColumn Field="@nameof(Product.Price)" DisplayFormat="{0:C2}" />
+        <MariloGridColumn Field="@nameof(Product.Quantity)" DisplayFormat="{0:N0}" />
+        <MariloGridColumn Field="@nameof(Product.ReleaseDate)" DisplayFormat="{0:d}" />
+        <MariloGridColumn Field="@nameof(Product.Discontinued)" Width="120px" />
+        <MariloGridCommandColumn Width="180px">
             <GridCommandButton Command="Edit">Edit</GridCommandButton>
             <GridCommandButton Command="Delete">Delete</GridCommandButton>
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 
 @code {
     private ProductService GridProductService { get; set; } = new();
 
-    private MariloGrid<Product>? GridRef { get; set; }
+    private MariloDataGrid<Product>? GridRef { get; set; }
 
     private Product? GridEditItem { get; set; }
 

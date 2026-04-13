@@ -78,17 +78,16 @@ The example below shows how to:
 @using Marilo.DataSource
 @using Marilo.DataSource.Extensions
 
-<MariloGrid OnRead="@OnGridRead"
+<MariloDataGrid OnRead="@OnGridRead"
              TItem="@Product"
              EditMode="@GridEditMode.Inline"
-        <GridCommandColumn Width="180px">
+        <MariloGridCommandColumn Width="180px">
             <GridCommandButton Command="Edit">Edit</GridCommandButton>
             <GridCommandButton Command="Save" ShowInEdit="true">Save</GridCommandButton>
             <GridCommandButton Command="Cancel" ShowInEdit="true">Cancel</GridCommandButton>
             <GridCommandButton Command="Delete">Delete</GridCommandButton>
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 
 @code {
 
@@ -108,18 +107,17 @@ The example below shows how to:
 @using Marilo.DataSource
 @using Marilo.DataSource.Extensions
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              EditMode="@GridEditMode.Inline"
-    <GridColumns>
-        <GridColumn Field="@nameof(Product.Id)" Editable="false" Width="60px" />
-        <GridColumn Field="@nameof(Product.Name)" />
-        <GridColumn Field="@nameof(Product.Description)" EditorType="@GridEditorType.TextArea">
+        <MariloGridColumn Field="@nameof(Product.Id)" Editable="false" Width="60px" />
+        <MariloGridColumn Field="@nameof(Product.Name)" />
+        <MariloGridColumn Field="@nameof(Product.Description)" EditorType="@GridEditorType.TextArea">
             <Template>
                 @{ var dataItem = (Product)context; }
                 <div style="white-space:pre">@dataItem.Description</div>
             </Template>
-        </GridColumn>
-        <GridCommandColumn Title="Commands" Width="180px">
+        </MariloGridColumn>
+        <MariloGridCommandColumn Title="Commands" Width="180px">
             @{ var dataItem = (Product)context; }
             <GridCommandButton Command="Edit" ThemeColor="@AddEditButtonThemeColor">Edit</GridCommandButton>
             <GridCommandButton Command="Save" ShowInEdit="true">Save</GridCommandButton>
@@ -128,9 +126,8 @@ The example below shows how to:
             {
                 <GridCommandButton Command="Delete" ThemeColor="@DeleteButtonThemeColor">Delete</GridCommandButton>
             }
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 
 @code {
 

@@ -82,6 +82,29 @@ Fires when a built-in or custom context menu command is invoked.
 
 Called before a context menu action is shown to allow enable/disable logic. Set `IsEnabled = false` to grey out the command.
 
+### OnTimeColumnResized
+
+Fires when the user finishes resizing a time column via drag or double-click auto-fit.
+
+| Property | Type |
+|---|---|
+| *(Dictionary)* | `Dictionary<int, int>` |
+
+The dictionary maps zero-based column indices to their new widths in pixels.
+
+```razor
+<MariloAllocationScheduler ... OnTimeColumnResized="@HandleResize">
+
+@code {
+    private Task HandleResize(Dictionary<int, int> widths)
+    {
+        foreach (var kv in widths)
+            Console.WriteLine($"Column {kv.Key} → {kv.Value}px");
+        return Task.CompletedTask;
+    }
+}
+```
+
 ## Two-Way Binding Callbacks
 
 These callbacks support Blazor two-way binding (`@bind-*`) for parameters that can change from within the component. See [Data Binding](slug:allocation-scheduler-data-binding) for usage examples.

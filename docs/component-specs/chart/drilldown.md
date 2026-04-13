@@ -26,13 +26,13 @@ To configure Chart series for drill-down:
 ````RAZOR
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column"
+        <MariloChartSeries Type="ChartSeriesType.Column"
                      Name="Total Sales By Company"
                      Data="@Data"
                      Field="@nameof(CompanyModel.Sales)"
                      CategoryField="@nameof(CompanyModel.Name)"
                      DrilldownField="@nameof(CompanyModel.Details)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 </MariloChart>
 
@@ -118,13 +118,13 @@ Optionally, you can display a Breadcrumb component to show the drill-down levels
 
 <MariloChart Id="@ChartId">
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column"
+        <MariloChartSeries Type="ChartSeriesType.Column"
                      Name="Total Sales By Company"
                      Data="@Data"
                      Field="@nameof(CompanyModel.Sales)"
                      CategoryField="@nameof(CompanyModel.Name)"
                      DrilldownField="@nameof(CompanyModel.Details)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 </MariloChart>
 
@@ -213,13 +213,13 @@ To reset the drilldown level programmatically, use the `ResetDrilldownLevel` met
 <MariloChart Id="@ChartId"
               @ref="ChartRef">
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column"
+        <MariloChartSeries Type="ChartSeriesType.Column"
                      Name="Total Sales By Company"
                      Data="@Data"
                      Field="@nameof(CompanyModel.Sales)"
                      CategoryField="@nameof(CompanyModel.Name)"
                      DrilldownField="@nameof(CompanyModel.Details)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 </MariloChart>
 

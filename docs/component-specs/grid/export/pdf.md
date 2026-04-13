@@ -73,7 +73,7 @@ The column widths for the PDF export can differ from the ones in the Grid config
 @* You can sort, group, filter, page the grid, resize and reorder its columns, and you can click the
     Export button to save the current data *@
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              FilterMode="@GridFilterMode.FilterMenu"
              Groupable="true"
              Pageable="true"
@@ -91,14 +91,12 @@ The column widths for the PDF export can differ from the ones in the Grid config
         <GridPdfExport FileName="marilo-grid-export"/>
     </GridExport>
 
-    <GridColumns>
-        <GridColumn Field="@nameof(SampleData.ProductId)" Title="ID" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.ProductName)" Title="Product Name" Width="200px" />
-        <GridColumn Field="@nameof(SampleData.UnitsInStock)" Title="In stock" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.Price)" Title="Unit Price" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.Discontinued)" Title="Discontinued" Width="150px" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(SampleData.ProductId)" Title="ID" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.ProductName)" Title="Product Name" Width="200px" />
+        <MariloGridColumn Field="@nameof(SampleData.UnitsInStock)" Title="In stock" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.Price)" Title="Unit Price" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.Discontinued)" Title="Discontinued" Width="150px" />
+</MariloDataGrid>
 
 @code {
     private List<SampleData> GridData { get; set; }
@@ -153,7 +151,7 @@ You can programmatically invoke the export feature of the Grid, by using the fol
 <MariloButton OnClick="@(async () => await GridRef.SaveAsPdfFileAsync())">Download the PDF file</MariloButton>
 <MariloButton OnClick="@GetTheDataAsAStream">Get the Exported Data as a MemoryStream</MariloButton>
 
-<MariloGrid @ref="@GridRef"
+<MariloDataGrid @ref="@GridRef"
              Data="@GridData"
              FilterMode="@GridFilterMode.FilterMenu"
              Groupable="true"
@@ -171,17 +169,15 @@ You can programmatically invoke the export feature of the Grid, by using the fol
         <GridPdfExport FileName="marilo-grid-export" AllPages="@ExportAllPages" />
     </GridExport>
 
-    <GridColumns>
-        <GridColumn Field="@nameof(SampleData.ProductId)" Title="ID" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.ProductName)" Title="Product Name" Width="200px" />
-        <GridColumn Field="@nameof(SampleData.UnitsInStock)" Title="In stock" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.Price)" Title="Unit Price" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.Discontinued)" Title="Discontinued" Width="150px" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(SampleData.ProductId)" Title="ID" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.ProductName)" Title="Product Name" Width="200px" />
+        <MariloGridColumn Field="@nameof(SampleData.UnitsInStock)" Title="In stock" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.Price)" Title="Unit Price" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.Discontinued)" Title="Discontinued" Width="150px" />
+</MariloDataGrid>
 
 @code {
-    private MariloGrid<SampleData> GridRef { get; set; }
+    private MariloDataGrid<SampleData> GridRef { get; set; }
 
     private MemoryStream ExportedPdfStream { get; set; }
 

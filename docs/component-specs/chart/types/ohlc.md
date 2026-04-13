@@ -36,7 +36,7 @@ The <a href="https://www.marilo.com/blazor-ui/ohlc-chart" target="_blank">OHLC (
 <MariloChart Height="480px" Width="640px">
 
     <ChartSeriesItems>
-        <ChartSeries Type="@ChartSeriesType.OHLC"
+        <MariloChartSeries Type="@ChartSeriesType.OHLC"
                      Name="Product 1"
                      Data="@ChartProduct1Data"
                      CategoryField="@(nameof(StockDataPoint.Date))"
@@ -44,7 +44,7 @@ The <a href="https://www.marilo.com/blazor-ui/ohlc-chart" target="_blank">OHLC (
                      CloseField="@nameof(StockDataPoint.Close)"
                      HighField="@nameof(StockDataPoint.High)"
                      LowField="@nameof(StockDataPoint.Low)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>

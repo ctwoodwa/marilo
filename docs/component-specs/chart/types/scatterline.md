@@ -34,26 +34,26 @@ You would usually use ScatterLine charts for showing the relation between differ
     <ChartLegend Visible="true"></ChartLegend>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.ScatterLine"
+        <MariloChartSeries Type="ChartSeriesType.ScatterLine"
                      Data="@Series1Data"
                      Name="0.8C"
                      XField="@nameof(ModelData.X)"
                      YField="@nameof(ModelData.Y)">
-        </ChartSeries>
+        </MariloChartSeries>
 
-        <ChartSeries Type="ChartSeriesType.ScatterLine"
+        <MariloChartSeries Type="ChartSeriesType.ScatterLine"
                      Data="@Series2Data"
                      Name="1.6C"
                      XField="@nameof(ModelData.X)"
                      YField="@nameof(ModelData.Y)">
-        </ChartSeries>
+        </MariloChartSeries>
 
-        <ChartSeries Type="ChartSeriesType.ScatterLine"
+        <MariloChartSeries Type="ChartSeriesType.ScatterLine"
                      Data="@Series3Data"
                      Name="3.1C"
                      XField="@nameof(ModelData.X)"
                      YField="@nameof(ModelData.Y)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartXAxes>

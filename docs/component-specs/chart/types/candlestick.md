@@ -36,7 +36,7 @@ The <a href="https://www.marilo.com/blazor-ui/candlestick-chart" target="_blank"
 <MariloChart Height="480px" Width="640px">
 
     <ChartSeriesItems>
-        <ChartSeries Type="@ChartSeriesType.Candlestick"
+        <MariloChartSeries Type="@ChartSeriesType.Candlestick"
                      Name="Product 1"
                      Data="@ChartProduct1Data"
                      CategoryField="@(nameof(StockDataPoint.Date))"
@@ -44,7 +44,7 @@ The <a href="https://www.marilo.com/blazor-ui/candlestick-chart" target="_blank"
                      CloseField="@nameof(StockDataPoint.Close)"
                      HighField="@nameof(StockDataPoint.High)"
                      LowField="@nameof(StockDataPoint.Low)">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>

@@ -12,99 +12,60 @@ components: ["dockmanager"]
 
 This article explains the events available in the Marilo DockManager for Blazor:
 
-* [OnDock](#ondock)
-* [OnUndock](#ondock)
-* [VisibleChanged](#visiblechanged)
-* [SizeChanged](#sizechanged)
-* [UnpinnedChanged](#unpinnedchanged)
-* [UnpinnedSizeChanged](#unpinnedsizechanged)
-* [OnPaneResize](#onpaneresize)
-* [State Events](#state-events)
-* [OnPin](#onpin)
-* [OnUnpin](#onunpin)
+* [OnPaneClosed](#onpaneclosed)
+* [OnPaneFloat](#onpanefloat)
+* [OnPanePin](#onpanepin)
+* [OnPaneActivated](#onpaneactivated)
+* [OnTabReordered](#ontabreordered)
+* [OnPaneMoved](#onpanemoved)
+* [OnLayoutChanged](#onlayoutchanged)
 
-## OnDock
+## OnPaneClosed
 
-The `OnDock` event fires when any pane is docked.
+The OnPaneClosed event fires when a pane is closed (removed from the dock manager). The event handler receives the pane Id as a string.
 
-The event handler receives as an argument an `DockManagerDockEventArgs` object that contains:
+## OnPaneFloat
 
-| Property | Type | Description |
-|---|---|---|
-| `DockPosition` | `DockManagerDockPosition` | The position where the pane is being docked. The possible options are: `Left`, `Right`, `Top`, `Bottom`, `Middle`. |
-| `IsCancelled` | `bool` <br /> (`false`) | Set the `IsCancelled` property to `true` to cancel the event. |
-| `PaneId` | `string` | The Id of the floating pane that is being docked. |
-| `TargetPaneId` | `string` | The Id of the target pane. |
+The OnPaneFloat event fires when a pane is toggled between docked and floating states. The event handler receives the pane Id as a string.
 
-## OnUndock
+## OnPanePin
 
-The `OnUndock` event fires when any pane is undocked.
+The OnPanePin event fires when the pin button of a pane is clicked. The event handler receives the pane Id as a string.
 
-The event handler receives as an argument an `DockManagerUndockEventArgs` object that contains:
+## OnPaneActivated
 
-| Property | Type | Description |
-|---|---|---|
-| `IsCancelled` | `bool` <br /> (`false`) | Set the `IsCancelled` property to `true` to cancel the event. |
-| `PaneId` | `string` | The Id of the floating pane that is being undocked. |
+The OnPaneActivated event fires when a pane becomes the active tab (via user click). The event handler receives the pane Id as a string.
 
-## VisibleChanged
+## OnTabReordered
 
-The `VisibleChanged` event fires when the user tries to hide a given pane. You can effectively cancel the event by not propagating the new visibility state to the variable the `Visible` property is bound to. This is the way to cancel the event and keep the pane visible.
+The OnTabReordered event fires when a tab is reordered within the tab strip via drag-and-drop.
 
-## SizeChanged
-
-The `SizeChanged` event fireswhen the `Size` parameter of the corresponding pane changes.
-
-## UnpinnedChanged
-
-The `UnpinnedChanged` event fireswhen the `Unpinned` parameter of the corresponding pane changes.
-
-## UnpinnedSizeChanged
-
-The `UnpinnedSizeChanged` event fires when the `UnpinnedSize` parameter of the corresponding pane changes.
-
-## OnPaneResize
-
-The `OnPaneResize` event fires when a pane is resized, except unpinned panes. It lets you respond to that change if needed - for example, call the `.Refresh()` method of a chart or otherwise repaint a child component in the content. You can also use it to, for example, update the saved [state](slug:dockmanager-state) for your users.
-
-The event handler receives as an argument an `DockManagerPaneResizeEventArgs` object that contains:
+The event handler receives a DockTabReorderEventArgs object that contains:
 
 | Property | Type | Description |
 |---|---|---|
-| `PaneId` | `string` | The Id of the pane that is being resized. |
-| `Size` | `string` | The new size of the resized pane. |
+| TabGroupId | string | The Id of the tab group in which the reorder occurred. |
+| PaneId | string | The Id of the pane (tab) that was moved. |
+| OldIndex | int | The original index of the tab before the drag. |
+| NewIndex | int | The new index of the tab after the drop. |
 
-## State Events
+## OnPaneMoved
 
-The DockManager state lets you control through code the aspects of the DockManager the user can control in the UI - such as docking, undocking, resizing panes and etc. The DockManager provides two events related to the state:
+The OnPaneMoved event fires when a tab is moved from one tab group to another via drag-and-drop.
 
-* `OnStateInit` - fires when the DockManager initializes so you can provide a stored version of the grid.
-
-* `OnStateChanged` - fires when the user performs an action so you can see what area was changed and, if needed, alter the component state.
-
-Review the [DockManager state](slug:dockmanager-state) article for more details and examples on how the grid state works and what you can do with it.
-
-## OnPin
-
-The `OnPin` event fires when any pane is pinned.
-
-The event handler receives as an argument an `DockManagerPinEventArgs` object that contains:
+The event handler receives a DockPaneMoveEventArgs object that contains:
 
 | Property | Type | Description |
 |---|---|---|
-| `IsCancelled` | `bool` <br /> (`false`) | Set the `IsCancelled` property to `true` to cancel the event. |
-| `PaneId` | `string` | The Id of the pane that is being pinned. |
+| PaneId | string | The Id of the pane (tab) that was moved. |
+| SourceGroupId | string | The Id of the source tab group from which the pane was moved. |
+| TargetGroupId | string | The Id of the target tab group to which the pane was moved. |
 
-## OnUnpin
+## OnLayoutChanged
 
-The `OnUnpin` event fires when any pane is unpinned.
+The OnLayoutChanged event fires whenever the layout changes. This includes pane registration, removal, reordering, floating, docking, and cross-pane tab moves. Use this event to persist layout state or trigger dependent UI updates.
 
-The event handler receives as an argument an `DockManagerUnpinEventArgs` object that contains:
-
-| Property | Type | Description |
-|---|---|---|
-| `IsCancelled` | `bool` <br /> (`false`) | Set the `IsCancelled` property to `true` to cancel the event. |
-| `PaneId` | `string` | The Id of the pane that is being unpinned. |
+The event handler receives no arguments (EventCallback).
 
 ## Example
 

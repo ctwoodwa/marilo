@@ -27,10 +27,10 @@
 }
 
 .mar-datagrid-row:last-child { border-bottom: none; }
-.mar-datagrid-row:hover { background: var(--marilo-color-surface); }
-.mar-datagrid-row--selected { background: var(--marilo-color-primary-light); }
-.mar-datagrid-row--selected:hover { background: var(--marilo-color-primary-light); }
-.mar-datagrid-row--striped:nth-child(even) { background: var(--marilo-color-surface); }
+.mar-datagrid-row:hover { background: var(--marilo-color-surface-hover, #f3f2f1); }
+.mar-datagrid-row--selected { background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 10%, var(--marilo-color-surface, #ffffff)); }
+.mar-datagrid-row--selected:hover { background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 15%, var(--marilo-color-surface, #ffffff)); }
+.mar-datagrid-row--striped:nth-child(even) { background: var(--marilo-color-stripe, #faf9f8); }
 
 .mar-datagrid-cell {
     flex: 1;
@@ -125,7 +125,7 @@
 
 .mar-datagrid .mar-datagrid-filter-menu-btn--active {
     border-color: var(--marilo-color-primary, #0f6cbd);
-    background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 10%, #ffffff);
+    background: color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 10%, var(--marilo-color-surface, #ffffff));
     color: var(--marilo-color-primary, #0f6cbd);
     box-shadow: 0 0 0 1px color-mix(in srgb, var(--marilo-color-primary, #0f6cbd) 35%, transparent);
 }
@@ -173,7 +173,7 @@
     border-radius: 4px;
     padding: 0.4rem 0.55rem;
     font-size: 0.9rem;
-    background: #fff;
+    background: var(--marilo-color-surface, #ffffff);
 }
 
 .mar-datagrid .mar-datagrid-filter-menu-actions {
@@ -186,6 +186,6 @@
     border: 1px solid var(--marilo-color-border, #c8c6c4);
     border-radius: 6px;
     padding: 0.35rem 0.75rem;
-    background: #fff;
+    background: var(--marilo-color-surface, #ffffff);
     cursor: pointer;
 }

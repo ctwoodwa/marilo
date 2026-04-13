@@ -2,42 +2,78 @@
 
 <div class="@CombineClasses("mar-pivotgrid")"
      style="@CombineStyles(SizeStyle())"
+     aria-label="@(AriaLabel ?? "Pivot Grid")"
      @attributes="AdditionalAttributes">
 
-    @if (_columnKeys.Count == 0 && _rowKeys.Count == 0)
+    @* Field definitions (hidden, registers via CascadingValue) *@
+    <CascadingValue Value="(IPivotGridFieldHost)this" IsFixed="true">
+        @ChildContent
+    </CascadingValue>
+
+    @if (_effectiveColumnKeys.Count == 0 && _effectiveRowKeys.Count == 0)
     {
-        <div class="mar-pivotgrid__empty">
-            <p>Configure RowFields, ColumnFields, and MeasureFields to display pivot data.</p>
+        <div class="mar-pivotgrid__empty" role="status">
+            <p>Configure row, column, and measure fields to display pivot data.</p>
         </div>
     }
     else
     {
         <div class="mar-pivotgrid__scroll" style="overflow:auto;max-height:@(Height ?? "100%")">
-            <table class="mar-pivotgrid__table">
+            <table class="mar-pivotgrid__table" role="grid">
                 <thead>
                     <tr>
-                        <th class="mar-pivotgrid__corner">
-                            @foreach (var rf in RowFields)
+                        <th class="mar-pivotgrid__corner" scope="col" role="columnheader">
+                            @foreach (var rf in GetEffectiveRowFields())
                             {
                                 <span>@(rf.Title ?? rf.Name)</span>
                             }
                         </th>
-                        @foreach (var colKey in _columnKeys)
+                        @foreach (var colKey in _effectiveColumnKeys)
                         {
-                            <th class="mar-pivotgrid__col-header">@colKey</th>
+                            <th class="mar-pivotgrid__col-header"
+                                scope="col"
+                                role="columnheader"
+                                aria-sort="@(Sortable ? "none" : null)">
+                                @if (ColumnHeaderTemplate != null)
+                                {
+                                    @ColumnHeaderTemplate(colKey)
+                                }
+                                else
+                                {
+                                    @colKey
+                                }
+                            </th>
                         }
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var rowKey in _rowKeys)
+                    @foreach (var rowKey in _effectiveRowKeys)
                     {
                         <tr>
-                            <td class="mar-pivotgrid__row-header">@rowKey</td>
-                            @foreach (var colKey in _columnKeys)
+                            <th class="mar-pivotgrid__row-header" scope="row" role="rowheader">
+                                @if (RowHeaderTemplate != null)
+                                {
+                                    @RowHeaderTemplate(rowKey)
+                                }
+                                else
+                                {
+                                    @rowKey
+                                }
+                            </th>
+                            @foreach (var colKey in _effectiveColumnKeys)
                             {
                                 var key = (rowKey, colKey);
-                                var val = _aggregates.ContainsKey(key) ? FormatValue(_aggregates[key]) : "-";
-                                <td class="mar-pivotgrid__cell">@val</td>
+                                var hasValue = _aggregates.ContainsKey(key);
+                                @if (CellTemplate != null)
+                                {
+                                    var cellContext = BuildCellContext(rowKey, colKey, hasValue ? _aggregates[key] : null);
+                                    <td class="mar-pivotgrid__cell" role="gridcell">@CellTemplate(cellContext)</td>
+                                }
+                                else
+                                {
+                                    var val = hasValue ? FormatValue(_aggregates[key]) : "-";
+                                    <td class="mar-pivotgrid__cell" role="gridcell">@val</td>
+                                }
                             }
                         </tr>
                     }
@@ -46,125 +82,3 @@
         </div>
     }
 </div>
-
-@code {
-    /// <summary>Data source for the pivot grid.</summary>
-    [Parameter] public IEnumerable<object>? Data { get; set; }
-
-    /// <summary>Fields used for row grouping.</summary>
-    [Parameter] public List<PivotGridField> RowFields { get; set; } = new();
-
-    /// <summary>Fields used for column grouping.</summary>
-    [Parameter] public List<PivotGridField> ColumnFields { get; set; } = new();
-
-    /// <summary>Fields used for aggregated measure values.</summary>
-    [Parameter] public List<PivotGridField> MeasureFields { get; set; } = new();
-
-    /// <summary>Aggregate function applied to measure values.</summary>
-    [Parameter] public PivotGridAggregateFunction AggregateFunction { get; set; } = PivotGridAggregateFunction.Sum;
-
-    /// <summary>CSS height of the pivot grid container.</summary>
-    [Parameter] public string? Height { get; set; }
-
-    /// <summary>CSS width of the pivot grid container.</summary>
-    [Parameter] public string? Width { get; set; }
-
-    /// <summary>Whether column headers are sortable.</summary>
-    [Parameter] public bool Sortable { get; set; }
-
-    /// <summary>Whether filtering is enabled.</summary>
-    [Parameter] public bool Filterable { get; set; }
-
-    private List<string> _rowKeys = new();
-    private List<string> _columnKeys = new();
-    private Dictionary<(string row, string col), double> _aggregates = new();
-
-    private string SizeStyle()
-    {
-        var parts = new List<string>();
-        if (Width != null) parts.Add($"width:{Width}");
-        if (Height != null) parts.Add($"height:{Height}");
-        return string.Join(";", parts);
-    }
-
-    protected override void OnParametersSet()
-    {
-        BuildPivot();
-    }
-
-    private void BuildPivot()
-    {
-        _rowKeys.Clear();
-        _columnKeys.Clear();
-        _aggregates.Clear();
-
-        if (Data == null || !RowFields.Any() || !ColumnFields.Any() || !MeasureFields.Any())
-            return;
-
-        var dataList = Data.ToList();
-        if (dataList.Count == 0) return;
-
-        var rowField = RowFields.First();
-        var colField = ColumnFields.First();
-        var measureField = MeasureFields.First();
-
-        var grouped = new Dictionary<(string row, string col), List<double>>();
-
-        foreach (var item in dataList)
-        {
-            var rowVal = GetPropertyValue(item, rowField.Name) ?? "(empty)";
-            var colVal = GetPropertyValue(item, colField.Name) ?? "(empty)";
-            var measureVal = GetNumericValue(item, measureField.Name);
-
-            if (!_rowKeys.Contains(rowVal)) _rowKeys.Add(rowVal);
-            if (!_columnKeys.Contains(colVal)) _columnKeys.Add(colVal);
-
-            var key = (rowVal, colVal);
-            if (!grouped.ContainsKey(key)) grouped[key] = new List<double>();
-            grouped[key].Add(measureVal);
-        }
-
-        if (Sortable)
-        {
-            _rowKeys.Sort();
-            _columnKeys.Sort();
-        }
-
-        foreach (var kvp in grouped)
-        {
-            _aggregates[kvp.Key] = Aggregate(kvp.Value);
-        }
-    }
-
-    private double Aggregate(List<double> values) => AggregateFunction switch
-    {
-        PivotGridAggregateFunction.Sum => values.Sum(),
-        PivotGridAggregateFunction.Count => values.Count,
-        PivotGridAggregateFunction.Average => values.Average(),
-        PivotGridAggregateFunction.Min => values.Min(),
-        PivotGridAggregateFunction.Max => values.Max(),
-        _ => values.Sum()
-    };
-
-    private string FormatValue(double value) =>
-        value == Math.Floor(value) ? value.ToString("N0") : value.ToString("N2");
-
-    private static string? GetPropertyValue(object item, string propertyName)
-    {
-        var prop = item.GetType().GetProperty(propertyName);
-        return prop?.GetValue(item)?.ToString();
-    }
-
-    private static double GetNumericValue(object item, string propertyName)
-    {
-        var prop = item.GetType().GetProperty(propertyName);
-        var val = prop?.GetValue(item);
-        if (val is double d) return d;
-        if (val is int i) return i;
-        if (val is decimal dec) return (double)dec;
-        if (val is float f) return f;
-        if (val is long l) return l;
-        if (double.TryParse(val?.ToString(), out var parsed)) return parsed;
-        return 0;
-    }
-}

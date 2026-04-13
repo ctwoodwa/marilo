@@ -35,7 +35,7 @@ To define a data item as a running total or total, include a corresponding data 
               Height="400px">
     <ChartTitle Text="Cash Flow"></ChartTitle>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Waterfall"
+        <MariloChartSeries Type="ChartSeriesType.Waterfall"
                      Data="@ChartData"
                      ColorField="@nameof(CashFlowData.Color)"
                      Field="@nameof(CashFlowData.Amount)"
@@ -44,7 +44,7 @@ To define a data item as a running total or total, include a corresponding data 
                      <ChartSeriesLabels Visible="true"
                                         Format="C0"
                                         Position="@ChartSeriesLabelsPosition.InsideEnd" />
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
     <ChartValueAxes>
         <ChartValueAxis Type="ChartValueAxisType.Numeric">

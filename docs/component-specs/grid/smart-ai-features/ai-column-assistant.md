@@ -73,7 +73,7 @@ Follow the [InlineAIPrompt component documentation](slug:inlineaiprompt-overview
 Add a Grid column with no `Field`. The column must have a `<Template>` to render a button that saves the current Grid data item and displays the InlineAIPrompt component.
 
 ````RAZOR.skip-repl
-<GridColumn Resizable="false" Width="70px">
+<MariloGridColumn Resizable="false" Width="70px">
     <Template>
         @{
             var dataItem = (GridModel)context;
@@ -82,7 +82,7 @@ Add a Grid column with no `Field`. The column must have a `<Template>` to render
                            Icon="@nameof(SvgIcon.Sparkles)" />
         }
     </Template>
-</GridColumn>
+</MariloGridColumn>
 
 @code {
     // GridModel is the Grid data item type
@@ -104,7 +104,7 @@ Add a Grid column with no `Field`. The column must have a `<Template>` to render
 You can save the AI response in a separate model property in the Grid data. To display that AI content, define its dedicated column:
 
 ````RAZOR.skip-repl
-<GridColumn Field="@nameof(GridModel.AIGenerated)" Title="AI Content" />
+<MariloGridColumn Field="@nameof(GridModel.AIGenerated)" Title="AI Content" />
 ````
 
 ## Update Grid Data
@@ -135,5 +135,5 @@ See the [Grid AI Column Assistant live demo](https://demos.marilo.com/blazor-ui/
 
 * [InlineAIPrompt Overview](slug:inlineaiprompt-overview)
 * [Grid AI Column Assistant Live Demo](https://demos.marilo.com/blazor-ui/grid/ai-column)
-* [Grid API](slug:Marilo.Blazor.Components.MariloGrid-1)
+* [Grid API](slug:Marilo.Components.DataGrid.MariloDataGrid-1)
 * [Integration with Marilo.AI.SmartComponents.Extensions](slug:grid-ai-service-setup)

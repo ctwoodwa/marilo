@@ -135,6 +135,15 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
     [Parameter] public EventCallback<TItem> OnTaskClick { get; set; }
     [Parameter] public EventCallback<GanttEditEventArgs> OnTaskEdit { get; set; }
 
+    /// <summary>The currently selected task item. Supports two-way binding via @bind-SelectedTask.</summary>
+    [Parameter] public TItem? SelectedTask { get; set; }
+
+    /// <summary>Callback fired when SelectedTask changes. Used for two-way binding.</summary>
+    [Parameter] public EventCallback<TItem?> SelectedTaskChanged { get; set; }
+
+    /// <summary>Fires when a task is selected or deselected via click.</summary>
+    [Parameter] public EventCallback<TItem?> OnTaskSelect { get; set; }
+
     /// <summary>Controls how the tree list enters edit mode. Currently only Inline is supported.</summary>
     [Parameter] public GanttTreeListEditMode TreeListEditMode { get; set; } = GanttTreeListEditMode.Inline;
 
@@ -977,6 +986,15 @@ public partial class MariloGantt<TItem> : MariloComponentBase, IGanttViewHost, I
         {
             _filterMenuField = null;
         }
+    }
+
+    private async Task HandleTaskSelect(TItem item)
+    {
+        // Toggle selection: clicking the already-selected task deselects it
+        var newSelection = ReferenceEquals(SelectedTask, item) ? null : item;
+        SelectedTask = newSelection;
+        await SelectedTaskChanged.InvokeAsync(newSelection);
+        await OnTaskSelect.InvokeAsync(newSelection);
     }
 
     // ── Checkbox filter methods ───────────────────────────────────────

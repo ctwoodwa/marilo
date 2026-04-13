@@ -42,14 +42,12 @@ Examples:
 ````RAZOR
 Custom paging. There is a deliberate delay in the data source operations in this example to mimic real life delays and to showcase the async nature of the calls.
 
-<MariloGrid TItem="@Employee"
+<MariloDataGrid TItem="@Employee"
 			 OnRead="@ReadItems"
 			 Pageable="true" PageSize="15">
-	<GridColumns>
-		<GridColumn Field=@nameof(Employee.Id) Title="ID" />
-		<GridColumn Field=@nameof(Employee.Name) Title="Name" />
-	</GridColumns>
-</MariloGrid>
+		<MariloGridColumn Field=@nameof(Employee.Id) Title="ID" />
+		<MariloGridColumn Field=@nameof(Employee.Name) Title="Name" />
+</MariloDataGrid>
 
 @code {
 	protected async Task ReadItems(GridReadEventArgs args)
@@ -133,15 +131,13 @@ Using Marilo DataSource extension methods to manipulate all the data into paged 
 
 @using Marilo.DataSource.Extensions
 
-<MariloGrid TItem="@Employee" OnRead="@ReadItems"
+<MariloDataGrid TItem="@Employee" OnRead="@ReadItems"
              FilterMode="@GridFilterMode.FilterRow"
              Sortable="true" Pageable="true">
-    <GridColumns>
-        <GridColumn Field=@nameof(Employee.ID) />
-        <GridColumn Field=@nameof(Employee.Name) Title="Name" />
-        <GridColumn Field=@nameof(Employee.HireDate) Title="Hire Date" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field=@nameof(Employee.ID) />
+        <MariloGridColumn Field=@nameof(Employee.Name) Title="Name" />
+        <MariloGridColumn Field=@nameof(Employee.HireDate) Title="Hire Date" />
+</MariloDataGrid>
 
 @code {
     public List<Employee> SourceData { get; set; }
@@ -206,18 +202,16 @@ This sample shows how to set up the grid to use grouping with manual data source
 
 @using Marilo.DataSource.Extensions
 
-<MariloGrid TItem="@Employee"
+<MariloDataGrid TItem="@Employee"
              OnRead="@ReadItems"
              Groupable="true"
              FilterMode="@GridFilterMode.FilterRow"
              Sortable="true"
              Pageable="true">
-    <GridColumns>
-        <GridColumn Field=@nameof(Employee.Name) FieldType="@(typeof(string))" Groupable="false" />
-        <GridColumn Field=@nameof(Employee.Team) FieldType="@(typeof(string))" Title="Team" />
-        <GridColumn Field=@nameof(Employee.IsOnLeave) FieldType="@(typeof(bool))" Title="On Vacation" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field=@nameof(Employee.Name) FieldType="@(typeof(string))" Groupable="false" />
+        <MariloGridColumn Field=@nameof(Employee.Team) FieldType="@(typeof(string))" Title="Team" />
+        <MariloGridColumn Field=@nameof(Employee.IsOnLeave) FieldType="@(typeof(bool))" Title="On Vacation" />
+</MariloDataGrid>
 
 @code {
     public List<Employee> SourceData { get; set; }
@@ -313,7 +307,7 @@ With a few simple loops, you can extract information from the DataSourceRequest 
 
 <p>@ConsoleSim</p>
 
-<MariloGrid TItem="@SampleData"
+<MariloDataGrid TItem="@SampleData"
              OnRead="@OnReadHandler"
              Sortable="true"
              FilterMode="@GridFilterMode.FilterRow"
@@ -322,13 +316,11 @@ With a few simple loops, you can extract information from the DataSourceRequest 
     <GridToolBarTemplate>
         <GridSearchBox />
     </GridToolBarTemplate>
-    <GridColumns>
-        <GridColumn Field="Id" />
-        <GridColumn Field="Name" />
-        <GridColumn Field="Team" />
-        <GridColumn Field="HireDate" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="Id" />
+        <MariloGridColumn Field="Name" />
+        <MariloGridColumn Field="Team" />
+        <MariloGridColumn Field="HireDate" />
+</MariloDataGrid>
 
 
 @code {

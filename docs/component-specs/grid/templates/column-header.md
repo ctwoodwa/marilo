@@ -19,19 +19,18 @@ Bound columns render the name of the field or their `Title` in their header. Thr
 ````RAZOR
 @* Header templates override the built-in title but leave sorting indicators and filter menu icons *@
 
-<MariloGrid Data="@MyData" Height="300px" Pageable="true" Sortable="true" FilterMode="@GridFilterMode.FilterMenu">
-    <GridColumns>
-        <GridColumn Field="@(nameof(SampleData.Id))" Title="This title will not be rendered">
+<MariloDataGrid Data="@MyData" Height="300px" Pageable="true" Sortable="true" FilterMode="@GridFilterMode.FilterMenu">
+        <MariloGridColumn Field="@(nameof(SampleData.Id))" Title="This title will not be rendered">
             <HeaderTemplate>
                 <span>Employee ID</span>
             </HeaderTemplate>
-        </GridColumn>
-        <GridColumn Field="@(nameof(SampleData.Name))">
+        </MariloGridColumn>
+        <MariloGridColumn Field="@(nameof(SampleData.Name))">
             <HeaderTemplate>
                 Employee<br /><strong>Name</strong>
             </HeaderTemplate>
-        </GridColumn>
-        <GridColumn Field="HireDate" Width="350px">
+        </MariloGridColumn>
+        <MariloGridColumn Field="HireDate" Width="350px">
             <HeaderTemplate>
                 <span @onclick:stopPropagation>
                     Hire date<br />
@@ -49,17 +48,16 @@ Bound columns render the name of the field or their `Title` in their header. Thr
                     }
                 }
             </HeaderTemplate>
-        </GridColumn>
-        <GridColumn>
+        </MariloGridColumn>
+        <MariloGridColumn>
             <HeaderTemplate>
                 <span>
                     <MariloSvgIcon Icon="@SvgIcon.Image" />
                     Column with Icon
                 </span>
             </HeaderTemplate>
-        </GridColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridColumn>
+</MariloDataGrid>
 
 @code {
     string result { get; set; }

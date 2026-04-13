@@ -150,6 +150,36 @@ You can control the rendering of the tasks and their Tooltip in the Timeline thr
 ````
 
 
+## Bar Rendering
+
+Each task in the Timeline is rendered as a horizontal bar inside a row container. The base CSS classes are:
+
+| Class | Element | Purpose |
+|---|---|---|
+| `.mar-gantt__bar-row` | Outer row `<div>` | Provides vertical rhythm; one per visible task |
+| `.mar-gantt__bar` | Inner bar `<div>` | The coloured task bar with label, progress fill, resize handles |
+
+Summary tasks receive the additional `.mar-gantt__bar--summary` modifier.
+
+### Design Tokens
+
+The bar appearance is controlled by CSS custom properties. Override them on `.mar-gantt` or any ancestor to customise without touching provider SCSS.
+
+| Token | Default (Fluent) | Default (Bootstrap) | Purpose |
+|---|---|---|---|
+| `--marilo-gantt-bar-height` | `24px` | `24px` | Bar element height |
+| `--marilo-gantt-bar-bg` | `var(--colorBrandBackground, #0078d4)` | `var(--bs-primary, #0d6efd)` | Bar fill colour |
+| `--marilo-gantt-bar-radius` | `4px` | `var(--bs-border-radius-sm, 0.25rem)` | Bar corner rounding |
+| `--marilo-gantt-bar-color` | `var(--colorNeutralForegroundOnBrand, #fff)` | `#fff` | Bar text/icon colour |
+| `--marilo-gantt-bar-font-size` | `12px` | `12px` | Bar label size |
+| `--marilo-gantt-row-height` | `36px` | `36px` | Vertical space per bar row |
+
+### Accessibility
+
+In forced-colours mode (`@media (forced-colors: active)`), the bar receives a `1px solid ButtonText` border so it remains visible regardless of token overrides.
+
+When `prefers-reduced-motion: reduce` is active, the bar's `transition` is collapsed to `0.01ms`.
+
 ## Timeline Layout Notes
 
 * `RowHeight` affects the vertical positioning of timeline bars. Each bar is centered within its row at `rowIndex * RowHeight`.

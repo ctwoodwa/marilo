@@ -172,12 +172,14 @@ mar-allocation-scheduler__splitter                           (element)
 mar-allocation-scheduler__splitter--dragging                 (modifier)
 mar-allocation-scheduler__splitter--focused                  (modifier)
 mar-allocation-scheduler__splitter-restore                   (element)
-mar-allocation-scheduler__splitter-restore--left             (modifier)
-mar-allocation-scheduler__splitter-restore--right            (modifier)
+mar-allocation-scheduler__splitter-restore--left             (modifier — restore zone at the left edge when the resource grid is collapsed)
+mar-allocation-scheduler__splitter-restore--right            (modifier — restore zone at the right edge when the timeline is collapsed)
 mar-allocation-scheduler__pane--left                         (element)
 mar-allocation-scheduler__pane--right                        (element)
-mar-allocation-scheduler__pane--collapsed                    (modifier)
+mar-allocation-scheduler__pane--collapsed                    (modifier — applied when the pane is fully collapsed; hides pane content and triggers restore zone display)
 ```
+
+**Collapse lifecycle:** When a pane collapses, the `--collapsed` modifier is added to the pane element and the corresponding `__splitter-restore--left` or `__splitter-restore--right` element becomes visible. Clicking or pressing Enter/Space on the restore zone removes `--collapsed` and restores the pane to its prior width.
 
 
 ## SplitterSide Enumeration

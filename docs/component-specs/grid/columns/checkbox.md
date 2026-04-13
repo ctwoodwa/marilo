@@ -46,10 +46,9 @@ The example below doesn't take into account sorting, filtering and paging. If th
     on how to get the data collection, which the Grid is currently showing.
     Use this collection instead of GridData in the custom logic.*@
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              SelectionMode="GridSelectionMode.Multiple"
              @bind-SelectedItems="SelectedItems">
-    <GridColumns>
         <GridCheckboxColumn Width="160px" HeaderClass="header-select-all">
             <HeaderTemplate>
                 @{
@@ -64,9 +63,8 @@ The example below doesn't take into account sorting, filtering and paging. If th
                 }
             </HeaderTemplate>
         </GridCheckboxColumn>
-        <GridColumn Field="@(nameof(Product.Name))" Title="Product Name" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@(nameof(Product.Name))" Title="Product Name" />
+</MariloDataGrid>
 
 <style>
     .k-grid .header-select-all .k-checkbox-wrap {

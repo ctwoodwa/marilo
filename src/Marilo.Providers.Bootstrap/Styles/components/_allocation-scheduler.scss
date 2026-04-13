@@ -217,9 +217,22 @@
     overflow-x: hidden;
     background: var(--bs-body-bg);
     z-index: 2;
-    scrollbar-width: none;
 
-    &::-webkit-scrollbar { display: none; }
+    // Thin visible scrollbar so keyboard/SR users can discover scrollability.
+    // Sync scrolling still driven by JS from the timeline panel.
+    scrollbar-width: thin;
+    scrollbar-color: var(--bs-border-color) transparent;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: var(--bs-border-color);
+      border-radius: 3px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
   }
 
   // ── Splitter handle (hardcoded class) ─────────────────
@@ -556,10 +569,11 @@
       outline: none;
     }
 
-    // Drag-fill target: distinct highlight
+    // Drag-fill target: dashed outline preview
     &--drag-target {
-      background-color: rgba(var(--bs-primary-rgb), 0.17) !important;
-      box-shadow: inset 0 0 0 1px var(--bs-primary);
+      background-color: rgba(var(--bs-primary-rgb), 0.08) !important;
+      outline: 2px dashed var(--bs-primary);
+      outline-offset: -2px;
     }
 
     // Edit mode: inline input fills cell
@@ -577,10 +591,18 @@
         font-family: inherit;
         font-variant-numeric: tabular-nums;
         background: var(--bs-body-bg);
+        color: var(--bs-body-color);
         padding: var(--bs-scheduler-cell-pad-y) var(--bs-scheduler-cell-pad-x);
         box-sizing: border-box;
       }
     }
+  }
+
+  // ── Conflict Icon ──
+  .mar-allocation-scheduler__conflict-icon {
+    margin-inline-start: 4px;
+    vertical-align: middle;
+    flex-shrink: 0;
   }
 
   // ── Fill Handle (hardcoded class — same for all themes) ──
@@ -625,6 +647,7 @@
       font-family: inherit;
       font-variant-numeric: tabular-nums;
       background: var(--bs-body-bg);
+      color: var(--bs-body-color);
       padding: var(--bs-scheduler-cell-pad-y) var(--bs-scheduler-cell-pad-x);
       box-sizing: border-box;
     }

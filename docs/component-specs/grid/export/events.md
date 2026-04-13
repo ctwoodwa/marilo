@@ -52,9 +52,9 @@ To export a hidden Grid column that has its `Visible` parameter set to `false`, 
 @using Marilo.Documents.SpreadsheetStreaming
 
 @* Required by GridExcelExportColumn in the OnExcelBeforeExport handler *@
-@using Marilo.Blazor.Components.Grid
+@using Marilo.Components.DataGrid
 
-<MariloGrid Data="@GridData" Pageable="true" Sortable="true"
+<MariloDataGrid Data="@GridData" Pageable="true" Sortable="true"
              @bind-SelectedItems="@SelectedItems"
              SelectionMode="@GridSelectionMode.Multiple"
              Resizable="true" Reorderable="true"
@@ -71,15 +71,13 @@ To export a hidden Grid column that has its `Visible` parameter set to `false`, 
         <GridExcelExport FileName="marilo-grid-export" AllPages="@ExportAllPages" OnBeforeExport="@OnExcelBeforeExport" />
     </GridExport>
 
-    <GridColumns>
-        <GridColumn Field="@nameof(SampleData.ProductId)" Title="ID" Width="100px" Visible="false" />
-        <GridColumn Field="@nameof(SampleData.ProductName)" Title="Product Name" Width="300px" />
-        <GridColumn Field="@nameof(SampleData.UnitsInStock)" Title="In stock" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.Price)" Title="Unit Price" Width="200px" />
-        <GridColumn Field="@nameof(SampleData.Discontinued)" Title="Discontinued" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.ReleaseDate)" Title="Release Date" Width="300px" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(SampleData.ProductId)" Title="ID" Width="100px" Visible="false" />
+        <MariloGridColumn Field="@nameof(SampleData.ProductName)" Title="Product Name" Width="300px" />
+        <MariloGridColumn Field="@nameof(SampleData.UnitsInStock)" Title="In stock" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.Price)" Title="Unit Price" Width="200px" />
+        <MariloGridColumn Field="@nameof(SampleData.Discontinued)" Title="Discontinued" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.ReleaseDate)" Title="Release Date" Width="300px" />
+</MariloDataGrid>
 
 @code {
     private List<SampleData> GridData { get; set; } = new();
@@ -169,9 +167,9 @@ To export a hidden Grid column that has its `Visible` parameter set to `false`, 
 @using Marilo.Documents.SpreadsheetStreaming
 
 @*This using is for the GridCsvExportColumn in the OnExcelBeforeExport method*@
-@using Marilo.Blazor.Components.Grid
+@using Marilo.Components.DataGrid
 
-<MariloGrid Data="@GridData" Pageable="true" Sortable="true"
+<MariloDataGrid Data="@GridData" Pageable="true" Sortable="true"
              @bind-SelectedItems="@SelectedItems"
              SelectionMode="@GridSelectionMode.Multiple"
              Resizable="true" Reorderable="true"
@@ -186,18 +184,16 @@ To export a hidden Grid column that has its `Visible` parameter set to `false`, 
         <GridCsvExport FileName="marilo-grid-export" AllPages="@ExportAllPages" OnBeforeExport="@OnBeforeCsvExport" />
     </GridExport>
 
-    <GridColumns>
-        <GridColumn Field="@nameof(SampleData.ProductId)" 
+        <MariloGridColumn Field="@nameof(SampleData.ProductId)" 
                     Title="ID"
                     Visible="false"
                     Width="100px" />
-        <GridColumn Field="@nameof(SampleData.ProductName)" Title="Product Name" Width="300px" />
-        <GridColumn Field="@nameof(SampleData.UnitsInStock)" Title="In stock" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.Price)" Title="Unit Price" Width="200px" />
-        <GridColumn Field="@nameof(SampleData.Discontinued)" Title="Discontinued" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.FirstReleaseDate)" Title="Release Date" Width="300px" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(SampleData.ProductName)" Title="Product Name" Width="300px" />
+        <MariloGridColumn Field="@nameof(SampleData.UnitsInStock)" Title="In stock" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.Price)" Title="Unit Price" Width="200px" />
+        <MariloGridColumn Field="@nameof(SampleData.Discontinued)" Title="Discontinued" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.FirstReleaseDate)" Title="Release Date" Width="300px" />
+</MariloDataGrid>
 
 @code {
     private IEnumerable<object> SelectedItems = Enumerable.Empty<object>();
@@ -278,9 +274,9 @@ To export a hidden Grid column that has its `Visible` parameter set to `false`, 
 @using Marilo.Documents.SpreadsheetStreaming
 
 @* Required by GridPdfExportColumn in the OnBeforePDFExport handler *@
-@using Marilo.Blazor.Components.Grid
+@using Marilo.Components.DataGrid
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              Pageable="true"
              Sortable="true"
              @bind-SelectedItems="@SelectedItems"
@@ -301,14 +297,12 @@ To export a hidden Grid column that has its `Visible` parameter set to `false`, 
         <GridPdfExport FileName="marilo-grid-export" AllPages="@ExportAllPages" OnBeforeExport="@OnBeforePDFExport" />
     </GridExport>
 
-    <GridColumns>
-        <GridColumn Field="@nameof(SampleData.ProductId)" Title="ID" Visible="false" />
-        <GridColumn Field="@nameof(SampleData.ProductName)" Title="Product Name" Width="150px" />
-        <GridColumn Field="@nameof(SampleData.UnitsInStock)" Title="In stock" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.Price)" Title="Unit Price" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.ReleaseDate)" Title="Release Date" Width="200px" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(SampleData.ProductId)" Title="ID" Visible="false" />
+        <MariloGridColumn Field="@nameof(SampleData.ProductName)" Title="Product Name" Width="150px" />
+        <MariloGridColumn Field="@nameof(SampleData.UnitsInStock)" Title="In stock" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.Price)" Title="Unit Price" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.ReleaseDate)" Title="Release Date" Width="200px" />
+</MariloDataGrid>
 
 @code {
     private List<SampleData> GridData { get; set; } = new();
@@ -397,7 +391,7 @@ The `OnAfterExport` event fires after [OnBeforeExport](#onbeforeexport) and befo
 
 @using System.IO
 
-<MariloGrid Data="@GridData" Pageable="true" Sortable="true"
+<MariloDataGrid Data="@GridData" Pageable="true" Sortable="true"
              @bind-SelectedItems="@SelectedItems"
              SelectionMode="@GridSelectionMode.Multiple"
              Resizable="true" Reorderable="true"
@@ -414,15 +408,13 @@ The `OnAfterExport` event fires after [OnBeforeExport](#onbeforeexport) and befo
                          OnAfterExport="@OnExcelAfterExport" />
     </GridExport>
 
-    <GridColumns>
-        <GridColumn Field="@nameof(SampleData.ProductId)" Title="ID" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.ProductName)" Title="Product Name" Width="300px" />
-        <GridColumn Field="@nameof(SampleData.UnitsInStock)" Title="In stock" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.Price)" Title="Unit Price" Width="200px" />
-        <GridColumn Field="@nameof(SampleData.Discontinued)" Title="Discontinued" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.FirstReleaseDate)" Title="Release Date" Width="300px" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(SampleData.ProductId)" Title="ID" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.ProductName)" Title="Product Name" Width="300px" />
+        <MariloGridColumn Field="@nameof(SampleData.UnitsInStock)" Title="In stock" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.Price)" Title="Unit Price" Width="200px" />
+        <MariloGridColumn Field="@nameof(SampleData.Discontinued)" Title="Discontinued" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.FirstReleaseDate)" Title="Release Date" Width="300px" />
+</MariloDataGrid>
 
 @code {
     private MemoryStream excelStream { get; set; }
@@ -475,7 +467,7 @@ The `OnAfterExport` event fires after [OnBeforeExport](#onbeforeexport) and befo
 
 @using System.IO
 
-<MariloGrid Data="@GridData" Pageable="true" Sortable="true"
+<MariloDataGrid Data="@GridData" Pageable="true" Sortable="true"
              @bind-SelectedItems="@SelectedItems"
              SelectionMode="@GridSelectionMode.Multiple"
              Resizable="true" Reorderable="true"
@@ -492,15 +484,13 @@ The `OnAfterExport` event fires after [OnBeforeExport](#onbeforeexport) and befo
                        OnAfterExport="@OnCSVAfterExport" />
     </GridExport>
 
-    <GridColumns>
-        <GridColumn Field="@nameof(SampleData.ProductId)" Title="ID" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.ProductName)" Title="Product Name" Width="300px" />
-        <GridColumn Field="@nameof(SampleData.UnitsInStock)" Title="In stock" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.Price)" Title="Unit Price" Width="200px" />
-        <GridColumn Field="@nameof(SampleData.Discontinued)" Title="Discontinued" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.FirstReleaseDate)" Title="Release Date" Width="300px" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(SampleData.ProductId)" Title="ID" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.ProductName)" Title="Product Name" Width="300px" />
+        <MariloGridColumn Field="@nameof(SampleData.UnitsInStock)" Title="In stock" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.Price)" Title="Unit Price" Width="200px" />
+        <MariloGridColumn Field="@nameof(SampleData.Discontinued)" Title="Discontinued" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.FirstReleaseDate)" Title="Release Date" Width="300px" />
+</MariloDataGrid>
 
 @code {
     private MemoryStream csvStream { get; set; }
@@ -553,7 +543,7 @@ The `OnAfterExport` event fires after [OnBeforeExport](#onbeforeexport) and befo
 
 @using System.IO
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              Pageable="true"
              Sortable="true"
              @bind-SelectedItems="@SelectedItems"
@@ -575,14 +565,12 @@ The `OnAfterExport` event fires after [OnBeforeExport](#onbeforeexport) and befo
                        OnAfterExport="@OnAfterPDFExport" />
     </GridExport>
 
-    <GridColumns>
-        <GridColumn Field="@nameof(SampleData.ProductId)" Title="ID" Width="50px" />
-        <GridColumn Field="@nameof(SampleData.ProductName)" Title="Product Name" Width="150px" />
-        <GridColumn Field="@nameof(SampleData.UnitsInStock)" Title="In stock" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.Price)" Title="Unit Price" Width="100px" />
-        <GridColumn Field="@nameof(SampleData.ReleaseDate)" Title="Release Date" Width="200px" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(SampleData.ProductId)" Title="ID" Width="50px" />
+        <MariloGridColumn Field="@nameof(SampleData.ProductName)" Title="Product Name" Width="150px" />
+        <MariloGridColumn Field="@nameof(SampleData.UnitsInStock)" Title="In stock" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.Price)" Title="Unit Price" Width="100px" />
+        <MariloGridColumn Field="@nameof(SampleData.ReleaseDate)" Title="Release Date" Width="200px" />
+</MariloDataGrid>
 
 @code {
     private MemoryStream pdfStream { get; set; }

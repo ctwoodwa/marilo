@@ -32,10 +32,10 @@ Column series
 
 <MariloChart>
 	<ChartSeriesItems>
-		<ChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@series1Data">
-		</ChartSeries>
-		<ChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@series2Data">
-		</ChartSeries>
+		<MariloChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@series1Data">
+		</MariloChartSeries>
+		<MariloChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@series2Data">
+		</MariloChartSeries>
 	</ChartSeriesItems>
 
 	<ChartCategoryAxes>
@@ -44,7 +44,7 @@ Column series
 
 	<ChartTitle Text="Quarterly revenue per product"></ChartTitle>
 
-	<ChartLegend Position="ChartLegendPosition.Right">
+	<ChartLegend Position="ChartPosition.Right">
 	</ChartLegend>
 </MariloChart>
 
@@ -84,10 +84,10 @@ The color of a series is controlled through the `Color` property that can take a
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@series1Data">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@series2Data">
-        </ChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@series1Data">
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@series2Data">
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -102,7 +102,7 @@ The color of a series is controlled through the `Color` property that can take a
 
     <ChartTitle Text="Quarterly revenue per product"></ChartTitle>
 
-    <ChartLegend Position="ChartLegendPosition.Right">
+    <ChartLegend Position="ChartPosition.Right">
     </ChartLegend>
 </MariloChart>
 

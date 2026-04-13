@@ -69,3 +69,24 @@ Based on cerebrum learnings:
 2. Set up Playwright capture scripts for automated screenshot collection
 3. Execute first-pass Fluent Light review across P1 scenarios
 4. Document gaps and iterate through remaining themes/modes
+
+## 2026-04-11 Wave 3 Update — Static-Analysis Pass Complete
+
+**Worker:** w-datagrid-delivery (Wave 3)
+**Output:** See `datagrid-visual-parity-gaps.md` (20 records) and `datagrid-parity-summary.md`.
+
+Instead of waiting for a Playwright capture pipeline, Wave 3 executed a pure static-analysis pass over the DataGrid SCSS (FluentUI + Bootstrap + Material) and the component razor. Major new learning:
+
+- **The headline issue is unstyled selectors, not token drift.** Nine+ razor-emitted classes (`.mar-datagrid-pager-btn*`, `.mar-datagrid-popup-*`, `.mar-datagrid-empty`, `.mar-datagrid-loading-*`, `.mar-datagrid-sort-indicator`, `.mar-datagrid-checkbox-cell`, `.mar-datagrid-detail-row`, `.mar-datagrid-footer-*`, `.mar-datagrid-col--locked`) have zero matching SCSS rules in either provider. A single SCSS pass can lift 7–8 gap records by a full score each.
+- **Dark-mode token collisions confirmed** on `--marilo-color-surface` (used as header, stripe, AND hover fill). Introducing a dedicated `--marilo-color-state-hover` fixes VP-datagrid-001/002/003/004 in one stroke.
+- **Hardcoded `#fff`/`#ffffff` literals confirmed** in FluentUI filter-menu popover (4 occurrences) and Bootstrap filter-menu (3 occurrences). Matches cerebrum learning about `color-mix` base color requiring `var(--marilo-color-surface)`.
+- **Material provider is a 5-line TODO placeholder.** All 6 Material state/mode slots score 0 by default. Requires new provider track — not a SCSS patch.
+
+**Revised next steps:**
+
+1. Orchestrator review of the 20 gap records and parity summary.
+2. Route the unstyled-selector cluster to `datagrid-gap-analysis` as a single "DataGrid provider visual gap batch" intake.
+3. Route Material provider scaffolding to its own gap-analysis track (not Wave 3 scope).
+4. Stand up the Playwright capture pipeline after the first remediation pass lands — the 20 DEFERRED-TO-CAPTURE entries are ready to execute once the unstyled selectors have at least baseline rules.
+5. Re-score Wave 3 after remediation; target is Fluent Light ≥ 2.5 average on primary states.
+

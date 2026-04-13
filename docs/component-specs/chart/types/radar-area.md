@@ -32,10 +32,10 @@ Radar area charts are often used to make comparisons between several units that 
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.RadarArea" Name="John Smith" Data="@series1Data">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.RadarArea" Name="Jane Doe" Data="@series2Data">
-        </ChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.RadarArea" Name="John Smith" Data="@series1Data">
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.RadarArea" Name="Jane Doe" Data="@series2Data">
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -44,7 +44,7 @@ Radar area charts are often used to make comparisons between several units that 
 
     <ChartTitle Text="Candidate reviews and comparisons"></ChartTitle>
 
-    <ChartLegend Position="Marilo.Blazor.ChartLegendPosition.Right">
+    <ChartLegend Position="Marilo.Blazor.ChartPosition.Right">
     </ChartLegend>
 </MariloChart>
 
@@ -93,11 +93,11 @@ You can render the lines between the points with different styles. The supported
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="@ChartSeriesType.RadarArea" Name="John Smith" Data="@series1Data">
+        <MariloChartSeries Type="@ChartSeriesType.RadarArea" Name="John Smith" Data="@series1Data">
             <ChartSeriesLine Color="blue" Width="5" Style="@ChartSeriesLineStyle.Smooth"></ChartSeriesLine>
-        </ChartSeries>
-        <ChartSeries Type="@ChartSeriesType.RadarArea" Name="Jane Doe" Data="@series2Data">
-        </ChartSeries>
+        </MariloChartSeries>
+        <MariloChartSeries Type="@ChartSeriesType.RadarArea" Name="Jane Doe" Data="@series2Data">
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -109,7 +109,7 @@ You can render the lines between the points with different styles. The supported
     <ChartTitle Text="Candidate reviews and comparisons">
     </ChartTitle>
 
-    <ChartLegend Position="@Marilo.Blazor.ChartLegendPosition.Right">
+    <ChartLegend Position="@Marilo.Blazor.ChartPosition.Right">
         <ChartLegendBorder Color="red" DashType="@DashType.LongDashDotDot" Width="2"></ChartLegendBorder>
     </ChartLegend>
 

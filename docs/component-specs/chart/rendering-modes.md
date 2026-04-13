@@ -32,10 +32,10 @@ In addition, the SVG Chart provides accessibility features such as [general desc
 ````RAZOR
 <MariloChart Width="700px" Height="400px">
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Bar" Name="Product 1" Data="@series1Data">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Bar" Name="Product 2" Data="@series2Data">
-        </ChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Bar" Name="Product 1" Data="@series1Data">
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Bar" Name="Product 2" Data="@series2Data">
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -44,7 +44,7 @@ In addition, the SVG Chart provides accessibility features such as [general desc
 
     <ChartTitle Text="Quarterly revenue per product"></ChartTitle>
 
-    <ChartLegend Position="ChartLegendPosition.Right">
+    <ChartLegend Position="ChartPosition.Right">
     </ChartLegend>
 </MariloChart>
 
@@ -75,10 +75,10 @@ On the downside, rendering a fixed resolution bitmap results in:
 ````RAZOR
 <MariloChart RenderAs="@RenderingMode.Canvas" Width="700px" Height="400px">
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Bar" Name="Product 1" Data="@series1Data">
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Bar" Name="Product 2" Data="@series2Data">
-        </ChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Bar" Name="Product 1" Data="@series1Data">
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Bar" Name="Product 2" Data="@series2Data">
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -87,7 +87,7 @@ On the downside, rendering a fixed resolution bitmap results in:
 
     <ChartTitle Text="Quarterly revenue per product"></ChartTitle>
 
-    <ChartLegend Position="ChartLegendPosition.Right">
+    <ChartLegend Position="ChartPosition.Right">
     </ChartLegend>
 </MariloChart>
 

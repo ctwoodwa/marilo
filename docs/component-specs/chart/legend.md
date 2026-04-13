@@ -31,7 +31,7 @@ The structure of the nested tags is `<ChartLegend*Specifics*>`, where the specif
 
 ## Legend Settings in the Chart Series
 
-You can customize individual items in the legend for a specific Chart series by adding the `<ChartSeriesLegendItem>` (child tag of `<ChartSeries>`) and its nested tag settings and parameters.
+You can customize individual items in the legend for a specific Chart series by adding the `<ChartSeriesLegendItem>` (child tag of `<MariloChartSeries>`) and its nested tag settings and parameters.
 
 The structure of the nested tags is `<ChartSeriesLegend*Specifics*>`, where the specifics can be:
 
@@ -48,18 +48,18 @@ Customize the legend items by using nested tag settings.
 ````RAZOR
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@series1Data">
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 1" Data="@series1Data">
             <ChartSeriesLegendItem>
                 <ChartSeriesLegendItemMarkers Background="blue">
                 </ChartSeriesLegendItemMarkers>
             </ChartSeriesLegendItem>
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@series2Data">
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Column" Name="Product 2" Data="@series2Data">
             <ChartSeriesLegendItem Type="@ChartLegendItemType.Area">
                 <ChartSeriesLegendItemMarkers Background="#00ff00">
                 </ChartSeriesLegendItemMarkers>
             </ChartSeriesLegendItem>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -68,7 +68,7 @@ Customize the legend items by using nested tag settings.
 
     <ChartTitle Text="Quarterly revenue"></ChartTitle>
 
-    <ChartLegend Position="ChartLegendPosition.Right" Visible="true">
+    <ChartLegend Position="ChartPosition.Right" Visible="true">
         <ChartLegendTitle Text="Revenue per product"
                           Background="lightblue"
                           Color="black">

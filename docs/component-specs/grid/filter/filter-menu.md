@@ -21,15 +21,13 @@ Set the `FilterMode` parameter of the Marilo Grid to `GridFilterMode.FilterMenu`
 ````RAZOR
 @* Filter menu in the column header *@
 
-<MariloGrid Data=@GridData FilterMode="@GridFilterMode.FilterMenu"
+<MariloDataGrid Data=@GridData FilterMode="@GridFilterMode.FilterMenu"
 			 Pageable="true" Height="400px">
-	<GridColumns>
-		<GridColumn Field=@nameof(Employee.Name) />
-		<GridColumn Field=@nameof(Employee.AgeInYears) Title="Age" />
-		<GridColumn Field=@nameof(Employee.HireDate) Title="Hire Date" />
-		<GridColumn Field=@nameof(Employee.IsOnLeave) Title="On Vacation" />
-	</GridColumns>
-</MariloGrid>
+		<MariloGridColumn Field=@nameof(Employee.Name) />
+		<MariloGridColumn Field=@nameof(Employee.AgeInYears) Title="Age" />
+		<MariloGridColumn Field=@nameof(Employee.HireDate) Title="Hire Date" />
+		<MariloGridColumn Field=@nameof(Employee.IsOnLeave) Title="On Vacation" />
+</MariloDataGrid>
 
 @code {
 	public List<Employee> GridData { get; set; }
@@ -83,21 +81,19 @@ You can override the default Filter Menu behavior for each column through the fo
 
 @using Marilo.DataSource
 
-<MariloGrid Data="@MyData"
+<MariloDataGrid Data="@MyData"
              Height="400px"
              Pageable="true"
              FilterMode="@GridFilterMode.FilterMenu">
-    <GridColumns>
-        <GridColumn DefaultFilterOperator="FilterOperator.IsEqualTo"
+        <MariloGridColumn DefaultFilterOperator="FilterOperator.IsEqualTo"
                     Field="@(nameof(SampleData.Id))" Width="120px" />
-        <GridColumn DefaultFilterOperator="FilterOperator.StartsWith"
+        <MariloGridColumn DefaultFilterOperator="FilterOperator.StartsWith"
                     Field="@(nameof(SampleData.Name))" Title="Employee Name" />
-        <GridColumn DefaultFilterOperator="FilterOperator.Contains"
+        <MariloGridColumn DefaultFilterOperator="FilterOperator.Contains"
                     Field="@(nameof(SampleData.Team))" Title="Team" />
-        <GridColumn DefaultFilterOperator="FilterOperator.IsGreaterThanOrEqualTo"
+        <MariloGridColumn DefaultFilterOperator="FilterOperator.IsGreaterThanOrEqualTo"
                     Field="@(nameof(SampleData.HireDate))" Title="Hire Date" />
-    </GridColumns>
-</MariloGrid>
+</MariloDataGrid>
 
 @code {
     public IEnumerable<SampleData> MyData = Enumerable.Range(1, 30).Select(x => new SampleData
@@ -121,7 +117,7 @@ You can override the default Filter Menu behavior for each column through the fo
 
 ### FilterMenuType
 
-You can switch between [CheckBoxList](slug:grid-checklist-filter) and a `Menu` filtering layout for a particular `<GridColumn>` by setting the `FilterMenuType` to `FilterMenuType.Menu` or `FilterMenuType.CheckBoxList`.
+You can switch between [CheckBoxList](slug:grid-checklist-filter) and a `Menu` filtering layout for a particular `<MariloGridColumn>` by setting the `FilterMenuType` to `FilterMenuType.Menu` or `FilterMenuType.CheckBoxList`.
 
 ### CheckBoxList
 

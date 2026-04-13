@@ -21,21 +21,19 @@ To prevent the user from moving a certain column, set the column's `Reorderable`
 ````RAZOR
 @* Drag a column header between other columns to change the columns positions. You cannot drag the command column. Note that actual CRUD operations and settings are not implemented here for brevity. *@
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              Reorderable="true"
              Pageable="true" PageSize="10" Sortable="true" Height="300px">
-    <GridColumns>
-        <GridColumn Field=@nameof(SampleData.Id) Title="Id" />
-        <GridColumn Field=@nameof(SampleData.Name) Title="First Name" />
-        <GridColumn Field=@nameof(SampleData.LastName) Title="Last Name" />
-        <GridCommandColumn Width="100px" Reorderable="false">
+        <MariloGridColumn Field=@nameof(SampleData.Id) Title="Id" />
+        <MariloGridColumn Field=@nameof(SampleData.Name) Title="First Name" />
+        <MariloGridColumn Field=@nameof(SampleData.LastName) Title="Last Name" />
+        <MariloGridCommandColumn Width="100px" Reorderable="false">
             <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">Save</GridCommandButton>
             <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil">Edit</GridCommandButton>
             <GridCommandButton Command="Delete" Icon="@SvgIcon.Trash">Delete</GridCommandButton>
             <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 
 @code {
     public List<SampleData> GridData { get; set; }

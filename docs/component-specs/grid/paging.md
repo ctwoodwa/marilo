@@ -32,12 +32,10 @@ The Grid component can page the entire data source automatically. Alternatively,
 ````RAZOR
 Enable paging and start on the second page.
 
-<MariloGrid Data="@MyData" Pageable="true" PageSize="15" Page="2" Height="500px">
-	<GridColumns>
-		<GridColumn Field="ID"></GridColumn>
-		<GridColumn Field="TheName" Title="Employee Name"></GridColumn>
-	</GridColumns>
-</MariloGrid>
+<MariloDataGrid Data="@MyData" Pageable="true" PageSize="15" Page="2" Height="500px">
+		<MariloGridColumn Field="ID"></MariloGridColumn>
+		<MariloGridColumn Field="TheName" Title="Employee Name"></MariloGridColumn>
+</MariloDataGrid>
 
 @code {
 	public IEnumerable<object> MyData = Enumerable.Range(1, 50).Select(x => new { ID = x, TheName = "name " + x });
@@ -61,12 +59,10 @@ Dynamic page size change
 	<option value="all" selected>all</option>
 </select>
 
-<MariloGrid Data="@MyData" Pageable="true" PageSize="@PageSize">
-	<GridColumns>
-		<GridColumn Field="ID"></GridColumn>
-		<GridColumn Field="TheName" Title="Employee Name"></GridColumn>
-	</GridColumns>
-</MariloGrid>
+<MariloDataGrid Data="@MyData" Pageable="true" PageSize="@PageSize">
+		<MariloGridColumn Field="ID"></MariloGridColumn>
+		<MariloGridColumn Field="TheName" Title="Employee Name"></MariloGridColumn>
+</MariloDataGrid>
 
 @code {
 	public IEnumerable<object> MyData = Enumerable.Range(1, 50).Select(x => new { ID = x, TheName = "name " + x });
@@ -97,7 +93,7 @@ The Grid exposes several relevant events. You can find related examples in the [
 
 ## Root-level PagerButtonCount Parameter
 
-In addition to the nested `GridPagerSettings` approach shown below, `MariloGrid` exposes a simpler root-level `PagerButtonCount` parameter that controls the maximum number of page buttons rendered in the pager without requiring any `GridSettings` configuration. This is the currently-implemented pager button count parameter on `MariloGrid` directly.
+In addition to the nested `GridPagerSettings` approach shown below, `MariloDataGrid` exposes a simpler root-level `PagerButtonCount` parameter that controls the maximum number of page buttons rendered in the pager without requiring any `GridSettings` configuration. This is the currently-implemented pager button count parameter on `MariloDataGrid` directly.
 
 ### Parameters
 
@@ -105,15 +101,13 @@ In addition to the nested `GridPagerSettings` approach shown below, `MariloGrid`
 | --- | --- | --- |
 | `PagerButtonCount` | `int` | The maximum number of page buttons to show in the pager. Defaults to `5`. |
 
->caption Set the root-level PagerButtonCount on MariloGrid
+>caption Set the root-level PagerButtonCount on MariloDataGrid
 
 ````RAZOR
-<MariloGrid Data="@GridData" Pageable="true" PageSize="5" PagerButtonCount="7">
-    <GridColumns>
-        <GridColumn Field="ID"></GridColumn>
-        <GridColumn Field="TheName" Title="Employee Name"></GridColumn>
-    </GridColumns>
-</MariloGrid>
+<MariloDataGrid Data="@GridData" Pageable="true" PageSize="5" PagerButtonCount="7">
+        <MariloGridColumn Field="ID"></MariloGridColumn>
+        <MariloGridColumn Field="TheName" Title="Employee Name"></MariloGridColumn>
+</MariloDataGrid>
 
 @code {
     public IEnumerable<object> GridData = Enumerable.Range(1, 100).Select(x => new { ID = x, TheName = "name " + x });
@@ -130,7 +124,7 @@ In addition to `Page` and `PageSize`, the Grid provides advanced pager configura
 ````RAZOR
 @*Configure the Pager Settings*@
 
-<MariloGrid Data="@MyData" Pageable="true" @bind-PageSize="@PageSize" @bind-Page="@CurrentPage">
+<MariloDataGrid Data="@MyData" Pageable="true" @bind-PageSize="@PageSize" @bind-Page="@CurrentPage">
     <GridSettings>
         <GridPagerSettings InputType="PagerInputType.Input"
                            PageSizes="@PageSizes"
@@ -139,11 +133,9 @@ In addition to `Page` and `PageSize`, the Grid provides advanced pager configura
                            Position="PagerPosition.Top">
         </GridPagerSettings>
     </GridSettings>
-    <GridColumns>
-        <GridColumn Field="ID"></GridColumn>
-        <GridColumn Field="TheName" Title="Employee Name"></GridColumn>
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="ID"></MariloGridColumn>
+        <MariloGridColumn Field="TheName" Title="Employee Name"></MariloGridColumn>
+</MariloDataGrid>
 
 @code {
     public IEnumerable<object> MyData = Enumerable.Range(1, 50).Select(x => new { ID = x, TheName = "name " + x });

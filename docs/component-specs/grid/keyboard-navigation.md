@@ -19,7 +19,7 @@ This article describes how the Grid keyboard navigation works, how to enable it,
 To enable the Grid keyboard navigation, set the `Navigable` parameter of the component to `true`.
 
 ````RAZOR.skip-repl
-<MariloGrid Navigable="true" />
+<MariloDataGrid Navigable="true" />
 ````
 
 When the keyboard navigation is enabled, the Grid component becomes an accessible container that consists of the following structural elements:
@@ -187,7 +187,7 @@ Set the `Dictionary` to the Grid `CustomKeyboardShortcuts` parameter.
 >caption Setting custom Grid keyboard shortcuts
 
 ````RAZOR.skip-repl
-<MariloGrid CustomKeyboardShortcuts="@GridCustomShortcuts" />
+<MariloDataGrid CustomKeyboardShortcuts="@GridCustomShortcuts" />
 
 @code {
     private Dictionary<GridKeyboardScope, Dictionary<string, GridKeyboardCommand?>> GridCustomShortcuts = new()
@@ -212,7 +212,7 @@ Set the `Dictionary` to the Grid `CustomKeyboardShortcuts` parameter.
 
 ### Keyboard Scope
 
-The [`GridKeyboardScope`](slug:Marilo.Blazor.GridKeyboardScope) enum represents a part (zone) of the Grid that supports specific user keyboard actions, for example, `DataCell`, `HeaderCell`, `CommandCell`, and others. There is also a `Common` scope that includes all the other scopes.
+The [`GridKeyboardScope`](slug:Marilo.Components.DataGrid.GridKeyboardScope) enum represents a part (zone) of the Grid that supports specific user keyboard actions, for example, `DataCell`, `HeaderCell`, `CommandCell`, and others. There is also a `Common` scope that includes all the other scopes.
 
 You can define a custom keyboard shortcut in the `Common` scope and then override it again in a specific scope with a different custom keyboard shortcut.
 
@@ -220,7 +220,7 @@ You can define a custom keyboard shortcut in the `Common` scope and then overrid
 
 ### Keyboard Command
 
-The [`GridKeyboardCommand`](slug:Marilo.Blazor.GridKeyboardCommand) enum represents a user action, for example, `SortColumn`, `EnterEditMode`, `Select`, and others.
+The [`GridKeyboardCommand`](slug:Marilo.Components.DataGrid.GridKeyboardCommand) enum represents a user action, for example, `SortColumn`, `EnterEditMode`, `Select`, and others.
 
 You can define multiple keyboard shortcuts that execute the same keyboard command. If a Grid keyboard command has no custom key, the component uses the default key. To disable a built-in keyboard command for a specific key, use `null`.
 
@@ -229,7 +229,7 @@ You can define multiple keyboard shortcuts that execute the same keyboard comman
 >caption Override Grid keyboard shortcuts
 
 ````RAZOR
-@using Marilo.Blazor.Components.Grid
+@using Marilo.Components.DataGrid
 
 <label class="k-checkbox-label">
     <MariloCheckBox @bind-Value="@GridUseCustomShortcuts" />
@@ -246,7 +246,7 @@ You can define multiple keyboard shortcuts that execute the same keyboard comman
     </ul>
 }
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              CustomKeyboardShortcuts="@(GridUseCustomShortcuts ? GridCustomShortcuts : null)"
              Groupable="true"
              Height="240px"
@@ -255,14 +255,12 @@ You can define multiple keyboard shortcuts that execute the same keyboard comman
              SelectionMode="@GridSelectionMode.Single"
              @bind-SelectedItems="@GridSelectedItems"
              Sortable="true">
-    <GridColumns>
-        <GridColumn Field="@nameof(Product.Name)" />
-        <GridColumn Field="@nameof(Product.Price)" DisplayFormat="{0:c2}" />
-        <GridColumn Field="@nameof(Product.Quantity)" DisplayFormat="{0:n0}" />
-        <GridColumn Field="@nameof(Product.Released)" DisplayFormat="{0:d}" />
-        <GridColumn Field="@nameof(Product.Discontinued)" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(Product.Name)" />
+        <MariloGridColumn Field="@nameof(Product.Price)" DisplayFormat="{0:c2}" />
+        <MariloGridColumn Field="@nameof(Product.Quantity)" DisplayFormat="{0:n0}" />
+        <MariloGridColumn Field="@nameof(Product.Released)" DisplayFormat="{0:d}" />
+        <MariloGridColumn Field="@nameof(Product.Discontinued)" />
+</MariloDataGrid>
 
 @code {
     private List<Product> GridData { get; set; } = new();

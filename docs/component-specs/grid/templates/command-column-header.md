@@ -17,16 +17,15 @@ The `HeaderTemplate` of the Grid command column enables you to customize the hea
 ````RAZOR
 @* Customize the header of the command column *@
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              EditMode="@GridEditMode.Inline"
              OnUpdate="@OnUpdateHandler"
              Pageable="true"
              Height="400px">
-    <GridColumns>
-        <GridColumn Field="@nameof(Product.Name)" Title="Product Name" />
-        <GridColumn Field="@nameof(Product.Price)" Title="Price" />
-        <GridColumn Field="@nameof(Product.Quantity)" Title="Quantity" />
-        <GridCommandColumn Width="280px">
+        <MariloGridColumn Field="@nameof(Product.Name)" Title="Product Name" />
+        <MariloGridColumn Field="@nameof(Product.Price)" Title="Price" />
+        <MariloGridColumn Field="@nameof(Product.Quantity)" Title="Quantity" />
+        <MariloGridCommandColumn Width="280px">
             <HeaderTemplate>
                 <MariloSvgIcon Icon="@SvgIcon.Gear" />
                 <strong>Actions</strong>
@@ -37,9 +36,8 @@ The `HeaderTemplate` of the Grid command column enables you to customize the hea
                 <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
                 <GridCommandButton Command="Delete" Icon="@SvgIcon.Trash">Delete</GridCommandButton>
             </Template>
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 
 @code {
     private List<Product> GridData { get; set; } = new List<Product>();

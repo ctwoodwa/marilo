@@ -23,13 +23,13 @@ Where the labels are numerical (series values, the value axis), you can format t
 ````RAZOR
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Line"
+        <MariloChartSeries Type="ChartSeriesType.Line"
                      Data="@ChartData"
                      Name="Revenue"
                      Field="@nameof(ChartModel.Value)"
                      CategoryField="@nameof(ChartModel.Category)">
             <ChartSeriesLabels Visible="true" Format="{0:C2}"></ChartSeriesLabels>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartValueAxes>
@@ -38,7 +38,7 @@ Where the labels are numerical (series values, the value axis), you can format t
         </ChartValueAxis>
     </ChartValueAxes>
 
-    <ChartLegend Position="ChartLegendPosition.Right">
+    <ChartLegend Position="ChartPosition.Right">
     </ChartLegend>
 </MariloChart>
 
@@ -75,7 +75,7 @@ Where the labels are numerical (series values, the value axis), you can format t
 
 > This section changed for product version 4.5.0. If you are using an older version, then [download the PDF documentation](https://www.marilo.com/account/downloads/product-download?product=BLAZOR) for your version, or [browse an older version of this documentation page](https://github.com/marilo/blazor-docs/blob/4.4.0/components/chart/labels-template-and-format.md#templates).
 
-To set a template for Chart labels, use the `Template` parameter in the corresponding inner `...Labels` tag. For example, set `Template` to `<ChartSeriesLabels>` inside `<ChartSeries>`, or to `<ChartValueAxisLabels>` inside `<ChartValueAxis>`.
+To set a template for Chart labels, use the `Template` parameter in the corresponding inner `...Labels` tag. For example, set `Template` to `<ChartSeriesLabels>` inside `<MariloChartSeries>`, or to `<ChartValueAxisLabels>` inside `<ChartValueAxis>`.
 
 The Blazor Chart uses client-side rendering and the label templates are JavaScript-based. The `Template` parameter must point to a name of a JavaScript function, which is defined in the global scope. This function must return the formatted label as a plain text string. HTML markup inside the label template is not supported.
 
@@ -174,7 +174,7 @@ function chartLabelFunction(context) {
 ````RAZOR
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column"
+        <MariloChartSeries Type="ChartSeriesType.Column"
                      Data="@PhoneSales"
                      Name="Phones"
                      Color="orange"
@@ -184,8 +184,8 @@ function chartLabelFunction(context) {
             <ChartSeriesLabels Visible="true"
                                Template="chartSeriesLabelTemplate"
                                AriaTemplate="chartSeriesAriaTemplate"></ChartSeriesLabels>
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Column"
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Column"
                      Data="@LaptopSales"
                      Name="Laptops"
                      Color="green"
@@ -195,7 +195,7 @@ function chartLabelFunction(context) {
             <ChartSeriesLabels Visible="true"
                                Template="chartSeriesLabelTemplate"
                                AriaTemplate="chartSeriesAriaTemplate"></ChartSeriesLabels>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -212,26 +212,26 @@ function chartLabelFunction(context) {
 
     <ChartTitle Text="Sales per Product"></ChartTitle>
 
-    <ChartLegend Position="ChartLegendPosition.Top">
+    <ChartLegend Position="ChartPosition.Top">
         <ChartLegendLabels Template="chartLegendItemLabelTemplate"></ChartLegendLabels>
     </ChartLegend>
 </MariloChart>
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Pie"
+        <MariloChartSeries Type="ChartSeriesType.Pie"
                      Data="@PhoneSales"
                      Field="@nameof(ChartModel.Value)"
                      CategoryField="@nameof(ChartModel.Category)">
             <ChartSeriesLabels Visible="true"
                                Template="chartSeriesLabelTemplate"
                                AriaTemplate="chartSeriesAriaTemplate"></ChartSeriesLabels>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartTitle Text="Phone Sales per Quarter"></ChartTitle>
 
-    <ChartLegend Position="ChartLegendPosition.Right">
+    <ChartLegend Position="ChartPosition.Right">
         <ChartLegendLabels Template="pieLegendItemLabelTemplate"></ChartLegendLabels>
     </ChartLegend>
 </MariloChart>
@@ -332,7 +332,7 @@ function chartLabelFunction(context) {
     <ChartTitle Text="Signal Level vs. Errors per Minute"></ChartTitle>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Scatter"
+        <MariloChartSeries Type="ChartSeriesType.Scatter"
                      Data="@Series1Data"
                      Name="APSK modulation"
                      XField="@nameof(ChartModel.Signal)"
@@ -341,9 +341,9 @@ function chartLabelFunction(context) {
             <ChartSeriesLabels Visible="true"
                                Template="chartSeriesLabelTemplate"
                                AriaTemplate="chartSeriesAriaTemplate" />
-        </ChartSeries>
+        </MariloChartSeries>
 
-        <ChartSeries Type="ChartSeriesType.Scatter"
+        <MariloChartSeries Type="ChartSeriesType.Scatter"
                      Data="@Series2Data"
                      Name="QAM modulation"
                      XField="@nameof(ChartModel.Signal)"
@@ -352,7 +352,7 @@ function chartLabelFunction(context) {
             <ChartSeriesLabels Visible="true"
                                Template="chartSeriesLabelTemplate"
                                AriaTemplate="chartSeriesAriaTemplate" />
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartXAxes>
@@ -367,7 +367,7 @@ function chartLabelFunction(context) {
         </ChartYAxis>
     </ChartYAxes>
 
-    <ChartLegend Position="ChartLegendPosition.Top">
+    <ChartLegend Position="ChartPosition.Top">
         <ChartLegendLabels Template="chartLegendItemLabelTemplate"></ChartLegendLabels>
     </ChartLegend>
 </MariloChart>
@@ -436,7 +436,7 @@ To do that, you need to:
 ````RAZOR
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Column"
+        <MariloChartSeries Type="ChartSeriesType.Column"
                      Data="@ChartData"
                      Name="Product 1 Sales"
                      Field="@nameof(ChartModel.Value1)"
@@ -445,8 +445,8 @@ To do that, you need to:
                                Template="chartSeriesLabelTemplate"
                                Background="transparent"></ChartSeriesLabels>
             <ChartSeriesStack Enabled="true"></ChartSeriesStack>
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Column"
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Column"
                      Data="@ChartData"
                      Name="Product 2 Sales"
                      Field="@nameof(ChartModel.Value2)"
@@ -454,7 +454,7 @@ To do that, you need to:
             <ChartSeriesLabels Visible="true"
                                Template="chartSeriesLabelTemplate"
                                Background="transparent"></ChartSeriesLabels>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 </MariloChart>
 

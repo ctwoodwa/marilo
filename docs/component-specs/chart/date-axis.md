@@ -41,14 +41,14 @@ Grouping by month, aggregates
 	</ChartCategoryAxes>
 	
 	<ChartSeriesItems>
-		<ChartSeries Type="ChartSeriesType.Column" Name="Product 1 (SUM)" Data="@chartData"
+		<MariloChartSeries Type="ChartSeriesType.Column" Name="Product 1 (SUM)" Data="@chartData"
 							Field="@nameof(MyDataModel.Product1)" CategoryField="@nameof(MyDataModel.MySharedCategories)" Aggregate="ChartSeriesAggregate.Sum">
 			<ChartSeriesLabels Visible="true"></ChartSeriesLabels>
-		</ChartSeries>
-		<ChartSeries Type="ChartSeriesType.Column" Name="Product 2 (COUNT)" Data="@chartData"
+		</MariloChartSeries>
+		<MariloChartSeries Type="ChartSeriesType.Column" Name="Product 2 (COUNT)" Data="@chartData"
 							Field="@nameof(MyDataModel.Product2)" Aggregate="ChartSeriesAggregate.Count">
 			<ChartSeriesLabels Visible="true"></ChartSeriesLabels>
-		</ChartSeries>
+		</MariloChartSeries>
 	</ChartSeriesItems>
 	
 </MariloChart>
@@ -109,15 +109,15 @@ Steps, custom label format, non-default start of week
 	</ChartCategoryAxes>
 	
 	<ChartSeriesItems>
-		<ChartSeries Type="ChartSeriesType.Column" Name="Product 1 (SUM)" Data="@chartData"
+		<MariloChartSeries Type="ChartSeriesType.Column" Name="Product 1 (SUM)" Data="@chartData"
 							Field="@nameof(MyDataModel.Product1)" CategoryField="@nameof(MyDataModel.MySharedCategories)" 
 							Aggregate="ChartSeriesAggregate.Sum">
 			<ChartSeriesLabels Visible="true"></ChartSeriesLabels>
-		</ChartSeries>
-		<ChartSeries Type="ChartSeriesType.Column" Name="Product 2 (COUNT)" Data="@chartData"
+		</MariloChartSeries>
+		<MariloChartSeries Type="ChartSeriesType.Column" Name="Product 2 (COUNT)" Data="@chartData"
 							Field="@nameof(MyDataModel.Product2)" Aggregate="ChartSeriesAggregate.Count">
 			<ChartSeriesLabels Visible="true"></ChartSeriesLabels>
-		</ChartSeries>
+		</MariloChartSeries>
 	</ChartSeriesItems>
 
 </MariloChart>
@@ -173,12 +173,12 @@ For example, if the chosen `BaseUnit` is `days`, the X labels mark the beginning
     <MariloChart>
 
         <ChartSeriesItems>
-            <ChartSeries Type="ChartSeriesType.ScatterLine"
+            <MariloChartSeries Type="ChartSeriesType.ScatterLine"
                          Data="@ChartData"
                          Name="0.8C"
                          XField="@nameof(ModelData.X)"
                          YField="@nameof(ModelData.Y)">
-            </ChartSeries>
+            </MariloChartSeries>
         </ChartSeriesItems>
 
         <ChartXAxes>
@@ -228,12 +228,12 @@ For example, if the chosen `BaseUnit` is `days`, the X labels mark the beginning
     <MariloChart>
 
         <ChartSeriesItems>
-            <ChartSeries Type="ChartSeriesType.ScatterLine"
+            <MariloChartSeries Type="ChartSeriesType.ScatterLine"
                          Data="@ChartData"
                          Name="0.8C"
                          XField="@nameof(ModelData.X)"
                          YField="@nameof(ModelData.Y)">
-            </ChartSeries>
+            </MariloChartSeries>
         </ChartSeriesItems>
 
         <ChartXAxes>

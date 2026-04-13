@@ -31,9 +31,9 @@
 
 | Field | Value |
 |-------|-------|
-| Demo page(s) | Gantt/Overview.razor |
-| Last demo audit | PENDING |
-| Open demo gaps | PENDING |
+| Demo page(s) | Gantt/Overview.razor, Views.razor, Templates.razor, Hierarchical.razor, Editing.razor, Features.razor |
+| Last demo audit | 2026-04-11 (Wave 2) |
+| Open demo gaps | 8 (EUX-01..EUX-08; EUX-04 and EUX-05 are Tracked-Out-of-Session) |
 
 ## Visual Parity State
 
@@ -41,16 +41,18 @@
 |-------|-------|
 | Themes to cover | Fluent, Bootstrap, Material |
 | Modes to cover | Light, Dark |
-| Last parity audit | PENDING |
-| Parity gaps | PENDING |
+| Last parity audit | 2026-04-11 (Wave 3, static analysis) |
+| Parity gaps | 16 direct (VP-gantt-01..16) + 2 Deferred (VP-gantt-17, VP-gantt-18); 3 Critical, 7 Major, 4 Minor |
 
 ## Delivery Gate
 
 | Field | Value |
 |-------|-------|
-| Last sync check | PENDING |
-| Gate status | PENDING |
-| Blocking items | PENDING |
+| Last sync check | 2026-04-11 (Wave 4) |
+| Gate status | **BLOCKED** |
+| Blocking items | 7 (VP-gantt-01, VP-gantt-02, VP-gantt-03, VP-gantt-16; NM-01/NM-02 + SA-01/02 GanttState API; SA-06 + SRC-01..06 spec under-population; EUX demo set) |
+| Tracked-Out-of-Session | 2 (VP-gantt-17 / EUX-04 GetState/SetStateAsync; VP-gantt-18 / EUX-05 TaskListWidthChanged — both queued to gantt-gap-analysis) |
+| Pipeline status | CLOSED — remediation flows through gantt-gap-analysis workspace |
 
 ## Gap Workspace Link
 

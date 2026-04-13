@@ -23,7 +23,7 @@ This article describes:
 
 ## Information in the Grid State
 
-The Grid state is a generic [class `GridState<TItem>`](slug:Marilo.Blazor.Components.GridState-1). The type depends on the type of the Grid model. The `GridState<TItem>` object exposes the following properties:
+The Grid state is a generic [class `GridState<TItem>`](slug:Marilo.Components.DataGrid.GridState-1). The type depends on the type of the Grid model. The `GridState<TItem>` object exposes the following properties:
 
 
 | Property | Type | Description |
@@ -74,20 +74,18 @@ The example below shows how to apply initial sorting, filtering and grouping.
 ````RAZOR
 @using Marilo.DataSource
 
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              Pageable="true"
              PageSize="5"
              Sortable="true"
              FilterMode="@GridFilterMode.FilterMenu"
              Groupable="true"
              OnStateInit="@( (GridStateEventArgs<Product> args) => OnGridStateInit(args) )">
-    <GridColumns>
-        <GridColumn Field="@nameof(Product.Name)" />
-        <GridColumn Field="@nameof(Product.Category)" />
-        <GridColumn Field="@nameof(Product.Stock)" />
-        <GridColumn Field="@nameof(Product.Discontinued)" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@nameof(Product.Name)" />
+        <MariloGridColumn Field="@nameof(Product.Category)" />
+        <MariloGridColumn Field="@nameof(Product.Stock)" />
+        <MariloGridColumn Field="@nameof(Product.Discontinued)" />
+</MariloDataGrid>
 
 @code {
     private List<Product> GridData { get; set; }
@@ -182,7 +180,7 @@ Find out how to [get the applied filtering, sorting and grouping criteria](slug:
 @using System.Text.Json
 
 <div id="demo-container">
-    <MariloGrid Data="@GridData"
+    <MariloDataGrid Data="@GridData"
                  EditMode="@GridEditMode.Inline"
                  FilterMode="@GridFilterMode.FilterMenu"
                  Groupable="true"
@@ -204,22 +202,20 @@ Find out how to [get the applied filtering, sorting and grouping criteria](slug:
             <GridCommandButton Command="Add">Add</GridCommandButton>
             <GridSearchBox />
         </GridToolBarTemplate>
-        <GridColumns>
             <GridCheckboxColumn SelectAll="true" />
-            <GridColumn Field="@nameof(Product.Name)" />
-            <GridColumn Field="@nameof(Product.Category)" />
-            <GridColumn Field="@nameof(Product.Stock)" />
-            <GridColumn Field="@nameof(Product.Discontinued)" />
-            <GridCommandColumn>
+            <MariloGridColumn Field="@nameof(Product.Name)" />
+            <MariloGridColumn Field="@nameof(Product.Category)" />
+            <MariloGridColumn Field="@nameof(Product.Stock)" />
+            <MariloGridColumn Field="@nameof(Product.Discontinued)" />
+            <MariloGridCommandColumn>
                 <GridCommandButton Command="Edit">Edit</GridCommandButton>
                 <GridCommandButton Command="Save" ShowInEdit="true">Save</GridCommandButton>
                 <GridCommandButton Command="Cancel" ShowInEdit="true">Cancel</GridCommandButton>
-            </GridCommandColumn>
-        </GridColumns>
+            </MariloGridCommandColumn>
         <DetailTemplate>
             Detail Template for product <strong>@context.Name</strong>.
         </DetailTemplate>
-    </MariloGrid>
+    </MariloDataGrid>
 
     <div id="console">
         <code class="@GridStateChangedPropertyClass">OnStateChanged</code> count:
@@ -424,5 +420,5 @@ You can find multiple examples for using the Grid state in the following [Knowle
 ## See Also
 
 * [Live Demo: Grid State](https://demos.marilo.com/blazor-ui/grid/persist-state)
-* [GridState API reference](slug:Marilo.Blazor.Components.GridState-1)
+* [GridState API reference](slug:Marilo.Components.DataGrid.GridState-1)
 * [Blazor Grid](slug:grid-overview)

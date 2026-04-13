@@ -1,30 +1,291 @@
 // =============================================================================
-// Component: TreeView
+// Component: TreeView — FluentUI Provider
+// =============================================================================
+// BEM Block: .mar-treeview (container <ul>)
+// BEM Block: .mar-tree-item (each <li> tree item)
 // =============================================================================
 
-.mar-treeview {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+// ── Density custom properties ─────────────────────────────────────────────
+// Set --mar-treeview-density on the container or ancestor to switch sizes.
+// The Size parameter on MariloTreeView maps "sm"/"lg" to inline font-size;
+// these selectors hook that plus an explicit CSS-class alternative.
+
+:root {
+  --mar-treeview-item-padding-y: var(--marilo-space-xxs, 2px);
+  --mar-treeview-item-padding-x: var(--marilo-space-sm, 8px);
+  --mar-treeview-item-gap: var(--marilo-space-xs, 4px);
+  --mar-treeview-indent: var(--marilo-space-lg, 24px);
+  --mar-treeview-icon-size: 16px;
+  --mar-treeview-font-size: var(--marilo-font-size-md, 14px);
+  --mar-treeview-line-height: var(--marilo-line-height-md, 20px);
 }
 
-.mar-treeview ul { list-style: none; padding-left: var(--marilo-space-lg); margin: 0; }
+// ── Container ───────────────────────────────────────────────────────────────
+
+.mar-treeview {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  outline: none;
+
+  // VP-001: Focus-visible ring on the tree container when navigating by keyboard
+  &:focus-visible {
+    outline: 2px solid var(--marilo-color-primary);
+    outline-offset: -2px;
+    border-radius: var(--marilo-radius-sm);
+  }
+
+  // ── Density: small ────────────────────────────────────────────────────
+  &[style*="font-size:sm"],
+  &.mar-treeview--sm {
+    --mar-treeview-item-padding-y: 1px;
+    --mar-treeview-item-padding-x: 4px;
+    --mar-treeview-item-gap: 2px;
+    --mar-treeview-indent: 16px;
+    --mar-treeview-icon-size: 14px;
+    --mar-treeview-font-size: var(--marilo-font-size-sm, 12px);
+    --mar-treeview-line-height: var(--marilo-line-height-sm, 16px);
+  }
+
+  // ── Density: large ────────────────────────────────────────────────────
+  &[style*="font-size:lg"],
+  &.mar-treeview--lg {
+    --mar-treeview-item-padding-y: var(--marilo-space-xs, 4px);
+    --mar-treeview-item-padding-x: var(--marilo-space-md, 12px);
+    --mar-treeview-item-gap: var(--marilo-space-sm, 8px);
+    --mar-treeview-indent: 32px;
+    --mar-treeview-icon-size: 20px;
+    --mar-treeview-font-size: var(--marilo-font-size-lg, 16px);
+    --mar-treeview-line-height: var(--marilo-line-height-lg, 24px);
+  }
+}
+
+// Nested <ul> groups (direct or via .mar-tree-item__children)
+.mar-treeview ul {
+  list-style: none;
+  padding-left: var(--mar-treeview-indent);
+  margin: 0;
+}
+
+// ── Tree Item (li) ──────────────────────────────────────────────────────────
 
 .mar-tree-item {
-    padding: var(--marilo-space-xs) var(--marilo-space-sm);
-    border-radius: var(--marilo-radius-md);
-    cursor: pointer;
-    transition: background var(--marilo-transition-fast);
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }
 
-.mar-tree-item:hover { background: var(--marilo-color-surface-hover); }
-.mar-tree-item--selected { background: var(--marilo-color-primary-light); color: var(--marilo-color-primary); }
+.mar-tree-item--selected > .mar-tree-item__header {
+  background: var(--marilo-color-primary-light);
+  color: var(--marilo-color-primary);
+}
+
 .mar-tree-item--expanded {}
 
-// Phase 2 extended
-.mar-treeitem { }
-.mar-treeitem__row { display: flex; align-items: center; gap: var(--marilo-space-xs); padding: var(--marilo-space-xxs) var(--marilo-space-sm); border-radius: var(--marilo-radius-md); cursor: pointer; }
-.mar-treeitem__row:hover { background: var(--marilo-color-surface); }
-.mar-treeitem--selected > .mar-treeitem__row { background: var(--marilo-color-primary-light); color: var(--marilo-color-primary); }
-.mar-treeitem__toggle { display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; background: none; border: none; cursor: pointer; padding: 0; transition: transform var(--marilo-transition-fast); }
-.mar-treeitem--expanded > .mar-treeitem__row .mar-treeitem__toggle { transform: rotate(90deg); }
+// VP-001: Focus-visible ring on focused tree item
+.mar-tree-item--focused > .mar-tree-item__header {
+  outline: 2px solid var(--marilo-color-primary);
+  outline-offset: -2px;
+  border-radius: var(--marilo-radius-md);
+}
+
+// VP-003: Disabled visual treatment via aria-disabled
+.mar-tree-item[aria-disabled="true"],
+.mar-treeview[aria-disabled="true"] .mar-tree-item {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+// VP-007: ReadOnly modifier — shows state but prevents interaction cues
+.mar-tree-item--readonly > .mar-tree-item__header {
+  cursor: default;
+}
+.mar-tree-item--readonly .mar-tree-item__toggle,
+.mar-tree-item--readonly .mar-tree-item__checkbox {
+  pointer-events: none;
+  opacity: 0.65;
+}
+
+// Filter match highlight
+.mar-tree-item--filter-match > .mar-tree-item__header {
+  background: var(--marilo-color-warning-light, rgba(255, 235, 59, 0.15));
+}
+
+// ── VP-012: Header row (flex container for toggle + checkbox + icon + title) ─
+
+.mar-tree-item__header {
+  display: flex;
+  align-items: center;
+  gap: var(--mar-treeview-item-gap);
+  padding: var(--mar-treeview-item-padding-y) var(--mar-treeview-item-padding-x);
+  border-radius: var(--marilo-radius-md);
+  cursor: pointer;
+  transition: background var(--marilo-transition-fast),
+              outline-color 0.15s ease;
+
+  // VP-006: Unified hover token
+  &:hover {
+    background: var(--marilo-color-surface-hover);
+  }
+}
+
+// Drag-over indicator on header
+.mar-tree-item__header--dragover {
+  outline: 2px dashed var(--marilo-color-primary);
+  outline-offset: -2px;
+  background: var(--marilo-color-primary-light);
+}
+
+// ── VP-014: Toggle button ───────────────────────────────────────────────────
+
+.mar-tree-item__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: inherit;
+  font-size: 0.65rem;
+  transition: transform var(--marilo-transition-fast);
+}
+
+.mar-tree-item--expanded > .mar-tree-item__header .mar-tree-item__toggle {
+  transform: rotate(90deg);
+}
+
+.mar-tree-item__toggle:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+// ── VP-008: Checkbox styling ────────────────────────────────────────────────
+
+.mar-tree-item__checkbox {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  accent-color: var(--marilo-color-primary);
+  cursor: pointer;
+}
+
+.mar-tree-item__checkbox:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.mar-tree-item__checkbox--indeterminate {
+  opacity: 0.7;
+}
+
+// ── VP-010: Icon alignment ──────────────────────────────────────────────────
+
+.mar-tree-item__icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: var(--mar-treeview-icon-size);
+  height: var(--mar-treeview-icon-size);
+  font-size: var(--mar-treeview-icon-size);
+  color: var(--marilo-color-text-secondary, var(--marilo-color-text));
+  transition: color var(--marilo-transition-fast);
+}
+
+// ── VP-011: Title typography ────────────────────────────────────────────────
+
+.mar-tree-item__title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--mar-treeview-font-size);
+  line-height: var(--mar-treeview-line-height);
+  color: inherit;
+  text-decoration: none;
+  user-select: none;
+}
+
+a.mar-tree-item__title {
+  color: var(--marilo-color-primary);
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// ── Inline edit input ───────────────────────────────────────────────────────
+
+.mar-tree-item__edit-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: var(--mar-treeview-font-size);
+  line-height: var(--mar-treeview-line-height);
+  padding: 0 var(--marilo-space-xs);
+  border: 1px solid var(--marilo-color-primary);
+  border-radius: var(--marilo-radius-sm);
+  outline: none;
+  transition: border-color var(--marilo-transition-fast);
+
+  &:focus {
+    border-color: var(--marilo-color-primary);
+    box-shadow: 0 0 0 1px var(--marilo-color-primary);
+  }
+}
+
+// ── Loading indicator ───────────────────────────────────────────────────────
+
+.mar-tree-item__loading {
+  padding: var(--marilo-space-xs) var(--marilo-space-sm);
+  padding-left: calc(var(--mar-treeview-indent) + 20px);
+  font-size: var(--marilo-font-size-sm, 12px);
+  color: var(--marilo-color-text-secondary, var(--marilo-color-text));
+  font-style: italic;
+}
+
+// ── VP-013: Children container (indentation) ────────────────────────────────
+
+.mar-tree-item__children {
+  list-style: none;
+  padding-left: var(--mar-treeview-indent);
+  margin: 0;
+}
+
+// ── VP-009: Dark mode overrides ─────────────────────────────────────────────
+
+[data-marilo-theme="dark"] {
+  .mar-tree-item--selected > .mar-tree-item__header {
+    background: rgba(var(--marilo-color-primary-rgb, 0, 120, 212), 0.2);
+    color: var(--marilo-color-primary);
+  }
+
+  .mar-tree-item__header:hover {
+    background: var(--marilo-color-surface-hover, rgba(255, 255, 255, 0.05));
+  }
+
+  .mar-tree-item--focused > .mar-tree-item__header {
+    outline-color: var(--marilo-color-primary);
+  }
+
+  .mar-tree-item__icon {
+    color: var(--marilo-color-text-secondary, rgba(255, 255, 255, 0.6));
+  }
+
+  .mar-tree-item__loading {
+    color: var(--marilo-color-text-secondary, rgba(255, 255, 255, 0.6));
+  }
+
+  .mar-tree-item--filter-match > .mar-tree-item__header {
+    background: rgba(255, 235, 59, 0.1);
+  }
+
+  .mar-tree-item__edit-input {
+    background: var(--marilo-color-surface, #252423);
+    color: var(--marilo-color-text, #f3f2f1);
+    border-color: var(--marilo-color-primary);
+  }
+}

@@ -31,22 +31,22 @@ To use a Chart component with Bubble series:
 <MariloChart>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Bubble"
+        <MariloChartSeries Type="ChartSeriesType.Bubble"
                      Data="@Series1Data"
                      Name="North America"
                      XField="@nameof(ModelData.LifeExpectancy)"
                      YField="@nameof(ModelData.FertilityRate)"
                      SizeField="@nameof(ModelData.PopulationChange)">
             <ChartSeriesLabels Visible="true" Template="@labelTemplate"></ChartSeriesLabels>
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Bubble"
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Bubble"
                      Data="@Series2Data"
                      Name="Europe"
                      XField="@nameof(ModelData.LifeExpectancy)"
                      YField="@nameof(ModelData.FertilityRate)"
                      SizeField="@nameof(ModelData.PopulationChange)">
             <ChartSeriesLabels Visible="true" Template="@labelTemplate"></ChartSeriesLabels>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartXAxes>
@@ -98,7 +98,7 @@ By default, the Chart determines the physical size of each bubble automatically:
 * The minimum bubble diameter is 2% of the smaller Chart dimension, but not less than `10px`. This ensures that even the smallest bubbles are perceivable and accessible. The smallest bubble size also depends on the largest `Size` value in the Chart series.
 * All bubble sizes are set proportionately, as long as they comply with the preceding rules.
 
-To change the minimum and maximum bubble diameter, use the `MinSize` and `MinSize` parameters of `<ChartSeries>`. In this case, the Chart component sets the diameter of the rendered bubbles based on:
+To change the minimum and maximum bubble diameter, use the `MinSize` and `MinSize` parameters of `<MariloChartSeries>`. In this case, the Chart component sets the diameter of the rendered bubbles based on:
 
 * The absolute values of `MinSize` and `MaxSize`, which represent pixels.
 * The ratio between `MinSize` and `MaxSize`.
@@ -117,7 +117,7 @@ If you need to [improve the bubble size comparability across several Charts](slu
 <MariloChart Width="1000px" Height="420px">
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Bubble"
+        <MariloChartSeries Type="ChartSeriesType.Bubble"
                      Data="@BubbleData"
                      Name="Custom Sizes"
                      XField="@nameof(BubbleModel.XValue)"
@@ -129,8 +129,8 @@ If you need to [improve the bubble size comparability across several Charts](slu
             <ChartSeriesLabels Visible="true">
                 <ChartSeriesLabelsMargin Top="24" />
             </ChartSeriesLabels>
-        </ChartSeries>
-        <ChartSeries Type="ChartSeriesType.Bubble"
+        </MariloChartSeries>
+        <MariloChartSeries Type="ChartSeriesType.Bubble"
                      Data="@BubbleData"
                      Name="Default Sizes"
                      XField="@nameof(BubbleModel.XValue)"
@@ -140,10 +140,10 @@ If you need to [improve the bubble size comparability across several Charts](slu
             <ChartSeriesLabels Visible="true">
                 <ChartSeriesLabelsMargin Bottom="30" />
             </ChartSeriesLabels>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
-    <ChartLegend Position="@ChartLegendPosition.Top" />
+    <ChartLegend Position="@ChartPosition.Top" />
 
 </MariloChart>
 
@@ -197,14 +197,14 @@ The size field should, generally, have positive values as it correlates to the p
 <MariloChart>
 
     <ChartSeriesItems>
-        <ChartSeries Type="ChartSeriesType.Bubble"
+        <MariloChartSeries Type="ChartSeriesType.Bubble"
                      Data="@SeriesData"
                      XField="@nameof(ModelData.X)"
                      YField="@nameof(ModelData.Y)"
                      SizeField="@nameof(ModelData.Size)">
             <ChartSeriesNegativeValues Visible="true" Color="cyan"></ChartSeriesNegativeValues>
             <ChartSeriesLabels Visible="true" Template="#=dataItem.MetaData#"></ChartSeriesLabels>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
 </MariloChart>

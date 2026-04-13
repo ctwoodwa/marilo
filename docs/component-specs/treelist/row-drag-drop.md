@@ -27,29 +27,21 @@ This article contains the following sections:
 
 To enable the Drag and Drop functionality:
 
-1. Set the `RowDraggable` parameter of the `<MariloTreeList>` to `true`
+1. Set the `RowDraggable` parameter of the `<MariloTreeList>` to `true`.
+2. Handle the `OnRowDropped` event to process the drag-and-drop operation and update your data source.
 
-1. Use the `OnRowDrop` event to handle the drag and drop operations and modify the data source as per your business logic.
+When `RowDraggable` is `true`, all data rows get `draggable="true"` and respond to standard HTML drag events. During a drag operation, the source row receives the CSS class `mar-treelist__row--dragging` and the current drop target receives `mar-treelist__row--drop-target`.
 
-The row drag and drop functionality works with a dedicated column which is always rendered as the first column when the feature is enabled.  
+## OnRowDropped Event
 
-## OnRowDrop Event
+The `OnRowDropped` event fires when the user drops a row into a new location. It provides a `TreeListRowDropEventArgs<TItem>` with the following properties:
 
-The `OnRowDrop` event fires when the user drops a row into a new location. It allows you to manipulate your data collection based on where the user dropped the element. 
-
-### Event Arguments
-
-The `OnRowDrop` event provides an object of type `TreeListRowDropEventArgs<T>` to its event handler which exposes the following fields:
-
-| Parameter | Type | Description |
+| Property | Type | Description |
 | --- | --- | --- |
-| `Item` | `object` | Represents the dragged row. You can cast this object to your model class. |
-| `DestinationItem` | `object` | Represents the row over which the `Item` is dropped. You can cast this object to your model class. |
-| `Items` | `object` | Represents the dragged row. You can cast this object to your model class. |
-| `DropPosition` | `enum` | Its members allow you to determine the exact position of the dropped item relative to the position of the `DestinationItem`. |
-| `DestinationGrid` | `object` | The reference of the Grid in which the row is dropped. This is applicable when you drag and drop rows between different grids. |
-| `DestinationIndex` | `string` | The index where the drop will happen in the second component. |
-| `DestinationComponentId` | `string` | The `Id` of the second component in which the drop will happen. |
+| `Item` | `TItem` | The dragged item. |
+| `DestinationItem` | `TItem?` | The item over which the dragged item was dropped. |
+| `DropPosition` | `TreeListDropPosition` | The position relative to the destination: `Before`, `After`, or `Over`. |
+| `DestinationIndex` | `int` | The flat index in the visible row list where the drop occurred. |
 
 ## TreeListRowDraggableSettings
 

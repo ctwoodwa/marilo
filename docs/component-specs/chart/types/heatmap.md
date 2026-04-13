@@ -42,14 +42,14 @@ The <a href="https://www.marilo.com/blazor-ui/heatmap" target="_blank">Blazor He
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="@ChartSeriesType.Heatmap"
+        <MariloChartSeries Type="@ChartSeriesType.Heatmap"
                      Name="Commits Made per developer"
                      Data="@HeatmapData"
                      XField="@(nameof(MyHeatmapDataModel.Week))"
                      YField="@(nameof(MyHeatmapDataModel.Day))"
                      Field="@(nameof(MyHeatmapDataModel.CommitsNumber))">
 
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 </MariloChart>
 
@@ -121,14 +121,14 @@ When you are data binding the Heatmap Chart you should have the following points
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="@ChartSeriesType.Heatmap"
+        <MariloChartSeries Type="@ChartSeriesType.Heatmap"
                      Name="Commits Made per developer"
                      Data="@HeatmapData"
                      XField="@(nameof(MyHeatmapDataModel.Week))"
                      YField="@(nameof(MyHeatmapDataModel.Day))"
                      Field="@(nameof(MyHeatmapDataModel.CommitsNumber))">
 
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartYAxes>
@@ -193,7 +193,7 @@ When you are data binding the Heatmap Chart you should have the following points
 
 ### Setting the Marker Type
 
-To change the marker type you should set the `Type` parameter, exposed on the `ChartSeriesMarkers` tag (child tag of the `<ChartSeries>`). It takes a member of the Marilo.Blazor.Components.ChartSeriesMarkersType enum:
+To change the marker type you should set the `Type` parameter, exposed on the `ChartSeriesMarkers` tag (child tag of the `<MariloChartSeries>`). It takes a member of the ChartSeriesMarkersType enum:
 
 * `Rect` - the default value - specifies a rectangular form of the marker.
 
@@ -206,7 +206,7 @@ To change the marker type you should set the `Type` parameter, exposed on the `C
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="@ChartSeriesType.Heatmap"
+        <MariloChartSeries Type="@ChartSeriesType.Heatmap"
                      Name="Commits Made per developer"
                      Data="@HeatmapData"
                      XField="@(nameof(MyHeatmapDataModel.Week))"
@@ -215,7 +215,7 @@ To change the marker type you should set the `Type` parameter, exposed on the `C
             <ChartSeriesMarkers Type="@ChartSeriesMarkersType.RoundedRect"
                                 BorderRadius="10">
             </ChartSeriesMarkers>
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 </MariloChart>
 
@@ -279,14 +279,14 @@ The `Color` parameter controls the general color palette for the markers of the 
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="@ChartSeriesType.Heatmap"
+        <MariloChartSeries Type="@ChartSeriesType.Heatmap"
                      Name="Commits Made per developer"
                      Data="@HeatmapData"
                      XField="@(nameof(MyHeatmapDataModel.Week))"
                      YField="@(nameof(MyHeatmapDataModel.Day))"
                      Field="@(nameof(MyHeatmapDataModel.CommitsNumber))"
                      Color="blue">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 </MariloChart>
 
@@ -350,14 +350,14 @@ The `ColorField` parameter allows you to control the color of an individual mark
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="@ChartSeriesType.Heatmap"
+        <MariloChartSeries Type="@ChartSeriesType.Heatmap"
                      Name="Commits Made per developer"
                      Data="@HeatmapData"
                      XField="@(nameof(MyHeatmapDataModel.Week))"
                      YField="@(nameof(MyHeatmapDataModel.Day))"
                      Field="@(nameof(MyHeatmapDataModel.CommitsNumber))"
                      ColorField="@(nameof(MyHeatmapDataModel.Color))">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 </MariloChart>
 
@@ -422,13 +422,13 @@ The `ColorField` parameter allows you to control the color of an individual mark
 
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Type="@ChartSeriesType.Heatmap"
+        <MariloChartSeries Type="@ChartSeriesType.Heatmap"
                      Name="Commits Made per developer"
                      Data="@HeatmapData"
                      XField="@(nameof(MyHeatmapDataModel.Week))"
                      YField="@(nameof(MyHeatmapDataModel.Day))"
                      Field="@(nameof(MyHeatmapDataModel.CommitsNumber))">
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartXAxes>

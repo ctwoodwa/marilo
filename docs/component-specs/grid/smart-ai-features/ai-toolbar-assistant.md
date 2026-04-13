@@ -33,7 +33,7 @@ Use the following steps to implement Grid AI integration using the `GridToolBarA
 3. Optionally, define some [`PromptSuggestions`](slug:aiprompt-views-prompt).
 
 ````RAZOR.skip-repl
-<MariloGrid>
+<MariloDataGrid>
     <GridToolBar>
         <GridToolBarAIAssistantTool>
             <GridToolBarAIAssistantToolSettings>
@@ -43,7 +43,7 @@ Use the following steps to implement Grid AI integration using the `GridToolBarA
             </GridToolBarAIAssistantToolSettings>
         </GridToolBarAIAssistantTool>
     </GridToolBar>
-</MariloGrid>
+</MariloDataGrid>
 
 @code {
     private List<string> AIPromptSuggestions { get; set; } = new();
@@ -93,5 +93,5 @@ The following online demos show complete implementations of the Grid AI smart fu
 
 * [Grid AI Features Overview](slug:grid-ai-overview)
 * [InlineAIPrompt Overview](slug:inlineaiprompt-overview)
-* [Grid API](slug:Marilo.Blazor.Components.MariloGrid-1)
+* [Grid API](slug:Marilo.Components.DataGrid.MariloDataGrid-1)
 * [Integration with Marilo.AI.SmartComponents.Extensions](slug:grid-ai-service-setup)

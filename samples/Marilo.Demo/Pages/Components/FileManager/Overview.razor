@@ -132,6 +132,17 @@
     </DemoSection>
 </PageSection>
 
+<PageSection Title="Disabled & Readonly States">
+    <DemoSection Title="Disabled File Manager" Description="All CRUD operations are disabled. The user can browse files but cannot create, rename, or delete.">
+        <MariloFileManager TItem="FileManagerEntry"
+                           Data="@_sampleData"
+                           Height="300px"
+                           AllowCreate="false"
+                           AllowRename="false"
+                           AllowDelete="false" />
+    </DemoSection>
+</PageSection>
+
 @code {
     // ── Sample data ──────────────────────────────────────────────────
     private string _currentPath = "/";

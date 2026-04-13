@@ -23,7 +23,7 @@ By default, the series backgrounds are semi-transparent, which lets the user cle
 2. Set the series `Type` parameter to `ChartSeriesType.RangeArea`.
 3. Provide a data collection to its `Data` property. You can use a [collection of arrays](#binding-range-area-series-to-collection-of-arrays) or a [collection of custom objects](#binding-range-area-series-to-custom-objects).
 4. If the Range Area data is a collection of arrays, provide data for the `Categories` parameter of the `ChartCategoryAxis`.
-5. (optional) Set `Visible="true"` to `<ChartSeriesLabels>` to show both the `from` and `to` labels. Alternatively, enable visibility or define [label `Template`](slug:components/chart/label-template-format) for `<ChartSeriesLabelsFrom>` or `<ChartSeriesLabelsTo>`. These are nested tags inside `<ChartSeriesLabels>` of the respective `<ChartSeries>`.
+5. (optional) Set `Visible="true"` to `<ChartSeriesLabels>` to show both the `from` and `to` labels. Alternatively, enable visibility or define [label `Template`](slug:components/chart/label-template-format) for `<ChartSeriesLabelsFrom>` or `<ChartSeriesLabelsTo>`. These are nested tags inside `<ChartSeriesLabels>` of the respective `<MariloChartSeries>`.
 
 ### Binding Range Area Series to Collection of Arrays
 
@@ -36,19 +36,19 @@ Set the `Categories` parameter of the `ChartCategoryAxis` to `object[]`. The mem
 ````RAZOR
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Name="Sydney"
+        <MariloChartSeries Name="Sydney"
                      Data="@SydneyData"
                      Type="ChartSeriesType.RangeArea">
             <ChartSeriesLabels Visible="true" />
-        </ChartSeries>
-        <ChartSeries Name="Sofia"
+        </MariloChartSeries>
+        <MariloChartSeries Name="Sofia"
                      Data="@SofiaData"
                      Type="ChartSeriesType.RangeArea">
             @*<ChartSeriesLabels>
                 <ChartSeriesLabelsFrom Visible="true" />
                 <ChartSeriesLabelsTo Visible="false" />
             </ChartSeriesLabels>*@
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartCategoryAxes>
@@ -63,7 +63,7 @@ Set the `Categories` parameter of the `ChartCategoryAxis` to `object[]`. The mem
 
     <ChartTitle Text="Monthly Temperatures"></ChartTitle>
 
-    <ChartLegend Position="ChartLegendPosition.Right"></ChartLegend>
+    <ChartLegend Position="ChartPosition.Right"></ChartLegend>
 </MariloChart>
 
 @code {
@@ -117,15 +117,15 @@ Set the `Categories` parameter of the `ChartCategoryAxis` to `object[]`. The mem
 ````RAZOR
 <MariloChart>
     <ChartSeriesItems>
-        <ChartSeries Name="Test Tube 1"
+        <MariloChartSeries Name="Test Tube 1"
                      Data="@Tube1Data"
                      Type="ChartSeriesType.RangeArea"
                      FromField="@nameof(AreaDataPoint.LowValue)"
                      ToField="@nameof(AreaDataPoint.HighValue)"
                      CategoryField="@nameof(AreaDataPoint.Hour)">
             <ChartSeriesLabels Visible="true" />
-        </ChartSeries>
-        <ChartSeries Name="Test Tube 2"
+        </MariloChartSeries>
+        <MariloChartSeries Name="Test Tube 2"
                      Data="@Tube2Data"
                      Type="ChartSeriesType.RangeArea"
                      FromField="@nameof(AreaDataPoint.LowValue)"
@@ -135,14 +135,14 @@ Set the `Categories` parameter of the `ChartCategoryAxis` to `object[]`. The mem
                     <ChartSeriesLabelsFrom Visible="true" />
                     <ChartSeriesLabelsTo Visible="false" />
                 </ChartSeriesLabels>*@
-        </ChartSeries>
+        </MariloChartSeries>
     </ChartSeriesItems>
 
     <ChartTooltip Visible="true"></ChartTooltip>
 
     <ChartTitle Text="Laboratory Measurements"></ChartTitle>
 
-    <ChartLegend Position="ChartLegendPosition.Right"></ChartLegend>
+    <ChartLegend Position="ChartPosition.Right"></ChartLegend>
 </MariloChart>
 
 @code {

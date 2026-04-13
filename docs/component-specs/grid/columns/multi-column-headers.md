@@ -35,38 +35,36 @@ The following code snippet shows how you can group columns in the Grid in multi-
 ````RAZOR
 @* See the root-level GridColumn tags that have their own Columns collections *@
 
-<MariloGrid Data=@GridData
+<MariloDataGrid Data=@GridData
              Pageable="true" Sortable="true" Resizable="true" Reorderable="true"
              ShowColumnMenu="true" FilterMode="@GridFilterMode.FilterMenu"
              Width="800px" Height="400px">
-    <GridColumns>
-        <GridColumn Title="Personal Information">
+        <MariloGridColumn Title="Personal Information">
             <Columns>
-                <GridColumn Field=@nameof(Customer.FirstName) Title="First Name" Width="100px" />
-                <GridColumn Field=@nameof(Customer.LastName) Title="Last Name" Width="100px" />
+                <MariloGridColumn Field=@nameof(Customer.FirstName) Title="First Name" Width="100px" />
+                <MariloGridColumn Field=@nameof(Customer.LastName) Title="Last Name" Width="100px" />
             </Columns>
-        </GridColumn>
-        <GridColumn Title="Company">
+        </MariloGridColumn>
+        <MariloGridColumn Title="Company">
             <Columns>
-                <GridColumn Field=@nameof(Customer.CompanyName) Title="Name" />
-                <GridColumn Field=@nameof(Customer.HasCompanyContract) Title="Has Contract" Width="120px" />
+                <MariloGridColumn Field=@nameof(Customer.CompanyName) Title="Name" />
+                <MariloGridColumn Field=@nameof(Customer.HasCompanyContract) Title="Has Contract" Width="120px" />
             </Columns>
-        </GridColumn>
-        <GridColumn Title="Contact Details">
+        </MariloGridColumn>
+        <MariloGridColumn Title="Contact Details">
             <Columns>
-                <GridColumn Field="@nameof(Customer.Email)" Title="Email"></GridColumn>
-                <GridColumn Field="@nameof(Customer.Phone)" Title="Phone"></GridColumn>
-                <GridColumn Field="@nameof(Customer.City)" Title="City"></GridColumn>
+                <MariloGridColumn Field="@nameof(Customer.Email)" Title="Email"></MariloGridColumn>
+                <MariloGridColumn Field="@nameof(Customer.Phone)" Title="Phone"></MariloGridColumn>
+                <MariloGridColumn Field="@nameof(Customer.City)" Title="City"></MariloGridColumn>
             </Columns>
-        </GridColumn>
-        <GridColumn Title="Admin Settings">
+        </MariloGridColumn>
+        <MariloGridColumn Title="Admin Settings">
             <Columns>
-                <GridColumn Field=@nameof(Customer.Id) Title="UserID" />
-                <GridColumn Field=@nameof(Customer.PasswordHash) Title="Pass Hash" Width="100px" />
+                <MariloGridColumn Field=@nameof(Customer.Id) Title="UserID" />
+                <MariloGridColumn Field=@nameof(Customer.PasswordHash) Title="Pass Hash" Width="100px" />
             </Columns>
-        </GridColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridColumn>
+</MariloDataGrid>
 
 @code {
     public List<Customer> GridData { get; set; }

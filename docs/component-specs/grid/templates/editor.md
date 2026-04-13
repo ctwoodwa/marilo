@@ -79,12 +79,11 @@ This section demonstrates different scenarios with the Editor Template:
 The Grid will save changes and close the current edit row (or edit cell) when the user hits Enter. To prevent this inside HTML Editor or TextArea components, stop the propagation of the `keydown` event:
 
 ````RAZOR
-<MariloGrid Data="@Products"
+<MariloDataGrid Data="@Products"
              EditMode="@GridEditMode.Inline"
              OnUpdate="@OnGridUpdate">
-    <GridColumns>
-        <GridColumn Field="@nameof(Product.Name)" Width="200px" />
-        <GridColumn Field="@nameof(Product.Description)" Width="200px">
+        <MariloGridColumn Field="@nameof(Product.Name)" Width="200px" />
+        <MariloGridColumn Field="@nameof(Product.Description)" Width="200px">
             <EditorTemplate>
                 @{
                     var item = (Product)context;
@@ -95,8 +94,8 @@ The Grid will save changes and close the current edit row (or edit cell) when th
                     </div>
                 }
             </EditorTemplate>
-        </GridColumn>
-        <GridColumn Field="@nameof(Product.HTMLDescription)">
+        </MariloGridColumn>
+        <MariloGridColumn Field="@nameof(Product.HTMLDescription)">
             <Template>
                 @{
                     var item = (Product)context;
@@ -113,14 +112,13 @@ The Grid will save changes and close the current edit row (or edit cell) when th
                     </div>
                 }
             </EditorTemplate>
-        </GridColumn>
-        <GridCommandColumn Width="200px">
+        </MariloGridColumn>
+        <MariloGridCommandColumn Width="200px">
             <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil">Edit</GridCommandButton>
             <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">Save</GridCommandButton>
             <GridCommandButton Command="Cancel" Icon="@SvgIcon.Cancel" ShowInEdit="true">Cancel</GridCommandButton>
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 
 @code {
 
@@ -164,11 +162,10 @@ The Grid will save changes and close the current edit row (or edit cell) when th
 @* This example shows how to use a simple <select> to edit strings. You can implement any desired logic instead.
     If you have an enum, the grid can edit and filter it out-of-the-box without the need for an edit template *@
 
-<MariloGrid Data=@MyData EditMode="@GridEditMode.Inline" Pageable="true" Height="300px" OnUpdate="@UpdateHandler">
-    <GridColumns>
-        <GridColumn Field=@nameof(SampleData.ID) Editable="false" Title="ID" />
-        <GridColumn Field=@nameof(SampleData.Name) Title="Name" />
-        <GridColumn Field=@nameof(SampleData.Role) Title="Position">
+<MariloDataGrid Data=@MyData EditMode="@GridEditMode.Inline" Pageable="true" Height="300px" OnUpdate="@UpdateHandler">
+        <MariloGridColumn Field=@nameof(SampleData.ID) Editable="false" Title="ID" />
+        <MariloGridColumn Field=@nameof(SampleData.Name) Title="Name" />
+        <MariloGridColumn Field=@nameof(SampleData.Role) Title="Position">
             <EditorTemplate>
                 @{
                     CurrentlyEditedEmployee = context as SampleData;
@@ -180,13 +177,12 @@ The Grid will save changes and close the current edit row (or edit cell) when th
                     </select>
                 }
             </EditorTemplate>
-        </GridColumn>
-        <GridCommandColumn>
+        </MariloGridColumn>
+        <MariloGridCommandColumn>
             <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">Save</GridCommandButton>
             <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil">Edit</GridCommandButton>
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 
 @code {
     List<SampleData> MyData { get; set; }
@@ -278,11 +274,10 @@ Also check the [Grid Foreign Key Column](slug:grids-foreign-key) knowledge base 
 ````RAZOR
 @* This example shows one way to use a dropdownlist to edit values with a foreign key. *@
 
-<MariloGrid Data=@MyData EditMode="@GridEditMode.Inline" Pageable="true" Height="500px" OnUpdate="@UpdateHandler">
-    <GridColumns>
-        <GridColumn Field=@nameof(Employee.ID) Editable="false" Title="ID" />
-        <GridColumn Field=@nameof(Employee.Name) Title="Name" />
-        <GridColumn Field=@nameof(Employee.RoleId) Title="Position">
+<MariloDataGrid Data=@MyData EditMode="@GridEditMode.Inline" Pageable="true" Height="500px" OnUpdate="@UpdateHandler">
+        <MariloGridColumn Field=@nameof(Employee.ID) Editable="false" Title="ID" />
+        <MariloGridColumn Field=@nameof(Employee.Name) Title="Name" />
+        <MariloGridColumn Field=@nameof(Employee.RoleId) Title="Position">
             <EditorTemplate>
                 @{
                     CurrentlyEditedEmployee = context as Employee;
@@ -306,13 +301,12 @@ Also check the [Grid Foreign Key Column](slug:grids-foreign-key) knowledge base 
                     <text>@textToRender</text>
                 }
             </Template>
-        </GridColumn>
-        <GridCommandColumn>
+        </MariloGridColumn>
+        <MariloGridCommandColumn>
             <GridCommandButton Command="Save" Icon="@SvgIcon.Save" ShowInEdit="true">Save</GridCommandButton>
             <GridCommandButton Command="Edit" Icon="@SvgIcon.Pencil">Edit</GridCommandButton>
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 
 @code {
     List<Employee> MyData { get; set; }

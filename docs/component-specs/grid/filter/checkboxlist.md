@@ -24,15 +24,13 @@ To enable the CheckBoxList filtering in the Marilo Grid for Blazor:
 ````RAZOR
 @* Checkbox List Filter for the Name, Team and Vacation columns, the ID column overrides it to Menu *@
 
-<MariloGrid Data=@GridData Pageable="true" Height="400px"
+<MariloDataGrid Data=@GridData Pageable="true" Height="400px"
              FilterMode="@GridFilterMode.FilterMenu" FilterMenuType="@FilterMenuType.CheckBoxList">
-    <GridColumns>
-        <GridColumn Field="@(nameof(Employee.EmployeeId))" FilterMenuType="@FilterMenuType.Menu" />
-        <GridColumn Field=@nameof(Employee.Name) />
-        <GridColumn Field=@nameof(Employee.Team) Title="Team" />
-        <GridColumn Field=@nameof(Employee.IsOnLeave) Title="On Vacation" />
-    </GridColumns>
-</MariloGrid>
+        <MariloGridColumn Field="@(nameof(Employee.EmployeeId))" FilterMenuType="@FilterMenuType.Menu" />
+        <MariloGridColumn Field=@nameof(Employee.Name) />
+        <MariloGridColumn Field=@nameof(Employee.Team) Title="Team" />
+        <MariloGridColumn Field=@nameof(Employee.IsOnLeave) Title="On Vacation" />
+</MariloDataGrid>
 
 @code {
     public List<Employee> GridData { get; set; }
@@ -90,33 +88,31 @@ Now try to filter by the On Vacation column - it will use only the current Grid 
 depending on how you filter the data so you may never be able to get back all values.
 
 
-<MariloGrid TItem="@Employee"
+<MariloDataGrid TItem="@Employee"
              OnRead="@OnReadHandler"
              Pageable="true"
              FilterMode="@GridFilterMode.FilterMenu"
              FilterMenuType="@FilterMenuType.CheckBoxList"
              Height="400px">
-    <GridColumns>
-        <GridColumn Field="@(nameof(Employee.EmployeeId))" Filterable="false" />
-        <GridColumn Field="@nameof(Employee.Name)">
+        <MariloGridColumn Field="@(nameof(Employee.EmployeeId))" Filterable="false" />
+        <MariloGridColumn Field="@nameof(Employee.Name)">
             <FilterMenuTemplate Context="context">
                 <MariloCheckBoxListFilter Data="@NameOptions"
                                            Field="@(nameof(NameFilterOption.Name))"
                                            @bind-FilterDescriptor="@context.FilterDescriptor">
                 </MariloCheckBoxListFilter>
             </FilterMenuTemplate>
-        </GridColumn>
-        <GridColumn Field="@nameof(Employee.Team)" Title="Team">
+        </MariloGridColumn>
+        <MariloGridColumn Field="@nameof(Employee.Team)" Title="Team">
             <FilterMenuTemplate Context="context">
                 <MariloCheckBoxListFilter Data="@TeamsList"
                                            Field="@(nameof(TeamNameFilterOption.Team))"
                                            @bind-FilterDescriptor="@context.FilterDescriptor">
                 </MariloCheckBoxListFilter>
             </FilterMenuTemplate>
-        </GridColumn>
-        <GridColumn Field="@nameof(Employee.IsOnLeave)" Title="On Vacation" />
-    </GridColumns>
-</MariloGrid>
+        </MariloGridColumn>
+        <MariloGridColumn Field="@nameof(Employee.IsOnLeave)" Title="On Vacation" />
+</MariloDataGrid>
 
 @code {
     List<Employee> AllGridData { get; set; }

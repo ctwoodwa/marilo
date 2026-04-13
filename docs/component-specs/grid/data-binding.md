@@ -62,7 +62,7 @@ Note the usage of [`OnModelInit`](slug:grid-events#onmodelinit) in the example b
 >caption Data Binding the Grid to an Interface
 
 ````RAZOR
-<MariloGrid Data="@GridData"
+<MariloDataGrid Data="@GridData"
              FilterMode="GridFilterMode.FilterRow"
              EditMode="GridEditMode.Inline"
              OnUpdate="@UpdateHandler"
@@ -72,15 +72,13 @@ Note the usage of [`OnModelInit`](slug:grid-events#onmodelinit) in the example b
     <GridToolBarTemplate>
         <GridCommandButton Command="Add" Icon="@SvgIcon.Plus">Add</GridCommandButton>
     </GridToolBarTemplate>
-    <GridColumns>
-        <GridColumn Field="IntProperty" />
-        <GridCommandColumn>
+        <MariloGridColumn Field="IntProperty" />
+        <MariloGridCommandColumn>
             <GridCommandButton Command="Edit">Edit</GridCommandButton>
             <GridCommandButton Command="Save" ShowInEdit="true">Save</GridCommandButton>
             <GridCommandButton Command="Cancel" ShowInEdit="true">Cancel</GridCommandButton>
-        </GridCommandColumn>
-    </GridColumns>
-</MariloGrid>
+        </MariloGridCommandColumn>
+</MariloDataGrid>
 
 @code {
     public interface IModel
