@@ -60,6 +60,13 @@ The `MariloResizableContainer` is a layout primitive that wraps arbitrary child 
 | Class | string? | null | Extra CSS class for root |
 | Style | string? | null | Extra inline style for root |
 
+### Two-Way Binding Callbacks
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| WidthChanged | EventCallback\<string\> | — | Two-way binding callback. Fires with the new CSS width string after drag, keyboard resize, `SetSizeAsync`, or persisted-size restore. Use `@bind-Width` rather than wiring this directly. |
+| HeightChanged | EventCallback\<string\> | — | Two-way binding callback. Fires with the new CSS height string. Use `@bind-Height` rather than wiring this directly. |
+
 ## Two-Way Binding
 
 Width and Height support Blazor two-way binding:

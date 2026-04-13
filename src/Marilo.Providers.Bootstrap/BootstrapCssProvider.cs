@@ -764,6 +764,28 @@ public class BootstrapCssProvider : IMariloCssProvider
             .AddClass("mar-bs-datasheet__save-footer--has-changes", dirtyCount > 0)
             .Build();
 
+    public string DataSheetAddButtonClass() => "mar-datasheet__add-btn";
+    public string DataSheetSaveButtonClass() => "mar-datasheet__save-btn";
+    public string DataSheetResetButtonClass() => "mar-datasheet__reset-btn";
+    public string DataSheetSpinnerClass() => "mar-datasheet__spinner";
+    public string DataSheetDirtyBadgeClass() => "mar-datasheet__dirty-badge";
+    public string DataSheetSkeletonClass() => "mar-datasheet__skeleton";
+    public string DataSheetSkeletonRowClass() => "mar-datasheet__skeleton-row";
+    public string DataSheetSkeletonCellClass() => "mar-datasheet__skeleton-cell";
+    public string DataSheetLoadingTextClass() => "mar-datasheet__loading-text";
+    public string DataSheetEmptyClass() => "mar-datasheet__empty";
+    public string DataSheetSelectHeaderClass() => "mar-datasheet__select-header";
+    public string DataSheetActionsHeaderClass() => "mar-datasheet__actions-header";
+    public string DataSheetAriaLiveClass() => "mar-datasheet__aria-live";
+    public string DataSheetSelectCellClass() => "mar-datasheet__select-cell";
+    public string DataSheetActionsCellClass() => "mar-datasheet__actions-cell";
+    public string DataSheetDeleteButtonClass() => "mar-datasheet__delete-btn";
+    public string DataSheetCellTextClass() => "mar-datasheet__cell-text";
+    public string DataSheetEditorInputClass() => "mar-datasheet__editor-input";
+    public string DataSheetEditorSelectClass() => "mar-datasheet__editor-select";
+    public string DataSheetContentClass() => "mar-datasheet__content";
+    public string DataSheetScreenReaderOnlyClass() => "mar-datasheet__sr-only";
+
     // ───────────────────────────────────────────────
     // ListView
     // ───────────────────────────────────────────────

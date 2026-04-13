@@ -231,6 +231,42 @@ private void OnCreate(GridEditEventArgs<TItem> args)
 }    
 ````
 
+## Imperative API
+
+In addition to command buttons and events, the Grid exposes public C# methods that let you trigger edit operations programmatically — for example, from a toolbar button or a custom context menu.
+
+| Method | Signature | Description |
+| --- | --- | --- |
+| `BeginEdit` | `Task BeginEdit(TItem item)` | Puts the specified row into edit mode. Fires `OnEdit`. |
+| `BeginCellEdit` | `Task BeginCellEdit(TItem item, string field)` | Puts a specific cell into in-cell edit mode. Fires `OnEdit`. |
+| `BeginAdd` | `Task BeginAdd()` | Puts the Grid into add mode. Fires `OnAdd`. |
+| `SaveEdit` | `Task SaveEdit()` | Saves the current edit or add operation. Fires `OnUpdate` or `OnCreate`. |
+| `CancelEdit` | `Task CancelEdit()` | Cancels the current edit or add operation. Fires `OnCancel`. |
+| `DeleteItem` | `Task DeleteItem(TItem item)` | Deletes the specified item. Fires `OnDelete`. If `ConfirmDelete` is `true`, shows a browser `confirm` dialog before firing. |
+| `ExecuteCommand` | `Task ExecuteCommand(string commandId, TItem? item = default)` | Executes a named command on the Grid. Fires `OnCommand` with the given `commandId`. |
+
+To call these methods, obtain a reference to the Grid instance with `@ref`:
+
+````RAZOR.skip-repl
+<MariloDataGrid @ref="@GridRef" Data="@GridData" EditMode="@GridEditMode.Inline" ...>
+    ...
+</MariloDataGrid>
+
+@code {
+    private MariloDataGrid<Employee> GridRef { get; set; } = default!;
+
+    private async Task EditFirstRow()
+    {
+        if (GridData.Any())
+        {
+            await GridRef.BeginEdit(GridData.First());
+        }
+    }
+}
+````
+
+> The `ConfirmDelete` parameter uses the browser's native `window.confirm` dialog, not a Marilo `MariloDialog` component. To use a custom dialog, handle the `OnDelete` event and manage confirmation in application code.
+
 ## Examples
 
 See Grid CRUD operations in action at:

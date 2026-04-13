@@ -88,7 +88,7 @@ Each pasted string value is coerced to the target column's expected type. The fo
 | --- | --- | --- |
 | `Text` | Value used as-is. | Never fails. |
 | `Number` | `decimal.TryParse` with invariant culture. Result is type-converted to the property's actual numeric type (`int`, `double`, etc.). | Cell marked `CellState.Invalid` with message "Invalid number". |
-| `Date` | `DateTime.TryParse` with the current culture. | Cell marked `CellState.Invalid` with message "Invalid date". |
+| `Date` | `DateTime.TryParse` with InvariantCulture (matches the invariant round-trip used by `data-raw-value`). | Cell marked `CellState.Invalid` with message "Invalid date". |
 | `Select` | Value matched against `Options.Value` (case-sensitive). | Cell marked `CellState.Invalid` with message "Value not in options". |
 | `Checkbox` | `"true"` or `"1"` (case-insensitive) → `true`. All other values → `false`. | Never fails (defaults to `false`). |
 | `Computed` | Skipped entirely. | Not applicable. |

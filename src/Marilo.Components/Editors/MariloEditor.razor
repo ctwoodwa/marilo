@@ -106,6 +106,39 @@
 @inject IEnumerable<IEditorFormatConverter> _formatConverters
 
 @code {
+    // ── Security model ─────────────────────────────────────────────────
+    //
+    // MariloEditor sanitizes all HTML at the boundary between untrusted
+    // input and the Blazor render tree. Sanitization runs on:
+    //   • Pasted content (CleanPastedContent → SanitizeHtml)
+    //   • Programmatically inserted HTML (ExecuteAsync → SanitizeHtml)
+    //   • Preview rendering (SanitizeHtml applied before MarkupString cast)
+    //
+    // What is blocked (SanitizeHtml):
+    //   • <script> tags and their content
+    //   • on* event-handler attributes (onclick, onload, onerror, etc.)
+    //   • javascript: and vbscript: URL schemes in href/src/action
+    //   • CSS expression() constructs (IE attack vector)
+    //
+    // What is allowed (all remaining safe HTML):
+    //   • Structural and semantic elements (p, div, span, h1–h6, ul, ol,
+    //     li, blockquote, pre, code, table, tr, td, th, etc.)
+    //   • Formatting elements (b, strong, i, em, u, s, br, hr)
+    //   • Links (<a href="...">) with non-javascript: hrefs
+    //   • Images (<img src="...">) with non-javascript: srcs
+    //   • Style attributes (visual only, no expression())
+    //
+    // SanitizeAttr blocks attribute-injection via HTML encoding:
+    //   • Double-quote injection → &quot;
+    //   • Angle-bracket injection → &lt; / &gt;
+    //
+    // IMPORTANT: This is a client-side defense layer. Consumers MUST
+    // apply additional server-side sanitization (e.g., HtmlSanitizer,
+    // AntiXss) before persisting or rendering editor content outside
+    // this component.
+    //
+    // ──────────────────────────────────────────────────────────────────
+
     private ElementReference _editorRef;
     private ElementReference _previewRef;
     private ElementReference _toolbarRef;

@@ -41,6 +41,9 @@
     [Parameter] public int? Decimals { get; set; }
     [Parameter] public bool ShowClearButton { get; set; }
 
+    /// <summary>Specifies the adaptive rendering mode for the popup on mobile devices. Defaults to <see cref="AdaptiveMode.None"/>.</summary>
+    [Parameter] public AdaptiveMode AdaptiveMode { get; set; } = AdaptiveMode.None;
+
     private double Clamp(double value)
     {
         if (Min.HasValue && value < Min.Value) return Min.Value;
