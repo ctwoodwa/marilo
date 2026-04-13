@@ -26,6 +26,9 @@
     /// <summary>Logical tab group this pane belongs to. Used for cross-pane tab moves. Defaults to "root".</summary>
     [Parameter] public string TabGroupId { get; set; } = "root";
 
+    /// <summary>Internal setter for DockManager cross-pane moves (avoids BL0005 by not setting the parameter directly from outside).</summary>
+    internal void SetTabGroupId(string groupId) => TabGroupId = groupId;
+
     /// <summary>Minimum width constraint (e.g. "100px"). Enforced during floating resize. Defaults to "100px".</summary>
     [Parameter] public string MinWidth { get; set; } = "100px";
 

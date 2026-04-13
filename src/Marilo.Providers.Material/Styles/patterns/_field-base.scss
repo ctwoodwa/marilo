@@ -1,11 +1,51 @@
 // =============================================================================
 // Patterns: Field Base — Shared input chrome for Material 3
 // M3 defines two field variants: Filled and Outlined.
-// This file establishes the shared chrome tokens and base class.
+// This file establishes the shared chrome tokens, base class, and
+// cross-browser form control normalization.
 // =============================================================================
 
-// TODO: Placeholder — full Material 3 field-base styles not yet defined.
-// Scaffold below establishes the token contract for filled/outlined fields.
+// ── Cross-browser form control normalization ────────────────────────────────
+// Scoped to .mar-* containers so it does not leak into consumer markup.
+// Addresses Firefox/Safari differences: line-height, font inheritance,
+// ::-moz-focus-inner padding, appearance, and box-sizing.
+
+[class^="mar-"] button::-moz-focus-inner,
+[class*=" mar-"] button::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+[class^="mar-"] input,
+[class^="mar-"] select,
+[class^="mar-"] textarea,
+[class^="mar-"] button,
+[class*=" mar-"] input,
+[class*=" mar-"] select,
+[class*=" mar-"] textarea,
+[class*=" mar-"] button {
+  font: inherit;
+  line-height: var(--marilo-line-height-base, 1.5);
+  box-sizing: border-box;
+  margin: 0;
+}
+
+[class^="mar-"] input[type="search"],
+[class*=" mar-"] input[type="search"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  &::-webkit-search-decoration,
+  &::-webkit-search-cancel-button,
+  &::-webkit-search-results-button,
+  &::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+    display: none;
+  }
+}
+
+// ── Material 3 field tokens ─────────────────────────────────────────────────
 
 :root {
   // Field dimensions
@@ -23,6 +63,7 @@
 
   // Fill (filled variant)
   --marilo-field-fill:                var(--marilo-color-surface-variant);
+  --marilo-field-fill-hover:          var(--marilo-color-surface-variant);
   --marilo-field-fill-hover:          color-mix(in srgb, var(--marilo-color-on-surface) 8%, var(--marilo-color-surface-variant));
 
   // Label

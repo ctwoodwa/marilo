@@ -49,7 +49,7 @@ public enum SchedulerEditMode
 }
 
 /// <summary>
-/// Event arguments for the <see cref="MariloScheduler.OnAppointmentRender"/> callback.
+/// Event arguments for the OnAppointmentRender callback on MariloScheduler.
 /// Allows consumers to customise the CSS class and inline style of individual appointments.
 /// </summary>
 public class SchedulerAppointmentRenderEventArgs

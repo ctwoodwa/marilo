@@ -1,7 +1,34 @@
 // =================================================================
 // Marilo Bootstrap Provider — Field Base Pattern
 // =================================================================
-// Bootstrap's form-control and form-select classes provide the field base.
+// Bootstrap's reboot handles most form control normalization.
+// This file adds Marilo-scoped fixes for gaps that Bootstrap's
+// reboot does not cover: ::-moz-focus-inner on .mar-* buttons,
+// and search input appearance resets.
 // =================================================================
 
-// TODO: Placeholder — Bootstrap handles field base styles natively
+// Firefox adds 2px padding + 1px border inside <button> via ::-moz-focus-inner.
+// Bootstrap reboot resets this on bare <button>, but not on Marilo-classed wrappers
+// where the <button> is a child element (e.g. .mar-search-box__clear).
+[class^="mar-"] button::-moz-focus-inner,
+[class*=" mar-"] button::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+// Ensure consistent line-height on form controls inside Marilo containers.
+// Bootstrap sets this on .form-control / .form-select but not on bare elements
+// inside .mar-* wrappers.
+[class^="mar-"] input,
+[class^="mar-"] select,
+[class^="mar-"] textarea,
+[class^="mar-"] button,
+[class*=" mar-"] input,
+[class*=" mar-"] select,
+[class*=" mar-"] textarea,
+[class*=" mar-"] button {
+  font: inherit;
+  line-height: var(--marilo-line-height-base, 1.5);
+  box-sizing: border-box;
+  margin: 0;
+}

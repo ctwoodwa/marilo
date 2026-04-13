@@ -5,7 +5,7 @@
 // BEM Block: .mar-tree-item (each <li> tree item)
 // =============================================================================
 
-// ── Density custom properties ──────────���────────────────────────────────────
+// ── Density custom properties ─────────────────────────────────────────────
 // Set --mar-treeview-density on the container or ancestor to switch sizes.
 // The Size parameter on MariloTreeView maps "sm"/"lg" to inline font-size;
 // these selectors hook that plus an explicit CSS-class alternative.
@@ -20,7 +20,7 @@
   --mar-treeview-line-height: var(--marilo-line-height-md, 20px);
 }
 
-// ── Container ────────────────���──────────────────────────────────────────────
+// ── Container ───────────────────────────────────────────────────────────────
 
 .mar-treeview {
   list-style: none;
@@ -35,7 +35,7 @@
     border-radius: var(--marilo-radius-sm);
   }
 
-  // ── Density: small ────────��───────────────────────────────────────────
+  // ── Density: small ────────────────────────────────────────────────────
   &[style*="font-size:sm"],
   &.mar-treeview--sm {
     --mar-treeview-item-padding-y: 1px;
@@ -67,7 +67,7 @@
   margin: 0;
 }
 
-// ── Tree Item (li) ─────────────��────────────────────────────────────────────
+// ── Tree Item (li) ──────────────────────────────────────────────────────────
 
 .mar-tree-item {
   padding: 0;
@@ -136,7 +136,7 @@
   background: var(--marilo-color-primary-light);
 }
 
-// ── VP-014: Toggle button ───────────────��───────────────────────────────────
+// ── VP-014: Toggle button ───────────────────────────────────────────────────
 
 .mar-tree-item__toggle {
   display: flex;
@@ -163,7 +163,7 @@
   opacity: 0.4;
 }
 
-// ─�� VP-008: Checkbox styling ────────────────────────────────────────────────
+// ── VP-008: Checkbox styling ────────────────────────────────────────────────
 
 .mar-tree-item__checkbox {
   flex-shrink: 0;
@@ -183,7 +183,7 @@
   opacity: 0.7;
 }
 
-// ── VP-010: Icon alignment ───────��──────────────────────────────────────────
+// ── VP-010: Icon alignment ──────────────────────────────────────────────────
 
 .mar-tree-item__icon {
   display: inline-flex;
@@ -196,7 +196,7 @@
   transition: color var(--marilo-transition-fast);
 }
 
-// ── VP-011: Title typography ──────────��─────────────────────────────────────
+// ── VP-011: Title typography ────────────────────────────────────────────────
 
 .mar-tree-item__title {
   flex: 1 1 auto;
@@ -218,7 +218,7 @@ a.mar-tree-item__title {
   }
 }
 
-// ── Inline edit input ───────────────────────────────────────���───────────────
+// ── Inline edit input ───────────────────────────────────────────────────────
 
 .mar-tree-item__edit-input {
   flex: 1 1 auto;
@@ -237,7 +237,7 @@ a.mar-tree-item__title {
   }
 }
 
-// ── Loading indicator ──────────────────────────────────────��────────────────
+// ── Loading indicator ───────────────────────────────────────────────────────
 
 .mar-tree-item__loading {
   padding: var(--marilo-space-xs) var(--marilo-space-sm);
@@ -255,7 +255,7 @@ a.mar-tree-item__title {
   margin: 0;
 }
 
-// ── VP-009: Dark mode overrides ──────────────���──────────────────────────────
+// ── VP-009: Dark mode overrides ─────────────────────────────────────────────
 
 [data-marilo-theme="dark"] {
   .mar-tree-item--selected > .mar-tree-item__header {

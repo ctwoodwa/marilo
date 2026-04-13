@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Components.Rendering;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.Web.Virtualization;
 
+#pragma warning disable ASP0006 // seq++ is intentional in manual RenderTreeBuilder code — each render fragment builds a complete tree from scratch
+
 namespace Marilo.Components.DataGrid;
 
 public partial class MariloTreeList<TItem> : MariloComponentBase, IColumnHost, ITreeListEditController

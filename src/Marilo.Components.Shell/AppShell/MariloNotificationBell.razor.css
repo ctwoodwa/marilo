@@ -13,7 +13,7 @@
     --mnb-width: 340px;
 
     position: relative;
-    display: contents;
+    display: block;
 }
 
 :global([data-marilo-theme="dark"]) .mar-notifbell {
@@ -27,6 +27,7 @@
 
 .mar-notifbell__scrim {
     position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
     inset: 0;
     background: transparent;
     z-index: 60;

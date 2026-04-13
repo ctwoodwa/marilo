@@ -1,9 +1,49 @@
 // =============================================================================
 // Patterns: Field Base
-// Shared input field chrome used by TextField, TextArea, Select
+// Cross-browser form control normalization for Marilo components.
+//
+// Scoped to .mar-* containers so it does not leak into consumer markup.
+// Addresses Firefox/Safari differences: line-height, font inheritance,
+// ::-moz-focus-inner padding, appearance, and box-sizing.
 // =============================================================================
 
-// The shared input chrome is applied per-component in components/_text-field.scss,
-// components/_text-area.scss, and components/_select.scss.
-// Extraction into a shared mixin is deferred until a second provider (Bootstrap/Material)
-// needs parity — at that point, lift to a @mixin marilo-field-base here.
+// Firefox adds 2px padding + 1px border inside <button> via ::-moz-focus-inner.
+// This inflates button dimensions and breaks flex alignment in toolbars/headers.
+[class^="mar-"] button::-moz-focus-inner,
+[class*=" mar-"] button::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+
+// Normalize form controls inside Marilo component containers.
+// Ensures consistent height, font metrics, and box model across browsers.
+[class^="mar-"] input,
+[class^="mar-"] select,
+[class^="mar-"] textarea,
+[class^="mar-"] button,
+[class*=" mar-"] input,
+[class*=" mar-"] select,
+[class*=" mar-"] textarea,
+[class*=" mar-"] button {
+  font: inherit;
+  line-height: var(--marilo-line-height-base, 1.5);
+  box-sizing: border-box;
+  margin: 0;
+}
+
+// Search inputs: suppress platform-native clear/cancel controls that
+// interfere with the Marilo clear button. Also reset appearance for Firefox.
+[class^="mar-"] input[type="search"],
+[class*=" mar-"] input[type="search"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  &::-webkit-search-decoration,
+  &::-webkit-search-cancel-button,
+  &::-webkit-search-results-button,
+  &::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+    display: none;
+  }
+}

@@ -259,7 +259,7 @@
         if (pane != null)
         {
             pane.IsCurrentlyFloating = false;
-            UnregisterPane(pane);
+            await UnregisterPane(pane);
         }
         if (id != null) await OnPaneClosed.InvokeAsync(id);
     }
@@ -305,7 +305,7 @@
                 // Cross-pane move: move source pane into target's tab group
                 var sourceGroupId = sourcePane.TabGroupId;
                 var targetGroupId = targetPane.TabGroupId;
-                sourcePane.TabGroupId = targetGroupId;
+                sourcePane.SetTabGroupId(targetGroupId);
 
                 // Activate the moved pane in its new group
                 _activeId = _dragSourcePaneId;
