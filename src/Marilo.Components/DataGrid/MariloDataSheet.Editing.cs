@@ -99,6 +99,20 @@ public partial class MariloDataSheet<TItem>
         }
     }
 
+    // ── Cell Double-Click Handler (SA-09) ──────────────────────────────
+
+    internal void OnCellDoubleClick(TItem row, string field)
+    {
+        var column = _columns.FirstOrDefault(c => c.Field == field);
+        if (column is null) return;
+
+        if (column.ColumnType == DataSheetColumnType.Computed || !column.Editable)
+            return;
+
+        ActivateCell(row, field);
+        EnterEditMode(row, field);
+    }
+
     // ── Cell Value Commit ──────────────────────────────────────────────
 
     internal async Task OnCellValueCommit(TItem row, string field, object? newValue)
