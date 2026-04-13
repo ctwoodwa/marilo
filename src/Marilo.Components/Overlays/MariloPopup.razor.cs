@@ -1,3 +1,4 @@
+using Marilo.Core.Base;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
@@ -8,7 +9,7 @@ namespace Marilo.Components.Overlays;
 /// Lightweight anchor-positioned popup for filter menus, column choosers, and popup edit forms.
 /// Intermediate between MariloPopover (tooltip-like) and MariloDialog (full-screen modal).
 /// </summary>
-public partial class MariloPopup : IAsyncDisposable
+public partial class MariloPopup : MariloComponentBase, IAsyncDisposable
 {
     // ── Fields ──────────────────────────────────────────────────────────
 
