@@ -118,9 +118,106 @@
     </DemoSection>
 </PageSection>
 
+<PageSection Title="Resources">
+    <DemoSection Title="Grouped Day View with Resources"
+                 Description="Set GroupByResource=true with a Resources collection and ResourceIdField to group appointments into per-resource columns. Each resource gets its own column in Day view."
+                 Code="@_resourceDayCode">
+        <div class="demo-row">
+            <MariloScheduler Appointments="@_resourceAppointments"
+                             CurrentDate="@_currentDate"
+                             View="SchedulerView.Day"
+                             StartHour="8"
+                             EndHour="18"
+                             Resources="@_resources"
+                             ResourceIdField="ResourceId"
+                             GroupByResource="true"
+                             Style="height:500px;" />
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Grouped Week View with Resources"
+                 Description="In Week view, GroupByResource renders each resource as a separate row-band with its own 7-day time grid."
+                 Code="@_resourceWeekCode">
+        <div class="demo-row">
+            <MariloScheduler Appointments="@_resourceAppointments"
+                             CurrentDate="@_currentDate"
+                             View="SchedulerView.Week"
+                             StartHour="8"
+                             EndHour="18"
+                             Resources="@_resources"
+                             ResourceIdField="ResourceId"
+                             GroupByResource="true"
+                             Style="height:600px;" />
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Multi-Day, Timeline, and Agenda Views">
+    <DemoSection Title="Multi-Day View"
+                 Description="The MultiDay view shows a configurable number of day columns with hourly time slots. Set NumberOfDays to control how many days are visible. Navigation moves by that number of days."
+                 Code="@_multiDayCode">
+        <div class="demo-row">
+            <MariloScheduler Appointments="@_sampleAppointments"
+                             CurrentDate="@_currentDate"
+                             View="SchedulerView.MultiDay"
+                             Height="500px">
+                <SchedulerMultiDayView NumberOfDays="4"
+                                       StartTime="TimeSpan.FromHours(7)"
+                                       EndTime="TimeSpan.FromHours(20)" />
+            </MariloScheduler>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Timeline View"
+                 Description="The Timeline view renders time horizontally. Each row is a day. Appointments appear as horizontal bars spanning their time range. Configure SlotDuration to control granularity."
+                 Code="@_timelineCode">
+        <div class="demo-row">
+            <MariloScheduler Appointments="@_sampleAppointments"
+                             CurrentDate="@_currentDate"
+                             View="SchedulerView.Timeline"
+                             Height="300px">
+                <SchedulerTimelineView StartTime="TimeSpan.FromHours(8)"
+                                       EndTime="TimeSpan.FromHours(18)"
+                                       SlotDuration="TimeSpan.FromMinutes(30)"
+                                       NumberOfDays="3" />
+            </MariloScheduler>
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Agenda View"
+                 Description="The Agenda view shows a flat chronological list of appointments grouped by date. Set NumberOfDays to control the range."
+                 Code="@_agendaCode">
+        <div class="demo-row">
+            <MariloScheduler Appointments="@_sampleAppointments"
+                             CurrentDate="@_currentDate"
+                             View="SchedulerView.Agenda"
+                             Height="400px">
+                <SchedulerAgendaView NumberOfDays="14" />
+            </MariloScheduler>
+        </div>
+    </DemoSection>
+</PageSection>
+
 <PageSection Title="Editing">
-    <DemoSection Title="CRUD Editing"
-                 Description="Set Editable to true to allow double-click editing. Handle OnUpdate and OnDelete to respond to user changes. The component is fully controlled -- update your data in the handler."
+    <DemoSection Title="Popup Edit (Default)"
+                 Description="Double-click an appointment to open a modal popup with Title, Start, End, All Day, Description, and Resource fields. EditMode defaults to Popup."
+                 Code="@_editPopupCode">
+        <div class="demo-row">
+            <p><strong>Last edit action:</strong> @_editAction</p>
+            <MariloScheduler Appointments="@_editableAppointments"
+                             CurrentDate="@_currentDate"
+                             View="SchedulerView.Month"
+                             Editable="true"
+                             EditMode="SchedulerEditMode.Popup"
+                             OnUpdate="@HandleUpdate"
+                             OnDelete="@HandleDelete"
+                             OnCancel="@HandleCancel"
+                             Style="height:500px;" />
+        </div>
+    </DemoSection>
+
+    <DemoSection Title="Inline Edit"
+                 Description="Set EditMode to Inline to use the compact inline edit form at the bottom of the scheduler."
                  Code="@_editCode">
         <div class="demo-row">
             <p><strong>Last edit action:</strong> @_editAction</p>
@@ -128,6 +225,7 @@
                              CurrentDate="@_currentDate"
                              View="SchedulerView.Month"
                              Editable="true"
+                             EditMode="SchedulerEditMode.Inline"
                              OnUpdate="@HandleUpdate"
                              OnDelete="@HandleDelete"
                              Style="height:500px;" />
@@ -155,6 +253,21 @@
                     </div>
                 </AppointmentTemplate>
             </MariloScheduler>
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Accessibility">
+    <DemoSection Title="Custom CSS Class and Sizing"
+                 Description="Use Class to add custom CSS classes and Height/Width for sizing. The root element is a semantic div with class mar-scheduler. Toolbar buttons are native button elements accessible via keyboard Tab/Enter."
+                 Code="@_a11yCode">
+        <div class="demo-row">
+            <MariloScheduler Appointments="@_sampleAppointments"
+                             CurrentDate="@_currentDate"
+                             View="SchedulerView.Month"
+                             Class="my-scheduler-custom"
+                             Height="400px"
+                             Width="100%" />
         </div>
     </DemoSection>
 </PageSection>
@@ -214,6 +327,28 @@
         }
     };
 
+    // Resource demo data
+    private static readonly List<SchedulerResource> _resources = new()
+    {
+        new() { Id = "room-a", Text = "Room A", Color = "#0078d4" },
+        new() { Id = "room-b", Text = "Room B", Color = "#107c10" },
+        new() { Id = "room-c", Text = "Room C", Color = "#d83b01" }
+    };
+
+    private static readonly List<SchedulerAppointment> _resourceAppointments = new()
+    {
+        new ResourcedSchedulerAppointment { Title = "Sprint Planning", Start = new DateTime(2026, 4, 13, 9, 0, 0), End = new DateTime(2026, 4, 13, 11, 0, 0), ResourceId = "room-a" },
+        new ResourcedSchedulerAppointment { Title = "Design Review", Start = new DateTime(2026, 4, 14, 14, 0, 0), End = new DateTime(2026, 4, 14, 15, 30, 0), ResourceId = "room-b" },
+        new ResourcedSchedulerAppointment { Title = "Team Standup", Start = new DateTime(2026, 4, 13, 9, 30, 0), End = new DateTime(2026, 4, 13, 9, 45, 0), ResourceId = "room-c" },
+        new ResourcedSchedulerAppointment { Title = "Client Demo", Start = new DateTime(2026, 4, 15, 13, 0, 0), End = new DateTime(2026, 4, 15, 14, 0, 0), ResourceId = "room-a" },
+        new ResourcedSchedulerAppointment { Title = "1:1 Meeting", Start = new DateTime(2026, 4, 13, 14, 0, 0), End = new DateTime(2026, 4, 13, 14, 30, 0), ResourceId = "room-b" }
+    };
+
+    private class ResourcedSchedulerAppointment : SchedulerAppointment
+    {
+        public string ResourceId { get; set; } = string.Empty;
+    }
+
     private void HandleAppointmentClick(SchedulerAppointment appt)
     {
         _lastAction = $"Clicked appointment: {appt.Title} ({appt.Start:HH:mm} - {appt.End:HH:mm})";
@@ -253,6 +388,11 @@
     {
         _editableAppointments.RemoveAll(a => a.Id == deleted.Id);
         _editAction = $"Deleted: {deleted.Title}";
+    }
+
+    private void HandleCancel()
+    {
+        _editAction = "Edit cancelled";
     }
 
     private const string _monthCode = @"<MariloScheduler Appointments=""@_appointments""
@@ -312,10 +452,21 @@
                        FirstDayOfWeek=""DayOfWeek.Monday"" />
 </MariloScheduler>";
 
+    private const string _editPopupCode = @"<MariloScheduler Appointments=""@_appointments""
+                 CurrentDate=""@_currentDate""
+                 View=""SchedulerView.Month""
+                 Editable=""true""
+                 EditMode=""SchedulerEditMode.Popup""
+                 OnUpdate=""@HandleUpdate""
+                 OnDelete=""@HandleDelete""
+                 OnCancel=""@HandleCancel""
+                 Style=""height:500px;"" />";
+
     private const string _editCode = @"<MariloScheduler Appointments=""@_appointments""
                  CurrentDate=""@_currentDate""
                  View=""SchedulerView.Month""
                  Editable=""true""
+                 EditMode=""SchedulerEditMode.Inline""
                  OnUpdate=""@HandleUpdate""
                  OnDelete=""@HandleDelete""
                  Style=""height:500px;"" />";
@@ -330,4 +481,55 @@
         </div>
     </AppointmentTemplate>
 </MariloScheduler>";
+
+    private const string _multiDayCode = @"<MariloScheduler Appointments=""@_appointments""
+                 CurrentDate=""@_currentDate""
+                 View=""SchedulerView.MultiDay""
+                 Height=""500px"">
+    <SchedulerMultiDayView NumberOfDays=""4""
+                           StartTime=""TimeSpan.FromHours(7)""
+                           EndTime=""TimeSpan.FromHours(20)"" />
+</MariloScheduler>";
+
+    private const string _timelineCode = @"<MariloScheduler Appointments=""@_appointments""
+                 CurrentDate=""@_currentDate""
+                 View=""SchedulerView.Timeline""
+                 Height=""300px"">
+    <SchedulerTimelineView StartTime=""TimeSpan.FromHours(8)""
+                           EndTime=""TimeSpan.FromHours(18)""
+                           SlotDuration=""TimeSpan.FromMinutes(30)""
+                           NumberOfDays=""3"" />
+</MariloScheduler>";
+
+    private const string _agendaCode = @"<MariloScheduler Appointments=""@_appointments""
+                 CurrentDate=""@_currentDate""
+                 View=""SchedulerView.Agenda""
+                 Height=""400px"">
+    <SchedulerAgendaView NumberOfDays=""14"" />
+</MariloScheduler>";
+
+    private const string _resourceDayCode = @"<MariloScheduler Appointments=""@_appointments""
+                 CurrentDate=""@_currentDate""
+                 View=""SchedulerView.Day""
+                 StartHour=""8"" EndHour=""18""
+                 Resources=""@_resources""
+                 ResourceIdField=""ResourceId""
+                 GroupByResource=""true""
+                 Style=""height:500px;"" />";
+
+    private const string _resourceWeekCode = @"<MariloScheduler Appointments=""@_appointments""
+                 CurrentDate=""@_currentDate""
+                 View=""SchedulerView.Week""
+                 StartHour=""8"" EndHour=""18""
+                 Resources=""@_resources""
+                 ResourceIdField=""ResourceId""
+                 GroupByResource=""true""
+                 Style=""height:600px;"" />";
+
+    private const string _a11yCode = @"<MariloScheduler Appointments=""@_appointments""
+                 CurrentDate=""@_currentDate""
+                 View=""SchedulerView.Month""
+                 Class=""my-scheduler-custom""
+                 Height=""400px""
+                 Width=""100%"" />";
 }

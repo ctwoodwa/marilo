@@ -10,7 +10,27 @@ components: ["scheduler"]
 ---
 # Scheduler Resources
 
+> **Implementation status:** v1 implemented. The `Resources`, `ResourceIdField`, and `GroupByResource` parameters are available on `MariloScheduler`. Resource grouping is supported in Day, Week, and Month views.
+
 The Scheduler lets you associate appointments with a shared resource (such as meeting rooms, people, pieces of equipment) and shows the appointment in the corresponding color. You can also use resources to separate events into different calendars (e.g., work and personal events) through their colors.
+
+## Implemented Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `Resources` | `IEnumerable<SchedulerResource>?` | `null` | Collection of resources. Each has `Id` (object), `Text` (string), `Color` (string?). |
+| `ResourceIdField` | `string?` | `null` | Property name on the appointment that holds the resource ID. Uses reflection to read the value. |
+| `GroupByResource` | `bool` | `false` | When `true` and `Resources` is provided, views group appointments by resource. |
+
+### Grouped Rendering Behavior
+
+- **Day view**: One column per resource. Column header shows resource `Text`.
+- **Week view**: One row-band per resource. Each band has its own 7-day time grid. Resource label on the left.
+- **Month view**: One row-band per resource. Each band has its own month calendar grid. Resource label on the left.
+
+### Non-Grouped Rendering
+
+When `GroupByResource=false` but `Resources` is set, the layout is unchanged. Resource `Color` is applied as a fallback background color on appointments that don't have their own `Color` set.
 
 This article contains the following sections
 

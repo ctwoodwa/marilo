@@ -12,3 +12,12 @@ public interface ISchedulerViewHost
     /// <summary>Unregisters a view configuration component from this scheduler.</summary>
     void UnregisterView(SchedulerViewBase view);
 }
+
+/// <summary>
+/// Internal interface that allows <see cref="SchedulerToolbar"/> to register with its parent scheduler.
+/// </summary>
+internal interface ISchedulerToolbarHost
+{
+    void RegisterToolbar(SchedulerToolbar toolbar);
+    void UnregisterToolbar(SchedulerToolbar toolbar);
+}
