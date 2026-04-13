@@ -19,7 +19,7 @@
         @if (AllowAddRow)
         {
             <button type="button"
-                    class="mar-datasheet__add-btn"
+                    class="@CssProvider.DataSheetAddButtonClass()"
                     aria-label="Add row"
                     @onclick="AddRowAsync">
                 + Add Row
@@ -28,25 +28,25 @@
 
         @if (_dirtyRows.Count > 0)
         {
-            <span class="mar-datasheet__dirty-badge" aria-live="polite">
+            <span class="@CssProvider.DataSheetDirtyBadgeClass()" aria-live="polite">
                 @_dirtyRows.Count(kv => !kv.Value.IsDeleted && kv.Value.DirtyFields.Count > 0) unsaved changes
             </span>
         }
 
         <button type="button"
-                class="mar-datasheet__save-btn"
+                class="@CssProvider.DataSheetSaveButtonClass()"
                 disabled="@(IsSaving || _dirtyRows.Count == 0)"
                 aria-label="Save all changes"
                 @onclick="SaveAllAsync">
             @if (IsSaving)
             {
-                <span class="mar-datasheet__spinner" role="status" aria-label="Saving"></span>
+                <span class="@CssProvider.DataSheetSpinnerClass()" role="status" aria-label="Saving"></span>
             }
             Save All
         </button>
 
         <button type="button"
-                class="mar-datasheet__reset-btn"
+                class="@CssProvider.DataSheetResetButtonClass()"
                 disabled="@(_dirtyRows.Count == 0)"
                 aria-label="Reset all changes"
                 @onclick="ResetAsync">
@@ -77,22 +77,22 @@
     @* Loading skeleton *@
     @if (IsLoading)
     {
-        <div class="mar-datasheet__skeleton" aria-live="polite" role="status">
+        <div class="@CssProvider.DataSheetSkeletonClass()" aria-live="polite" role="status">
             @for (var s = 0; s < 5; s++)
             {
-                <div class="mar-datasheet__skeleton-row" aria-hidden="true">
+                <div class="@CssProvider.DataSheetSkeletonRowClass()" aria-hidden="true">
                     @for (var sc = 0; sc < Math.Max(_columns.Count, 3); sc++)
                     {
-                        <div class="mar-datasheet__skeleton-cell"></div>
+                        <div class="@CssProvider.DataSheetSkeletonCellClass()"></div>
                     }
                 </div>
             }
-            <span class="mar-datasheet__loading-text">Loading…</span>
+            <span class="@CssProvider.DataSheetLoadingTextClass()">Loading…</span>
         </div>
     }
     else
     {
-        <div class="mar-datasheet__content" style="@_contentStyle">
+        <div class="@CssProvider.DataSheetContentClass()" style="@_contentStyle">
             <table>
                 @* Header *@
                 <thead>
@@ -102,7 +102,7 @@
                     <tr role="row" aria-rowindex="1">
                         @if (AllowDeleteRow)
                         {
-                            <th class="mar-datasheet__select-header"
+                            <th class="@CssProvider.DataSheetSelectHeaderClass()"
                                 role="columnheader"
                                 aria-colindex="@(headerColIndex++)"
                                 style="width:40px;">
@@ -126,7 +126,7 @@
                         }
                         @if (AllowDeleteRow)
                         {
-                            <th class="mar-datasheet__actions-header"
+                            <th class="@CssProvider.DataSheetActionsHeaderClass()"
                                 role="columnheader"
                                 aria-colindex="@(headerColIndex++)"
                                 style="width:60px;"></th>
@@ -139,7 +139,7 @@
                     @if (_displayRows.Count == 0)
                     {
                         <tr role="row">
-                            <td colspan="@_totalColumnCount" role="gridcell" class="mar-datasheet__empty">
+                            <td colspan="@_totalColumnCount" role="gridcell" class="@CssProvider.DataSheetEmptyClass()">
                                 @EmptyStateMessage
                             </td>
                         </tr>
@@ -171,7 +171,7 @@
     </div>
 
     @* Aria-live region for announcements *@
-    <div aria-live="polite" role="status" class="mar-datasheet__aria-live">
+    <div aria-live="polite" role="status" class="@CssProvider.DataSheetAriaLiveClass()">
         @_ariaAnnouncement
     </div>
 </div>

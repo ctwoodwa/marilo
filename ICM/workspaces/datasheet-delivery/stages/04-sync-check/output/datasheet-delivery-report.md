@@ -305,6 +305,71 @@ Per Wave 3 parity summary "Primary remediation lanes":
 
 ---
 
+## Wave 5 Update — 2026-04-11 (gifted-swanson delivery pass)
+
+**Executed by:** single-session worker (claude/gifted-swanson worktree)
+**Build result:** `dotnet build Marilo.slnx` — **Build succeeded. 0 Warning(s). 0 Error(s).** Elapsed ~17s.
+
+### Spec items now fixed
+
+| Gap ID | Area | What changed |
+|--------|------|-------------|
+| SA-07 | `bulk-paste-and-clipboard.md:91` | "current culture" → "InvariantCulture (matches the invariant round-trip used by `data-raw-value`)" |
+| SA-11 | `editing-and-validation.md:139` | Validation short-circuit wording corrected — required check is evaluated first; if it fails, Validate delegate is not invoked |
+| SA-12 | `editing-and-validation.md:193` | Dirty count "does not include invalid-only rows" replaced with accurate description — count includes all rows with uncommitted changes including dirty+invalid |
+| NM-01 | `overview.md:122-123` | `Class`/`Style` parameter table rows updated to note they are inherited from `MariloComponentBase` via `AdditionalAttributes`, not explicit `[Parameter]` on `MariloDataSheet<TItem>` |
+| SRC-01 | `virtualization-and-performance.md:77` | Viewport-calculated skeleton count replaced with "fixed number of skeleton rows (currently 5)" |
+
+### Source items now fixed
+
+| Gap ID | Source file | What changed |
+|--------|-------------|-------------|
+| SA-01 | `MariloDataSheet.razor:6-14` | Added `tabindex="0"` to root `role="grid"` element |
+| SA-03 | `MariloDataSheet.razor.cs AddRowAsync` | Added `ActivateCell(newItem, firstEditableColumn.Field)` after insert |
+| SA-04 | `MariloDataSheet.Data.cs ResetAsync` | Added `_undoBuffer.Clear()` after `_dirtyRows.Clear()` |
+| SA-08 | `MariloDataSheet.Editing.cs PasteFromClipboard` | Added `IsSaving` guard at top of method |
+| SA-09 | `MariloDataSheet.Rendering.cs` + `MariloDataSheet.Editing.cs` | Added `ondblclick` → `OnCellDoubleClick` which calls `EnterEditMode` directly |
+| SA-13 | `MariloDataSheet.Data.cs SaveAllAsync` + `CommitCellEdit` | Added "Saving changes" at save start; "Save failed. {N} validation error(s)." at save-blocked path; "{N} cells have errors" after CommitCellEdit when validation errors exist |
+| SA-14 | `MariloDataSheet.Data.cs RunColumnValidation` | Added zero-default check for non-nullable numeric types when `Required=true` |
+| SA-15 | `MariloDataSheet.Data.cs RunColumnValidation` | Added `DateTime.MinValue` check for Date columns when `Required=true` |
+
+### Items that remain blocked
+
+| Gap ID | Reason |
+|--------|--------|
+| UD-01 `datasheet-theming-architecture` | Open user decision — orchestrator must choose Path A (extend `IMariloCssProvider`) or Path B (narrow spec) |
+| UD-02 `datasheet-10k-rows` | Open user decision — confirm demo cap at 10k vs 5k |
+| V03 | DataSheetSelection\<TItem\> — design complete; implementation is a 3.5-day session |
+| SRC-02 | Hard-coded BEM classes — blocked on UD-01 |
+| SA-02 | AddRowAsync prepend vs. append — blocked on orchestrator arbitration |
+| SA-05 | Saving→Saved cell-state transition — blocked on orchestrator arbitration |
+
+### Updated blocking item count
+
+Previous blocking count: **7 distinct** (UD-01, UD-02, VP-datasheet-01, V03, SA-01, SA-13, no gap workspace)
+
+After Wave 5: **6 distinct remaining**
+
+- SA-01 — **RESOLVED** (tabindex added)
+- SA-13 — **RESOLVED** (all 3 announcements added)
+- Blocking items remaining: UD-01, UD-02, VP-datasheet-01 (still gated on UD-01), V03, no bUnit coverage audit (gap workspace now bootstrapped at Stage 01, coverage-summary.md exists)
+
+The "no datasheet-gap-analysis workspace" checklist failure (items 3.1/3.3/3.5/5.1) is partially resolved: the workspace stage 01 intake document now exists. Items 3.1 (bUnit per-parameter coverage) and 3.5 (Tests Passing = YES) remain BLOCKED pending a bUnit coverage audit pass.
+
+### Revised gate verdict (post-Wave-5)
+
+| Section | Previous | Post-Wave-5 |
+|---------|----------|-------------|
+| 1. API Spec | BLOCKED | BLOCKED (V03, SRC-02 remain) |
+| 2. Example UX | AMBER-leaning-BLOCKED | AMBER-leaning-BLOCKED (unchanged) |
+| 3. Source and Tests | BLOCKED | BLOCKED (bUnit audit still pending) |
+| 4. Visual Parity | BLOCKED | BLOCKED (UD-01 still open) |
+| 5. Alignment | BLOCKED | AMBER (gap workspace Stage 01 now exists) |
+
+**Overall: BLOCKED** — dominant remaining blockers are UD-01 (theming architecture) and V03 (range selection implementation).
+
+---
+
 ## _config update
 
 `_config/delivery-context.md` is updated in this same turn to reflect the

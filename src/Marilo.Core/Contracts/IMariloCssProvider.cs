@@ -171,6 +171,27 @@ public interface IMariloCssProvider
     string DataSheetToolbarClass();
     string DataSheetBulkBarClass(bool isVisible);
     string DataSheetSaveFooterClass(int dirtyCount);
+    string DataSheetAddButtonClass();
+    string DataSheetSaveButtonClass();
+    string DataSheetResetButtonClass();
+    string DataSheetSpinnerClass();
+    string DataSheetDirtyBadgeClass();
+    string DataSheetSkeletonClass();
+    string DataSheetSkeletonRowClass();
+    string DataSheetSkeletonCellClass();
+    string DataSheetLoadingTextClass();
+    string DataSheetEmptyClass();
+    string DataSheetSelectHeaderClass();
+    string DataSheetActionsHeaderClass();
+    string DataSheetAriaLiveClass();
+    string DataSheetSelectCellClass();
+    string DataSheetActionsCellClass();
+    string DataSheetDeleteButtonClass();
+    string DataSheetCellTextClass();
+    string DataSheetEditorInputClass();
+    string DataSheetEditorSelectClass();
+    string DataSheetContentClass();
+    string DataSheetScreenReaderOnlyClass();
 
     // ── ListView ────────────────────────────────────────────────────────
     string ListViewClass();

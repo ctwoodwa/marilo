@@ -20,7 +20,13 @@ The Grid component supports row and cell selection. When you select a row or a c
 
 ## Enable Row or Cell Selection
 
-You can configure the Grid either for row or cell selection. See [Rows Selection Basics](slug:grid-selection-row#basics) and [Cells Selection Basics](slug:grid-selection-cell#basics) for more details and examples.
+You can configure the Grid either for row or cell selection using the `SelectionUnit` parameter:
+
+| Parameter | Type | Default | Description |
+| --- | --- | --- | --- |
+| `SelectionUnit` | `GridSelectionUnit` enum | `Row` | Controls whether clicks select rows or individual cells. Set to `GridSelectionUnit.Cell` to enable cell selection. |
+
+See [Rows Selection Basics](slug:grid-selection-row#basics) and [Cells Selection Basics](slug:grid-selection-cell#basics) for more details and examples.
 
 ## Use Single or Multiple Selection
 
@@ -34,8 +40,8 @@ You can configure the selection behavior by setting the Grid `SelectionMode` par
 
 The Grid exposes two parameters to get or set its selected rows and cells.
 
-* Use the `SelectedItems` parameter (`IEnumerable<T>`) to access the selected rows.
-* Use the `SelectedCells` parameter (`IEnumerable<GridSelectedCellDescriptor>`) to access the selected cells.
+* Use the `SelectedItems` parameter (`IEnumerable<TItem>`) to access the selected rows.
+* Use the `SelectedCells` parameter (`IEnumerable<GridCellReference<TItem>>`) to access the selected cells. See [`GridCellReference`](slug:grid-selection-cell#gridcellreference) for the type's properties.
 
 Both parameters support two-way binding. You can also use the parameters to pre-select rows or cells for your users.
 

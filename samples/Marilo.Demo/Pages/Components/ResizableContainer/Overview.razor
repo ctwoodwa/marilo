@@ -169,6 +169,47 @@
     </DemoSection>
 </PageSection>
 
+<PageSection Title="Disabled State">
+    <DemoSection Title="Disabled State"
+                 Description="Enabled=&quot;false&quot; prevents resize via drag, keyboard, and SetSizeAsync. The handle renders but is visually inert. Use to lock dimensions at runtime."
+                 Code="@_disabledCode">
+        <MariloResizableContainer @bind-Width="_disabledWidth" @bind-Height="_disabledHeight"
+                                  Enabled="@_disabledEnabled"
+                                  MinWidth="200px" MinHeight="120px">
+            <div style="padding: 1rem; height: 100%;">
+                <p>Resize is currently <strong>@(_disabledEnabled ? "enabled" : "disabled")</strong>.</p>
+                <p>Size: @_disabledWidth × @_disabledHeight</p>
+            </div>
+        </MariloResizableContainer>
+        <div style="margin-top: 0.75rem;">
+            <button @onclick="ToggleEnabled"
+                    style="padding: 0.4rem 1rem; cursor: pointer;">
+                @(_disabledEnabled ? "Lock (disable resize)" : "Unlock (enable resize)")
+            </button>
+        </div>
+    </DemoSection>
+</PageSection>
+
+<PageSection Title="Programmatic Control">
+    <DemoSection Title="Programmatic Control"
+                 Description="SetSizeAsync, ResetSizeAsync, and FocusHandleAsync allow external code to drive resize."
+                 Code="@_programmaticCode">
+        <MariloResizableContainer @ref="_programmaticRef"
+                                  @bind-Width="_programmaticWidth" @bind-Height="_programmaticHeight"
+                                  MinWidth="150px" MinHeight="100px">
+            <div style="padding: 1rem;">
+                <p>Size: @_programmaticWidth × @_programmaticHeight</p>
+                <p>Use the buttons below to control this container programmatically.</p>
+            </div>
+        </MariloResizableContainer>
+        <div style="margin-top: 0.75rem; display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button @onclick="SetSize400x300" style="padding: 0.4rem 1rem; cursor: pointer;">Set 400×300</button>
+            <button @onclick="ResetSize" style="padding: 0.4rem 1rem; cursor: pointer;">Reset to initial</button>
+            <button @onclick="FocusHandle" style="padding: 0.4rem 1rem; cursor: pointer;">Focus handle</button>
+        </div>
+    </DemoSection>
+</PageSection>
+
 <PageSection Title="Usage Guidance">
     <div style="padding: 1rem; border: 1px solid #e0e0e0; border-radius: 6px; background: #fafafa;">
         <h4>When to use MariloResizableContainer</h4>
@@ -265,6 +306,22 @@
         return Task.CompletedTask;
     }
 
+    // ── Disabled demo state ──
+    private bool _disabledEnabled = true;
+    private string _disabledWidth = "400px";
+    private string _disabledHeight = "200px";
+
+    private void ToggleEnabled() => _disabledEnabled = !_disabledEnabled;
+
+    // ── Programmatic control demo state ──
+    private MariloResizableContainer _programmaticRef = default!;
+    private string _programmaticWidth = "300px";
+    private string _programmaticHeight = "200px";
+
+    private async Task SetSize400x300() => await _programmaticRef.SetSizeAsync("400px", "300px");
+    private async Task ResetSize() => await _programmaticRef.ResetSizeAsync();
+    private async Task FocusHandle() => await _programmaticRef.FocusHandleAsync();
+
     // ── Code samples ──
     private const string _basicCode = @"<MariloResizableContainer Width=""400px"" Height=""250px""
                           MinWidth=""200px"" MinHeight=""120px""
@@ -340,4 +397,40 @@
         Size is saved to localStorage and restored on reload.
     </div>
 </MariloResizableContainer>";
+
+    private const string _disabledCode = @"<MariloResizableContainer @bind-Width=""_width"" @bind-Height=""_height""
+                          Enabled=""@_enabled""
+                          MinWidth=""200px"" MinHeight=""120px"">
+    <div style=""padding: 1rem;"">
+        <p>Resize is currently @(_enabled ? ""enabled"" : ""disabled"").</p>
+    </div>
+</MariloResizableContainer>
+<button @onclick=""() => _enabled = !_enabled"">
+    @(_enabled ? ""Lock"" : ""Unlock"")
+</button>
+
+@code {
+    private bool _enabled = true;
+    private string _width = ""400px"";
+    private string _height = ""200px"";
+}";
+
+    private const string _programmaticCode = @"<MariloResizableContainer @ref=""_ref""
+                          @bind-Width=""_width"" @bind-Height=""_height""
+                          Width=""300px"" Height=""200px""
+                          MinWidth=""150px"" MinHeight=""100px"">
+    <div style=""padding: 1rem;"">
+        <p>Size: @_width × @_height</p>
+    </div>
+</MariloResizableContainer>
+
+<button @onclick=""async () => await _ref.SetSizeAsync(&quot;400px&quot;, &quot;300px&quot;)"">Set 400×300</button>
+<button @onclick=""async () => await _ref.ResetSizeAsync()"">Reset to initial</button>
+<button @onclick=""async () => await _ref.FocusHandleAsync()"">Focus handle</button>
+
+@code {
+    private MariloResizableContainer _ref = default!;
+    private string _width = ""300px"";
+    private string _height = ""200px"";
+}";
 }

@@ -35,6 +35,8 @@ The Data Grid part is a single tab stop component. When the Data Grid gains focu
 
 ## Default Keys
 
+> **Note:** Full keyboard navigation is planned for a future release. The shortcuts listed below describe the target behavior. The `Navigable` parameter is accepted by the component but does not yet enable keyboard grid traversal — there is currently no `onkeydown` handler wired in the Grid source. The `CustomKeyboardShortcuts` parameter and the `GridKeyboardScope`/`GridKeyboardCommand` enums are similarly planned but not yet implemented.
+
 The following sections list the default built-in keyboard shortcuts and the actions that they perform when a specific Grid area or cell is focused. Also check the [Grid Keyboard Navigation demo](https://demos.marilo.com/blazor-ui/grid/keyboard-navigation).
 
 

@@ -243,6 +243,27 @@ public class ProviderSwitcher : IMariloCssProvider, IMariloIconProvider, IMarilo
     public string DataSheetToolbarClass() => Css.DataSheetToolbarClass();
     public string DataSheetBulkBarClass(bool isVisible) => Css.DataSheetBulkBarClass(isVisible);
     public string DataSheetSaveFooterClass(int dirtyCount) => Css.DataSheetSaveFooterClass(dirtyCount);
+    public string DataSheetAddButtonClass() => Css.DataSheetAddButtonClass();
+    public string DataSheetSaveButtonClass() => Css.DataSheetSaveButtonClass();
+    public string DataSheetResetButtonClass() => Css.DataSheetResetButtonClass();
+    public string DataSheetSpinnerClass() => Css.DataSheetSpinnerClass();
+    public string DataSheetDirtyBadgeClass() => Css.DataSheetDirtyBadgeClass();
+    public string DataSheetSkeletonClass() => Css.DataSheetSkeletonClass();
+    public string DataSheetSkeletonRowClass() => Css.DataSheetSkeletonRowClass();
+    public string DataSheetSkeletonCellClass() => Css.DataSheetSkeletonCellClass();
+    public string DataSheetLoadingTextClass() => Css.DataSheetLoadingTextClass();
+    public string DataSheetEmptyClass() => Css.DataSheetEmptyClass();
+    public string DataSheetSelectHeaderClass() => Css.DataSheetSelectHeaderClass();
+    public string DataSheetActionsHeaderClass() => Css.DataSheetActionsHeaderClass();
+    public string DataSheetAriaLiveClass() => Css.DataSheetAriaLiveClass();
+    public string DataSheetSelectCellClass() => Css.DataSheetSelectCellClass();
+    public string DataSheetActionsCellClass() => Css.DataSheetActionsCellClass();
+    public string DataSheetDeleteButtonClass() => Css.DataSheetDeleteButtonClass();
+    public string DataSheetCellTextClass() => Css.DataSheetCellTextClass();
+    public string DataSheetEditorInputClass() => Css.DataSheetEditorInputClass();
+    public string DataSheetEditorSelectClass() => Css.DataSheetEditorSelectClass();
+    public string DataSheetContentClass() => Css.DataSheetContentClass();
+    public string DataSheetScreenReaderOnlyClass() => Css.DataSheetScreenReaderOnlyClass();
 
     // ── ListView ──
     public string ListViewClass() => Css.ListViewClass();

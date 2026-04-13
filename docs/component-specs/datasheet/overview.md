@@ -119,8 +119,8 @@ The following table lists all MariloDataSheet component-level parameters.
 | `AriaLabel` | `string` | `"Editable data grid"` | Accessible label applied to the `role="grid"` root element. |
 | `ChildContent` | `RenderFragment?` | — | Column definitions via `MariloDataSheetColumn` child components. |
 | `ToolbarTemplate` | `RenderFragment?` | — | Additional toolbar content rendered alongside built-in toolbar actions (filters, custom buttons, etc.). |
-| `Class` | `string?` | `null` | Additional CSS class names appended to the root element. |
-| `Style` | `string?` | `null` | Inline style string appended to the root element. |
+| `Class` | `string?` | `null` | Inherited from `MariloComponentBase`. Pass via HTML attribute syntax (`class="..."`). Not an explicit `[Parameter]` on `MariloDataSheet<TItem>`; applied through `AdditionalAttributes`. |
+| `Style` | `string?` | `null` | Inherited from `MariloComponentBase`. Pass via HTML attribute syntax (`style="..."`). Not an explicit `[Parameter]` on `MariloDataSheet<TItem>`; applied through `AdditionalAttributes`. |
 
 ## Column Parameters
 
