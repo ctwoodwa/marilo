@@ -12,10 +12,12 @@ REPLACEMENTS = [
     ("demos.telerik.com", "demos.marilo.com"),
     ("www.telerik.com/blazor-ui", "www.marilo.com/blazor-ui"),
     ("www.telerik.com", "www.marilo.com"),
-    ("telerik.com", "marilo.com"),
-    # Brand name — capitalized before lowercase to avoid double-replacing
+    ("telerik.com", "marilo.com"),  # intentional substring — no false positives expected in doc sources
+    # Brand name: mixed-case first to prevent the generic lowercase rule
+    # from double-firing on output of the capitalised rule.
     ("Telerik", "Marilo"),
     ("telerik", "marilo"),
+    # All-caps variant: independent of the above (no ordering dependency).
     ("TELERIK", "MARILO"),
 ]
 

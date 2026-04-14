@@ -52,5 +52,21 @@ class TestBrandReplace(unittest.TestCase):
         line = "@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)"
         self.assertEqual(brand_replace(line), line)
 
+    def test_all_caps_telerik(self):
+        self.assertEqual(brand_replace("TELERIK UI"), "MARILO UI")
+
+    def test_idempotent(self):
+        inputs = [
+            "tags: telerik,blazor",
+            "Telerik UI for Blazor",
+            "TELERIK",
+            "https://demos.telerik.com/blazor-ui/chart/overview",
+            "slug:Telerik.Blazor.Components.ChartSeries",
+        ]
+        for text in inputs:
+            with self.subTest(text=text):
+                once = brand_replace(text)
+                self.assertEqual(brand_replace(once), once)
+
 if __name__ == '__main__':
     unittest.main()
