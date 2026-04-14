@@ -24,7 +24,7 @@
 .mar-search-box__icon {
     display: flex;
     align-items: center;
-    padding: 0 var(--marilo-space-sm) 0 var(--marilo-space-sm);
+    padding: 0 var(--marilo-space-sm);
     color: var(--marilo-color-text-secondary);
     flex-shrink: 0;
 }
@@ -32,7 +32,7 @@
 .mar-search-box input {
     flex: 1;
     min-width: 0;
-    padding: var(--marilo-space-xs) var(--marilo-space-xs);
+    padding: var(--marilo-space-xs);
     font-family: var(--marilo-font-family);
     font-size: var(--marilo-font-size-base);
     line-height: var(--marilo-line-height-base);
