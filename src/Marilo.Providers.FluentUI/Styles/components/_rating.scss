@@ -1,1 +1,86 @@
-// TODO: Placeholder — no FluentUI styles defined yet
+// =============================================================================
+// Component: Rating
+// =============================================================================
+
+.mar-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--marilo-space-xxs);
+    line-height: 1;
+}
+
+.mar-rating__star {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--marilo-color-border-strong);
+    font-size: 1.25rem; // relative unit — intentional default star size
+    transition: color var(--marilo-transition-fast), transform var(--marilo-transition-fast);
+    user-select: none;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+
+    svg {
+        width: 1.25em;
+        height: 1.25em;
+    }
+}
+
+.mar-rating__star--filled {
+    color: var(--marilo-color-warning);
+}
+
+.mar-rating__star--half {
+    position: relative;
+    color: var(--marilo-color-border-strong);
+
+    &::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 50%;
+        height: 100%;
+        background: var(--marilo-color-warning);
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    }
+}
+
+// QUALITY FIX: explicit color tokens for disabled, not opacity
+.mar-rating--disabled {
+    pointer-events: none;
+
+    .mar-rating__star {
+        color: var(--marilo-color-text-disabled);
+        cursor: not-allowed;
+    }
+
+    .mar-rating__star--filled,
+    .mar-rating__star--half {
+        color: var(--marilo-color-text-disabled);
+    }
+
+    .mar-rating__star--half::after {
+        background: var(--marilo-color-text-disabled);
+    }
+}
+
+// Read-only (display only)
+.mar-rating--readonly {
+    pointer-events: none;
+
+    .mar-rating__star {
+        cursor: default;
+
+        &:hover {
+            transform: none;
+        }
+    }
+}
+
+// Size variants
+.mar-rating--small .mar-rating__star { font-size: 1rem; }
+.mar-rating--large .mar-rating__star { font-size: 1.75rem; }
