@@ -45,3 +45,15 @@
     .mar-dialog-header { cursor: grab; user-select: none; }
     .mar-dialog-header:active { cursor: grabbing; }
 }
+
+/* === Dialog Size Variants === */
+
+.mar-dialog--small  .mar-dialog__panel { max-width: var(--marilo-dialog-sm-max-width, 400px); }
+.mar-dialog--medium .mar-dialog__panel { max-width: var(--marilo-dialog-md-max-width, 600px); } // default
+.mar-dialog--large  .mar-dialog__panel { max-width: var(--marilo-dialog-lg-max-width, 900px); }
+.mar-dialog--full   .mar-dialog__panel {
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+}
