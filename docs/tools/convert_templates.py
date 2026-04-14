@@ -28,6 +28,7 @@ def convert(dry_run: bool = False) -> int:
         return 0
 
     if not dry_run and DEST.exists():
+        # Wipe DEST so stale files from prior runs don't accumulate
         shutil.rmtree(DEST)
 
     count = 0
@@ -56,7 +57,7 @@ def verify() -> bool:
         return False
 
     dest_files = list(DEST.rglob("*.md"))
-    src_files  = list(SOURCE.rglob("*.md"))
+    src_files  = list(SOURCE.rglob("*.md")) if SOURCE.exists() else []
 
     print(f"Source files : {len(src_files)}")
     print(f"Dest files   : {len(dest_files)}")
@@ -87,6 +88,8 @@ if __name__ == "__main__":
     if "--verify" in sys.argv:
         sys.exit(0 if verify() else 1)
     else:
-        convert()
-        print()
-        verify()
+        dry_run = "--dry-run" in sys.argv
+        convert(dry_run=dry_run)
+        if not dry_run:
+            print()
+            verify()
