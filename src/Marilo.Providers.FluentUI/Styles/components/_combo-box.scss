@@ -6,8 +6,8 @@
     display: inline-flex;
     align-items: center;
     position: relative;
-    min-width: 200px;
-    min-height: 32px;
+    min-width: var(--marilo-input-min-width, 200px);
+    min-height: var(--marilo-input-min-height, 32px);
     border: 1px solid var(--marilo-color-border-strong);
     border-radius: var(--marilo-radius-md);
     background: var(--marilo-color-background);
@@ -86,8 +86,8 @@
 
 // Popup
 .mar-combobox-popup {
-    min-width: 200px;
-    max-height: 280px;
+    min-width: var(--marilo-input-min-width, 200px);
+    max-height: var(--marilo-dropdown-max-height, 280px);
     overflow-y: auto;
     background: var(--marilo-color-background);
     border: 1px solid var(--marilo-color-border);
