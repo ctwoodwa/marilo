@@ -2105,7 +2105,7 @@ progress {
   color: var(--bs-secondary-color);
 }
 
-.form-control {
+.form-control, .mar-bs-datagrid-searchbox input {
   display: block;
   width: 100%;
   padding: 0.375rem 0.75rem;
@@ -2122,41 +2122,41 @@ progress {
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 @media (prefers-reduced-motion: reduce) {
-  .form-control {
+  .form-control, .mar-bs-datagrid-searchbox input {
     transition: none;
   }
 }
-.form-control[type=file] {
+.form-control[type=file], .mar-bs-datagrid-searchbox input[type=file] {
   overflow: hidden;
 }
-.form-control[type=file]:not(:disabled):not([readonly]) {
+.form-control[type=file]:not(:disabled):not([readonly]), .mar-bs-datagrid-searchbox input[type=file]:not(:disabled):not([readonly]) {
   cursor: pointer;
 }
-.form-control:focus {
+.form-control:focus, .mar-bs-datagrid-searchbox input:focus {
   color: var(--bs-body-color);
   background-color: var(--bs-body-bg);
   border-color: rgb(134, 182.5, 254);
   outline: 0;
   box-shadow: var(--bs-box-shadow-inset), 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
-.form-control::-webkit-date-and-time-value {
+.form-control::-webkit-date-and-time-value, .mar-bs-datagrid-searchbox input::-webkit-date-and-time-value {
   min-width: 85px;
   height: 1.5em;
   margin: 0;
 }
-.form-control::-webkit-datetime-edit {
+.form-control::-webkit-datetime-edit, .mar-bs-datagrid-searchbox input::-webkit-datetime-edit {
   display: block;
   padding: 0;
 }
-.form-control::placeholder {
+.form-control::placeholder, .mar-bs-datagrid-searchbox input::placeholder {
   color: var(--bs-secondary-color);
   opacity: 1;
 }
-.form-control:disabled {
+.form-control:disabled, .mar-bs-datagrid-searchbox input:disabled {
   background-color: var(--bs-secondary-bg);
   opacity: 1;
 }
-.form-control::file-selector-button {
+.form-control::file-selector-button, .mar-bs-datagrid-searchbox input::file-selector-button {
   padding: 0.375rem 0.75rem;
   margin: -0.375rem -0.75rem;
   margin-inline-end: 0.75rem;
@@ -2171,11 +2171,11 @@ progress {
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 @media (prefers-reduced-motion: reduce) {
-  .form-control::file-selector-button {
+  .form-control::file-selector-button, .mar-bs-datagrid-searchbox input::file-selector-button {
     transition: none;
   }
 }
-.form-control:hover:not(:disabled):not([readonly])::file-selector-button {
+.form-control:hover:not(:disabled):not([readonly])::file-selector-button, .mar-bs-datagrid-searchbox input:hover:not(:disabled):not([readonly])::file-selector-button {
   background-color: var(--bs-secondary-bg);
 }
 
@@ -2193,18 +2193,18 @@ progress {
 .form-control-plaintext:focus {
   outline: 0;
 }
-.form-control-plaintext.form-control-sm, .form-control-plaintext.form-control-lg {
+.form-control-plaintext.form-control-sm, .mar-bs-datagrid-searchbox input.form-control-plaintext, .form-control-plaintext.form-control-lg {
   padding-right: 0;
   padding-left: 0;
 }
 
-.form-control-sm {
+.form-control-sm, .mar-bs-datagrid-searchbox input {
   min-height: calc(1.5em + 0.5rem + calc(var(--bs-border-width) * 2));
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
   border-radius: var(--bs-border-radius-sm);
 }
-.form-control-sm::file-selector-button {
+.form-control-sm::file-selector-button, .mar-bs-datagrid-searchbox input::file-selector-button {
   padding: 0.25rem 0.5rem;
   margin: -0.25rem -0.5rem;
   margin-inline-end: 0.5rem;
@@ -2248,7 +2248,7 @@ textarea.form-control-lg {
   border: 0 !important;
   border-radius: var(--bs-border-radius);
 }
-.form-control-color.form-control-sm {
+.form-control-color.form-control-sm, .mar-bs-datagrid-searchbox input.form-control-color {
   height: calc(1.5em + 0.5rem + calc(var(--bs-border-width) * 2));
 }
 .form-control-color.form-control-lg {
@@ -2437,7 +2437,7 @@ textarea.form-control-lg {
   clip: rect(0, 0, 0, 0);
   pointer-events: none;
 }
-.btn-check[disabled] + .btn, .btn-check[disabled] + .mar-signalr-row__action, .btn-check:disabled + .btn, .btn-check:disabled + .mar-signalr-row__action {
+.btn-check[disabled] + .btn, .btn-check[disabled] + .mar-signalr-row__action, .btn-check[disabled] + .mar-bs-datagrid-pager-btn, .btn-check:disabled + .btn, .btn-check:disabled + .mar-signalr-row__action, .btn-check:disabled + .mar-bs-datagrid-pager-btn {
   pointer-events: none;
   filter: none;
   opacity: 0.65;
@@ -2536,7 +2536,7 @@ textarea.form-control-lg {
 .form-floating {
   position: relative;
 }
-.form-floating > .form-control,
+.form-floating > .form-control, .mar-bs-datagrid-searchbox .form-floating > input,
 .form-floating > .form-control-plaintext,
 .form-floating > .form-select {
   height: calc(3.5rem + calc(var(--bs-border-width) * 2));
@@ -2566,21 +2566,21 @@ textarea.form-control-lg {
     transition: none;
   }
 }
-.form-floating > .form-control,
+.form-floating > .form-control, .mar-bs-datagrid-searchbox .form-floating > input,
 .form-floating > .form-control-plaintext {
   padding: 1rem 0.75rem;
 }
-.form-floating > .form-control::placeholder,
+.form-floating > .form-control::placeholder, .mar-bs-datagrid-searchbox .form-floating > input::placeholder,
 .form-floating > .form-control-plaintext::placeholder {
   color: transparent;
 }
-.form-floating > .form-control:focus, .form-floating > .form-control:not(:placeholder-shown),
+.form-floating > .form-control:focus, .mar-bs-datagrid-searchbox .form-floating > input:focus, .form-floating > .form-control:not(:placeholder-shown), .mar-bs-datagrid-searchbox .form-floating > input:not(:placeholder-shown),
 .form-floating > .form-control-plaintext:focus,
 .form-floating > .form-control-plaintext:not(:placeholder-shown) {
   padding-top: 1.625rem;
   padding-bottom: 0.625rem;
 }
-.form-floating > .form-control:-webkit-autofill,
+.form-floating > .form-control:-webkit-autofill, .mar-bs-datagrid-searchbox .form-floating > input:-webkit-autofill,
 .form-floating > .form-control-plaintext:-webkit-autofill {
   padding-top: 1.625rem;
   padding-bottom: 0.625rem;
@@ -2590,13 +2590,14 @@ textarea.form-control-lg {
   padding-bottom: 0.625rem;
   padding-left: 0.75rem;
 }
-.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:focus ~ label, .mar-bs-datagrid-searchbox .form-floating > input:focus ~ label,
 .form-floating > .form-control:not(:placeholder-shown) ~ label,
+.mar-bs-datagrid-searchbox .form-floating > input:not(:placeholder-shown) ~ label,
 .form-floating > .form-control-plaintext ~ label,
 .form-floating > .form-select ~ label {
   transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
 }
-.form-floating > .form-control:-webkit-autofill ~ label {
+.form-floating > .form-control:-webkit-autofill ~ label, .mar-bs-datagrid-searchbox .form-floating > input:-webkit-autofill ~ label {
   transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
 }
 .form-floating > textarea:focus ~ label::after,
@@ -2627,7 +2628,7 @@ textarea.form-control-lg {
   align-items: stretch;
   width: 100%;
 }
-.input-group > .form-control,
+.input-group > .form-control, .mar-bs-datagrid-searchbox .input-group > input,
 .input-group > .form-select,
 .input-group > .form-floating {
   position: relative;
@@ -2635,16 +2636,16 @@ textarea.form-control-lg {
   width: 1%;
   min-width: 0;
 }
-.input-group > .form-control:focus,
+.input-group > .form-control:focus, .mar-bs-datagrid-searchbox .input-group > input:focus,
 .input-group > .form-select:focus,
 .input-group > .form-floating:focus-within {
   z-index: 5;
 }
-.input-group .btn, .input-group .mar-signalr-row__action {
+.input-group .btn, .input-group .mar-signalr-row__action, .input-group .mar-bs-datagrid-pager-btn {
   position: relative;
   z-index: 2;
 }
-.input-group .btn:focus, .input-group .mar-signalr-row__action:focus {
+.input-group .btn:focus, .input-group .mar-signalr-row__action:focus, .input-group .mar-bs-datagrid-pager-btn:focus {
   z-index: 5;
 }
 
@@ -2663,21 +2664,23 @@ textarea.form-control-lg {
   border-radius: var(--bs-border-radius);
 }
 
-.input-group-lg > .form-control,
+.input-group-lg > .form-control, .mar-bs-datagrid-searchbox .input-group-lg > input,
 .input-group-lg > .form-select,
 .input-group-lg > .input-group-text,
 .input-group-lg > .btn,
-.input-group-lg > .mar-signalr-row__action {
+.input-group-lg > .mar-signalr-row__action,
+.input-group-lg > .mar-bs-datagrid-pager-btn {
   padding: 0.5rem 1rem;
   font-size: 1.25rem;
   border-radius: var(--bs-border-radius-lg);
 }
 
-.input-group-sm > .form-control,
+.input-group-sm > .form-control, .mar-bs-datagrid-searchbox .input-group-sm > input,
 .input-group-sm > .form-select,
 .input-group-sm > .input-group-text,
 .input-group-sm > .btn,
-.input-group-sm > .mar-signalr-row__action {
+.input-group-sm > .mar-signalr-row__action,
+.input-group-sm > .mar-bs-datagrid-pager-btn {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
   border-radius: var(--bs-border-radius-sm);
@@ -2691,6 +2694,7 @@ textarea.form-control-lg {
 .input-group:not(.has-validation) > :not(:last-child):not(.dropdown-toggle):not(.dropdown-menu):not(.form-floating),
 .input-group:not(.has-validation) > .dropdown-toggle:nth-last-child(n+3),
 .input-group:not(.has-validation) > .form-floating:not(:last-child) > .form-control,
+.mar-bs-datagrid-searchbox .input-group:not(.has-validation) > .form-floating:not(:last-child) > input,
 .input-group:not(.has-validation) > .form-floating:not(:last-child) > .form-select {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
@@ -2698,6 +2702,7 @@ textarea.form-control-lg {
 .input-group.has-validation > :nth-last-child(n+3):not(.dropdown-toggle):not(.dropdown-menu):not(.form-floating),
 .input-group.has-validation > .dropdown-toggle:nth-last-child(n+4),
 .input-group.has-validation > .form-floating:nth-last-child(n+3) > .form-control,
+.mar-bs-datagrid-searchbox .input-group.has-validation > .form-floating:nth-last-child(n+3) > input,
 .input-group.has-validation > .form-floating:nth-last-child(n+3) > .form-select {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
@@ -2707,7 +2712,7 @@ textarea.form-control-lg {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
-.input-group > .form-floating:not(:first-child) > .form-control,
+.input-group > .form-floating:not(:first-child) > .form-control, .mar-bs-datagrid-searchbox .input-group > .form-floating:not(:first-child) > input,
 .input-group > .form-floating:not(:first-child) > .form-select {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
@@ -2742,7 +2747,7 @@ textarea.form-control-lg {
   display: block;
 }
 
-.was-validated .form-control:valid, .form-control.is-valid {
+.was-validated .form-control:valid, .was-validated .mar-bs-datagrid-searchbox input:valid, .mar-bs-datagrid-searchbox .was-validated input:valid, .form-control.is-valid, .mar-bs-datagrid-searchbox input.is-valid {
   border-color: var(--bs-form-valid-border-color);
   padding-right: calc(1.5em + 0.75rem);
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1'/%3e%3c/svg%3e");
@@ -2750,7 +2755,7 @@ textarea.form-control-lg {
   background-position: right calc(0.375em + 0.1875rem) center;
   background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
 }
-.was-validated .form-control:valid:focus, .form-control.is-valid:focus {
+.was-validated .form-control:valid:focus, .was-validated .mar-bs-datagrid-searchbox input:valid:focus, .mar-bs-datagrid-searchbox .was-validated input:valid:focus, .form-control.is-valid:focus, .mar-bs-datagrid-searchbox input.is-valid:focus {
   border-color: var(--bs-form-valid-border-color);
   box-shadow: var(--bs-box-shadow-inset), 0 0 0 0.25rem rgba(var(--bs-success-rgb), 0.25);
 }
@@ -2795,7 +2800,7 @@ textarea.form-control-lg {
   margin-left: 0.5em;
 }
 
-.was-validated .input-group > .form-control:not(:focus):valid, .input-group > .form-control:not(:focus).is-valid,
+.was-validated .input-group > .form-control:not(:focus):valid, .was-validated .mar-bs-datagrid-searchbox .input-group > input:not(:focus):valid, .mar-bs-datagrid-searchbox .was-validated .input-group > input:not(:focus):valid, .input-group > .form-control:not(:focus).is-valid, .mar-bs-datagrid-searchbox .input-group > input:not(:focus).is-valid,
 .was-validated .input-group > .form-select:not(:focus):valid,
 .input-group > .form-select:not(:focus).is-valid,
 .was-validated .input-group > .form-floating:not(:focus-within):valid,
@@ -2832,7 +2837,7 @@ textarea.form-control-lg {
   display: block;
 }
 
-.was-validated .form-control:invalid, .form-control.is-invalid {
+.was-validated .form-control:invalid, .was-validated .mar-bs-datagrid-searchbox input:invalid, .mar-bs-datagrid-searchbox .was-validated input:invalid, .form-control.is-invalid, .mar-bs-datagrid-searchbox input.is-invalid {
   border-color: var(--bs-form-invalid-border-color);
   padding-right: calc(1.5em + 0.75rem);
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
@@ -2840,7 +2845,7 @@ textarea.form-control-lg {
   background-position: right calc(0.375em + 0.1875rem) center;
   background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
 }
-.was-validated .form-control:invalid:focus, .form-control.is-invalid:focus {
+.was-validated .form-control:invalid:focus, .was-validated .mar-bs-datagrid-searchbox input:invalid:focus, .mar-bs-datagrid-searchbox .was-validated input:invalid:focus, .form-control.is-invalid:focus, .mar-bs-datagrid-searchbox input.is-invalid:focus {
   border-color: var(--bs-form-invalid-border-color);
   box-shadow: var(--bs-box-shadow-inset), 0 0 0 0.25rem rgba(var(--bs-danger-rgb), 0.25);
 }
@@ -2885,7 +2890,7 @@ textarea.form-control-lg {
   margin-left: 0.5em;
 }
 
-.was-validated .input-group > .form-control:not(:focus):invalid, .input-group > .form-control:not(:focus).is-invalid,
+.was-validated .input-group > .form-control:not(:focus):invalid, .was-validated .mar-bs-datagrid-searchbox .input-group > input:not(:focus):invalid, .mar-bs-datagrid-searchbox .was-validated .input-group > input:not(:focus):invalid, .input-group > .form-control:not(:focus).is-invalid, .mar-bs-datagrid-searchbox .input-group > input:not(:focus).is-invalid,
 .was-validated .input-group > .form-select:not(:focus):invalid,
 .input-group > .form-select:not(:focus).is-invalid,
 .was-validated .input-group > .form-floating:not(:focus-within):invalid,
@@ -2893,7 +2898,7 @@ textarea.form-control-lg {
   z-index: 4;
 }
 
-.btn, .mar-signalr-row__action {
+.btn, .mar-signalr-row__action, .mar-bs-datagrid-pager-btn {
   --bs-btn-padding-x: 0.75rem;
   --bs-btn-padding-y: 0.375rem;
   --bs-btn-font-family: ;
@@ -2928,45 +2933,45 @@ textarea.form-control-lg {
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 @media (prefers-reduced-motion: reduce) {
-  .btn, .mar-signalr-row__action {
+  .btn, .mar-signalr-row__action, .mar-bs-datagrid-pager-btn {
     transition: none;
   }
 }
-.btn:hover, .mar-signalr-row__action:hover {
+.btn:hover, .mar-signalr-row__action:hover, .mar-bs-datagrid-pager-btn:hover {
   color: var(--bs-btn-hover-color);
   background-color: var(--bs-btn-hover-bg);
   border-color: var(--bs-btn-hover-border-color);
 }
-.btn-check + .btn:hover, .btn-check + .mar-signalr-row__action:hover {
+.btn-check + .btn:hover, .btn-check + .mar-signalr-row__action:hover, .btn-check + .mar-bs-datagrid-pager-btn:hover {
   color: var(--bs-btn-color);
   background-color: var(--bs-btn-bg);
   border-color: var(--bs-btn-border-color);
 }
-.btn:focus-visible, .mar-signalr-row__action:focus-visible {
+.btn:focus-visible, .mar-signalr-row__action:focus-visible, .mar-bs-datagrid-pager-btn:focus-visible {
   color: var(--bs-btn-hover-color);
   background-color: var(--bs-btn-hover-bg);
   border-color: var(--bs-btn-hover-border-color);
   outline: 0;
   box-shadow: var(--bs-btn-box-shadow), var(--bs-btn-focus-box-shadow);
 }
-.btn-check:focus-visible + .btn, .btn-check:focus-visible + .mar-signalr-row__action {
+.btn-check:focus-visible + .btn, .btn-check:focus-visible + .mar-signalr-row__action, .btn-check:focus-visible + .mar-bs-datagrid-pager-btn {
   border-color: var(--bs-btn-hover-border-color);
   outline: 0;
   box-shadow: var(--bs-btn-box-shadow), var(--bs-btn-focus-box-shadow);
 }
-.btn-check:checked + .btn, .btn-check:checked + .mar-signalr-row__action, :not(.btn-check) + .btn:active, :not(.btn-check) + .mar-signalr-row__action:active, .btn:first-child:active, .mar-signalr-row__action:first-child:active, .btn.active, .active.mar-signalr-row__action, .btn.show, .show.mar-signalr-row__action {
+.btn-check:checked + .btn, .btn-check:checked + .mar-signalr-row__action, .btn-check:checked + .mar-bs-datagrid-pager-btn, :not(.btn-check) + .btn:active, :not(.btn-check) + .mar-signalr-row__action:active, :not(.btn-check) + .mar-bs-datagrid-pager-btn:active, .btn:first-child:active, .mar-signalr-row__action:first-child:active, .mar-bs-datagrid-pager-btn:first-child:active, .btn.active, .active.mar-signalr-row__action, .active.mar-bs-datagrid-pager-btn, .btn.show, .show.mar-signalr-row__action, .show.mar-bs-datagrid-pager-btn {
   color: var(--bs-btn-active-color);
   background-color: var(--bs-btn-active-bg);
   border-color: var(--bs-btn-active-border-color);
   box-shadow: var(--bs-btn-active-shadow);
 }
-.btn-check:checked + .btn:focus-visible, .btn-check:checked + .mar-signalr-row__action:focus-visible, :not(.btn-check) + .btn:active:focus-visible, :not(.btn-check) + .mar-signalr-row__action:active:focus-visible, .btn:first-child:active:focus-visible, .mar-signalr-row__action:first-child:active:focus-visible, .btn.active:focus-visible, .active.mar-signalr-row__action:focus-visible, .btn.show:focus-visible, .show.mar-signalr-row__action:focus-visible {
+.btn-check:checked + .btn:focus-visible, .btn-check:checked + .mar-signalr-row__action:focus-visible, .btn-check:checked + .mar-bs-datagrid-pager-btn:focus-visible, :not(.btn-check) + .btn:active:focus-visible, :not(.btn-check) + .mar-signalr-row__action:active:focus-visible, :not(.btn-check) + .mar-bs-datagrid-pager-btn:active:focus-visible, .btn:first-child:active:focus-visible, .mar-signalr-row__action:first-child:active:focus-visible, .mar-bs-datagrid-pager-btn:first-child:active:focus-visible, .btn.active:focus-visible, .active.mar-signalr-row__action:focus-visible, .active.mar-bs-datagrid-pager-btn:focus-visible, .btn.show:focus-visible, .show.mar-signalr-row__action:focus-visible, .show.mar-bs-datagrid-pager-btn:focus-visible {
   box-shadow: var(--bs-btn-active-shadow), var(--bs-btn-focus-box-shadow);
 }
-.btn-check:checked:focus-visible + .btn, .btn-check:checked:focus-visible + .mar-signalr-row__action {
+.btn-check:checked:focus-visible + .btn, .btn-check:checked:focus-visible + .mar-signalr-row__action, .btn-check:checked:focus-visible + .mar-bs-datagrid-pager-btn {
   box-shadow: var(--bs-btn-active-shadow), var(--bs-btn-focus-box-shadow);
 }
-.btn:disabled, .mar-signalr-row__action:disabled, .btn.disabled, .disabled.mar-signalr-row__action, fieldset:disabled .btn, fieldset:disabled .mar-signalr-row__action {
+.btn:disabled, .mar-signalr-row__action:disabled, .mar-bs-datagrid-pager-btn:disabled, .btn.disabled, .disabled.mar-signalr-row__action, .disabled.mar-bs-datagrid-pager-btn, fieldset:disabled .btn, fieldset:disabled .mar-signalr-row__action, fieldset:disabled .mar-bs-datagrid-pager-btn {
   color: var(--bs-btn-disabled-color);
   pointer-events: none;
   background-color: var(--bs-btn-disabled-bg);
@@ -2975,7 +2980,7 @@ textarea.form-control-lg {
   box-shadow: none;
 }
 
-.btn-primary {
+.btn-primary, .mar-bs-datagrid-pager-btn.active, .mar-bs-datagrid-pager-btn--active {
   --bs-btn-color: #fff;
   --bs-btn-bg: #0d6efd;
   --bs-btn-border-color: #0d6efd;
@@ -3128,7 +3133,7 @@ textarea.form-control-lg {
   --bs-gradient: none;
 }
 
-.btn-outline-secondary {
+.btn-outline-secondary, .mar-bs-datagrid-pager-btn {
   --bs-btn-color: #6c757d;
   --bs-btn-border-color: #6c757d;
   --bs-btn-hover-color: #fff;
@@ -3269,14 +3274,14 @@ textarea.form-control-lg {
   color: var(--bs-btn-hover-color);
 }
 
-.btn-lg, .btn-group-lg > .btn, .btn-group-lg > .mar-signalr-row__action {
+.btn-lg, .btn-group-lg > .btn, .btn-group-lg > .mar-signalr-row__action, .btn-group-lg > .mar-bs-datagrid-pager-btn {
   --bs-btn-padding-y: 0.5rem;
   --bs-btn-padding-x: 1rem;
   --bs-btn-font-size: 1.25rem;
   --bs-btn-border-radius: var(--bs-border-radius-lg);
 }
 
-.btn-sm, .mar-signalr-row__action, .btn-group-sm > .btn, .btn-group-sm > .mar-signalr-row__action {
+.btn-sm, .mar-signalr-row__action, .btn-group-sm > .btn, .btn-group-sm > .mar-signalr-row__action, .btn-group-sm > .mar-bs-datagrid-pager-btn {
   --bs-btn-padding-y: 0.25rem;
   --bs-btn-padding-x: 0.5rem;
   --bs-btn-font-size: 0.875rem;
@@ -3644,35 +3649,47 @@ textarea.form-control-lg {
   display: inline-flex;
   vertical-align: middle;
 }
-.btn-group > .btn, .btn-group > .mar-signalr-row__action,
+.btn-group > .btn, .btn-group > .mar-signalr-row__action, .btn-group > .mar-bs-datagrid-pager-btn,
 .btn-group-vertical > .btn,
-.btn-group-vertical > .mar-signalr-row__action {
+.btn-group-vertical > .mar-signalr-row__action,
+.btn-group-vertical > .mar-bs-datagrid-pager-btn {
   position: relative;
   flex: 1 1 auto;
 }
-.btn-group > .btn-check:checked + .btn, .btn-group > .btn-check:checked + .mar-signalr-row__action,
+.btn-group > .btn-check:checked + .btn, .btn-group > .btn-check:checked + .mar-signalr-row__action, .btn-group > .btn-check:checked + .mar-bs-datagrid-pager-btn,
 .btn-group > .btn-check:focus + .btn,
 .btn-group > .btn-check:focus + .mar-signalr-row__action,
+.btn-group > .btn-check:focus + .mar-bs-datagrid-pager-btn,
 .btn-group > .btn:hover,
 .btn-group > .mar-signalr-row__action:hover,
+.btn-group > .mar-bs-datagrid-pager-btn:hover,
 .btn-group > .btn:focus,
 .btn-group > .mar-signalr-row__action:focus,
+.btn-group > .mar-bs-datagrid-pager-btn:focus,
 .btn-group > .btn:active,
 .btn-group > .mar-signalr-row__action:active,
+.btn-group > .mar-bs-datagrid-pager-btn:active,
 .btn-group > .btn.active,
 .btn-group > .active.mar-signalr-row__action,
+.btn-group > .active.mar-bs-datagrid-pager-btn,
 .btn-group-vertical > .btn-check:checked + .btn,
 .btn-group-vertical > .btn-check:checked + .mar-signalr-row__action,
+.btn-group-vertical > .btn-check:checked + .mar-bs-datagrid-pager-btn,
 .btn-group-vertical > .btn-check:focus + .btn,
 .btn-group-vertical > .btn-check:focus + .mar-signalr-row__action,
+.btn-group-vertical > .btn-check:focus + .mar-bs-datagrid-pager-btn,
 .btn-group-vertical > .btn:hover,
 .btn-group-vertical > .mar-signalr-row__action:hover,
+.btn-group-vertical > .mar-bs-datagrid-pager-btn:hover,
 .btn-group-vertical > .btn:focus,
 .btn-group-vertical > .mar-signalr-row__action:focus,
+.btn-group-vertical > .mar-bs-datagrid-pager-btn:focus,
 .btn-group-vertical > .btn:active,
 .btn-group-vertical > .mar-signalr-row__action:active,
+.btn-group-vertical > .mar-bs-datagrid-pager-btn:active,
 .btn-group-vertical > .btn.active,
-.btn-group-vertical > .active.mar-signalr-row__action {
+.btn-group-vertical > .active.mar-signalr-row__action,
+.btn-group-vertical > .active.mar-bs-datagrid-pager-btn {
   z-index: 1;
 }
 
@@ -3688,23 +3705,27 @@ textarea.form-control-lg {
 .btn-group {
   border-radius: var(--bs-border-radius);
 }
-.btn-group > :not(.btn-check:first-child) + .btn, .btn-group > :not(.btn-check:first-child) + .mar-signalr-row__action,
+.btn-group > :not(.btn-check:first-child) + .btn, .btn-group > :not(.btn-check:first-child) + .mar-signalr-row__action, .btn-group > :not(.btn-check:first-child) + .mar-bs-datagrid-pager-btn,
 .btn-group > .btn-group:not(:first-child) {
   margin-left: calc(-1 * var(--bs-border-width));
 }
-.btn-group > .btn:not(:last-child):not(.dropdown-toggle), .btn-group > .mar-signalr-row__action:not(:last-child):not(.dropdown-toggle),
+.btn-group > .btn:not(:last-child):not(.dropdown-toggle), .btn-group > .mar-signalr-row__action:not(:last-child):not(.dropdown-toggle), .btn-group > .mar-bs-datagrid-pager-btn:not(:last-child):not(.dropdown-toggle),
 .btn-group > .btn.dropdown-toggle-split:first-child,
 .btn-group > .dropdown-toggle-split.mar-signalr-row__action:first-child,
+.btn-group > .dropdown-toggle-split.mar-bs-datagrid-pager-btn:first-child,
 .btn-group > .btn-group:not(:last-child) > .btn,
-.btn-group > .btn-group:not(:last-child) > .mar-signalr-row__action {
+.btn-group > .btn-group:not(:last-child) > .mar-signalr-row__action,
+.btn-group > .btn-group:not(:last-child) > .mar-bs-datagrid-pager-btn {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
-.btn-group > .btn:nth-child(n+3), .btn-group > .mar-signalr-row__action:nth-child(n+3),
+.btn-group > .btn:nth-child(n+3), .btn-group > .mar-signalr-row__action:nth-child(n+3), .btn-group > .mar-bs-datagrid-pager-btn:nth-child(n+3),
 .btn-group > :not(.btn-check) + .btn,
 .btn-group > :not(.btn-check) + .mar-signalr-row__action,
+.btn-group > :not(.btn-check) + .mar-bs-datagrid-pager-btn,
 .btn-group > .btn-group:not(:first-child) > .btn,
-.btn-group > .btn-group:not(:first-child) > .mar-signalr-row__action {
+.btn-group > .btn-group:not(:first-child) > .mar-signalr-row__action,
+.btn-group > .btn-group:not(:first-child) > .mar-bs-datagrid-pager-btn {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
@@ -3720,12 +3741,12 @@ textarea.form-control-lg {
   margin-right: 0;
 }
 
-.btn-sm + .dropdown-toggle-split, .mar-signalr-row__action + .dropdown-toggle-split, .btn-group-sm > .btn + .dropdown-toggle-split {
+.btn-sm + .dropdown-toggle-split, .mar-signalr-row__action + .dropdown-toggle-split, .btn-group-sm > .btn + .dropdown-toggle-split, .btn-group-sm > .mar-bs-datagrid-pager-btn + .dropdown-toggle-split {
   padding-right: 0.375rem;
   padding-left: 0.375rem;
 }
 
-.btn-lg + .dropdown-toggle-split, .btn-group-lg > .btn + .dropdown-toggle-split, .btn-group-lg > .mar-signalr-row__action + .dropdown-toggle-split {
+.btn-lg + .dropdown-toggle-split, .btn-group-lg > .btn + .dropdown-toggle-split, .btn-group-lg > .mar-signalr-row__action + .dropdown-toggle-split, .btn-group-lg > .mar-bs-datagrid-pager-btn + .dropdown-toggle-split {
   padding-right: 0.75rem;
   padding-left: 0.75rem;
 }
@@ -3742,25 +3763,28 @@ textarea.form-control-lg {
   align-items: flex-start;
   justify-content: center;
 }
-.btn-group-vertical > .btn, .btn-group-vertical > .mar-signalr-row__action,
+.btn-group-vertical > .btn, .btn-group-vertical > .mar-signalr-row__action, .btn-group-vertical > .mar-bs-datagrid-pager-btn,
 .btn-group-vertical > .btn-group {
   width: 100%;
 }
-.btn-group-vertical > .btn:not(:first-child), .btn-group-vertical > .mar-signalr-row__action:not(:first-child),
+.btn-group-vertical > .btn:not(:first-child), .btn-group-vertical > .mar-signalr-row__action:not(:first-child), .btn-group-vertical > .mar-bs-datagrid-pager-btn:not(:first-child),
 .btn-group-vertical > .btn-group:not(:first-child) {
   margin-top: calc(-1 * var(--bs-border-width));
 }
-.btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle), .btn-group-vertical > .mar-signalr-row__action:not(:last-child):not(.dropdown-toggle),
+.btn-group-vertical > .btn:not(:last-child):not(.dropdown-toggle), .btn-group-vertical > .mar-signalr-row__action:not(:last-child):not(.dropdown-toggle), .btn-group-vertical > .mar-bs-datagrid-pager-btn:not(:last-child):not(.dropdown-toggle),
 .btn-group-vertical > .btn-group:not(:last-child) > .btn,
-.btn-group-vertical > .btn-group:not(:last-child) > .mar-signalr-row__action {
+.btn-group-vertical > .btn-group:not(:last-child) > .mar-signalr-row__action,
+.btn-group-vertical > .btn-group:not(:last-child) > .mar-bs-datagrid-pager-btn {
   border-bottom-right-radius: 0;
   border-bottom-left-radius: 0;
 }
-.btn-group-vertical > .btn:nth-child(n+3), .btn-group-vertical > .mar-signalr-row__action:nth-child(n+3),
+.btn-group-vertical > .btn:nth-child(n+3), .btn-group-vertical > .mar-signalr-row__action:nth-child(n+3), .btn-group-vertical > .mar-bs-datagrid-pager-btn:nth-child(n+3),
 .btn-group-vertical > :not(.btn-check) + .btn,
 .btn-group-vertical > :not(.btn-check) + .mar-signalr-row__action,
+.btn-group-vertical > :not(.btn-check) + .mar-bs-datagrid-pager-btn,
 .btn-group-vertical > .btn-group:not(:first-child) > .btn,
-.btn-group-vertical > .btn-group:not(:first-child) > .mar-signalr-row__action {
+.btn-group-vertical > .btn-group:not(:first-child) > .mar-signalr-row__action,
+.btn-group-vertical > .btn-group:not(:first-child) > .mar-bs-datagrid-pager-btn {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
@@ -4806,12 +4830,12 @@ textarea.form-control-lg {
   display: none;
 }
 
-.btn .badge, .mar-signalr-row__action .badge {
+.btn .badge, .mar-signalr-row__action .badge, .mar-bs-datagrid-pager-btn .badge {
   position: relative;
   top: -1px;
 }
 
-.alert {
+.alert, .mar-bs-datagrid-validation-summary {
   --bs-alert-bg: transparent;
   --bs-alert-padding-x: 1rem;
   --bs-alert-padding-y: 1rem;
@@ -4885,7 +4909,7 @@ textarea.form-control-lg {
   --bs-alert-link-color: var(--bs-warning-text-emphasis);
 }
 
-.alert-danger {
+.alert-danger, .mar-bs-datagrid-validation-summary {
   --bs-alert-color: var(--bs-danger-text-emphasis);
   --bs-alert-bg: var(--bs-danger-bg-subtle);
   --bs-alert-border-color: var(--bs-danger-border-subtle);
@@ -6764,7 +6788,7 @@ textarea.form-control-lg {
   background-color: currentcolor;
   opacity: 0.5;
 }
-.placeholder.btn::before, .placeholder.mar-signalr-row__action::before {
+.placeholder.btn::before, .placeholder.mar-signalr-row__action::before, .placeholder.mar-bs-datagrid-pager-btn::before {
   display: inline-block;
   content: "";
 }
@@ -13482,11 +13506,11 @@ textarea.form-control-lg {
   min-height: 2rem;
 }
 
-.mar-bs-split-button .btn:first-child, .mar-bs-split-button .mar-signalr-row__action:first-child {
+.mar-bs-split-button .btn:first-child, .mar-bs-split-button .mar-signalr-row__action:first-child, .mar-bs-split-button .mar-bs-datagrid-pager-btn:first-child {
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
-.mar-bs-split-button .btn:last-child, .mar-bs-split-button .mar-signalr-row__action:last-child {
+.mar-bs-split-button .btn:last-child, .mar-bs-split-button .mar-signalr-row__action:last-child, .mar-bs-split-button .mar-bs-datagrid-pager-btn:last-child {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   padding-left: 0.5rem;
@@ -13825,7 +13849,7 @@ textarea.form-control-lg {
 .mar-bs-combobox {
   position: relative;
 }
-.mar-bs-combobox .form-control,
+.mar-bs-combobox .form-control, .mar-bs-combobox .mar-bs-datagrid-searchbox input, .mar-bs-datagrid-searchbox .mar-bs-combobox input,
 .mar-bs-combobox .form-select {
   cursor: pointer;
 }
@@ -13883,7 +13907,7 @@ textarea.form-control-lg {
 .mar-bs-datagrid-filter-cell {
   padding: var(--marilo-space-xs) var(--marilo-space-sm);
 }
-.mar-bs-datagrid-filter-cell .form-control {
+.mar-bs-datagrid-filter-cell .form-control, .mar-bs-datagrid-filter-cell .mar-bs-datagrid-searchbox input, .mar-bs-datagrid-searchbox .mar-bs-datagrid-filter-cell input {
   font-size: var(--marilo-font-size-sm);
   padding: 0.25rem 0.5rem;
 }
@@ -13899,7 +13923,7 @@ textarea.form-control-lg {
   justify-content: center;
   margin-left: 0.35rem;
   border: 1px solid var(--marilo-color-border);
-  background: #fff;
+  background: var(--bs-body-bg);
   color: var(--marilo-color-text-secondary);
   border-radius: 4px;
   min-width: 1.5rem;
@@ -13952,7 +13976,7 @@ textarea.form-control-lg {
   padding: 0.75rem;
   border: 1px solid var(--marilo-color-border);
   border-radius: 0.5rem;
-  background: #fff;
+  background: var(--bs-body-bg);
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 }
 
@@ -13974,13 +13998,102 @@ textarea.form-control-lg {
 .mar-bs-datagrid .mar-datagrid-filter-menu-actions .mar-datagrid-cmd-btn {
   border: 1px solid var(--marilo-color-border);
   border-radius: 0.375rem;
-  background: #fff;
+  background: var(--bs-body-bg);
   padding: 0.35rem 0.75rem;
   cursor: pointer;
 }
 
 .mar-bs-datagrid-group-header td {
   padding: var(--marilo-space-sm) var(--marilo-space-md);
+}
+
+.mar-bs-datagrid-pager-btn {
+  min-width: 2rem;
+  padding: 0.25rem 0.5rem;
+  font-size: var(--marilo-font-size-sm);
+}
+.mar-bs-datagrid-pager-btn.active, .mar-bs-datagrid-pager-btn--active {
+  border-color: var(--bs-primary);
+}
+
+.mar-bs-datagrid-empty {
+  text-align: center;
+  padding: var(--marilo-space-xl) var(--marilo-space-md);
+  color: var(--bs-secondary-color);
+}
+
+.mar-bs-datagrid-loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(var(--bs-body-bg-rgb, 255, 255, 255), 0.7);
+  z-index: 10;
+}
+
+.mar-bs-datagrid-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mar-bs-datagrid-sort-indicator {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.25rem;
+  color: var(--bs-primary);
+  font-size: 0.75rem;
+}
+
+.mar-bs-datagrid-validation-summary {
+  padding: var(--marilo-space-sm) var(--marilo-space-md);
+  font-size: var(--marilo-font-size-sm);
+}
+
+.mar-bs-datagrid-footer-row {
+  background-color: var(--bs-tertiary-bg);
+  border-top: 1px solid var(--marilo-color-border);
+  font-weight: 600;
+}
+
+.mar-bs-datagrid-detail-row {
+  background-color: var(--bs-secondary-bg);
+  border-bottom: 1px solid var(--marilo-color-border);
+}
+.mar-bs-datagrid-detail-row > td {
+  padding: var(--marilo-space-sm) var(--marilo-space-md);
+}
+
+.mar-bs-datagrid-col--locked {
+  position: sticky;
+  z-index: 2;
+  background-color: var(--bs-body-bg);
+  border-right: 2px solid var(--marilo-color-border);
+}
+
+.mar-bs-datagrid-searchbox {
+  display: flex;
+  align-items: center;
+  gap: var(--marilo-space-sm);
+  padding: var(--marilo-space-xs) var(--marilo-space-md);
+  border-bottom: 1px solid var(--marilo-color-border);
+}
+.mar-bs-datagrid-cell:focus,
+.mar-bs-datagrid-header-cell:focus {
+  outline: 2px solid var(--bs-focus-ring-color, var(--marilo-color-primary));
+  outline-offset: -2px;
+  position: relative;
+  z-index: 1;
+}
+
+.mar-bs-datagrid-row--focused {
+  outline: 2px solid var(--bs-focus-ring-color, var(--marilo-color-primary));
+  outline-offset: -1px;
 }
 
 .mar-bs-datasheet {
@@ -14898,7 +15011,7 @@ textarea.form-control-lg {
 .mar-bs-dropdownlist {
   position: relative;
 }
-.mar-bs-dropdownlist .form-control,
+.mar-bs-dropdownlist .form-control, .mar-bs-dropdownlist .mar-bs-datagrid-searchbox input, .mar-bs-datagrid-searchbox .mar-bs-dropdownlist input,
 .mar-bs-dropdownlist .form-select {
   cursor: pointer;
 }
@@ -14915,7 +15028,7 @@ textarea.form-control-lg {
 .mar-bs-editor-toolbar {
   background-color: var(--marilo-color-surface);
 }
-.mar-bs-editor-toolbar .btn, .mar-bs-editor-toolbar .mar-signalr-row__action {
+.mar-bs-editor-toolbar .btn, .mar-bs-editor-toolbar .mar-signalr-row__action, .mar-bs-editor-toolbar .mar-bs-datagrid-pager-btn {
   padding: 0.25rem 0.5rem;
   font-size: var(--marilo-font-size-sm);
 }
@@ -15927,7 +16040,7 @@ textarea.form-control-lg {
 .mar-bs-multiselect {
   position: relative;
 }
-.mar-bs-multiselect .form-control,
+.mar-bs-multiselect .form-control, .mar-bs-multiselect .mar-bs-datagrid-searchbox input, .mar-bs-datagrid-searchbox .mar-bs-multiselect input,
 .mar-bs-multiselect .form-select {
   cursor: pointer;
 }
