@@ -34,6 +34,12 @@ def restore_lines(
     destination lines with the template lines re-inserted.
 
     Returns (result_lines, count_of_templates_restored).
+
+    Note: Only restores *standalone* @[template] lines (lines that start with the include
+    directive). Inline template references (where @[template] is embedded mid-sentence,
+    e.g. "The component @[template](...) [read more]") are not restored — those 48
+    references across 33 files were removed as full sentences in the destination and
+    require manual review.
     """
     # Brand-replace source so it aligns with dest during diffing
     src_branded = [brand_replace(line) for line in src_lines]
@@ -60,7 +66,7 @@ def restore_lines(
         elif tag == "delete":
             # Lines only in src (stripped during migration) — re-add templates only
             for line in src_branded[i1:i2]:
-                if line.strip().startswith("@[template]"):
+                if line.strip().startswith("@[template]"):  # standalone only; inline refs skipped (see docstring)
                     result.append(line)
                     templates_added += 1
 
@@ -124,6 +130,7 @@ def restore_all(dry_run: bool = False) -> None:
 
     mode = " (DRY RUN)" if dry_run else ""
     print(f"\nDone{mode}. Restored {total_templates} template includes across {total_files} files.")
+    print("Note: inline @[template] refs (embedded mid-sentence) are not handled — see docstring.")
 
 
 if __name__ == "__main__":
