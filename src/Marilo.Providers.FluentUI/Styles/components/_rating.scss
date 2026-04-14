@@ -34,19 +34,14 @@
 }
 
 .mar-rating__star--half {
+    // Half-star support is not yet implemented in MariloRating.razor (Value is integer-only).
+    // When half-star rendering is added to the component, use the overflow-clip approach:
+    //   render a filled-star icon inside a width:50% overflow:hidden container overlaid on an
+    //   outline-star icon, and use this class only as the container context (position: relative).
+    // The previous ::after rectangle overlay bled through transparent star-point cutouts and
+    // has been removed.
     position: relative;
     color: var(--marilo-color-border-strong);
-
-    &::after {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 50%;
-        height: 100%;
-        background: var(--marilo-color-warning);
-        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-    }
 }
 
 // QUALITY FIX: explicit color tokens for disabled, not opacity
@@ -55,16 +50,12 @@
 
     .mar-rating__star {
         color: var(--marilo-color-text-disabled);
-        cursor: not-allowed;
+        // cursor: not-allowed is unreachable — parent has pointer-events: none
     }
 
     .mar-rating__star--filled,
     .mar-rating__star--half {
         color: var(--marilo-color-text-disabled);
-    }
-
-    .mar-rating__star--half::after {
-        background: var(--marilo-color-text-disabled);
     }
 }
 
