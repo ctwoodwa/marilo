@@ -1,5 +1,91 @@
 // =============================================================================
 // Component: Splitter — Material 3
-// TODO: Placeholder — no Material 3 styles defined yet.
-//       Implement when the Material provider runtime project is created.
 // =============================================================================
+
+.mar-splitter {
+    --mar-splitter-bar-size: 5px;
+    display: flex;
+    height: 100%;
+    overflow: hidden;
+}
+
+.mar-splitter--vertical {
+    flex-direction: column;
+}
+
+.mar-splitter__pane {
+    overflow: auto;
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+}
+
+.mar-splitter__pane--fill {
+    flex: 1 1 0 !important;
+}
+
+.mar-splitter__pane--collapsed {
+    flex: 0 0 0 !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+}
+
+.mar-splitter__handle {
+    flex: 0 0 var(--mar-splitter-bar-size);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--marilo-color-border);
+    cursor: col-resize;
+    transition: background-color 0.15s;
+    user-select: none;
+    touch-action: none;
+    z-index: 1;
+}
+
+.mar-splitter__handle:hover,
+.mar-splitter__handle--active {
+    background: var(--marilo-color-primary);
+}
+
+.mar-splitter--vertical .mar-splitter__handle {
+    cursor: row-resize;
+}
+
+.mar-splitter__collapse-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 18px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-sm);
+    background: var(--marilo-color-background);
+    color: var(--marilo-color-text-secondary);
+    font-size: 8px;
+    cursor: pointer;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.mar-splitter--vertical .mar-splitter__collapse-btn {
+    width: 28px;
+    height: 18px;
+}
+
+.mar-splitter__handle:hover .mar-splitter__collapse-btn {
+    opacity: 1;
+}
+
+.mar-splitter__collapse-btn:hover {
+    background: var(--marilo-color-surface-hover, var(--marilo-color-surface-container-high));
+    color: var(--marilo-color-on-background);
+}
