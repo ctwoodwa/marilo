@@ -18,6 +18,7 @@
 
 // Popup
 .mar-autocomplete__popup {
+    display: none;
     position: absolute;
     top: calc(100% + 2px);
     left: 0;
@@ -35,6 +36,10 @@
         margin: 0;
         padding: var(--marilo-space-xs) 0;
     }
+}
+
+.mar-autocomplete--open .mar-autocomplete__popup {
+    display: block;
 }
 
 // QUALITY FIX: Use explicit color tokens for disabled — NOT opacity
