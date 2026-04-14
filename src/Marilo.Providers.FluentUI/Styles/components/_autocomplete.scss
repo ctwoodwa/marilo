@@ -1,1 +1,81 @@
-// TODO: Placeholder — no FluentUI styles defined yet
+// =============================================================================
+// Component: Autocomplete
+// =============================================================================
+
+.mar-autocomplete {
+    display: inline-flex;
+    flex-direction: column;
+    position: relative;
+    min-width: 200px;
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-base);
+}
+
+// Trigger input — shares .mar-textbox chrome via the inner input
+.mar-autocomplete > .mar-textbox {
+    width: 100%;
+}
+
+// Popup
+.mar-autocomplete__popup {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 0;
+    right: 0;
+    max-height: 280px;
+    overflow-y: auto;
+    background: var(--marilo-color-background);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-md);
+    box-shadow: var(--marilo-shadow-md);
+    z-index: var(--marilo-z-dropdown);
+
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: var(--marilo-space-xs) 0;
+    }
+}
+
+// QUALITY FIX: Use explicit color tokens for disabled — NOT opacity
+.mar-autocomplete--disabled {
+    background: var(--marilo-color-surface);
+    color: var(--marilo-color-text-disabled);
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.mar-autocomplete--invalid > .mar-textbox {
+    border-color: var(--marilo-color-danger);
+}
+
+// Items
+.mar-autocomplete-item {
+    padding: var(--marilo-space-sm) var(--marilo-space-md);
+    cursor: pointer;
+    color: var(--marilo-color-on-background);
+    transition: background var(--marilo-transition-fast);
+
+    &:hover {
+        background: var(--marilo-color-surface);
+    }
+
+    // Highlighted match text within suggestion
+    mark {
+        background: var(--marilo-color-primary-light);
+        color: var(--marilo-color-primary);
+        font-weight: var(--marilo-font-weight-semibold);
+        border-radius: var(--marilo-radius-sm);
+        padding: 0 2px;
+    }
+}
+
+.mar-autocomplete-item--highlighted {
+    background: var(--marilo-color-surface);
+}
+
+.mar-autocomplete-item--selected {
+    background: var(--marilo-color-primary-light);
+    color: var(--marilo-color-primary);
+    font-weight: var(--marilo-font-weight-semibold);
+}
