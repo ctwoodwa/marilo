@@ -33,6 +33,22 @@
     }
 }
 
+.mar-slider--disabled input[type="range"] {
+    background: var(--marilo-color-border); // track stays muted
+
+    &::-webkit-slider-thumb {
+        background: var(--marilo-color-text-disabled);
+        border-color: var(--marilo-color-border);
+        box-shadow: none;
+    }
+
+    &::-moz-range-thumb {
+        background: var(--marilo-color-text-disabled);
+        border-color: var(--marilo-color-border);
+        box-shadow: none;
+    }
+}
+
 // The native range input styled as Fluent
 .mar-slider input[type="range"] {
     -webkit-appearance: none;
@@ -56,11 +72,11 @@
         cursor: pointer;
         box-shadow: var(--marilo-shadow-sm);
         transition: background var(--marilo-transition-fast), transform var(--marilo-transition-fast);
+    }
 
-        &:hover {
-            background: var(--marilo-color-primary-hover);
-            transform: scale(1.2);
-        }
+    &:hover::-webkit-slider-thumb {
+        background: var(--marilo-color-primary-hover);
+        transform: scale(1.2);
     }
 
     &::-moz-range-thumb {
