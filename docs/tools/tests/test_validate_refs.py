@@ -55,24 +55,40 @@ class TestValidateRefs(unittest.TestCase):
             self.assertEqual(total, 1)
 
     def test_anchor_stripped_from_path(self):
-        """The #anchor fragment is stripped before checking file existence."""
+        """The #anchor fragment is stripped before checking file existence.
+
+        Verifies that a reference like grid/state.md#table-layout-anchor resolves
+        to grid/state.md on disk.  If anchor stripping were removed, the script
+        would look for a file literally named 'state.md#table-layout-anchor', which
+        cannot exist on any filesystem — so the test would report a broken ref.
+        """
         with tempfile.TemporaryDirectory() as td:
             tmp = Path(td)
             spec_dir, template_dir = self._make_dirs(tmp)
 
-            # Create the file without any anchor in its name
+            # Only the bare file exists — no '#…' suffix in its name.
             (template_dir / "grid").mkdir()
             (template_dir / "grid" / "state.md").write_text("# State\n")
 
-            # Reference includes an anchor — should resolve to the file
+            # Reference uses a multi-segment anchor to make the intent explicit.
             (spec_dir / "spec.md").write_text(
-                "@[template](/_contentTemplates/grid/state.md#some-anchor)\n"
+                "@[template](/_contentTemplates/grid/state.md#table-layout-anchor)\n"
             )
 
             errors, total = validate(spec_dir=spec_dir, template_dir=template_dir)
 
+            # If anchor stripping works correctly, the file is found.
             self.assertEqual(errors, [])
             self.assertEqual(total, 1)
+
+            # Confirm that a path WITH the hash fragment is NOT a valid file —
+            # showing why the strip is necessary for the lookup to succeed.
+            anchored_path = template_dir / "grid" / "state.md#table-layout-anchor"
+            self.assertFalse(
+                anchored_path.exists(),
+                "A file with a '#' in its name should not exist on this filesystem; "
+                "anchor stripping is required for the reference to resolve.",
+            )
 
     def test_multiple_references_in_one_file(self):
         """Multiple valid template refs in one file → all pass, total count correct."""
@@ -109,6 +125,17 @@ class TestValidateRefs(unittest.TestCase):
             self.assertEqual(len(errors), 1)
             self.assertIsInstance(errors[0], str)
             self.assertIn("missing/file.md", errors[0])
+
+    def test_missing_spec_dir_raises(self):
+        """validate() raises FileNotFoundError when spec_dir does not exist."""
+        with tempfile.TemporaryDirectory() as td:
+            tmp = Path(td)
+            missing_spec = tmp / "nonexistent-specs"
+            template_dir = tmp / "_contentTemplates"
+            template_dir.mkdir()
+
+            with self.assertRaises(FileNotFoundError):
+                validate(spec_dir=missing_spec, template_dir=template_dir)
 
     def test_no_references_returns_zero(self):
         """A spec file with no template refs → no errors, total 0."""

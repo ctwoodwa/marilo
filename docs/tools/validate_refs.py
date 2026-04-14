@@ -26,6 +26,7 @@ def validate(spec_dir=None, template_dir=None):
     reference resolves to a file in template_dir.
 
     Returns (errors: list[str], total: int).
+    Raises FileNotFoundError if spec_dir does not exist.
     """
     if spec_dir is None:
         spec_dir = SPEC_DIR
@@ -34,6 +35,12 @@ def validate(spec_dir=None, template_dir=None):
 
     spec_dir = Path(spec_dir)
     template_dir = Path(template_dir)
+
+    if not spec_dir.exists():
+        raise FileNotFoundError(
+            f"ERROR: spec_dir not found: {spec_dir}\n"
+            "Cannot validate @[template] references against a missing directory."
+        )
 
     errors = []
     total = 0
@@ -58,15 +65,23 @@ def validate(spec_dir=None, template_dir=None):
 
 if __name__ == "__main__":
     verify_mode = "--verify" in sys.argv
+
+    if not SPEC_DIR.exists():
+        print(f"ERROR: component-specs/ not found: {SPEC_DIR}")
+        sys.exit(1)
+
+    if not TEMPLATE_DIR.exists():
+        print(f"ERROR: _contentTemplates/ not found: {TEMPLATE_DIR}")
+        sys.exit(1)
+
     errors, total = validate()
 
     if errors:
         if not verify_mode:
             for e in errors:
                 print(e)
-            print(f"FAIL: {len(errors)} broken @[template] reference(s) out of {total} total.")
+        print(f"FAIL: {len(errors)} broken @[template] reference(s) out of {total} total.")
         sys.exit(1)
     else:
-        if not verify_mode:
-            print(f"PASS: All {total} @[template] references resolve correctly.")
+        print(f"PASS: All {total} @[template] references resolve correctly.")
         sys.exit(0)
