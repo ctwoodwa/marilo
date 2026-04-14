@@ -69,6 +69,7 @@ The event can be used to implement custom business logic, or update the Carousel
 }
 ````
 
+@[template](/_contentTemplates/carousel/general.md#carousel-item-class)
 
 ## See Also
 

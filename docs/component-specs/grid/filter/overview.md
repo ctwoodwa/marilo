@@ -52,6 +52,7 @@ There are two approaches to customize the Grid filtering behavior, and you can u
 
 You can customize the filter editors declaratively for some data types. It is possible to change the editor component or the editor format.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | GridColumn Parameter | Type | Works for | Description |
 |---|---|---|---|

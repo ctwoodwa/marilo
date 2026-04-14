@@ -14,9 +14,11 @@ You can add [Marilo Font or SVG icons](slug:common-features-icons) to the Contex
 
 To use ContextMenu item icons, define a property in the component model class and assign the property name to the `IconField` parameter of the ContextMenu.
 
+@[template](/_contentTemplates/common/icons.md#icon-property-supported-types)
 
 If the icon property name in the ContextMenu model is `Icon`, there is no need to set the `IconField` parameter.
 
+@[template](/_contentTemplates/common/icons.md#font-icons-css-note)
 
 >caption How to use icons in Marilo Context Menu
 
@@ -48,6 +50,7 @@ If the icon property name in the ContextMenu model is `Icon`, there is no need t
     }
 </style>
 
+@[template](/_contentTemplates/common/icons.md#font-icons-css-code)
 
 @code {
     private List<MenuItem> MenuData { get; set; }

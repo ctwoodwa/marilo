@@ -20,6 +20,7 @@ The Marilo Blazor Spreadsheet fires events that are related to different user ac
 
 The `OnDownload` event fires when the user clicks on the **Download** button in the Spreadsheet toolbar. The `SpreadsheetDownloadEventArgs` event argument has the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property Name | Type | Description |
 | --- | --- | --- |
@@ -35,6 +36,7 @@ The `OnOpen` event fires when the user clicks on the **Open** button in the Spre
 
 The `SpreadsheetOpenEventArgs` argument of the `OnOpen` event has the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property Name | Type | Description |
 | --- | --- | --- |

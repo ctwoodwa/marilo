@@ -48,6 +48,7 @@ The labels are rendered on the scale of the component to give information to the
 
 ## Arc Gauge Parameters
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 | Parameter | Type and Default Value | Description |
 | --- | --- | --- |
 | `Class` | `string` | Renders a custom CSS class to the `<div class="k-arcgauge">` element. |

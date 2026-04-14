@@ -45,6 +45,7 @@ The <a href="https://www.marilo.com/blazor-ui/daterange-picker" target="_blank">
 ## Date Input Typing Settings
 
 The DateRangePicker
+@[template](/_contentTemplates/date-inputs/general.md#dateinput-typing-settings)
 DateRangePicker.
 
 ## Events
@@ -64,11 +65,13 @@ The DateRangePicker allows you to customize the rendering of the Calendar popup 
 ## Adaptive Rendering
 
 
+@[template](/_contentTemplates/dropdowns/adaptive-rendering.md#intro)
 
 ## DateRangePicker Parameters
 
 The Blazor Date Range Picker provides various parameters that allow you to configure the component. Also check the [DateRangePicker's public API](slug:Marilo.Blazor.Components.MariloDateRangePicker-1).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Attribute | Type and Default Value | Description |
 |----------|----------|----------|
@@ -96,6 +99,7 @@ The Blazor Date Range Picker provides various parameters that allow you to confi
 
 The date range picker is, essentially, two [DateInputs](slug:components/dateinput/overview) and a [Calendar](slug:components/calendar/overview) and the properties it exposes are mapped to the corresponding properties of these two components. You can read more about their behavior in the respective components' documentation.
 
+@[template](/_contentTemplates/date-inputs/general.md#typing-parameters)
 
 ### Styling and Appearance
 
@@ -108,6 +112,7 @@ The following parameters enable you to customize the appearance of the Blazor Da
 
 You can find more options for customizing the Date Range Picker styling in the [Appearance article](slug:daterangepicker-appearance).
 
+@[template](/_contentTemplates/date-inputs/general.md#format-placeholder)
 
 ## DateRangePicker Reference and Methods
 

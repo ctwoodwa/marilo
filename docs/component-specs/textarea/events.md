@@ -41,6 +41,7 @@ The `OnChange` event does not prevent you from using two-way data binding.
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 ## ValueChanged
 
@@ -67,6 +68,7 @@ The `ValueChanged` event fires upon every change (for example, keystroke) in the
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 
 

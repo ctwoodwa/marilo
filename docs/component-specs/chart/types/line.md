@@ -14,6 +14,7 @@ The <a href="https://www.marilo.com/blazor-ui/line-chart" target="_blank">Blazor
 
 ![line chart](images/line-chart.png)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#understand-basics-and-databinding-first)
 
 #### To create a line chart:
 
@@ -57,7 +58,9 @@ Line series
 
 ## Line Chart Specific Appearance Settings
 
+@[template](/_contentTemplates/chart/link-to-basics.md#markers-line-scatter)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#color-line-scatter)
 
 
 ### Missing Values
@@ -69,8 +72,11 @@ If some values are missing from the series data (they are `null`), you can have 
 * `Gap` - there will be no line for the category that misses a value.
 
 
+@[template](/_contentTemplates/chart/link-to-basics.md#line-style-line)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings-categorical)
 
 >caption A line chart that shows how to rotate the labels
 

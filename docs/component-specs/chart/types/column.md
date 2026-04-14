@@ -16,6 +16,7 @@ The <a href="https://www.marilo.com/blazor-ui/column-chart" target="_blank">Blaz
 
 The Column Chart is similar to the [Range Column Chart](slug:components/chart/types/rangecolumn), which allows the column's low end to start above the horizontal axis.
 
+@[template](/_contentTemplates/chart/link-to-basics.md#understand-basics-and-databinding-first)
 
 #### To create a column chart:
 
@@ -73,9 +74,13 @@ To rotate the markers use the `ChartCategoryAxisLabelsRotation` child tag and se
 
 The color of a series is controlled through the `Color` property that can take any valid CSS color (for example, `#abcdef`, `#f00`, or `blue`).
 
+@[template](/_contentTemplates/chart/link-to-basics.md#color-field-bar-column)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#gap-and-spacing)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings-categorical)
 
 >caption Configuring Label Rotation, Skipping the rendering of every second label and adding borders and padding to the Labels.
 

@@ -10,6 +10,7 @@ components: ["gantt"]
 ---
 # Column Display Format
 
+@[template](/_contentTemplates/grid/common-link.md#display-format-basics)
 
 ## Example
 

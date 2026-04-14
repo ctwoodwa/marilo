@@ -47,3 +47,4 @@ The following example demonstrates how to configure the Map Tile Layer.
     private const string LayerAttribution = "&copy; <a href='https://osm.org/copyright'>OpenStreetMap contributors</a>";
 }
 ````
+@[template](/_contentTemplates/map/general.md#urltemplate-csp)

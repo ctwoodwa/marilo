@@ -115,6 +115,7 @@ The RangeSlider provides various parameters that allow you to configure the comp
 
 The following parameters enable you to customize the appearance of the Blazor Slider:
 
+@[template](/_contentTemplates/slider/common.md#styling-features)
 
 ## Next Steps
 

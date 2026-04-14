@@ -44,6 +44,7 @@ The `OnChange` event represents a user action - confirmation of the current valu
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 
 ## ValueChanged
@@ -71,7 +72,9 @@ The example below uses [binding](slug:radiogroup-databind) to string data for br
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
+@[template](/_contentTemplates/common/issues-and-warnings.md#valuechanged-lambda-required)
 
 
 

@@ -41,6 +41,7 @@ Top, Bottom, Left, Right, Auto
 - `mar-popup--{placement}` — position modifier
 - Provider integration: IPopupClass on IMariloProvider (deferred)
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 ## Relationship to Existing Components
 - MariloPopover: tooltip-like, uses show/hide methods. MariloPopup is parameter-driven.
 - MariloDrawer: sidebar panel. MariloPopup is anchor-relative.

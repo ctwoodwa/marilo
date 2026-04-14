@@ -14,6 +14,7 @@ Customize the appearance of the Gantt Timeline through its templates. They will 
 
 Available templates for the [Timeline](slug:gantt-timeline):
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Template | Description |
 | --- | --- |

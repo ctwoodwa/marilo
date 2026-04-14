@@ -19,6 +19,7 @@ This article explains the events available in the Marilo Window for Blazor:
 * [Action Click](#action-click)
 * [LeftChanged and TopChanged](#leftchanged-and-topchanged)
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async) 
 
 
 ## VisibleChanged

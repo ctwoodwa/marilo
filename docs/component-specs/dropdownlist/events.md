@@ -60,7 +60,9 @@ The example below uses [binding](slug:components/dropdownlist/databind) to strin
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
+@[template](/_contentTemplates/common/issues-and-warnings.md#valuechanged-lambda-required)
 
 ## OnChange
 
@@ -93,6 +95,7 @@ from the model: @MySelectedItem
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 ## OnRead
 
@@ -110,6 +113,7 @@ You can also call remote data through `async` operations.
 
 >tip You can also debounce the service calls and implement minimum filter length. An example of such approach is available in [this knowledge base article for the ComboBox](slug:combo-kb-debounce-onread). The same approach is applicable for the DropDownList.
 
+@[template](/_contentTemplates/common/dropdowns-virtualization.md#value-in-onread)
 
 
 ````RAZOR
@@ -231,6 +235,7 @@ The `OnOpen` event fires before the DropDownList popup renders.
 
 The event handler receives as an argument an `DropDownListOpenEventArgs` object that contains:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Description |
 | --- | --- |

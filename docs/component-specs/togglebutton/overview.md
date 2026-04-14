@@ -60,6 +60,7 @@ The Toggle Button provides several parameters that control its [styling and appe
 
 The following table lists Toggle Button parameters, which are not discussed elsewhere. Check the [ToggleButton API Reference](slug:Marilo.Blazor.Components.MariloToggleButton) for a full list of properties, methods and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 |---|---|---|

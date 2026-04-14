@@ -82,6 +82,7 @@ You can pass the entire [NotificationModel](slug:notification-overview#notificat
 
 ### Show From Anywhere
 
+@[template](/_contentTemplates/notification/templates.md#one-instance-per-app-link)
 
 ## Close and Hide
 

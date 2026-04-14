@@ -16,6 +16,7 @@ The Blazor FileSelect provides a [Stream](https://docs.microsoft.com/en-us/dotne
 
 ## FileSelect vs. Upload
 
+@[template](/_contentTemplates/upload/notes.md#fileselect-upload-comparison)
 
 ## Creating Blazor FileSelect
 
@@ -78,6 +79,7 @@ You can use the functionality of the built-in template and modify the appearance
 
 The following table lists the FileSelect parameters. Also check the [FileSelect API Reference](slug:Marilo.Blazor.Components.MariloFileSelect) for a full list of properties, methods and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

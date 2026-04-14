@@ -12,6 +12,7 @@ components: ["scheduler"]
 
 The Scheduler component is designed to work with a collection of appointments. This article will explain their features and how to define the appointment model, so that the Scheduler recognizes it.
 
+@[template](/_contentTemplates/common/general-info.md#valuebind-vs-databind-link)
 
 In this article:
 
@@ -32,6 +33,7 @@ Some of the Scheduler features and behaviors depend directly on values in the ap
 
 The following table lists the default property names and explains how the Scheduler uses these properties. The appointment model needs to provide all properties from the list below, no matter if they have the same names or not.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property Name | Type | Description |
 | --- | --- | --- |

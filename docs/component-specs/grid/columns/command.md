@@ -224,6 +224,7 @@ The following code example demonstrates declarations and handling.
 
 ## Using Components in Grid Command Column
 
+@[template](/_contentTemplates/grid/common-link.md#using-components-in-templates)
 
 ## See Also
 

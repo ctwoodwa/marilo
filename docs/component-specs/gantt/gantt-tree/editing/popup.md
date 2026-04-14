@@ -429,6 +429,7 @@ The Gantt exposes options to customize the edit popup and its form. You can defi
 
 The `GanttPopupEditSettings` nested tag exposes the following parameters to allow popup customization:
 
+@[template](/_contentTemplates/common/popup-edit-customization.md#popup-settings)
 
 ### Edit Form Customization
 

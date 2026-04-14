@@ -194,6 +194,7 @@ You can increase or decrease the size of the chips by setting the `Size` paramet
 }
 ````
 
+@[template](/_contentTemplates/common/themebuilder-section.md#appearance-themebuilder)
 
 ## See Also
 

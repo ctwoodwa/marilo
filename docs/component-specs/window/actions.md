@@ -25,6 +25,7 @@ To define action buttons, populate the `WindowActions` tag of the Window with `W
 
 Action buttons expose the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

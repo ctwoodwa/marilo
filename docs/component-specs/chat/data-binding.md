@@ -55,6 +55,7 @@ To bind the Chat to data, set its `Data` parameter to an `IEnumerable<T>` where 
         ChatData.Add(newMessage);
     }
 
+@[template](/_contentTemplates/chat/general.md#messagecs)
 }
 ````
 
@@ -62,6 +63,7 @@ To bind the Chat to data, set its `Data` parameter to an `IEnumerable<T>` where 
 
 The Chat component provides field mapping parameters to work with different data models. Use these parameters to specify which properties in your data model correspond to Chat features:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property Name | Description | Default Value |
 |-----------|-------------|---------------|
@@ -153,6 +155,7 @@ The Chat component automatically reflects changes to the bound data collection. 
         ChatRef?.Refresh();
     }
 
+@[template](/_contentTemplates/chat/general.md#messagecs)
 }
 ````
 

@@ -22,6 +22,7 @@ This article explains the available events for the Marilo Map for Blazor:
 
 The `OnClick` event fires when the user clicks or taps on the Map. The `OnClick` event handler argument is of type `MapClickEventArgs`, which exposes the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Type | Description |
 | ---------| ---- | ----------- |
@@ -128,6 +129,7 @@ The `OnClick` event fires when the user clicks or taps on the Map. The `OnClick`
 
 The `OnMarkerClick` event fires when the user clicks or taps a marker. The `OnMarkerClick` event handler argument is of type `MapMarkerClickEventArgs`, which exposes the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Type | Description |
 | ---------| ---- | ----------- |
@@ -234,6 +236,7 @@ The `OnMarkerClick` event fires when the user clicks or taps a marker. The `OnMa
 
 The `OnShapeClick` event fires when the user clicks or taps a shape. The `OnShapeClick` event handler argument is of type `MapShapeClickEventArgs`, which exposes the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Type | Description |
 | ---------| ---- | ----------- |
@@ -341,6 +344,7 @@ The `OnShapeClick` event fires when the user clicks or taps a shape. The `OnShap
 
 The `OnZoomEnd` event fires when the user has finished zooming the Map. The `OnZoomEnd` event handler argument is of type `MapZoomEndEventArgs`, which exposes the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Type | Description |
 | ---------| ---- | ----------- |
@@ -449,6 +453,7 @@ The `OnZoomEnd` event fires when the user has finished zooming the Map. The `OnZ
 
 The `OnPanEnd` event fires when the user has finished moving (panning) the Map. The `OnPanEnd` event handler argument is of type `MapPanEndEventArgs` argument, which exposes the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Type | Description |
 | ---------| ---- | ----------- |
@@ -551,6 +556,7 @@ The `OnPanEnd` event fires when the user has finished moving (panning) the Map. 
 }
 ````
 
+@[template](/_contentTemplates/map/general.md#urltemplate-csp)
 
 ## See Also
 

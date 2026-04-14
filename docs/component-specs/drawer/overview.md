@@ -74,6 +74,7 @@ The Blazor Drawer fires select and expand events. Handle those events to respond
 
 The Blazor Drawer provides various parameters to configure the component. Also check the [Drawer public API](slug:Marilo.Blazor.Components.MariloDrawer-1).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default Value | Description |
 | --- | --- | --- |

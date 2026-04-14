@@ -142,6 +142,7 @@ The Blazor PanelBar generates events that you can handle to respond to the user 
 
 The following table lists PanelBar parameters, which are not related to other features on this page. Check the [PanelBar API Reference](slug:Marilo.Blazor.Components.MariloPanelBar) for a full list of properties, methods and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default Value | Description |
 |---|---|---|

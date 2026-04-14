@@ -29,6 +29,7 @@ You can add multiple buttons to the Marilo AIPrompt. To do that you should add t
 
 The `AIPromptToolBarButton` tag exposes parameters that allow you to customize the buttons:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default Value | Description |
 | ----------- | ----------- | ----------- |

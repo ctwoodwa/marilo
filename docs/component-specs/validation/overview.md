@@ -12,6 +12,7 @@ components: ["validationmessage", "validationsummary", "validationtooltip"]
 
 Marilo UI for Blazor provides different ways to show and customize validation messages. The validation tools can be used together with the [Marilo Form](slug:form-overview) or with any form that provides an [`EditContext`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.components.forms.editcontext) like the [standard Blazor `EditForm`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.components.forms.editform).
 
+@[template](/_contentTemplates/common/form-validation.md#note-validation)
 
 ## Validation Tools
 
@@ -25,7 +26,9 @@ These components add default styling and customization options on top of the sta
 
 The validation components must receive an `EditContext` instance as a cascading parameter, so they can reside in a [Marilo Form](slug:form-overview) or a standard Blazor `EditForm`.
 
+@[template](/_contentTemplates/common/form-validation.md#note-editcontext-formitem-template)
 
+@[template](/_contentTemplates/common/form-validation.md#note-marilo-role-in-validation)
 
 # Next Steps
 

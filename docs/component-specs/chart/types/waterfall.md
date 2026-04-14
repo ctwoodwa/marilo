@@ -16,6 +16,7 @@ A Waterfall Chart is useful for different types of quantitative analysis related
 
 ![waterfall chart](images/waterfall-chart.png)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#understand-basics-and-databinding-first)
 
 ## Creating a Waterfall Chart
 
@@ -165,9 +166,13 @@ Each data item is decorated with a text label. To control and customize these la
 
 The color of a series is controlled through the `Color` property that can take any valid CSS color (for example, `#abcdef`, `#f00`, or `blue`).
 
+@[template](/_contentTemplates/chart/link-to-basics.md#color-field-bar-column)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#gap-and-spacing)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings-categorical)
 
 ## See Also
 

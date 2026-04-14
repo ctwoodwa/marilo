@@ -42,6 +42,7 @@ The Blazor ColorGradient fires value change and format change events that you ca
 
 The ColorGradient accepts values by the application code in the following formats:
 
+@[template](/_contentTemplates/common/coloreditors.md#value-formats)
 
 Color keywords are not supported. If this is the preferred use case scenario, consider the [ColorPalette component](slug:colorpalette-overview).
 
@@ -49,6 +50,7 @@ Color keywords are not supported. If this is the preferred use case scenario, co
 
 The Blazor ColorGradient provides various parameters to configure the component. Also check the [ColorGradient public API](slug:Marilo.Blazor.Components.MariloColorGradient).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default Value | Description |
 | --- | --- | --- |

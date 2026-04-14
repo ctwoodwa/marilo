@@ -18,6 +18,7 @@ The [Blazor Grid](https://demos.marilo.com/blazor-ui/grid/overview) provides sev
 
 ### Command Tools
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Tool Name | Tool Tag | Description |
 | --- | --- | --- |

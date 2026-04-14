@@ -12,6 +12,7 @@ components: ["treelist"]
 
 Inline TreeList editing lets users modify all values on a TreeList row. The edit process starts and ends with clicking of command buttons on the respective row. Inline editing can be more intuitive for beginner users, compared to in-cell editing.
 
+@[template](/_contentTemplates/treelist/editing.md#overview-required)
 
 ## Basics
 
@@ -32,6 +33,7 @@ Inline add, edit, and delete operations use the following [command buttons](slug
 * **Save**
 * **Cancel**
 
+@[template](/_contentTemplates/treelist/editing.md#without-commands)
 
 In inline edit mode, the TreeList commands execute row by row and the corresponding [TreeList events](slug:treelist-editing-overview#events) also fire row by row. This is similar to [popup editing](slug:treelist-editing-popup) and unlike [in-cell editing](slug:treelist-editing-incell), where commands and events relate to cells.
 
@@ -69,6 +71,7 @@ The example below shows how to:
 
 * Implement inline TreeList CRUD operations with the minimal required number of events.
 * Bind an editable TreeList to [flat data](slug:treelist-data-binding-flat-data). Check the [popup editing example] for an implementation with [hierarchical data](slug:treelist-data-binding-hierarchical-data).
+@[template](/_contentTemplates/treelist/editing.md#basic-example-description)
 
 >caption TreeList inline editing
 
@@ -82,6 +85,7 @@ The example below shows how to:
                  ParentIdField="@nameof(Employee.ParentId)"
                  ConfirmDelete="true"
                  EditMode="@TreeListEditMode.Inline"
+@[template](/_contentTemplates/treelist/editing.md#basic-example-parameters-columns)
         <TreeListCommandColumn Width="200px">
             <TreeListCommandButton Command="Add">Add</TreeListCommandButton>
             <TreeListCommandButton Command="Edit">Edit</TreeListCommandButton>
@@ -93,7 +97,9 @@ The example below shows how to:
 </MariloTreeList>
 
 @code {
+@[template](/_contentTemplates/treelist/editing.md#basic-example-code)
 
+@[template](/_contentTemplates/treelist/editing.md#flat-crud-service-and-model)
 }
 ````
 

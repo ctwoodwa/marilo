@@ -16,6 +16,7 @@ The <a href="https://www.marilo.com/blazor-ui/pie-chart" target="_blank">Blazor 
 
 >caption Pie chart. Results from the first code snippet below
 
+@[template](/_contentTemplates/chart/link-to-basics.md#understand-basics-and-databinding-first)
 
 #### To create a pie chart:
 
@@ -347,7 +348,9 @@ Chart Legend Position
 
 ## Other Settings
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings-axis-free)
 
 ## See Also
 

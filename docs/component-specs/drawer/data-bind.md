@@ -12,6 +12,7 @@ components: ["drawer"]
 
 This article explains the how to provide data to a Drawer component so it renders items for you, the properties related to data binding and their results.
 
+@[template](/_contentTemplates/common/general-info.md#valuebind-vs-databind-link)
 
 This article has the following sections:
 
@@ -39,6 +40,7 @@ The properties of a drawer item match directly to a field of the model the drawe
 
 >tip There are default values for the field names. If your model names match the defaults, you don't have to define them in the bindings settings.
 
+@[template](/_contentTemplates/common/navigation-components.md#default-fields-match-issues)
 
 >caption Default field names for drawer item bindings. If you use these, you don't have to specify them in the `MariloDrawer` tag explicitly.
 

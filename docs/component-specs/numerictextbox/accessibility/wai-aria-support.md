@@ -9,6 +9,7 @@ position: 50
 
 # Blazor NumericTextBox Accessibility
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 
 

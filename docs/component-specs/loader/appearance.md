@@ -136,6 +136,7 @@ The `ThemeColor` parameter renders as the `k-loader-<ThemeColor>` CSS class on t
 <MariloLoader ThemeColor="custom-color"></MariloLoader>
 ````
 
+@[template](/_contentTemplates/common/themebuilder-section.md#appearance-themebuilder)
 
 ## See Also
 

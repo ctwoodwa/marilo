@@ -20,6 +20,7 @@ You can control the appearance of the CheckBox button by setting the following a
 
 You can increase or decrease the size of the CheckBox by setting the `Size` attribute to a member of the `Marilo.Blazor.ThemeConstants.CheckBox.Size` class:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Class member | Manual declaration |
 |------------|--------|
@@ -43,3 +44,4 @@ The `Rounded` attribute applies the `border-radius` CSS rule to the checkbox to 
 >caption The built-in values of the Rounded attribute
 
 
+@[template](/_contentTemplates/common/themebuilder-section.md#appearance-themebuilder)

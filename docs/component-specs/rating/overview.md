@@ -55,6 +55,7 @@ The Rating events allow you to implement custom functionality and handle user in
 
 The Blazor Rating provides various parameters that allow you to configure the component. Also check the [Rating API Reference](slug:Marilo.Blazor.Components.MariloRating) for a full list of properties.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type | Description |
 | ----------- | ----------- | ----------- |

@@ -47,6 +47,7 @@ Each tile provides settings that define how many columns and rows its takes up -
 
 `ColSpan` can affect the actual number of `Columns` of the entire layout. For example, if you have a tile with `ColSpan="2"` and `Columns="1"`, the TileLayout will still have two columns.
 
+@[template](/_contentTemplates/tilelayout/basics.md#resizing-reordering-logic)
 
 
 ## Next Steps

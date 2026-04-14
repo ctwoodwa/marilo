@@ -77,6 +77,7 @@ The GridLayout Item defines the content of the MariloGridLayout. [See the Items 
 
 ## GridLayout Parameters
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default value | Description |
 |-----------|------------------------|-------------|

@@ -28,6 +28,7 @@ When using a Form item template, the following `FormItem` parameters are ignored
 * `Id`
 * `LabelText`
 
+@[template](/_contentTemplates/common/form-validation.md#note-editcontext-formitem-template)
 
 ## Validation Messages and Styling
 

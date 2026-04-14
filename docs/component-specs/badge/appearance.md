@@ -16,6 +16,7 @@ The Badge component features built-in appearance parameters that allow you to cu
 
 You can toggle the Badge border and background by setting the `FillMode` parameter to a member of the `Marilo.Blazor.ThemeConstants.Badge.FillMode` class:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Class members | Manual declarations |
 |---------------|--------|
@@ -29,6 +30,7 @@ Refer to the [example](#example) below to customize the available parameters and
 
 The `Rounded` parameter applies the `border-radius` CSS rule to the Badge and lets you curve its edges. You can set it to a member of the `Marilo.Blazor.ThemeConstants.Badge.Rounded` class:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Class members | Manual declarations |
 |---------------|--------|
@@ -43,6 +45,7 @@ Refer to the [example](#example) below to customize the available parameters and
 
 You can increase or decrease the size of the Badge by setting the `Size` parameter to a member of the `Marilo.Blazor.ThemeConstants.Badge.Size` class:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Class members | Manual declarations |
 |---------------|--------|
@@ -56,6 +59,7 @@ Refer to the [example](#example) below to customize the available parameters and
 
 You can change the color of the Badge by setting the `ThemeColor` parameter to a member of the `Marilo.Blazor.ThemeConstants.Badge.ThemeColor` class:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Class members | Manual declarations |
 |---------------|--------|

@@ -40,6 +40,7 @@ See [Integration with Marilo.AI.SmartComponents.Extensions](slug:common-features
 
 ### Types
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Class Name | Description |
 | --- | --- |

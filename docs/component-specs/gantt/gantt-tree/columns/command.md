@@ -32,6 +32,7 @@ The Blazor Gantt Command Column provides various parameters to configure the com
 
 ### The GanttCommandButton Tag
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Description |
 | --- | --- |

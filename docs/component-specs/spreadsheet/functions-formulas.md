@@ -39,6 +39,7 @@ The Marilo Spreadsheet supports a large variety of functions. They work in the s
 
 The function names are case insensitive.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Function Name | Description |
 | --- | --- |

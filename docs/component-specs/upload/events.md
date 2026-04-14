@@ -29,12 +29,14 @@ First, get familiar with the [**Event Arguments**](#event-arguments) section, as
 
 >warning Make sure to also check the section about [Upload security](slug:upload-overview#security).
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 
 ## Event Arguments
 
 The different Upload events use different event argument types, but the exposed properties are similar. Depending on the exact event, the properties will be some of these:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Type | Description |
 |---|---|---|
@@ -810,6 +812,7 @@ app.MapDefaultControllerRoute();
 app.Run();
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 
 ## See Also

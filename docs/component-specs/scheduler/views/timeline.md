@@ -22,6 +22,7 @@ In this article:
 
 Generally, the views are designed around the timeframe that they show and the day-based views share some common properties that you will likely have to set to provide a good user experience for the user:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Attribute | Type and Default Value | Description |
 |----------|----------|----------|
@@ -34,7 +35,9 @@ Generally, the views are designed around the timeframe that they show and the da
 |`WorkDayEnd` | `DateTime` | The counterpart to `WorkDayStart` &mdash; defines when the working day ends.
 | `WorkDayStart` | `DateTime` | The start time of the working day; differentiates work hours with a distinct background for easy identification. Influences the **Show Business Hours** toggle.
 
+@[template](/_contentTemplates/scheduler/views.md#visible-times-tip)
 
+@[template](/_contentTemplates/scheduler/views.md#day-slots-explanation)
 
 ## Example
 

@@ -56,6 +56,7 @@ The Blazor Tooltip accepts a nested `<Template>` tag, which is a standard Blazor
 
 The Blazor Tooltip provides the following configuration parameters. Also check the [Tooltip component API](slug:Marilo.Blazor.Components.MariloTooltip).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

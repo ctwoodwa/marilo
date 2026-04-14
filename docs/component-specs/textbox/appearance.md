@@ -21,6 +21,7 @@ You can control the appearance of the TextBox button by setting the following at
 
 You can increase or decrease the size of the TextBox by setting the `Size` parameter to a member of the `Marilo.Blazor.ThemeConstants.TextBox.Size` class. The `Size` parameter determines styles like `padding` and `font-size`, but is not related to the separate `Width` parameter.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Class members | Manual declarations |
 |------------|--------|
@@ -126,3 +127,4 @@ The `FillMode` controls how the MariloTextBox is filled. You can set it to a mem
 }
 ````
 
+@[template](/_contentTemplates/common/themebuilder-section.md#appearance-themebuilder)

@@ -68,6 +68,7 @@ In the example below each chunk is "worth" `10 / 4 = 2.5`. The `Value` is `3` so
 
 ## ChunkProgressBar Parameters
 
+ @[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default Value | Description |
 | --- | --- | --- |

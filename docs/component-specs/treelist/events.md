@@ -47,6 +47,7 @@ You can use `OnExpand` to know the user action and/or to [load data on demand](s
 
 The `OnCollapse` event fires when the user collapses an expanded row through the collapse arrow. It receives arguments of type `TreeListCollapseEventArgs<T>` where `T` is the model you bind the treelist to, and the `Item` field in the event arguments is the current model.
 
+@[template](/_contentTemplates/common/general-info.md#rerender-after-event)
 
 >caption Handle OnExpand and OnCollapse
 
@@ -180,6 +181,7 @@ Visit the [TreeList Cell Selection article to see an example](slug:treelist-sele
 
 ## OnModelInit
 
+@[template](/_contentTemplates/common/onmodelinit.md#onmodelinit-info)
 
 >caption The different use-cases of the OnModelInit event
 
@@ -959,9 +961,11 @@ Visit the [TreeList Cell Selection article to see an example](slug:treelist-sele
 
 ## OnRowClick
 
+@[template](/_contentTemplates/common/click-events.md#rowclick)
 
 The `OnRowClick` event handler receives a `TreeListRowClickEventArgs` argument, which has the following properties.
 
+@[template](/_contentTemplates/common/click-events.md#clickeventargs)
 
 >caption Using the TreeList OnRowClick event
 
@@ -1060,9 +1064,11 @@ The `OnRowClick` event handler receives a `TreeListRowClickEventArgs` argument, 
 
 ## OnRowDoubleClick
 
+@[template](/_contentTemplates/common/click-events.md#rowdoubleclick)
 
 The `OnRowDoubleClick` event handler receives a `TreeListRowClickEventArgs` argument, which has the following properties.
 
+@[template](/_contentTemplates/common/click-events.md#clickeventargs)
 
 >caption Using the TreeList OnRowDoubleClick event
 
@@ -1161,9 +1167,11 @@ The `OnRowDoubleClick` event handler receives a `TreeListRowClickEventArgs` argu
 
 ## OnRowContextMenu
 
+@[template](/_contentTemplates/common/click-events.md#rowcontextmenu)
 
 The `OnRowContextMenu` event handler receives a `TreeListRowClickEventArgs` argument, which has the following properties.
 
+@[template](/_contentTemplates/common/click-events.md#clickeventargs)
 
 >caption Using the TreeList OnRowContextMenu event
 

@@ -36,6 +36,7 @@ This section applies to:
 
 The recommended way to add `MariloRootComponent` to a Blazor app is to:
 
+@[template](/_contentTemplates/rootcomponent/setup.md#define-in-marilolayout)
 
 The above approach has the following benefits:
 
@@ -69,6 +70,7 @@ If you are using Marilo components in a Blazor app with **Per page/component** i
 
 ## MariloRootComponent Parameters
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

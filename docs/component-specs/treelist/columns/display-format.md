@@ -10,6 +10,7 @@ components: ["treelist"]
 ---
 # Column Display Format
 
+@[template](/_contentTemplates/grid/common-link.md#display-format-basics)
 
 ## Example
 
@@ -83,6 +84,7 @@ components: ["treelist"]
 ![DisplayFormat basic sample](images/treelist-display-format.png)
 
 
+@[template](/_contentTemplates/grid/common-link.md#display-format-notes)
 
 
 ## See Also

@@ -47,6 +47,7 @@ The `OnBlur` event fires when the component loses focus.
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 
 ## OnCalendarCellRender
@@ -130,6 +131,7 @@ The DatePicker is a generic component, so you must either provide a `Value`, or 
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 >tip The `OnChange` event is a custom event and does not interfere with bindings, so you can use it together with models and forms.
 
@@ -165,6 +167,7 @@ The event handler receives as an argument an [`DatePickerCloseEventArgs` object]
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 
 ## OnOpen
@@ -173,6 +176,7 @@ The `OnOpen` event fires before the DatePicker popup renders.
 
 As an argument, the event handler receives a [`DatePickerOpenEventArgs` object](slug:Marilo.Blazor.Components.DatePickerOpenEventArgs), which contains the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Description |
 | --- | --- |
@@ -194,6 +198,7 @@ As an argument, the event handler receives a [`DatePickerOpenEventArgs` object](
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 
 ## ValueChanged
@@ -230,7 +235,9 @@ model value: @DatePickerValue
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
+@[template](/_contentTemplates/common/issues-and-warnings.md#valuechanged-lambda-required)
 
 
 ## See Also

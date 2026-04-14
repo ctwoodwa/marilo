@@ -50,6 +50,7 @@ The template exposes a `context` parameter, which allows access to the Carousel 
 }
 ````
 
+@[template](/_contentTemplates/carousel/general.md#carousel-item-class)
 
 ## See Also
 

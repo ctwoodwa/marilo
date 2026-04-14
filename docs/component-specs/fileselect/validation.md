@@ -73,6 +73,7 @@ For brevity, the code below does not handle the selected file. See a full exampl
 }
 ````
 
+@[template](/_contentTemplates/upload/notes.md#server-security-note)
 
 
 ## See Also

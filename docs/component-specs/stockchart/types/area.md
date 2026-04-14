@@ -18,6 +18,7 @@ An Area chart emphasizes the volume of money, data or any other unit that the gi
 
 ![basic area chart](images/stockchart-basic-area-chart.png)
 
+@[template](/_contentTemplates/stockchart/link-to-basics.md#understand-basics-and-databinding-first)
 
 To add a `Area` chart to a stock chart component:
 

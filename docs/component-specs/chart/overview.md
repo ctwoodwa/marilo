@@ -28,6 +28,7 @@ The <a href="https://demos.marilo.com/blazor-ui/chart/overview" target="_blank">
 
 ## Chart Elements
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings)
 
 ## Title and Subtitle
 
@@ -190,6 +191,7 @@ The Chart allows various [customizations through child tags and parameters](#cha
 
 The following table lists Chart parameters, which are not discussed elsewhere in the component documentation.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default value | Description |
 |-----------|------------------------|-------------|

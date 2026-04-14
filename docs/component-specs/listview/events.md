@@ -33,6 +33,7 @@ In the common case, you provide all the data to the listview's Data collection a
 
 ### OnModelInit
 
+@[template](/_contentTemplates/common/onmodelinit.md#onmodelinit-info)
 
 >caption The different use-cases of the OnModelInit event
 

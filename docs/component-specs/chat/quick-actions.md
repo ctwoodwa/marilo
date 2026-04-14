@@ -134,6 +134,7 @@ When the user clicks on a Chat suggestion, the suggestion text may or may not ap
         ChatData.Add(newMessage);
     }
 
+@[template](/_contentTemplates/chat/general.md#messagecs)
 }
 ````
 
@@ -264,6 +265,7 @@ Customize the appearance of suggestions using the Chat's `SuggestionTemplate`.
 
         ChatData.Add(newMessage);
     }
+@[template](/_contentTemplates/chat/general.md#messagecs)
 }
 ````
 
@@ -318,6 +320,7 @@ The `SuggestedActionsLayoutMode` parameter controls how suggested actions (quick
         });
     }
 
+@[template](/_contentTemplates/chat/general.md#messagecs)
 }
 ````
 

@@ -12,6 +12,7 @@ components: ["multiselect"]
 
 This article explains the different ways to provide data to a MultiSelect component, the properties related to data binding and their results.
 
+@[template](/_contentTemplates/common/general-info.md#valuebind-vs-databind-link)
 
 There are two key ways to bind data:
 
@@ -123,6 +124,7 @@ To bind the MultiSelect to a model:
 }
 ````
 
+@[template](/_contentTemplates/common/get-model-from-dropdowns.md#get-model-from-dropdowns)
 
 ## Considerations
 

@@ -20,6 +20,7 @@ You can customize how the popup and its anchor align with each other. You can us
 
 Use the available parameters to control which part of the anchor touches the Popup.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type | Enum Members |
 | ----------- | ----------- | ----------- |
@@ -32,6 +33,7 @@ See the [example](#example) below to customize the available parameters and see 
 
 Use the available parameters to control which side of the Popup is in contact with the anchor.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type | Enum Members |
 | ----------- | ----------- | ----------- |
@@ -47,6 +49,7 @@ There are two collision modes available for the Popup component:
 
 Use the available parameters to control how the Popup reacts to insufficient screen space.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type | Enum Members |
 | ----------- | ----------- | ----------- |

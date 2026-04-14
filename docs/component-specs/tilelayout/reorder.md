@@ -16,6 +16,7 @@ To enable reordering, set the `Reorderable` parameter of the main `MariloTileLay
 
 To be able to drag and reorder a tile, it must have some [content](slug:tilelayout-tile-content) in its header.
 
+@[template](/_contentTemplates/tilelayout/basics.md#resizing-reordering-logic)
 
 Reordering a tile fires the [OnReorder event](slug:tilelayout-events#onreorder).
 

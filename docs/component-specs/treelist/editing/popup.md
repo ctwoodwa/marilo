@@ -12,6 +12,7 @@ components: ["treelist"]
 
 TreeList popup editing allows the app to render a larger form with customizable dimensions and layout. The popup edit mode is also more suitable for mobile devices with small screens. The popup edit form may contain editable fields from hidden columns in the TreeList table.
 
+@[template](/_contentTemplates/treelist/editing.md#overview-required)
 
 ## Basics
 
@@ -31,6 +32,7 @@ Popup add, edit, and delete operations use the following [command buttons](slug:
 * **Delete**
 * **Edit**
 
+@[template](/_contentTemplates/treelist/editing.md#without-commands)
 
 Popup edit mode does not use **Save** and **Cancel** command buttons in the [TreeList command column](slug:treelist-columns-command). The TreeList renders them automatically in the popup, unless you define a [Buttons Template](slug:treelist-templates-popup-buttons) or a [Form Template](slug:treelist-templates-popup-form).
 
@@ -48,6 +50,7 @@ Starting with version 7.0, the TreeList allows users to edit [hidden columns](sl
 
 The `TreeListPopupEditSettings` nested tag exposes the following parameters to allow popup customization:
 
+@[template](/_contentTemplates/common/popup-edit-customization.md#popup-settings)
 
 For example, here is [how to set the TreeList popup edit form's title, so that it matches a property value of the edited data item](slug:grid-kb-popup-edit-title).
 
@@ -55,6 +58,7 @@ For example, here is [how to set the TreeList popup edit form's title, so that i
 
 The `TreeListPopupEditFormSettings` nested tag exposes the following parameters to allow edit form customization:
 
+@[template](/_contentTemplates/common/popup-edit-customization.md#edit-form-settings)
 
 >important These settings are not applicable if you are using a [`<FormTemplate>` with a standalone Form component](slug:treelist-templates-popup-form).
 
@@ -72,6 +76,7 @@ The example below shows how to:
 
 * Implement popup TreeList CRUD operations with the minimal required number of events.
 * Bind an editable TreeList to [hierarchical data](slug:treelist-data-binding-hierarchical-data). Check the [inline editing example](slug:treelist-editing-inline#example) for an implementation with [flat data](slug:treelist-data-binding-flat-data).
+@[template](/_contentTemplates/treelist/editing.md#basic-example-description)
 * Edit the `Notes` column that is not visible in the TreeList.
 * Customize the popup edit form dimensions and layout.
 
@@ -119,7 +124,9 @@ The example below shows how to:
 </MariloTreeList>
 
 @code {
+@[template](/_contentTemplates/treelist/editing.md#basic-example-code)
 
+@[template](/_contentTemplates/treelist/editing.md#hierarchical-crud-service-and-model)
 }
 ````
 

@@ -595,14 +595,19 @@ The Gantt state allows you to control the behavior of the Gantt programmatically
 <div class="skip-repl"></div>
 
 ````RAZOR Sorting
+@[template](/_contentTemplates/gantt/state.md#set-sort-from-code)
 ````
 ````RAZOR FilterRow
+@[template](/_contentTemplates/gantt/state.md#filter-row-from-code)
 ````
 ````RAZOR FilterMenu
+@[template](/_contentTemplates/gantt/state.md#filter-menu-from-code)
 ````
 ````RAZOR Hierarchy
+@[template](/_contentTemplates/gantt/state.md#expand-hierarchy-from-code)
 ````
 
+@[template](/_contentTemplates/grid/state.md#filter-menu-default-filters)
 
 ### Get and Override User Action That Changes The Gantt
 

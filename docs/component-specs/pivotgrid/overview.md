@@ -27,6 +27,7 @@ The PivotGrid component and this documentation use terms *row*, *column*, and *m
 
 The PivotGrid is an integrated product that includes several Razor components:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Component | Description |
 | --- | --- |

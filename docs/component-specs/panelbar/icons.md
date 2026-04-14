@@ -14,9 +14,11 @@ You can add [Marilo Font or SVG icons](slug:common-features-icons) to the PanelB
 
 To use PanelBar item icons, define a property in the component model class and assign the property name to the `IconField` parameter of the PanelBar.
 
+@[template](/_contentTemplates/common/icons.md#icon-property-supported-types)
 
 If the icon property name in the PanelBar model is `Icon`, there is no need to set the `IconField` parameter.
 
+@[template](/_contentTemplates/common/icons.md#font-icons-css-note)
 
 >caption How to use icons in the Marilo PanelBar
 
@@ -45,6 +47,7 @@ If the icon property name in the PanelBar model is `Icon`, there is no need to s
     }
 </style>
 
+@[template](/_contentTemplates/common/icons.md#font-icons-css-code)
 
 @code {
     private List<PanelBarItem> PanelBarData { get; set; } = new List<PanelBarItem>();

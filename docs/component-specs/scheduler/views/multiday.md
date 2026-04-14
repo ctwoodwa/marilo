@@ -20,9 +20,12 @@ In this article:
 	* Slots
 * [Example](#example)
 
+@[template](/_contentTemplates/scheduler/views.md#day-views-common-properties)
 | `NumberOfDays` | `int` <br/> `1` | How many days to show side by side in the view.
 
+@[template](/_contentTemplates/scheduler/views.md#visible-times-tip)
 
+@[template](/_contentTemplates/scheduler/views.md#day-slots-explanation)
 
 ## Example
 

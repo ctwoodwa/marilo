@@ -12,6 +12,7 @@ components: ["multicolumncombobox"]
 
 This article explains how to provide data to the MultiColumnComboBox component, the properties related to data binding and their results.
 
+@[template](/_contentTemplates/common/general-info.md#valuebind-vs-databind-link)
 
 
 ## Bind to a Model
@@ -20,6 +21,7 @@ Bind the MultiColumnComboBox to a model in your application. Unlike other drop d
 
 Consult the [MultiColumnComboBox basic usage example](slug:multicolumncombobox-overview#creating-multiColumnComboBox).
 
+@[template](/_contentTemplates/common/get-model-from-dropdowns.md#get-model-from-dropdowns)
 
 
 ## Value and Selected Item
@@ -46,6 +48,7 @@ Missing selection is most common when:
 | The `ValueField` of an item | No item is selected. `Value` is updated to the custom input. | No item is selected. `Value` is updated to `default(typeof(Value))`. The `OnChange` event does not fire for the value clearing. |
 | No match | No item is selected. `Value` is updated to the custom one. | No item is selected. `Value` is updated to `default(typeof(Value))`. The `OnChange` event does not fire for the value clearing. |
 
+@[template](/_contentTemplates/common/get-model-from-dropdowns.md#get-model-from-dropdowns)
 
 
 ## Missing Value or Data

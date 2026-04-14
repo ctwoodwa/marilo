@@ -191,6 +191,7 @@ If you set the `Reverse` (`bool`) parameter to `true` the scale direction will b
 
 ## Additional Customization
 
+@[template](/_contentTemplates/gauges/additional-customization.md#circular-gauge-additional-customization)
 
 
 ## See Also

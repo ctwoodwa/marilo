@@ -121,8 +121,10 @@ You can set or remove the search filters programmatically through the `SearchFil
 >caption Set and clear the Grid SearchBox filter programmatically
 
 ````RAZOR
+@[template](/_contentTemplates/grid/state.md#search-from-code)
 ````
 
+@[template](/_contentTemplates/grid/state.md#initial-state)
 
 ## Customize the SearchBox
 

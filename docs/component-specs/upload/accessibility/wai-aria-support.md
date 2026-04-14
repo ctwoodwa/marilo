@@ -9,6 +9,7 @@ position: 50
 
 # Blazor Upload Accessibility
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 
 

@@ -57,6 +57,7 @@ The `OnClick` event argument is of type [MouseEventArgs](https://docs.microsoft.
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 ## SelectedChanged
 

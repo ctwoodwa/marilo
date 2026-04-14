@@ -10,6 +10,7 @@ components: ["grid"]
 ---
 # Column Display Format
 
+@[template](/_contentTemplates/grid/common-link.md#display-format-basics)
 The `MariloGridColumn` exposes two parameters for formatting cell values: `DisplayFormat` (the preferred modern form, using composite format strings) and `Format` (a legacy simple format string retained for backwards compatibility). If both are set, `DisplayFormat` takes precedence.
 
 ## Parameters
@@ -65,6 +66,7 @@ The `MariloGridColumn` exposes two parameters for formatting cell values: `Displ
 ````
 
 
+@[template](/_contentTemplates/grid/common-link.md#display-format-notes)
 
 
 ## See Also

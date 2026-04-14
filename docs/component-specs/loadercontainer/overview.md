@@ -81,6 +81,7 @@ The Blazor LoaderContainer can expand to fill only a specific parent container. 
 
 The following table lists the LoaderContainer parameters. Also check the [LoaderContainer API Reference](slug:Marilo.Blazor.Components.MariloLoaderContainer).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

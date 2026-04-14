@@ -12,6 +12,7 @@ position: 10
 # DropDownTree Binding to Hierarchical Data
 
 This article explains how to bind the DropDownTree for Blazor to hierarchical data.
+@[template](/_contentTemplates/dropdowntree/general.md#data-binding-basics-link)
 
 Hierarchical data means that the child items exist in a property of the parent item. By default, the DropDownTree expects this property to be called `Items`, otherwise set the property name in the `ItemsField` parameter.
 

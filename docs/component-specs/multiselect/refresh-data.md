@@ -10,6 +10,7 @@ components: ["multiselect"]
 ---
 # MultiSelect - Refresh Data
 
+@[template](/_contentTemplates/common/observable-data.md#intro)
 
 Sections in this article:
 
@@ -65,9 +66,11 @@ You can refresh the data of the MultiSelect by using the `Rebind` method exposed
 }
 ````
 
+@[template](/_contentTemplates/common/refresh-data-not-applicable.md#refresh-data-note)
 
 ## Observable Data
 
+@[template](/_contentTemplates/common/observable-data.md#observable-data)
 
 
 >caption Bind the MultiSelect component to an ObservableCollection, so it can react to collection changes.
@@ -130,9 +133,11 @@ You can refresh the data of the MultiSelect by using the `Rebind` method exposed
 }
 ````
 
+@[template](/_contentTemplates/common/observable-data.md#tip-for-new-collection)
 
 ## New Collection Reference
 
+@[template](/_contentTemplates/common/observable-data.md#refresh-data)
 
 >caption Create new collection reference to refresh the Multiselect data.
 

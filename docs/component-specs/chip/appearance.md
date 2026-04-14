@@ -98,6 +98,7 @@ The `Rounded` attribute applies the `border-radius` CSS rule to the Chip to achi
 
 You can increase or decrease the size of the Chip by setting the `Size` attribute to a member of the `Marilo.Blazor.ThemeConstants.Chip.Size` class:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Class member | Manual declaration |
 |------------|--------|
@@ -171,6 +172,7 @@ The `ThemeColor` parameter applies a predefined text color and background color.
 }
 ````
 
+@[template](/_contentTemplates/common/themebuilder-section.md#appearance-themebuilder)
 
 ## Next Steps
 

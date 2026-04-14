@@ -51,6 +51,7 @@ The ListView provides events related to editing and [loading data on demand](slu
 
 The table below lists the ListView parameters. For a full list of the ListView API members (parameters, methods, and events), check the [ListView API Reference](https://docs.marilo.com/blazor-ui/api/Marilo.Blazor.Components.MariloListView-1).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

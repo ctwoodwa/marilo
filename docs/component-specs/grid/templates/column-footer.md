@@ -82,6 +82,7 @@ You can use [aggregates](slug:grid-aggregates) for the current field directly fr
 
 ## Using Components in Grid Column Footer Templates
 
+@[template](/_contentTemplates/grid/common-link.md#using-components-in-templates)
 
 ## Notes
 

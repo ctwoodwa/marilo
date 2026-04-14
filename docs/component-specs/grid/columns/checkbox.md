@@ -20,6 +20,7 @@ If you need checkboxes to display or edit boolean values, then use a [Grid colum
 
 The Grid checkbox column has the following exclusive parameters. For other available parameters, see the [appearance settings of bound columns](slug:components/grid/columns/bound#appearance).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

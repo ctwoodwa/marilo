@@ -16,6 +16,7 @@ The <a href="https://www.marilo.com/blazor-ui/bubble-chart" target="_blank">Blaz
 
 A Bubble chart is useful for visualizing different scientific relationships (e.g, economical, social, etc.). This chart type's x-axis is also numerical and does not require items.
 
+@[template](/_contentTemplates/chart/link-to-basics.md#understand-basics-and-databinding-first)
 
 ## Creating a Blazor Bubble Chart
 
@@ -182,6 +183,7 @@ The color of a series is controlled through the `Color` property that can take a
 
 The `ColorField` can change the color of individual items. To use it, pass a valid CSS color to the corresponding field in the model and the chart will use its values instead of the `Color` parameter.
 
+@[template](/_contentTemplates/chart/link-to-basics.md#opacity-area-bubble)
 
 ### Negative Values
 
@@ -226,7 +228,9 @@ The size field should, generally, have positive values as it correlates to the p
 }
 ````
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings-numerical)
 
 ## See Also
 

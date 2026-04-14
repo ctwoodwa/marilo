@@ -25,12 +25,15 @@ components: ["multiselect"]
 
 ## Basics
 
+@[template](/_contentTemplates/common/dropdowns-virtualization.md#basics-core)
 
 
 
+@[template](/_contentTemplates/common/dropdowns-virtualization.md#remote-data-specifics)
 
 ### Limitations
 
+@[template](/_contentTemplates/common/dropdowns-virtualization.md#limitations)
 
 
 ## Local Data Example
@@ -76,7 +79,9 @@ Number of selected items: @SelectedValues?.Count
 
 ## Remote Data Example
 
+@[template](/_contentTemplates/common/dropdowns-virtualization.md#remote-data-sample-intro)
 
+@[template](/_contentTemplates/common/dropdowns-virtualization.md#value-mapper-in-remote-example)
 
 Run this and see how you can display, scroll and filter over 10k records in the MultiSelect without delays and performance issues from a remote endpoint. There is artificial delay in these operations for the sake of the demonstration.
 

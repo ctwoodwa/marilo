@@ -158,6 +158,7 @@ Use the `Size` parameter to apply the `min-height` CSS style to the `<div class=
 }
 ````
 
+@[template](/_contentTemplates/common/themebuilder-section.md#appearance-themebuilder)
 
 ## See Also
 

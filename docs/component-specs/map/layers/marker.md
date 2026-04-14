@@ -190,6 +190,7 @@ The following example uses two Marker layers with different templates. One rende
 }
 ````
 
+@[template](/_contentTemplates/map/general.md#urltemplate-csp)
 
 ## Defining Marker Shapes
 

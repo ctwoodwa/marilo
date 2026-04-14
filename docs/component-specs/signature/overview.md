@@ -123,6 +123,7 @@ The Signature parameters, which affect the `Value` size are `ExportScale`, `Heig
 
 The following table lists the Signature parameters. Also check the [Signature API Reference](slug:Marilo.Blazor.Components.MariloSignature).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |
@@ -148,6 +149,7 @@ The following table lists the Signature parameters. Also check the [Signature AP
 
 The Signature exposes methods for programmatic operation. To use them, define a reference to the component instance with the `@ref` directive attribute. The methods are:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Method | Description |
 | --- | --- |

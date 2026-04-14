@@ -79,11 +79,13 @@ If a Marilo component has both a `Placeholder` and a floating label, the behavio
 
 ## Integration with Prefix Adornment
 
+@[template](/_contentTemplates/common/inputs.md#floating-label-and-preffix)
 
 ## FloatingLabel Parameters
 
 The following table lists the FloatingLabel parameters. Also check the [FloatingLabel API Reference](slug:Marilo.Blazor.Components.MariloFloatingLabel) for a full list of properties, methods and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Attribute | Type | Description |
 | --- | --- | --- |

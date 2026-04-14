@@ -155,6 +155,7 @@ The built-in delete confirmation dialog triggers before event deletion. You can 
 
 ## Custom Delete Confirmation Dialog
 
+@[template](/_contentTemplates/grid/built-in-dialogs.md#delete-confirmation)
 
 
 ## See Also

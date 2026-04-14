@@ -51,6 +51,7 @@ The labels are rendered on the scale of the Radial Gauge to give information to 
 
 ## Radial Gauge Parameters
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default value | Description |
 |-----------|------------------------|-------------|

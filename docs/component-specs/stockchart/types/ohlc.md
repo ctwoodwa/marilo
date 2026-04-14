@@ -16,6 +16,7 @@ The **OHLC** (open-high-low-close) chart is typically used to illustrate movemen
 
 ![Blazor Basic OHLC Chart](images/basic-ohlc-chart.png)
 
+@[template](/_contentTemplates/stockchart/link-to-basics.md#understand-basics-and-databinding-first)
 
 To add a `OHLC` chart to a stock chart component:
 
@@ -113,6 +114,9 @@ To add a `OHLC` chart to a stock chart component:
 
 ## OHLC Chart Specific Appearance Settings
 
+@[template](/_contentTemplates/stockchart/link-to-basics.md#color-field-column-ohlc-candlestick)
+@[template](/_contentTemplates/stockchart/link-to-basics.md#gap-and-spacing)
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings)
 
 
 

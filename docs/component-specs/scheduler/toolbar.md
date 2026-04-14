@@ -16,6 +16,7 @@ The [Blazor Scheduler toolbar](https://demos.marilo.com/blazor-ui/scheduler/tool
 
 By default, the [Blazor Scheduler](slug:scheduler-overview) displays all its built-in tools in the following order:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Tool Tag | Description |
 | --- | --- |

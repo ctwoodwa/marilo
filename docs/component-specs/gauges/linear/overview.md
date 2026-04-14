@@ -51,6 +51,7 @@ The ranges are used to visually distinguish particular values on the scale. [Rea
 
 ## Linear Gauge Parameters
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 | Parameter | Type and Default Value | Description |
 | --- | --- | --- |
 | `Class` | `string` | A custom CSS class for the `<div class="k-lineargauge">` element. |

@@ -129,6 +129,7 @@ The TreeView can [display links to app views and external pages](slug:treeview-n
 
 The following table lists TreeView parameters, which are not related to other features on this page. Check the [TreeView API Reference](slug:Marilo.Blazor.Components.MariloTreeView) for a full list of properties, methods and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

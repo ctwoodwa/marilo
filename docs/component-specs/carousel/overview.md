@@ -55,6 +55,7 @@ The <a href = "https://www.marilo.com/blazor-ui/carousel" target="_blank">Carous
 }
 ````
 
+@[template](/_contentTemplates/carousel/general.md#carousel-item-class)
 
 ## Template
 
@@ -68,6 +69,7 @@ The Blazor Carousel generates events that you can handle and further customize i
 
 The following table lists Carousel parameters. Check the [Carousel API Reference](slug:Marilo.Blazor.Components.MariloCarousel-1) for a full list of properties, methods and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default Value | Description |
 |---|---|---|

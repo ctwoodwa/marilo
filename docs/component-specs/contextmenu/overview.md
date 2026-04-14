@@ -159,6 +159,7 @@ The ContextMenu provides the following popup settings:
 
 To use the [Blazor Context Menu methods](slug:Marilo.Blazor.Components.MariloContextMenu-1), add a reference to the component instance.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Method | Description |
 | --- | --- |

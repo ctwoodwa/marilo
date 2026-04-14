@@ -38,6 +38,7 @@ The Marilo Form can generate [editors](slug:form-formitems) for you based on the
 
 The following data types are supported out-of-the box and they use the following default editors:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Data Type | Default Editor |
 |-----------|----------|

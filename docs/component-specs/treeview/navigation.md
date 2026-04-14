@@ -113,6 +113,8 @@ For specific scenarios, use a [Template](slug:components/treeview/templates) to 
 
 ## Notes
 
+@[template](/_contentTemplates/common/navigation-components.md#navman-used)
+@[template](/_contentTemplates/common/navigation-components.md#double-navigation)
 
 
 ## See Also

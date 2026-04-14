@@ -132,6 +132,7 @@ Configure file upload behavior using the `ChatFileSelectSettings` component:
         ChatRef?.Refresh();
     }
 
+@[template](/_contentTemplates/chat/general.md#messagecs)
 }
 ````
 

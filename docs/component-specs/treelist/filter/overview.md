@@ -50,6 +50,7 @@ You can get the applied filtering criteria for each filtered field. Use the [Tre
 
 You can customize the filter editors declaratively for some data types. It is possible to change the editor component or the editor format.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | TreeListColumn Parameter | Type | Works for | Description |
 |---|---|---|---|

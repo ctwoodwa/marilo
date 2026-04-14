@@ -30,15 +30,19 @@ The `ValueTemplate` exposes a `context` which represents the selected item objec
 
 ## Item Template
 
+@[template](/_contentTemplates/dropdowns/templates.md#item-template)
 
 ## Header Template
 
+@[template](/_contentTemplates/dropdowns/templates.md#header-template)
 
 ## Footer Template
 
+@[template](/_contentTemplates/dropdowns/templates.md#footer-template)
 
 ## No Data Template
 
+@[template](/_contentTemplates/dropdowns/templates.md#no-data-template)
 
 ## Example
 

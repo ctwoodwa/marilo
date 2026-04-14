@@ -11,6 +11,7 @@ components: ["treelist"]
 # TreeList Data Binding to Flat Data
 
 This article explains how to bind the treelist for Blazor to flat data. 
+@[template](/_contentTemplates/treelist/databinding.md#link-to-basics)
 
 
 Flat data means that the entire collection of treelist items is available at one level, for example `List<MyTreeListItemModel>`.

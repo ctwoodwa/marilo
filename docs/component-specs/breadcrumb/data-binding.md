@@ -12,6 +12,7 @@ components: ["breadcrumb"]
 
 This article explains how to provide data to a Breadcrumb component, the properties related to data binding and their effect.
 
+@[template](/_contentTemplates/common/general-info.md#valuebind-vs-databind-link)
 
 This article has the following sections:
 
@@ -48,6 +49,7 @@ The properties of a Breadcrumb item map directly to fields from the Breadcrumb m
 
 >tip There are default values for the field names. If your model names match the defaults, you don't have to define them in the bindings settings.
 
+@[template](/_contentTemplates/common/navigation-components.md#default-fields-match-issues)
 
 >caption Default field names for Breadcrumb item bindings. If you use these, you don't have to specify them in the `MariloBreadcrumb` tag explicitly.
 

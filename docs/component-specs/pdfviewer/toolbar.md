@@ -19,6 +19,7 @@ By default, the [Blazor PDF Viewer](https://demos.marilo.com/blazor-ui/pdfviewer
 
 ### Command Tools
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Tool Name | Tool Tag | Description |
 | --- | --- | --- |
@@ -33,6 +34,7 @@ By default, the [Blazor PDF Viewer](https://demos.marilo.com/blazor-ui/pdfviewer
 
 ### Layout Tools
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Tool Name | Tool Tag | Description |
 | --- | --- | --- |

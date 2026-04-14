@@ -40,6 +40,7 @@ The examples below showcase [resource grouping by one resource](#resource-groupi
 
 ### Resource Grouping by one resource
 
+@[template](/_contentTemplates/scheduler/views.md#resource-grouping-code-snippet-for-examples)
 
 ### Resource Grouping by multiple resources
 

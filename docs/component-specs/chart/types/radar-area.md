@@ -16,6 +16,7 @@ Radar area charts are often used to make comparisons between several units that 
 
 ![radar area chart](images/radar-area-chart.png)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#understand-basics-and-databinding-first)
 
 #### To create a radar area chart:
 
@@ -64,6 +65,7 @@ The color of a series is controlled through the `Color` property that can take a
 
 You can control the color of the line itself separately by using the `Color` property of the nested `MariloChartSeriesLine` tag. To see the line, set its `Width` parameter to a value larger than `0`.
 
+@[template](/_contentTemplates/chart/link-to-basics.md#opacity-area-bubble)
 
 ### Missing Values
 
@@ -84,7 +86,9 @@ You can render the lines between the points with different styles. The supported
 
 
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings-categorical)
 
 >caption Change the first series line settings, the Color and Font of the Category Axis Labels and the legend border
 

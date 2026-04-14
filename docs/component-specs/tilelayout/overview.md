@@ -79,6 +79,7 @@ The Tile Layout fires [events when the user resizes or rearranges tiles](slug:ti
 
 The following table lists the Tile Layout parameters. Also check the [TileLayout API Reference](slug:Marilo.Blazor.Components.MariloTileLayout) for a full list of all properties, methods and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

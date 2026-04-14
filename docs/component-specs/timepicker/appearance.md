@@ -124,6 +124,7 @@ The `FillMode` controls how the MariloTimePicker is filled. You can set it to a 
 }
 ````
 
+@[template](/_contentTemplates/common/themebuilder-section.md#appearance-themebuilder)
 
 ## See Also
 

@@ -62,6 +62,7 @@ The Window component fires events for visibility, state, size, and position chan
 
 The following table lists the Window parameters. Also check the [Window API](slug:Marilo.Blazor.Components.MariloWindow) for a full list of parameters, methods, and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

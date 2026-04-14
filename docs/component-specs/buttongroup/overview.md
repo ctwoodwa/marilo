@@ -69,6 +69,7 @@ The Blazor ButtonGroup fires events that you can handle and respond to user acti
 
 The following table lists ButtonGroup parameters. Check the [ButtonGroup API Reference](slug:Marilo.Blazor.Components.MariloButtonGroup) for a full list of properties, methods and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 |---|---|---|

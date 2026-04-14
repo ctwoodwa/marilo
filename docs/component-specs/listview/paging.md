@@ -70,6 +70,7 @@ The ListView exposes three relevant events. You can find related examples in the
 
 In addition to `Page` and `PageSize`, the ListView provides advanced pager configuration options via the `ListViewPagerSettings` tag, which is nested inside `ListViewSettings`. These configuration attributes include:
 
+@[template](/_contentTemplates/common/pager-settings.md#pager-settings)
 
 >caption ListView Pager Settings
 

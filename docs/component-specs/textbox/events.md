@@ -70,6 +70,7 @@ The `OnChange` event represents a user action that confirms the current value. I
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 ## ValueChanged
 
@@ -98,6 +99,7 @@ The `ValueChanged` event fires upon every change (for example, keystroke) in the
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 ## See Also
 

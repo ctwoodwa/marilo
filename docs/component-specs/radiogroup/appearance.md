@@ -19,6 +19,7 @@ You can control the appearance of the RadioButtonGroup button by setting the fol
 
 Change the size of the radio buttons by setting the `Size` parameter to a member of the `Marilo.Blazor.ThemeConstants.Button.Size` class:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Class members | Manual declarations |
 |---------------|--------|
@@ -59,3 +60,4 @@ Change the size of the radio buttons by setting the `Size` parameter to a member
 }
 ````
 
+@[template](/_contentTemplates/common/themebuilder-section.md#appearance-themebuilder)

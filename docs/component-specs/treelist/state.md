@@ -25,6 +25,7 @@ This article describes:
 
 The TreeList state is a generic [class `TreeListState<TItem>`](slug:Marilo.Blazor.Components.TreeListState-1). The type depends on the type of the TreeList model. The `TreeListState<TItem>` object exposes the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Type | Description |
 | --- | --- | --- |
@@ -127,6 +128,7 @@ The example below shows how to apply initial sorting, filtering and grouping.
         TreeListData = await TreeListEmployeeService.Read();
     }
 
+@[template](/_contentTemplates/treelist/editing.md#flat-crud-service-and-model)
 }
 ````
 
@@ -321,6 +323,7 @@ Find out how to [get the applied filtering and sorting criteria](slug:common-fea
         TreeListData = await TreeListEmployeeService.Read();
     }
 
+@[template](/_contentTemplates/treelist/editing.md#flat-crud-service-and-model)
 }
 ````
 
@@ -351,22 +354,30 @@ If you want to make changes to the current TreeList state:
 
 The tabs below show how to set the TreeList state and control filtering, sorting and other TreeList features.
 
+@[template](/_contentTemplates/treelist/state.md#initial-state)
 
 <div class="skip-repl"></div>
 
 ````RAZOR Sorting
+@[template](/_contentTemplates/treelist/state.md#set-sort-from-code)
 ````
 ````RAZOR FilterRow
+@[template](/_contentTemplates/treelist/state.md#filter-row-from-code)
 ````
 ````RAZOR FilterMenu
+@[template](/_contentTemplates/treelist/state.md#filter-menu-from-code)
 ````
 ````RAZOR Search
+@[template](/_contentTemplates/treelist/state.md#search-from-code)
 ````
 ````RAZOR ExpandedItems
+@[template](/_contentTemplates/treelist/state.md#expand-items-from-code)
 ````
 ````RAZOR Columns
+@[template](/_contentTemplates/treelist/state.md#column-state-from-code)
 ````
 
+@[template](/_contentTemplates/grid/state.md#filter-menu-default-filters)
 
 
 ## Equals Comparison

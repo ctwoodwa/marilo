@@ -28,8 +28,11 @@ The `CheckedItemsChanged` event fires every time the user uses a [checkbox](slug
 
 The `ExpandedItemsChanged` event fires every time the user expands or collapses a TreeView item.
 
+@[template](/_contentTemplates/common/general-info.md#rerender-after-event)
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 ## OnItemClick
 
+@[template](/_contentTemplates/common/click-events.md#clickeventargs)
 The `OnItemClick` event fires when the user clicks a TreeView node (item). The event handler receives `EventCallback<object>` — the data item itself.
 
 ## OnItemContextMenu
@@ -38,6 +41,7 @@ The `OnItemContextMenu` event fires when the user right-clicks on a TreeView nod
 
 The event handler receives a `TreeItemContextMenuEventArgs` argument, which has the following properties:
 
+@[template](/_contentTemplates/common/click-events.md#clickeventargs)
 | Property | Type | Description |
 | --- | --- | --- |
 | `Item` | `object` | The data item that was right-clicked. |
@@ -55,6 +59,7 @@ The event handler receives a `TreeItemEditEventArgs` argument:
 | `ItemId` | `string` | The ID of the edited node. |
 | `NewText` | `string` | The new text value after editing. |
 
+@[template](/_contentTemplates/common/click-events.md#clickeventargs)
 ## OnItemDrop
 
 The `OnItemDrop` event fires when a tree item is dropped onto another item during drag-and-drop (requires `EnableDragDrop="true"`).

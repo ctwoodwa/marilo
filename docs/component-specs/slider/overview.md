@@ -82,6 +82,7 @@ You can validate Slider value using the built-in validation. See the [Input Vali
 
 The Slider provides various parameters that allow you to configure the component:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter    | Type  | Description |
 | ----------- | ----------- | -------|
@@ -101,6 +102,7 @@ The Slider provides various parameters that allow you to configure the component
 
 The following parameters enable you to customize the appearance of the Blazor Slider:
 
+@[template](/_contentTemplates/slider/common.md#styling-features)
 
 
 ## Next Steps

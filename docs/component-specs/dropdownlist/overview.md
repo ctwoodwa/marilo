@@ -37,21 +37,26 @@ The Blazor DropDownList component allows the user to choose an option from a pre
 
 ## Templates
 
+@[template](/_contentTemplates/dropdowns/features.md#templates) [Read more about the Blazor DropDownList templates...](slug:components/dropdownlist/templates).
 
 ## Validation
 
+@[template](/_contentTemplates/dropdowns/features.md#validation)
 
 ## Virtualization
 
+@[template](/_contentTemplates/dropdowns/features.md#virtualization) [Read more about the Blazor DropDownList virtualization...](slug:dropdownlist-virtualization)
 
 ## Adaptive Rendering
 
 
+@[template](/_contentTemplates/dropdowns/adaptive-rendering.md#intro)
 
 ## DropDownList Parameters
 
 >caption The Blazor dropdown list provides various parameters that allow you to configure the component:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter      | Type | Description
 | ----------- | ----------- | -----------|
@@ -79,6 +84,7 @@ The Blazor DropDownList component allows the user to choose an option from a pre
 
 The following parameters enable you to customize the [appearance](slug:dropdownlist-appearance) of the Blazor DropDownList component:
 
+@[template](/_contentTemplates/dropdowns/features.md#styling)
 
 >tip To learn more about the appearance, anatomy, and accessibility of the DropDownList, visit the [Progress Design System Kit documentation](https://www.marilo.com/design-system/docs/components/dropdownlist/)—an information portal offering rich component usage guidelines, descriptions of the available style variables, and globalization support details.
 
@@ -109,12 +115,14 @@ The DropDownList exposes settings for its dropdown (popup). To configure the opt
 
 The DropDownList provides the following popup settings:
 
+@[template](/_contentTemplates/dropdowns/features.md#popup-settings)
 
 ## DropDownList Reference and Methods
 
 Add a reference to the component instance to use the [DropDownList's methods](slug:Marilo.Blazor.Components.MariloDropDownList-2). Note that the [DropDownList is a generic component](slug:common-features-data-binding-overview#component-type).
 
 
+@[template](/_contentTemplates/dropdowns/methods.md#methods-list)
 
 ````RAZOR
 <MariloDropDownList @ref="@DropDownListRef"
@@ -223,6 +231,7 @@ By default, if no `Value` is provided and no `DefaultText` is defined, the DropD
 ````
 
 
+@[template](/_contentTemplates/common/get-model-from-dropdowns.md#get-model-from-dropdowns)
 
 ## Next Steps
 

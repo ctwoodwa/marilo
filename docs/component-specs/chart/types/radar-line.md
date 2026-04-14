@@ -16,6 +16,7 @@ Radar line charts are often used to make comparisons between several units that 
 
 ![radar line chart](images/radar-line-chart.png)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#understand-basics-and-databinding-first)
 
 #### To create a radar line chart:
 
@@ -97,7 +98,9 @@ You can render the lines between the points with different styles. The supported
 * `Smooth`—This style causes the Chart to display a fitted curve through data points. It is suitable when the data requires to be displayed with a curve, or when you wish to connect the points with smooth instead of straight lines.
 
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings-categorical)
 
 ## See Also
 

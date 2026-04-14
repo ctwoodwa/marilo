@@ -17,6 +17,7 @@ This article describes the ListBox selection feature, including the available se
 
 The ListBox component provides users two ways to select items. This depends on the value of the [`SelectionMode` parameter](slug:listbox-overview#listbox-parameters), which expects a member of the `ListBoxSelectionMode` enum.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Selection&nbsp;Mode | Description |
 | --- | --- |

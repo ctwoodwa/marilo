@@ -51,6 +51,7 @@ To customize the style and the appearance of the Blazor Button, you can use the 
 
 The Blazor Button provides various parameters that allow you to configure the component. Also check the [Button's public API](slug:Marilo.Blazor.Components.MariloButton).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default Value | Description |
 |----------|----------|----------|

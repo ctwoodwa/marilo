@@ -17,6 +17,7 @@ Panes are containers that serve as the building blocks of the Splitter. The pane
 
 Each Splitter pane is configured individually and offers the following parameters:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Attribute | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

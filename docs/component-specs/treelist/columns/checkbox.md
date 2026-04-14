@@ -18,6 +18,7 @@ The `TreeListCheckboxColumn` provides an additional way for users to [select Tre
 
 The TreeList checkbox column has the following exclusive parameters. For other available parameters, see the [appearance settings of bound columns](slug:treelist-columns-bound#appearance).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

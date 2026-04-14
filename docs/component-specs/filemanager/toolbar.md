@@ -16,6 +16,7 @@ The Blazor FileManager Toolbar can render built-in and custom tools. This articl
 
 By default, the Blazor FileManager displays all its built-in tools in the order below. Use the *tool tag* if you need to define a tool explicitly in a [custom toolbar configuration](#toolbar-configuration).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Tool Name | Tool Tag | Description |
 | --- | --- | --- |

@@ -73,6 +73,7 @@ The Blazor Calendar generates events that you can handle and further customize i
 
 The Blazor Calendar provides various parameters that allow you to configure the component. Also check the [Calendar's public API](slug:Marilo.Blazor.Components.MariloCalendar).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Attribute | Type and Default Value | Description |
 |----------|----------|----------|
@@ -106,6 +107,7 @@ The following parameters enable you to customize the appearance of the Blazor Ca
 
 Add a reference to the component instance to use the [Blazor Calendar methods](slug:Marilo.Blazor.Components.MariloCalendar).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Method | Description |
 | --- | --- |

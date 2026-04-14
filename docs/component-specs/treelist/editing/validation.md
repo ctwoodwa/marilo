@@ -12,6 +12,7 @@ components: ["treelist"]
 
 The Marilo TreeList for Blazor supports built-in validation that is enabled by default. This article describes how the TreeList validation works and how to customize or disable it.
 
+@[template](/_contentTemplates/treelist/editing.md#overview-required)
 
 ## Basics
 
@@ -21,6 +22,7 @@ When a row is not in edit mode, the `EditContext` is `null`. The TreeList `EditC
 
 The built-in TreeList validation is not supported with dynamic data such as `ExpandoObject`, `DataTable`, or `Dictionary`.
 
+@[template](/_contentTemplates/common/form-validation.md#note-marilo-role-in-validation)
 
 ## Disable Validation
 
@@ -141,6 +143,7 @@ Install the [`Blazored.FluentValidation`](https://www.nuget.org/packages/Blazore
         TreeListData = await TreeListEmployeeService.Read();
     }
 
+@[template](/_contentTemplates/treelist/editing.md#flat-crud-service-and-model)
 }
 ````
 

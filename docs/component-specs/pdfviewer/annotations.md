@@ -20,6 +20,7 @@ To add and manage the annotations, the user can click on the dedicated button in
 
 The PdfViewer provides the following annotation types:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Annotation Type | Description |
 | --- | --- |

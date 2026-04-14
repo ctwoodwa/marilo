@@ -43,6 +43,7 @@ After the event handler executes, the Chat automatically scrolls down to the las
         ChatData.Add(newMessage);
     }
 
+@[template](/_contentTemplates/chat/general.md#messagecs)
 }
 ````
 
@@ -162,6 +163,7 @@ If the handler adds new messages to the Chat, call the component `Refresh()` met
         ChatRef?.Refresh();
     }
 
+@[template](/_contentTemplates/chat/general.md#messagecs)
 }
 ````
 

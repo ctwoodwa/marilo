@@ -18,6 +18,7 @@ An Area chart emphasizes the volume of money, data or any other unit that the gi
 
 The Area Chart is similar to the [Range Area Chart](slug:components/chart/types/rangearea), which allows the area to raise above the horizontal axis.
 
+@[template](/_contentTemplates/chart/link-to-basics.md#understand-basics-and-databinding-first)
 
 #### To create an area chart:
 
@@ -66,6 +67,7 @@ The color of a series is controlled through the `Color` property that can take a
 
 You can control the color of the line itself separately by using the `Color` property of the nested `MariloChartSeriesLine` tag.
 
+@[template](/_contentTemplates/chart/link-to-basics.md#opacity-area-bubble)
 
 ### Missing Values
 
@@ -84,7 +86,9 @@ You can render the lines between the points with different styles. The supported
 * `Step`—The style renders the connection between data points through vertical and horizontal lines. It is suitable for indicating that the value is constant between the changes.
 * `Smooth`—This style causes the Area Chart to display a fitted curve through data points. It is suitable when the data requires to be displayed with a curve, or when you wish to connect the points with smooth instead of straight lines.
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings-categorical)
 
 >caption Change the rendering Step, Color and Font of the Category Axis Labels
 

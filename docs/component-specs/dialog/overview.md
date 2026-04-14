@@ -49,6 +49,7 @@ The Blazor Dialog fires a `VisibleChanged` event to customize the application be
 
 The Blazor Dialog provides various parameters to configure the component. Also check the [Dialog public API](slug:Marilo.Blazor.Components.MariloDialog).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default Value | Description |
 | --- | --- | --- |

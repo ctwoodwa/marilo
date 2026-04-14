@@ -117,3 +117,4 @@ The `ThemeColor` parameter controls the Button background, text, and border colo
 <MariloButton ThemeColor="@ThemeConstants.Button.ThemeColor.Inverse">Inverse</MariloButton>
 ````
 
+@[template](/_contentTemplates/common/themebuilder-section.md#appearance-themebuilder)

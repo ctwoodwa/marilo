@@ -16,6 +16,7 @@ A **Line** chart displays data as continuous lines that pass through points defi
 
 ![Blazor Stockchart Basic Line Chart](images/stockchart-basic-line-chart.png)
 
+@[template](/_contentTemplates/stockchart/link-to-basics.md#understand-basics-and-databinding-first)
 
 To add a `Line` chart to a stock chart component:
 
@@ -106,5 +107,6 @@ Line series
 
 ## Line Chart Specific Appearance Settings
 
+@[template](/_contentTemplates/stockchart/link-to-basics.md#configurable-nested-chart-settings)
 
 

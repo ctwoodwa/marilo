@@ -20,6 +20,7 @@ To bind data to the `<MultiColumnComboBoxColumn>` you can use the `Field`. This 
 
 >caption The MultiColumnComboBox provides various parameters that allow you to configure the component:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type | Description |
 | --- | --- | --- |

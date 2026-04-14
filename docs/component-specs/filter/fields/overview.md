@@ -15,6 +15,7 @@ You can define different Fields settings. For example, names, labels, and [filte
 
 The following parameters enable you to customize the appearance of the Blazor Filter Fields:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type | Description |
 | ----------- | ----------- | ----------- |

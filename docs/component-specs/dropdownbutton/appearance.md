@@ -226,6 +226,7 @@ The `ThemeColor` parameter sets the background and text color of the DropDownBut
 }
 ````
 
+@[template](/_contentTemplates/common/themebuilder-section.md#appearance-themebuilder)
 
 ## Next Steps
 

@@ -14,6 +14,7 @@ This article explains the events available in the Marilo Dialog for Blazor:
 
 * [VisibleChanged](#visiblechanged)
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async) 
 
 
 ## VisibleChanged

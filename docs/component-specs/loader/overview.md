@@ -63,6 +63,7 @@ It is possible to place the Loader component inside another component for better
 
 The following table lists the Loader parameters. Also check the [Loader API Reference](slug:Marilo.Blazor.Components.MariloLoader).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

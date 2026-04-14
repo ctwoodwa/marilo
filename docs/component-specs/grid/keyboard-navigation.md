@@ -39,6 +39,7 @@ The Data Grid part is a single tab stop component. When the Data Grid gains focu
 
 The following sections list the default built-in keyboard shortcuts and the actions that they perform when a specific Grid area or cell is focused. Also check the [Grid Keyboard Navigation demo](https://demos.marilo.com/blazor-ui/grid/keyboard-navigation).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 ### ToolBar
 

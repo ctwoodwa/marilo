@@ -16,6 +16,7 @@ Radar column charts are often used to make comparisons between several units tha
 
 ![radar column chart](images/radar-column-chart.png)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#understand-basics-and-databinding-first)
 
 #### To create a radar column chart:
 
@@ -69,10 +70,13 @@ Radar column charts are often used to make comparisons between several units tha
 
 The color of a series is controlled through the `Color` property that can take any valid CSS color (for example, `#abcdef`, `#f00`, or `blue`).
 
+@[template](/_contentTemplates/chart/link-to-basics.md#gap-and-spacing)
 
 >note The explanations above treat the general concept of the `Gap` and `Spacing` features of the Marilo charts. For radar-type charts the calculations are slightly different and the results will, generally, be less pronounced due to the radial nature of the bars.
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings-categorical)
 
 ## See Also
 

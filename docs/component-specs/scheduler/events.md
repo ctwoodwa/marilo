@@ -30,6 +30,7 @@ To enable editing, set `Editable="true"` on the Scheduler. The component fires t
 | `OnUpdate` | `EventCallback<SchedulerAppointment>` | Fires when the user saves changes in the edit popup or drag-reschedules an appointment. The event args contain the updated appointment. |
 | `OnDelete` | `EventCallback<SchedulerAppointment>` | Fires when the user deletes an appointment via the edit popup Delete button. |
 
+@[template](/_contentTemplates/common/onmodelinit.md#onmodelinit-info)
 The Scheduler is fully controlled -- it does not mutate its own `Appointments` collection. Update your data source in the event handler for visual changes to appear.
 
 >caption CRUD event handling
@@ -118,6 +119,8 @@ Fires when the visible date changes via the Previous/Next navigation buttons. Us
 |-----------|------|
 | `CurrentDateChanged` | `EventCallback<DateTime>` |
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 Navigation increments by view:
 - **Month**: +/- 1 month
 - **Week**: +/- 7 days
@@ -139,6 +142,7 @@ Fires when the user switches views via the toolbar buttons. Use with two-way bin
 
 The following events are documented in the spec but **not yet implemented** in source. They are tracked in the scheduler-gap-analysis workspace:
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 - `OnModelInit` -- factory callback for appointment creation
 - `OnItemDoubleClick` -- separate from the edit-popup behavior
 - `OnItemContextMenu` -- right-click context menu

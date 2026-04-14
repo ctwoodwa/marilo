@@ -90,6 +90,7 @@ If you paste more images at the same time, their `src` attributes will not be co
 
 ## Content Size
 
+@[template](/_contentTemplates/editor/general.md#content-size-signalr)
 
 ## Content Sanitization
 

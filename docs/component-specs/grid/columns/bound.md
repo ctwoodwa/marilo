@@ -14,6 +14,7 @@ This article explains the basics of showing data in a grid and the features of i
 
 Important related information are the [Grid data binding fundamentals](slug:grid-data-binding).
 
+@[template](/_contentTemplates/common/general-info.md#valuebind-vs-databind-link)
 
 Sections in this article:
 

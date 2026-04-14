@@ -33,24 +33,30 @@ The <a href="https://www.marilo.com/blazor-ui/multiselect" target="_blank">Blazo
 ## Grouping
 
 
+@[template](/_contentTemplates/common/inputs.md#adornments)
 
 ## Templates
 
+@[template](/_contentTemplates/dropdowns/features.md#templates) [Read more about the Blazor MultiSelect templates...](slug:multiselect-templates)
 
 ## Validation
 
+@[template](/_contentTemplates/dropdowns/features.md#validation)
 
 ## Virtualization
 
+@[template](/_contentTemplates/dropdowns/features.md#virtualization) [Read more about the Blazor MultiSelect virtualization...](slug:multiselect-virtualization)
 
 ## Adaptive Rendering
 
 
+@[template](/_contentTemplates/dropdowns/adaptive-rendering.md#intro)
 
 ## Parameters
 
 The Blazor MultiSelect provides various parameters that allow you to configure the component:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter    | Type  | Description |
 | ----------- | ----------- | ------ |
@@ -83,6 +89,7 @@ The Blazor MultiSelect provides various parameters that allow you to configure t
 
 The following parameters enable you to customize the [appearance](slug:multiselect-appearance) of the Blazor MultiSelect:
 
+@[template](/_contentTemplates/dropdowns/features.md#styling)
 
 >tip To learn more about the appearance, anatomy, and accessibility of the MultiSelect, visit the [Progress Design System Kit documentation](https://www.marilo.com/design-system/docs/components/multiselect/)—an information portal offering rich component usage guidelines, descriptions of the available style variables, and globalization support details.
 
@@ -101,13 +108,16 @@ The MultiSelect exposes settings for its dropdown (popup). To configure the opti
 
 The MultiSelect provides the following popup settings:
 
+@[template](/_contentTemplates/dropdowns/features.md#popup-settings)
 
+@[template](/_contentTemplates/common/get-model-from-dropdowns.md#get-model-from-dropdowns)
 
 ## MultiSelect Reference and Methods
 
 Add a reference to the component instance to use the [MultiSelect's methods](slug:Marilo.Blazor.Components.MariloMultiSelect-2). Note that the [MultiSelect is a generic component](slug:common-features-data-binding-overview#component-type).
 
 
+@[template](/_contentTemplates/dropdowns/methods.md#methods-list)
 
 ````RAZOR.skip-repl
 <MariloMultiSelect @ref="@MultiSelectRef" .../>

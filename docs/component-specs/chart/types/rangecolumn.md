@@ -12,6 +12,7 @@ components: ["charts"]
 
 The <a href="https://www.marilo.com/blazor-ui/range-column-chart" target="_blank">Blazor Range Column Chart</a> displays data as vertical bars whose position and height vary according to pairs of `from` and `to` values. You can use a Range Column Chart to show a comparison between several sets of data (for example, summaries of quantities or measurements for different time periods). Each series is automatically colored differently for easier perception. The Range Column Chart is similar to the [Column Chart](slug:components/chart/types/column), which can be regarded as a Range Column Chart with zero `from` values.
 
+@[template](/_contentTemplates/chart/link-to-basics.md#understand-basics-and-databinding-first)
 
 ## Creating Blazor Range Column Chart
 
@@ -206,9 +207,13 @@ To rotate the markers, use the `ChartCategoryAxisLabelsRotation` child tag and s
 
 The color of a series is controlled through the `Color` property that can take any valid CSS color (for example, `#abcdef`, `#f00`, or `blue`).
 
+@[template](/_contentTemplates/chart/link-to-basics.md#color-field-bar-column)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#gap-and-spacing)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings-categorical)
 
 
 ## See Also

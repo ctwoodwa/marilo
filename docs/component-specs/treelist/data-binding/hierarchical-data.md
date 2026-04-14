@@ -11,6 +11,7 @@ components: ["treelist"]
 # TreeList Data Binding to Hierarchical Data
 
 This article explains how to bind the treelist for Blazor to hierarchical data. 
+@[template](/_contentTemplates/treelist/databinding.md#link-to-basics)
 
 
 Hierarchical data means that the collection of child items is provided in a field of its parent's model. By default, this is the `Items` field, and hierarchical data binding is the default mode of the treelist. This approach of providing items lets you gather separate collections of data that may even come from different sources.

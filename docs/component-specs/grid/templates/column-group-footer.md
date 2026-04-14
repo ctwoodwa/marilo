@@ -79,6 +79,7 @@ When the grid is grouped, the columns can display a footer with information abou
 
 ## Using Components in Grid Group Footer Templates
 
+@[template](/_contentTemplates/grid/common-link.md#using-components-in-templates)
 
 ## See Also
 

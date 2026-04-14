@@ -37,6 +37,7 @@ Selected time: @selectedTime
 ## Date Input Typing Settings
 
 The DateTimePicker
+@[template](/_contentTemplates/date-inputs/general.md#dateinput-typing-settings)
 DateTimePicker.
 
 ## Increment Steps
@@ -62,11 +63,13 @@ The time format specifiers in the `Format` control the tumblers available in the
 ## Adaptive Rendering
 
 
+@[template](/_contentTemplates/dropdowns/adaptive-rendering.md#intro)
 
 ## Blazor DateTime Picker Parameters
 
 The Blazor Date Time Picker provides various parameters that allow you to configure the component. Also check the [DateTimePicker's public API](slug:Marilo.Blazor.Components.MariloDateTimePicker-1).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Attribute | Type and Default Value | Description |
 |---|---|---|
@@ -88,6 +91,7 @@ The Blazor Date Time Picker provides various parameters that allow you to config
 | `ValidateOn` | `ValidationEvent` enum <br/> (`Input`) |`ValidateOn` - configures the event that will trigger validation (if validation is enabled). Read more at [Validation Modes for Simple Inputs](slug:common-features/input-validation#validation-modes-for-simple-inputs) |
 | `Value` | `DateTime` or `DateTime?` | The current value of the component. Supports two-way binding. |
 
+@[template](/_contentTemplates/date-inputs/general.md#typing-parameters)
 
 ### Styling and Appearance
 
@@ -101,6 +105,7 @@ The following parameters enable you to customize the appearance of the Blazor Da
 
 You can find more options for customizing the DateTimePicker styling in the [Appearance article](slug:datetimepicker-appearance).
 
+@[template](/_contentTemplates/date-inputs/general.md#format-placeholder)
 
 ## Blazor DateTimePicker Reference and Methods
 

@@ -64,6 +64,7 @@ The user can maximize and minimize the Window through [action buttons in its tit
 
 You can invoke those actions by setting the `State` parameter. It takes a member of the `Marilo.Blazor.WindowState` enum:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | `WindowState`&nbsp;Value | Description |
 | --- | --- |

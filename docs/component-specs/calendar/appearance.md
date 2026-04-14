@@ -48,6 +48,7 @@ This configuration affects the size of the whole Calendar and its inner elements
 }
 ````
 
+@[template](/_contentTemplates/common/themebuilder-section.md#appearance-themebuilder)
 
 ## See Also
 

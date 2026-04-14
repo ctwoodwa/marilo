@@ -98,6 +98,7 @@ The example below shows how to:
 
 ## Using Components in Grid Column Templates
 
+@[template](/_contentTemplates/grid/common-link.md#using-components-in-templates)
 
 ## See Also
 

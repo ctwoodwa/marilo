@@ -85,6 +85,7 @@ The Blazor Map generates events that you can handle and further customize its be
 
 The Blazor Map provides various parameters that allow you to configure the component:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type | Description |
 | --- | --- | --- |

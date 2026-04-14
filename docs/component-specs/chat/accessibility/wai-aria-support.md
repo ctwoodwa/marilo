@@ -10,6 +10,7 @@ published: True
 
 # WAI-ARIA Support in Marilo UI for Blazor Chat
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 Out of the box, the Marilo UI for Blazor Chat provides extensive accessibility support and enables users with disabilities to acquire complete control over its features.
 

@@ -54,24 +54,30 @@ Selected value: @selectedValue
 ## Grouping
 
 
+@[template](/_contentTemplates/common/inputs.md#adornments)
 
 ## Templates
 
+@[template](/_contentTemplates/dropdowns/features.md#templates) [Read more about the Blazor ComboBox templates...](slug:components/combobox/templates).
 
 ## Validation
 
+@[template](/_contentTemplates/dropdowns/features.md#validation)
 
 ## Virtualization
 
+@[template](/_contentTemplates/dropdowns/features.md#virtualization) [Read more about the Blazor ComboBox virtualization...](slug:combobox-virtualization)
 
 ## Adaptive Rendering
 
 
+@[template](/_contentTemplates/dropdowns/adaptive-rendering.md#intro)
 
 ## Parameters
 
 >caption The Blazor ComboBox provides various parameters that allow you to configure the component:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter      | Type | Description
 | ----------- | ----------- | -----------|
@@ -100,6 +106,7 @@ Selected value: @selectedValue
 
 The following parameters enable you to customize the [appearance](slug:combobox-appearance) of the Blazor ComboBox:
 
+@[template](/_contentTemplates/dropdowns/features.md#styling)
 
 >tip To learn more about the appearance, anatomy, and accessibility of the ComboBox, visit the [Progress Design System Kit documentation](https://www.marilo.com/design-system/docs/components/combobox/)—an information portal offering rich component usage guidelines, descriptions of the available style variables, and globalization support details.
 
@@ -130,12 +137,14 @@ The ComboBox exposes settings for its dropdown (popup). To configure the options
 
 The ComboBox provides the following popup settings:
 
+@[template](/_contentTemplates/dropdowns/features.md#popup-settings)
 
 ## ComboBox Reference and Methods
 
 Add a reference to the component instance to use the [ComboBox's methods](slug:Marilo.Blazor.Components.MariloComboBox-2). Note that the [ComboBox is a generic component](slug:common-features-data-binding-overview#component-type).
 
 
+@[template](/_contentTemplates/dropdowns/methods.md#methods-list)
 
 ````RAZOR
 <MariloComboBox @ref="@ComboBoxRef"
@@ -187,6 +196,7 @@ Missing selection is most common when the initial value is `null` as data source
 | No match | No item is selected. `Value` is updated to the custom one. | No item is selected. `Value` is updated to `default(typeof(Value))`. The `OnChange` event does not fire for the value clearing. |
 
 
+@[template](/_contentTemplates/common/get-model-from-dropdowns.md#get-model-from-dropdowns)
 
 ## Next Steps
 

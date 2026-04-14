@@ -64,6 +64,7 @@ Set the `FilterMode` parameter of the Marilo Grid to `GridFilterMode.FilterMenu`
 
 To learn how to programmatically filter the Grid, refer to the [Grid State](slug:grid-state) documentation article.
 
+@[template](/_contentTemplates/grid/state.md#initial-state)
 
 ## Customization
 
@@ -73,6 +74,7 @@ You can customize the default behavior of the Filter Menu in a couple ways:
 
 You can override the default Filter Menu behavior for each column through the following property the `GridColumn` exposes:
 
+@[template](/_contentTemplates/common/filtering.md#filter-menu-customization-properties)
 
 >caption Configure the Filter Menu
 

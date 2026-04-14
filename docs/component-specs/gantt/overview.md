@@ -222,6 +222,7 @@ The Gantt is a generic component. Its type depends on the type of its model and 
 
 The table below lists the Gantt methods. Also consult the [Gantt API](slug:Marilo.Components.DataDisplay.MariloGantt-1).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Method | Description |
 | --- | --- |

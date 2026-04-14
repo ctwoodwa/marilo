@@ -93,10 +93,12 @@ The `ExpandedItems` collection is compared against the Grid Data collection in o
 
 When the `ExpandedItems` are obtained from a different data source to the Grid (e.g., from a separate service method and not from the view-model), the references may not match and so there will be no expanded items. In such cases, you have to override the [`Equals`](https://docs.microsoft.com/en-us/dotnet/api/system.object.equals) method of the underlying model class so that it matches them, for example, by a unique identifier rather than by reference so that two objects can be equal regardless of their origin, but according to their contents. When you are overriding the `Equals` method, it is also recommended to override the [`GetHashCode`](https://docs.microsoft.com/en-us/dotnet/api/system.object.gethashcode) method as well. A similar example is available at [Save and Load Grid State from Browser LocalStorage](slug:grid-kb-save-load-state-localstorage).
 
+@[template](/_contentTemplates/grid/state.md#initial-state)
 
 >caption Expand DetailTemplate hierarchy from code
 
 ````RAZOR
+@[template](/_contentTemplates/grid/state.md#expand-hierarchy-from-code)
 ````
 
 ## More Examples
@@ -115,6 +117,7 @@ The following articles and sample projects can be helpful when implementing hier
 
 ## Using Components in Grid Detail Templates
 
+@[template](/_contentTemplates/grid/common-link.md#using-components-in-templates)
 
 ## See Also
 

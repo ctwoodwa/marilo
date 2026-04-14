@@ -68,6 +68,7 @@ Set the `FilterMode` parameter of the Marilo Grid to `GridFilterMode.FilterRow`.
 
 To learn how to programmatically filter the Grid, refer to the [Grid State](slug:grid-state) documentation article.
 
+@[template](/_contentTemplates/grid/state.md#initial-state)
 
 ## Customization
 
@@ -77,6 +78,7 @@ You can customize the default behavior of the `FilterRow` in a couple ways:
 
 You can override the default Filter Row behavior for each column through the following properties the `GridColumn` exposes:
 
+@[template](/_contentTemplates/common/filtering.md#filter-row-customization-properties)
 
 >caption Configure the Filter Row
 
@@ -123,6 +125,7 @@ You can override the default Filter Row behavior for each column through the fol
 
 ### Debouncing the Filtering
 
+@[template](/_contentTemplates/common/filtering.md#filter-debounce-delay-customization)
 
 ### Filter Row Template
 
