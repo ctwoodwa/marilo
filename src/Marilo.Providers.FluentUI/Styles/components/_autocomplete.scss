@@ -20,7 +20,7 @@
 .mar-autocomplete__popup {
     display: none;
     position: absolute;
-    top: calc(100% + 2px);
+    top: calc(100% + var(--marilo-space-xxs));
     left: 0;
     right: 0;
     max-height: 280px;
@@ -71,7 +71,7 @@
         color: var(--marilo-color-primary);
         font-weight: var(--marilo-font-weight-semibold);
         border-radius: var(--marilo-radius-sm);
-        padding: 0 2px;
+        padding: 0 var(--marilo-space-xxs);
     }
 }
 
