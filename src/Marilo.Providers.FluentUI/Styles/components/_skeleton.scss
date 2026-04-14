@@ -1,1 +1,45 @@
-// TODO: Placeholder — no FluentUI styles defined yet
+// =============================================================================
+// Component: Skeleton (Loading Placeholder)
+// =============================================================================
+
+.mar-skeleton {
+    display: block;
+    background: linear-gradient(
+        90deg,
+        var(--marilo-color-surface) 25%,
+        var(--marilo-color-surface-hover) 50%,
+        var(--marilo-color-surface) 75%
+    );
+    background-size: 200% 100%;
+    border-radius: var(--marilo-radius-sm);
+    animation: mar-skeleton-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes mar-skeleton-shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+// Shape variants
+.mar-skeleton--text {
+    height: var(--marilo-line-height-base, 1em);
+    border-radius: var(--marilo-radius-sm);
+}
+
+.mar-skeleton--circle {
+    border-radius: 50%;
+}
+
+.mar-skeleton--rect {
+    border-radius: var(--marilo-radius-md);
+}
+
+.mar-skeleton--pulse {
+    animation: mar-skeleton-pulse 1.5s ease-in-out infinite;
+    background: var(--marilo-color-surface);
+}
+
+@keyframes mar-skeleton-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; } // animation keyframe — not a disabled state
+}
