@@ -251,5 +251,9 @@
         background: var(--marilo-color-primary);
         color: var(--marilo-color-on-primary);
         font-weight: var(--marilo-font-weight-semibold);
+
+        &:hover {
+            background: var(--marilo-color-primary-hover);
+        }
     }
 }
