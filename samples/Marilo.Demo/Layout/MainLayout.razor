@@ -40,7 +40,7 @@
                     <button class="theme-picker-trigger" @onclick="ToggleThemePicker"
                             title="Change theme">
                         <MariloIcon Name="palette" Size="IconSize.Small" />
-                        <span class="theme-picker-label">@(_activeProvider == DesignProvider.FluentUI ? "Fluent" : "Bootstrap") · @(_isDark ? "Dark" : _selectedPreset.Name)</span>
+                        <span class="theme-picker-label">@(ProviderLabel(_activeProvider)) · @(_isDark ? "Dark" : _selectedPreset.Name)</span>
                         <MariloIcon Name="chevron-down" Size="IconSize.Small" />
                     </button>
                     @if (_showThemePicker)
@@ -351,6 +351,13 @@
         catch (TaskCanceledException) { }
         catch (OperationCanceledException) { }
     }
+
+    private static string ProviderLabel(DesignProvider provider) => provider switch
+    {
+        DesignProvider.Bootstrap => "Bootstrap",
+        DesignProvider.Material => "Material",
+        _ => "Fluent",
+    };
 
     private void ToggleThemePicker() => _showThemePicker = !_showThemePicker;
     private void CloseThemePicker() => _showThemePicker = false;
