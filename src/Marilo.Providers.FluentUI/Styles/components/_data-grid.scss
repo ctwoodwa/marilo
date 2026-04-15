@@ -11,17 +11,18 @@
     font-size: var(--marilo-font-size-base);
 }
 
+.mar-datagrid-content > table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
 .mar-datagrid-header {
-    display: flex;
-    align-items: center;
     background: var(--marilo-color-surface);
     font-weight: var(--marilo-font-weight-semibold);
     border-bottom: 1px solid var(--marilo-color-border);
 }
 
 .mar-datagrid-row {
-    display: flex;
-    align-items: center;
     border-bottom: 1px solid var(--marilo-color-border);
     transition: background var(--marilo-transition-fast);
 }
@@ -33,7 +34,6 @@
 .mar-datagrid-row--striped:nth-child(even) { background: var(--marilo-color-surface); }
 
 .mar-datagrid-cell {
-    flex: 1;
     padding: var(--marilo-space-sm) var(--marilo-space-md);
     overflow: hidden;
     text-overflow: ellipsis;
@@ -82,12 +82,6 @@
     font-weight: var(--marilo-font-weight-semibold);
     background: var(--marilo-color-surface);
     padding: var(--marilo-space-xs) var(--marilo-space-md);
-}
-
-// Table layout overrides (semantic <table> markup)
-.mar-datagrid table tr.mar-datagrid-header,
-.mar-datagrid table tr.mar-datagrid-row {
-    display: table-row;
 }
 
 .mar-datagrid .mar-datagrid-header-cell,
@@ -210,7 +204,7 @@
 
     &:hover { background: var(--marilo-color-surface-hover); }
     &--active { background: var(--marilo-color-primary); color: var(--marilo-color-on-primary); border-color: var(--marilo-color-primary); }
-    &:disabled { opacity: 0.4; cursor: not-allowed; }
+    &:disabled { color: var(--marilo-color-text-muted); cursor: not-allowed; }
 }
 
 .mar-datagrid-empty {
@@ -260,8 +254,6 @@
 }
 
 .mar-datagrid-footer-row {
-    display: flex;
-    align-items: center;
     background: var(--marilo-color-surface);
     border-top: 1px solid var(--marilo-color-border);
     font-weight: var(--marilo-font-weight-semibold);
@@ -308,8 +300,8 @@
 // Focus ring rules (DG-10 Phase 5)
 // =============================================================================
 
-.mar-datagrid-cell:focus,
-.mar-datagrid-header-cell:focus {
+.mar-datagrid-cell:focus-visible,
+.mar-datagrid-header-cell:focus-visible {
     outline: 2px solid var(--marilo-color-focus-ring, var(--marilo-color-primary));
     outline-offset: -2px;
     position: relative;

@@ -13872,11 +13872,20 @@ textarea.form-control-lg {
 }
 .mar-bs-datagrid table {
   margin-bottom: 0;
+  border-collapse: collapse;
+  width: 100%;
 }
 
+.mar-bs-datagrid-header-cell {
+  padding: var(--marilo-space-sm) var(--marilo-space-md);
+  font-weight: var(--marilo-font-weight-semibold);
+  text-align: left;
+  white-space: nowrap;
+  user-select: none;
+  border-bottom: 2px solid var(--marilo-color-border);
+}
 .mar-bs-datagrid-header-cell--sortable {
   cursor: pointer;
-  user-select: none;
 }
 .mar-bs-datagrid-header-cell--sortable:hover {
   background-color: var(--marilo-color-surface);
@@ -13884,6 +13893,34 @@ textarea.form-control-lg {
 .mar-bs-datagrid-header-cell--sorted {
   font-weight: 600;
   color: var(--marilo-color-primary);
+}
+
+.mar-bs-datagrid-header {
+  background: var(--marilo-color-surface);
+}
+
+.mar-bs-datagrid-row {
+  border-bottom: 1px solid var(--marilo-color-border);
+  transition: background 0.15s;
+}
+.mar-bs-datagrid-row:last-child {
+  border-bottom: none;
+}
+.mar-bs-datagrid-row:hover {
+  background: var(--marilo-color-surface);
+}
+.mar-bs-datagrid-row--selected {
+  background: var(--marilo-color-primary-light);
+}
+.mar-bs-datagrid-row--selected:hover {
+  background: var(--marilo-color-primary-light);
+}
+
+.mar-bs-datagrid-cell {
+  padding: var(--marilo-space-sm) var(--marilo-space-md);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .mar-bs-datagrid-row--striped:nth-child(even) {
