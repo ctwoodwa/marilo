@@ -41,6 +41,7 @@ The Blazor Checkbox fires value change, focus and state change events that you c
 
 The Blazor CheckBox provides various parameters that allow you to configure the component:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type | Description |
 | ----------- | ----------- | ----------- |

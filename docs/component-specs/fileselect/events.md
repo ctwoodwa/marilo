@@ -22,6 +22,7 @@ The FileSelect event handlers provide a [`FileSelectEventArgs` argument](slug:Ma
 
 The `FileSelectFileInfo` type contains the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 Property | Type | Description
 ---------|----------|---------
@@ -154,6 +155,7 @@ The event handler receives a [`FileSelectEventArgs` object](#fileselectfileinfo)
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 ## See Also
 

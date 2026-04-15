@@ -24,9 +24,11 @@ The MultiSelect component allows you to change what is rendered in its items, he
 
 ## Item Template
 
+@[template](/_contentTemplates/dropdowns/templates.md#item-template)
 
 ## Tag Template
 
+@[template](/_contentTemplates/dropdowns/templates.md#tag-template)
 
 ## Summary Tag Template
 
@@ -38,12 +40,15 @@ The context of the `SummaryTagTemplate` is of type `MultiSelectSummaryTagTemplat
 
 ## Header Template
 
+@[template](/_contentTemplates/dropdowns/templates.md#header-template)
 
 ## Footer Template
 
+@[template](/_contentTemplates/dropdowns/templates.md#footer-template)
 
 ## No Data Template
 
+@[template](/_contentTemplates/dropdowns/templates.md#no-data-template)
 
 ## Example
 

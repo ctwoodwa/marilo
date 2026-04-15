@@ -52,24 +52,30 @@ User input: @AutoCompleteValue
 ## Grouping
 
 
+@[template](/_contentTemplates/common/inputs.md#adornments)
 
 ## Templates
 
+@[template](/_contentTemplates/dropdowns/features.md#templates) [Read more about the Blazor AutoComplete templates...](slug:autocomplete-templates)
 
 ## Validation
 
+@[template](/_contentTemplates/dropdowns/features.md#validation)
 
 ## Virtualization
 
+@[template](/_contentTemplates/dropdowns/features.md#virtualization) [Read more about the Blazor AutoComplete virtualization...](slug:autocomplete-virtualization)
 
 ## Adaptive Rendering
 
 
+@[template](/_contentTemplates/dropdowns/adaptive-rendering.md#intro)
 
 ## AutoComplete Parameters
 
 The Blazor AutoComplete provides various parameters that allow you to configure the component:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter    | Type  | Description |
 | ----------- | ----------- | -------|
@@ -97,6 +103,7 @@ The Blazor AutoComplete provides various parameters that allow you to configure 
 
 The following parameters enable you to customize the appearance of the Blazor AutoComplete:
 
+@[template](/_contentTemplates/dropdowns/features.md#styling)
 
 You can find more options for customizing the AutoComplete styling in the [Appearance article](slug:autocomplete-appearance).
 
@@ -127,13 +134,16 @@ The AutoComplete exposes settings for its dropdown (popup). To configure the opt
 
 The AutoComplete provides the following popup settings:
 
+@[template](/_contentTemplates/dropdowns/features.md#popup-settings)
 
 
+@[template](/_contentTemplates/common/get-model-from-dropdowns.md#get-model-from-dropdowns)
 
 ## AutoComplete Reference and Methods
 
 Add a reference to the component instance to use the [AutoComplete's methods](slug:Marilo.Blazor.Components.MariloAutoComplete-1). Note that the [AutoComplete is a generic component](slug:common-features-data-binding-overview#component-type).
 
+@[template](/_contentTemplates/dropdowns/methods.md#methods-list)
 
 ````RAZOR
 <MariloAutoComplete @ref="@AutoCompleteRef"

@@ -90,6 +90,7 @@ The inline tools add or work with inline HTML elements. For example, such elemen
 
 >caption Table 1: Inline Tools of the Editor
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 <table>
     <thead>

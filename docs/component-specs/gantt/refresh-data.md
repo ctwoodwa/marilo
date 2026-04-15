@@ -10,6 +10,7 @@ components: ["gantt"]
 ---
 # Gantt - Refresh Data
 
+@[template](/_contentTemplates/common/observable-data.md#intro)
 
 In this article:
 - [Rebind Method](#rebind-method)
@@ -18,6 +19,7 @@ In this article:
 
 ## Rebind Method
 
+@[template](/_contentTemplates/common/rebind-method.md#intro)
 The Gantt automatically detects both `Data` reference changes AND field parameter changes in `OnParametersSet`, triggering a full tree rebuild and timeline recalculation.
 
 `Rebind()` refreshes the Gantt's internal tree from the current `Data` collection when the collection is mutated in place (items added or removed without reassigning the reference). `Rebind()` also triggers timeline recomputation (range recalculation) in addition to the tree rebuild.
@@ -187,6 +189,7 @@ The Gantt automatically detects both `Data` reference changes AND field paramete
 
 ## Observable Data
 
+@[template](/_contentTemplates/common/observable-data.md#observable-data)
 
 >caption Bind the Gantt to an ObservableCollection, so it can react to collection changes.
 
@@ -346,9 +349,11 @@ The Gantt automatically detects both `Data` reference changes AND field paramete
 }
 ````
 
+@[template](/_contentTemplates/common/observable-data.md#tip-for-new-collection)
 
 ## New Collection Reference
 
+@[template](/_contentTemplates/common/observable-data.md#refresh-data)
 
 >caption Create new collection reference to refresh the Gantt data.
 

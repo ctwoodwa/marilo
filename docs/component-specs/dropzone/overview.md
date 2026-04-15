@@ -52,6 +52,7 @@ The DropZone allows you to customize its rendering and appearance through a `Tem
 
 The following table lists DropZone parameters. Check the [DropZone API Reference](slug:Marilo.Blazor.Components.MariloDropZone) for a full list of properties, methods and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

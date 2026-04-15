@@ -14,6 +14,7 @@ The <a href = "https://www.marilo.com/blazor-ui/split-button" target="_blank">Sp
 
 ## SplitButton vs. DropDownButton
 
+@[template](/_contentTemplates/dropdownbutton/notes.md#dropdownbutton-splitbutton-comparison)
 
 ## Creating Blazor SplitButton
 
@@ -77,6 +78,7 @@ Each SplitButton action [fires a separate `OnClick` event](slug:splitbutton-even
 
 The following table lists the SplitButton parameters, except those related to [built-in styling](slug:splitbutton-appearance) and [icons](slug:splitbutton-icons). Also check the [SplitButton API Reference](slug:Marilo.Blazor.Components.MariloSplitButton) for a full list of properties, methods and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

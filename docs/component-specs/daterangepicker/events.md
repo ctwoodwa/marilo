@@ -75,7 +75,9 @@ When the user selects a range from the calendar popup, the first click always fi
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
+@[template](/_contentTemplates/common/issues-and-warnings.md#valuechanged-lambda-required)
 
 ## OnChange
 
@@ -113,6 +115,7 @@ The `OnOpen` event fires before the DateRangePicker popup renders.
 
 The event handler receives as an argument an `DateRangePickerOpenEventArgs` object that contains:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Description |
 | --- | --- |
@@ -140,6 +143,7 @@ The event handler receives as an argument an `DateRangePickerOpenEventArgs` obje
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 >tip The `OnChange` event is a custom event and does not interfere with bindings, so you can use it together with models and forms.
 
@@ -207,6 +211,7 @@ The `ViewChanged` event fires when the user changes the view they are seeing in 
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 ## OnCalendarCellRender
 

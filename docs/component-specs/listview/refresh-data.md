@@ -10,6 +10,7 @@ components: ["listview"]
 ---
 # ListView - Refresh Data
 
+@[template](/_contentTemplates/common/observable-data.md#intro)
 
 In this article:
 
@@ -101,9 +102,11 @@ To refresh the `ListView` data when using [`OnRead`](slug:listview-manual-operat
 </style>
 ````
 
+@[template](/_contentTemplates/common/refresh-data-not-applicable.md#refresh-data-note)
 
 ## Observable Data
 
+@[template](/_contentTemplates/common/observable-data.md#observable-data)
 
 >caption Bind the ListView to an ObservableCollection, so it can react to collection changes.
 
@@ -181,9 +184,11 @@ To refresh the `ListView` data when using [`OnRead`](slug:listview-manual-operat
 </style>
 ````
 
+@[template](/_contentTemplates/common/observable-data.md#tip-for-new-collection)
 
 ## New Collection Reference
 
+@[template](/_contentTemplates/common/observable-data.md#refresh-data)
 
 >caption Create new collection reference to refresh the ListView data.
 

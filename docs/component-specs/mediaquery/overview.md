@@ -59,6 +59,7 @@ The <a href = "https://www.marilo.com/blazor-ui/mediaquery" target="_blank">Medi
 
 ## MediaQuery Parameters
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type | Description |
 |---|---|---|

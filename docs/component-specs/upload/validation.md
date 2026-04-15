@@ -48,6 +48,7 @@ Removing invalid files with the [x] button in the Upload interface will not call
 
 >note The [Blazor framework does not support form validation for files](https://github.com/dotnet/aspnetcore/issues/18821). We made [an example that creates similar experience](https://github.com/marilo/blazor-ui/tree/master/upload/form-validation). Use it as base for your implementation.
 
+@[template](/_contentTemplates/upload/notes.md#server-security-note)
 
 ## See Also
 

@@ -17,6 +17,7 @@ There are two data binding modes that the FileManager supports:
 * [Flat data](slug:filemanager-data-binding-flat-data)&mdash;a collection of self-referencing items with parent-child relationships.
 * [Hierarchical data](slug:filemanager-data-binding-hierarchical-data)&mdash;each item holds its children in a nested property.
 
+@[template](/_contentTemplates/common/general-info.md#valuebind-vs-databind-link)
 
 ## FileManager Item Features
 
@@ -224,6 +225,7 @@ The following section describes the meaning of the model properties for the File
 
 All [FileManager item features](#filemanager-item-features) map to model properties. You define that relationship by providing the property name from which the corresponding information is taken. To do this, use the following parameters of the main `MariloFileManager` tag:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | FileManager Parameter | Default&nbsp;Parameter&nbsp;Value <br /> (Model Property Name) | Model Property Type | Model Value Description | 
 | --- | --- | --- | --- |

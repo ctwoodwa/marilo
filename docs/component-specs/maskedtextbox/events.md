@@ -41,6 +41,7 @@ The `OnChange` event represents a user action - confirmation of the current valu
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 >tip The `OnChange` event is a custom event and does not interfere with bindings, so you can use it together with models and forms.
 
@@ -70,6 +71,7 @@ The `ValueChanged` event fires upon every change (for example, keystroke) in the
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 
 

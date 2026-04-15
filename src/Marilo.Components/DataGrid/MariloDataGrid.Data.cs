@@ -956,9 +956,9 @@ public partial class MariloDataGrid<TItem>
         await NotifyStateChanged("Page");
     }
 
-    internal async Task OnPageSizeDropdownChanged(ChangeEventArgs e)
+    internal async Task OnPaginationPageSizeChanged(int newSize)
     {
-        if (int.TryParse(e.Value?.ToString(), out var newSize) && newSize > 0)
+        if (newSize > 0 && newSize != _state.PageSize)
         {
             _state.PageSize = newSize;
             _state.CurrentPage = 1;
@@ -966,6 +966,14 @@ public partial class MariloDataGrid<TItem>
             await PageSizeChanged.InvokeAsync(newSize);
             await NotifyPageChanged();
             await NotifyStateChanged("PageSize");
+        }
+    }
+
+    internal async Task OnPageSizeDropdownChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var newSize) && newSize > 0)
+        {
+            await OnPaginationPageSizeChanged(newSize);
         }
     }
 }

@@ -60,6 +60,7 @@ The layout is the building block of the StackLayout component. Control its appea
 
 The Blazor StackLayout provides various parameters that allow you to configure the component:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default Value | Description |
 | ----------- | ----------- | ----------- |

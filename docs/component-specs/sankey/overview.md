@@ -8,6 +8,7 @@ published: True
 position: 0
 components: ["general"]
 ---
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 # Blazor Sankey Overview
 

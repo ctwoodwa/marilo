@@ -22,6 +22,7 @@ The available built-in views are:
 
 The AIPrompt views provide various parameters that allow you to configure the component:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type | Description |
 | --- | --- | --- |

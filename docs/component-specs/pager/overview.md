@@ -76,6 +76,7 @@ The Blazor Pager exposes PageChanged and PageSizeChanged events that you can han
 
 The Blazor Pager provides various parameters that allow you to configure the component:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | ----------- | ----------- | ----------- |

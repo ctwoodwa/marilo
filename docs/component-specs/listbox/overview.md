@@ -152,6 +152,7 @@ The various [ListBox events](slug:listbox-events) allow you to implement custom 
 
 The table below lists the ListBox parameters. For a full list of the ListBox API members (parameters, methods, and events), check the [ListBox API Reference](slug:Marilo.Blazor.Components.MariloListBox-1).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

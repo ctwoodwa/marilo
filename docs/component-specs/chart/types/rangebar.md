@@ -12,6 +12,7 @@ components: ["charts"]
 
 The <a href="https://www.marilo.com/blazor-ui/range-bar-chart" target="_blank">Blazor Range Bar Chart</a> displays data as horizontal bars whose position and length vary according to pairs of `from` and `to` values. You can use a Range Bar Chart to show a comparison between several sets of data (for example, summaries of quantitative or time data). Each series is automatically colored differently for easier reading. The Range Bar Chart is similar to the [Bar Chart](slug:components/chart/types/bar), which can be regarded as a Range Bar Chart with zero `from` values.
 
+@[template](/_contentTemplates/chart/link-to-basics.md#understand-basics-and-databinding-first)
 
 ## Creating Blazor Range Bar Chart
 
@@ -159,9 +160,13 @@ Set the `Categories` parameter of the `ChartCategoryAxis` to `object[]`. The mem
 
 The color of a series is controlled through the `Color` property that can take any valid CSS color (for example, `#abcdef`, `#f00`, or `blue`). The color controls the fill color of the area.
 
+@[template](/_contentTemplates/chart/link-to-basics.md#color-field-bar-column)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#gap-and-spacing)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings-categorical)
 
 
 ## See Also

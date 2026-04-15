@@ -12,6 +12,7 @@ components: ["chiplist"]
 
 This article explains how to provide data to a ChipList component, and the properties related to data binding.
 
+@[template](/_contentTemplates/common/general-info.md#valuebind-vs-databind-link)
 
 ## Data Binding Features
 
@@ -38,6 +39,7 @@ The `IconField` model property can hold:
 * A member of the `FontIcon` enum;
 * A `string` that is a CSS class for a custom icon.
 
+@[template](/_contentTemplates/common/icons.md#font-icons-css-note)
 
 ## Examples
 

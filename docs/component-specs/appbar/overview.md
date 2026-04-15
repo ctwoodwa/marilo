@@ -74,6 +74,7 @@ You can control the position of the AppBar and how the component behaves accordi
 
 The Blazor AppBar provides parameters to configure the component. Also check the [AppBar API Reference](slug:Marilo.Blazor.Components.MariloAppBar) for a full list of properties.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type | Description |
 | ----------- | ----------- | ----------- |

@@ -144,6 +144,7 @@ The various [TreeList templates](slug:treelist-templates-overview) provide bette
 
 The following table lists Tree List parameters, which are not related to other features on this page. Check the [TreeList API Reference](slug:Marilo.Blazor.Components.MariloTreeList-1) for a full list of properties, methods and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 |---|---|---|

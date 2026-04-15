@@ -18,6 +18,7 @@ If you need to perform logic more complex than simple data binding, use the chan
 
 The TreeList row creates an `EditContext` and passes it to the `EditorTemplate`. You can read more about it in the [Notes section of the Editing Overview](slug:gantt-tree-editing#notes) article).
 
+@[template](/_contentTemplates/common/inputs.md#edit-debouncedelay)
 
 >caption Using TreeList Editor Template
 

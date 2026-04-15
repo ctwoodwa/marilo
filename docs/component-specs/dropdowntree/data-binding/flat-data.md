@@ -12,6 +12,7 @@ position: 5
 # DropDownTree Binding to Flat Data
 
 This article explains how to bind the DropDownTree for Blazor to flat self-referencing data.
+@[template](/_contentTemplates/dropdowntree/general.md#data-binding-basics-link)
 
 Flat data means that all DropDownTree items are available at one level in a single collection, for example, `List<MyTreeItem>`. The parent-child relationships are defined through properties in the model. For example, the `ParentId` property value of one item points to the `Id` property value of another parent item. The root level items have `null` values for `ParentId`. There must be at least one node with a `null` value so that the TreeView in the DropDownTree popup renders.
 

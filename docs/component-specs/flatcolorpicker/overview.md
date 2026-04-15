@@ -77,6 +77,7 @@ The FlatColorPicker tag exposes the following features via its attributes:
 
 The FlatColorPicker accepts values by the application code in the following formats:
 
+@[template](/_contentTemplates/common/coloreditors.md#value-formats)
 
 Color keywords are not supported.
 

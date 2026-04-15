@@ -53,6 +53,7 @@ You can ensure that the component value is acceptable by using the built-in vali
 
 The following table lists the Switch parameters. Also check the [Switch API Reference](slug:Marilo.Blazor.Components.MariloSwitch-1) for a full list of all properties, methods and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Attribute | Type and Default Value | Description |
 |----------|----------|----------|

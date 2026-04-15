@@ -24,6 +24,7 @@ The settings control the following component behaviors:
 
 The table below provides a quick reference to the relevant parameters. For more detailed descriptions and [example](#example), check the sections below.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default Value | Description |
 |---|---|---|

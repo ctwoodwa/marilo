@@ -40,6 +40,7 @@ Selected time: @selectedTime?.ToLongTimeString()
 ## Date Input Typing Settings
 
 The TimePicker
+@[template](/_contentTemplates/date-inputs/general.md#dateinput-typing-settings)
 TimePicker.
 
 ## Increment Steps
@@ -69,11 +70,13 @@ The `Min` and `Max` properties require a `DateTime` object, but will only use th
 ## Adaptive Rendering
 
 
+@[template](/_contentTemplates/dropdowns/adaptive-rendering.md#intro)
 
 ## Time Picker Parameters
 
 The Blazor Time Picker component provides various parameters that allow you to configure the component. Also check the [TimePicker's public API](slug:Marilo.Blazor.Components.MariloTimePicker-1).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Attribute | Type and Default Value | Description |
 |---|---|---|
@@ -93,6 +96,7 @@ The Blazor Time Picker component provides various parameters that allow you to c
 | `ValidateOn` | `ValidationEvent` enum <br/> (`Input`) | Configures the event that will trigger validation (if validation is enabled). Read more at [Validation Modes for Simple Inputs](slug:common-features/input-validation#validation-modes-for-simple-inputs). |
 | `Value` | `DateTime` or `DateTime?` | The current value of the component. Supports two-way binding. |
 
+@[template](/_contentTemplates/date-inputs/general.md#typing-parameters)
 
 ### Styling and Appearance
 
@@ -106,6 +110,7 @@ The following parameters enable you to customize the appearance of the Blazor Ti
 
 You can find more options for customizing the Time Picker styling in the [Appearance article](slug:timepicker-appearance).
 
+@[template](/_contentTemplates/date-inputs/general.md#format-placeholder)
 
 ## TimePicker Reference and Methods
 

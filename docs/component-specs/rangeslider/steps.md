@@ -20,9 +20,11 @@ In this article:
 
 ## LargeStep
 
+@[template](/_contentTemplates/slider/common.md#large-step)
 
 ## SmallStep
 
+@[template](/_contentTemplates/slider/common.md#small-step)
 
 ## Examples
 

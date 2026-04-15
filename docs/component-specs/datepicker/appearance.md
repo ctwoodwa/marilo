@@ -124,6 +124,7 @@ The `FillMode` controls how the MariloDatePicker is filled. You can set it to a 
 }
 ````
 
+@[template](/_contentTemplates/common/themebuilder-section.md#appearance-themebuilder)
 
 ## See Also
 

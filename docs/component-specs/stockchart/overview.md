@@ -112,6 +112,7 @@ The Marilo Stock Chart provides a [Navigator](slug:stockchart-navigator) to wide
 ![stockchart basic example](images/stockchart-basic-example.png)
 
 
+@[template](/_contentTemplates/stockchart/link-to-basics.md#configurable-nested-chart-settings)
 
 ## Stock Chart Size
 
@@ -231,6 +232,7 @@ You can make a responsive chart
 
 The following table lists StockChart parameters, which are not discussed elsewhere in the component documentation.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default value | Description |
 |-----------|------------------------|-------------|

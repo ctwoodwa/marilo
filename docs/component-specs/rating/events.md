@@ -37,6 +37,7 @@ Make sure to update the currently selected item when using the event.
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 ## See Also
 

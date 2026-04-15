@@ -14,9 +14,11 @@ You can add [Marilo Font or SVG icons](slug:common-features-icons) to the Breadc
 
 To use Breadcrumb icons, define a property in the component model class and assign the property name to the `IconField` parameter of the Breadcrumb.
 
+@[template](/_contentTemplates/common/icons.md#icon-property-supported-types)
 
 If the icon property name in the Breadcrumb model is `Icon`, there is no need to set the `IconField` parameter.
 
+@[template](/_contentTemplates/common/icons.md#font-icons-css-note)
 
 >caption How to use icons in Marilo Breadcrumb
 
@@ -34,6 +36,7 @@ If the icon property name in the Breadcrumb model is `Icon`, there is no need to
     }
 </style>
 
+@[template](/_contentTemplates/common/icons.md#font-icons-css-code)
 
 @code {
     private IEnumerable<BreadcrumbItem> Data = new List<BreadcrumbItem>();

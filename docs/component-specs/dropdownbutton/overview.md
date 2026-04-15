@@ -14,6 +14,7 @@ The <a href = "https://www.marilo.com/blazor-ui/dropdownbutton" target="_blank">
 
 ## DropDownButton vs. SplitButton
 
+@[template](/_contentTemplates/dropdownbutton/notes.md#dropdownbutton-splitbutton-comparison)
 
 ## Creating Blazor DropDownButton
 
@@ -65,6 +66,7 @@ Each DropDownButton action [fires a separate `OnClick` event](slug:dropdownbutto
 
 The following table lists the DropDownButton parameters, except those related to [built-in styling](slug:dropdownbutton-appearance) and [icons](slug:dropdownbutton-icons). Also check the [DropDownButton API Reference](slug:Marilo.Blazor.Components.MariloDropDownButton) for a full list of properties, methods, and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |
@@ -103,6 +105,7 @@ The DropDownButton exposes settings for its dropdown (popup). To configure the o
 ````
 The DropDownButton provides the following popup settings:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type | Description |
 | --- | --- | --- |

@@ -37,6 +37,7 @@ You can control how the Badge is positioned relative to its associated container
 
 The Blazor Badge provides various parameters that allow you to configure the component. Also check the [Badge API Reference](slug:Marilo.Blazor.Components.MariloBadge) for a full list of properties.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type | Description |
 | ----------- | ----------- | ----------- |

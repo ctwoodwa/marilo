@@ -99,7 +99,9 @@ The type of the argument in the lambda expression must match the `Value` type of
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
+@[template](/_contentTemplates/common/issues-and-warnings.md#valuechanged-lambda-required)
 
 ## OnChange
 
@@ -210,6 +212,7 @@ When using `OnRead`, make sure to set `TItem` and `TValue`.
 
 >caption Custom Data according to the user input in the ComboBox
 
+@[template](/_contentTemplates/common/dropdowns-virtualization.md#value-in-onread)
 
 ````RAZOR
 <p>@SelectedValue</p>
@@ -378,6 +381,7 @@ The `OnOpen` event fires before the MultiColumnComboBox popup renders.
 
 The event handler receives as an argument an `MultiColumnComboBoxOpenEventArgs` object that contains:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Description |
 | --- | --- |

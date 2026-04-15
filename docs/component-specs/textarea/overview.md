@@ -39,6 +39,7 @@ The TextArea component provides settings to control its appearance. [Read more a
 
 >tip To learn more about the appearance, anatomy, and accessibility of the TextArea, visit the [Progress Design System Kit documentation](https://www.marilo.com/design-system/docs/components/textarea/)—an information portal offering rich component usage guidelines, descriptions of the available style variables, and globalization support details.
 
+@[template](/_contentTemplates/common/inputs.md#adornments)
 
 ## Events
 
@@ -48,6 +49,7 @@ The Blazor TextArea fires **blur** and value **change** events to respond to use
 
 The Blazor TextArea provides various parameters to configure the component:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default Value | Description |
 | ----------- | ----------- | ----------- |
@@ -76,6 +78,7 @@ See the [Input Validation](slug:common-features/input-validation) article.
 ## TextArea Reference and Methods
 
 The TextArea provides a `FocusAsync` method that allows the application to focus the component programmatically. First, obtain reference to the component through its `@ref` attribute.
+@[template](/_contentTemplates/common/inputs.md#focus-kb)
 
 >caption Use TextArea methods
 

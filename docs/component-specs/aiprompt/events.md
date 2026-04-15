@@ -34,6 +34,7 @@ The `OnPromptRequest` event fires when the user clicks on the **Generate** butto
 
 The event handler receives an argument of type [`AIPromptPromptRequestEventArgs`](slug:Marilo.Blazor.Components.AIPromptPromptRequestEventArgs). See the [example below](#example).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Type | Description |
 | --- | --- | --- |
@@ -56,6 +57,7 @@ The `OnCommandExecute` event fires when the user clicks on a command within the 
 
 The event handler receives an argument of type [`AIPromptCommandExecuteEventArgs`](slug:Marilo.Blazor.Components.AIPromptCommandExecuteEventArgs). See the [example below](#example).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Type | Description |
 | --- | --- | --- |

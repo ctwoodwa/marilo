@@ -31,6 +31,7 @@ The top of the Spreadsheet component displays a Menu and a ToolBar:
 
 The `SpreadsheetToolSetItem` class has the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property Name | Type | Description |
 | --- | --- | --- |

@@ -42,6 +42,7 @@ public class TreeItem
 
 The above model properties have the following meaning for the TreeView:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 <style>
     style + table td {
@@ -109,6 +110,7 @@ public class TreeItem
 
 >tip If some model property names match the default ones in the table above, then there is no need to configure them in a `TreeViewBinding`.
 
+@[template](/_contentTemplates/common/navigation-components.md#default-fields-match-issues)
 
 > Do not use `ParentId` with hierarhical data. This will confuse the TreeView that it is bound to flat data and the component may not render any items. If the model must have a `ParentId` property, set `ParentIdField` in the `TreeViewBinding` to a non-existent property.
 

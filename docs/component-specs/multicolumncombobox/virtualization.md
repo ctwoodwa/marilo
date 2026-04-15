@@ -33,9 +33,11 @@ You can find a basic example in the [Local Data](#local-data-example) section be
 >caption For working with [remote data](#remote-data-example), you also need:
 
 
+@[template](/_contentTemplates/common/dropdowns-virtualization.md#remote-data-specifics)
 
 ### Limitations
 
+@[template](/_contentTemplates/common/dropdowns-virtualization.md#limitations)
 
 ## Local Data Example
 
@@ -80,7 +82,9 @@ You can find a basic example in the [Local Data](#local-data-example) section be
 
 ## Remote Data Example
 
+@[template](/_contentTemplates/common/dropdowns-virtualization.md#remote-data-sample-intro)
 
+@[template](/_contentTemplates/common/dropdowns-virtualization.md#value-mapper-in-remote-example)
 
 Run this and see how you can display, scroll and filter over 10k records in the combobox without delays and performance issues from a remote endpoint. There is artificial delay in these operations for the sake of the demonstration.
 

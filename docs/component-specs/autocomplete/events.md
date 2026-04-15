@@ -48,7 +48,9 @@ AutoComplete Value: @AutoCompleteValue <br />
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
+@[template](/_contentTemplates/common/issues-and-warnings.md#valuechanged-lambda-required)
 
 >caption Handle ValueChanged and provide initial value
 
@@ -236,6 +238,7 @@ The `OnOpen` event fires before the AutoComplete popup renders.
 
 The event handler receives as an argument an `AutoCompleteOpenEventArgs` object that contains:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Description |
 | --- | --- |

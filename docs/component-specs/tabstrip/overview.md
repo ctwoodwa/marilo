@@ -79,6 +79,7 @@ The TabStrip fires events when the user changes the active tab (`ActiveTabIndexC
 
 The TabStrip provides the following features to allow further customization of its behavior:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

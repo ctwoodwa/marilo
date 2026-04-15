@@ -322,12 +322,16 @@ public class MariloDataGridPhase1Tests : MariloTestBase
             .AddChildContent<MariloGridColumn<Employee>>(col => col
                 .Add(c => c.Field, "Name")));
 
+        cut.Find(".mar-datagrid-pager .mar-pagination");
+
         // 12 items / 3 per page = 4 pages
-        var pageButtons = cut.FindAll("button.mar-datagrid-pager-btn");
-        Assert.True(pageButtons.Count >= 4); // At least 4 page buttons + prev/next
+        var pageButtons = cut.FindAll(".mar-datagrid-pager .mar-pagination button")
+            .Where(button => int.TryParse(button.TextContent.Trim(), out _))
+            .ToList();
+        Assert.Equal(4, pageButtons.Count);
 
         // Current page button should be active
-        var activeBtn = cut.Find("button.mar-datagrid-pager-btn--active");
+        var activeBtn = cut.Find(".mar-datagrid-pager .mar-pagination button[aria-current='page']");
         Assert.Contains("1", activeBtn.TextContent);
     }
 

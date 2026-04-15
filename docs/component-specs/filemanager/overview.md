@@ -383,6 +383,7 @@ The available FileManager methods are:
 
 The following table lists the FileManager parameters. Also check the [FileManager API Reference](slug:Marilo.Blazor.Components.MariloFileManager-1) for a full list of properties, methods and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and &nbsp; DefaultValue | Description |
 | --- | --- | --- |

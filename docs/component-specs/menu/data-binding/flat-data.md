@@ -11,6 +11,7 @@ components: ["menu"]
 # Menu Data Binding to Flat Data
 
 This article explains how to bind the Menu for Blazor to flat data. 
+@[template](/_contentTemplates/menu/basic-example.md#data-binding-basics-link)
 
 
 Flat data means that the entire collection of menu items is available at one level, for example `List<MyMenuModel>`.

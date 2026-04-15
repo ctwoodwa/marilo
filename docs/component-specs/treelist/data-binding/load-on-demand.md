@@ -11,6 +11,7 @@ components: ["treelist"]
 # TreeList Load on Demand
 
 This article explains how to load nodes on demand the treelist for Blazor so you can improve the performance. 
+@[template](/_contentTemplates/treelist/databinding.md#link-to-basics)
 Loading nodes on demand can improve the performance of your application by requesting less data at any given time.
 
 

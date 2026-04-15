@@ -13,6 +13,7 @@ The column's `EditorTemplate` defines the inline template or component that will
 
 In the Editor Template, you can data bind components to the current context, which is an instance to the model the Gantt is bound to.
 
+@[template](/_contentTemplates/common/inputs.md#edit-debouncedelay)
 
 >caption Using Gantt Editor Template
 

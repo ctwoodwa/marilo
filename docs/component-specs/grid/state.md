@@ -25,6 +25,7 @@ This article describes:
 
 The Grid state is a generic [class `GridState<TItem>`](slug:Marilo.Components.DataGrid.GridState-1). The type depends on the type of the Grid model. The `GridState<TItem>` object exposes the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Type | Description |
 | --- | --- | --- |
@@ -381,24 +382,33 @@ If you want to make changes to the current Grid state:
 
 The tabs below show how to set the Grid state and control filtering, sorting and other Grid features.
 
+@[template](/_contentTemplates/grid/state.md#initial-state)
 
 <div class="skip-repl"></div>
 
 ````RAZOR Sorting
+@[template](/_contentTemplates/grid/state.md#set-sort-from-code)
 ````
 ````RAZOR FilterRow
+@[template](/_contentTemplates/grid/state.md#filter-row-from-code)
 ````
 ````RAZOR FilterMenu
+@[template](/_contentTemplates/grid/state.md#filter-menu-from-code)
 ````
 ````RAZOR Search
+@[template](/_contentTemplates/grid/state.md#search-from-code)
 ````
 ````RAZOR Grouping
+@[template](/_contentTemplates/grid/state.md#group-from-code)
 ````
 ````RAZOR Hierarchy
+@[template](/_contentTemplates/grid/state.md#expand-hierarchy-from-code)
 ````
 ````RAZOR Columns
+@[template](/_contentTemplates/grid/state.md#column-state-from-code)
 ````
 
+@[template](/_contentTemplates/grid/state.md#filter-menu-default-filters)
 
 
 ## Equals Comparison

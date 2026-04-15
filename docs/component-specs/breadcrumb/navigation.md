@@ -30,6 +30,8 @@ Here is an example for such a configuration in our public repository - [SubScrib
 
 ## Notes
 
+@[template](/_contentTemplates/common/navigation-components.md#navman-used)
+@[template](/_contentTemplates/common/navigation-components.md#double-navigation)
 
 
 ## See Also

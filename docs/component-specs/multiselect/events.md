@@ -24,6 +24,7 @@ This article explains the events available in the Marilo MultiSelect for Blazor:
 
 The `ValueChanged` event fires when the user selection changes (the user adds or removes items). The type of the argument in the lambda expression must match the `Value` type of the component.
 
+@[template](/_contentTemplates/dropdowns/adaptive-rendering.md#value-changed)
 
 >caption Handle MultiSelect ValueChanged
 
@@ -49,7 +50,9 @@ Selected items count: @( MultiValues?.Count ?? 0 ) <br />
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
+@[template](/_contentTemplates/common/issues-and-warnings.md#valuechanged-lambda-required)
 
 ## OnChange
 
@@ -228,6 +231,7 @@ The `OnOpen` event fires before the MultiSelect popup renders.
 
 The event handler receives as an argument an `MultiSelectOpenEventArgs` object that contains:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Description |
 | --- | --- |

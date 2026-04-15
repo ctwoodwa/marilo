@@ -23,6 +23,7 @@ It receives argument of type [MouseEventArgs](https://docs.microsoft.com/en-us/d
 >caption Handle the button click
 
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 ## See Also
 

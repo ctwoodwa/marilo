@@ -79,14 +79,17 @@ You can set or remove the search filters programmatically through the `SearchFil
 >caption Set and clear the TreeList SearchBox filter programmatically
 
 ````RAZOR
+@[template](/_contentTemplates/treelist/state.md#search-from-code)
 ````
 
+@[template](/_contentTemplates/treelist/state.md#initial-state)
 
 
 ## Customize the SearchBox
 
 The `TreeListSearchBox` component offers the following parameters to customize its behavior:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

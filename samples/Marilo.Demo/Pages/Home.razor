@@ -81,8 +81,18 @@ Marilo.Providers.*   - Provider implementations (FluentUI, Bootstrap, etc.)</div
 </div>
 
 @code {
-    private string _providerName => ProviderSwitcher.ActiveProvider == DesignProvider.FluentUI ? "Fluent UI" : "Bootstrap";
-    private string _providerCss => ProviderSwitcher.ActiveProvider == DesignProvider.FluentUI ? "marilo-fluentui.css" : "marilo-bootstrap.css";
+    private string _providerName => ProviderSwitcher.ActiveProvider switch
+    {
+        DesignProvider.Bootstrap => "Bootstrap",
+        DesignProvider.Material => "Material 3",
+        _ => "Fluent UI",
+    };
+    private string _providerCss => ProviderSwitcher.ActiveProvider switch
+    {
+        DesignProvider.Bootstrap => "marilo-bootstrap.css",
+        DesignProvider.Material => "marilo-material.css",
+        _ => "marilo-fluentui.css",
+    };
 
     protected override void OnInitialized()
     {

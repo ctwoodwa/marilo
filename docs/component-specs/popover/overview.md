@@ -60,6 +60,7 @@ Use the available parameters to customize the animation type and its duration. [
 
 The Blazor Popover provides parameters to configure the component. Also check the [Popover API Reference](slug:Marilo.Blazor.Components.MariloPopover) for a full list of properties.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type | Description |
 | ----------- | ----------- | ----------- |

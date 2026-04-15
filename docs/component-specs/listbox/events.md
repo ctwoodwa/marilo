@@ -78,6 +78,7 @@ The `OnDrop` event fires when the user releases the currently dragged ListBox it
 
 The event handler receives an argument of type [`ListBoxDropEventArgs<T>`](slug:Marilo.Blazor.Components.ListBoxDropEventArgs-1). See the [example below](#example) and the [example in article Drag and Drop](slug:listbox-dragdrop#example).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Type | Description |
 | --- | --- | --- |

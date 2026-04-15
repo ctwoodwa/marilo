@@ -14,6 +14,7 @@ The <a href="https://www.marilo.com/blazor-ui/ohlc-chart" target="_blank">OHLC (
 
 ![ohlc chart](images/ohlc-chart.png)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#understand-basics-and-databinding-first)
 
 #### To create an OHLC chart:
 
@@ -114,8 +115,11 @@ The <a href="https://www.marilo.com/blazor-ui/ohlc-chart" target="_blank">OHLC (
 ## OHLC Chart Specific Appearance Settings
 
 
+@[template](/_contentTemplates/stockchart/link-to-basics.md#color-field-column-ohlc-candlestick)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#gap-and-spacing)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings)
 
 
 

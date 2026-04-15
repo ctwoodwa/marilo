@@ -12,6 +12,7 @@ components: ["gantt"]
 
 The Gantt Timeline provides four predefined views, which dictate how much time a single time slot represents:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | View | One Slot Is | Main Header Shows | Secondary Header Shows |
 | --- | --- | --- | --- |

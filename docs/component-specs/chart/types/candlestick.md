@@ -14,6 +14,7 @@ The <a href="https://www.marilo.com/blazor-ui/candlestick-chart" target="_blank"
 
 ![candlestick chart](images/candlestick-chart.png)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#understand-basics-and-databinding-first)
 
 #### To create a candlestick chart:
 
@@ -121,10 +122,13 @@ The <a href="https://www.marilo.com/blazor-ui/candlestick-chart" target="_blank"
 
 Set the color - a valid CSS, RGB, RGBA color - of the series when the `OpenField` is greater than the `CloseField` by setting the `DownColor` property of the `ChartSeries`. This can be passed through the data model and bound to the `DownColorField`.
 
+@[template](/_contentTemplates/stockchart/link-to-basics.md#color-field-column-ohlc-candlestick)
 
 >note The values bound to `DownColorField` and `ColorField` will take precedence over the values passed to the `Color` and the `DownColor` attributes. 
 
+@[template](/_contentTemplates/stockchart/link-to-basics.md#gap-and-spacing)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings)
 
 
 

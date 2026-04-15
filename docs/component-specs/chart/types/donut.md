@@ -14,6 +14,7 @@ The <a href="https://www.marilo.com/blazor-ui/donut-chart" target="_blank">Blazo
 
 ![donut chart](images/donut-chart.png)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#understand-basics-and-databinding-first)
 
 ## Creating Donut Chart
 
@@ -433,7 +434,9 @@ You can also use the `ColorField` property to define a field with the segments' 
 }
 ````
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings-axis-free)
 
 >caption Customize Chart Title Margin, Series Label Font, and Borders
 

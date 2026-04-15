@@ -14,9 +14,11 @@ You can add [Marilo Font or SVG icons](slug:common-features-icons) to the Drawer
 
 To use Drawer item icons, define a property in the component model class and assign the property name to the `IconField` parameter of the Drawer.
 
+@[template](/_contentTemplates/common/icons.md#icon-property-supported-types)
 
 If the icon property name in the Drawer model is `Icon`, there is no need to set the `IconField` parameter.
 
+@[template](/_contentTemplates/common/icons.md#font-icons-css-note)
 
 >caption How to use icons in the Marilo Drawer
 

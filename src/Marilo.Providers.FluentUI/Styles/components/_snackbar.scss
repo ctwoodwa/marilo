@@ -1,1 +1,102 @@
-// TODO: Placeholder — no FluentUI styles defined yet
+// =============================================================================
+// Component: Snackbar / Toast Notification
+// =============================================================================
+
+.mar-snackbar {
+    display: flex;
+    align-items: center;
+    gap: var(--marilo-space-md);
+    min-width: var(--marilo-snackbar-min-width, 280px);
+    max-width: var(--marilo-snackbar-max-width, 480px);
+    padding: var(--marilo-space-sm) var(--marilo-space-md);
+    background: var(--marilo-color-on-background);
+    color: var(--marilo-color-background);
+    border-radius: var(--marilo-radius-md);
+    box-shadow: var(--marilo-shadow-lg);
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-base);
+    animation: mar-snackbar-enter 0.2s ease-out;
+}
+
+@keyframes mar-snackbar-enter {
+    from {
+        opacity: 0;
+        transform: translateY(var(--marilo-space-xs, 8px));
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// Severity variants
+.mar-snackbar--success {
+    background: var(--marilo-color-success);
+    color: var(--marilo-color-on-success);
+}
+
+.mar-snackbar--warning {
+    background: var(--marilo-color-warning);
+    color: var(--marilo-color-on-warning);
+}
+
+.mar-snackbar--danger {
+    background: var(--marilo-color-danger);
+    color: var(--marilo-color-on-danger);
+}
+
+.mar-snackbar--info {
+    background: var(--marilo-color-info);
+    color: var(--marilo-color-on-info);
+}
+
+.mar-snackbar__icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    font-size: 1.1em;
+}
+
+.mar-snackbar__message {
+    flex: 1;
+    line-height: var(--marilo-line-height-base);
+}
+
+.mar-snackbar__action {
+    flex-shrink: 0;
+    background: transparent;
+    border: 1px solid currentColor;
+    border-radius: var(--marilo-radius-sm);
+    padding: var(--marilo-space-xxs) var(--marilo-space-sm);
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-sm);
+    font-weight: var(--marilo-font-weight-semibold);
+    color: inherit;
+    cursor: pointer;
+    transition: background var(--marilo-transition-fast);
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.15); // white overlay — correct for any severity bg
+    }
+}
+
+.mar-snackbar__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: var(--marilo-snackbar-close-size, 24px);
+    height: var(--marilo-snackbar-close-size, 24px);
+    background: transparent;
+    border: none;
+    border-radius: var(--marilo-radius-sm);
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.7; // intentional: close button dimmed relative to snackbar content
+    transition: opacity var(--marilo-transition-fast), background var(--marilo-transition-fast);
+
+    &:hover {
+        opacity: 1;
+        background: rgba(255, 255, 255, 0.15); // white overlay — correct for any severity bg
+    }
+}

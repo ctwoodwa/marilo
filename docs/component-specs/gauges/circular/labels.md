@@ -184,6 +184,7 @@ The `Visible` (`bool`) parameter controls whether the labels will be rendered. I
 
 ## Additional Customization
 
+@[template](/_contentTemplates/gauges/additional-customization.md#circular-gauge-additional-customization)
 
 >caption Customize the background and the margin of the Labels. The result from the code snippet below.
 

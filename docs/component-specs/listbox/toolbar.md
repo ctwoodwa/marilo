@@ -19,6 +19,7 @@ By default, the ListBox displays all its built-in tools in the order below. Use 
 
 Each button becomes enabled when it can be used, for example, when the user selects items. Each built-in button fires an event and the app must implement the required data source operation.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Tool Name | Tool Tag | Event On Click | Description |
 | --- | --- | --- | --- |

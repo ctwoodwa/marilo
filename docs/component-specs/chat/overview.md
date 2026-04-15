@@ -63,6 +63,7 @@ The <a href="https://www.marilo.com/blazor-ui/chat-(conversational-ui)" target="
         }
     }
  
+@[template](/_contentTemplates/chat/general.md#messagecs)
 }
 ````
 
@@ -94,6 +95,7 @@ The Chat component exposes various events that allow you to implement custom fun
 
 The Chat component provides a variety of parameters:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

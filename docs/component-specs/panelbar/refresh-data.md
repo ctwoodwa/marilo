@@ -10,6 +10,7 @@ components: ["panelbar"]
 ---
 # PanelBar - Refresh Data
 
+@[template](/_contentTemplates/common/observable-data.md#intro)
 
 In this article:
 - [Rebind Method](#rebind-method)
@@ -18,6 +19,7 @@ In this article:
 
 ## Rebind Method
 
+@[template](/_contentTemplates/common/rebind-method.md#intro)
 
 ````RAZOR
 @* Add/remove an item and rebind the PanelBar to react to that change. *@
@@ -135,6 +137,7 @@ In this article:
 
 ## Observable Data
 
+@[template](/_contentTemplates/common/observable-data.md#observable-data)
 
 >caption Bind the PanelBar to an ObservableCollection, so it can react to collection changes.
 
@@ -248,6 +251,7 @@ In this article:
 
 ## New Collection Reference
 
+@[template](/_contentTemplates/common/observable-data.md#refresh-data)
 
 >caption Create new collection reference to refresh the PanelBar data.
 

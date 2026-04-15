@@ -14,6 +14,7 @@ In-cell editing allows users to click Grid data cells and type new values like i
 
 The in-cell edit mode provides a different user experience, compared to the inline and popup edit modes. In-cell edit mode can be more convenient for advanced users, fast users, or users who prefer keyboard navigation rather than clicking command buttons.
 
+@[template](/_contentTemplates/grid/editing.md#overview-required)
 
 ## Basics
 
@@ -35,6 +36,7 @@ In-cell add, edit, and delete operations use the following [command buttons](slu
 * **Add**
 * **Delete**
 
+@[template](/_contentTemplates/grid/editing.md#without-commands)
 
 Unlike [inline editing](slug:grid-editing-inline), the in-cell edit mode does not use **Edit**, **Save**, and **Cancel** command buttons.
 
@@ -98,6 +100,7 @@ To see how to select the row that is currently in in-cell edit mode without usin
 The example below shows how to:
 
 * Implement in-cell Grid CRUD operations with the simplest and minimal required setup.
+@[template](/_contentTemplates/grid/editing.md#basic-example-description)
 
 >caption Basic Grid in-cell editing configuration
 
@@ -109,13 +112,16 @@ The example below shows how to:
 <MariloDataGrid OnRead="@OnGridRead"
              TItem="@Product"
              EditMode="@GridEditMode.Incell"
+@[template](/_contentTemplates/grid/editing.md#basic-example-parameters-columns)
         <MariloGridCommandColumn Width="180px">
             <GridCommandButton Command="Delete">Delete</GridCommandButton>
         </MariloGridCommandColumn>
 </MariloDataGrid>
 
 @code {
+@[template](/_contentTemplates/grid/editing.md#basic-example-code)
 
+@[template](/_contentTemplates/grid/editing.md#crud-service-and-model)
 }
 ````
 
@@ -124,6 +130,7 @@ The example below shows how to:
 The example below shows how to:
 
 * Implement in-cell Grid CRUD operations with all available events and various built-in customizations.
+@[template](/_contentTemplates/grid/editing.md#advanced-example-description)
 
 >caption Advanced Grid in-cell editing configuration
 
@@ -134,6 +141,8 @@ The example below shows how to:
 
 <MariloDataGrid Data="@GridData"
              EditMode="@GridEditMode.Incell"
+@[template](/_contentTemplates/grid/editing.md#advanced-example-parameters)
+@[template](/_contentTemplates/grid/editing.md#advanced-example-toolbar)
         <MariloGridColumn Field="@nameof(Product.Id)" Editable="false" Width="60px" />
         <MariloGridColumn Field="@nameof(Product.Name)" />
         <MariloGridColumn Field="@nameof(Product.Description)" EditorType="@GridEditorType.TextArea">
@@ -141,6 +150,7 @@ The example below shows how to:
                 @{ var dataItem = (Product)context; }
                 <div style="white-space:pre">@dataItem.Description</div>
             </Template>
+@[template](/_contentTemplates/grid/editing.md#advanced-example-columns)
         </MariloGridColumn>
         <MariloGridCommandColumn Title="Commands" Width="180px">
             @{ var dataItem = (Product)context; }
@@ -152,7 +162,9 @@ The example below shows how to:
 </MariloDataGrid>
 
 @code {
+@[template](/_contentTemplates/grid/editing.md#advanced-example-code)
 
+@[template](/_contentTemplates/grid/editing.md#crud-service-and-model)
 }
 ````
 

@@ -23,6 +23,7 @@ The <a href="https://www.marilo.com/blazor-ui/numeric-textbox" target="_blank">B
 
 The Numeric TextBox component is generic, meaning that it takes the type of its value parameter as an argument. It can take `int`, `long`, `float`, `double` and `decimal` values. Therefore, the values for the `Min`, `Max` and `Step` properties must be of the same type as the `Value`, and the `ValueChanged` handler must also accommodate the corresponding value type.
 
+@[template](/_contentTemplates/common/inputs.md#adornments)
 
 ## Events
 
@@ -41,6 +42,7 @@ The Blazor Numeric TextBox allows you to define your desired custom format throu
 
 ## Numeric TextBox Parameters
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Attribute | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

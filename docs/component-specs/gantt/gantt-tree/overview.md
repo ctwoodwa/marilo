@@ -16,6 +16,7 @@ Set data to the component through its [data binding](slug:gantt-data-binding-ove
 
 ## List of available features for the Gantt Tree
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 * `Gantt Columns` - The main building blocks of the Gantt Tree. They are used to render data in the component. Read more information in the [Bound Column](slug:gantt-columns-bound) article.
 * `Editing` - Allows you to create new records, update the existing or deleting them. Read more on this topic in the [Editing](slug:gantt-tree-editing) article.

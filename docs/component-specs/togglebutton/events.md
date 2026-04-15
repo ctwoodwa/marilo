@@ -48,6 +48,7 @@ The `OnClick` event fires before `SelectedChanged`. Do not change the `Selected`
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 ## SelectedChanged
 

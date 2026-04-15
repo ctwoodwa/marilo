@@ -79,6 +79,7 @@ model value: @NumericTextBoxValue
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 >tip The `OnChange` event is a custom event and does not interfere with bindings, so you can use it together with models and forms.
 
@@ -118,7 +119,9 @@ Using this event requires one-way binding for the `Value` parameter and manual u
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
+@[template](/_contentTemplates/common/issues-and-warnings.md#valuechanged-lambda-required)
 
 
 ## See Also

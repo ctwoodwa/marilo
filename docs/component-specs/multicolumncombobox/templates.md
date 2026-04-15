@@ -30,12 +30,15 @@ You can access the `context` object and cast it to the bound model to employ som
 
 ## Header Template
 
+@[template](/_contentTemplates/dropdowns/templates.md#header-template)
 
 ## Footer Template
 
+@[template](/_contentTemplates/dropdowns/templates.md#footer-template)
 
 ## No Data Template
 
+@[template](/_contentTemplates/dropdowns/templates.md#no-data-template)
 
 ## Example
 

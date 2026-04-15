@@ -150,6 +150,7 @@ The `Margin` (`double`) parameter controls the margin between the [Scale](slug:l
 
 ## Additional Customization
 
+@[template](/_contentTemplates/gauges/additional-customization.md#linear-gauge-additional-customization)
 
 >caption Customize the Pointer Track. The result from the code snippet below.
 

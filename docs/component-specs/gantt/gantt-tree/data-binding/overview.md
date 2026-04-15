@@ -12,6 +12,7 @@ components: ["gantt"]
 
 This article explains the different ways to provide data to a Gantt Chart component and the properties related to data binding. Reviewing this article will explain the basics of how you can describe the hierarchy of items in your data source to the Gantt component so they can render.
 
+@[template](/_contentTemplates/common/general-info.md#valuebind-vs-databind-link)
 
 First, review:
 
@@ -28,6 +29,7 @@ There are two modes of providing data to a Gantt Tree, and they all use the item
 
 The Blazor Gantt Tree provides various parameters to configure its items. Also, check the [Gantt public API](slug:Marilo.Components.DataDisplay.MariloGantt-1).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Description |
 | --- | --- |

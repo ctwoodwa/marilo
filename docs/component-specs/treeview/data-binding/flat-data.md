@@ -11,6 +11,7 @@ components: ["treeview"]
 # Treeview Data Binding to Flat Data
 
 This article explains how to bind the TreeView for Blazor to flat data. 
+@[template](/_contentTemplates/treeview/basic-example.md#data-binding-basics-link)
 
 
 Flat data means that the entire collection of treeview items is available at one level, for example `List<MyTreeItemModel>`.

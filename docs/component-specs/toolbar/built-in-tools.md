@@ -26,6 +26,7 @@ You can add multiple buttons to the Marilo Toolbar. To do that you should add th
 
 The nested `ToolBarButton` tag exposes parameters that allow you to customize the buttons:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default Value | Description |
 | ----------- | ----------- | ----------- |

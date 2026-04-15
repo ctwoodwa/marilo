@@ -34,6 +34,7 @@ To add a custom plugin to the Editor, use the `Plugins` parameter. Set this `str
 
 The Editor will call this function and will pass an argument object that contains the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Description |
 |----------|-------------|

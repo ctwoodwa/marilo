@@ -59,6 +59,7 @@ The ProgressBar will resize with the parent element dimensions when you set its 
 
 The ProgressBar provides the following features to further customize its behavior:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

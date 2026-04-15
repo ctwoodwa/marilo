@@ -127,3 +127,4 @@ The `FillMode` controls how the MariloColorPicker is filled. You can set it to a
 }
 ````
 
+@[template](/_contentTemplates/common/themebuilder-section.md#appearance-themebuilder)

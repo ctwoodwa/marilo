@@ -77,6 +77,7 @@ The [Wizard can display its Stepper on either side of the component](slug:wizard
 
 ## Wizard Parameters
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

@@ -18,6 +18,7 @@ The [Blazor TreeList](https://demos.marilo.com/blazor-ui/treelist/overview) disp
 
 ### Command Tools
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Tool Name | Tool Tag | Description |
 | --- | --- | --- |

@@ -11,6 +11,7 @@ components: ["gantt"]
 # Gantt Tree Data Binding to Flat Data
 
 This article explains how to bind the Gantt Tree for Blazor to flat data.
+@[template](/_contentTemplates/treelist/databinding.md#link-to-basics)
 
 
 Flat data means that the entire collection of Gantt items is available at one level, for example `List<MyGanttItemModel>`.

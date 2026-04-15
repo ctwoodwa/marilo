@@ -16,6 +16,7 @@ A **Candlestick** chart shows data for the movement of the price of a financial 
 
 ![Blazor Basic Candlestick Chart](images/basic-candlestick-chart.png)
 
+@[template](/_contentTemplates/stockchart/link-to-basics.md#understand-basics-and-databinding-first)
 
 To add a `Candlestick` chart to a stock chart component::
 
@@ -120,6 +121,9 @@ To add a `Candlestick` chart to a stock chart component::
 
 Set the color - a valid CSS, RGB, RGBA color - of the series when the `OpenField` is greater than the `CloseField` by setting the `DownColor` property of the `StockChartSeries`. This can be passed through the data model and bound to the `DownColorField`. 
 
+@[template](/_contentTemplates/stockchart/link-to-basics.md#color-field-column-ohlc-candlestick)
+@[template](/_contentTemplates/stockchart/link-to-basics.md#gap-and-spacing)
+@[template](/_contentTemplates/stockchart/link-to-basics.md#configurable-nested-chart-settings)
 
 
 

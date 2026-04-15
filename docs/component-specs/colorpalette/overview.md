@@ -47,6 +47,7 @@ The Blazor ColorPalette fires value change and blur events that you can handle a
 
 The Blazor ColorPalette provides various parameters to configure the component. Also check the [ColorPalette public API](slug:Marilo.Blazor.Components.MariloColorPalette).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default Value | Description |
 | --- | --- | --- |

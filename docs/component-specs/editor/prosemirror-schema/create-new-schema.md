@@ -12,9 +12,11 @@ components: ["editor"]
 
 This article describes how you can create a new [ProseMirror schema](slug:editor-prosemirror-schema-overview) for the Editor to use. Creating a new schema is useful if you want to change the majority of the default schema.
 
+@[template](/_contentTemplates/editor/general.md#prosemirror-schema-prerequisites)
 
 ## Basics
 
+@[template](/_contentTemplates/editor/general.md#prosemirror-schema-general-info)
 
 ## Plugin Dependencies
 

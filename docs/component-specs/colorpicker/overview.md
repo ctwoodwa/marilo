@@ -62,12 +62,14 @@ The Blazor ColorPicker fires a set of events that you can handle to further cust
 
 The Blazor ColorPicker accepts values by the application code in the following formats:
 
+@[template](/_contentTemplates/common/coloreditors.md#value-formats)
 
 The ColorPicker does not support color keywords.
 
 ## Adaptive Rendering
 
 
+@[template](/_contentTemplates/dropdowns/adaptive-rendering.md#intro)
 
 ## ColorPicker Parameters
 
@@ -105,6 +107,7 @@ For more information on customizing the ColorPicker styling, see the article abo
 
 To use the [methods of the Blazor ColorPicker](slug:Marilo.Blazor.Components.MariloColorPicker), add a reference to the component instance.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Method | Description |
 | --- | --- |

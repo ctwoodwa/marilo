@@ -50,7 +50,9 @@ The `ValueChanged` event fires every time the `Value` parameter changes. This ha
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
+@[template](/_contentTemplates/common/issues-and-warnings.md#valuechanged-lambda-required)
 
 ## OnChange
 
@@ -92,6 +94,7 @@ If you use two-way binding, the [`ValueChanged`](#valuechanged) event will fire 
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 ## See Also
 

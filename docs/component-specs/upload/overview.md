@@ -15,6 +15,7 @@ The <a href="https://www.marilo.com/blazor-ui/upload" target="_blank">Blazor Upl
 
 ## Upload vs. FileSelect
 
+@[template](/_contentTemplates/upload/notes.md#fileselect-upload-comparison)
 
 
 ## Creating Blazor Upload
@@ -169,6 +170,7 @@ The Marilo Upload component makes XHR requests from the browser to the designate
 
 Authentication and authorization depends on the application.
 
+@[template](/_contentTemplates/upload/notes.md#server-security-note)
 
 
 ### Cross-Origin Requests
@@ -209,6 +211,7 @@ Additionally, you can define an external drop zone by using the [Marilo UI for B
 
 The following table lists the Upload parameters. Also check the [Upload API Reference](slug:Marilo.Blazor.Components.MariloUpload) for a full list of properties, methods and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

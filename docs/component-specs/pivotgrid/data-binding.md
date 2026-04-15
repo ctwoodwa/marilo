@@ -110,6 +110,7 @@ The PivotGrid provides nested Razor components to setup the XMLA connection. Use
 
 The `PivotGridXmlaDataProviderSettings` component exposes the following parameters.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type | Description |
 | --- | --- | --- |

@@ -130,6 +130,7 @@ The `FillMode` controls how the MariloDateRangePicker is filled. You can set it 
 }
 ````
 
+@[template](/_contentTemplates/common/themebuilder-section.md#appearance-themebuilder)
 
 ## See Also
 

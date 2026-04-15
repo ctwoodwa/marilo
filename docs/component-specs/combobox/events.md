@@ -12,6 +12,7 @@ components: ["combobox"]
 
 This article explains the events available in the Marilo ComboBox for Blazor:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 * [ValueChanged](#valuechanged)
 * [OnChange](#onchange)
@@ -95,7 +96,9 @@ The examples below use binding to string data for simplicity, but you can use [f
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
+@[template](/_contentTemplates/common/issues-and-warnings.md#valuechanged-lambda-required)
 
 ## OnChange
 
@@ -188,6 +191,7 @@ When using `OnRead`, make sure to set `TItem` and `TValue`.
 
 >tip You can also [debounce the service calls and implement minimum filter length](slug:combo-kb-debounce-onread).
 
+@[template](/_contentTemplates/common/dropdowns-virtualization.md#value-in-onread)
 
 
 ````RAZOR

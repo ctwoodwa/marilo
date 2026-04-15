@@ -97,6 +97,7 @@ The `OnOpen` event fires before the ColorPicker popup renders.
 
 The event handler receives as an argument an `ColorPickerOpenEventArgs` object that contains:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Description |
 | --- | --- |

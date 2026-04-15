@@ -106,6 +106,7 @@ The Dock Manager fires [events when the user changes the panes layout](slug:dock
 
 The following table lists the Dock Manager parameters. Also check the [DockManager API Reference](slug:Marilo.Blazor.Components.MariloDockManager) for a full list of all properties, methods and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

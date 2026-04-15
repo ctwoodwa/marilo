@@ -14,6 +14,7 @@ You can put a Font or Svg Icon in the toggle button to illustrate its purpose fo
 
 ## Parameters
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default Value | Description |
 |---|---|---|
@@ -21,6 +22,7 @@ You can put a Font or Svg Icon in the toggle button to illustrate its purpose fo
 
 The following example shows how to use SVG and Font icons. If you don't add text to the button, the button will center the icon on all sides.
 
+@[template](/_contentTemplates/common/icons.md#font-icons-css-note)
 
 >caption How to use icons in the Marilo Toggle Button
 
@@ -33,6 +35,7 @@ The following example shows how to use SVG and Font icons. If you don't add text
 <MariloToggleButton Icon="@( FontSelected ? FontIcon.VolumeUp : FontIcon.VolumeDown )"
                      @bind-Selected="@FontSelected">Font Icon</MariloToggleButton>
 
+@[template](/_contentTemplates/common/icons.md#font-icons-css-code)
 
 @code {
     private bool SvgSelected { get; set; }

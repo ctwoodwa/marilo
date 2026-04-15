@@ -25,6 +25,7 @@ The layers in the Map are:
 
 The following parameters enable you to customize the appearance of the Blazor Map Layers:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type | Description |
 | --- | --- | --- |

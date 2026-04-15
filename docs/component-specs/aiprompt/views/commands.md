@@ -18,6 +18,7 @@ The Commands View displays a set of predefined commands, which the user can brow
 
 The following properties enable you to customize each command:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type | Description |
 | ----------- | ----------- | ----------- |

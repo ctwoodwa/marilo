@@ -21,6 +21,7 @@ The `Icon` parameter type is `object` and it accepts:
 * A member of the `FontIcon` enum;
 * A `string` that is a CSS class for a custom icon.
 
+@[template](/_contentTemplates/common/icons.md#font-icons-css-note)
 
 >caption How to use icons in Marilo Button
 
@@ -42,6 +43,7 @@ The `Icon` parameter type is `object` and it accepts:
     }
 </style>
 
+@[template](/_contentTemplates/common/icons.md#font-icons-css-code)
 ````
 
 ## Notes

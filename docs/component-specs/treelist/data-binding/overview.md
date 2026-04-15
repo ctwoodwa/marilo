@@ -12,6 +12,7 @@ components: ["treelist"]
 
 This article explains the different ways to provide data to a treelist component and the properties related to data binding. Reviewing this article will explain the basics of how you can describe the hierarchy of items in your data source to the treelist component so they can render.
 
+@[template](/_contentTemplates/common/general-info.md#valuebind-vs-databind-link)
 
 First, review:
 
@@ -20,6 +21,7 @@ First, review:
 
 There are two modes of providing data to a treelist, and they all use the items' features. Once you are familiar with the current article, choose the data binding more you wish to use:
 
+@[template](/_contentTemplates/treelist/databinding.md#data-binding-modes)
 
 ## TreeList Item Features
 
@@ -46,6 +48,7 @@ The properties of a treelist item match directly to a field of the model the tre
 
 For samples of using each data binding approach listed above, see its corresponding article:
 
+@[template](/_contentTemplates/treelist/databinding.md#data-binding-modes)
 
 ## Notes
 

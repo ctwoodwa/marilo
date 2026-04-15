@@ -66,6 +66,7 @@ You can customize the rendering of the Notification by using Templates. To learn
 
 ## Notification Parameters
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default value | Description |
 |-----------|------------------------|-------------|

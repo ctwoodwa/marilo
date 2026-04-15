@@ -161,6 +161,7 @@ The `Vertical` (`bool`) parameter controls the orientation of the linear gauge. 
 
 ## Additional Customization
 
+@[template](/_contentTemplates/gauges/additional-customization.md#linear-gauge-additional-customization)
 
 ### Example: Remove the MinorUnit ticks
 

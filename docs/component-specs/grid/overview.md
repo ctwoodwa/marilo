@@ -114,6 +114,7 @@ The Grid supports custom content in various parts of the component such as data 
 
 The following table lists Grid parameters, which are not discussed elsewhere in the component documentation. Check the [Grid API Reference](slug:Marilo.Components.DataGrid.MariloDataGrid-1) for a full list of parameters, methods and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

@@ -158,6 +158,7 @@ The `TabStripOverflowMenu` is a tool component that appears as a dropdown button
 
 The following parameters allow you to customize the appearance of the overflow menu button:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type | Description |
 | --- | --- | --- |

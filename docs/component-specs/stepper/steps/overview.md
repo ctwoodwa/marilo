@@ -27,6 +27,7 @@ The `StepperStep` exposes the following parameters which allow you to configure 
 
 The [visual indicators](slug:stepper-indicators) of the steps can include the content below.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type | Description |
 | ----------- | ----------- | ----------- |

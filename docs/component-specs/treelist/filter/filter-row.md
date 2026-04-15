@@ -106,10 +106,12 @@ The treelist will render a row below the column headers with UI that you can use
 
 You can set the TreeList filters from your code through the component [state](slug:treelist-state).
 
+@[template](/_contentTemplates/treelist/state.md#initial-state)
 
 >caption Set filtering programmatically
 
 ````RAZOR
+@[template](/_contentTemplates/treelist/state.md#filter-row-from-code)
 ````
 
 ## Customization
@@ -118,11 +120,13 @@ The TreeList allows you to customize the default behavior of the Filter Row in a
 
 ### Debouncing the Filtering
 
+@[template](/_contentTemplates/common/filtering.md#filter-debounce-delay-customization)
 
 ### Configuring the Filter Row
 
 You can override the default Filter Row behavior for each column through the following properties the `TreeListColumn` exposes:
 
+@[template](/_contentTemplates/common/filtering.md#filter-row-customization-properties)
 
 >caption Configure the Filter Row
 

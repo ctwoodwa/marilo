@@ -16,6 +16,7 @@ You would usually use ScatterLine charts for showing the relation between differ
 
 ![scatter line chart](images/scatter-line-chart.png)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#understand-basics-and-databinding-first)
 
 #### To create a scatter chart:
 
@@ -115,10 +116,15 @@ You would usually use ScatterLine charts for showing the relation between differ
 
 ## ScatterLine Chart Specific Appearance Settings
 
+@[template](/_contentTemplates/chart/link-to-basics.md#markers-line-scatter)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#color-line-scatter)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#line-style-line)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings-numerical)
 
 >tip See the code snippet above to observe changing the Labels' Format and Title Text for the `ChartXAxis` and the `ChartYAxes`.
 

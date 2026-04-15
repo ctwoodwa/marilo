@@ -23,6 +23,7 @@ This article explains the available events for the Marilo Sankey Diagram for Bla
 
 The `OnNodeClick` event fires when the user clicks or taps a node. The `OnNodeClick` event handler receives an argument of type `SankeyNodeClickEventArgs`, which exposes the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Type | Description |
 | ---------| ---- | ----------- |
@@ -32,6 +33,7 @@ The `OnNodeClick` event fires when the user clicks or taps a node. The `OnNodeCl
 
 The `OnNodeEnter` event fires when the user hovers a node. The `OnNodeEnter` event handler receives an argument of type `SankeyNodeEnterEventArgs`, which exposes the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Type | Description |
 | ---------| ---- | ----------- |
@@ -41,6 +43,7 @@ The `OnNodeEnter` event fires when the user hovers a node. The `OnNodeEnter` eve
 
 The `OnNodeLeave` event fires when the user exits the hover from a node. The `OnNodeLeave` event handler receives an argument of type `SankeyNodeLeaveEventArgs`, which exposes the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Type | Description |
 | ---------| ---- | ----------- |
@@ -50,6 +53,7 @@ The `OnNodeLeave` event fires when the user exits the hover from a node. The `On
 
 The `OnLinkClick` event fires when the user clicks a link. The `OnLinkClick` event handler receives an argument of type `SankeyLinkClickEventArgs`, which exposes the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Type | Description |
 | ---------| ---- | ----------- |
@@ -60,6 +64,7 @@ The `OnLinkClick` event fires when the user clicks a link. The `OnLinkClick` eve
 
 The `OnLinkEnter` event fires when the user hovers a link. The `OnLinkEnter` event handler receives an argument of type `SankeyLinkEnterEventArgs`, which exposes the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Type | Description |
 | ---------| ---- | ----------- |
@@ -70,6 +75,7 @@ The `OnLinkEnter` event fires when the user hovers a link. The `OnLinkEnter` eve
 
 The `OnLinkLeave` event fires when the user hovers a link. The `OnLinkLeave` event handler receives an argument of type `SankeyLinkLeaveEventArgs`, which exposes the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Type | Description |
 | ---------| ---- | ----------- |

@@ -102,10 +102,12 @@ Click a column header to sort by its data
 
 You can sort the TreeList from your own code through its [state](slug:treelist-state).
 
+@[template](/_contentTemplates/treelist/state.md#initial-state)
 
 >caption Set sorting programmatically
 
 ````RAZOR
+@[template](/_contentTemplates/treelist/state.md#set-sort-from-code)
 ````
 
 

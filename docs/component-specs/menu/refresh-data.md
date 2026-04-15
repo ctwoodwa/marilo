@@ -10,6 +10,7 @@ components: ["menu"]
 ---
 # Menu - Refresh Data
 
+@[template](/_contentTemplates/common/observable-data.md#intro)
 
 In this article:
 - [Observable Data](#observable-data)
@@ -19,9 +20,11 @@ In this article:
 
 >note The Menu does not support binding to observable data. You can currently refresh the component by creating a [new collection reference](#new-collection-reference).
 
+@[template](/_contentTemplates/common/observable-data.md#observable-data)
 
 ## New Collection Reference
 
+@[template](/_contentTemplates/common/observable-data.md#refresh-data)
 
 >caption Create new collection reference to refresh the Menu data.
 

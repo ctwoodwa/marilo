@@ -37,6 +37,7 @@ The [DropDownTree provides templates](slug:dropdowntree-templates) that allow yo
 
 ## Adaptive Rendering
 
+@[template](/_contentTemplates/dropdowns/adaptive-rendering.md#intro)
 
 ## Events
 

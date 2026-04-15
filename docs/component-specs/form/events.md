@@ -96,6 +96,7 @@ You can use the `OnUpdate` event to programmatically [refresh the UI outside the
 
 The `OnUpdate` event argument is a [`FormUpdateEventArgs` object](slug:Marilo.Blazor.Components.FormUpdateEventArgs) with the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Type | Description |
 | --- | --- | --- |

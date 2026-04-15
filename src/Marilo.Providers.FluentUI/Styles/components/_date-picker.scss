@@ -1,1 +1,259 @@
-// TODO: Placeholder — no FluentUI styles defined yet
+// =============================================================================
+// Component: DatePicker / TimePicker / DateRangePicker / DateTimePicker
+// =============================================================================
+
+// Shared input-with-icon chrome
+.mar-datepicker,
+.mar-timepicker,
+.mar-date-range-picker,
+.mar-datetime-picker {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    min-width: var(--marilo-input-min-width, 200px);
+    min-height: var(--marilo-input-min-height, 32px);
+    background: var(--marilo-color-background);
+    border: 1px solid var(--marilo-color-border-strong);
+    border-radius: var(--marilo-radius-md);
+    transition: border-color var(--marilo-transition-fast), box-shadow var(--marilo-transition-fast);
+
+    &:hover {
+        border-color: var(--marilo-color-on-background);
+    }
+
+    &:focus-within {
+        border-color: var(--marilo-color-primary);
+        box-shadow: var(--marilo-focus-ring);
+    }
+
+    input {
+        flex: 1;
+        min-width: 0;
+        padding: var(--marilo-space-xs) var(--marilo-space-xs) var(--marilo-space-xs) var(--marilo-space-sm);
+        font-family: var(--marilo-font-family);
+        font-size: var(--marilo-font-size-base);
+        line-height: var(--marilo-line-height-base);
+        color: var(--marilo-color-on-background);
+        background: transparent;
+        border: none;
+        outline: none;
+        cursor: pointer;
+
+        &::placeholder {
+            color: var(--marilo-color-text-secondary);
+        }
+    }
+}
+
+// Calendar/clock toggle button
+.mar-datepicker__toggle,
+.mar-timepicker__toggle,
+.mar-date-range-picker__toggle,
+.mar-datetime-picker__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: var(--marilo-input-min-height, 32px);
+    height: 100%;
+    background: transparent;
+    border: none;
+    border-left: 1px solid var(--marilo-color-border);
+    cursor: pointer;
+    color: var(--marilo-color-text-secondary);
+    transition: background var(--marilo-transition-fast), color var(--marilo-transition-fast);
+
+    &:hover {
+        background: var(--marilo-color-surface);
+        color: var(--marilo-color-on-background);
+    }
+}
+
+// Popup containers
+.mar-timepicker__popup,
+.mar-date-range-picker__popup,
+.mar-datetime-picker__popup {
+    background: var(--marilo-color-background);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-md);
+    box-shadow: var(--marilo-shadow-lg);
+    z-index: var(--marilo-z-dropdown);
+    overflow: hidden;
+}
+
+// Invalid state
+.mar-datepicker--invalid,
+.mar-timepicker--invalid,
+.mar-date-range-picker--invalid,
+.mar-datetime-picker--invalid {
+    border-color: var(--marilo-color-danger);
+}
+
+// QUALITY FIX: explicit color tokens for disabled, not opacity
+.mar-datepicker--disabled,
+.mar-timepicker--disabled,
+.mar-date-range-picker--disabled,
+.mar-datetime-picker--disabled {
+    background: var(--marilo-color-surface);
+    color: var(--marilo-color-text-disabled);
+    border-color: var(--marilo-color-border);
+    pointer-events: none;
+}
+
+// Calendar header navigation
+.mar-calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--marilo-space-sm) var(--marilo-space-md);
+    border-bottom: 1px solid var(--marilo-color-border);
+}
+
+.mar-calendar-title {
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-base);
+    font-weight: var(--marilo-font-weight-semibold);
+    color: var(--marilo-color-on-background);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+        color: var(--marilo-color-primary);
+    }
+}
+
+.mar-calendar-nav-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--marilo-space-xl);
+    height: var(--marilo-space-xl);
+    background: transparent;
+    border: none;
+    border-radius: var(--marilo-radius-sm);
+    cursor: pointer;
+    color: var(--marilo-color-text-secondary);
+
+    &:hover {
+        background: var(--marilo-color-surface);
+        color: var(--marilo-color-on-background);
+    }
+}
+
+// Calendar grid
+.mar-calendar-grid {
+    padding: var(--marilo-space-sm);
+}
+
+.mar-calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    padding: var(--marilo-space-xs) 0;
+}
+
+.mar-calendar-weekday {
+    font-size: var(--marilo-font-size-xs);
+    font-weight: var(--marilo-font-weight-semibold);
+    color: var(--marilo-color-text-secondary);
+    text-align: center;
+}
+
+.mar-calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: var(--marilo-space-xxs);
+}
+
+.mar-calendar-day {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--marilo-calendar-day-size, 32px);
+    height: var(--marilo-calendar-day-size, 32px);
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-sm);
+    border: none;
+    border-radius: var(--marilo-radius-sm);
+    background: transparent;
+    cursor: pointer;
+    color: var(--marilo-color-on-background);
+    transition: background var(--marilo-transition-fast);
+
+    &:hover {
+        background: var(--marilo-color-surface);
+    }
+
+    &--today {
+        font-weight: var(--marilo-font-weight-semibold);
+        color: var(--marilo-color-primary);
+    }
+
+    &--selected {
+        background: var(--marilo-color-primary);
+        color: var(--marilo-color-on-primary);
+
+        &:hover {
+            background: var(--marilo-color-primary-hover);
+        }
+    }
+
+    &--in-range {
+        background: var(--marilo-color-primary-light);
+        border-radius: 0;
+    }
+
+    &--other-month {
+        color: var(--marilo-color-text-disabled);
+    }
+
+    // QUALITY FIX: explicit color token for disabled day, not opacity
+    &--disabled {
+        color: var(--marilo-color-text-disabled);
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+}
+
+// Time picker clock list
+.mar-timepicker__list {
+    display: flex;
+    max-height: var(--marilo-dropdown-max-height, 200px);
+    overflow-y: auto;
+}
+
+.mar-timepicker__column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    border-right: 1px solid var(--marilo-color-border);
+
+    &:last-child {
+        border-right: none;
+    }
+}
+
+.mar-timepicker__item {
+    padding: var(--marilo-space-sm) var(--marilo-space-md);
+    text-align: center;
+    cursor: pointer;
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-sm);
+    transition: background var(--marilo-transition-fast);
+
+    &:hover {
+        background: var(--marilo-color-surface);
+    }
+
+    &--selected {
+        background: var(--marilo-color-primary);
+        color: var(--marilo-color-on-primary);
+        font-weight: var(--marilo-font-weight-semibold);
+
+        &:hover {
+            background: var(--marilo-color-primary-hover);
+        }
+    }
+}

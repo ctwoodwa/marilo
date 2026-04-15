@@ -57,6 +57,7 @@ The SignalR WebSocket has a default maximum message size of **32 KB**. To work w
 
 The table below lists the PDF Viewer parameters. Also check the [PDF Viewer API Reference](slug:Marilo.Blazor.Components.MariloPdfViewer) for all parameters, methods and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

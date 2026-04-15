@@ -12,6 +12,7 @@ components: ["contextmenu"]
 
 This article explains the different ways to provide data to a Context Menu component, the properties related to data binding and their results.
 
+@[template](/_contentTemplates/common/general-info.md#valuebind-vs-databind-link)
 
 First, review:
 
@@ -60,6 +61,7 @@ The properties of a menu item match directly to a field of the model the menu is
 
 >tip There are default values for the field names. If your model names match the defaults, you don't have to define them in the bindings settings.
 
+@[template](/_contentTemplates/common/navigation-components.md#default-fields-match-issues)
 
 >caption Default field names for menu item bindings. If you use these, you don't have to specify them in the `MariloMenu` tag explicitly.
 

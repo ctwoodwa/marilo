@@ -76,6 +76,7 @@ The event provides [`PromptBoxActionButtonEventArgs`](https://docs.marilo.com/bl
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 ### ValueChanged
 

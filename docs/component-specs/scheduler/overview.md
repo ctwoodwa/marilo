@@ -116,6 +116,7 @@ The [Scheduler fires events](slug:scheduler-events) for CRUD operations, appoint
 
 The following table lists **every** parameter on `MariloScheduler` as implemented in source.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 ### MariloScheduler Parameters
 
 | Parameter | Type | Default | Description |

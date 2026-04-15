@@ -8,6 +8,7 @@ published: True
 position: 3
 components: ["general"]
 ---
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 
 # Sankey Data Binding

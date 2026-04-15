@@ -58,7 +58,9 @@ To enable validation in the Marilo Form for Blazor add the `<FormValidation>` ta
 }
 ````
 
+@[template](/_contentTemplates/common/form-validation.md#note-editcontext-formitem-template)
 
+@[template](/_contentTemplates/common/form-validation.md#note-validation)
 
 When you provide an `EditContext` to the form, you can use its [`EnableDataAnnotationsValidation(IServiceProvider serviceProvider)`](https://learn.microsoft.com/en-us/dotnet/api/microsoft.aspnetcore.components.forms.editcontextdataannotationsextensions.enabledataannotationsvalidation?view=aspnetcore-8.0#microsoft-aspnetcore-components-forms-editcontextdataannotationsextensions-enabledataannotationsvalidation(microsoft-aspnetcore-components-forms-editcontext-system-iserviceprovider)) method to add the data annotation validation instead of using the markup. This is useful in the following cases:
 
@@ -67,6 +69,7 @@ When you provide an `EditContext` to the form, you can use its [`EnableDataAnnot
 
 Marilo Blazor input components automatically display an invalid state when their value does not match the Form validation rules. This behavior depends on the input's `ValueExpression`. See how to [set the `ValueExpression` correctly when the input is nested in a child component of the Form](slug:inputs-kb-validate-child-component).
 
+@[template](/_contentTemplates/common/form-validation.md#note-marilo-role-in-validation)
 
 ## Validation Message Type
 

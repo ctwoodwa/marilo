@@ -150,6 +150,7 @@ There are two types of customizations you can do for the tooltips:
 ### Parameter Settings
 You can customize the rendering of the `Shared` tooltip by using:
 
+@[template](/_contentTemplates/stockchart/chart-tooltip-context-templates.md#shared-tooltip-parameter-settings)
 
 
 ### Shared Template
@@ -171,6 +172,7 @@ The `context` contains the following information:
 
 Each `Point` contains the following data:
 
+@[template](/_contentTemplates/stockchart/chart-tooltip-context-templates.md#context-parameter-information)
 
 
 >caption Usage of the SharedTemplate

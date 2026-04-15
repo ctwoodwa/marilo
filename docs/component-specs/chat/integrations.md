@@ -68,6 +68,7 @@ The following example demonstrates using the `OnSendMessage` event to communicat
 }
 ````
 ````C# Message.cs
+@[template](/_contentTemplates/chat/general.md#messagecs)
 ````
 
 ## IChatClient
@@ -119,6 +120,7 @@ IChatClient gpt5Client = new OpenAI.OpenAIClient()
 builder.Services.AddChatClient(gpt5Client);
 ````
 ````C# Message.cs
+@[template](/_contentTemplates/chat/general.md#messagecs)
 ````
 
 ### OnAIResponse Event
@@ -254,6 +256,7 @@ builder.Services.AddKeyedChatClient("gpt5.0", gptChat5Client);
 }
 ````
 ````C# Message.cs
+@[template](/_contentTemplates/chat/general.md#messagecs)
 ````
 
 ## Chatbot

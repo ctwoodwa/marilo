@@ -21,6 +21,7 @@ This article describes the available events for the Marilo Chart for Blazor:
 
 The `OnAxisLabelClick` event fires when the user clicks a label item on any of the Chart axes. The event argument is of type `ChartAxisLabelClickEventArgs` and exposes the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Type | Description |
 | --- | --- | --- |

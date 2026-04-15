@@ -50,6 +50,7 @@ If you have a custom Toolbar, add a command button with the `PdfExport` command 
 
 To configure the PDF export settings, add the `GridPdfExport` tag under the `GridExport` tag. You may set the following options:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |
 | `FileName` | `string` | The name of the file. The Grid will add the `.pdf` extension for you. |
@@ -135,6 +136,7 @@ The PDF export has the following limitations:
 
 You can programmatically invoke the export feature of the Grid, by using the following methods exposed on the `@ref` of the Grid:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Method | Type | Description |
 | --- | --- | --- |

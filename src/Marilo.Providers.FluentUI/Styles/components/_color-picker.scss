@@ -1,1 +1,153 @@
-// TODO: Placeholder — no FluentUI styles defined yet
+// =============================================================================
+// Component: ColorPicker / ColorGradient / ColorPalette / FlatColorPicker
+// =============================================================================
+
+// Trigger button with color swatch
+.mar-color-picker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--marilo-space-sm);
+    min-height: var(--marilo-input-min-height, 32px);
+    padding: var(--marilo-space-xxs) var(--marilo-space-sm);
+    background: var(--marilo-color-background);
+    border: 1px solid var(--marilo-color-border-strong);
+    border-radius: var(--marilo-radius-md);
+    cursor: pointer;
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-base);
+    color: var(--marilo-color-on-background);
+    transition: border-color var(--marilo-transition-fast);
+
+    &:hover {
+        border-color: var(--marilo-color-on-background);
+    }
+
+    &:focus-visible {
+        outline: none;
+        box-shadow: var(--marilo-focus-ring);
+    }
+}
+
+.mar-color-picker__swatch {
+    display: inline-block;
+    width: var(--marilo-color-swatch-size, 20px);
+    height: var(--marilo-color-swatch-size, 20px);
+    border-radius: var(--marilo-radius-sm);
+    border: 1px solid rgba(0, 0, 0, 0.2); // semi-transparent overlay works on any swatch color
+    flex-shrink: 0;
+    // background-color is set inline by the component
+}
+
+// Popup panel
+.mar-color-picker__popup {
+    background: var(--marilo-color-background);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-md);
+    box-shadow: var(--marilo-shadow-lg);
+    padding: var(--marilo-space-md);
+    z-index: var(--marilo-z-dropdown);
+}
+
+// Color gradient — 2D saturation/brightness picker
+.fui-colorgradient {
+    position: relative;
+    width: var(--marilo-colorgradient-width, 220px);
+    height: var(--marilo-colorgradient-height, 160px);
+    border-radius: var(--marilo-radius-sm);
+    overflow: hidden;
+    cursor: crosshair;
+    user-select: none;
+
+    // Gradient layers overlay each other
+    // These are literal color values required to render the gradient spectrum
+    .fui-colorgradient__white {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to right, #fff 0%, transparent 100%);
+    }
+
+    .fui-colorgradient__black {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, transparent 0%, #000 100%);
+    }
+
+    .fui-colorgradient__thumb {
+        position: absolute;
+        width: var(--marilo-colorgradient-thumb-size, 12px);
+        height: var(--marilo-colorgradient-thumb-size, 12px);
+        border: 2px solid #fff; // white border ensures visibility on any hue
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.5); // shadow for visibility
+        cursor: grab;
+
+        &:active {
+            cursor: grabbing;
+        }
+    }
+}
+
+// Hue slider
+.fui-colorgradient__hue {
+    position: relative;
+    height: var(--marilo-colorslider-height, 12px);
+    border-radius: var(--marilo-radius-full);
+    // hsl() values represent the literal color spectrum — not theming tokens
+    background: linear-gradient(to right,
+        hsl(0, 100%, 50%),
+        hsl(60, 100%, 50%),
+        hsl(120, 100%, 50%),
+        hsl(180, 100%, 50%),
+        hsl(240, 100%, 50%),
+        hsl(300, 100%, 50%),
+        hsl(360, 100%, 50%)
+    );
+    cursor: pointer;
+    margin-top: var(--marilo-space-sm);
+}
+
+// Alpha slider
+.fui-colorgradient__alpha {
+    position: relative;
+    height: var(--marilo-colorslider-height, 12px);
+    border-radius: var(--marilo-radius-full);
+    margin-top: var(--marilo-space-sm);
+    cursor: pointer;
+    // background set inline by component (alpha gradient over current color)
+}
+
+// Color palette grid
+.fui-colorpalette {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, var(--marilo-palette-swatch-size, 22px));
+    gap: var(--marilo-space-xxs);
+    padding: var(--marilo-space-sm);
+}
+
+.fui-colorpalette__swatch {
+    width: var(--marilo-palette-swatch-size, 22px);
+    height: var(--marilo-palette-swatch-size, 22px);
+    border-radius: var(--marilo-radius-sm);
+    border: 1px solid rgba(0, 0, 0, 0.1); // semi-transparent overlay works on any swatch color
+    cursor: pointer;
+    transition: transform var(--marilo-transition-fast);
+
+    &:hover {
+        transform: scale(1.2);
+        border-color: rgba(0, 0, 0, 0.3);
+    }
+
+    &--selected {
+        outline: 2px solid var(--marilo-color-primary);
+        outline-offset: 1px;
+    }
+}
+
+// Flat (always-visible) color picker
+.fui-flatcolorpicker {
+    background: var(--marilo-color-background);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-md);
+    padding: var(--marilo-space-md);
+}

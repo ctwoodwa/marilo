@@ -55,6 +55,7 @@ The Blazor Floating Action Button fires events that you can handle and respond t
 
 The Blazor Floating Action Button provides various parameters that allow you to configure the component. Also check the [Floating Action Button public API](slug:Marilo.Blazor.Components.MariloFloatingActionButton).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

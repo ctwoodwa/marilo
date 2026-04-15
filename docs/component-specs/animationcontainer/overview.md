@@ -142,6 +142,7 @@ One of the core features of the Animation Container is the customizable open and
 
 ## AnimationContainer Parameters
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 |---|---|---|

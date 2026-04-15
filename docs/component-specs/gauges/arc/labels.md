@@ -179,6 +179,7 @@ The `Visible` (`bool`) parameter controls whether the labels will be rendered. B
 
 ## Additional Customization
 
+@[template](/_contentTemplates/gauges/additional-customization.md#arc-gauge-additional-customization)
 
 >caption Customize the borders of the Labels. The result from the code snippet below.
 

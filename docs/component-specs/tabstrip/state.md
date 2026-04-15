@@ -18,6 +18,7 @@ The Marilo TabStrip for Blazor exposes state management capabilities through eve
 
 The `TabStripState` object describes the current state of the TabStrip:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Type | Description |
 | --- | --- | --- |

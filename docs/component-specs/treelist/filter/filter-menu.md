@@ -105,10 +105,12 @@ A key difference in the behavior from the [filter row](slug:treelist-filter-row)
 
 You can set the TreeList filters from your code through the component [state](slug:treelist-state).
 
+@[template](/_contentTemplates/treelist/state.md#initial-state)
 
 >caption Set filtering programmatically
 
 ````RAZOR
+@[template](/_contentTemplates/treelist/state.md#filter-menu-from-code)
 ````
 
 ## Customization
@@ -119,6 +121,7 @@ The TreeList allows you to customize the default behavior of the Filter Row in a
 
 You can override the default Filter Row behavior for each column through the following property the `TreeListColumn` exposes:
 
+@[template](/_contentTemplates/common/filtering.md#filter-menu-customization-properties)
 
 >caption Configure the Filter Menu
 

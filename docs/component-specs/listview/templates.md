@@ -33,6 +33,7 @@ This is the main building block of the listview component. You define the layout
 
 This is the template that an item in edit or insert mode renders, instead of its item template. You can use it to add inputs or other editors so the user can modify the data. You can read more about editing data and see examples of using this template in the [ListView Editing](slug:listview-editing) article.
 
+@[template](/_contentTemplates/common/inputs.md#edit-debouncedelay)
 
 >caption Declaring an edit template in the ListView. Note: The CUD operations are not implemented in this example.
 

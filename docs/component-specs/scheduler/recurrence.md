@@ -397,6 +397,7 @@ Marilo UI for Blazor provides standalone components that you can use to edit rec
 
 The Marilo Blazor recurrence editor components include:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Component Name | Renders As | Description |
 | --- | --- | --- |

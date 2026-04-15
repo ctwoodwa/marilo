@@ -35,6 +35,7 @@ The component value is: @MaskedValue
 }
 ````
 
+@[template](/_contentTemplates/common/inputs.md#adornments)
 
 ## Validation
 
@@ -48,6 +49,7 @@ The [MaskedTextBox component fires events for value changes and blur](slug:maske
 
 The table below provides a quick overview of the mask-related parameters. See the [Mask and Prompt article](slug:maskedtextbox-mask-prompt) for additional details.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default value | Description |
 |---|---|---|

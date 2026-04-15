@@ -63,6 +63,7 @@ builder.Services.AddChatClient(services => services.GetRequiredService<AzureOpen
 
 The Editor allows customizing some of the integrated Inline Prompt's settings. For that purpose, use the `<EditorInlineAIPromptSettings>` tag. It provides the following parameters that you can configure:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default value | Description |
 |-----------|------------------------|-------------|

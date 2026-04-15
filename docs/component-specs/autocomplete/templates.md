@@ -22,15 +22,19 @@ The AutoComplete component allows you to change what is rendered in its items, h
 
 ## Item Template
 
+@[template](/_contentTemplates/dropdowns/templates.md#item-template)
 
 ## Header Template
 
+@[template](/_contentTemplates/dropdowns/templates.md#header-template)
 
 ## Footer Template
 
+@[template](/_contentTemplates/dropdowns/templates.md#footer-template)
 
 ## No Data Template
 
+@[template](/_contentTemplates/dropdowns/templates.md#no-data-template)
 
 ## Example
 

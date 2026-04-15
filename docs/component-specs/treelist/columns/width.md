@@ -22,6 +22,7 @@ You can set the TreeList column `Width` parameter in any CSS unit, such as `px`,
 
 The TreeList column width settings can vary and result in the following behaviors:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#multidimensional-table)
 
 <table class="multi-dimensional-table">
     <colgroup><col style="width: 112px" /><col style="width: 70px" /><col /><col /></colgroup>

@@ -42,6 +42,7 @@ public class TreeItem
 
 The above model properties have the following meaning for the DropDownTree:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 <style>
     style + table td {

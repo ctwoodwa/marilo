@@ -18,6 +18,8 @@ To use the Drawer for navigating between pages:
 * Put the `@Body` tag in the `<DrawerContent>` tag of the drawer.
 * Provide a collection of models that describe the pages you want the user to navigate to.
 
+@[template](/_contentTemplates/common/navigation-components.md#navman-used)
+@[template](/_contentTemplates/common/navigation-components.md#double-navigation)
 
 >caption Use the Drawer for Navigation in `MainLayout.razor`
 

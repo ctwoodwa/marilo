@@ -92,10 +92,12 @@ The grid can load the grouped data on demand only. This can be useful if you hav
 
 You can group the Grid from your code through the [Grid state](slug:grid-state). This is possible even if `Groupable="false"` and the group panel is not visible. You can define the list of fields by which the grid is grouped and indexes of groups that will be collapsed (all groups are expanded by default).
 
+@[template](/_contentTemplates/grid/state.md#initial-state)
 
 >caption Set grouping programmatically
 
 ````RAZOR
+@[template](/_contentTemplates/grid/state.md#group-from-code)
 ````
 
 ## Grouping Settings

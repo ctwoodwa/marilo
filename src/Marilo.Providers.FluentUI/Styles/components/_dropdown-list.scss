@@ -1,1 +1,146 @@
-// TODO: Placeholder — no FluentUI styles defined yet
+// =============================================================================
+// Component: DropDownList
+// =============================================================================
+
+// Trigger (closed state)
+.mar-dropdownlist {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    min-width: 200px;
+    min-height: 32px;
+    padding: 0 10px;
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-base);
+    color: var(--marilo-color-on-background);
+    background: var(--marilo-color-background);
+    border: 1px solid var(--marilo-color-border-strong);
+    border-radius: var(--marilo-radius-md);
+    cursor: pointer;
+    user-select: none;
+    transition: border-color var(--marilo-transition-fast);
+
+    &::after {
+        content: '';
+        display: block;
+        flex-shrink: 0;
+        width: 12px;
+        height: 12px;
+        margin-left: var(--marilo-space-sm);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.15 4.65a.5.5 0 0 1 .7 0L6 7.79l3.15-3.14a.5.5 0 0 1 .7.7l-3.5 3.5a.5.5 0 0 1-.7 0l-3.5-3.5a.5.5 0 0 1 0-.7z' fill='%231a1a1a'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-size: contain;
+        pointer-events: none;
+        transition: transform var(--marilo-transition-fast);
+    }
+}
+
+.mar-dropdownlist:hover {
+    border-color: var(--marilo-color-on-background);
+}
+
+.mar-dropdownlist:focus-visible {
+    outline: none;
+    box-shadow: var(--marilo-focus-ring);
+}
+
+.mar-dropdownlist--open {
+    border-color: var(--marilo-color-primary);
+    box-shadow: 0 0 0 1px var(--marilo-color-primary);
+
+    &::after {
+        transform: rotate(180deg);
+    }
+}
+
+.mar-dropdownlist--disabled {
+    background: var(--marilo-color-surface);
+    color: var(--marilo-color-text-disabled);
+    border-color: var(--marilo-color-border);
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.mar-dropdownlist--invalid {
+    border-color: var(--marilo-color-danger);
+}
+
+.mar-dropdownlist__value {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mar-dropdownlist__placeholder {
+    color: var(--marilo-color-text-secondary);
+}
+
+// Popup
+.mar-dropdownlist-popup {
+    min-width: 200px;
+    max-height: 300px;
+    overflow-y: auto;
+    background: var(--marilo-color-background);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-md);
+    box-shadow: var(--marilo-shadow-md);
+    z-index: var(--marilo-z-dropdown);
+
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: var(--marilo-space-xs) 0;
+    }
+}
+
+.mar-dropdownlist__filter-input {
+    display: block;
+    width: 100%;
+    padding: var(--marilo-space-sm) var(--marilo-space-md);
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-base);
+    border: none;
+    border-bottom: 1px solid var(--marilo-color-border);
+    outline: none;
+    background: var(--marilo-color-surface);
+}
+
+.mar-dropdownlist__group-header {
+    padding: var(--marilo-space-sm) var(--marilo-space-md);
+    font-size: var(--marilo-font-size-xs);
+    font-weight: var(--marilo-font-weight-semibold);
+    color: var(--marilo-color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+// Items
+.mar-dropdownlist-item {
+    padding: var(--marilo-space-sm) var(--marilo-space-md);
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-base);
+    color: var(--marilo-color-on-background);
+    cursor: pointer;
+    transition: background var(--marilo-transition-fast);
+
+    &:hover {
+        background: var(--marilo-color-surface);
+    }
+}
+
+.mar-dropdownlist-item--highlighted {
+    background: var(--marilo-color-surface);
+}
+
+.mar-dropdownlist-item--selected {
+    background: var(--marilo-color-primary-light);
+    color: var(--marilo-color-primary);
+    font-weight: var(--marilo-font-weight-semibold);
+}
+
+.mar-dropdownlist-item--selected.mar-dropdownlist-item--highlighted {
+    background: var(--marilo-color-primary-light);
+}

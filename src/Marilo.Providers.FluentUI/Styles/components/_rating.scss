@@ -1,1 +1,77 @@
-// TODO: Placeholder — no FluentUI styles defined yet
+// =============================================================================
+// Component: Rating
+// =============================================================================
+
+.mar-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--marilo-space-xxs);
+    line-height: 1;
+}
+
+.mar-rating__star {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--marilo-color-border-strong);
+    font-size: 1.25rem; // relative unit — intentional default star size
+    transition: color var(--marilo-transition-fast), transform var(--marilo-transition-fast);
+    user-select: none;
+
+    &:hover {
+        transform: scale(1.1);
+    }
+
+    svg {
+        width: 1.25em;
+        height: 1.25em;
+    }
+}
+
+.mar-rating__star--filled {
+    color: var(--marilo-color-warning);
+}
+
+.mar-rating__star--half {
+    // Half-star support is not yet implemented in MariloRating.razor (Value is integer-only).
+    // When half-star rendering is added to the component, use the overflow-clip approach:
+    //   render a filled-star icon inside a width:50% overflow:hidden container overlaid on an
+    //   outline-star icon, and use this class only as the container context (position: relative).
+    // The previous ::after rectangle overlay bled through transparent star-point cutouts and
+    // has been removed.
+    position: relative;
+    color: var(--marilo-color-border-strong);
+}
+
+// QUALITY FIX: explicit color tokens for disabled, not opacity
+.mar-rating--disabled {
+    pointer-events: none;
+
+    .mar-rating__star {
+        color: var(--marilo-color-text-disabled);
+        // cursor: not-allowed is unreachable — parent has pointer-events: none
+    }
+
+    .mar-rating__star--filled,
+    .mar-rating__star--half {
+        color: var(--marilo-color-text-disabled);
+    }
+}
+
+// Read-only (display only)
+.mar-rating--readonly {
+    pointer-events: none;
+
+    .mar-rating__star {
+        cursor: default;
+
+        &:hover {
+            transform: none;
+        }
+    }
+}
+
+// Size variants
+.mar-rating--small .mar-rating__star { font-size: 1rem; }
+.mar-rating--large .mar-rating__star { font-size: 1.75rem; }

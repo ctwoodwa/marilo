@@ -55,6 +55,7 @@ You can customize the appearance of the Blazor Chip via a variety of built-in cu
 
 The table below lists the Chip parameters. Also check the [Chip API Reference](slug:Marilo.Blazor.Components.MariloChip) for all parameters, methods and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

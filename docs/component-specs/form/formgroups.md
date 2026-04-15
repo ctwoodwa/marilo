@@ -21,6 +21,7 @@ In this article:
 
 The `FormGroup` tag exposes the following parameters:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value| Description |
 | --- | --- | --- |

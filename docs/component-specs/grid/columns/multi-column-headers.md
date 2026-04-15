@@ -128,6 +128,7 @@ The following code snippet shows how you can group columns in the Grid in multi-
 
 ## Behavior With Other Features
 
+@[template](/_contentTemplates/grid/common-link.md#multi-column-headers-feature-integration)
 
 
 

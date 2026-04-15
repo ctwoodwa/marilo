@@ -14,6 +14,7 @@ You can add a [Marilo Font or SVG icon](slug:common-features-icons) to the Butto
 
 The example below also includes conditional logic to show different icons in the different button states.
 
+@[template](/_contentTemplates/common/icons.md#font-icons-css-note)
 
 >caption How to use icons in the Marilo ButtonGroup Button
 
@@ -25,6 +26,7 @@ The example below also includes conditional logic to show different icons in the
                              @bind-Selected="@FontSelected">Font Icon</ButtonGroupToggleButton>
 </MariloButtonGroup>
 
+@[template](/_contentTemplates/common/icons.md#font-icons-css-code)
 
 @code{
     private bool SvgSelected { get; set; }

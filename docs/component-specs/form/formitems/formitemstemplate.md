@@ -28,6 +28,7 @@ The `<FormItems>` tag is a standard Blazor `RenderFragment`, which expects only 
 
 Marilo UI for Blazor version 4.2.0 introduced one new Form parameter and two new components that allow mixing Form groups and items with other content, such as HTML markup or Razor components:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Feature | Description |
 | --- | --- |

@@ -84,6 +84,7 @@ The TimePicker is a generic component, so you must either provide a `Value`, or 
 }
 ````
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 >tip The `OnChange` event is a custom event and does not interfere with bindings, so you can use it together with models and forms.
 
@@ -93,6 +94,7 @@ The `OnOpen` event fires before the TimePicker popup renders.
 
 The event handler receives as an argument an `TimePickerOpenEventArgs` object that contains:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property | Description |
 | --- | --- |

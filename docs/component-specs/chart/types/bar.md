@@ -16,6 +16,7 @@ The <a href="https://www.marilo.com/blazor-ui/bar-chart" target="_blank">Blazor 
 
 The Bar Chart is similar to the [Range Bar Chart](slug:components/chart/types/rangebar), which allows the bar to move away from the category axis.
 
+@[template](/_contentTemplates/chart/link-to-basics.md#understand-basics-and-databinding-first)
 
 #### To create a bar chart:
 
@@ -63,9 +64,13 @@ Bar series
 
 The color of a series is controlled through the `Color` property that can take any valid CSS color (for example, `#abcdef`, `#f00`, or `blue`). The color control the fill color of the area.
 
+@[template](/_contentTemplates/chart/link-to-basics.md#color-field-bar-column)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#gap-and-spacing)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings-categorical)
 
 >caption Configuring Label Template for the Value Axis and change the Font of the Category Axis.
 

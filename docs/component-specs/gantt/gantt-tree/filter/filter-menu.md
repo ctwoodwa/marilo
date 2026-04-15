@@ -127,6 +127,7 @@ A key difference in the behavior from the [filter row](slug:gantt-filter-row) is
 
 You can customize the default Filter Menu behavior for each column through the following property the `GanttColumn` exposes:
 
+@[template](/_contentTemplates/common/filtering.md#filter-menu-customization-properties)
 
 >caption Configure the Filter Menu
 

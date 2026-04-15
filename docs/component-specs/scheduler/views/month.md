@@ -24,6 +24,7 @@ In this article:
 
 The following parameters allow you to configure the month view:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Attribute | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

@@ -148,6 +148,7 @@ If you set the `Reverse` (`bool`) parameter to `true` the gauge will be rendered
 
 ## Additional Customization
 
+@[template](/_contentTemplates/gauges/additional-customization.md#radial-gauge-additional-customization)
 
 ### Example: Remove the MinorUnit ticks
 

@@ -1,1 +1,56 @@
-// TODO: Placeholder — no FluentUI styles defined yet
+// =============================================================================
+// Component: ProgressCircle (Circular Progress Bar)
+// =============================================================================
+
+.mar-progress-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.mar-progress-circle svg {
+    display: block;
+    transform: rotate(-90deg); // SVG circles start at 3 o'clock; rotate to start at 12 o'clock
+}
+
+.mar-progress-circle__track {
+    fill: none;
+    stroke: var(--marilo-color-border);
+}
+
+.mar-progress-circle__fill {
+    fill: none;
+    stroke: var(--marilo-color-primary);
+    stroke-linecap: round;
+    transition: stroke-dashoffset var(--marilo-transition-normal, 0.2s) ease;
+}
+
+// Theme color variants
+.mar-progress-circle--success .mar-progress-circle__fill { stroke: var(--marilo-color-success); }
+.mar-progress-circle--danger  .mar-progress-circle__fill { stroke: var(--marilo-color-danger); }
+.mar-progress-circle--warning .mar-progress-circle__fill { stroke: var(--marilo-color-warning); }
+.mar-progress-circle--info    .mar-progress-circle__fill { stroke: var(--marilo-color-info); }
+
+// Center label
+.mar-progress-circle__label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-sm);
+    font-weight: var(--marilo-font-weight-semibold);
+    color: var(--marilo-color-on-background);
+}
+
+// Indeterminate / animated state
+.mar-progress-circle--indeterminate .mar-progress-circle__fill {
+    animation: mar-progress-circle-spin 1.5s linear infinite;
+}
+
+@keyframes mar-progress-circle-spin {
+    0%   { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -283; } // circumference of r=45 circle (2π×45 ≈ 282.7)
+}

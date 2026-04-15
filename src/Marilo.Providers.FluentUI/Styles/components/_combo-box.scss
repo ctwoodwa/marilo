@@ -1,1 +1,127 @@
-// TODO: Placeholder — no FluentUI styles defined yet
+// =============================================================================
+// Component: ComboBox (editable DropDownList)
+// =============================================================================
+
+.mar-combobox {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    min-width: var(--marilo-input-min-width, 200px);
+    min-height: var(--marilo-input-min-height, 32px);
+    border: 1px solid var(--marilo-color-border-strong);
+    border-radius: var(--marilo-radius-md);
+    background: var(--marilo-color-background);
+    transition: border-color var(--marilo-transition-fast), box-shadow var(--marilo-transition-fast);
+    overflow: hidden;
+}
+
+.mar-combobox:hover {
+    border-color: var(--marilo-color-on-background);
+}
+
+.mar-combobox:focus-within {
+    border-color: var(--marilo-color-primary);
+    box-shadow: var(--marilo-focus-ring);
+}
+
+.mar-combobox--open {
+    border-color: var(--marilo-color-primary);
+    box-shadow: var(--marilo-focus-ring);
+}
+
+// QUALITY FIX: explicit color tokens for disabled, not opacity
+.mar-combobox--disabled {
+    background: var(--marilo-color-surface);
+    color: var(--marilo-color-text-disabled);
+    border-color: var(--marilo-color-border);
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.mar-combobox--invalid {
+    border-color: var(--marilo-color-danger);
+}
+
+// Inner input field
+.mar-combobox input {
+    flex: 1;
+    min-width: 0;
+    padding: var(--marilo-space-xs) var(--marilo-space-xs) var(--marilo-space-xs) var(--marilo-space-sm);
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-base);
+    color: var(--marilo-color-on-background);
+    background: transparent;
+    border: none;
+    outline: none;
+
+    &::placeholder {
+        color: var(--marilo-color-text-secondary);
+    }
+}
+
+// Chevron button
+.mar-combobox__toggle {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--marilo-space-xl);
+    height: 100%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--marilo-color-text-secondary);
+
+    svg, .mar-icon {
+        width: var(--marilo-space-md);
+        height: var(--marilo-space-md);
+        transition: transform var(--marilo-transition-fast);
+    }
+}
+
+.mar-combobox--open .mar-combobox__toggle svg,
+.mar-combobox--open .mar-combobox__toggle .mar-icon {
+    transform: rotate(180deg);
+}
+
+// Popup
+.mar-combobox-popup {
+    min-width: var(--marilo-input-min-width, 200px);
+    max-height: var(--marilo-dropdown-max-height, 280px);
+    overflow-y: auto;
+    background: var(--marilo-color-background);
+    border: 1px solid var(--marilo-color-border);
+    border-radius: var(--marilo-radius-md);
+    box-shadow: var(--marilo-shadow-md);
+    z-index: var(--marilo-z-dropdown);
+
+    ul {
+        list-style: none;
+        margin: 0;
+        padding: var(--marilo-space-xs) 0;
+    }
+}
+
+// Items
+.mar-combobox-item {
+    padding: var(--marilo-space-sm) var(--marilo-space-md);
+    cursor: pointer;
+    color: var(--marilo-color-on-background);
+    font-family: var(--marilo-font-family);
+    font-size: var(--marilo-font-size-base);
+    transition: background var(--marilo-transition-fast);
+
+    &:hover {
+        background: var(--marilo-color-surface);
+    }
+}
+
+.mar-combobox-item--highlighted {
+    background: var(--marilo-color-surface);
+}
+
+.mar-combobox-item--selected {
+    background: var(--marilo-color-primary-light);
+    color: var(--marilo-color-primary);
+    font-weight: var(--marilo-font-weight-semibold);
+}

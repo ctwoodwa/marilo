@@ -47,6 +47,7 @@ If you have a custom Toolbar, add a command button with the `CsvExport` command 
 
 To configure the CSV export settings, add the `GridCsvExport` tag under the `GridExport` tag. You may set the following options:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

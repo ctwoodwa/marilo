@@ -74,6 +74,7 @@ You can customize the [appearance of the Blazor ChipList](slug:chiplist-appearan
 
 The table below lists the ChipList parameters. Also check the [ChipList API Reference](slug:Marilo.Blazor.Components.MariloChipList-1) for all parameters, methods and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description |
 | --- | --- | --- |

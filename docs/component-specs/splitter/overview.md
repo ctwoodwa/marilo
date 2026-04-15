@@ -68,6 +68,7 @@ The Blazor Splitter provides various parameters for its configuration. The follo
 
 Check the [Splitter API Reference ](slug:Marilo.Blazor.Components.MariloSplitter) for a full list of properties, methods and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type | Description |
 | --- | --- | --- |

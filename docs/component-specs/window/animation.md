@@ -14,6 +14,7 @@ The Marilo Window component for Blazor provides an option to control the opening
 
 ## Parameters
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value| Description |
 |--------------------|------------------------------------|-------------|
@@ -24,6 +25,7 @@ The Marilo Window component for Blazor provides an option to control the opening
 
 The `WindowAnimationType` enumeration includes the following options:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Animation Type | Description                                                                                     |
 |----------------|-------------------------------------------------------------------------------------------------|

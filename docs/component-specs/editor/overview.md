@@ -29,6 +29,7 @@ The Editor manages its content and `Value` depending on a [customizable schema](
 
 ## Security
 
+@[template](/_contentTemplates/editor/general.md#app-must-sanitize-content)
 
 
 ## Validation
@@ -37,6 +38,7 @@ You can use the standard Data Annotation attributes to validate the content of t
 
 ## Large Content Support 
 
+@[template](/_contentTemplates/editor/general.md#content-size-signalr)
 
 ## Resizing
 
@@ -58,6 +60,7 @@ The Marilo Editor uses a `contenteditable` div with `document.execCommand` for r
 
 The following table lists Editor parameters, which are not discussed elsewhere in the component documentation. 
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default value | Description |
 |-----------|------------------------|-------------|

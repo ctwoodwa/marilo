@@ -14,6 +14,7 @@ In-cell editing allows users to click TreeList data cells and type new values li
 
 The in-cell edit mode provides a different user experience, compared to the inline and popup edit modes. In-cell edit mode can be more convenient for advanced users, fast users, or users who prefer keyboard navigation rather than clicking command buttons.
 
+@[template](/_contentTemplates/treelist/editing.md#overview-required)
 
 ## Basics
 
@@ -35,6 +36,7 @@ In-cell add, edit, and delete operations use the following [command buttons](slu
 * **Add**
 * **Delete**
 
+@[template](/_contentTemplates/treelist/editing.md#without-commands)
 
 Unlike [inline editing](slug:treelist-editing-inline), the in-cell edit mode does not use **Edit**, **Save**, and **Cancel** command buttons.
 
@@ -95,6 +97,7 @@ The example below shows how to:
 
 * Implement in-cell TreeList CRUD operations with the minimal required number of events.
 * Bind an editable TreeList to [flat data](slug:treelist-data-binding-flat-data). Check the [popup editing example] for an implementation with [hierarchical data](slug:treelist-data-binding-hierarchical-data).
+@[template](/_contentTemplates/treelist/editing.md#basic-example-description)
 
 >caption Basic TreeList in-cell editing configuration
 
@@ -108,6 +111,7 @@ The example below shows how to:
                  ParentIdField="@nameof(Employee.ParentId)"
                  ConfirmDelete="true"
                  EditMode="@TreeListEditMode.Incell"
+@[template](/_contentTemplates/treelist/editing.md#basic-example-parameters-columns)
         <TreeListCommandColumn Width="120px">
             <TreeListCommandButton Command="Add">Add</TreeListCommandButton>
             <TreeListCommandButton Command="Delete">Delete</TreeListCommandButton>
@@ -116,7 +120,9 @@ The example below shows how to:
 </MariloTreeList>
 
 @code {
+@[template](/_contentTemplates/treelist/editing.md#basic-example-code)
 
+@[template](/_contentTemplates/treelist/editing.md#flat-crud-service-and-model)
 }
 ````
 

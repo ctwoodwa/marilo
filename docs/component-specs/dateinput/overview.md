@@ -85,6 +85,7 @@ The [DateInput exposes a few parameters for its styling](slug:dateinput-appearan
 
 The following section lists some Date Input parameters and links to other pages that provide information for more parameters. Also check the [DateInput API Reference](slug:Marilo.Blazor.Components.MariloDateInput-1) for all parameters, methods and events.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default Value | Description |
 |---|---|---|
@@ -119,6 +120,7 @@ The component provides multiple parameters, which control the [caret placement, 
 
 The [Date Input Appearance article lists more parameters, which configure the component styling](slug:dateinput-appearance).
 
+@[template](/_contentTemplates/date-inputs/general.md#format-placeholder)
 
 
 ## DateInput Reference and Methods

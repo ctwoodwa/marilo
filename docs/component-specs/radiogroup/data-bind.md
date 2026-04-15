@@ -12,6 +12,7 @@ components: ["radiogroup"]
 
 This article explains the different ways to provide data to a RadioGroup component, the properties related to data binding and their results.
 
+@[template](/_contentTemplates/common/general-info.md#valuebind-vs-databind-link)
 
 There are two key ways to bind data:
 

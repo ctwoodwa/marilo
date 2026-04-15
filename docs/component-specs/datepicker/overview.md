@@ -25,6 +25,7 @@ The <a href="https://www.marilo.com/blazor-ui/datepicker" target="_blank">Blazor
 ## Date Input Typing Settings
 
 The Blazor DatePicker
+@[template](/_contentTemplates/date-inputs/general.md#dateinput-typing-settings)
 DatePicker.
 
 ## Increment Steps
@@ -46,11 +47,13 @@ The Blazor DatePicker allows you to customize the rendering of the Calendar popu
 ## Adaptive Rendering
 
 
+@[template](/_contentTemplates/dropdowns/adaptive-rendering.md#intro)
 
 ## Date Picker Parameters
 
 The Blazor Date Picker provides various parameters that allow you to configure the component:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Attribute | Type and Default Value | Description |
 |---|---|---|
@@ -78,6 +81,7 @@ The Blazor Date Picker provides various parameters that allow you to configure t
 
 The Date Picker is, essentially, a [DateInput](slug:components/dateinput/overview) and a [Calendar](slug:components/calendar/overview) and the properties it exposes are mapped to the corresponding properties of these two components. You can read more about their behavior in the respective components' documentation.
 
+@[template](/_contentTemplates/date-inputs/general.md#typing-parameters)
 
 ### Styling and Appearance
 
@@ -93,6 +97,7 @@ The following parameters enable you to customize the appearance of the Blazor Da
 
 You can find more options for customizing the Date Picker styling in the [Appearance article](slug:datepicker-appearance).
 
+@[template](/_contentTemplates/date-inputs/general.md#format-placeholder)
 
 ## DatePicker Reference and Methods
 

@@ -102,10 +102,12 @@ To allow sorting on more than one column at a time, set the `SortMode` parameter
 
 You can sort the grid from your own code through its [state](slug:grid-state).
 
+@[template](/_contentTemplates/grid/state.md#initial-state)
 
 >caption Set sorting programmatically
 
 ````RAZOR
+@[template](/_contentTemplates/grid/state.md#set-sort-from-code)
 ````
 
 ## More Examples

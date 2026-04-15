@@ -2,7 +2,7 @@
 
 Based on the Telerik Blazor documentation at `/workspaces/Marilo/docs/component-specs` (101 components) compared against Marilo's current ~140+ component files.
 
-> Last updated: 2026-03-30 (revised after Phase 0–4 implementation — all P0/P1/P2/P3 gaps resolved)
+> Last updated: 2026-04-14 (revised after _contentTemplates/ migration — template infrastructure fully resolved)
 
 ---
 
@@ -106,3 +106,30 @@ The following spec components are deferred and not yet implemented. These are hi
 | **MariloInlineAIPrompt** | AI | Popup AI interaction |
 | **MariloSmartPasteButton** | AI | AI-powered form fill |
 | **MariloChat** | AI/Comms | Conversational messaging UI |
+
+---
+
+## 5. Documentation Infrastructure — _contentTemplates/ — RESOLVED
+
+The `_contentTemplates/` shared-include infrastructure (previously missing from Marilo docs) has been fully migrated.
+
+### What was done
+
+| Item | Status | Detail |
+|---|---|---|
+| `docs/_contentTemplates/` directory | **Created** | 59 Markdown files converted from `blazor-docs/_contentTemplates/` |
+| Brand replacement | **Complete** | All Telerik/Kendo/Progress references replaced with Marilo equivalents |
+| `@[template]` include lines | **Restored** | 1008 of 1056 lines restored in component-spec files |
+| Inline template refs (mid-sentence) | **Partially unresolved** | 48 refs in 33 files require manual review — see note below |
+| Cross-reference validation | **Passing** | `PASS: All 1008 @[template] references resolve correctly.` |
+
+### Tools created
+
+- `docs/tools/convert_templates.py` — copies and brand-replaces template files from source
+- `docs/tools/restore_includes.py` — restores `@[template]` include lines to component-spec files
+- `docs/tools/validate_refs.py` — validates all `@[template]` references resolve to actual files
+- `docs/tools/brand_replace.py` — shared brand replacement utility used by the above tools
+
+### Known limitation
+
+48 `@[template]` references (out of 1056 total) are embedded mid-sentence inside prose paragraphs across 33 component-spec files. The automated restore script cannot reconstruct these without the original surrounding context. These require manual review and are tracked as a known documentation debt item.

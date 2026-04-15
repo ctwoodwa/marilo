@@ -18,6 +18,7 @@ To enable resizing:
 
 2. Set the  `RowHeight` and `ColumnWidth` parameters of the `MariloTileLayout`. The provided values must be in absolute units—this allows for the layout to correctly calculate the position of each tile during resizing.
 
+@[template](/_contentTemplates/tilelayout/basics.md#resizing-reordering-logic)
 
 Resizing a tile fires the [OnResize event](slug:tilelayout-events#onresize).
 

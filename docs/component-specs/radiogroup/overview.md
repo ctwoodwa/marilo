@@ -83,6 +83,7 @@ The Blazor RadioGroup fires blur and value change events to respond to user acti
 
 The Blazor RadioGroup provides various parameters to configure the component. Also check the [RadioGroup public API](slug:Marilo.Blazor.Components.MariloRadioGroup-2).
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default Value | Description |
 | --- | --- | --- |

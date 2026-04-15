@@ -130,6 +130,7 @@ The `TrackRounded` attribute applies the `border-radius` CSS rule to the track o
 }
 ````
 
+@[template](/_contentTemplates/common/themebuilder-section.md#appearance-themebuilder)
 
 ## See Also
 

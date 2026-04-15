@@ -211,6 +211,7 @@ The TreeList exposes several relevant events. You can find related examples in t
 
 In addition to `Page` and `PageSize`, the TreeList provides advanced pager configuration options via the `TreeListPagerSettings` tag, which is nested inside `TreeListSettings`. These configuration attributes include:
 
+@[template](/_contentTemplates/common/pager-settings.md#pager-settings)
 
 ````RAZOR
 @*Configure the Pager Settings*@

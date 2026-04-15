@@ -129,7 +129,9 @@ The `ExpandedChanged` event fires every time the component's state is changed - 
 
 ![drawer expandedchanged example](images/drawer-expandedchanged-example.gif)
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
+@[template](/_contentTemplates/common/issues-and-warnings.md#valuechanged-lambda-required)
 
 ## OnItemRender
 

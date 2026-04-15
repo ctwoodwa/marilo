@@ -74,6 +74,7 @@ Read more about them and find code examples in the [Grid Export Events](slug:gri
 
 ## OnModelInit
 
+@[template](/_contentTemplates/common/onmodelinit.md#onmodelinit-info)
 
 >caption The different use-cases of the OnModelInit event
 
@@ -479,9 +480,11 @@ Read more about them and find code examples in the [Grid Export Events](slug:gri
 
 ## OnRowClick
 
+@[template](/_contentTemplates/common/click-events.md#rowclick)
 
 The `OnRowClick` event handler receives a `GridRowClickEventArgs` argument, which has the following properties.
 
+@[template](/_contentTemplates/common/click-events.md#clickeventargs)
 
 >caption Using the Grid OnRowClick event
 
@@ -538,9 +541,11 @@ The `OnRowClick` event handler receives a `GridRowClickEventArgs` argument, whic
 
 ## OnRowDoubleClick
 
+@[template](/_contentTemplates/common/click-events.md#rowdoubleclick)
 
 The `OnRowDoubleClick` event handler receives a `GridRowClickEventArgs` argument, which has the following properties.
 
+@[template](/_contentTemplates/common/click-events.md#clickeventargs)
 
 >caption Using the Grid OnRowDoubleClick event
 
@@ -595,9 +600,11 @@ The `OnRowDoubleClick` event handler receives a `GridRowClickEventArgs` argument
 
 ## OnRowContextMenu
 
+@[template](/_contentTemplates/common/click-events.md#rowcontextmenu)
 
 The `OnRowContextMenu` event handler receives a `GridRowClickEventArgs` argument, which has the following properties.
 
+@[template](/_contentTemplates/common/click-events.md#clickeventargs)
 
 >caption Using the Grid OnRowContextMenu event
 
@@ -658,6 +665,7 @@ The `OnRowExpand` event fires as a response to the user expanding the [`DetailTe
 
 The event handler receives the expanded row's data item directly (typed as `TItem`, which is the model type of your grid's `Data` source).
 
+@[template](/_contentTemplates/common/general-info.md#rerender-after-event)
 
 >caption Use the OnRowExpand event to load detailed data on demand. Another approach can be found on our [public github repository](https://github.com/marilo/blazor-ui/tree/master/grid/load-on-demand-hierarchy).
 
@@ -741,6 +749,7 @@ The `OnRowCollapse` event fires as a response to the user collapsing the [`Detai
 
 The event handler receives the collapsed row's data item directly (typed as `TItem`, which is the model type of your grid's `Data` source).
 
+@[template](/_contentTemplates/common/general-info.md#rerender-after-event)
 
 >caption Use the OnRowCollapse event to get the Id of the collapsed row from the data model
 

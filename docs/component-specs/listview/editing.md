@@ -29,6 +29,7 @@ The CUD operations are implemented through dedicated events that let you alter t
 * `OnDelete` - fires when an item is deleted.
 * `OnCancel` - fires when the Cancel button is clicked.
 
+@[template](/_contentTemplates/common/inputs.md#edit-debouncedelay)
 
 >caption How to edit data in the ListView
 

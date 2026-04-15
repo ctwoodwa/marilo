@@ -10,6 +10,7 @@ components: ["scheduler"]
 ---
 # Scheduler - Refresh Data
 
+@[template](/_contentTemplates/common/observable-data.md#intro)
 
 In this article:
 - [Rebind Method](#rebind-method)
@@ -137,9 +138,11 @@ You can refresh the Scheduler data by using the Rebind method exposed to the ref
 
 >note Refresh the Scheduler data by creating a [New collection reference](#new-collection-reference).
 
+@[template](/_contentTemplates/common/observable-data.md#observable-data)
 
 ## New Collection Reference
 
+@[template](/_contentTemplates/common/observable-data.md#refresh-data)
 
 >caption Create new collection reference to refresh the Scheduler data.
 

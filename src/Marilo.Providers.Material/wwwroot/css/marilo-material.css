@@ -536,6 +536,452 @@
   padding: 0 var(--marilo-space-2xl);
 }
 
+.mar-datagrid {
+  width: 100%;
+  border: 1px solid var(--marilo-color-border);
+  border-radius: var(--marilo-radius-md);
+  overflow: hidden;
+  font-family: var(--marilo-font-family);
+  font-size: var(--marilo-font-size-base);
+}
+
+.mar-datagrid-content > table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.mar-datagrid-header {
+  background: var(--marilo-color-surface-container);
+  font-weight: var(--marilo-font-weight-semibold);
+  border-bottom: 1px solid var(--marilo-color-border);
+}
+
+.mar-datagrid-header-cell {
+  padding: var(--marilo-space-sm) var(--marilo-space-md);
+  font-weight: var(--marilo-font-weight-semibold);
+  text-align: left;
+  white-space: nowrap;
+  user-select: none;
+}
+.mar-datagrid-header-cell--sortable {
+  cursor: pointer;
+}
+.mar-datagrid-header-cell--sortable:hover {
+  background: var(--marilo-color-surface-container-high);
+}
+.mar-datagrid-header-cell--sorted {
+  color: var(--marilo-color-primary);
+}
+
+.mar-datagrid-sort-indicator {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.25rem;
+  color: var(--marilo-color-primary);
+  font-size: 0.75rem;
+}
+
+.mar-datagrid-row {
+  border-bottom: 1px solid var(--marilo-color-border);
+  transition: background var(--marilo-transition-fast);
+}
+
+.mar-datagrid-row:last-child {
+  border-bottom: none;
+}
+
+.mar-datagrid-row:hover {
+  background: var(--marilo-color-surface-container-high);
+}
+
+.mar-datagrid-row--selected {
+  background: var(--marilo-color-primary-light);
+}
+
+.mar-datagrid-row--selected:hover {
+  background: var(--marilo-color-primary-light);
+}
+
+.mar-datagrid-row--striped:nth-child(even) {
+  background: var(--marilo-color-surface-container);
+}
+
+.mar-datagrid-cell {
+  padding: var(--marilo-space-sm) var(--marilo-space-md);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mar-datagrid-cell--selected {
+  background: var(--marilo-color-primary-light);
+  outline: 2px solid var(--marilo-color-primary);
+  outline-offset: -2px;
+  position: relative;
+  z-index: 1;
+}
+
+.mar-datagrid-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--marilo-space-sm);
+  padding: var(--marilo-space-sm) var(--marilo-space-md);
+  border-bottom: 1px solid var(--marilo-color-border);
+}
+
+.mar-datagrid-searchbox {
+  display: flex;
+  align-items: center;
+  gap: var(--marilo-space-sm);
+  padding: var(--marilo-space-xs) var(--marilo-space-md);
+  border-bottom: 1px solid var(--marilo-color-border);
+}
+.mar-datagrid-searchbox input {
+  flex: 1;
+  border: 1px solid var(--marilo-color-border);
+  border-radius: var(--marilo-radius-sm);
+  padding: 0.3rem 0.6rem;
+  font-size: var(--marilo-font-size-base);
+  background: var(--marilo-color-surface);
+  color: var(--marilo-color-text);
+}
+.mar-datagrid-searchbox input::placeholder {
+  color: var(--marilo-color-text-muted);
+}
+.mar-datagrid-searchbox input:focus {
+  outline: none;
+  border-color: var(--marilo-color-primary);
+}
+
+.mar-datagrid-filter-row {
+  background: var(--marilo-color-surface-container);
+}
+
+.mar-datagrid-filter-cell {
+  padding: var(--marilo-space-xs) var(--marilo-space-md);
+}
+
+.mar-datagrid .mar-datagrid-header-cell,
+.mar-datagrid .mar-datagrid-header-cell--sortable,
+.mar-datagrid .mar-datagrid-header-cell--sorted {
+  position: relative;
+}
+
+.mar-datagrid .mar-datagrid-filter-menu-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.35rem;
+  border: 1px solid var(--marilo-color-border);
+  background: var(--marilo-color-surface);
+  color: var(--marilo-color-text-muted);
+  border-radius: 4px;
+  line-height: 1;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mar-datagrid .mar-datagrid-filter-menu-btn:hover {
+  border-color: var(--marilo-color-primary);
+  color: var(--marilo-color-primary);
+}
+
+.mar-datagrid .mar-datagrid-filter-menu-icon {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.mar-datagrid .mar-datagrid-filter-menu-btn--active {
+  border-color: var(--marilo-color-primary);
+  background: color-mix(in srgb, var(--marilo-color-primary) 10%, var(--marilo-color-surface, #ffffff));
+  color: var(--marilo-color-primary);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--marilo-color-primary) 35%, transparent);
+}
+
+.mar-datagrid .mar-datagrid-filter-menu-btn--active::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--marilo-color-primary);
+}
+
+.mar-datagrid .mar-datagrid-filter-popup {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  z-index: 30;
+  min-width: 260px;
+}
+
+.mar-datagrid .mar-datagrid-filter-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid var(--marilo-color-border);
+  border-radius: 8px;
+  background: var(--marilo-color-surface);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.mar-datagrid .mar-datagrid-filter-menu label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--marilo-color-text);
+}
+
+.mar-datagrid .mar-datagrid-filter-menu-operator,
+.mar-datagrid .mar-datagrid-filter-menu-value {
+  width: 100%;
+  border: 1px solid var(--marilo-color-border);
+  border-radius: 4px;
+  padding: 0.4rem 0.55rem;
+  font-size: 0.9rem;
+  background: var(--marilo-color-surface);
+}
+
+.mar-datagrid .mar-datagrid-filter-menu-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.mar-datagrid .mar-datagrid-filter-menu-actions .mar-datagrid-cmd-btn {
+  border: 1px solid var(--marilo-color-border);
+  border-radius: 6px;
+  padding: 0.35rem 0.75rem;
+  background: var(--marilo-color-surface);
+  cursor: pointer;
+}
+
+.mar-datagrid-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--marilo-space-xl) var(--marilo-space-md);
+  color: var(--marilo-color-text-muted);
+  font-size: var(--marilo-font-size-base);
+}
+
+.mar-datagrid-group-header {
+  font-weight: var(--marilo-font-weight-semibold);
+  background: var(--marilo-color-surface-container);
+  padding: var(--marilo-space-xs) var(--marilo-space-md);
+}
+
+.mar-datagrid-detail-row {
+  background: var(--marilo-color-surface);
+  border-bottom: 1px solid var(--marilo-color-border);
+}
+.mar-datagrid-detail-row > td, .mar-datagrid-detail-row > .mar-datagrid-cell {
+  padding: var(--marilo-space-sm) var(--marilo-space-md);
+}
+
+.mar-datagrid-loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--marilo-color-surface) 70%, transparent);
+  z-index: 10;
+}
+
+.mar-datagrid-footer-row {
+  background: var(--marilo-color-surface-container);
+  border-top: 1px solid var(--marilo-color-border);
+  font-weight: var(--marilo-font-weight-semibold);
+}
+
+.mar-datagrid-footer-cell {
+  padding: var(--marilo-space-sm) var(--marilo-space-md);
+}
+
+.mar-datagrid-col--locked {
+  position: sticky;
+  z-index: 2;
+  background: var(--marilo-color-surface);
+  border-right: 2px solid var(--marilo-color-border);
+}
+
+.mar-datagrid-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--marilo-space-sm) var(--marilo-space-md);
+  border-top: 1px solid var(--marilo-color-border);
+  background: var(--marilo-color-surface-container);
+}
+
+.mar-datagrid-pager-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 var(--marilo-space-xs);
+  border: 1px solid var(--marilo-color-border);
+  border-radius: var(--marilo-radius-sm);
+  background: var(--marilo-color-surface);
+  color: var(--marilo-color-text);
+  cursor: pointer;
+  transition: background var(--marilo-transition-fast), color var(--marilo-transition-fast);
+}
+.mar-datagrid-pager-btn:hover {
+  background: var(--marilo-color-surface-container-high);
+}
+.mar-datagrid-pager-btn--active {
+  background: var(--marilo-color-primary);
+  color: var(--marilo-color-on-primary);
+  border-color: var(--marilo-color-primary);
+}
+.mar-datagrid-pager-btn:disabled {
+  color: var(--marilo-color-text-muted);
+  cursor: not-allowed;
+}
+
+.mar-datagrid-pager-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--marilo-space-xs);
+  color: var(--marilo-color-text-secondary);
+}
+
+.mar-datagrid-pager-info {
+  font-size: var(--marilo-font-size-sm);
+  color: var(--marilo-color-text-secondary);
+}
+
+.mar-datagrid-pagesize-select {
+  border: 1px solid var(--marilo-color-border);
+  border-radius: var(--marilo-radius-sm);
+  padding: 0.2rem 0.4rem;
+  font-size: var(--marilo-font-size-sm);
+  background: var(--marilo-color-surface);
+  color: var(--marilo-color-text);
+}
+
+.mar-datagrid-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mar-datagrid-popup-dialog {
+  background: var(--marilo-color-surface);
+  border: 1px solid var(--marilo-color-border);
+  border-radius: var(--marilo-radius-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
+  min-width: 320px;
+  max-width: 600px;
+  width: 100%;
+}
+
+.mar-datagrid-popup-header {
+  padding: var(--marilo-space-md) var(--marilo-space-lg);
+  border-bottom: 1px solid var(--marilo-color-border);
+  font-weight: var(--marilo-font-weight-semibold);
+  font-size: var(--marilo-font-size-base);
+}
+
+.mar-datagrid-popup-body {
+  padding: var(--marilo-space-md) var(--marilo-space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--marilo-space-md);
+}
+
+.mar-datagrid-popup-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--marilo-space-sm);
+  padding: var(--marilo-space-sm) var(--marilo-space-lg) var(--marilo-space-md);
+  border-top: 1px solid var(--marilo-color-border);
+}
+
+.mar-datagrid-popup-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--marilo-space-xs);
+}
+.mar-datagrid-popup-field label {
+  font-size: var(--marilo-font-size-sm);
+  font-weight: var(--marilo-font-weight-semibold);
+  color: var(--marilo-color-on-surface-variant);
+}
+
+.mar-datagrid-validation-summary {
+  padding: var(--marilo-space-sm) var(--marilo-space-md);
+  border: 1px solid var(--marilo-color-danger);
+  border-radius: var(--marilo-radius-sm);
+  background: color-mix(in srgb, var(--marilo-color-danger) 8%, var(--marilo-color-surface));
+  color: var(--marilo-color-danger);
+  font-size: var(--marilo-font-size-sm);
+}
+
+.mar-datagrid-cmd-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--marilo-space-xs);
+  padding: 0.25rem var(--marilo-space-sm);
+  border: 1px solid var(--marilo-color-border);
+  border-radius: var(--marilo-radius-sm);
+  background: var(--marilo-color-surface);
+  color: var(--marilo-color-text);
+  font-size: var(--marilo-font-size-sm);
+  cursor: pointer;
+  transition: background var(--marilo-transition-fast);
+}
+.mar-datagrid-cmd-btn:hover {
+  background: var(--marilo-color-surface-container-high);
+}
+
+.mar-datagrid-command-header {
+  text-align: center;
+}
+
+.mar-datagrid-checkbox-cell {
+  width: 2.5rem;
+  text-align: center;
+  padding: var(--marilo-space-xs);
+}
+
+.mar-datagrid-drag-header {
+  width: 2rem;
+  text-align: center;
+  cursor: grab;
+}
+
+.mar-datagrid-detail-cell {
+  padding: 0;
+}
+
+.mar-datagrid-cell:focus-visible,
+.mar-datagrid-header-cell:focus-visible {
+  box-shadow: var(--marilo-focus-ring);
+  outline: none;
+  position: relative;
+  z-index: 1;
+}
+
+.mar-datagrid-row--focused {
+  box-shadow: var(--marilo-focus-ring);
+  outline: none;
+  position: relative;
+  z-index: 1;
+}
+
 .mar-datasheet {
   width: 100%;
   border: 1px solid var(--marilo-color-border);
@@ -941,4 +1387,91 @@
   100% {
     background: transparent;
   }
+}
+.mar-splitter {
+  --mar-splitter-bar-size: 5px;
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+}
+
+.mar-splitter--vertical {
+  flex-direction: column;
+}
+
+.mar-splitter__pane {
+  overflow: auto;
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+}
+
+.mar-splitter__pane--fill {
+  flex: 1 1 0 !important;
+}
+
+.mar-splitter__pane--collapsed {
+  flex: 0 0 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.mar-splitter__handle {
+  flex: 0 0 var(--mar-splitter-bar-size);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--marilo-color-border);
+  cursor: col-resize;
+  transition: background-color 0.15s;
+  user-select: none;
+  touch-action: none;
+  z-index: 1;
+}
+
+.mar-splitter__handle:hover,
+.mar-splitter__handle--active {
+  background: var(--marilo-color-primary);
+}
+
+.mar-splitter--vertical .mar-splitter__handle {
+  cursor: row-resize;
+}
+
+.mar-splitter__collapse-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--marilo-color-border);
+  border-radius: var(--marilo-radius-sm);
+  background: var(--marilo-color-background);
+  color: var(--marilo-color-text-secondary);
+  font-size: 8px;
+  cursor: pointer;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.mar-splitter--vertical .mar-splitter__collapse-btn {
+  width: 28px;
+  height: 18px;
+}
+
+.mar-splitter__handle:hover .mar-splitter__collapse-btn {
+  opacity: 1;
+}
+
+.mar-splitter__collapse-btn:hover {
+  background: var(--marilo-color-surface-hover, var(--marilo-color-surface-container-high));
+  color: var(--marilo-color-on-background);
 }

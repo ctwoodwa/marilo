@@ -107,6 +107,7 @@ You can also [trigger add and edit operations programmatically](slug:grid-kb-add
 
 The following table describes the TreeList events, which are related to adding, deleting, and editing items. Also check the sections about [item instances](#item-instances) and [event arguments](#treelistcommandeventargs) below.
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Event | Required | Description | [Item Instance](#treelistcommandeventargs) | If&nbsp;Cancelled |
 | --- | --- | --- | --- | --- |

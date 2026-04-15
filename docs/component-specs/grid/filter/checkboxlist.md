@@ -69,6 +69,7 @@ Using the [`OnRead` event](slug:components/grid/manual-operations) to customize 
 
 To customize the CheckBoxList behavior, use the [Filter Menu Template](slug:grid-templates-filter#filter-menu-template). Place the `MariloCheckBoxListFilter` component inside the `FilterMenuTemplate` to get the default CheckBoxList filtering UI. The template provides the following settings:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Description |
 |---------------------|------------------|

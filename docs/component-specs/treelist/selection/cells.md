@@ -190,6 +190,7 @@ You can respond to user selection actions through the `SelectedCellsChanged` eve
 
 The `TreeListSelectedCellDescriptor` type exposes the following properties:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Property Name | Type | Description |
 | --- | --- | --- |

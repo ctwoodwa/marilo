@@ -18,6 +18,7 @@ The `Icon` parameter type is `object` and it accepts:
 * A member of the [`FontIcon` enum](slug:common-features-icons#icons-list)
 * A `string` that is a CSS class for a custom icon
 
+@[template](/_contentTemplates/common/icons.md#font-icons-css-note)
 
 >caption How to use icons in Marilo Blazor DropDownButton
 
@@ -42,6 +43,7 @@ The `Icon` parameter type is `object` and it accepts:
     }
 </style>
 
+@[template](/_contentTemplates/common/icons.md#font-icons-css-code)
 
 @code {
     private string CustomIconClass { get; set; } = "my-icon";

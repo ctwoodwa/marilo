@@ -120,6 +120,7 @@ In addition to the nested `GridPagerSettings` approach shown below, `MariloDataG
 
 In addition to `Page` and `PageSize`, the Grid provides advanced pager configuration options via the `GridPagerSettings` tag, which is nested inside `GridSettings`. These configuration attributes include:
 
+@[template](/_contentTemplates/common/pager-settings.md#pager-settings)
 
 ````RAZOR
 @*Configure the Pager Settings*@

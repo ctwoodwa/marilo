@@ -80,24 +80,30 @@ The MultiColumnComboBox renders its dropdown items in a grid-like column layout.
 ## Grouping
 
 
+@[template](/_contentTemplates/common/inputs.md#adornments)
 
 ## Templates
 
+@[template](/_contentTemplates/dropdowns/features.md#templates) [Read more about the Blazor MultiColumnComboBox templates...](slug:multicolumncombobox-templates).
 
 ## Validation
 
+@[template](/_contentTemplates/dropdowns/features.md#validation)
 
 ## Virtualization
 
+@[template](/_contentTemplates/dropdowns/features.md#virtualization) [Read more about the Blazor MultiColumnComboBox virtualization...](slug:multicolumncombobox-virtualization)
 
 ## Adaptive Rendering
 
 
+@[template](/_contentTemplates/dropdowns/adaptive-rendering.md#intro)
 
 ## MultiColumnComboBox Parameters
 
 >caption The MultiColumnComboBox provides various parameters that allow you to configure the component:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type and Default&nbsp;Value | Description
 | ----------- | ----------- | -----------|
@@ -126,6 +132,7 @@ The MultiColumnComboBox renders its dropdown items in a grid-like column layout.
 
 The following parameters enable you to customize the appearance of the Blazor MultiColumnComboBox:
 
+@[template](/_contentTemplates/dropdowns/features.md#styling)
 
 You can find more options for customizing the MultiColumnComboBox styling in the [Appearance article](slug:multicolumncombobox-appearance).
 

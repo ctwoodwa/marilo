@@ -131,6 +131,7 @@ The Blazor Gantt Bound Column provides various parameters to configure the compo
 
 ### Data Binding
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter | Type | Description |
 | --- | --- | --- |

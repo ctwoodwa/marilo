@@ -9,6 +9,7 @@ position: 50
 
 # Blazor Button Accessibility
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 
 

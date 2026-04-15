@@ -128,12 +128,14 @@ The Gantt allows you to customize the default behavior of the Filter Row in a co
 
 ### Debouncing the Filtering
 
+@[template](/_contentTemplates/common/filtering.md#filter-debounce-delay-customization)
 > This feature is planned for a future release.
 
 ### Configuring the Filter Row
 
 You can customize the default Filter Row behavior for each Gantt Tree column through the following properties the `GanttColumn` exposes:
 
+@[template](/_contentTemplates/common/filtering.md#filter-row-customization-properties)
 
 >caption Configure the Filter Row
 

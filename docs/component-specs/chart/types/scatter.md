@@ -16,6 +16,7 @@ Scatter charts are useful for showing the relation between different sets of dat
 
 ![scatter chart](images/scatter-chart.png)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#understand-basics-and-databinding-first)
 
 #### To create a scatter chart:
 
@@ -95,9 +96,13 @@ Scatter charts are useful for showing the relation between different sets of dat
 
 ## Scatter Chart Specific Appearance Settings
 
+@[template](/_contentTemplates/chart/link-to-basics.md#markers-line-scatter)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#color-line-scatter)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings-numerical)
 
 >tip See the code snippet above to observe setting the title text for the `ChartXAxis` and the `ChartYAxes`.
 

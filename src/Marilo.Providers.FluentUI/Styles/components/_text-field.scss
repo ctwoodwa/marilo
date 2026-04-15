@@ -277,3 +277,46 @@
     gap: var(--marilo-space-xs);
     margin-top: var(--marilo-space-sm);
 }
+
+/* === TextField Size Variants === */
+/* Applied via mar-textbox--small / --medium / --large modifier classes */
+
+.mar-textbox--small {
+    min-height: var(--marilo-textbox-sm-height, 24px);
+
+    input {
+        padding: var(--marilo-space-xxs) var(--marilo-space-sm);
+        font-size: var(--marilo-font-size-sm);
+    }
+
+    .mar-textbox__prefix,
+    .mar-textbox__suffix {
+        padding-left: var(--marilo-space-xs);
+        padding-right: var(--marilo-space-xs);
+        font-size: var(--marilo-font-size-sm);
+    }
+}
+
+.mar-textbox--medium {
+    // Already the default — present for explicit use
+    min-height: var(--marilo-input-min-height, 32px);
+
+    input {
+        padding: var(--marilo-space-xs) var(--marilo-space-sm);
+        font-size: var(--marilo-font-size-base);
+    }
+}
+
+.mar-textbox--large {
+    min-height: var(--marilo-textbox-lg-height, 40px);
+
+    input {
+        padding: var(--marilo-space-sm) var(--marilo-space-md);
+        font-size: var(--marilo-font-size-md);
+    }
+
+    .mar-textbox__prefix,
+    .mar-textbox__suffix {
+        font-size: var(--marilo-font-size-md);
+    }
+}

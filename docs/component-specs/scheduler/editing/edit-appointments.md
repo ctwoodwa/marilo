@@ -92,6 +92,7 @@ When the user clicks the close button (`x`) of the appointment a confirmation di
 
 The example below shows the signature of the event handlers so you can copy the proper arguments and start implementing your business logic and data storage operations. The example only updates the local collection of appointments used in the UI.
 
+@[template](/_contentTemplates/common/general-info.md#event-callback-can-be-async)
 
 >note It is up to the data access logic to save the data once it is changed in the data collection. The example below showcases when that happens and adds some code to provide a visual indication of the change. In a real application, the code for handling data updates may be entirely different.
 

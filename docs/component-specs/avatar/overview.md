@@ -47,6 +47,7 @@ The Avatar provides multiple options for configuring its look - `ThemeColor`, `R
 
 The Blazor Avatar provides the following parameters that allow you to configure the component:
 
+@[template](/_contentTemplates/common/parameters-table-styles.md#table-layout)
 
 | Parameter    | Type  | Description |
 | ----------- | ----------- | -------|

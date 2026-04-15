@@ -23,6 +23,7 @@ The <a href="https://www.marilo.com/blazor-ui/heatmap" target="_blank">Blazor He
     * [ColorField](#colorfield)
     * Customize Chart Elements - Nested Tags Settings
 
+@[template](/_contentTemplates/chart/link-to-basics.md#understand-basics-and-databinding-first)
 
 #### To create a Heatmap chart:
 
@@ -413,7 +414,9 @@ The `ColorField` parameter allows you to control the color of an individual mark
 ````
 
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings)
 
+@[template](/_contentTemplates/chart/link-to-basics.md#configurable-nested-chart-settings-axis-free)
 
 >caption Hide the Labels for both X and Y axes.
 
